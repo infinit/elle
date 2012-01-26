@@ -50,20 +50,20 @@ namespace elle
       //
       // methods
       //
-      Status		Create(const Natural32);
+      Status            Create(const Natural32);
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Byte*		stack;
-      Natural32		size;
+      Byte*             stack;
+      Natural32         size;
     };
 
   }

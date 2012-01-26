@@ -32,7 +32,7 @@ namespace elle
     ///
     /// this type is logically equivalent to a plain text.
     ///
-    typedef Plain	Clear;
+    typedef Plain       Clear;
 
   }
 }

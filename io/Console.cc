@@ -38,31 +38,31 @@ namespace elle
     ///
     /// this method retrieves the user's input from the console.
     ///
-    Status		Console::Input(String&			text,
-				       const String&		prompt,
-				       const Console::Option	option)
+    Status              Console::Input(String&                  text,
+                                       const String&            prompt,
+                                       const Console::Option    option)
     {
       enter();
 
       // retrieve the input depending on the option.
       switch (option)
-	{
-	case OptionPassword:
-	  {
-	    // retrieve the input and assign it.
-	    text.assign(::readline(prompt.c_str()));
+        {
+        case OptionPassword:
+          {
+            // retrieve the input and assign it.
+            text.assign(::readline(prompt.c_str()));
 
-	    break;
-	  }
-	case OptionNone:
-	default:
-	  {
-	    // retrieve the input and assign it.
-	    text.assign(::readline(prompt.c_str()));
+            break;
+          }
+        case OptionNone:
+        default:
+          {
+            // retrieve the input and assign it.
+            text.assign(::readline(prompt.c_str()));
 
-	    break;
-	  }
-	}
+            break;
+          }
+        }
 
       leave();
     }

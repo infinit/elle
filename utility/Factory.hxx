@@ -31,7 +31,7 @@ namespace elle
     /// a default constructor in order to keep the identifier.
     ///
     template <typename T>
-    Factory::Generatoid<T>::Generatoid(const Product&		identifier):
+    Factory::Generatoid<T>::Generatoid(const Product&           identifier):
       identifier(identifier)
     {
     }
@@ -40,7 +40,7 @@ namespace elle
     /// this method allocates a new object of the type of the functionoid.
     ///
     template <typename T>
-    Status	Factory::Generatoid<T>::Allocate(Meta*&		meta) const
+    Status      Factory::Generatoid<T>::Allocate(Meta*&         meta) const
     {
       enter();
 
@@ -58,29 +58,29 @@ namespace elle
     /// this method registers a new type associated with a identifier.
     ///
     template <typename T>
-    Status	Factory::Register(const Product&		identifier)
+    Status      Factory::Register(const Product&                identifier)
     {
-      Factory::Generatoid<T>*			generatoid;
-      std::pair<Factory::Iterator, Boolean>	result;
+      Factory::Generatoid<T>*                   generatoid;
+      std::pair<Factory::Iterator, Boolean>     result;
 
       enterx(instance(generatoid));
 
       // check if there is already such an identifier registerd.
       if (this->container.find(identifier) != this->container.end())
-	escape("unable to register an already registered identifier");
+        escape("unable to register an already registered identifier");
 
       // create a generatoid.
       generatoid = new Factory::Generatoid<T>(identifier);
 
       // insert the generator in the container.
       result = this->container.insert(
-	         std::pair<const Product,
-			   Factory::Functionoid*>(identifier,
-						  generatoid));
+                 std::pair<const Product,
+                           Factory::Functionoid*>(identifier,
+                                                  generatoid));
 
       // check if the insertion was successful.
       if (result.second == false)
-	escape("unable to insert the generatoid into the container");
+        escape("unable to insert the generatoid into the container");
 
       // give up the tracking.
       waive(generatoid);
@@ -93,22 +93,22 @@ namespace elle
     /// corresponding type.
     ///
     template <typename U>
-    Status		Factory::Build(const Product&		identifier,
-				       U*&			object) const
+    Status              Factory::Build(const Product&           identifier,
+                                       U*&                      object) const
     {
-      Factory::Scoutor	scoutor;
+      Factory::Scoutor  scoutor;
 
       enter();
 
       // retrieve the associated generator.
       if ((scoutor = this->container.find(identifier)) ==
-	  this->container.end())
-	escape("unable to locate the generatoid for the given identifier");
+          this->container.end())
+        escape("unable to locate the generatoid for the given identifier");
 
       // allocate an object of the type handled by the generatoid.
       if (scoutor->second->Allocate(
-	    reinterpret_cast<Meta*&>(object)) == StatusError)
-	escape("unable to allocate the object");
+            reinterpret_cast<Meta*&>(object)) == StatusError)
+        escape("unable to allocate the object");
 
       leave();
     }

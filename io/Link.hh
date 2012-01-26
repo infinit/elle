@@ -42,11 +42,11 @@ namespace elle
       //
       // static methods
       //
-      static Status	Create(const Path&,
-			       const Path&);
-      static Status	Erase(const Path&);
-      static Status	Exist(const Path&);
-      static Status	Dig(const Path&);
+      static Status     Create(const Path&,
+                               const Path&);
+      static Status     Erase(const Path&);
+      static Status     Exist(const Path&);
+      static Status     Dig(const Path&);
     };
 
   }

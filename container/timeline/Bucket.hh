@@ -49,33 +49,33 @@ namespace elle
       ///
       template <typename T>
       class Bucket:
-	public Entity
+        public Entity
       {
       public:
-	//
-	// types
-	//
-	typedef std::vector<T>				Container;
-	typedef typename Container::iterator		Iterator;
-	typedef typename Container::const_iterator	Scoutor;
+        //
+        // types
+        //
+        typedef std::vector<T>                          Container;
+        typedef typename Container::iterator            Iterator;
+        typedef typename Container::const_iterator      Scoutor;
 
-	//
-	// methods
-	//
-	Status		Add(T&);
-	Status		Remove(T&);
+        //
+        // methods
+        //
+        Status          Add(T&);
+        Status          Remove(T&);
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	Status		Dump(const Natural32 = 0) const;
+        // dumpable
+        Status          Dump(const Natural32 = 0) const;
 
-	//
-	// attributes
-	//
-	Container	container;
+        //
+        // attributes
+        //
+        Container       container;
       };
 
     }

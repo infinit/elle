@@ -24,21 +24,21 @@ namespace elle
     /// this method recycles a region.
     ///
     template <typename T>
-    Status		Region::Recycle(const T*		object)
+    Status              Region::Recycle(const T*                object)
     {
       // release the resources.
       this->~Region();
 
       if (object == NULL)
-	{
-	  // initialize the object with default values.
-	  new (this) T;
-	}
+        {
+          // initialize the object with default values.
+          new (this) T;
+        }
       else
-	{
-	  // initialize the object with defined values.
-	  new (this) T(*object);
-	}
+        {
+          // initialize the object with defined values.
+          new (this) T(*object);
+        }
 
       // return StatusOk in order to avoid including Report, Status and Maid.
       return (StatusOk);

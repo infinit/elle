@@ -31,7 +31,7 @@ namespace elle
     ///
     /// this defines a null code.
     ///
-    const Code			Code::Null;
+    const Code                  Code::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -51,7 +51,7 @@ namespace elle
     ///
     /// this method creates a code based on the given region.
     ///
-    Status		Code::Create(const Region&	region)
+    Status              Code::Create(const Region&      region)
     {
       enter();
 
@@ -68,17 +68,17 @@ namespace elle
     ///
     /// this method check if two codes match.
     ///
-    Boolean		Code::operator==(const Code&	element) const
+    Boolean             Code::operator==(const Code&    element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the regions.
       if (this->region != element.region)
-	false();
+        false();
 
       true();
     }
@@ -95,25 +95,25 @@ namespace elle
     ///
     /// this method dumps the code.
     ///
-    Status		Code::Dump(const Natural32		margin) const
+    Status              Code::Dump(const Natural32              margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
       // display depending on the value.
       if (*this == Code::Null)
-	{
-	  std::cout << alignment << "[Code] " << none << std::endl;
-	}
+        {
+          std::cout << alignment << "[Code] " << none << std::endl;
+        }
       else
-	{
-	  std::cout << alignment << "[Code] " << std::endl;
+        {
+          std::cout << alignment << "[Code] " << std::endl;
 
-	  // dump the region.
-	  if (this->region.Dump(margin + 2) == StatusError)
-	      escape("unable to dump the region");
-	}
+          // dump the region.
+          if (this->region.Dump(margin + 2) == StatusError)
+              escape("unable to dump the region");
+        }
 
       leave();
     }
@@ -125,13 +125,13 @@ namespace elle
     ///
     /// this method serializes a code object.
     ///
-    Status		Code::Serialize(Archive&		archive) const
+    Status              Code::Serialize(Archive&                archive) const
     {
       enter();
 
       // serialize the region.
       if (archive.Serialize(this->region) == StatusError)
-	escape("unable to serialize the region");
+        escape("unable to serialize the region");
 
       leave();
     }
@@ -139,13 +139,13 @@ namespace elle
     ///
     /// this method extracts a code object.
     ///
-    Status		Code::Extract(Archive&		archive)
+    Status              Code::Extract(Archive&          archive)
     {
       enter();
 
       // extract the content.
       if (archive.Extract(this->region) == StatusError)
-	escape("unable to extract the region");
+        escape("unable to extract the region");
 
       leave();
     }

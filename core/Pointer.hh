@@ -30,7 +30,7 @@ namespace elle
     /// this type defines a memory word which depends upon the
     /// microprocessor architecture.
     ///
-    typedef Void*		Pointer;
+    typedef Void*               Pointer;
 
   }
 }

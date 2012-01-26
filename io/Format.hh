@@ -26,11 +26,11 @@ namespace elle
     ///
     enum Format
       {
-	FormatUnknown,
-	FormatRaw,
-	FormatHexadecimal,
-	FormatBase64,
-	FormatCustom
+        FormatUnknown,
+        FormatRaw,
+        FormatHexadecimal,
+        FormatBase64,
+        FormatCustom
       };
 
   }

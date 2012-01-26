@@ -50,22 +50,22 @@ namespace elle
     ///
     /// the default key pair length.
     ///
-    const Natural32		KeyPair::Default::Length = 1024;
+    const Natural32             KeyPair::Default::Length = 1024;
 
     ///
     /// the default value for the key generation context.
     ///
-    ::EVP_PKEY_CTX*		KeyPair::Contexts::Generate = NULL;
+    ::EVP_PKEY_CTX*             KeyPair::Contexts::Generate = NULL;
 
     ///
     /// this defines a null key pair.
     ///
-    const KeyPair		KeyPair::Null;
+    const KeyPair               KeyPair::Null;
 
     ///
     /// this string defines the key pair files extension.
     ///
-    const String		KeyPair::Extension = ".pair";
+    const String                KeyPair::Extension = ".pair";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -85,18 +85,18 @@ namespace elle
     ///
     /// this method initializes the key generation context.
     ///
-    Status		KeyPair::Initialize()
+    Status              KeyPair::Initialize()
     {
       enter();
 
       // create the context for the RSA algorithm.
       if ((KeyPair::Contexts::Generate = ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA,
-							       NULL)) == NULL)
-	escape("unable to create the context");
+                                                               NULL)) == NULL)
+        escape("unable to create the context");
 
       // initialise the context for key generation.
       if (::EVP_PKEY_keygen_init(KeyPair::Contexts::Generate) <= 0)
-	escape("unable to initialise the generation context");
+        escape("unable to initialise the generation context");
 
       leave();
     }
@@ -104,7 +104,7 @@ namespace elle
     ///
     /// this method cleans the key generation context.
     ///
-    Status		KeyPair::Clean()
+    Status              KeyPair::Clean()
     {
       enter();
 
@@ -117,12 +117,12 @@ namespace elle
     ///
     /// this method generate a RSA keypair.
     ///
-    Status		KeyPair::Generate()
+    Status              KeyPair::Generate()
     {
       enter();
 
       if (this->Generate(KeyPair::Default::Length) == StatusError)
-	escape("unable to generate the key pair");
+        escape("unable to generate the key pair");
 
       leave();
     }
@@ -132,28 +132,28 @@ namespace elle
     ///
     /// the argument length represents the length of the key, in bits.
     ///
-    Status		KeyPair::Generate(const Natural32	length)
+    Status              KeyPair::Generate(const Natural32       length)
     {
-      ::EVP_PKEY*	key;
+      ::EVP_PKEY*       key;
 
       enterx(slab(key, ::EVP_PKEY_free));
 
       // set the key length.
       if (::EVP_PKEY_CTX_set_rsa_keygen_bits(KeyPair::Contexts::Generate,
-					     length) <= 0)
-	escape("unable to set the RSA key length");
+                                             length) <= 0)
+        escape("unable to set the RSA key length");
 
       // generate the EVP key.
       if (::EVP_PKEY_keygen(KeyPair::Contexts::Generate, &key) <= 0)
-	escape("unable to generate the key");
+        escape("unable to generate the key");
 
       // create the actual public key according to the EVP structure.
       if (this->K.Create(key) == StatusError)
-	escape("unable to create the public key");
+        escape("unable to create the public key");
 
       // create the actual private key according to the EVP structure.
       if (this->k.Create(key) == StatusError)
-	escape("unable to create the private key");
+        escape("unable to create the private key");
 
       // release the memory.
       ::EVP_PKEY_free(key);
@@ -167,8 +167,8 @@ namespace elle
     ///
     /// this method creates a key pair from both a public and private key.
     ///
-    Status		KeyPair::Create(const PublicKey&	K,
-					const PrivateKey&	k)
+    Status              KeyPair::Create(const PublicKey&        K,
+                                        const PrivateKey&       k)
     {
       enter();
 
@@ -186,44 +186,44 @@ namespace elle
     /// and to the key modulus---in order to retrieve the public key.
     /// for more information, please refer to PrivateKey::Derive().
     ///
-    Status		KeyPair::Rotate(const Seed&		seed,
-					KeyPair&		kp) const
+    Status              KeyPair::Rotate(const Seed&             seed,
+                                        KeyPair&                kp) const
     {
-      ::EVP_PKEY*	key;
-      ::RSA*		rsa;
+      ::EVP_PKEY*       key;
+      ::RSA*            rsa;
 
       enterx(slab(key, ::EVP_PKEY_free),
-	    slab(rsa, ::RSA_free));
+            slab(rsa, ::RSA_free));
 
       // create an EVP key.
       if ((key = ::EVP_PKEY_new()) == NULL)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // create a new RSA key.
       if ((rsa = ::RSA_new()) == NULL)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // rotate the RSA key.
       if (comet::RSA_rotate(rsa,
-			    ::BN_num_bits(this->K.key->pkey.rsa->n),
-			    seed.region.contents,
-			    seed.region.size) <= 0)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+                            ::BN_num_bits(this->K.key->pkey.rsa->n),
+                            seed.region.contents,
+                            seed.region.size) <= 0)
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // assign the RSA key to the EVP's.
       if (::EVP_PKEY_assign_RSA(key, rsa) <= 0)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // stop tracking.
       waive(rsa);
 
       // create the rotated public key according to the EVP structure.
       if (kp.K.Create(key) == StatusError)
-	escape("unable to create the public key");
+        escape("unable to create the public key");
 
       // create the rotated private key according to the EVP structure.
       if (kp.k.Create(key) == StatusError)
-	escape("unable to create the private key");
+        escape("unable to create the private key");
 
       // release the EVP key.
       ::EVP_PKEY_free(key);
@@ -241,17 +241,17 @@ namespace elle
     ///
     /// this method check if two keypairs match.
     ///
-    Boolean		KeyPair::operator==(const KeyPair&	element) const
+    Boolean             KeyPair::operator==(const KeyPair&      element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the internal keys.
       if ((this->K != element.K) || (this->k != element.k))
-	false();
+        false();
 
       true();
     }
@@ -268,9 +268,9 @@ namespace elle
     ///
     /// this method dumps the keypair internals.
     ///
-    Status		KeyPair::Dump(const Natural32		margin) const
+    Status              KeyPair::Dump(const Natural32           margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
@@ -278,11 +278,11 @@ namespace elle
 
       // dump the public key.
       if (this->K.Dump(margin + 2) == StatusError)
-	escape("unable to dump the public key");
+        escape("unable to dump the public key");
 
       // dump the private key.
       if (this->k.Dump(margin + 2) == StatusError)
-	escape("unable to dump the public key");
+        escape("unable to dump the public key");
 
       leave();
     }
@@ -294,13 +294,13 @@ namespace elle
     ///
     /// this method serializes a keypair object.
     ///
-    Status		KeyPair::Serialize(Archive&		archive) const
+    Status              KeyPair::Serialize(Archive&             archive) const
     {
       enter();
 
       // serialize the internal keys.
       if (archive.Serialize(this->K, this->k) == StatusError)
-	escape("unable to serialize the internal keys");
+        escape("unable to serialize the internal keys");
 
       leave();
     }
@@ -308,13 +308,13 @@ namespace elle
     ///
     /// this method extract a keypair from the given archive.
     ///
-    Status		KeyPair::Extract(Archive&		archive)
+    Status              KeyPair::Extract(Archive&               archive)
     {
       enter();
 
       // extract the internal keys.
       if (archive.Extract(this->K, this->k) == StatusError)
-	escape("unable to extract the internal keys");
+        escape("unable to extract the internal keys");
 
       leave();
     }
@@ -326,32 +326,32 @@ namespace elle
     ///
     /// this method loads a key pair from a file.
     ///
-    Status		KeyPair::Load(const Path&		path,
-				      const String&		pass)
+    Status              KeyPair::Load(const Path&               path,
+                                      const String&             pass)
     {
-      Region		region;
-      Cipher		cipher;
-      SecretKey		key;
+      Region            region;
+      Cipher            cipher;
+      SecretKey         key;
 
       enter();
 
       // read the file.
       if (File::Read(path, region) == StatusError)
-	escape("unable to read the file");
+        escape("unable to read the file");
 
       // decode and extract the cipher.
       if (Base64::Decode(
-	    String(reinterpret_cast<char*>(region.contents), region.size),
-	    cipher) == StatusError)
-	escape("unable to decode the cipher");
+            String(reinterpret_cast<char*>(region.contents), region.size),
+            cipher) == StatusError)
+        escape("unable to decode the cipher");
 
       // create the key based on the given pass.
       if (key.Create(pass) == StatusError)
-	escape("unable to create the key");
+        escape("unable to create the key");
 
       // decrypt the cipher file content with the secret key.
       if (key.Decrypt(cipher, *this) == StatusError)
-	escape("unable to decrypt the keypair");
+        escape("unable to decrypt the keypair");
 
       leave();
     }
@@ -360,36 +360,36 @@ namespace elle
     /// this method stores a key pair in a file, taking care to encrypt
     /// it with the given pass.
     ///
-    Status		KeyPair::Store(const Path&		path,
-				       const String&		pass) const
+    Status              KeyPair::Store(const Path&              path,
+                                       const String&            pass) const
     {
-      Cipher		cipher;
-      String		string;
-      SecretKey		key;
-      Region		region;
+      Cipher            cipher;
+      String            string;
+      SecretKey         key;
+      Region            region;
 
       enter();
 
       // create a secret key with this pass.
       if (key.Create(pass) == StatusError)
-	escape("unable to create the secret key");
+        escape("unable to create the secret key");
 
       // encrypt the keypair.
       if (key.Encrypt(*this, cipher) == StatusError)
-	escape("unable to decrypt the keypair");
+        escape("unable to decrypt the keypair");
 
       // encode in base64.
       if (Base64::Encode(cipher, string) == StatusError)
-	escape("unable to encode in base64");
+        escape("unable to encode in base64");
 
       // wrap the string.
       if (region.Wrap(reinterpret_cast<const Byte*>(string.c_str()),
-		      string.length()) == StatusError)
-	escape("unable to wrap the string");
+                      string.length()) == StatusError)
+        escape("unable to wrap the string");
 
       // write the file.
       if (File::Write(path, region) == StatusError)
-	escape("unable to write the file");
+        escape("unable to write the file");
 
       leave();
     }
@@ -397,13 +397,13 @@ namespace elle
     ///
     /// this method erases the key pair file.
     ///
-    Status		KeyPair::Erase(const Path&		path) const
+    Status              KeyPair::Erase(const Path&              path) const
     {
       enter();
 
       // erase the file.
       if (File::Erase(path) == StatusError)
-	escape("unable to erase the file");
+        escape("unable to erase the file");
 
       leave();
     }
@@ -411,7 +411,7 @@ namespace elle
     ///
     /// this method tests the key pair file.
     ///
-    Status		KeyPair::Exist(const Path&		path) const
+    Status              KeyPair::Exist(const Path&              path) const
     {
       return (File::Exist(path));
     }

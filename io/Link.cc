@@ -51,19 +51,19 @@ namespace elle
     ///
     /// this method creates a link.
     ///
-    Status		Link::Create(const Path&		link,
-				     const Path&		target)
+    Status              Link::Create(const Path&                link,
+                                     const Path&                target)
     {
       enter();
 
       // does the link exist.
       if (Link::Exist(link) == StatusTrue)
-	escape("the link seems to already exist");
+        escape("the link seems to already exist");
 
       // does the target exist.
       if ((File::Exist(target) == StatusFalse) &&
-	  (Directory::Exist(target) == StatusFalse))
-	escape("the target does not seem to exist");
+          (Directory::Exist(target) == StatusFalse))
+        escape("the target does not seem to exist");
 
       // create the link.
 #if defined(INFINIT_UNIX)
@@ -85,13 +85,13 @@ namespace elle
     ///
     /// this method erases the given link path.
     ///
-    Status		Link::Erase(const Path&			path)
+    Status              Link::Erase(const Path&                 path)
     {
       enter();
 
       // does the link exist.
       if (Link::Exist(path) == StatusFalse)
-	escape("the link does not seem to exist");
+        escape("the link does not seem to exist");
 
       // unlink the link.
       ::unlink(path.string.c_str());
@@ -102,24 +102,24 @@ namespace elle
     ///
     /// this method returns true if the pointed to link exists.
     ///
-    Status		Link::Exist(const Path&			path)
+    Status              Link::Exist(const Path&                 path)
     {
-      struct ::stat		stat;
+      struct ::stat             stat;
 
       enter();
 
 #if defined(INFINIT_UNIX)
       // does the path points to something.
       if (::lstat(path.string.c_str(), &stat) != 0)
-	false();
+        false();
 
       // does the path points to a regular file.
       if (!S_ISLNK(stat.st_mode))
-	false();
+        false();
 #elif defined(INFINIT_WIN32)
       // does the path points to something.
       if (::stat(path.string.c_str(), &stat) != 0)
-	false();
+        false();
 #else
 # error "unsupported platform"
 #endif
@@ -131,14 +131,14 @@ namespace elle
     /// this method takes a path to a link and creates, if necessary,
     /// the intermediate directory leading to the file.
     ///
-    Status		Link::Dig(const Path&			path)
+    Status              Link::Dig(const Path&                   path)
     {
-      String		target(path.string);
+      String            target(path.string);
       char *            tmp_str = ::strdup(path.string.c_str());
-      String		directory(::dirname(tmp_str));
-      std::stringstream	stream(directory);
-      String		item;
-      Path		chemin;
+      String            directory(::dirname(tmp_str));
+      std::stringstream stream(directory);
+      String            item;
+      Path              chemin;
 
       enter();
 
@@ -147,25 +147,25 @@ namespace elle
 
       // go through the components of the path.
       while (std::getline(stream, item, System::Path::Separator))
-	{
-	  // update the intermediate chemin.
-	  if (chemin.string.empty() && item.empty())
-	    chemin.string = System::Path::Separator;
-	  else
-	    {
-	      chemin.string.append(item);
-	      chemin.string.append(1, System::Path::Separator);
-	    }
+        {
+          // update the intermediate chemin.
+          if (chemin.string.empty() && item.empty())
+            chemin.string = System::Path::Separator;
+          else
+            {
+              chemin.string.append(item);
+              chemin.string.append(1, System::Path::Separator);
+            }
 
-	  // retrieve information on the path. should this operation fail
-	  // would mean that the target directory does not exist.
-	  if (Directory::Exist(chemin) == StatusFalse)
-	    {
-	      // create the intermediate directory.
-	      if (Directory::Create(chemin) == StatusError)
-		escape("unable to create the intermediate directory");
-	    }
-	}
+          // retrieve information on the path. should this operation fail
+          // would mean that the target directory does not exist.
+          if (Directory::Exist(chemin) == StatusFalse)
+            {
+              // create the intermediate directory.
+              if (Directory::Create(chemin) == StatusError)
+                escape("unable to create the intermediate directory");
+            }
+        }
 
       leave();
     }

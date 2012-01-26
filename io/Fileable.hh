@@ -51,41 +51,41 @@ namespace elle
       ///
       /// this method loads an object and reconstructs it in memory.
       ///
-      Status		Load(const Path&)
+      Status            Load(const Path&)
       {
-	enter();
+        enter();
 
-	escape("this method should never have been called");
+        escape("this method should never have been called");
       }
 
       ///
       /// this method stores the object in the given file.
       ///
-      Status		Store(const Path&) const
+      Status            Store(const Path&) const
       {
-	enter();
+        enter();
 
-	escape("this method should never have been called");
+        escape("this method should never have been called");
       }
 
       ///
       /// this method erases the given file.
       ///
-      Status		Erase(const Path&) const
+      Status            Erase(const Path&) const
       {
-	enter();
+        enter();
 
-	escape("this method should never have been called");
+        escape("this method should never have been called");
       }
 
       ///
       /// this method returns true if the given file exists.
       ///
-      Status		Exist(const Path&) const
+      Status            Exist(const Path&) const
       {
-	enter();
+        enter();
 
-	escape("this method should never have been called");
+        escape("this method should never have been called");
       }
     };
 

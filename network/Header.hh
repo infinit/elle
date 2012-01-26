@@ -54,7 +54,7 @@ namespace elle
       //
       // constants
       //
-      static const String		Name;
+      static const String               Name;
 
       //
       // constructors & destructors
@@ -64,9 +64,9 @@ namespace elle
       //
       // methods
       //
-      Status		Create(const Event&,
-			       const Tag,
-			       const Natural32);
+      Status            Create(const Event&,
+                               const Tag,
+                               const Natural32);
 
       //
       // interfaces
@@ -76,18 +76,18 @@ namespace elle
       declare(Header);
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      Status            Serialize(Archive&) const;
+      Status            Extract(Archive&);
 
       //
       // attributes
       //
-      Event		event;
-      Tag		tag;
-      Natural32		size;
+      Event             event;
+      Tag               tag;
+      Natural32         size;
     };
 
   }

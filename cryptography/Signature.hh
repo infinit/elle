@@ -53,7 +53,7 @@ namespace elle
       //
       // constants
       //
-      static const Signature		Null;
+      static const Signature            Null;
 
       //
       // constructors & destructors
@@ -66,19 +66,19 @@ namespace elle
 
       // object
       declare(Signature);
-      Boolean		operator==(const Signature&) const;
+      Boolean           operator==(const Signature&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      Status            Serialize(Archive&) const;
+      Status            Extract(Archive&);
 
       //
       // attributes
       //
-      Region		region;
+      Region            region;
     };
 
   }

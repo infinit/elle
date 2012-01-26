@@ -46,16 +46,16 @@ namespace elle
       //
       // constants
       //
-      static Resource	ResourceA;
-      static Resource	ResourceB;
-      static Resource	ResourceC;
+      static Resource   ResourceA;
+      static Resource   ResourceB;
+      static Resource   ResourceC;
 
       //
       // attributes
       //
-      static Timer	Timer1;
-      static Timer	Timer2;
-      static Timer	Timer3;
+      static Timer      Timer1;
+      static Timer      Timer2;
+      static Timer      Timer3;
     };
 
   }

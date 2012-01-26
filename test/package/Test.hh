@@ -40,8 +40,8 @@ namespace elle
       //
       // constants
       //
-      static const Natural32		MinimumPackSize;
-      static const Natural32		MaximumPackSize;
+      static const Natural32            MinimumPackSize;
+      static const Natural32            MaximumPackSize;
     };
 
   }

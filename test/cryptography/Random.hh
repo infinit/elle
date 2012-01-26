@@ -39,50 +39,50 @@ namespace elle
       ///
       /// this method generates a random number.
       ///
-      static Integer64	Generate(Integer64			minimum,
-				 Integer64			maximum)
+      static Integer64  Generate(Integer64                      minimum,
+                                 Integer64                      maximum)
       {
-	Integer64	base = (Integer64)rand();
+        Integer64       base = (Integer64)rand();
 
-	if ((base >= minimum) && (base <= maximum))
-	  return (base);
+        if ((base >= minimum) && (base <= maximum))
+          return (base);
 
-	return (base % ((maximum - minimum) + 1) + minimum);
+        return (base % ((maximum - minimum) + 1) + minimum);
       }
 
       ///
       /// this method generates a random region.
       ///
-      static Status	Generate(Region&			region)
+      static Status     Generate(Region&                        region)
       {
-	static const Natural32		MinimumRegionSize = 1;
-	static const Natural32		MaximumRegionSize = 12345;
+        static const Natural32          MinimumRegionSize = 1;
+        static const Natural32          MaximumRegionSize = 12345;
 
-	Natural32	size = Random::Generate(MinimumRegionSize,
-						MaximumRegionSize);
-	Byte*		buffer;
-	Natural32	i;
+        Natural32       size = Random::Generate(MinimumRegionSize,
+                                                MaximumRegionSize);
+        Byte*           buffer;
+        Natural32       i;
 
-	enterx(slab(buffer, ::free));
+        enterx(slab(buffer, ::free));
 
-	// allocate a buffer.
-	if ((buffer = (Byte*)::malloc(size)) == NULL)
-	  escape("unable to allocate memory");
+        // allocate a buffer.
+        if ((buffer = (Byte*)::malloc(size)) == NULL)
+          escape("unable to allocate memory");
 
-	// randomize the buffer contents.
-	for (i = 0; i < size; i++)
-	  *(buffer + i) =
-	    Random::Generate(elle::core::Type<Character>::Minimum,
-			     elle::core::Type<Character>::Maximum);
+        // randomize the buffer contents.
+        for (i = 0; i < size; i++)
+          *(buffer + i) =
+            Random::Generate(elle::core::Type<Character>::Minimum,
+                             elle::core::Type<Character>::Maximum);
 
-	// assign the buffer to the region.
-	if (region.Acquire(buffer, size) == StatusError)
-	  escape("unable to assign the buffer to the region");
+        // assign the buffer to the region.
+        if (region.Acquire(buffer, size) == StatusError)
+          escape("unable to assign the buffer to the region");
 
-	// since included in the region.
-	waive(buffer);
+        // since included in the region.
+        waive(buffer);
 
-	leave();
+        leave();
       }
     };
 

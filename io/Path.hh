@@ -47,17 +47,17 @@ namespace elle
       //
       // methods
       //
-      Status		Create(const String&);
-      Status		Create(const Pattern&);
+      Status            Create(const String&);
+      Status            Create(const Pattern&);
 
       template <typename T>
-      Status		Complete(T);
+      Status            Complete(T);
       template <typename T,
-		typename... TT>
-      Status		Complete(T,
-				 TT...);
-      Status		Complete(const String&,
-				 const String&);
+                typename... TT>
+      Status            Complete(T,
+                                 TT...);
+      Status            Complete(const String&,
+                                 const String&);
 
       //
       // interfaces
@@ -65,17 +65,17 @@ namespace elle
 
       // object
       declare(Path);
-      Boolean		operator==(const Path&) const;
+      Boolean           operator==(const Path&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       // archivable: nothing
 
       //
       // attributes
       //
-      String		string;
+      String            string;
     };
 
   }

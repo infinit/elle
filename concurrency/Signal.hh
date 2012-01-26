@@ -53,26 +53,26 @@ namespace elle
       //
       // types
       //
-      typedef Parameters<T...>		P;
+      typedef Parameters<T...>          P;
 
       ///
       /// this class represents the functionoid used to forward the call.
       ///
       class Functionoid:
-	public Entity
+        public Entity
       {
       public:
-	//
-	// constructors & destructors
-	//
-	virtual ~Functionoid()
-	{
-	}
+        //
+        // constructors & destructors
+        //
+        virtual ~Functionoid()
+        {
+        }
 
-	//
-	// methods
-	//
-	virtual Status	Call(T&...) const = 0;
+        //
+        // methods
+        //
+        virtual Status  Call(T&...) const = 0;
       };
 
       ///
@@ -81,41 +81,41 @@ namespace elle
       ///
       template <typename Y>
       class Selectionoid:
-	public Functionoid
+        public Functionoid
       {
       public:
-	//
-	// constructors & destructors
-	//
-	Selectionoid(const Y&);
+        //
+        // constructors & destructors
+        //
+        Selectionoid(const Y&);
 
-	//
-	// methods
-	//
-	Status		Call(T&...) const;
+        //
+        // methods
+        //
+        Status          Call(T&...) const;
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	Status		Dump(const Natural32) const;
+        // dumpable
+        Status          Dump(const Natural32) const;
 
-	//
-	// attributes
-	//
-	Y		object;
+        //
+        // attributes
+        //
+        Y               object;
       };
 
       //
       // types
       //
-      typedef Natural32					Stream;
+      typedef Natural32                                 Stream;
 
       typedef std::map<const Natural32,
-		       Functionoid*>			Container;
-      typedef typename Container::iterator		Iterator;
-      typedef typename Container::const_iterator	Scoutor;
+                       Functionoid*>                    Container;
+      typedef typename Container::iterator              Iterator;
+      typedef typename Container::const_iterator        Scoutor;
 
       //
       // constructors & destructors
@@ -127,21 +127,21 @@ namespace elle
       // methods
       //
       template <template <typename...> class C>
-      Status		Subscribe(const C<Status, P>);
+      Status            Subscribe(const C<Status, P>);
       template <template <typename...> class C>
-      Status		Subscribe(const C<Status, P>,
-				  Stream&);
-      Status		Unsubscribe(const Stream);
-      Status		Emit(T...);
+      Status            Subscribe(const C<Status, P>,
+                                  Stream&);
+      Status            Unsubscribe(const Stream);
+      Status            Emit(T...);
 
-      Status		Flush();
+      Status            Flush();
 
       //
       // attributes
       //
-      Stream		counter;
+      Stream            counter;
 
-      Container		container;
+      Container         container;
     };
 
   }

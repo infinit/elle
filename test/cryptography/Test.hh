@@ -42,26 +42,26 @@ namespace elle
       // enumerations
       //
       enum Type
-	{
-	  TypeKeys,
-	  TypeEncryption,
-	  TypeNoitpyrcne,
-	  TypeSignature,
-	  TypeRotation,
-	  TypeCipher
-	};
+        {
+          TypeKeys,
+          TypeEncryption,
+          TypeNoitpyrcne,
+          TypeSignature,
+          TypeRotation,
+          TypeCipher
+        };
 
       //
       // constants
       //
-      static const Natural32		MinimumTestsNumber;
-      static const Natural32		MaximumTestsNumber;
+      static const Natural32            MinimumTestsNumber;
+      static const Natural32            MaximumTestsNumber;
 
-      static const Natural32		MinimumKeyLength;
-      static const Natural32		MaximumKeyLength;
+      static const Natural32            MinimumKeyLength;
+      static const Natural32            MaximumKeyLength;
 
-      static const Natural32		MinimumKeyRotations;
-      static const Natural32		MaximumKeyRotations;
+      static const Natural32            MinimumKeyRotations;
+      static const Natural32            MaximumKeyRotations;
     };
 
   }

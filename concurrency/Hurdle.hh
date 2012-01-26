@@ -52,8 +52,8 @@ namespace elle
     /// Hurdle with a Section in order to make sure the hurdle is always
     /// unlocked when leaving the scope. this class can be used as follows:
     ///
-    ///   Hurdle		hurdle;
-    ///   Hurdle::Zone		zone(hurdle, ModeWrite);
+    ///   Hurdle                hurdle;
+    ///   Hurdle::Zone          zone(hurdle, ModeWrite);
     ///
     ///   zone.Lock();
     ///
@@ -74,21 +74,21 @@ namespace elle
       typedef Section<
         Parameters<const Mode>,
         Parameters<const Mode>
-        >							S;
+        >                                                       S;
       typedef Closure<
-	Void,
-	Parameters<const Mode>,
-	Parameters<>
-	>							L;
+        Void,
+        Parameters<const Mode>,
+        Parameters<>
+        >                                                       L;
       typedef Closure<
-	Void,
-	Parameters<const Mode>,
-	Parameters<>
-	>							U;
+        Void,
+        Parameters<const Mode>,
+        Parameters<>
+        >                                                       U;
       typedef Callback<
-	Void,
-	Parameters<const Mode>
-	>							C;
+        Void,
+        Parameters<const Mode>
+        >                                                       C;
 
       //
       // classes
@@ -99,35 +99,35 @@ namespace elle
       /// when leaving a scope.
       ///
       class Zone:
-	public Entity
+        public Entity
       {
       public:
-	//
-	// constructors & destructors
-	//
-	Zone(Hurdle&,
-	     const Mode);
+        //
+        // constructors & destructors
+        //
+        Zone(Hurdle&,
+             const Mode);
 
-	//
-	// methods
-	//
-	Void		Lock();
-	Void		Unlock();
+        //
+        // methods
+        //
+        Void            Lock();
+        Void            Unlock();
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	Status		Dump(const Natural32 = 0) const;
+        // dumpable
+        Status          Dump(const Natural32 = 0) const;
 
-	//
-	// attributes
-	//
-	Hurdle&		hurdle;
-	Mode		mode;
+        //
+        // attributes
+        //
+        Hurdle&         hurdle;
+        Mode            mode;
 
-	S		section;
+        S               section;
       };
 
       //
@@ -138,10 +138,10 @@ namespace elle
       //
       // methods
       //
-      Void		Lock(const Mode);
-      Void		Unlock(const Mode);
+      Void              Lock(const Mode);
+      Void              Unlock(const Mode);
 
-      Status		Try(const Mode);
+      Status            Try(const Mode);
 
       //
       // interfaces
@@ -151,13 +151,13 @@ namespace elle
       declare(Hurdle);
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Boolean		locked;
-      Natural32		readers;
+      Boolean           locked;
+      Natural32         readers;
     };
 
   }

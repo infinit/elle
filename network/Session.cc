@@ -31,7 +31,7 @@ namespace elle
     ///
     /// this variables is the session specific to the current thread/fiber.
     ///
-    Session*			Session::Current = NULL;
+    Session*                    Session::Current = NULL;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -40,13 +40,13 @@ namespace elle
     ///
     /// this method initializes the session.
     ///
-    Status		Session::Initialize()
+    Status              Session::Initialize()
     {
       enter();
 
       // register the govern callback to the fiber system.
       if (Fiber::Register(Callback<>::Infer(&Session::Govern)) == StatusError)
-	escape("unable to register the govern callback");
+        escape("unable to register the govern callback");
 
       leave();
     }
@@ -54,7 +54,7 @@ namespace elle
     ///
     /// this method cleans the session.
     ///
-    Status		Session::Clean()
+    Status              Session::Clean()
     {
       enter();
 
@@ -66,7 +66,7 @@ namespace elle
     ///
     /// this method returns the instance of the session.
     ///
-    Status		Session::Instance(Session*&		session)
+    Status              Session::Instance(Session*&             session)
     {
       enter();
 
@@ -79,7 +79,7 @@ namespace elle
     ///
     /// this method explicitely assign the session.
     ///
-    Status		Session::Assign(Session*		session)
+    Status              Session::Assign(Session*                session)
     {
       enter();
 
@@ -93,7 +93,7 @@ namespace elle
     /// this method is called to indicate that the session is no
     /// longer valid.
     ///
-    Status		Session::Clear()
+    Status              Session::Clear()
     {
       enter();
 
@@ -107,55 +107,55 @@ namespace elle
     /// this method initializes, saves, restores and cleans the session
     /// for the given fiber.
     ///
-    Status		Session::Govern(const Phase		phase,
-					Fiber*			fiber)
+    Status              Session::Govern(const Phase             phase,
+                                        Fiber*                  fiber)
     {
       enter();
 
       // perform an operation depending on the phase.
       switch (phase)
-	{
-	case PhaseInitialize:
-	  {
-	    // nothing to do.
+        {
+        case PhaseInitialize:
+          {
+            // nothing to do.
 
-	    break;
-	  }
-	case PhaseSave:
-	  {
-	    // save the session in the fiber's environment.
-	    if (fiber->environment->Store("session",
-					  Session::Current) == StatusError)
-	      escape("unable to store the session in the environment");
+            break;
+          }
+        case PhaseSave:
+          {
+            // save the session in the fiber's environment.
+            if (fiber->environment->Store("session",
+                                          Session::Current) == StatusError)
+              escape("unable to store the session in the environment");
 
-	    // set the locuser to NULL, for safety purposes.
-	    Session::Current = NULL;
+            // set the locuser to NULL, for safety purposes.
+            Session::Current = NULL;
 
-	    break;
-	  }
-	case PhaseRestore:
-	  {
-	    // restore the session from the fiber's environment.
-	    if (fiber->environment->Load("session",
-					 Session::Current) == StatusError)
-	      escape("unable to load the session from the environment");
+            break;
+          }
+        case PhaseRestore:
+          {
+            // restore the session from the fiber's environment.
+            if (fiber->environment->Load("session",
+                                         Session::Current) == StatusError)
+              escape("unable to load the session from the environment");
 
-	    break;
-	  }
-	case PhaseClean:
-	  {
-	    // nothing to do.
-	    //
-	    // actually, at this locus, the session must have been deleted
-	    // by the network manager.
+            break;
+          }
+        case PhaseClean:
+          {
+            // nothing to do.
+            //
+            // actually, at this locus, the session must have been deleted
+            // by the network manager.
 
-	    // ... but reinitializes the session locuser to make sure
-	    // everything is clean!
-	    Session::Current = NULL;
+            // ... but reinitializes the session locuser to make sure
+            // everything is clean!
+            Session::Current = NULL;
 
-	    break;
-	  }
-	}
+            break;
+          }
+        }
 
       leave();
     }
@@ -179,9 +179,9 @@ namespace elle
     ///
     /// this method sets the arguments.
     ///
-    Status		Session::Create(Socket*			socket,
-					const Locus&		locus,
-					const Event&		event)
+    Status              Session::Create(Socket*                 socket,
+                                        const Locus&            locus,
+                                        const Event&            event)
     {
       enter();
 
@@ -200,9 +200,9 @@ namespace elle
     ///
     /// this method dumps the session.
     ///
-    Status		Session::Dump(const Natural32		margin) const
+    Status              Session::Dump(const Natural32           margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
@@ -210,18 +210,18 @@ namespace elle
 
       // dump the socket.
       if (this->socket != NULL)
-	{
-	  std::cout << alignment << Dumpable::Shift
-		    << "[Socket] " << std::hex << this->socket << std::endl;
-	}
+        {
+          std::cout << alignment << Dumpable::Shift
+                    << "[Socket] " << std::hex << this->socket << std::endl;
+        }
 
       // dump the locus.
       if (this->locus.Dump(margin + 2) == StatusError)
-	escape("unable to dump the locus");
+        escape("unable to dump the locus");
 
       // dump the event.
       if (this->event.Dump(margin + 2) == StatusError)
-	escape("unable to dump the event");
+        escape("unable to dump the event");
 
       leave();
     }

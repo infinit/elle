@@ -39,10 +39,10 @@ namespace elle
       //
       // constants
       //
-      static const Natural32		AsymmetricKeyLength;
-      static const Natural32		SymmetricKeyLength;
+      static const Natural32            AsymmetricKeyLength;
+      static const Natural32            SymmetricKeyLength;
 
-      static const Natural32		BlockSize;
+      static const Natural32            BlockSize;
     };
 
   }

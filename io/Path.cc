@@ -26,7 +26,7 @@ namespace elle
     ///
     /// this method creates a path based on a string.
     ///
-    Status		Path::Create(const String&		string)
+    Status              Path::Create(const String&              string)
     {
       enter();
 
@@ -39,7 +39,7 @@ namespace elle
     ///
     /// this method creates a path according to a given pattern.
     ///
-    Status		Path::Create(const Pattern&		pattern)
+    Status              Path::Create(const Pattern&             pattern)
     {
       enter();
 
@@ -52,19 +52,19 @@ namespace elle
     ///
     /// this function resolves the given name/value tuple.
     ///
-    Status		Path::Complete(const String&		name,
-				       const String&		value)
+    Status              Path::Complete(const String&            name,
+                                       const String&            value)
     {
-      String::size_type	position;
+      String::size_type position;
 
       enter();
 
       // as long as the name is located within the string.
       while ((position = this->string.find(name)) != String::npos)
-	{
-	  // replace the name with the value.
-	  this->string.replace(position, name.length(), value);
-	}
+        {
+          // replace the name with the value.
+          this->string.replace(position, name.length(), value);
+        }
 
       leave();
     }
@@ -76,17 +76,17 @@ namespace elle
     ///
     /// this method check if two objects match.
     ///
-    Boolean		Path::operator==(const Path&		element) const
+    Boolean             Path::operator==(const Path&            element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the internal.
       if (this->string != element.string)
-	false();
+        false();
 
       true();
     }
@@ -103,15 +103,15 @@ namespace elle
     ///
     /// this method dumps the object's internal.
     ///
-    Status		Path::Dump(const Natural32		margin) const
+    Status              Path::Dump(const Natural32              margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Path] "
-		<< this->string
-		<< std::endl;
+                << this->string
+                << std::endl;
 
       leave();
     }

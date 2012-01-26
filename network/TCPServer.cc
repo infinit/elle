@@ -29,7 +29,7 @@ namespace elle
     ///
     /// definition of the container.
     ///
-    TCPServer::Container		TCPServer::Porters;
+    TCPServer::Container                TCPServer::Porters;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -39,10 +39,10 @@ namespace elle
     /// the default constructor.
     ///
     TCPServerPorter::TCPServerPorter(const
-				       Callback<
-					 Status,
-					 Parameters<TCPSocket*>
-					 >&			callback):
+                                       Callback<
+                                         Status,
+                                         Parameters<TCPSocket*>
+                                         >&                     callback):
       server(NULL),
       callback(callback)
     {
@@ -58,7 +58,7 @@ namespace elle
 
       // if there is a server, release it.
       if (this->server != NULL)
-	this->server->deleteLater();
+        this->server->deleteLater();
     }
 
 //
@@ -72,7 +72,7 @@ namespace elle
     ///
     /// this method creates and starts the porter.
     ///
-    Status		TCPServerPorter::Create(const Locus&	locus)
+    Status              TCPServerPorter::Create(const Locus&    locus)
     {
       enter();
 
@@ -84,13 +84,13 @@ namespace elle
 
       // start listening.
       if (this->server->listen(this->locus.host.location,
-			       this->locus.port) == false)
-	escape(this->server->errorString().toStdString().c_str());
+                               this->locus.port) == false)
+        escape(this->server->errorString().toStdString().c_str());
 
       // connect the signals.
       if (this->connect(this->server, SIGNAL(newConnection()),
-			this, SLOT(_accept())) == false)
-	escape("unable to connect the signal");
+                        this, SLOT(_accept())) == false)
+        escape("unable to connect the signal");
 
       leave();
     }
@@ -102,7 +102,7 @@ namespace elle
     ///
     /// this method initializes the server.
     ///
-    Status		TCPServer::Initialize()
+    Status              TCPServer::Initialize()
     {
       enter();
 
@@ -114,22 +114,22 @@ namespace elle
     ///
     /// this method cleans the server.
     ///
-    Status		TCPServer::Clean()
+    Status              TCPServer::Clean()
     {
-      TCPServer::Scoutor	scoutor;
+      TCPServer::Scoutor        scoutor;
 
       enter();
 
       // go through the porters.
       for (scoutor = TCPServer::Porters.begin();
-	   scoutor != TCPServer::Porters.end();
-	   scoutor++)
-	{
-	  TCPServerPorter*	porter = scoutor->second;
+           scoutor != TCPServer::Porters.end();
+           scoutor++)
+        {
+          TCPServerPorter*      porter = scoutor->second;
 
-	  // delete the porter.
-	  delete porter;
-	}
+          // delete the porter.
+          delete porter;
+        }
 
       // clear the container.
       TCPServer::Porters.clear();
@@ -147,36 +147,36 @@ namespace elle
     /// since the TCPServer class is static), all the slots registered on the
     /// signal would be triggered which is not want we want.
     ///
-    Status		TCPServer::Listen(const Locus&		locus,
-					  const
-					    Callback<
-					      Status,
-					      Parameters<TCPSocket*>
-					      >&		callback)
+    Status              TCPServer::Listen(const Locus&          locus,
+                                          const
+                                            Callback<
+                                              Status,
+                                              Parameters<TCPSocket*>
+                                              >&                callback)
     {
-      std::pair<TCPServer::Iterator, Boolean>	result;
-      TCPServerPorter*				porter;
+      std::pair<TCPServer::Iterator, Boolean>   result;
+      TCPServerPorter*                          porter;
 
       enterx(instance(porter));
 
       // check if this locus is not already listened on.
       if (TCPServer::Locate(locus) == StatusTrue)
-	escape("this locus seems to have already been registered");
+        escape("this locus seems to have already been registered");
 
       // allocate a new porter.
       porter = new TCPServerPorter(callback);
 
       // create the porter.
       if (porter->Create(locus) == StatusError)
-	escape("unable to create the porter");
+        escape("unable to create the porter");
 
       // insert the porter in the container.
       result = TCPServer::Porters.insert(
-	         std::pair<const Locus, TCPServerPorter*>(locus, porter));
+                 std::pair<const Locus, TCPServerPorter*>(locus, porter));
 
       // check if the insertion was successful.
       if (result.second == false)
-	escape("unable to insert the porter in the container");
+        escape("unable to insert the porter in the container");
 
       // stop tracking porter.
       waive(porter);
@@ -188,16 +188,16 @@ namespace elle
     /// this method blocks the given locus by deleting the associated
     /// porter.
     ///
-    Status		TCPServer::Block(const Locus&		locus)
+    Status              TCPServer::Block(const Locus&           locus)
     {
-      TCPServer::Iterator	iterator;
-      TCPServerPorter*		porter;
+      TCPServer::Iterator       iterator;
+      TCPServerPorter*          porter;
 
       enter();
 
       // locate the porter.
       if (TCPServer::Locate(locus, &iterator) == StatusFalse)
-	escape("unable to locate the given porter");
+        escape("unable to locate the given porter");
 
       // retrieve the porter.
       porter = iterator->second;
@@ -214,16 +214,16 @@ namespace elle
     ///
     /// this method returns the porter associated with the given locus.
     ///
-    Status		TCPServer::Retrieve(const Locus&	locus,
-					    TCPServerPorter*&	porter)
+    Status              TCPServer::Retrieve(const Locus&        locus,
+                                            TCPServerPorter*&   porter)
     {
-      TCPServer::Iterator	iterator;
+      TCPServer::Iterator       iterator;
 
       enter();
 
       // locate the porter.
       if (TCPServer::Locate(locus, &iterator) == StatusFalse)
-	escape("unable to locate the given porter");
+        escape("unable to locate the given porter");
 
       // retrieve the porter.
       porter = iterator->second;
@@ -235,21 +235,21 @@ namespace elle
     /// this method tries to locate the porter associated with the given
     /// locus and returns true if so.
     ///
-    Status		TCPServer::Locate(const Locus&		locus,
-					  Iterator*		iterator)
+    Status              TCPServer::Locate(const Locus&          locus,
+                                          Iterator*             iterator)
     {
-      TCPServer::Iterator	i;
+      TCPServer::Iterator       i;
 
       enter();
 
       // try to locate the porter.
       if ((i = TCPServer::Porters.find(locus)) != TCPServer::Porters.end())
-	{
-	  if (iterator != NULL)
-	    *iterator = i;
+        {
+          if (iterator != NULL)
+            *iterator = i;
 
-	  true();
-	}
+          true();
+        }
 
       false();
     }
@@ -265,9 +265,9 @@ namespace elle
     ///
     /// this method dumps the internals of a porter.
     ///
-    Status		TCPServerPorter::Dump(const Natural32	margin) const
+    Status              TCPServerPorter::Dump(const Natural32   margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
@@ -275,15 +275,15 @@ namespace elle
 
       // dump the locus.
       if (this->locus.Dump(margin + 2) == StatusError)
-	escape("unable to dump the locus");
+        escape("unable to dump the locus");
 
       // dump the server locus.
       std::cout << alignment << Dumpable::Shift << "[Server] "
-		<< std::hex << this->server << std::endl;
+                << std::hex << this->server << std::endl;
 
       // dump the callback.
       if (this->callback.Dump(margin + 2) == StatusError)
-	escape("unable to dump the callback");
+        escape("unable to dump the callback");
 
       leave();
     }
@@ -295,10 +295,10 @@ namespace elle
     ///
     /// this method dumps the table of porters.
     ///
-    Status		TCPServer::Show(const Natural32		margin)
+    Status              TCPServer::Show(const Natural32         margin)
     {
-      String			alignment(margin, ' ');
-      TCPServer::Scoutor	scoutor;
+      String                    alignment(margin, ' ');
+      TCPServer::Scoutor        scoutor;
 
       enter();
 
@@ -306,15 +306,15 @@ namespace elle
 
       // dump the porters table.
       for (scoutor = TCPServer::Porters.begin();
-	   scoutor != TCPServer::Porters.end();
-	   scoutor++)
-	{
-	  TCPServerPorter*	porter = scoutor->second;
+           scoutor != TCPServer::Porters.end();
+           scoutor++)
+        {
+          TCPServerPorter*      porter = scoutor->second;
 
-	  // dump the porter.
-	  if (porter->Dump(margin + 2) == StatusError)
-	    escape("unable to dump the porter");
-	}
+          // dump the porter.
+          if (porter->Dump(margin + 2) == StatusError)
+            escape("unable to dump the porter");
+        }
 
       leave();
     }
@@ -326,27 +326,27 @@ namespace elle
     ///
     /// this callback is triggered whenever a new conncetion is made.
     ///
-    Status		TCPServerPorter::Accept()
+    Status              TCPServerPorter::Accept()
     {
-      ::QTcpSocket*	connection;
-      TCPSocket*	socket;
+      ::QTcpSocket*     connection;
+      TCPSocket*        socket;
 
       enterx(instance(socket));
 
       // retrieve the connection from the server.
       if ((connection = this->server->nextPendingConnection()) == NULL)
-	escape(this->server->errorString().toStdString().c_str());
+        escape(this->server->errorString().toStdString().c_str());
 
       // allocate a new socket to this server.
       socket = new TCPSocket;
 
       // create a socket with the specific connection.
       if (socket->Create(connection) == StatusError)
-	escape("unable to create the socket");
+        escape("unable to create the socket");
 
       // call the callback.
       if (this->callback.Call(socket) == StatusError)
-	escape("an error occured in the callback");
+        escape("an error occured in the callback");
 
       // stop tracking socket as it has been handed to the callback.
       waive(socket);
@@ -362,19 +362,19 @@ namespace elle
     /// this slot is triggered whenever a connection is being made on the
     /// porter's locus.
     ///
-    void		TCPServerPorter::_accept()
+    void                TCPServerPorter::_accept()
     {
       Closure<
-	Status,
-	Parameters<>
-	>		closure(Callback<>::Infer(
-				  &TCPServerPorter::Accept, this));
+        Status,
+        Parameters<>
+        >               closure(Callback<>::Infer(
+                                  &TCPServerPorter::Accept, this));
 
       enter();
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	yield(_(), "unable to spawn a fiber");
+        yield(_(), "unable to spawn a fiber");
 
       release();
     }

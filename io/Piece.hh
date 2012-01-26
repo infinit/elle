@@ -44,7 +44,7 @@ namespace elle
       //
       Piece();
       Piece(const String&,
-	    const String&);
+            const String&);
 
       //
       // interfaces
@@ -52,18 +52,18 @@ namespace elle
 
       // object
       declare(Piece);
-      Boolean		operator==(const Piece&) const;
+      Boolean           operator==(const Piece&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       // archivable: nothing
 
       //
       // attributes
       //
-      const String	name;
-      const String	value;
+      const String      name;
+      const String      value;
     };
 
   }

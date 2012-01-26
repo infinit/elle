@@ -51,7 +51,7 @@ namespace elle
       //
       // constants
       //
-      static const Event	Null;
+      static const Event        Null;
 
       //
       // constructors & destructors
@@ -61,7 +61,7 @@ namespace elle
       //
       // methods
       //
-      Status		Generate();
+      Status            Generate();
 
       //
       // interfaces
@@ -69,20 +69,20 @@ namespace elle
 
       // object
       declare(Event);
-      Boolean		operator==(const Event&) const;
-      Boolean		operator<(const Event&) const;
+      Boolean           operator==(const Event&) const;
+      Boolean           operator<(const Event&) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      Status            Serialize(Archive&) const;
+      Status            Extract(Archive&);
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Natural64		identifier;
+      Natural64         identifier;
     };
 
   }

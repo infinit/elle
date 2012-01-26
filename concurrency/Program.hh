@@ -51,28 +51,28 @@ namespace elle
       // enumerations
       //
       enum State
-	{
-	  StateUnknown,
-	  StateActive,
-	  StateStopped
-	};
+        {
+          StateUnknown,
+          StateActive,
+          StateStopped
+        };
 
       //
       // static methods
       //
-      static Status		Initialize();
-      static Status		Clean();
+      static Status             Initialize();
+      static Status             Clean();
 
-      static Status		Setup();
-      static Status		Launch();
-      static Void		Exception(int);
-      static Status		Exit();
+      static Status             Setup();
+      static Status             Launch();
+      static Void               Exception(int);
+      static Status             Exit();
 
 #if defined(INFINIT_WIN32)
       // nothing
 #else
-      static Status		Attach(Broker&);
-      static Status		Detach(Broker&);
+      static Status             Attach(Broker&);
+      static Status             Detach(Broker&);
 #endif
 
       //
@@ -84,16 +84,16 @@ namespace elle
       //
       // attributes
       //
-      ::QCoreApplication*	core;
+      ::QCoreApplication*       core;
 
-      State			state;
+      State                     state;
     };
 
 //
 // ---------- externs ---------------------------------------------------------
 //
 
-    extern Program*		program;
+    extern Program*             program;
 
   }
 }

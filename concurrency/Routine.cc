@@ -39,7 +39,7 @@ namespace elle
     ///
     /// specific constructor.
     ///
-    Routine::Routine(const Scheme				scheme):
+    Routine::Routine(const Scheme                               scheme):
       scheme(scheme)
     {
     }
@@ -60,9 +60,9 @@ namespace elle
     ///
     /// this method dumps the kind.
     ///
-    Status		Routine::Dump(const Natural32		margin) const
+    Status              Routine::Dump(const Natural32           margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
@@ -70,7 +70,7 @@ namespace elle
 
       // dump the scheme.
       std::cout << alignment << Dumpable::Shift
-		<< "[Scheme] " << this->scheme << std::endl;
+                << "[Scheme] " << this->scheme << std::endl;
 
       leave();
     }

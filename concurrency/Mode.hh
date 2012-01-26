@@ -31,7 +31,7 @@ namespace elle
     ///
     /// this enumeration defines the type of access to a lock.
     ///
-    typedef Natural8		Mode;
+    typedef Natural8            Mode;
 
 //
 // ---------- constants -------------------------------------------------------
@@ -40,8 +40,8 @@ namespace elle
     ///
     /// default mode values.
     ///
-    const Mode			ModeRead = 0x1;
-    const Mode			ModeWrite = 0x2;
+    const Mode                  ModeRead = 0x1;
+    const Mode                  ModeWrite = 0x2;
 
   }
 }

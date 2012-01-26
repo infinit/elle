@@ -57,27 +57,27 @@ namespace elle
       //
       // constants
       //
-      const static Natural32			Frequency;
+      const static Natural32                    Frequency;
 
       //
       // types
       //
-      typedef std::list<Meta*>				Container;
-      typedef typename Container::iterator		Iterator;
-      typedef typename Container::const_iterator	Scoutor;
+      typedef std::list<Meta*>                          Container;
+      typedef typename Container::iterator              Iterator;
+      typedef typename Container::const_iterator        Scoutor;
 
       //
       // static methods
       //
-      static Status	Initialize();
-      static Status	Clean();
+      static Status     Initialize();
+      static Status     Clean();
 
-      static Status	Instance(Morgue*&);
+      static Status     Instance(Morgue*&);
 
       //
       // static attributes
       //
-      static Morgue*	Current;
+      static Morgue*    Current;
 
       //
       // constructors & destructors
@@ -89,25 +89,25 @@ namespace elle
       // methods
       //
       template <typename T>
-      Status		Register(T*);
+      Status            Register(T*);
 
       //
       // callbacks
       //
-      Status		Bury();
+      Status            Bury();
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Container		container;
-      Timer*		timer;
+      Container         container;
+      Timer*            timer;
     };
 
   }

@@ -51,28 +51,28 @@ namespace elle
       //
       // constants
       //
-      struct			Trash
+      struct                    Trash
       {
-	static JSON::Document	_Document;
+        static JSON::Document   _Document;
       };
 
       //
       // static methods
       //
-      static Status	Get(const URI&,
-			    JSON::Document&,
-			    HTTP::Code& = HTTP::Trash::_Code);
-      static Status	Post(const URI&,
-			     const JSON::Document&,
-			     JSON::Document& = Trash::_Document,
-			     HTTP::Code& = HTTP::Trash::_Code);
-      static Status	Put(const URI&,
-			    const JSON::Document&,
-			    JSON::Document& = Trash::_Document,
-			    HTTP::Code& = HTTP::Trash::_Code);
-      static Status	Delete(const URI&,
-			       JSON::Document& = Trash::_Document,
-			       HTTP::Code& = HTTP::Trash::_Code);
+      static Status     Get(const URI&,
+                            JSON::Document&,
+                            HTTP::Code& = HTTP::Trash::_Code);
+      static Status     Post(const URI&,
+                             const JSON::Document&,
+                             JSON::Document& = Trash::_Document,
+                             HTTP::Code& = HTTP::Trash::_Code);
+      static Status     Put(const URI&,
+                            const JSON::Document&,
+                            JSON::Document& = Trash::_Document,
+                            HTTP::Code& = HTTP::Trash::_Code);
+      static Status     Delete(const URI&,
+                               JSON::Document& = Trash::_Document,
+                               HTTP::Code& = HTTP::Trash::_Code);
     };
 
   }

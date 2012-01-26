@@ -36,7 +36,7 @@ namespace elle
     /// footprint assumes a byte is used for the type and another byte
     /// is used for the value.
     ///
-    const Natural32			Footprint::Meta = sizeof (Byte);
+    const Natural32                     Footprint::Meta = sizeof (Byte);
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -55,7 +55,7 @@ namespace elle
     ///
     /// specific constructor.
     ///
-    Footprint::Footprint(const Archivable&			archivable):
+    Footprint::Footprint(const Archivable&                      archivable):
       state(Footprint::StateUnknown),
       archivable(&archivable),
       size(0)
@@ -69,57 +69,57 @@ namespace elle
     ///
     /// this method computes the footprint of the given archivable.
     ///
-    Status		Footprint::Compute()
+    Status              Footprint::Compute()
     {
       enter();
 
       // check that an archivable has been assigned to the footprint.
       if (this->archivable == NULL)
-	escape("no archivable has been assigned to this footprint");
+        escape("no archivable has been assigned to this footprint");
 
       // operate depending on the state.
       switch (this->state)
-	{
-	case StateUnknown:
-	  {
-	    // create the footprint i.e archive in order to set it in
-	    // serialization mode.
-	    if (this->Create() == StatusError)
-	      escape("unable to create the footprint");
+        {
+        case StateUnknown:
+          {
+            // create the footprint i.e archive in order to set it in
+            // serialization mode.
+            if (this->Create() == StatusError)
+              escape("unable to create the footprint");
 
-	    // serialize the archivable with the footprint as argument so
-	    // as to compute its footprint.
-	    if (this->archivable->Serialize(*this) == StatusError)
-	      escape("unable to serialize the archivable");
+            // serialize the archivable with the footprint as argument so
+            // as to compute its footprint.
+            if (this->archivable->Serialize(*this) == StatusError)
+              escape("unable to serialize the archivable");
 
-	    break;
-	  }
-	case StateConsistent:
-	  {
-	    //
-	    // do not proceed since the footprint has already been computed
-	    // and the object has not been modified since.
-	    //
+            break;
+          }
+        case StateConsistent:
+          {
+            //
+            // do not proceed since the footprint has already been computed
+            // and the object has not been modified since.
+            //
 
-	    break;
-	  }
-	case StateInconsistent:
-	  {
-	    //
-	    // proceed with the computation.
-	    //
+            break;
+          }
+        case StateInconsistent:
+          {
+            //
+            // proceed with the computation.
+            //
 
-	    // reset the size.
-	    this->size = 0;
+            // reset the size.
+            this->size = 0;
 
-	    // serialize the archivable with the footprint as argument so
-	    // as to compute its footprint.
-	    if (this->archivable->Serialize(*this) == StatusError)
-	      escape("unable to serialize the archivable");
+            // serialize the archivable with the footprint as argument so
+            // as to compute its footprint.
+            if (this->archivable->Serialize(*this) == StatusError)
+              escape("unable to serialize the archivable");
 
-	    break;
-	  }
-	}
+            break;
+          }
+        }
 
       // set the state as consistent.
       this->state = Footprint::StateConsistent;
@@ -134,15 +134,15 @@ namespace elle
     ///
     /// this method dumps a footprint.
     ///
-    Status		Footprint::Dump(const Natural32		margin) const
+    Status              Footprint::Dump(const Natural32         margin) const
     {
-      String		alignment(margin, ' ');
-      Archive		archive;
+      String            alignment(margin, ' ');
+      Archive           archive;
 
       enter();
 
       std::cout << alignment << "[Footprint] "
-		<< std::dec << this->size << std::endl;
+                << std::dec << this->size << std::endl;
 
       leave();
     }
@@ -154,7 +154,7 @@ namespace elle
     ///
     /// this method returns the size of the footprint object.
     ///
-    Status		Footprint::Imprint(Natural32&		size) const
+    Status              Footprint::Imprint(Natural32&           size) const
     {
       enter();
 
@@ -167,7 +167,7 @@ namespace elle
     ///
     /// this method clones the current footprint.
     ///
-    Status		Footprint::Clone(Footprint*&		object) const
+    Status              Footprint::Clone(Footprint*&            object) const
     {
       enter();
 
@@ -180,17 +180,17 @@ namespace elle
     ///
     /// this method copies a footprint.
     ///
-    Footprint&		Footprint::operator=(const Footprint&	element)
+    Footprint&          Footprint::operator=(const Footprint&   element)
     {
       enter();
 
       // test if the footprints are identical.
       if (this == &element)
-	return (*this);
+        return (*this);
 
       // recycle the object.
       if (this->Recycle(&element) == StatusError)
-	yield(*this, "unable to recycle the object");
+        yield(*this, "unable to recycle the object");
 
       return (*this);
     }
@@ -198,17 +198,17 @@ namespace elle
     ///
     /// this method check if two footprints match.
     ///
-    Boolean		Footprint::operator==(const Footprint&	element) const
+    Boolean             Footprint::operator==(const Footprint&  element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the attribute.
       if (this->size != element.size)
-	false();
+        false();
 
       true();
     }
@@ -216,7 +216,7 @@ namespace elle
     ///
     /// this method compares two footprints.
     ///
-    Boolean		Footprint::operator!=(const Footprint&	element) const
+    Boolean             Footprint::operator!=(const Footprint&  element) const
     {
       return (!(*this == element));
     }
@@ -228,7 +228,7 @@ namespace elle
     ///
     /// this method computes a null footprint.
     ///
-    Status		Footprint::Store(const Null&)
+    Status              Footprint::Store(const Null&)
     {
       enter();
 
@@ -241,7 +241,7 @@ namespace elle
     ///
     /// this method computes a boolean footprint.
     ///
-    Status		Footprint::Store(const Boolean&)
+    Status              Footprint::Store(const Boolean&)
     {
       enter();
 
@@ -254,7 +254,7 @@ namespace elle
     ///
     /// this method computes a character footprint.
     ///
-    Status		Footprint::Store(const Character&)
+    Status              Footprint::Store(const Character&)
     {
       enter();
 
@@ -267,7 +267,7 @@ namespace elle
     ///
     /// this method computes a real footprint.
     ///
-    Status		Footprint::Store(const Real&)
+    Status              Footprint::Store(const Real&)
     {
       enter();
 
@@ -280,7 +280,7 @@ namespace elle
     ///
     /// this method computes a integer footprint.
     ///
-    Status		Footprint::Store(const Integer8&)
+    Status              Footprint::Store(const Integer8&)
     {
       enter();
 
@@ -293,7 +293,7 @@ namespace elle
     ///
     /// this method computes a integer footprint.
     ///
-    Status		Footprint::Store(const Integer16&)
+    Status              Footprint::Store(const Integer16&)
     {
       enter();
 
@@ -306,7 +306,7 @@ namespace elle
     ///
     /// this method computes a integer footprint.
     ///
-    Status		Footprint::Store(const Integer32&)
+    Status              Footprint::Store(const Integer32&)
     {
       enter();
 
@@ -319,7 +319,7 @@ namespace elle
     ///
     /// this method computes a integer footprint.
     ///
-    Status		Footprint::Store(const Integer64&)
+    Status              Footprint::Store(const Integer64&)
     {
       enter();
 
@@ -332,7 +332,7 @@ namespace elle
     ///
     /// this method computes a natural footprint.
     ///
-    Status		Footprint::Store(const Natural8&)
+    Status              Footprint::Store(const Natural8&)
     {
       enter();
 
@@ -345,7 +345,7 @@ namespace elle
     ///
     /// this method computes a natural footprint.
     ///
-    Status		Footprint::Store(const Natural16&)
+    Status              Footprint::Store(const Natural16&)
     {
       enter();
 
@@ -358,7 +358,7 @@ namespace elle
     ///
     /// this method computes a natural footprint.
     ///
-    Status		Footprint::Store(const Natural32&)
+    Status              Footprint::Store(const Natural32&)
     {
       enter();
 
@@ -371,7 +371,7 @@ namespace elle
     ///
     /// this method computes a natural footprint.
     ///
-    Status		Footprint::Store(const Natural64&)
+    Status              Footprint::Store(const Natural64&)
     {
       enter();
 
@@ -384,7 +384,7 @@ namespace elle
     ///
     /// this method computes a large footprint.
     ///
-    Status		Footprint::Store(const Large&		element)
+    Status              Footprint::Store(const Large&           element)
     {
       enter();
 
@@ -397,7 +397,7 @@ namespace elle
     ///
     /// this method computes a string footprint.
     ///
-    Status		Footprint::Store(const String&		element)
+    Status              Footprint::Store(const String&          element)
     {
       enter();
 
@@ -410,7 +410,7 @@ namespace elle
     ///
     /// this method computes a region footprint.
     ///
-    Status		Footprint::Store(const Region&		element)
+    Status              Footprint::Store(const Region&          element)
     {
       enter();
 
@@ -423,7 +423,7 @@ namespace elle
     ///
     /// this method computes a archive footprint.
     ///
-    Status		Footprint::Store(const Archive&		element)
+    Status              Footprint::Store(const Archive&         element)
     {
       enter();
 
@@ -436,7 +436,7 @@ namespace elle
     ///
     /// this method returns an error.
     ///
-    Status		Footprint::Load(Null&)
+    Status              Footprint::Load(Null&)
     {
       enter();
 
@@ -446,7 +446,7 @@ namespace elle
     ///
     /// this method returns an error.
     ///
-    Status		Footprint::Load(Boolean&)
+    Status              Footprint::Load(Boolean&)
     {
       enter();
 
@@ -456,7 +456,7 @@ namespace elle
     ///
     /// this method returns an error.
     ///
-    Status		Footprint::Load(Character&)
+    Status              Footprint::Load(Character&)
     {
       enter();
 
@@ -466,7 +466,7 @@ namespace elle
     ///
     /// this method returns an error.
     ///
-    Status		Footprint::Load(Real&)
+    Status              Footprint::Load(Real&)
     {
       enter();
 
@@ -476,7 +476,7 @@ namespace elle
     ///
     /// this method returns an error.
     ///
-    Status		Footprint::Load(Integer8&)
+    Status              Footprint::Load(Integer8&)
     {
       enter();
 
@@ -486,7 +486,7 @@ namespace elle
     ///
     /// this method returns an error.
     ///
-    Status		Footprint::Load(Integer16&)
+    Status              Footprint::Load(Integer16&)
     {
       enter();
 
@@ -496,7 +496,7 @@ namespace elle
     ///
     /// this method returns an error.
     ///
-    Status		Footprint::Load(Integer32&)
+    Status              Footprint::Load(Integer32&)
     {
       enter();
 
@@ -506,7 +506,7 @@ namespace elle
     ///
     /// this method returns an error.
     ///
-    Status		Footprint::Load(Integer64&)
+    Status              Footprint::Load(Integer64&)
     {
       enter();
 
@@ -516,7 +516,7 @@ namespace elle
     ///
     /// this method returns an error.
     ///
-    Status		Footprint::Load(Natural8&)
+    Status              Footprint::Load(Natural8&)
     {
       enter();
 
@@ -526,7 +526,7 @@ namespace elle
     ///
     /// this method returns an error.
     ///
-    Status		Footprint::Load(Natural16&)
+    Status              Footprint::Load(Natural16&)
     {
       enter();
 
@@ -536,7 +536,7 @@ namespace elle
     ///
     /// this method returns an error.
     ///
-    Status		Footprint::Load(Natural32&)
+    Status              Footprint::Load(Natural32&)
     {
       enter();
 
@@ -546,7 +546,7 @@ namespace elle
     ///
     /// this method returns an error.
     ///
-    Status		Footprint::Load(Natural64&)
+    Status              Footprint::Load(Natural64&)
     {
       enter();
 
@@ -556,7 +556,7 @@ namespace elle
     ///
     /// this method returns an error.
     ///
-    Status		Footprint::Load(Large&)
+    Status              Footprint::Load(Large&)
     {
       enter();
 
@@ -566,7 +566,7 @@ namespace elle
     ///
     /// this method returns an error.
     ///
-    Status		Footprint::Load(String&)
+    Status              Footprint::Load(String&)
     {
       enter();
 
@@ -576,7 +576,7 @@ namespace elle
     ///
     /// this method returns an error.
     ///
-    Status		Footprint::Load(Region&)
+    Status              Footprint::Load(Region&)
     {
       enter();
 
@@ -586,7 +586,7 @@ namespace elle
     ///
     /// this method returns an error.
     ///
-    Status		Footprint::Load(Archive&)
+    Status              Footprint::Load(Archive&)
     {
       enter();
 

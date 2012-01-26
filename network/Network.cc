@@ -26,7 +26,7 @@ namespace elle
     ///
     /// this container holds the list of registered procedures.
     ///
-    Network::Container			Network::Procedures;
+    Network::Container                  Network::Procedures;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -35,21 +35,21 @@ namespace elle
     ///
     /// this method initializes the network components.
     ///
-    Status		Network::Initialize()
+    Status              Network::Initialize()
     {
       enter();
 
       // initialize the local server.
       if (LocalServer::Initialize() == StatusError)
-	escape("unable to initialize the local server");
+        escape("unable to initialize the local server");
 
       // initialize the TCP server.
       if (TCPServer::Initialize() == StatusError)
-	escape("unable to initialize the TCP server");
+        escape("unable to initialize the TCP server");
 
       // initialize the session.
       if (Session::Initialize() == StatusError)
-	escape("unable to initialize the session");
+        escape("unable to initialize the session");
 
       leave();
     }
@@ -57,39 +57,39 @@ namespace elle
     ///
     /// this method cleans the network components.
     ///
-    Status		Network::Clean()
+    Status              Network::Clean()
     {
       enter();
 
       // clean the session.
       if (Session::Clean() == StatusError)
-	escape("unable to clean the session");
+        escape("unable to clean the session");
 
       // clean the TCP server.
       if (TCPServer::Clean() == StatusError)
-	escape("unable to clean the TCP server");
+        escape("unable to clean the TCP server");
 
       // clean the local server.
       if (LocalServer::Clean() == StatusError)
-	escape("unable to clean the local server");
+        escape("unable to clean the local server");
 
       //
       // clear the container.
       //
       {
-	Network::Scoutor	scoutor;
+        Network::Scoutor        scoutor;
 
-	// go through the functionoids.
-	for (scoutor = Network::Procedures.begin();
-	     scoutor != Network::Procedures.end();
-	     scoutor++)
-	  {
-	    // delete the functionoid.
-	    delete scoutor->second;
-	  }
+        // go through the functionoids.
+        for (scoutor = Network::Procedures.begin();
+             scoutor != Network::Procedures.end();
+             scoutor++)
+          {
+            // delete the functionoid.
+            delete scoutor->second;
+          }
 
-	// clear the container.
-	Network::Procedures.clear();
+        // clear the container.
+        Network::Procedures.clear();
       }
 
       leave();
@@ -101,9 +101,9 @@ namespace elle
     /// note that the input variables are not tracked for automatic
     /// deletion because the caller should already been tracking them.
     ///
-    Status		Network::Dispatch(Parcel*		p)
+    Status              Network::Dispatch(Parcel*               p)
     {
-      Parcel*		parcel;
+      Parcel*           parcel;
 
       enterx(instance(parcel));
 
@@ -114,63 +114,63 @@ namespace elle
       // first, try to  wake up a waiting slot.
       //
       {
-	// try to wake up a slot.
-	if (Fiber::Awaken(parcel->header->event, parcel) == StatusTrue)
-	  {
-	    // since the awakening has been successful, stop tracking parcel.
-	    waive(parcel);
+        // try to wake up a slot.
+        if (Fiber::Awaken(parcel->header->event, parcel) == StatusTrue)
+          {
+            // since the awakening has been successful, stop tracking parcel.
+            waive(parcel);
 
-	    leave();
-	  }
+            leave();
+          }
       }
 
       //
       // if no slot is waiting for this event, dispatch it right away.
       //
       {
-	Network::Scoutor	scoutor;
+        Network::Scoutor        scoutor;
 
         // retrieve the procedure's functionoid associated to the header's tag.
-	if ((scoutor = Network::Procedures.find(parcel->header->tag)) ==
-	    Network::Procedures.end())
-	  {
-	    // test if the message received is an error, if so, log it.
-	    if (parcel->header->tag == TagError)
-	      {
-		Report	report;
+        if ((scoutor = Network::Procedures.find(parcel->header->tag)) ==
+            Network::Procedures.end())
+          {
+            // test if the message received is an error, if so, log it.
+            if (parcel->header->tag == TagError)
+              {
+                Report  report;
 
-		// extract the error message.
-		if (report.Extract(*parcel->data) == StatusError)
-		  escape("unable to extract the error message");
+                // extract the error message.
+                if (report.Extract(*parcel->data) == StatusError)
+                  escape("unable to extract the error message");
 
-		// report the remote error.
-		transpose(report);
+                // report the remote error.
+                transpose(report);
 
-		// log the error.
-		log("an error message has been received with no registered "
-		    "procedure");
-	      }
+                // log the error.
+                log("an error message has been received with no registered "
+                    "procedure");
+              }
 
-	    leave();
-	  }
+            leave();
+          }
 
-	// assign the new session.
-	if (Session::Assign(parcel->session) == StatusError)
-	  escape("unable to assign the session");
+        // assign the new session.
+        if (Session::Assign(parcel->session) == StatusError)
+          escape("unable to assign the session");
 
         // call the functionoid.
         if (scoutor->second->Call(*parcel->data) == StatusError)
-	  escape("an error occured while processing the event");
+          escape("an error occured while processing the event");
 
-	// clear the session.
-	if (Session::Clear() == StatusError)
-	  escape("unable to flush the session");
+        // clear the session.
+        if (Session::Clear() == StatusError)
+          escape("unable to flush the session");
 
-	// delete the parcel.
-	delete parcel;
+        // delete the parcel.
+        delete parcel;
 
-	// stop tracking the parcel since it has just been deleted.
-	waive(parcel);
+        // stop tracking the parcel since it has just been deleted.
+        waive(parcel);
       }
 
       leave();
@@ -179,10 +179,10 @@ namespace elle
     ///
     /// this method dumps the procedures.
     ///
-    Status		Network::Show(const Natural32		margin)
+    Status              Network::Show(const Natural32           margin)
     {
-      String		alignment(margin, ' ');
-      Network::Scoutor	scoutor;
+      String            alignment(margin, ' ');
+      Network::Scoutor  scoutor;
 
       enter();
 
@@ -190,13 +190,13 @@ namespace elle
 
       // go through the functionoids.
       for (scoutor = Network::Procedures.begin();
-	   scoutor != Network::Procedures.end();
-	   scoutor++)
-	{
-	  // dump the functionoid.
-	  if (scoutor->second->Dump(margin + 2) == StatusError)
-	    escape("unable to dump the functionoid");
-	}
+           scoutor != Network::Procedures.end();
+           scoutor++)
+        {
+          // dump the functionoid.
+          if (scoutor->second->Dump(margin + 2) == StatusError)
+            escape("unable to dump the functionoid");
+        }
 
       leave();
     }

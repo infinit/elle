@@ -35,8 +35,8 @@ namespace elle
     ///
     /// common constructor.
     ///
-    Duration::Duration(const Unit				unit,
-		       const Natural64				value):
+    Duration::Duration(const Unit                               unit,
+                       const Natural64                          value):
       unit(unit),
       value(value)
     {
@@ -49,14 +49,14 @@ namespace elle
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Duration::operator==(const Duration&	element) const
+    Boolean             Duration::operator==(const Duration&    element) const
     {
       enter();
 
       // compare the attributes.
       if ((this->unit != element.unit) ||
-	  (this->value != element.value))
-	false();
+          (this->value != element.value))
+        false();
 
       true();
     }
@@ -73,20 +73,20 @@ namespace elle
     ///
     /// this function dumps an duration object.
     ///
-    Status		Duration::Dump(Natural32		margin) const
+    Status              Duration::Dump(Natural32                margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
  
       enter();
 
       std::cout << alignment << "[Duration]" << std::endl;
 
       std::cout << alignment << Dumpable::Shift << "[Unit] "
-		<< std::nouppercase << std::dec	
-		<< this->unit << std::endl;
+                << std::nouppercase << std::dec 
+                << this->unit << std::endl;
       std::cout << alignment << Dumpable::Shift << "[Value] "
-		<< std::nouppercase << std::dec	
-		<< this->value << std::endl;
+                << std::nouppercase << std::dec 
+                << this->value << std::endl;
 
       leave();
     }
@@ -98,14 +98,14 @@ namespace elle
     ///
     /// this method serializes the duration object.
     ///
-    Status		Duration::Serialize(Archive&		archive) const
+    Status              Duration::Serialize(Archive&            archive) const
     {
       enter();
 
       // serialize the internal attributes.
       if (archive.Serialize(static_cast<Natural8>(this->unit),
-			    this->value) == StatusError)
-	escape("unable to serialize the attributes");
+                            this->value) == StatusError)
+        escape("unable to serialize the attributes");
 
       leave();
     }
@@ -113,14 +113,14 @@ namespace elle
     ///
     /// this method extracts the duration object.
     ///
-    Status		Duration::Extract(Archive&		archive)
+    Status              Duration::Extract(Archive&              archive)
     {
       enter();
 
       // extract the internal attributes.
       if (archive.Extract(reinterpret_cast<Natural8&>(this->unit),
-			  this->value) == StatusError)
-	escape("unable to extract the attributes");
+                          this->value) == StatusError)
+        escape("unable to extract the attributes");
 
       leave();
     }

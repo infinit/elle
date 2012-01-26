@@ -35,11 +35,11 @@ namespace std
 // ---------- functions -------------------------------------------------------
 //
 
-  elle::core::String	chop(const elle::core::String&,
-			     const elle::core::Natural32 = 50);
+  elle::core::String    chop(const elle::core::String&,
+                             const elle::core::Natural32 = 50);
   template <const elle::io::Format F>
-  elle::core::String	chop(const elle::io::Uniquable<F>&,
-			     const elle::core::Natural32 = 50);
+  elle::core::String    chop(const elle::io::Uniquable<F>&,
+                             const elle::core::Natural32 = 50);
 
 }
 

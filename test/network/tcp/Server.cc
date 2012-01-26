@@ -38,7 +38,7 @@ namespace elle
     {
       // if present, delete the socket.
       if (this->socket != NULL)
-	delete this->socket;
+        delete this->socket;
     }
 
 //
@@ -48,13 +48,13 @@ namespace elle
     ///
     /// this method initializes the server.
     ///
-    Status		Server::Setup(const String&		line)
+    Status              Server::Setup(const String&             line)
     {
       enter();
 
       // set the locus.
       if (this->locus.Create(line) == StatusError)
-	escape("unable to create the locus");
+        escape("unable to create the locus");
 
       leave();
     }
@@ -62,7 +62,7 @@ namespace elle
     ///
     /// this method is the thread entry locus.
     ///
-    Status		Server::Run()
+    Status              Server::Run()
     {
       enter();
 
@@ -71,9 +71,9 @@ namespace elle
 
       // listen for incoming connections.
       if (TCPServer::Listen(locus,
-			    Callback<>::Infer(&Server::Connection,
-					      this)) == StatusError)
-	escape("unable to listen for TCP connections");
+                            Callback<>::Infer(&Server::Connection,
+                                              this)) == StatusError)
+        escape("unable to listen for TCP connections");
 
       leave();
     }
@@ -85,16 +85,16 @@ namespace elle
     ///
     /// this method handles new connections.
     ///
-    Status		Server::Connection(TCPSocket*		socket)
+    Status              Server::Connection(TCPSocket*           socket)
     {
-      String		challenge("CHALLENGE");
-      String		response;
+      String            challenge("CHALLENGE");
+      String            response;
 
       enter();
 
       // if there is already a client, exit.
       if (this->socket != NULL)
-	escape("there is already a client connected");
+        escape("there is already a client connected");
 
       // add the socket.
       this->socket = socket;
@@ -103,8 +103,8 @@ namespace elle
 
       // call the challenge.
       if (socket->Call(Inputs<TagChallenge>(challenge),
-		       Outputs<TagResponse>(response)) == StatusError)
-	escape("unable to call the challenge");
+                       Outputs<TagResponse>(response)) == StatusError)
+        escape("unable to call the challenge");
 
       std::cout << "[response] " << response << std::endl;
 

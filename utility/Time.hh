@@ -66,17 +66,17 @@ namespace elle
       //
       // methods
       //
-      Status		Current();
+      Status            Current();
 
-      Status		Get(::time_t&) const;
-      Status		Set(const ::time_t&);
+      Status            Get(::time_t&) const;
+      Status            Set(const ::time_t&);
 
-      Status		Get(::QDateTime&) const;
-      Status		Set(const ::QDateTime&);
+      Status            Get(::QDateTime&) const;
+      Status            Set(const ::QDateTime&);
 
 #if defined(INFINIT_WIN32)
-      Status		Get(::FILETIME&) const;
-      Status		Set(const ::FILETIME&);
+      Status            Get(::FILETIME&) const;
+      Status            Set(const ::FILETIME&);
 #endif
 
       //
@@ -85,27 +85,27 @@ namespace elle
 
       // object
       declare(Time);
-      Boolean		operator==(const Time&) const;
-      Boolean		operator<(const Time&) const;
-      Boolean		operator>(const Time&) const;
+      Boolean           operator==(const Time&) const;
+      Boolean           operator<(const Time&) const;
+      Boolean           operator>(const Time&) const;
 
-      Time		operator+(const Time&);
-      Time		operator-(const Time&);
+      Time              operator+(const Time&);
+      Time              operator-(const Time&);
 
-      Time		operator+(const Duration&);
-      Time		operator-(const Duration&);
+      Time              operator+(const Duration&);
+      Time              operator-(const Duration&);
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      Status            Serialize(Archive&) const;
+      Status            Extract(Archive&);
 
       //
       // attributes
       //
-      Natural64		nanoseconds;
+      Natural64         nanoseconds;
     };
 
   }

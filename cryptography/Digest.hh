@@ -50,7 +50,7 @@ namespace elle
       //
       // constants
       //
-      static const Digest		Null;
+      static const Digest               Null;
 
       //
       // constructors & destructors
@@ -63,20 +63,20 @@ namespace elle
 
       // object
       declare(Digest);
-      Boolean		operator==(const Digest&) const;
-      Boolean		operator<(const Digest&) const;
+      Boolean           operator==(const Digest&) const;
+      Boolean           operator<(const Digest&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      Status            Serialize(Archive&) const;
+      Status            Extract(Archive&);
 
       //
       // attributes
       //
-      Region		region;
+      Region            region;
     };
 
   }

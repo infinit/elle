@@ -59,7 +59,7 @@ namespace elle
       //
       // types
       //
-      typedef Parameters<>					P;
+      typedef Parameters<>                                      P;
 
       //
       // constructors & destructors
@@ -69,16 +69,16 @@ namespace elle
       }
 
       template <template <typename...> class E,
-		typename... U>
+                typename... U>
       Arguments(E< Parameters<U...> >&)
       {
-	allege(Parameters<U...>::Quantum == P::Quantum);
+        allege(Parameters<U...>::Quantum == P::Quantum);
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2>
+                template <typename...> class E2>
       Arguments(E1< Parameters<> >&,
-		E2< Parameters<> >&)
+                E2< Parameters<> >&)
       {
       }
 
@@ -87,37 +87,37 @@ namespace elle
       //
 
       template <typename C,
-		typename... U>
-      Status		Call(const C&				object,
-			     U&...				elements)
+                typename... U>
+      Status            Call(const C&                           object,
+                             U&...                              elements)
       {
-	return (object.Call(elements...));
+        return (object.Call(elements...));
       }
 
       template <typename C,
-		typename... U>
-      Status		Call(const C&				object,
-			     U&...				elements)
-	const
+                typename... U>
+      Status            Call(const C&                           object,
+                             U&...                              elements)
+        const
       {
-	return (object.Call(elements...));
+        return (object.Call(elements...));
       }
 
       template <typename C,
-		typename... U>
-      Void		Trigger(const C&			object,
-				U&...				elements)
+                typename... U>
+      Void              Trigger(const C&                        object,
+                                U&...                           elements)
       {
-	object.Trigger(elements...);
+        object.Trigger(elements...);
       }
 
       template <typename C,
-		typename... U>
-      Void		Trigger(const C&			object,
-				U&...				elements)
-	const
+                typename... U>
+      Void              Trigger(const C&                        object,
+                                U&...                           elements)
+        const
       {
-	object.Trigger(elements...);
+        object.Trigger(elements...);
       }
 
       //
@@ -125,18 +125,18 @@ namespace elle
       //
 
       // dumpable
-      Status		Dump(const Natural32			margin = 0)
-	const
+      Status            Dump(const Natural32                    margin = 0)
+        const
       {
-	String		alignment(margin, ' ');
+        String          alignment(margin, ' ');
 
-	enter();
+        enter();
 
-	std::cout << alignment
-		  << "[Arguments " << P::Quantum << "]"
-		  << std::endl;
+        std::cout << alignment
+                  << "[Arguments " << P::Quantum << "]"
+                  << std::endl;
 
-	leave();
+        leave();
       }
     };
 
@@ -151,44 +151,44 @@ namespace elle
       //
       // types
       //
-      typedef Parameters<T1>					P;
+      typedef Parameters<T1>                                    P;
 
       //
       // attributes
       //
-      T1&		element1;
+      T1&               element1;
 
       //
       // constructors & destructors
       //
-      Arguments(T1&						element1):
-	element1(element1)
+      Arguments(T1&                                             element1):
+        element1(element1)
       {
       }
 
       template <template <typename...> class E,
-		typename... U>
-      Arguments(E< Parameters<U...> >&				ensemble):
-	element1(ensemble.element1)
+                typename... U>
+      Arguments(E< Parameters<U...> >&                          ensemble):
+        element1(ensemble.element1)
       {
-	allege(Parameters<U...>::Quantum == P::Quantum);
+        allege(Parameters<U...>::Quantum == P::Quantum);
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1>
-      Arguments(E1< Parameters<U1> >&				ensemble1,
-		E2< Parameters<> >&):
-	element1(ensemble1.element1)
+                template <typename...> class E2,
+                typename U1>
+      Arguments(E1< Parameters<U1> >&                           ensemble1,
+                E2< Parameters<> >&):
+        element1(ensemble1.element1)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename V1>
+                template <typename...> class E2,
+                typename V1>
       Arguments(E1< Parameters<> >&,
-		E2< Parameters<V1> >&				ensemble2):
-	element1(ensemble2.element1)
+                E2< Parameters<V1> >&                           ensemble2):
+        element1(ensemble2.element1)
       {
       }
 
@@ -197,41 +197,41 @@ namespace elle
       //
 
       template <typename C,
-		typename... U>
-      Status		Call(const C&				object,
-			     U&...				elements)
+                typename... U>
+      Status            Call(const C&                           object,
+                             U&...                              elements)
       {
-	return (object.Call(this->element1,
-			    elements...));
+        return (object.Call(this->element1,
+                            elements...));
       }
 
       template <typename C,
-		typename... U>
-      Status		Call(const C&				object,
-			     U&...				elements)
-	const
+                typename... U>
+      Status            Call(const C&                           object,
+                             U&...                              elements)
+        const
       {
-	return (object.Call(this->element1,
-			    elements...));
+        return (object.Call(this->element1,
+                            elements...));
       }
 
       template <typename C,
-		typename... U>
-      Void		Trigger(const C&			object,
-				U&...				elements)
+                typename... U>
+      Void              Trigger(const C&                        object,
+                                U&...                           elements)
       {
-	object.Trigger(this->element1,
-		       elements...);
+        object.Trigger(this->element1,
+                       elements...);
       }
 
       template <typename C,
-		typename... U>
-      Void		Trigger(const C&			object,
-				U&...				elements)
-	const
+                typename... U>
+      Void              Trigger(const C&                        object,
+                                U&...                           elements)
+        const
       {
-	object.Trigger(this->element1,
-		       elements...);
+        object.Trigger(this->element1,
+                       elements...);
       }
 
       //
@@ -239,18 +239,18 @@ namespace elle
       //
 
       // dumpable
-      Status		Dump(const Natural32			margin = 0)
-	const
+      Status            Dump(const Natural32                    margin = 0)
+        const
       {
-	String		alignment(margin, ' ');
+        String          alignment(margin, ' ');
 
-	enter();
+        enter();
 
-	std::cout << alignment
-		  << "[Arguments " << P::Quantum << "]"
-		  << std::endl;
+        std::cout << alignment
+                  << "[Arguments " << P::Quantum << "]"
+                  << std::endl;
 
-	leave();
+        leave();
       }
     };
 
@@ -258,7 +258,7 @@ namespace elle
     /// two-argument.
     ///
     template <typename T1,
-	      typename T2>
+              typename T2>
     class Arguments< Parameters<T1, T2> >:
       public Entity
     {
@@ -266,63 +266,63 @@ namespace elle
       //
       // types
       //
-      typedef Parameters<T1, T2>				P;
+      typedef Parameters<T1, T2>                                P;
 
       //
       // attributes
       //
-      T1&		element1;
-      T2&		element2;
+      T1&               element1;
+      T2&               element2;
 
       //
       // constructors & destructors
       //
-      Arguments(T1&						element1,
-		T2&						element2):
-	element1(element1),
-	element2(element2)
+      Arguments(T1&                                             element1,
+                T2&                                             element2):
+        element1(element1),
+        element2(element2)
       {
       }
 
       template <template <typename...> class E,
-		typename... U>
-      Arguments(E< Parameters<U...> >&				ensemble):
-	element1(ensemble.element1),
-	element2(ensemble.element2)
+                typename... U>
+      Arguments(E< Parameters<U...> >&                          ensemble):
+        element1(ensemble.element1),
+        element2(ensemble.element2)
       {
-	allege(Parameters<U...>::Quantum == P::Quantum);
+        allege(Parameters<U...>::Quantum == P::Quantum);
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2>
-      Arguments(E1< Parameters<U1, U2> >&			ensemble1,
-		E2< Parameters<> >&):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2)
-      {
-      }
-
-      template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename V2>
-      Arguments(E1< Parameters<U1> >&				ensemble1,
-		E2< Parameters<V2> >&				ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble2.element1)
+                template <typename...> class E2,
+                typename U1,
+                typename U2>
+      Arguments(E1< Parameters<U1, U2> >&                       ensemble1,
+                E2< Parameters<> >&):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename V1,
-		typename V2>
+                template <typename...> class E2,
+                typename U1,
+                typename V2>
+      Arguments(E1< Parameters<U1> >&                           ensemble1,
+                E2< Parameters<V2> >&                           ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble2.element1)
+      {
+      }
+
+      template <template <typename...> class E1,
+                template <typename...> class E2,
+                typename V1,
+                typename V2>
       Arguments(E1< Parameters<> >&,
-		E2< Parameters<V1, V2> >&			ensemble2):
-	element1(ensemble2.element1),
-	element2(ensemble2.element2)
+                E2< Parameters<V1, V2> >&                       ensemble2):
+        element1(ensemble2.element1),
+        element2(ensemble2.element2)
       {
       }
 
@@ -331,47 +331,47 @@ namespace elle
       //
 
       template <typename C,
-		typename... U>
-      Status		Call(const C&				object,
-			     U&...				elements)
+                typename... U>
+      Status            Call(const C&                           object,
+                             U&...                              elements)
       {
-	return (object.Call(this->element1,
-			    this->element2,
-			    elements...));
+        return (object.Call(this->element1,
+                            this->element2,
+                            elements...));
 
       }
 
       template <typename C,
-		typename... U>
-      Status		Call(const C&				object,
-			     U&...				elements)
-	const
+                typename... U>
+      Status            Call(const C&                           object,
+                             U&...                              elements)
+        const
       {
-	return (object.Call(this->element1,
-			    this->element2,
-			    elements...));
+        return (object.Call(this->element1,
+                            this->element2,
+                            elements...));
       }
 
       template <typename C,
-		typename... U>
-      Void		Trigger(const C&			object,
-				U&...				elements)
+                typename... U>
+      Void              Trigger(const C&                        object,
+                                U&...                           elements)
       {
-	object.Trigger(this->element1,
-		       this->element2,
-		       elements...);
+        object.Trigger(this->element1,
+                       this->element2,
+                       elements...);
 
       }
 
       template <typename C,
-		typename... U>
-      Void		Trigger(const C&			object,
-				U&...				elements)
-	const
+                typename... U>
+      Void              Trigger(const C&                        object,
+                                U&...                           elements)
+        const
       {
-	object.Trigger(this->element1,
-		       this->element2,
-		       elements...);
+        object.Trigger(this->element1,
+                       this->element2,
+                       elements...);
       }
 
       //
@@ -379,18 +379,18 @@ namespace elle
       //
 
       // dumpable
-      Status		Dump(const Natural32			margin = 0)
-	const
+      Status            Dump(const Natural32                    margin = 0)
+        const
       {
-	String		alignment(margin, ' ');
+        String          alignment(margin, ' ');
 
-	enter();
+        enter();
 
-	std::cout << alignment
-		  << "[Arguments " << P::Quantum << "]"
-		  << std::endl;
+        std::cout << alignment
+                  << "[Arguments " << P::Quantum << "]"
+                  << std::endl;
 
-	leave();
+        leave();
       }
     };
 
@@ -398,8 +398,8 @@ namespace elle
     /// three-argument.
     ///
     template <typename T1,
-	      typename T2,
-	      typename T3>
+              typename T2,
+              typename T3>
     class Arguments< Parameters<T1, T2, T3> >:
       public Entity
     {
@@ -407,86 +407,86 @@ namespace elle
       //
       // types
       //
-      typedef Parameters<T1, T2, T3>				P;
+      typedef Parameters<T1, T2, T3>                            P;
 
       //
       // attributes
       //
-      T1&		element1;
-      T2&		element2;
-      T3&		element3;
+      T1&               element1;
+      T2&               element2;
+      T3&               element3;
 
       //
       // constructors & destructors
       //
-      Arguments(T1&						element1,
-		T2&						element2,
-		T3&						element3):
-	element1(element1),
-	element2(element2),
-	element3(element3)
+      Arguments(T1&                                             element1,
+                T2&                                             element2,
+                T3&                                             element3):
+        element1(element1),
+        element2(element2),
+        element3(element3)
       {
       }
 
       template <template <typename...> class E,
-		typename... U>
-      Arguments(E< Parameters<U...> >&				ensemble):
-	element1(ensemble.element1),
-	element2(ensemble.element2),
-	element3(ensemble.element3)
+                typename... U>
+      Arguments(E< Parameters<U...> >&                          ensemble):
+        element1(ensemble.element1),
+        element2(ensemble.element2),
+        element3(ensemble.element3)
       {
-	allege(Parameters<U...>::Quantum == P::Quantum);
+        allege(Parameters<U...>::Quantum == P::Quantum);
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3>
-      Arguments(E1< Parameters<U1, U2, U3> >&			ensemble1,
-		E2< Parameters<> >&):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3)
-      {
-      }
-
-      template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename V3>
-      Arguments(E1< Parameters<U1, U2> >&			ensemble1,
-		E2< Parameters<V3> >&				ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble2.element1)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3>
+      Arguments(E1< Parameters<U1, U2, U3> >&                   ensemble1,
+                E2< Parameters<> >&):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename V2,
-		typename V3>
-      Arguments(E1< Parameters<U1> >&				ensemble1,
-		E2< Parameters<V2, V3> >&			ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble2.element1),
-	element3(ensemble2.element2)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename V3>
+      Arguments(E1< Parameters<U1, U2> >&                       ensemble1,
+                E2< Parameters<V3> >&                           ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble2.element1)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename V1,
-		typename V2,
-		typename V3>
+                template <typename...> class E2,
+                typename U1,
+                typename V2,
+                typename V3>
+      Arguments(E1< Parameters<U1> >&                           ensemble1,
+                E2< Parameters<V2, V3> >&                       ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble2.element1),
+        element3(ensemble2.element2)
+      {
+      }
+
+      template <template <typename...> class E1,
+                template <typename...> class E2,
+                typename V1,
+                typename V2,
+                typename V3>
       Arguments(E1< Parameters<> >&,
-		E2< Parameters<V1, V2, V3> >&			ensemble2):
-	element1(ensemble2.element1),
-	element2(ensemble2.element2),
-	element3(ensemble2.element3)
+                E2< Parameters<V1, V2, V3> >&                   ensemble2):
+        element1(ensemble2.element1),
+        element2(ensemble2.element2),
+        element3(ensemble2.element3)
       {
       }
 
@@ -495,49 +495,49 @@ namespace elle
       //
 
       template <typename C,
-		typename... U>
-      Status		Call(const C&				object,
-			     U&...				elements)
+                typename... U>
+      Status            Call(const C&                           object,
+                             U&...                              elements)
       {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    elements...));
+        return (object.Call(this->element1,
+                            this->element2,
+                            this->element3,
+                            elements...));
       }
 
       template <typename C,
-		typename... U>
-      Status		Call(const C&				object,
-			     U&...				elements)
-	const
+                typename... U>
+      Status            Call(const C&                           object,
+                             U&...                              elements)
+        const
       {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    elements...));
+        return (object.Call(this->element1,
+                            this->element2,
+                            this->element3,
+                            elements...));
       }
 
       template <typename C,
-		typename... U>
-      Void		Trigger(const C&			object,
-				U&...				elements)
+                typename... U>
+      Void              Trigger(const C&                        object,
+                                U&...                           elements)
       {
-	object.Trigger(this->element1,
-		       this->element2,
-		       this->element3,
-		       elements...);
+        object.Trigger(this->element1,
+                       this->element2,
+                       this->element3,
+                       elements...);
       }
 
       template <typename C,
-		typename... U>
-      Void		Trigger(const C&			object,
-				U&...				elements)
-	const
+                typename... U>
+      Void              Trigger(const C&                        object,
+                                U&...                           elements)
+        const
       {
-	object.Trigger(this->element1,
-		       this->element2,
-		       this->element3,
-		       elements...);
+        object.Trigger(this->element1,
+                       this->element2,
+                       this->element3,
+                       elements...);
       }
 
       //
@@ -545,18 +545,18 @@ namespace elle
       //
 
       // dumpable
-      Status		Dump(const Natural32			margin = 0)
-	const
+      Status            Dump(const Natural32                    margin = 0)
+        const
       {
-	String		alignment(margin, ' ');
+        String          alignment(margin, ' ');
 
-	enter();
+        enter();
 
-	std::cout << alignment
-		  << "[Arguments " << P::Quantum << "]"
-		  << std::endl;
+        std::cout << alignment
+                  << "[Arguments " << P::Quantum << "]"
+                  << std::endl;
 
-	leave();
+        leave();
       }
     };
 
@@ -564,9 +564,9 @@ namespace elle
     /// four-argument.
     ///
     template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4>
+              typename T2,
+              typename T3,
+              typename T4>
     class Arguments< Parameters<T1, T2, T3, T4> >:
       public Entity
     {
@@ -574,113 +574,113 @@ namespace elle
       //
       // types
       //
-      typedef Parameters<T1, T2, T3, T4>			P;
+      typedef Parameters<T1, T2, T3, T4>                        P;
 
       //
       // attributes
       //
-      T1&		element1;
-      T2&		element2;
-      T3&		element3;
-      T4&		element4;
+      T1&               element1;
+      T2&               element2;
+      T3&               element3;
+      T4&               element4;
 
       //
       // constructors & destructors
       //
-      Arguments(T1&						element1,
-		T2&						element2,
-		T3&						element3,
-		T4&						element4):
-	element1(element1),
-	element2(element2),
-	element3(element3),
-	element4(element4)
+      Arguments(T1&                                             element1,
+                T2&                                             element2,
+                T3&                                             element3,
+                T4&                                             element4):
+        element1(element1),
+        element2(element2),
+        element3(element3),
+        element4(element4)
       {
       }
 
       template <template <typename...> class E,
-		typename... U>
-      Arguments(E< Parameters<U...> >&				ensemble):
-	element1(ensemble.element1),
-	element2(ensemble.element2),
-	element3(ensemble.element3),
-	element4(ensemble.element4)
+                typename... U>
+      Arguments(E< Parameters<U...> >&                          ensemble):
+        element1(ensemble.element1),
+        element2(ensemble.element2),
+        element3(ensemble.element3),
+        element4(ensemble.element4)
       {
-	allege(Parameters<U...>::Quantum == P::Quantum);
+        allege(Parameters<U...>::Quantum == P::Quantum);
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4>
-      Arguments(E1< Parameters<U1, U2, U3, U4> >&		ensemble1,
-		E2< Parameters<> >&):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4)
-      {
-      }
-
-      template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename V4>
-      Arguments(E1< Parameters<U1, U2, U3> >&			ensemble1,
-		E2< Parameters<V4> >&				ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble2.element1)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4>
+      Arguments(E1< Parameters<U1, U2, U3, U4> >&               ensemble1,
+                E2< Parameters<> >&):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename V3,
-		typename V4>
-      Arguments(E1< Parameters<U1, U2> >&			ensemble1,
-		E2< Parameters<V3, V4> >&			ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble2.element1),
-	element4(ensemble2.element2)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename V4>
+      Arguments(E1< Parameters<U1, U2, U3> >&                   ensemble1,
+                E2< Parameters<V4> >&                           ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble2.element1)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename V2,
-		typename V3,
-		typename V4>
-      Arguments(E1< Parameters<U1> >&				ensemble1,
-		E2< Parameters<V2, V3, V4> >&			ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble2.element1),
-	element3(ensemble2.element2),
-	element4(ensemble2.element3)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename V3,
+                typename V4>
+      Arguments(E1< Parameters<U1, U2> >&                       ensemble1,
+                E2< Parameters<V3, V4> >&                       ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble2.element1),
+        element4(ensemble2.element2)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename V1,
-		typename V2,
-		typename V3,
-		typename V4>
+                template <typename...> class E2,
+                typename U1,
+                typename V2,
+                typename V3,
+                typename V4>
+      Arguments(E1< Parameters<U1> >&                           ensemble1,
+                E2< Parameters<V2, V3, V4> >&                   ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble2.element1),
+        element3(ensemble2.element2),
+        element4(ensemble2.element3)
+      {
+      }
+
+      template <template <typename...> class E1,
+                template <typename...> class E2,
+                typename V1,
+                typename V2,
+                typename V3,
+                typename V4>
       Arguments(E1< Parameters<> >&,
-		E2< Parameters<V1, V2, V3, V4> >&		ensemble2):
-	element1(ensemble2.element1),
-	element2(ensemble2.element2),
-	element3(ensemble2.element3),
-	element4(ensemble2.element4)
+                E2< Parameters<V1, V2, V3, V4> >&               ensemble2):
+        element1(ensemble2.element1),
+        element2(ensemble2.element2),
+        element3(ensemble2.element3),
+        element4(ensemble2.element4)
       {
       }
 
@@ -689,53 +689,53 @@ namespace elle
       //
 
       template <typename C,
-		typename... U>
-      Status		Call(const C&				object,
-			     U&...				elements)
+                typename... U>
+      Status            Call(const C&                           object,
+                             U&...                              elements)
       {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    elements...));
+        return (object.Call(this->element1,
+                            this->element2,
+                            this->element3,
+                            this->element4,
+                            elements...));
       }
 
       template <typename C,
-		typename... U>
-      Status		Call(const C&				object,
-			     U&...				elements)
-	const
+                typename... U>
+      Status            Call(const C&                           object,
+                             U&...                              elements)
+        const
       {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    elements...));
+        return (object.Call(this->element1,
+                            this->element2,
+                            this->element3,
+                            this->element4,
+                            elements...));
       }
 
       template <typename C,
-		typename... U>
-      Void		Trigger(const C&			object,
-				U&...				elements)
+                typename... U>
+      Void              Trigger(const C&                        object,
+                                U&...                           elements)
       {
-	object.Trigger(this->element1,
-		       this->element2,
-		       this->element3,
-		       this->element4,
-		       elements...);
+        object.Trigger(this->element1,
+                       this->element2,
+                       this->element3,
+                       this->element4,
+                       elements...);
       }
 
       template <typename C,
-		typename... U>
-      Void		Trigger(const C&			object,
-				U&...				elements)
-	const
+                typename... U>
+      Void              Trigger(const C&                        object,
+                                U&...                           elements)
+        const
       {
-	object.Trigger(this->element1,
-		       this->element2,
-		       this->element3,
-		       this->element4,
-		       elements...);
+        object.Trigger(this->element1,
+                       this->element2,
+                       this->element3,
+                       this->element4,
+                       elements...);
       }
 
       //
@@ -743,18 +743,18 @@ namespace elle
       //
 
       // dumpable
-      Status		Dump(const Natural32			margin = 0)
-	const
+      Status            Dump(const Natural32                    margin = 0)
+        const
       {
-	String		alignment(margin, ' ');
+        String          alignment(margin, ' ');
 
-	enter();
+        enter();
 
-	std::cout << alignment
-		  << "[Arguments " << P::Quantum << "]"
-		  << std::endl;
+        std::cout << alignment
+                  << "[Arguments " << P::Quantum << "]"
+                  << std::endl;
 
-	leave();
+        leave();
       }
     };
 
@@ -762,10 +762,10 @@ namespace elle
     /// five-argument.
     ///
     template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5>
+              typename T2,
+              typename T3,
+              typename T4,
+              typename T5>
     class Arguments< Parameters<T1, T2, T3, T4, T5> >:
       public Entity
     {
@@ -773,144 +773,144 @@ namespace elle
       //
       // types
       //
-      typedef Parameters<T1, T2, T3, T4, T5>			P;
+      typedef Parameters<T1, T2, T3, T4, T5>                    P;
 
       //
       // attributes
       //
-      T1&		element1;
-      T2&		element2;
-      T3&		element3;
-      T4&		element4;
-      T5&		element5;
+      T1&               element1;
+      T2&               element2;
+      T3&               element3;
+      T4&               element4;
+      T5&               element5;
 
       //
       // constructors & destructors
       //
-      Arguments(T1&						element1,
-		T2&						element2,
-		T3&						element3,
-		T4&						element4,
-		T5&						element5):
-	element1(element1),
-	element2(element2),
-	element3(element3),
-	element4(element4),
-	element5(element5)
+      Arguments(T1&                                             element1,
+                T2&                                             element2,
+                T3&                                             element3,
+                T4&                                             element4,
+                T5&                                             element5):
+        element1(element1),
+        element2(element2),
+        element3(element3),
+        element4(element4),
+        element5(element5)
       {
       }
 
       template <template <typename...> class E,
-		typename... U>
-      Arguments(E< Parameters<U...> >&				ensemble):
-	element1(ensemble.element1),
-	element2(ensemble.element2),
-	element3(ensemble.element3),
-	element4(ensemble.element4),
-	element5(ensemble.element5)
+                typename... U>
+      Arguments(E< Parameters<U...> >&                          ensemble):
+        element1(ensemble.element1),
+        element2(ensemble.element2),
+        element3(ensemble.element3),
+        element4(ensemble.element4),
+        element5(ensemble.element5)
       {
-	allege(Parameters<U...>::Quantum == P::Quantum);
+        allege(Parameters<U...>::Quantum == P::Quantum);
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4,
-		typename U5>
-      Arguments(E1< Parameters<U1, U2, U3, U4, U5> >&		ensemble1,
-		E2< Parameters<> >&):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4),
-	element5(ensemble1.element5)
-      {
-      }
-
-      template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4,
-		typename V5>
-      Arguments(E1< Parameters<U1, U2, U3, U4> >&		ensemble1,
-		E2< Parameters<V5> >&				ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4),
-	element5(ensemble2.element1)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4,
+                typename U5>
+      Arguments(E1< Parameters<U1, U2, U3, U4, U5> >&           ensemble1,
+                E2< Parameters<> >&):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4),
+        element5(ensemble1.element5)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename V4,
-		typename V5>
-      Arguments(E1< Parameters<U1, U2, U3> >&			ensemble1,
-		E2< Parameters<V4, V5> >&			ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble2.element1),
-	element5(ensemble2.element2)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4,
+                typename V5>
+      Arguments(E1< Parameters<U1, U2, U3, U4> >&               ensemble1,
+                E2< Parameters<V5> >&                           ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4),
+        element5(ensemble2.element1)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename V3,
-		typename V4,
-		typename V5>
-      Arguments(E1< Parameters<U1, U2> >&			ensemble1,
-		E2< Parameters<V3, V4, V5> >&			ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble2.element1),
-	element4(ensemble2.element2),
-	element5(ensemble2.element3)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename V4,
+                typename V5>
+      Arguments(E1< Parameters<U1, U2, U3> >&                   ensemble1,
+                E2< Parameters<V4, V5> >&                       ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble2.element1),
+        element5(ensemble2.element2)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename V2,
-		typename V3,
-		typename V4,
-		typename V5>
-      Arguments(E1< Parameters<U1> >&				ensemble1,
-		E2< Parameters<V2, V3, V4, V5> >&		ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble2.element1),
-	element3(ensemble2.element2),
-	element4(ensemble2.element3),
-	element5(ensemble2.element4)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename V3,
+                typename V4,
+                typename V5>
+      Arguments(E1< Parameters<U1, U2> >&                       ensemble1,
+                E2< Parameters<V3, V4, V5> >&                   ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble2.element1),
+        element4(ensemble2.element2),
+        element5(ensemble2.element3)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename V1,
-		typename V2,
-		typename V3,
-		typename V4,
-		typename V5>
+                template <typename...> class E2,
+                typename U1,
+                typename V2,
+                typename V3,
+                typename V4,
+                typename V5>
+      Arguments(E1< Parameters<U1> >&                           ensemble1,
+                E2< Parameters<V2, V3, V4, V5> >&               ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble2.element1),
+        element3(ensemble2.element2),
+        element4(ensemble2.element3),
+        element5(ensemble2.element4)
+      {
+      }
+
+      template <template <typename...> class E1,
+                template <typename...> class E2,
+                typename V1,
+                typename V2,
+                typename V3,
+                typename V4,
+                typename V5>
       Arguments(E1< Parameters<> >&,
-		E2< Parameters<V1, V2, V3, V4, V5> >&		ensemble2):
-	element1(ensemble2.element1),
-	element2(ensemble2.element2),
-	element3(ensemble2.element3),
-	element4(ensemble2.element4),
-	element5(ensemble2.element5)
+                E2< Parameters<V1, V2, V3, V4, V5> >&           ensemble2):
+        element1(ensemble2.element1),
+        element2(ensemble2.element2),
+        element3(ensemble2.element3),
+        element4(ensemble2.element4),
+        element5(ensemble2.element5)
       {
       }
 
@@ -919,57 +919,57 @@ namespace elle
       //
 
       template <typename C,
-		typename... U>
-      Status		Call(const C&				object,
-			     U&...				elements)
+                typename... U>
+      Status            Call(const C&                           object,
+                             U&...                              elements)
       {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    this->element5,
-			    elements...));
+        return (object.Call(this->element1,
+                            this->element2,
+                            this->element3,
+                            this->element4,
+                            this->element5,
+                            elements...));
       }
 
       template <typename C,
-		typename... U>
-      Status		Call(const C&				object,
-			     U&...				elements)
-	const
+                typename... U>
+      Status            Call(const C&                           object,
+                             U&...                              elements)
+        const
       {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    this->element5,
-			    elements...));
+        return (object.Call(this->element1,
+                            this->element2,
+                            this->element3,
+                            this->element4,
+                            this->element5,
+                            elements...));
       }
 
       template <typename C,
-		typename... U>
-      Void		Trigger(const C&			object,
-				U&...				elements)
+                typename... U>
+      Void              Trigger(const C&                        object,
+                                U&...                           elements)
       {
-	object.Trigger(this->element1,
-		       this->element2,
-		       this->element3,
-		       this->element4,
-		       this->element5,
-		       elements...);
+        object.Trigger(this->element1,
+                       this->element2,
+                       this->element3,
+                       this->element4,
+                       this->element5,
+                       elements...);
       }
 
       template <typename C,
-		typename... U>
-      Void		Trigger(const C&			object,
-				U&...				elements)
-	const
+                typename... U>
+      Void              Trigger(const C&                        object,
+                                U&...                           elements)
+        const
       {
-	object.Trigger(this->element1,
-		       this->element2,
-		       this->element3,
-		       this->element4,
-		       this->element5,
-		       elements...);
+        object.Trigger(this->element1,
+                       this->element2,
+                       this->element3,
+                       this->element4,
+                       this->element5,
+                       elements...);
       }
 
       //
@@ -977,18 +977,18 @@ namespace elle
       //
 
       // dumpable
-      Status		Dump(const Natural32			margin = 0)
-	const
+      Status            Dump(const Natural32                    margin = 0)
+        const
       {
-	String		alignment(margin, ' ');
+        String          alignment(margin, ' ');
 
-	enter();
+        enter();
 
-	std::cout << alignment
-		  << "[Arguments " << P::Quantum << "]"
-		  << std::endl;
+        std::cout << alignment
+                  << "[Arguments " << P::Quantum << "]"
+                  << std::endl;
 
-	leave();
+        leave();
       }
     };
 
@@ -996,13 +996,13 @@ namespace elle
     /// six-argument.
     ///
     template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5,
-	      typename T6>
+              typename T2,
+              typename T3,
+              typename T4,
+              typename T5,
+              typename T6>
     class Arguments< Parameters<T1, T2, T3, T4, T5,
-				T6> >:
+                                T6> >:
       public Entity
     {
     public:
@@ -1010,181 +1010,181 @@ namespace elle
       // types
       //
       typedef Parameters<T1, T2, T3, T4, T5,
-			 T6>					P;
+                         T6>                                    P;
 
       //
       // attributes
       //
-      T1&		element1;
-      T2&		element2;
-      T3&		element3;
-      T4&		element4;
-      T5&		element5;
-      T6&		element6;
+      T1&               element1;
+      T2&               element2;
+      T3&               element3;
+      T4&               element4;
+      T5&               element5;
+      T6&               element6;
 
       //
       // constructors & destructors
       //
-      Arguments(T1&						element1,
-		T2&						element2,
-		T3&						element3,
-		T4&						element4,
-		T5&						element5,
-		T6&						element6):
-	element1(element1),
-	element2(element2),
-	element3(element3),
-	element4(element4),
-	element5(element5),
-	element6(element6)
+      Arguments(T1&                                             element1,
+                T2&                                             element2,
+                T3&                                             element3,
+                T4&                                             element4,
+                T5&                                             element5,
+                T6&                                             element6):
+        element1(element1),
+        element2(element2),
+        element3(element3),
+        element4(element4),
+        element5(element5),
+        element6(element6)
       {
       }
 
       template <template <typename...> class E,
-		typename... U>
-      Arguments(E< Parameters<U...> >&				ensemble):
-	element1(ensemble.element1),
-	element2(ensemble.element2),
-	element3(ensemble.element3),
-	element4(ensemble.element4),
-	element5(ensemble.element5),
-	element6(ensemble.element6)
+                typename... U>
+      Arguments(E< Parameters<U...> >&                          ensemble):
+        element1(ensemble.element1),
+        element2(ensemble.element2),
+        element3(ensemble.element3),
+        element4(ensemble.element4),
+        element5(ensemble.element5),
+        element6(ensemble.element6)
       {
-	allege(Parameters<U...>::Quantum == P::Quantum);
+        allege(Parameters<U...>::Quantum == P::Quantum);
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4,
-		typename U5,
-		typename U6>
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4,
+                typename U5,
+                typename U6>
       Arguments(E1< Parameters<U1, U2, U3, U4, U5,
-			       U6> >&				ensemble1,
-		E2< Parameters<> >&):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4),
-	element5(ensemble1.element5),
-	element6(ensemble1.element6)
+                               U6> >&                           ensemble1,
+                E2< Parameters<> >&):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4),
+        element5(ensemble1.element5),
+        element6(ensemble1.element6)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4,
-		typename U5,
-		typename V6>
-      Arguments(E1< Parameters<U1, U2, U3, U4, U5> >&		ensemble1,
-		E2< Parameters<V6> >&				ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4),
-	element5(ensemble1.element5),
-	element6(ensemble2.element1)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4,
+                typename U5,
+                typename V6>
+      Arguments(E1< Parameters<U1, U2, U3, U4, U5> >&           ensemble1,
+                E2< Parameters<V6> >&                           ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4),
+        element5(ensemble1.element5),
+        element6(ensemble2.element1)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4,
-		typename V5,
-		typename V6>
-      Arguments(E1< Parameters<U1, U2, U3, U4> >&		ensemble1,
-		E2< Parameters<V5, V6> >&			ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4),
-	element5(ensemble2.element1),
-	element6(ensemble2.element2)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4,
+                typename V5,
+                typename V6>
+      Arguments(E1< Parameters<U1, U2, U3, U4> >&               ensemble1,
+                E2< Parameters<V5, V6> >&                       ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4),
+        element5(ensemble2.element1),
+        element6(ensemble2.element2)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename V4,
-		typename V5,
-		typename V6>
-      Arguments(E1< Parameters<U1, U2, U3> >&			ensemble1,
-		E2< Parameters<V4, V5, V6> >&			ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble2.element1),
-	element5(ensemble2.element2),
-	element6(ensemble2.element3)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename V4,
+                typename V5,
+                typename V6>
+      Arguments(E1< Parameters<U1, U2, U3> >&                   ensemble1,
+                E2< Parameters<V4, V5, V6> >&                   ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble2.element1),
+        element5(ensemble2.element2),
+        element6(ensemble2.element3)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename V3,
-		typename V4,
-		typename V5,
-		typename V6>
-      Arguments(E1< Parameters<U1, U2> >&			ensemble1,
-		E2< Parameters<V3, V4, V5, V6> >&		ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble2.element1),
-	element4(ensemble2.element2),
-	element5(ensemble2.element3),
-	element6(ensemble2.element4)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename V3,
+                typename V4,
+                typename V5,
+                typename V6>
+      Arguments(E1< Parameters<U1, U2> >&                       ensemble1,
+                E2< Parameters<V3, V4, V5, V6> >&               ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble2.element1),
+        element4(ensemble2.element2),
+        element5(ensemble2.element3),
+        element6(ensemble2.element4)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename V2,
-		typename V3,
-		typename V4,
-		typename V5,
-		typename V6>
-      Arguments(E1< Parameters<U1> >&				ensemble1,
-		E2< Parameters<V2, V3, V4, V5, V6> >&		ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble2.element1),
-	element3(ensemble2.element2),
-	element4(ensemble2.element3),
-	element5(ensemble2.element4),
-	element6(ensemble2.element5)
+                template <typename...> class E2,
+                typename U1,
+                typename V2,
+                typename V3,
+                typename V4,
+                typename V5,
+                typename V6>
+      Arguments(E1< Parameters<U1> >&                           ensemble1,
+                E2< Parameters<V2, V3, V4, V5, V6> >&           ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble2.element1),
+        element3(ensemble2.element2),
+        element4(ensemble2.element3),
+        element5(ensemble2.element4),
+        element6(ensemble2.element5)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename V1,
-		typename V2,
-		typename V3,
-		typename V4,
-		typename V5,
-		typename V6>
+                template <typename...> class E2,
+                typename V1,
+                typename V2,
+                typename V3,
+                typename V4,
+                typename V5,
+                typename V6>
       Arguments(E1< Parameters<> >&,
-		E2< Parameters<V1, V2, V3, V4, V5,
-			       V6> >&				ensemble2):
-	element1(ensemble2.element1),
-	element2(ensemble2.element2),
-	element3(ensemble2.element3),
-	element4(ensemble2.element4),
-	element5(ensemble2.element5),
-	element6(ensemble2.element6)
+                E2< Parameters<V1, V2, V3, V4, V5,
+                               V6> >&                           ensemble2):
+        element1(ensemble2.element1),
+        element2(ensemble2.element2),
+        element3(ensemble2.element3),
+        element4(ensemble2.element4),
+        element5(ensemble2.element5),
+        element6(ensemble2.element6)
       {
       }
 
@@ -1193,61 +1193,61 @@ namespace elle
       //
 
       template <typename C,
-		typename... U>
-      Status		Call(const C&				object,
-			     U&...				elements)
+                typename... U>
+      Status            Call(const C&                           object,
+                             U&...                              elements)
       {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    this->element5,
-			    this->element6,
-			    elements...));
+        return (object.Call(this->element1,
+                            this->element2,
+                            this->element3,
+                            this->element4,
+                            this->element5,
+                            this->element6,
+                            elements...));
       }
 
       template <typename C,
-		typename... U>
-      Status		Call(const C&				object,
-			     U&...				elements)
-	const
+                typename... U>
+      Status            Call(const C&                           object,
+                             U&...                              elements)
+        const
       {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    this->element5,
-			    this->element6,
-			    elements...));
+        return (object.Call(this->element1,
+                            this->element2,
+                            this->element3,
+                            this->element4,
+                            this->element5,
+                            this->element6,
+                            elements...));
       }
 
       template <typename C,
-		typename... U>
-      Void		Trigger(const C&			object,
-				U&...				elements)
+                typename... U>
+      Void              Trigger(const C&                        object,
+                                U&...                           elements)
       {
-	object.Trigger(this->element1,
-		       this->element2,
-		       this->element3,
-		       this->element4,
-		       this->element5,
-		       this->element6,
-		       elements...);
+        object.Trigger(this->element1,
+                       this->element2,
+                       this->element3,
+                       this->element4,
+                       this->element5,
+                       this->element6,
+                       elements...);
       }
 
       template <typename C,
-		typename... U>
-      Void		Trigger(const C&			object,
-				U&...				elements)
-	const
+                typename... U>
+      Void              Trigger(const C&                        object,
+                                U&...                           elements)
+        const
       {
-	object.Trigger(this->element1,
-		       this->element2,
-		       this->element3,
-		       this->element4,
-		       this->element5,
-		       this->element6,
-		       elements...);
+        object.Trigger(this->element1,
+                       this->element2,
+                       this->element3,
+                       this->element4,
+                       this->element5,
+                       this->element6,
+                       elements...);
       }
 
       //
@@ -1255,18 +1255,18 @@ namespace elle
       //
 
       // dumpable
-      Status		Dump(const Natural32			margin = 0)
-	const
+      Status            Dump(const Natural32                    margin = 0)
+        const
       {
-	String		alignment(margin, ' ');
+        String          alignment(margin, ' ');
 
-	enter();
+        enter();
 
-	std::cout << alignment
-		  << "[Arguments " << P::Quantum << "]"
-		  << std::endl;
+        std::cout << alignment
+                  << "[Arguments " << P::Quantum << "]"
+                  << std::endl;
 
-	leave();
+        leave();
       }
     };
 
@@ -1274,14 +1274,14 @@ namespace elle
     /// seven-argument.
     ///
     template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5,
-	      typename T6,
-	      typename T7>
+              typename T2,
+              typename T3,
+              typename T4,
+              typename T5,
+              typename T6,
+              typename T7>
     class Arguments< Parameters<T1, T2, T3, T4, T5,
-				T6, T7> >:
+                                T6, T7> >:
       public Entity
     {
     public:
@@ -1289,222 +1289,222 @@ namespace elle
       // types
       //
       typedef Parameters<T1, T2, T3, T4, T5,
-			 T6, T7>				P;
+                         T6, T7>                                P;
 
       //
       // attributes
       //
-      T1&		element1;
-      T2&		element2;
-      T3&		element3;
-      T4&		element4;
-      T5&		element5;
-      T6&		element6;
-      T7&		element7;
+      T1&               element1;
+      T2&               element2;
+      T3&               element3;
+      T4&               element4;
+      T5&               element5;
+      T6&               element6;
+      T7&               element7;
 
       //
       // constructors & destructors
       //
-      Arguments(T1&						element1,
-		T2&						element2,
-		T3&						element3,
-		T4&						element4,
-		T5&						element5,
-		T6&						element6,
-		T7&						element7):
-	element1(element1),
-	element2(element2),
-	element3(element3),
-	element4(element4),
-	element5(element5),
-	element6(element6),
-	element7(element7)
+      Arguments(T1&                                             element1,
+                T2&                                             element2,
+                T3&                                             element3,
+                T4&                                             element4,
+                T5&                                             element5,
+                T6&                                             element6,
+                T7&                                             element7):
+        element1(element1),
+        element2(element2),
+        element3(element3),
+        element4(element4),
+        element5(element5),
+        element6(element6),
+        element7(element7)
       {
       }
 
       template <template <typename...> class E,
-		typename... U>
-      Arguments(E< Parameters<U...> >&				ensemble):
-	element1(ensemble.element1),
-	element2(ensemble.element2),
-	element3(ensemble.element3),
-	element4(ensemble.element4),
-	element5(ensemble.element5),
-	element6(ensemble.element6),
-	element7(ensemble.element7)
+                typename... U>
+      Arguments(E< Parameters<U...> >&                          ensemble):
+        element1(ensemble.element1),
+        element2(ensemble.element2),
+        element3(ensemble.element3),
+        element4(ensemble.element4),
+        element5(ensemble.element5),
+        element6(ensemble.element6),
+        element7(ensemble.element7)
       {
-	allege(Parameters<U...>::Quantum == P::Quantum);
+        allege(Parameters<U...>::Quantum == P::Quantum);
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4,
-		typename U5,
-		typename U6,
-		typename U7>
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4,
+                typename U5,
+                typename U6,
+                typename U7>
       Arguments(E1< Parameters<U1, U2, U3, U4, U5,
-			       U6, U7> >&			ensemble1,
-		E2< Parameters<> >&):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4),
-	element5(ensemble1.element5),
-	element6(ensemble1.element6),
-	element7(ensemble1.element7)
+                               U6, U7> >&                       ensemble1,
+                E2< Parameters<> >&):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4),
+        element5(ensemble1.element5),
+        element6(ensemble1.element6),
+        element7(ensemble1.element7)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4,
-		typename U5,
-		typename U6,
-		typename V7>
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4,
+                typename U5,
+                typename U6,
+                typename V7>
       Arguments(E1< Parameters<U1, U2, U3, U4, U5,
-			       U6> >&				ensemble1,
-		E2< Parameters<V7> >&				ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4),
-	element5(ensemble1.element5),
-	element6(ensemble1.element6),
-	element7(ensemble2.element1)
+                               U6> >&                           ensemble1,
+                E2< Parameters<V7> >&                           ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4),
+        element5(ensemble1.element5),
+        element6(ensemble1.element6),
+        element7(ensemble2.element1)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4,
-		typename U5,
-		typename V6,
-		typename V7>
-      Arguments(E1< Parameters<U1, U2, U3, U4, U5> >&		ensemble1,
-		E2< Parameters<V6, V7> >&			ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4),
-	element5(ensemble1.element5),
-	element6(ensemble2.element1),
-	element7(ensemble2.element2)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4,
+                typename U5,
+                typename V6,
+                typename V7>
+      Arguments(E1< Parameters<U1, U2, U3, U4, U5> >&           ensemble1,
+                E2< Parameters<V6, V7> >&                       ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4),
+        element5(ensemble1.element5),
+        element6(ensemble2.element1),
+        element7(ensemble2.element2)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4,
-		typename V5,
-		typename V6,
-		typename V7>
-      Arguments(E1< Parameters<U1, U2, U3, U4> >&		ensemble1,
-		E2< Parameters<V5, V6, V7> >&			ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4),
-	element5(ensemble2.element1),
-	element6(ensemble2.element2),
-	element7(ensemble2.element3)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4,
+                typename V5,
+                typename V6,
+                typename V7>
+      Arguments(E1< Parameters<U1, U2, U3, U4> >&               ensemble1,
+                E2< Parameters<V5, V6, V7> >&                   ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4),
+        element5(ensemble2.element1),
+        element6(ensemble2.element2),
+        element7(ensemble2.element3)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename V4,
-		typename V5,
-		typename V6,
-		typename V7>
-      Arguments(E1< Parameters<U1, U2, U3> >&			ensemble1,
-		E2< Parameters<V4, V5, V6, V7> >&		ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble2.element1),
-	element5(ensemble2.element2),
-	element6(ensemble2.element3),
-	element7(ensemble2.element4)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename V4,
+                typename V5,
+                typename V6,
+                typename V7>
+      Arguments(E1< Parameters<U1, U2, U3> >&                   ensemble1,
+                E2< Parameters<V4, V5, V6, V7> >&               ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble2.element1),
+        element5(ensemble2.element2),
+        element6(ensemble2.element3),
+        element7(ensemble2.element4)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename V3,
-		typename V4,
-		typename V5,
-		typename V6,
-		typename V7>
-      Arguments(E1< Parameters<U1, U2> >&			ensemble1,
-		E2< Parameters<V3, V4, V5, V6, V7> >&		ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble2.element1),
-	element4(ensemble2.element2),
-	element5(ensemble2.element3),
-	element6(ensemble2.element4),
-	element7(ensemble2.element5)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename V3,
+                typename V4,
+                typename V5,
+                typename V6,
+                typename V7>
+      Arguments(E1< Parameters<U1, U2> >&                       ensemble1,
+                E2< Parameters<V3, V4, V5, V6, V7> >&           ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble2.element1),
+        element4(ensemble2.element2),
+        element5(ensemble2.element3),
+        element6(ensemble2.element4),
+        element7(ensemble2.element5)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename V2,
-		typename V3,
-		typename V4,
-		typename V5,
-		typename V6,
-		typename V7>
-      Arguments(E1< Parameters<U1> >&				ensemble1,
-		E2< Parameters<V2, V3, V4, V5, V6,
-			       V7> >&				ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble2.element1),
-	element3(ensemble2.element2),
-	element4(ensemble2.element3),
-	element5(ensemble2.element4),
-	element6(ensemble2.element5),
-	element7(ensemble2.element6)
+                template <typename...> class E2,
+                typename U1,
+                typename V2,
+                typename V3,
+                typename V4,
+                typename V5,
+                typename V6,
+                typename V7>
+      Arguments(E1< Parameters<U1> >&                           ensemble1,
+                E2< Parameters<V2, V3, V4, V5, V6,
+                               V7> >&                           ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble2.element1),
+        element3(ensemble2.element2),
+        element4(ensemble2.element3),
+        element5(ensemble2.element4),
+        element6(ensemble2.element5),
+        element7(ensemble2.element6)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename V1,
-		typename V2,
-		typename V3,
-		typename V4,
-		typename V5,
-		typename V6,
-		typename V7>
+                template <typename...> class E2,
+                typename V1,
+                typename V2,
+                typename V3,
+                typename V4,
+                typename V5,
+                typename V6,
+                typename V7>
       Arguments(E1< Parameters<> >&,
-		E2< Parameters<V1, V2, V3, V4, V5,
-			       V6, V7> >&			ensemble2):
-	element1(ensemble2.element1),
-	element2(ensemble2.element2),
-	element3(ensemble2.element3),
-	element4(ensemble2.element4),
-	element5(ensemble2.element5),
-	element6(ensemble2.element6),
-	element7(ensemble2.element7)
+                E2< Parameters<V1, V2, V3, V4, V5,
+                               V6, V7> >&                       ensemble2):
+        element1(ensemble2.element1),
+        element2(ensemble2.element2),
+        element3(ensemble2.element3),
+        element4(ensemble2.element4),
+        element5(ensemble2.element5),
+        element6(ensemble2.element6),
+        element7(ensemble2.element7)
       {
       }
 
@@ -1513,65 +1513,65 @@ namespace elle
       //
 
       template <typename C,
-		typename... U>
-      Status		Call(const C&				object,
-			     U&...				elements)
+                typename... U>
+      Status            Call(const C&                           object,
+                             U&...                              elements)
       {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    this->element5,
-			    this->element6,
-			    this->element7,
-			    elements...));
+        return (object.Call(this->element1,
+                            this->element2,
+                            this->element3,
+                            this->element4,
+                            this->element5,
+                            this->element6,
+                            this->element7,
+                            elements...));
       }
 
       template <typename C,
-		typename... U>
-      Status		Call(const C&				object,
-			     U&...				elements)
-	const
+                typename... U>
+      Status            Call(const C&                           object,
+                             U&...                              elements)
+        const
       {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    this->element5,
-			    this->element6,
-			    this->element7,
-			    elements...));
+        return (object.Call(this->element1,
+                            this->element2,
+                            this->element3,
+                            this->element4,
+                            this->element5,
+                            this->element6,
+                            this->element7,
+                            elements...));
       }
 
       template <typename C,
-		typename... U>
-      Void		Trigger(const C&			object,
-				U&...				elements)
+                typename... U>
+      Void              Trigger(const C&                        object,
+                                U&...                           elements)
       {
-	object.Trigger(this->element1,
-		       this->element2,
-		       this->element3,
-		       this->element4,
-		       this->element5,
-		       this->element6,
-		       this->element7,
-		       elements...);
+        object.Trigger(this->element1,
+                       this->element2,
+                       this->element3,
+                       this->element4,
+                       this->element5,
+                       this->element6,
+                       this->element7,
+                       elements...);
       }
 
       template <typename C,
-		typename... U>
-      Void		Trigger(const C&			object,
-				U&...				elements)
-	const
+                typename... U>
+      Void              Trigger(const C&                        object,
+                                U&...                           elements)
+        const
       {
-	object.Trigger(this->element1,
-		       this->element2,
-		       this->element3,
-		       this->element4,
-		       this->element5,
-		       this->element6,
-		       this->element7,
-		       elements...);
+        object.Trigger(this->element1,
+                       this->element2,
+                       this->element3,
+                       this->element4,
+                       this->element5,
+                       this->element6,
+                       this->element7,
+                       elements...);
       }
 
       //
@@ -1579,18 +1579,18 @@ namespace elle
       //
 
       // dumpable
-      Status		Dump(const Natural32			margin = 0)
-	const
+      Status            Dump(const Natural32                    margin = 0)
+        const
       {
-	String		alignment(margin, ' ');
+        String          alignment(margin, ' ');
 
-	enter();
+        enter();
 
-	std::cout << alignment
-		  << "[Arguments " << P::Quantum << "]"
-		  << std::endl;
+        std::cout << alignment
+                  << "[Arguments " << P::Quantum << "]"
+                  << std::endl;
 
-	leave();
+        leave();
       }
     };
 
@@ -1598,15 +1598,15 @@ namespace elle
     /// eight-arguments.
     ///
     template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5,
-	      typename T6,
-	      typename T7,
-	      typename T8>
+              typename T2,
+              typename T3,
+              typename T4,
+              typename T5,
+              typename T6,
+              typename T7,
+              typename T8>
     class Arguments< Parameters<T1, T2, T3, T4, T5,
-				T6, T7, T8> >:
+                                T6, T7, T8> >:
       public Entity
     {
     public:
@@ -1614,267 +1614,267 @@ namespace elle
       // types
       //
       typedef Parameters<T1, T2, T3, T4, T5,
-			 T6, T7, T8>				P;
+                         T6, T7, T8>                            P;
 
       //
       // attributes
       //
-      T1&		element1;
-      T2&		element2;
-      T3&		element3;
-      T4&		element4;
-      T5&		element5;
-      T6&		element6;
-      T7&		element7;
-      T8&		element8;
+      T1&               element1;
+      T2&               element2;
+      T3&               element3;
+      T4&               element4;
+      T5&               element5;
+      T6&               element6;
+      T7&               element7;
+      T8&               element8;
 
       //
       // constructors & destructors
       //
-      Arguments(T1&						element1,
-		T2&						element2,
-		T3&						element3,
-		T4&						element4,
-		T5&						element5,
-		T6&						element6,
-		T7&						element7,
-		T8&						element8):
-	element1(element1),
-	element2(element2),
-	element3(element3),
-	element4(element4),
-	element5(element5),
-	element6(element6),
-	element7(element7),
-	element8(element8)
+      Arguments(T1&                                             element1,
+                T2&                                             element2,
+                T3&                                             element3,
+                T4&                                             element4,
+                T5&                                             element5,
+                T6&                                             element6,
+                T7&                                             element7,
+                T8&                                             element8):
+        element1(element1),
+        element2(element2),
+        element3(element3),
+        element4(element4),
+        element5(element5),
+        element6(element6),
+        element7(element7),
+        element8(element8)
       {
       }
 
       template <template <typename...> class E,
-		typename... U>
-      Arguments(E< Parameters<U...> >&				ensemble):
-	element1(ensemble.element1),
-	element2(ensemble.element2),
-	element3(ensemble.element3),
-	element4(ensemble.element4),
-	element5(ensemble.element5),
-	element6(ensemble.element6),
-	element7(ensemble.element7),
-	element8(ensemble.element8)
+                typename... U>
+      Arguments(E< Parameters<U...> >&                          ensemble):
+        element1(ensemble.element1),
+        element2(ensemble.element2),
+        element3(ensemble.element3),
+        element4(ensemble.element4),
+        element5(ensemble.element5),
+        element6(ensemble.element6),
+        element7(ensemble.element7),
+        element8(ensemble.element8)
       {
-	allege(Parameters<U...>::Quantum == P::Quantum);
+        allege(Parameters<U...>::Quantum == P::Quantum);
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4,
-		typename U5,
-		typename U6,
-		typename U7,
-		typename U8>
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4,
+                typename U5,
+                typename U6,
+                typename U7,
+                typename U8>
       Arguments(E1< Parameters<U1, U2, U3, U4, U5,
-			       U6, U7, U8> >&			ensemble1,
-		E2< Parameters<> >&):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4),
-	element5(ensemble1.element5),
-	element6(ensemble1.element6),
-	element7(ensemble1.element7),
-	element8(ensemble1.element8)
+                               U6, U7, U8> >&                   ensemble1,
+                E2< Parameters<> >&):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4),
+        element5(ensemble1.element5),
+        element6(ensemble1.element6),
+        element7(ensemble1.element7),
+        element8(ensemble1.element8)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4,
-		typename U5,
-		typename U6,
-		typename U7,
-		typename V8>
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4,
+                typename U5,
+                typename U6,
+                typename U7,
+                typename V8>
       Arguments(E1< Parameters<U1, U2, U3, U4, U5,
-			       U6, U7> >&			ensemble1,
-		E2< Parameters<V8> >&				ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4),
-	element5(ensemble1.element5),
-	element6(ensemble1.element6),
-	element7(ensemble1.element7),
-	element8(ensemble2.element1)
+                               U6, U7> >&                       ensemble1,
+                E2< Parameters<V8> >&                           ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4),
+        element5(ensemble1.element5),
+        element6(ensemble1.element6),
+        element7(ensemble1.element7),
+        element8(ensemble2.element1)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4,
-		typename U5,
-		typename U6,
-		typename V7,
-		typename V8>
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4,
+                typename U5,
+                typename U6,
+                typename V7,
+                typename V8>
       Arguments(E1< Parameters<U1, U2, U3, U4, U5,
-			       U6> >&				ensemble1,
-		E2< Parameters<V7, V8> >&			ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4),
-	element5(ensemble1.element5),
-	element6(ensemble1.element6),
-	element7(ensemble2.element1),
-	element8(ensemble2.element2)
+                               U6> >&                           ensemble1,
+                E2< Parameters<V7, V8> >&                       ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4),
+        element5(ensemble1.element5),
+        element6(ensemble1.element6),
+        element7(ensemble2.element1),
+        element8(ensemble2.element2)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4,
-		typename U5,
-		typename V6,
-		typename V7,
-		typename V8>
-      Arguments(E1< Parameters<U1, U2, U3, U4, U5> >&		ensemble1,
-		E2< Parameters<V6, V7, V8> >&			ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4),
-	element5(ensemble1.element5),
-	element6(ensemble2.element1),
-	element7(ensemble2.element2),
-	element8(ensemble2.element3)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4,
+                typename U5,
+                typename V6,
+                typename V7,
+                typename V8>
+      Arguments(E1< Parameters<U1, U2, U3, U4, U5> >&           ensemble1,
+                E2< Parameters<V6, V7, V8> >&                   ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4),
+        element5(ensemble1.element5),
+        element6(ensemble2.element1),
+        element7(ensemble2.element2),
+        element8(ensemble2.element3)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4,
-		typename V5,
-		typename V6,
-		typename V7,
-		typename V8>
-      Arguments(E1< Parameters<U1, U2, U3, U4> >&		ensemble1,
-		E2< Parameters<V5, V6, V7, V8> >&		ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4),
-	element5(ensemble2.element1),
-	element6(ensemble2.element2),
-	element7(ensemble2.element3),
-	element8(ensemble2.element4)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4,
+                typename V5,
+                typename V6,
+                typename V7,
+                typename V8>
+      Arguments(E1< Parameters<U1, U2, U3, U4> >&               ensemble1,
+                E2< Parameters<V5, V6, V7, V8> >&               ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4),
+        element5(ensemble2.element1),
+        element6(ensemble2.element2),
+        element7(ensemble2.element3),
+        element8(ensemble2.element4)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename V4,
-		typename V5,
-		typename V6,
-		typename V7,
-		typename V8>
-      Arguments(E1< Parameters<U1, U2, U3> >&			ensemble1,
-		E2< Parameters<V4, V5, V6, V7, V8> >&		ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble2.element1),
-	element5(ensemble2.element2),
-	element6(ensemble2.element3),
-	element7(ensemble2.element4),
-	element8(ensemble2.element5)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename V4,
+                typename V5,
+                typename V6,
+                typename V7,
+                typename V8>
+      Arguments(E1< Parameters<U1, U2, U3> >&                   ensemble1,
+                E2< Parameters<V4, V5, V6, V7, V8> >&           ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble2.element1),
+        element5(ensemble2.element2),
+        element6(ensemble2.element3),
+        element7(ensemble2.element4),
+        element8(ensemble2.element5)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename V3,
-		typename V4,
-		typename V5,
-		typename V6,
-		typename V7,
-		typename V8>
-      Arguments(E1< Parameters<U1, U2> >&			ensemble1,
-		E2< Parameters<V3, V4, V5, V6, V7,
-			       V8> >&				ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble2.element1),
-	element4(ensemble2.element2),
-	element5(ensemble2.element3),
-	element6(ensemble2.element4),
-	element7(ensemble2.element5),
-	element8(ensemble2.element6)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename V3,
+                typename V4,
+                typename V5,
+                typename V6,
+                typename V7,
+                typename V8>
+      Arguments(E1< Parameters<U1, U2> >&                       ensemble1,
+                E2< Parameters<V3, V4, V5, V6, V7,
+                               V8> >&                           ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble2.element1),
+        element4(ensemble2.element2),
+        element5(ensemble2.element3),
+        element6(ensemble2.element4),
+        element7(ensemble2.element5),
+        element8(ensemble2.element6)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename V2,
-		typename V3,
-		typename V4,
-		typename V5,
-		typename V6,
-		typename V7,
-		typename V8>
-      Arguments(E1< Parameters<U1> >&				ensemble1,
-		E2< Parameters<V2, V3, V4, V5, V6,
-			       V7, V8> >&			ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble2.element1),
-	element3(ensemble2.element2),
-	element4(ensemble2.element3),
-	element5(ensemble2.element4),
-	element6(ensemble2.element5),
-	element7(ensemble2.element6),
-	element8(ensemble2.element7)
+                template <typename...> class E2,
+                typename U1,
+                typename V2,
+                typename V3,
+                typename V4,
+                typename V5,
+                typename V6,
+                typename V7,
+                typename V8>
+      Arguments(E1< Parameters<U1> >&                           ensemble1,
+                E2< Parameters<V2, V3, V4, V5, V6,
+                               V7, V8> >&                       ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble2.element1),
+        element3(ensemble2.element2),
+        element4(ensemble2.element3),
+        element5(ensemble2.element4),
+        element6(ensemble2.element5),
+        element7(ensemble2.element6),
+        element8(ensemble2.element7)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename V1,
-		typename V2,
-		typename V3,
-		typename V4,
-		typename V5,
-		typename V6,
-		typename V7,
-		typename V8>
+                template <typename...> class E2,
+                typename V1,
+                typename V2,
+                typename V3,
+                typename V4,
+                typename V5,
+                typename V6,
+                typename V7,
+                typename V8>
       Arguments(E1< Parameters<> >&,
-		E2< Parameters<V1, V2, V3, V4, V5,
-			       V6, V7, V8> >&			ensemble2):
-	element1(ensemble2.element1),
-	element2(ensemble2.element2),
-	element3(ensemble2.element3),
-	element4(ensemble2.element4),
-	element5(ensemble2.element5),
-	element6(ensemble2.element6),
-	element7(ensemble2.element7),
-	element8(ensemble2.element8)
+                E2< Parameters<V1, V2, V3, V4, V5,
+                               V6, V7, V8> >&                   ensemble2):
+        element1(ensemble2.element1),
+        element2(ensemble2.element2),
+        element3(ensemble2.element3),
+        element4(ensemble2.element4),
+        element5(ensemble2.element5),
+        element6(ensemble2.element6),
+        element7(ensemble2.element7),
+        element8(ensemble2.element8)
       {
       }
 
@@ -1883,69 +1883,69 @@ namespace elle
       //
 
       template <typename C,
-		typename... U>
-      Status		Call(const C&				object,
-			     U&...				elements)
+                typename... U>
+      Status            Call(const C&                           object,
+                             U&...                              elements)
       {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    this->element5,
-			    this->element6,
-			    this->element7,
-			    this->element8,
-			    elements...));
+        return (object.Call(this->element1,
+                            this->element2,
+                            this->element3,
+                            this->element4,
+                            this->element5,
+                            this->element6,
+                            this->element7,
+                            this->element8,
+                            elements...));
       }
 
       template <typename C,
-		typename... U>
-      Status		Call(const C&				object,
-			     U&...				elements)
-	const
+                typename... U>
+      Status            Call(const C&                           object,
+                             U&...                              elements)
+        const
       {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    this->element5,
-			    this->element6,
-			    this->element7,
-			    this->element8,
-			    elements...));
+        return (object.Call(this->element1,
+                            this->element2,
+                            this->element3,
+                            this->element4,
+                            this->element5,
+                            this->element6,
+                            this->element7,
+                            this->element8,
+                            elements...));
       }
 
       template <typename C,
-		typename... U>
-      Void		Trigger(const C&			object,
-				U&...				elements)
+                typename... U>
+      Void              Trigger(const C&                        object,
+                                U&...                           elements)
       {
-	object.Trigger(this->element1,
-		       this->element2,
-		       this->element3,
-		       this->element4,
-		       this->element5,
-		       this->element6,
-		       this->element7,
-		       this->element8,
-		       elements...);
+        object.Trigger(this->element1,
+                       this->element2,
+                       this->element3,
+                       this->element4,
+                       this->element5,
+                       this->element6,
+                       this->element7,
+                       this->element8,
+                       elements...);
       }
 
       template <typename C,
-		typename... U>
-      Void		Trigger(const C&			object,
-				U&...				elements)
-	const
+                typename... U>
+      Void              Trigger(const C&                        object,
+                                U&...                           elements)
+        const
       {
-	object.Trigger(this->element1,
-		       this->element2,
-		       this->element3,
-		       this->element4,
-		       this->element5,
-		       this->element6,
-		       this->element7,
-		       this->element8,
-		       elements...);
+        object.Trigger(this->element1,
+                       this->element2,
+                       this->element3,
+                       this->element4,
+                       this->element5,
+                       this->element6,
+                       this->element7,
+                       this->element8,
+                       elements...);
       }
 
       //
@@ -1953,18 +1953,18 @@ namespace elle
       //
 
       // dumpable
-      Status		Dump(const Natural32			margin = 0)
-	const
+      Status            Dump(const Natural32                    margin = 0)
+        const
       {
-	String		alignment(margin, ' ');
+        String          alignment(margin, ' ');
 
-	enter();
+        enter();
 
-	std::cout << alignment
-		  << "[Arguments " << P::Quantum << "]"
-		  << std::endl;
+        std::cout << alignment
+                  << "[Arguments " << P::Quantum << "]"
+                  << std::endl;
 
-	leave();
+        leave();
       }
     };
 
@@ -1972,16 +1972,16 @@ namespace elle
     /// nine-argument.
     ///
     template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5,
-	      typename T6,
-	      typename T7,
-	      typename T8,
-	      typename T9>
+              typename T2,
+              typename T3,
+              typename T4,
+              typename T5,
+              typename T6,
+              typename T7,
+              typename T8,
+              typename T9>
     class Arguments< Parameters<T1, T2, T3, T4, T5,
-				T6, T7, T8, T9> >:
+                                T6, T7, T8, T9> >:
       public Entity
     {
     public:
@@ -1989,316 +1989,316 @@ namespace elle
       // types
       //
       typedef Parameters<T1, T2, T3, T4, T5,
-			 T6, T7, T8, T9>			P;
+                         T6, T7, T8, T9>                        P;
 
       //
       // attributes
       //
-      T1&		element1;
-      T2&		element2;
-      T3&		element3;
-      T4&		element4;
-      T5&		element5;
-      T6&		element6;
-      T7&		element7;
-      T8&		element8;
-      T9&		element9;
+      T1&               element1;
+      T2&               element2;
+      T3&               element3;
+      T4&               element4;
+      T5&               element5;
+      T6&               element6;
+      T7&               element7;
+      T8&               element8;
+      T9&               element9;
 
       //
       // constructors & destructors
       //
-      Arguments(T1&						element1,
-		T2&						element2,
-		T3&						element3,
-		T4&						element4,
-		T5&						element5,
-		T6&						element6,
-		T7&						element7,
-		T8&						element8,
-		T9&						element9):
-	element1(element1),
-	element2(element2),
-	element3(element3),
-	element4(element4),
-	element5(element5),
-	element6(element6),
-	element7(element7),
-	element8(element8),
-	element9(element9)
+      Arguments(T1&                                             element1,
+                T2&                                             element2,
+                T3&                                             element3,
+                T4&                                             element4,
+                T5&                                             element5,
+                T6&                                             element6,
+                T7&                                             element7,
+                T8&                                             element8,
+                T9&                                             element9):
+        element1(element1),
+        element2(element2),
+        element3(element3),
+        element4(element4),
+        element5(element5),
+        element6(element6),
+        element7(element7),
+        element8(element8),
+        element9(element9)
       {
       }
 
       template <template <typename...> class E,
-		typename... U>
-      Arguments(E< Parameters<U...> >&				ensemble):
-	element1(ensemble.element1),
-	element2(ensemble.element2),
-	element3(ensemble.element3),
-	element4(ensemble.element4),
-	element5(ensemble.element5),
-	element6(ensemble.element6),
-	element7(ensemble.element7),
-	element8(ensemble.element8),
-	element9(ensemble.element9)
+                typename... U>
+      Arguments(E< Parameters<U...> >&                          ensemble):
+        element1(ensemble.element1),
+        element2(ensemble.element2),
+        element3(ensemble.element3),
+        element4(ensemble.element4),
+        element5(ensemble.element5),
+        element6(ensemble.element6),
+        element7(ensemble.element7),
+        element8(ensemble.element8),
+        element9(ensemble.element9)
       {
-	allege(Parameters<U...>::Quantum == P::Quantum);
+        allege(Parameters<U...>::Quantum == P::Quantum);
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4,
-		typename U5,
-		typename U6,
-		typename U7,
-		typename U8,
-		typename U9>
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4,
+                typename U5,
+                typename U6,
+                typename U7,
+                typename U8,
+                typename U9>
       Arguments(E1< Parameters<U1, U2, U3, U4, U5,
-			       U6, U7, U8, U9> >&		ensemble1,
-		E2< Parameters<> >&):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4),
-	element5(ensemble1.element5),
-	element6(ensemble1.element6),
-	element7(ensemble1.element7),
-	element8(ensemble1.element8),
-	element9(ensemble1.element9)
+                               U6, U7, U8, U9> >&               ensemble1,
+                E2< Parameters<> >&):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4),
+        element5(ensemble1.element5),
+        element6(ensemble1.element6),
+        element7(ensemble1.element7),
+        element8(ensemble1.element8),
+        element9(ensemble1.element9)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4,
-		typename U5,
-		typename U6,
-		typename U7,
-		typename U8,
-		typename V9>
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4,
+                typename U5,
+                typename U6,
+                typename U7,
+                typename U8,
+                typename V9>
       Arguments(E1< Parameters<U1, U2, U3, U4, U5,
-			       U6, U7, U8> >&			ensemble1,
-		E2< Parameters<V9> >&				ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4),
-	element5(ensemble1.element5),
-	element6(ensemble1.element6),
-	element7(ensemble1.element7),
-	element8(ensemble1.element8),
-	element9(ensemble2.element1)
+                               U6, U7, U8> >&                   ensemble1,
+                E2< Parameters<V9> >&                           ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4),
+        element5(ensemble1.element5),
+        element6(ensemble1.element6),
+        element7(ensemble1.element7),
+        element8(ensemble1.element8),
+        element9(ensemble2.element1)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4,
-		typename U5,
-		typename U6,
-		typename U7,
-		typename V8,
-		typename V9>
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4,
+                typename U5,
+                typename U6,
+                typename U7,
+                typename V8,
+                typename V9>
       Arguments(E1< Parameters<U1, U2, U3, U4, U5,
-			       U6, U7> >&			ensemble1,
-		E2< Parameters<V8, V9> >&			ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4),
-	element5(ensemble1.element5),
-	element6(ensemble1.element6),
-	element7(ensemble1.element7),
-	element8(ensemble2.element1),
-	element9(ensemble2.element2)
+                               U6, U7> >&                       ensemble1,
+                E2< Parameters<V8, V9> >&                       ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4),
+        element5(ensemble1.element5),
+        element6(ensemble1.element6),
+        element7(ensemble1.element7),
+        element8(ensemble2.element1),
+        element9(ensemble2.element2)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4,
-		typename U5,
-		typename U6,
-		typename V7,
-		typename V8,
-		typename V9>
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4,
+                typename U5,
+                typename U6,
+                typename V7,
+                typename V8,
+                typename V9>
       Arguments(E1< Parameters<U1, U2, U3, U4, U5,
-			       U6> >&				ensemble1,
-		E2< Parameters<V7, V8, V9> >&			ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4),
-	element5(ensemble1.element5),
-	element6(ensemble1.element6),
-	element7(ensemble2.element1),
-	element8(ensemble2.element2),
-	element9(ensemble2.element3)
+                               U6> >&                           ensemble1,
+                E2< Parameters<V7, V8, V9> >&                   ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4),
+        element5(ensemble1.element5),
+        element6(ensemble1.element6),
+        element7(ensemble2.element1),
+        element8(ensemble2.element2),
+        element9(ensemble2.element3)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4,
-		typename U5,
-		typename V6,
-		typename V7,
-		typename V8,
-		typename V9>
-      Arguments(E1< Parameters<U1, U2, U3, U4, U5> >&		ensemble1,
-		E2< Parameters<V6, V7, V8, V9> >&		ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4),
-	element5(ensemble1.element5),
-	element6(ensemble2.element1),
-	element7(ensemble2.element2),
-	element8(ensemble2.element3),
-	element9(ensemble2.element4)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4,
+                typename U5,
+                typename V6,
+                typename V7,
+                typename V8,
+                typename V9>
+      Arguments(E1< Parameters<U1, U2, U3, U4, U5> >&           ensemble1,
+                E2< Parameters<V6, V7, V8, V9> >&               ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4),
+        element5(ensemble1.element5),
+        element6(ensemble2.element1),
+        element7(ensemble2.element2),
+        element8(ensemble2.element3),
+        element9(ensemble2.element4)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename U4,
-		typename V5,
-		typename V6,
-		typename V7,
-		typename V8,
-		typename V9>
-      Arguments(E1< Parameters<U1, U2, U3, U4> >&		ensemble1,
-		E2< Parameters<V5, V6, V7, V8, V9> >&		ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble1.element4),
-	element5(ensemble2.element1),
-	element6(ensemble2.element2),
-	element7(ensemble2.element3),
-	element8(ensemble2.element4),
-	element9(ensemble2.element5)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename U4,
+                typename V5,
+                typename V6,
+                typename V7,
+                typename V8,
+                typename V9>
+      Arguments(E1< Parameters<U1, U2, U3, U4> >&               ensemble1,
+                E2< Parameters<V5, V6, V7, V8, V9> >&           ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble1.element4),
+        element5(ensemble2.element1),
+        element6(ensemble2.element2),
+        element7(ensemble2.element3),
+        element8(ensemble2.element4),
+        element9(ensemble2.element5)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename U3,
-		typename V4,
-		typename V5,
-		typename V6,
-		typename V7,
-		typename V8,
-		typename V9>
-      Arguments(E1< Parameters<U1, U2, U3> >&			ensemble1,
-		E2< Parameters<V4, V5, V6, V7, V8,
-			       V9> >&				ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble1.element3),
-	element4(ensemble2.element1),
-	element5(ensemble2.element2),
-	element6(ensemble2.element3),
-	element7(ensemble2.element4),
-	element8(ensemble2.element5),
-	element9(ensemble2.element6)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename U3,
+                typename V4,
+                typename V5,
+                typename V6,
+                typename V7,
+                typename V8,
+                typename V9>
+      Arguments(E1< Parameters<U1, U2, U3> >&                   ensemble1,
+                E2< Parameters<V4, V5, V6, V7, V8,
+                               V9> >&                           ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble1.element3),
+        element4(ensemble2.element1),
+        element5(ensemble2.element2),
+        element6(ensemble2.element3),
+        element7(ensemble2.element4),
+        element8(ensemble2.element5),
+        element9(ensemble2.element6)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename U2,
-		typename V3,
-		typename V4,
-		typename V5,
-		typename V6,
-		typename V7,
-		typename V8,
-		typename V9>
-      Arguments(E1< Parameters<U1, U2> >&			ensemble1,
-		E2< Parameters<V3, V4, V5, V6, V7,
-			       V8, V9> >&			ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble1.element2),
-	element3(ensemble2.element1),
-	element4(ensemble2.element2),
-	element5(ensemble2.element3),
-	element6(ensemble2.element4),
-	element7(ensemble2.element5),
-	element8(ensemble2.element6),
-	element9(ensemble2.element7)
+                template <typename...> class E2,
+                typename U1,
+                typename U2,
+                typename V3,
+                typename V4,
+                typename V5,
+                typename V6,
+                typename V7,
+                typename V8,
+                typename V9>
+      Arguments(E1< Parameters<U1, U2> >&                       ensemble1,
+                E2< Parameters<V3, V4, V5, V6, V7,
+                               V8, V9> >&                       ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble1.element2),
+        element3(ensemble2.element1),
+        element4(ensemble2.element2),
+        element5(ensemble2.element3),
+        element6(ensemble2.element4),
+        element7(ensemble2.element5),
+        element8(ensemble2.element6),
+        element9(ensemble2.element7)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename U1,
-		typename V2,
-		typename V3,
-		typename V4,
-		typename V5,
-		typename V6,
-		typename V7,
-		typename V8,
-		typename V9>
-      Arguments(E1< Parameters<U1> >&				ensemble1,
-		E2< Parameters<V2, V3, V4, V5, V6,
-			       V7, V8, V9> >&			ensemble2):
-	element1(ensemble1.element1),
-	element2(ensemble2.element1),
-	element3(ensemble2.element2),
-	element4(ensemble2.element3),
-	element5(ensemble2.element4),
-	element6(ensemble2.element5),
-	element7(ensemble2.element6),
-	element8(ensemble2.element7),
-	element9(ensemble2.element8)
+                template <typename...> class E2,
+                typename U1,
+                typename V2,
+                typename V3,
+                typename V4,
+                typename V5,
+                typename V6,
+                typename V7,
+                typename V8,
+                typename V9>
+      Arguments(E1< Parameters<U1> >&                           ensemble1,
+                E2< Parameters<V2, V3, V4, V5, V6,
+                               V7, V8, V9> >&                   ensemble2):
+        element1(ensemble1.element1),
+        element2(ensemble2.element1),
+        element3(ensemble2.element2),
+        element4(ensemble2.element3),
+        element5(ensemble2.element4),
+        element6(ensemble2.element5),
+        element7(ensemble2.element6),
+        element8(ensemble2.element7),
+        element9(ensemble2.element8)
       {
       }
 
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename V1,
-		typename V2,
-		typename V3,
-		typename V4,
-		typename V5,
-		typename V6,
-		typename V7,
-		typename V8,
-		typename V9>
+                template <typename...> class E2,
+                typename V1,
+                typename V2,
+                typename V3,
+                typename V4,
+                typename V5,
+                typename V6,
+                typename V7,
+                typename V8,
+                typename V9>
       Arguments(E1< Parameters<> >&,
-		E2< Parameters<V1, V2, V3, V4, V5,
-			       V6, V7, V8, V9> >&		ensemble2):
-	element1(ensemble2.element1),
-	element2(ensemble2.element2),
-	element3(ensemble2.element3),
-	element4(ensemble2.element4),
-	element5(ensemble2.element5),
-	element6(ensemble2.element6),
-	element7(ensemble2.element7),
-	element8(ensemble2.element8),
-	element9(ensemble2.element9)
+                E2< Parameters<V1, V2, V3, V4, V5,
+                               V6, V7, V8, V9> >&               ensemble2):
+        element1(ensemble2.element1),
+        element2(ensemble2.element2),
+        element3(ensemble2.element3),
+        element4(ensemble2.element4),
+        element5(ensemble2.element5),
+        element6(ensemble2.element6),
+        element7(ensemble2.element7),
+        element8(ensemble2.element8),
+        element9(ensemble2.element9)
       {
       }
 
@@ -2307,73 +2307,73 @@ namespace elle
       //
 
       template <typename C,
-		typename... U>
-      Status		Call(const C&				object,
-			     U&...				elements)
+                typename... U>
+      Status            Call(const C&                           object,
+                             U&...                              elements)
       {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    this->element5,
-			    this->element6,
-			    this->element7,
-			    this->element8,
-			    this->element9,
-			    elements...));
+        return (object.Call(this->element1,
+                            this->element2,
+                            this->element3,
+                            this->element4,
+                            this->element5,
+                            this->element6,
+                            this->element7,
+                            this->element8,
+                            this->element9,
+                            elements...));
       }
 
       template <typename C,
-		typename... U>
-      Status		Call(const C&				object,
-			     U&...				elements)
-	const
+                typename... U>
+      Status            Call(const C&                           object,
+                             U&...                              elements)
+        const
       {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    this->element5,
-			    this->element6,
-			    this->element7,
-			    this->element8,
-			    this->element9,
-			    elements...));
+        return (object.Call(this->element1,
+                            this->element2,
+                            this->element3,
+                            this->element4,
+                            this->element5,
+                            this->element6,
+                            this->element7,
+                            this->element8,
+                            this->element9,
+                            elements...));
       }
 
       template <typename C,
-		typename... U>
-      Void		Trigger(const C&			object,
-				U&...				elements)
+                typename... U>
+      Void              Trigger(const C&                        object,
+                                U&...                           elements)
       {
-	object.Trigger(this->element1,
-		       this->element2,
-		       this->element3,
-		       this->element4,
-		       this->element5,
-		       this->element6,
-		       this->element7,
-		       this->element8,
-		       this->element9,
-		       elements...);
+        object.Trigger(this->element1,
+                       this->element2,
+                       this->element3,
+                       this->element4,
+                       this->element5,
+                       this->element6,
+                       this->element7,
+                       this->element8,
+                       this->element9,
+                       elements...);
       }
 
       template <typename C,
-		typename... U>
-      Void		Trigger(const C&			object,
-				U&...				elements)
-	const
+                typename... U>
+      Void              Trigger(const C&                        object,
+                                U&...                           elements)
+        const
       {
-	object.Trigger(this->element1,
-		       this->element2,
-		       this->element3,
-		       this->element4,
-		       this->element5,
-		       this->element6,
-		       this->element7,
-		       this->element8,
-		       this->element9,
-		       elements...);
+        object.Trigger(this->element1,
+                       this->element2,
+                       this->element3,
+                       this->element4,
+                       this->element5,
+                       this->element6,
+                       this->element7,
+                       this->element8,
+                       this->element9,
+                       elements...);
       }
 
       //
@@ -2381,18 +2381,18 @@ namespace elle
       //
 
       // dumpable
-      Status		Dump(const Natural32			margin = 0)
-	const
+      Status            Dump(const Natural32                    margin = 0)
+        const
       {
-	String		alignment(margin, ' ');
+        String          alignment(margin, ' ');
 
-	enter();
+        enter();
 
-	std::cout << alignment
-		  << "[Arguments " << P::Quantum << "]"
-		  << std::endl;
+        std::cout << alignment
+                  << "[Arguments " << P::Quantum << "]"
+                  << std::endl;
 
-	leave();
+        leave();
       }
     };
 
@@ -2406,12 +2406,12 @@ namespace elle
     /// ensembles.
     ///
     template <template <typename...> class E1,
-	      template <typename...> class E2,
-	      typename... U,
-	      typename... V>
+              template <typename...> class E2,
+              typename... U,
+              typename... V>
     Arguments< Parameters<U..., V...> >
-    Arguments<>::Union(E1< Parameters<U...> >&			ensemble1,
-		       E2< Parameters<V...> >&			ensemble2)
+    Arguments<>::Union(E1< Parameters<U...> >&                  ensemble1,
+                       E2< Parameters<V...> >&                  ensemble2)
     {
       return (Arguments< Parameters<U..., V...> >(ensemble1, ensemble2));
     }

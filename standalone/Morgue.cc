@@ -28,13 +28,13 @@ namespace elle
     ///
     /// this variable contains the address of the current morgue.
     ///
-    Morgue*				Morgue::Current = NULL;
+    Morgue*                             Morgue::Current = NULL;
 
     ///
     /// this constants defines the morgue's frequency in milliseconds i.e
     /// the delay between each session of deletions.
     ///
-    const Natural32			Morgue::Frequency = 1000;
+    const Natural32                     Morgue::Frequency = 1000;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -43,7 +43,7 @@ namespace elle
     ///
     /// this method initializes the morgue system.
     ///
-    Status		Morgue::Initialize()
+    Status              Morgue::Initialize()
     {
       enter();
 
@@ -56,13 +56,13 @@ namespace elle
     ///
     /// this method cleans the morgue.
     ///
-    Status		Morgue::Clean()
+    Status              Morgue::Clean()
     {
       enter();
 
       // delete the morgue.
       if (Morgue::Current != NULL)
-	delete Morgue::Current;
+        delete Morgue::Current;
 
       leave();
     }
@@ -70,13 +70,13 @@ namespace elle
     ///
     /// this method returns the current morgue instance.
     ///
-    Status		Morgue::Instance(Morgue*&		morgue)
+    Status              Morgue::Instance(Morgue*&               morgue)
     {
       enter();
 
       // verify the morgue's presence.
       if (Morgue::Current == NULL)
-	false();
+        false();
 
       morgue = Morgue::Current;
 
@@ -102,7 +102,7 @@ namespace elle
     {
       // if present, delete the timer.
       if (this->timer != NULL)
-	delete this->timer;
+        delete this->timer;
 
       // bury the pending instances.
       this->Bury();
@@ -116,24 +116,24 @@ namespace elle
     /// this callback is triggered at a certain frequency and is
     /// responsible for deleting the pending instances.
     ///
-    Status		Morgue::Bury()
+    Status              Morgue::Bury()
     {
       enter();
 
       // as long as instances remain.
       while (this->container.empty() == false)
-	{
-	  Meta*		instance;
+        {
+          Meta*         instance;
 
-	  // retrieve the first instance.
-	  instance = this->container.front();
+          // retrieve the first instance.
+          instance = this->container.front();
 
-	  // delete it.
-	  delete instance;
+          // delete it.
+          delete instance;
 
-	  // remove it from the container.
-	  this->container.pop_front();
-	}
+          // remove it from the container.
+          this->container.pop_front();
+        }
 
       leave();
     }
@@ -145,10 +145,10 @@ namespace elle
     ///
     /// this method dumps the morgue's content.
     ///
-    Status		Morgue::Dump(Natural32		margin) const
+    Status              Morgue::Dump(Natural32          margin) const
     {
-      String		alignment(margin, ' ');
-      Morgue::Scoutor	scoutor;
+      String            alignment(margin, ' ');
+      Morgue::Scoutor   scoutor;
 
       enter();
 
@@ -157,15 +157,15 @@ namespace elle
 
       // go through the instances.
       for (scoutor = this->container.begin();
-	   scoutor != this->container.end();
-	   scoutor++)
-	{
-	  Meta*		instance = *scoutor;
+           scoutor != this->container.end();
+           scoutor++)
+        {
+          Meta*         instance = *scoutor;
 
-	  // dump the instance's address.
-	  std::cout << alignment << Dumpable::Shift
-		    << "[Instance] " << std::hex << instance << std::endl;
-	}
+          // dump the instance's address.
+          std::cout << alignment << Dumpable::Shift
+                    << "[Instance] " << std::hex << instance << std::endl;
+        }
 
       leave();
     }

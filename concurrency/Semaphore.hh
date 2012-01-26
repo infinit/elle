@@ -47,8 +47,8 @@ namespace elle
     /// Semaphore with a Section in order to make sure the semaphore is always
     /// unlocked when leaving the scope. this class can be used as follows:
     ///
-    ///   Semaphore		semaphore;
-    ///   Semaphore::Zone	zone(semaphore);
+    ///   Semaphore             semaphore;
+    ///   Semaphore::Zone       zone(semaphore);
     ///
     ///   zone.Lock();
     ///
@@ -71,21 +71,21 @@ namespace elle
       typedef Section<
         Parameters<const Natural32>,
         Parameters<const Natural32>
-        >							S;
+        >                                                       S;
       typedef Closure<
-	Void,
-	Parameters<const Natural32>,
-	Parameters<>
-	>							A;
+        Void,
+        Parameters<const Natural32>,
+        Parameters<>
+        >                                                       A;
       typedef Closure<
-	Void,
-	Parameters<const Natural32>,
-	Parameters<>
-	>							R;
+        Void,
+        Parameters<const Natural32>,
+        Parameters<>
+        >                                                       R;
       typedef Callback<
-	Void,
-	Parameters<const Natural32>
-	>							C;
+        Void,
+        Parameters<const Natural32>
+        >                                                       C;
 
       //
       // classes
@@ -96,35 +96,35 @@ namespace elle
       /// from the semaphore when leaving a scope.
       ///
       class Zone:
-	public Entity
+        public Entity
       {
       public:
-	//
-	// constructors & destructors
-	//
-	Zone(Semaphore&,
-	     const Natural32);
+        //
+        // constructors & destructors
+        //
+        Zone(Semaphore&,
+             const Natural32);
 
-	//
-	// methods
-	//
-	Void		Acquire();
-	Void		Release();
+        //
+        // methods
+        //
+        Void            Acquire();
+        Void            Release();
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	Status		Dump(const Natural32 = 0) const;
+        // dumpable
+        Status          Dump(const Natural32 = 0) const;
 
-	//
-	// attributes
-	//
-	Semaphore&	semaphore;
-	Natural32	n;
+        //
+        // attributes
+        //
+        Semaphore&      semaphore;
+        Natural32       n;
 
-	S		section;
+        S               section;
       };
 
       //
@@ -135,10 +135,10 @@ namespace elle
       //
       // methods
       //
-      Void		Acquire(const Natural32);
-      Void		Release(const Natural32);
+      Void              Acquire(const Natural32);
+      Void              Release(const Natural32);
 
-      Status		Try(const Natural32);
+      Status            Try(const Natural32);
 
       //
       // interfaces
@@ -148,13 +148,13 @@ namespace elle
       declare(Semaphore);
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Natural32		acquired;
-      Natural32		available;
+      Natural32         acquired;
+      Natural32         available;
     };
 
   }

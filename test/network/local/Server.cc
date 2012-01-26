@@ -26,7 +26,7 @@ namespace elle
     ///
     /// this method initializes the server.
     ///
-    Status		Server::Setup(const String&		line)
+    Status              Server::Setup(const String&             line)
     {
       enter();
 
@@ -39,7 +39,7 @@ namespace elle
     ///
     /// this method is the thread entry point.
     ///
-    Status		Server::Run()
+    Status              Server::Run()
     {
       enter();
 
@@ -47,9 +47,9 @@ namespace elle
 
       // listen for incoming connections.
       if (LocalServer::Listen(this->line,
-			      Callback<>::Infer(&Server::Connection,
-						this)) == StatusError)
-	escape("unable to listen for local connections");
+                              Callback<>::Infer(&Server::Connection,
+                                                this)) == StatusError)
+        escape("unable to listen for local connections");
 
       leave();
     }
@@ -61,10 +61,10 @@ namespace elle
     ///
     /// this method handles new connections.
     ///
-    Status		Server::Connection(LocalSocket*		socket)
+    Status              Server::Connection(LocalSocket*         socket)
     {
-      String		challenge("CHALLENGE");
-      String		response;
+      String            challenge("CHALLENGE");
+      String            response;
 
       enter();
 
@@ -75,8 +75,8 @@ namespace elle
 
       // call the challenge.
       if (socket->Call(Inputs<TagChallenge>(challenge),
-		       Outputs<TagResponse>(response)) == StatusError)
-	escape("unable to call the challenge");
+                       Outputs<TagResponse>(response)) == StatusError)
+        escape("unable to call the challenge");
 
       std::cout << "[response] " << response << std::endl;
 

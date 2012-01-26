@@ -27,7 +27,7 @@ namespace elle
     /// this variable defines the name that every message header will
     /// include.
     ///
-    const String		Header::Name = "Message";
+    const String                Header::Name = "Message";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -49,9 +49,9 @@ namespace elle
     ///
     /// this method initialises the tag and size.
     ///
-    Status		Header::Create(const Event&		event,
-				       const Tag		tag,
-				       const Natural32		size)
+    Status              Header::Create(const Event&             event,
+                                       const Tag                tag,
+                                       const Natural32          size)
     {
       enter();
 
@@ -79,9 +79,9 @@ namespace elle
     ///
     /// this method dumps the header.
     ///
-    Status		Header::Dump(const Natural32		margin) const
+    Status              Header::Dump(const Natural32            margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
@@ -89,15 +89,15 @@ namespace elle
 
       // dump the event.
       if (this->event.Dump(margin + 2) == StatusError)
-	escape("unable to dump the event");
+        escape("unable to dump the event");
 
       // dump the tag.
       std::cout << alignment << Dumpable::Shift
-		<< "[Tag] " << this->tag << std::endl;
+                << "[Tag] " << this->tag << std::endl;
 
       // dump the size.
       std::cout << alignment << Dumpable::Shift
-		<< "[Size] " << this->size << std::endl;
+                << "[Size] " << this->size << std::endl;
 
       leave();
     }
@@ -109,16 +109,16 @@ namespace elle
     ///
     /// this method serializes the name, size and tag.
     ///
-    Status		Header::Serialize(Archive&		archive) const
+    Status              Header::Serialize(Archive&              archive) const
     {
       enter();
 
       // serialize the attributes.
       if (archive.Serialize(Header::Name,
-			    this->event,
-			    this->tag,
-			    this->size) == StatusError)
-	escape("unable to serialize the header attributes");
+                            this->event,
+                            this->tag,
+                            this->size) == StatusError)
+        escape("unable to serialize the header attributes");
 
       leave();
     }
@@ -126,22 +126,22 @@ namespace elle
     ///
     /// this method extracts the name, size and tag.
     ///
-    Status		Header::Extract(Archive&		archive)
+    Status              Header::Extract(Archive&                archive)
     {
-      String		name;
+      String            name;
 
       enter();
 
       // extract the attributes.
       if (archive.Extract(name,
-			  this->event,
-			  this->tag,
-			  this->size) == StatusError)
-	escape("unable to serialize the header attributes");
+                          this->event,
+                          this->tag,
+                          this->size) == StatusError)
+        escape("unable to serialize the header attributes");
 
       // verify the name.
       if (Header::Name != name)
-	escape("incorrect name event");
+        escape("incorrect name event");
 
       leave();
 

@@ -50,7 +50,7 @@ namespace elle
       //
       // constants
       //
-      static const Code		Null;
+      static const Code         Null;
 
       //
       // constructors & destructors
@@ -60,7 +60,7 @@ namespace elle
       //
       // methods
       //
-      Status		Create(const Region&);
+      Status            Create(const Region&);
 
       //
       // interfaces
@@ -68,19 +68,19 @@ namespace elle
 
       // object
       declare(Code);
-      Boolean		operator==(const Code&) const;
+      Boolean           operator==(const Code&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      Status            Serialize(Archive&) const;
+      Status            Extract(Archive&);
 
       //
       // attributes
       //
-      Region		region;
+      Region            region;
     };
 
   }

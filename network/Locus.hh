@@ -51,7 +51,7 @@ namespace elle
       //
       // constants
       //
-      static const Locus		Null;
+      static const Locus                Null;
 
       //
       // constructors & destructors
@@ -61,9 +61,9 @@ namespace elle
       //
       // methods
       //
-      Status		Create(const String&);
-      Status		Create(const Host&,
-			       const Port);
+      Status            Create(const String&);
+      Status            Create(const Host&,
+                               const Port);
 
       //
       // interfaces
@@ -71,22 +71,22 @@ namespace elle
 
       // object
       declare(Locus);
-      Boolean		operator==(const Locus&) const;
-      Boolean		operator<(const Locus&) const;
-      Boolean		operator>(const Locus&) const;
+      Boolean           operator==(const Locus&) const;
+      Boolean           operator<(const Locus&) const;
+      Boolean           operator>(const Locus&) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      Status            Serialize(Archive&) const;
+      Status            Extract(Archive&);
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Host		host;
-      Port		port;
+      Host              host;
+      Port              port;
     };
 
   }

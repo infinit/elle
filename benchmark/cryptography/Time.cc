@@ -26,7 +26,7 @@ namespace elle
     ///
     /// this method starts the timer.
     ///
-    Status		Time::Start()
+    Status              Time::Start()
     {
       enter();
 
@@ -38,7 +38,7 @@ namespace elle
     ///
     /// this method stops the timer.
     ///
-    Status		Time::Stop()
+    Status              Time::Stop()
     {
       enter();
 
@@ -50,17 +50,17 @@ namespace elle
     ///
     /// this method prints the elapsed time.
     ///
-    Status		Time::Print()
+    Status              Time::Print()
     {
-      Natural32		useconds;
+      Natural32         useconds;
 
       enter();
 
       useconds =
-	((this->stop.tv_sec * 1000000.0) + this->stop.tv_usec) -
-	((this->start.tv_sec * 1000000.0) + this->start.tv_usec);
+        ((this->stop.tv_sec * 1000000.0) + this->stop.tv_usec) -
+        ((this->start.tv_sec * 1000000.0) + this->start.tv_usec);
 
-      Real		mseconds;
+      Real              mseconds;
 
       mseconds = (Real)useconds / 1000.0;
 

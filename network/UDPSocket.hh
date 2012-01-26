@@ -83,70 +83,70 @@ namespace elle
       //
       // methods
       //
-      Status		Create();
-      Status		Create(const Port);
+      Status            Create();
+      Status            Create(const Port);
 
-      Status		Write(const Locus&,
-			      const Packet&);
-      Status		Read(Locus&,
-			     Raw&);
+      Status            Write(const Locus&,
+                              const Packet&);
+      Status            Read(Locus&,
+                             Raw&);
 
       template <typename I>
-      Status		Send(const Locus&,
-			     const I,
-			     const Event& = Event::Null);
+      Status            Send(const Locus&,
+                             const I,
+                             const Event& = Event::Null);
       template <typename O>
-      Status		Receive(const Event&,
-				O);
+      Status            Receive(const Event&,
+                                O);
       template <typename I,
-		typename O>
-      Status		Call(const Locus&,
-			     const I,
-			     O);
+                typename O>
+      Status            Call(const Locus&,
+                             const I,
+                             O);
       template <typename I>
-      Status		Reply(const I,
-			      Session* = NULL);
+      Status            Reply(const I,
+                              Session* = NULL);
 
       //
       // callbacks
       //
-      Status		Dispatch();
+      Status            Dispatch();
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Port		port;
+      Port              port;
 
-      ::QUdpSocket*	socket;
+      ::QUdpSocket*     socket;
 
       //
       // signals
       //
       struct
       {
-	Signal<
-	  Parameters<>
-	  >		ready;
-	Signal<
-	  Parameters<
-	    const String&
-	    >
-	  >		error;
-      }			signal;
+        Signal<
+          Parameters<>
+          >             ready;
+        Signal<
+          Parameters<
+            const String&
+            >
+          >             error;
+      }                 signal;
 
     private slots:
       //
       // slots
       //
-      void		_ready();
-      void		_error(const QAbstractSocket::SocketError);
+      void              _ready();
+      void              _error(const QAbstractSocket::SocketError);
     };
 
   }

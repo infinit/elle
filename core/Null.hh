@@ -34,14 +34,14 @@ namespace elle
     ///
     enum Null
       {
-	Nil
+        Nil
       };
 
 //
 // ---------- externs ---------------------------------------------------------
 //
 
-    extern Null			none;
+    extern Null                 none;
 
   }
 }
@@ -53,8 +53,8 @@ namespace elle
 namespace std
 {
 
-  ostream&		operator<<(ostream&,
-				   const elle::core::Null&);
+  ostream&              operator<<(ostream&,
+                                   const elle::core::Null&);
 
 }
 

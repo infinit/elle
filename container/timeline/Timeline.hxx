@@ -47,19 +47,19 @@ namespace elle
       template <typename T>
       Timeline<T>::~Timeline()
       {
-	typename Timeline<T>::Scoutor	scoutor;
+        typename Timeline<T>::Scoutor   scoutor;
 
-	// go through the container.
-	for (scoutor = this->container.begin();
-	     scoutor != this->container.end();
-	     scoutor++)
-	  {
-	    // delete the bucket.
-	    delete scoutor->second;
-	  }
+        // go through the container.
+        for (scoutor = this->container.begin();
+             scoutor != this->container.end();
+             scoutor++)
+          {
+            // delete the bucket.
+            delete scoutor->second;
+          }
 
-	// clear the container.
-	this->container.clear();
+        // clear the container.
+        this->container.clear();
       }
 
 //
@@ -70,105 +70,105 @@ namespace elle
       /// this method insert an object in the timeline container.
       ///
       template <typename T>
-      Status		Timeline<T>::Insert(const Time&		timestamp,
-					    T&			object)
+      Status            Timeline<T>::Insert(const Time&         timestamp,
+                                            T&                  object)
       {
-	typename Timeline<T>::Iterator	iterator;
-	Bucket<T>*			bucket;
+        typename Timeline<T>::Iterator  iterator;
+        Bucket<T>*                      bucket;
 
-	enter();
+        enter();
 
-	// try to look up an bucket for the given timestamp.
-	if ((iterator =
-	       this->container.find(timestamp)) == this->container.end())
-	  {
-	    std::pair<typename Timeline<T>::Iterator, Boolean>	result;
-	    Bucket<T>*						b;
+        // try to look up an bucket for the given timestamp.
+        if ((iterator =
+               this->container.find(timestamp)) == this->container.end())
+          {
+            std::pair<typename Timeline<T>::Iterator, Boolean>  result;
+            Bucket<T>*                                          b;
 
-	    enterx(instance(b));
+            enterx(instance(b));
 
-	    // allocate an bucket.
-	    b = new Bucket<T>;
+            // allocate an bucket.
+            b = new Bucket<T>;
 
-	    // record the bucket with its timestamp.
-	    result =
-	      this->container.insert(
-	        typename Timeline<T>::Value(timestamp, b));
+            // record the bucket with its timestamp.
+            result =
+              this->container.insert(
+                typename Timeline<T>::Value(timestamp, b));
 
-	    // check the result.
-	    if (result.second == false)
-	      escape("unable to insert the object");
+            // check the result.
+            if (result.second == false)
+              escape("unable to insert the object");
 
-	    // set the bucket since _b_ is going to be reset to NULL.
-	    bucket = b;
+            // set the bucket since _b_ is going to be reset to NULL.
+            bucket = b;
 
-	    // waive.
-	    waive(b);
+            // waive.
+            waive(b);
 
-	    release();
-	  }
-	else
-	  {
-	    // retrieve the bucket.
-	    bucket = iterator->second;
-	  }
+            release();
+          }
+        else
+          {
+            // retrieve the bucket.
+            bucket = iterator->second;
+          }
 
-	// add the object to the bucket.
-	if (bucket->Add(object) == StatusError)
-	  escape("unable to add the object to the bucket");
+        // add the object to the bucket.
+        if (bucket->Add(object) == StatusError)
+          escape("unable to add the object to the bucket");
 
-	leave();
+        leave();
       }
 
       ///
       /// this method deletes an object from the timeline.
       ///
       template <typename T>
-      Status		Timeline<T>::Delete(const Time&		timestamp,
-					    T&			object)
+      Status            Timeline<T>::Delete(const Time&         timestamp,
+                                            T&                  object)
       {
-	typename Timeline<T>::Iterator	iterator;
-	Bucket<T>*			bucket;
+        typename Timeline<T>::Iterator  iterator;
+        Bucket<T>*                      bucket;
 
-	enter();
+        enter();
 
-	// try to look up the bucket in the container.
-	if ((iterator =
-	       this->container.find(timestamp)) == this->container.end())
-	  escape("unable to locate the given timestamp");
+        // try to look up the bucket in the container.
+        if ((iterator =
+               this->container.find(timestamp)) == this->container.end())
+          escape("unable to locate the given timestamp");
 
-	// retrieve the bucket.
-	bucket = iterator->second;
+        // retrieve the bucket.
+        bucket = iterator->second;
 
-	// remove the object from the bucket.
-	if (bucket->Remove(object) == StatusError)
-	  escape("unable to remove the object");
+        // remove the object from the bucket.
+        if (bucket->Remove(object) == StatusError)
+          escape("unable to remove the object");
 
-	// check if the bucket is empty.
-	if (bucket->container.empty() == true)
-	  {
-	    // delete the bucket.
-	    delete bucket;
+        // check if the bucket is empty.
+        if (bucket->container.empty() == true)
+          {
+            // delete the bucket.
+            delete bucket;
 
-	    // remove the bucket from the container.
-	    this->container.erase(iterator);
-	  }
+            // remove the bucket from the container.
+            this->container.erase(iterator);
+          }
 
-	leave();
+        leave();
       }
 
       ///
       /// this method clears the timeline container.
       ///
       template <typename T>
-      Status		Timeline<T>::Clear()
+      Status            Timeline<T>::Clear()
       {
-	enter();
+        enter();
 
-	// clear the container.
-	this->container.clear();
+        // clear the container.
+        this->container.clear();
 
-	leave();
+        leave();
       }
 
 //
@@ -179,31 +179,31 @@ namespace elle
       /// this method dumps the timeline container.
       ///
       template <typename T>
-      Status		Timeline<T>::Dump(const Natural32	margin) const
+      Status            Timeline<T>::Dump(const Natural32       margin) const
       {
-	String				alignment(margin, ' ');
-	typename Timeline<T>::Scoutor	scoutor;
+        String                          alignment(margin, ' ');
+        typename Timeline<T>::Scoutor   scoutor;
 
-	enter();
+        enter();
 
-	std::cout << alignment << "[Timeline] "
-		  << std::dec << this->container.size() << std::endl;
+        std::cout << alignment << "[Timeline] "
+                  << std::dec << this->container.size() << std::endl;
 
-	// go through the container.
-	for (scoutor = this->container.begin();
-	     scoutor != this->container.end();
-	     scoutor++)
-	  {
-	    // dump the timestamp.
-	    if (scoutor->first.Dump(margin + 2) == StatusError)
-	      escape("unable to dump the timestamp");
+        // go through the container.
+        for (scoutor = this->container.begin();
+             scoutor != this->container.end();
+             scoutor++)
+          {
+            // dump the timestamp.
+            if (scoutor->first.Dump(margin + 2) == StatusError)
+              escape("unable to dump the timestamp");
 
-	    // dump the bucket.
-	    if (scoutor->second->Dump(margin + 2) == StatusError)
-	      escape("unable to dump the bucket");
-	  }
+            // dump the bucket.
+            if (scoutor->second->Dump(margin + 2) == StatusError)
+              escape("unable to dump the bucket");
+          }
 
-	leave();
+        leave();
       }
 
     }

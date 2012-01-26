@@ -32,10 +32,10 @@ namespace elle
     ///
     /// this is a generic type for negative and positive integers.
     ///
-    typedef int8_t		Integer8;
-    typedef int16_t		Integer16;
-    typedef int32_t		Integer32;
-    typedef int64_t		Integer64;
+    typedef int8_t              Integer8;
+    typedef int16_t             Integer16;
+    typedef int32_t             Integer32;
+    typedef int64_t             Integer64;
 
   }
 }
@@ -47,8 +47,8 @@ namespace elle
 namespace std
 {
 
-  ostream&		operator<<(ostream&,
-				   const elle::core::Integer8&);
+  ostream&              operator<<(ostream&,
+                                   const elle::core::Integer8&);
 
 }
 

@@ -126,36 +126,36 @@ namespace elle
       struct Entry
       {
       public:
-	//
-	// attributes
-	//
-	String		location;
-	String		time;
-	String		message;
+        //
+        // attributes
+        //
+        String          location;
+        String          time;
+        String          message;
       };
 
       //
       // types
       //
-      typedef std::list<Entry*>			Container;
-      typedef Container::iterator		Iterator;
-      typedef Container::const_iterator		Scoutor;
+      typedef std::list<Entry*>                 Container;
+      typedef Container::iterator               Iterator;
+      typedef Container::const_iterator         Scoutor;
 
       //
       // static methods
       //
-      static Status	Initialize();
-      static Status	Clean();
+      static Status     Initialize();
+      static Status     Clean();
 
-      static Status	Instance(Report*&);
+      static Status     Instance(Report*&);
 
-      static Status	Govern(const Phase,
-			       Fiber*);
+      static Status     Govern(const Phase,
+                               Fiber*);
 
       //
       // static attributes
       //
-      static Report*		Current;
+      static Report*            Current;
 
       //
       // constructors & destructors
@@ -167,44 +167,44 @@ namespace elle
       //
       // methods
       //
-      Void		Flush();
+      Void              Flush();
 
-      Void		Record(const String&,
-			       const String&,
-			       const String&);
-      Void		Record(const Report&);
+      Void              Record(const String&,
+                               const String&,
+                               const String&);
+      Void              Record(const Report&);
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      Status            Serialize(Archive&) const;
+      Status            Extract(Archive&);
 
       // object-like
       template <typename T>
-      Status		Recycle(const T* = NULL);
+      Status            Recycle(const T* = NULL);
 
-      virtual Status	Imprint(Natural32&) const;
-      virtual Status	Clone(Report*&) const;
+      virtual Status    Imprint(Natural32&) const;
+      virtual Status    Clone(Report*&) const;
 
-      virtual Boolean	operator==(const Report&) const;
-      virtual Boolean	operator<(const Report&) const;
-      virtual Boolean	operator>(const Report&) const;
+      virtual Boolean   operator==(const Report&) const;
+      virtual Boolean   operator<(const Report&) const;
+      virtual Boolean   operator>(const Report&) const;
 
-      virtual Report&	operator=(const Report&);
-      virtual Boolean	operator!=(const Report&) const;
-      virtual Boolean	operator<=(const Report&) const;
-      virtual Boolean	operator>=(const Report&) const;
+      virtual Report&   operator=(const Report&);
+      virtual Boolean   operator!=(const Report&) const;
+      virtual Boolean   operator<=(const Report&) const;
+      virtual Boolean   operator>=(const Report&) const;
 
       //
       // attributes
       //
-      Container		container;
+      Container         container;
     };
 
   }

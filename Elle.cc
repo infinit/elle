@@ -26,7 +26,7 @@ namespace elle
   ///
   /// this value defines the component's name.
   ///
-  const Character		Component[] = "elle";
+  const Character               Component[] = "elle";
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -35,7 +35,7 @@ namespace elle
   ///
   /// this method initializes the whole Elle library.
   ///
-  Status		Elle::Initialize()
+  Status                Elle::Initialize()
   {
     enter();
 
@@ -69,7 +69,7 @@ namespace elle
   ///
   /// this method cleans the Elle library
   ///
-  Status		Elle::Clean()
+  Status                Elle::Clean()
   {
     enter();
 

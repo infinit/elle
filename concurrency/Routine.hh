@@ -44,12 +44,12 @@ namespace elle
       // enumerations
       //
       enum Scheme
-	{
-	  SchemeUnknown,
+        {
+          SchemeUnknown,
 
-	  SchemeFunction,
-	  SchemeMethod
-	};
+          SchemeFunction,
+          SchemeMethod
+        };
 
       //
       // constructors & destructors
@@ -65,12 +65,12 @@ namespace elle
       declare(Routine);
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Scheme		scheme;
+      Scheme            scheme;
     };
 
   }

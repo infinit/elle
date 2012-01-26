@@ -54,8 +54,8 @@ namespace elle
       //
       // virtual methods
       //
-      virtual Status	Serialize(Archive&) const;
-      virtual Status	Extract(Archive&);
+      virtual Status    Serialize(Archive&) const;
+      virtual Status    Extract(Archive&);
     };
 
   }

@@ -48,7 +48,7 @@ namespace elle
       /// this generic Inputs class.
       ///
       template <const Tag G,
-		typename... T>
+                typename... T>
       class Inputs;
 
       ///
@@ -57,48 +57,48 @@ namespace elle
       /// to send them over a network connection.
       ///
       template <const Tag G,
-		typename... T>
+                typename... T>
       class Inputs< G, Parameters<T...> >:
-	public Entity,
-	public virtual Archivable
+        public Entity,
+        public virtual Archivable
       {
       public:
-	//
-	// types
-	//
-	typedef Parameters<const T&...>				P;
+        //
+        // types
+        //
+        typedef Parameters<const T&...>                         P;
 
-	//
-	// constructors & destructors
-	//
-	Inputs(const T&...);
-	template <template <typename...> class E,
-		  typename... U>
-	Inputs(E< Parameters<U...> >&);
+        //
+        // constructors & destructors
+        //
+        Inputs(const T&...);
+        template <template <typename...> class E,
+                  typename... U>
+        Inputs(E< Parameters<U...> >&);
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// archivable
-	Status		Serialize(Archive&) const;
-	Status		Extract(Archive&);
+        // archivable
+        Status          Serialize(Archive&) const;
+        Status          Extract(Archive&);
 
-	// dumpable
-	Status		Dump(const Natural32 = 0) const;
+        // dumpable
+        Status          Dump(const Natural32 = 0) const;
 
-	//
-	// attributes
-	//
-	Tag		tag;
-	Arguments<P>	arguments;
+        //
+        // attributes
+        //
+        Tag             tag;
+        Arguments<P>    arguments;
       };
 
       ///
       /// the generic Outputs class.
       ///
       template <const Tag G,
-		typename... T>
+                typename... T>
       class Outputs;
 
       ///
@@ -107,41 +107,41 @@ namespace elle
       /// as to set the variables provided through the constructor.
       ///
       template <const Tag G,
-		typename... T>
+                typename... T>
       class Outputs< G, Parameters<T...> >:
-	public Entity,
-	public virtual Archivable
+        public Entity,
+        public virtual Archivable
       {
       public:
-	//
-	// types
-	//
-	typedef Parameters<T&...>				P;
+        //
+        // types
+        //
+        typedef Parameters<T&...>                               P;
 
-	//
-	// constructors & destructors
-	//
-	Outputs(T&...);
-	template <template <typename...> class E,
-		  typename... U>
-	Outputs(E< Parameters<U...> >&);
+        //
+        // constructors & destructors
+        //
+        Outputs(T&...);
+        template <template <typename...> class E,
+                  typename... U>
+        Outputs(E< Parameters<U...> >&);
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// archivable
-	Status		Serialize(Archive&) const;
-	Status		Extract(Archive&);
+        // archivable
+        Status          Serialize(Archive&) const;
+        Status          Extract(Archive&);
 
-	// dumpable
-	Status		Dump(const Natural32 = 0) const;
+        // dumpable
+        Status          Dump(const Natural32 = 0) const;
 
-	//
-	// attributes
-	//
-	Tag		tag;
-	Arguments<P>	arguments;
+        //
+        // attributes
+        //
+        Tag             tag;
+        Arguments<P>    arguments;
       };
 
     };

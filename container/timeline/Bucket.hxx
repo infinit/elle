@@ -37,44 +37,44 @@ namespace elle
       /// this method adds an object to the bucket.
       ///
       template <typename T>
-      Status		Bucket<T>::Add(T&			object)
+      Status            Bucket<T>::Add(T&                       object)
       {
-	typename Bucket<T>::Iterator	iterator;
+        typename Bucket<T>::Iterator    iterator;
 
-	enter();
+        enter();
 
-	// add the object to the container.
-	this->container.push_back(object);
+        // add the object to the container.
+        this->container.push_back(object);
 
-	leave();
+        leave();
       }
 
       ///
       /// this method removes an object from the bucket.
       ///
       template <typename T>
-      Status		Bucket<T>::Remove(T&			object)
+      Status            Bucket<T>::Remove(T&                    object)
       {
-	typename Bucket<T>::Iterator	iterator;
+        typename Bucket<T>::Iterator    iterator;
 
-	enter();
+        enter();
 
-	// go through the container.
-	for (iterator = this->container.begin();
-	     iterator != this->container.end();
-	     iterator++)
-	  {
-	    // check if this object is the one we are looking for.
-	    if (*iterator == object)
-	      {
-		// remove the object from the container.
-		this->container.erase(iterator);
+        // go through the container.
+        for (iterator = this->container.begin();
+             iterator != this->container.end();
+             iterator++)
+          {
+            // check if this object is the one we are looking for.
+            if (*iterator == object)
+              {
+                // remove the object from the container.
+                this->container.erase(iterator);
 
-		break;
-	      }
-	  }
+                break;
+              }
+          }
 
-	leave();
+        leave();
       }
 
 //
@@ -85,16 +85,16 @@ namespace elle
       /// this method dumps the bucket.
       ///
       template <typename T>
-      Status		Bucket<T>::Dump(const Natural32		margin) const
+      Status            Bucket<T>::Dump(const Natural32         margin) const
       {
-	String		alignment(margin, ' ');
+        String          alignment(margin, ' ');
 
-	enter();
+        enter();
 
-	std::cout << alignment << "[Bucket] "
-		  << std::dec << this->container.size() << std::endl;
+        std::cout << alignment << "[Bucket] "
+                  << std::dec << this->container.size() << std::endl;
 
-	leave();
+        leave();
       }
 
     }

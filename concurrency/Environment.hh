@@ -54,32 +54,32 @@ namespace elle
       //
       // types
       //
-      typedef std::pair<String, Meta*>		Value;
-      typedef std::vector<Value>		Container;
-      typedef Container::iterator		Iterator;
-      typedef Container::const_iterator		Scoutor;
+      typedef std::pair<String, Meta*>          Value;
+      typedef std::vector<Value>                Container;
+      typedef Container::iterator               Iterator;
+      typedef Container::const_iterator         Scoutor;
 
       //
       // methods
       //
       template <typename T>
-      Status		Store(const String&,
-			      T*);
+      Status            Store(const String&,
+                              T*);
       template <typename T>
-      Status		Load(const String&,
-			     T*&);
+      Status            Load(const String&,
+                             T*&);
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Container		container;
+      Container         container;
     };
 
   }

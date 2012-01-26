@@ -29,13 +29,13 @@ namespace elle
     ///
     /// this method initializes the radix module.
     ///
-    Status		Radix::Initialize()
+    Status              Radix::Initialize()
     {
       enter();
 
       // initialize the meta class.
       if (Meta::Initialize() == StatusError)
-	escape("unable to initialize the meta class");
+        escape("unable to initialize the meta class");
 
       leave();
     }
@@ -43,13 +43,13 @@ namespace elle
     ///
     /// this method cleans the radix module.
     ///
-    Status		Radix::Clean()
+    Status              Radix::Clean()
     {
       enter();
 
       // clean the meta class.
       if (Meta::Clean() == StatusError)
-	escape("unable to clean the meta class");
+        escape("unable to clean the meta class");
 
       leave();
     }

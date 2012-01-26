@@ -31,18 +31,18 @@ namespace elle
     /// default constructor.
     ///
     template <typename... L,
-	      typename... U>
+              typename... U>
     Section< Parameters<L...>,
-	     Parameters<U...> >::Section(Closure<
-					   Void,
-					   Parameters<L...>,
-					   Parameters<>
-					   >			lock,
-					 Closure<
-					   Void,
-					   Parameters<U...>,
-					   Parameters<>
-					   >			unlock):
+             Parameters<U...> >::Section(Closure<
+                                           Void,
+                                           Parameters<L...>,
+                                           Parameters<>
+                                           >                    lock,
+                                         Closure<
+                                           Void,
+                                           Parameters<U...>,
+                                           Parameters<>
+                                           >                    unlock):
       state(StateUnlocked),
       lock(lock),
       unlock(unlock)
@@ -53,18 +53,18 @@ namespace elle
     /// reference-specific constructor.
     ///
     template <typename... L,
-	      typename... U>
+              typename... U>
     Section< Parameters<L...>,
-	     Parameters<U...> >::Section(Closure<
-					   Void,
-					   Parameters<L...>,
-					   Parameters<>
-					   >&			lock,
-					 Closure<
-					   Void,
-					   Parameters<U...>,
-					   Parameters<>
-					   >&			unlock):
+             Parameters<U...> >::Section(Closure<
+                                           Void,
+                                           Parameters<L...>,
+                                           Parameters<>
+                                           >&                   lock,
+                                         Closure<
+                                           Void,
+                                           Parameters<U...>,
+                                           Parameters<>
+                                           >&                   unlock):
       state(StateUnlocked),
       lock(lock),
       unlock(unlock)
@@ -75,18 +75,18 @@ namespace elle
     /// destructor.
     ///
     template <typename... L,
-	      typename... U>
+              typename... U>
     Section< Parameters<L...>,
-	     Parameters<U...> >::~Section()
+             Parameters<U...> >::~Section()
     {
       enter();
 
       // if the section has been locked...
       if (this->state == Section::StateLocked)
-	{
-	  // release the lock by triggering the unlock closure.
-	  this->unlock.Call();
-	}
+        {
+          // release the lock by triggering the unlock closure.
+          this->unlock.Call();
+        }
 
       release();
     }
@@ -99,15 +99,15 @@ namespace elle
     /// this method is used for entering the critical section.
     ///
     template <typename... L,
-	      typename... U>
-    Void		Section< Parameters<L...>,
-				 Parameters<U...> >::Enter()
+              typename... U>
+    Void                Section< Parameters<L...>,
+                                 Parameters<U...> >::Enter()
     {
       enter();
 
       // check the object's state.
       if (this->state != Section::StateUnlocked)
-	yield(_(), "unable to lock an already locked section");
+        yield(_(), "unable to lock an already locked section");
 
       // trigger the lock closure.
       this->lock.Call();
@@ -123,15 +123,15 @@ namespace elle
     /// which would trigger the unlocking of the associated lock.
     ///
     template <typename... L,
-	      typename... U>
-    Void		Section< Parameters<L...>,
-				 Parameters<U...> >::Leave()
+              typename... U>
+    Void                Section< Parameters<L...>,
+                                 Parameters<U...> >::Leave()
     {
       enter();
 
       // check the object's state.
       if (this->state != Section::StateLocked)
-	yield(_(), "unable to unlock an unlocked section");
+        yield(_(), "unable to unlock an unlocked section");
 
       // trigger the unlock closure.
       this->unlock.Call();
@@ -150,12 +150,12 @@ namespace elle
     /// this method dumps the section.
     ///
     template <typename... L,
-	      typename... U>
+              typename... U>
     Status
     Section< Parameters<L...>,
-	     Parameters<U...> >::Dump(const Natural32		margin) const
+             Parameters<U...> >::Dump(const Natural32           margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
@@ -163,15 +163,15 @@ namespace elle
 
       // dump the state.
       std::cout << alignment << Dumpable::Shift
-		<< "[State] " << std::dec << this->state << std::endl;
+                << "[State] " << std::dec << this->state << std::endl;
 
       // dump the lock closure.
       if (this->lock.Dump(margin + 2) == StatusError)
-	escape("unable to dump the closure");
+        escape("unable to dump the closure");
 
       // dump the unlock closure.
       if (this->unlock.Dump(margin + 2) == StatusError)
-	escape("unable to dump the closure");
+        escape("unable to dump the closure");
 
       leave();
     }

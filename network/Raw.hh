@@ -31,7 +31,7 @@ namespace elle
     ///
     /// this type represents raw data received from a network socket.
     ///
-    typedef Region		Raw;
+    typedef Region              Raw;
 
   }
 }

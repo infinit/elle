@@ -32,7 +32,7 @@ namespace elle
     ///
     /// this variable represents the program.
     ///
-    Program*			program = NULL;
+    Program*                    program = NULL;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -41,7 +41,7 @@ namespace elle
     ///
     /// this method initializes the program.
     ///
-    Status		Program::Initialize()
+    Status              Program::Initialize()
     {
       enter();
 
@@ -54,13 +54,13 @@ namespace elle
     ///
     /// this method cleans the program.
     ///
-    Status		Program::Clean()
+    Status              Program::Clean()
     {
       enter();
 
       // delete the program.
       if (program != NULL)
-	delete program;
+        delete program;
 
       leave();
     }
@@ -68,9 +68,9 @@ namespace elle
     ///
     /// this method sets up the program for startup.
     ///
-    Status		Program::Setup()
+    Status              Program::Setup()
     {
-      int		n;
+      int               n;
 
       enter();
 
@@ -99,7 +99,7 @@ namespace elle
     ///
     /// this method stops the program.
     ///
-    Status		Program::Exit()
+    Status              Program::Exit()
     {
       enter();
 
@@ -112,14 +112,14 @@ namespace elle
     ///
     /// this method processes events.
     ///
-    Status		Program::Launch()
+    Status              Program::Launch()
     {
       enter();
 
       // check the program.
       if ((program == NULL) || (program->core == NULL))
-	escape("unable to process events since the program has not "
-	       "been set up");
+        escape("unable to process events since the program has not "
+               "been set up");
 
       // process the events.
       program->core->exec();
@@ -130,33 +130,33 @@ namespace elle
     ///
     /// this method is triggered whenever a POSIX signal is received.
     ///
-    Void		Program::Exception(int			signal)
+    Void                Program::Exception(int                  signal)
     {
       // stop the program depending on the signal.
       switch (signal)
-	{
+        {
 #if defined(INFINIT_UNIX)
-	case SIGQUIT:
+        case SIGQUIT:
 #endif
-	case SIGINT:
-	case SIGABRT:
-	case SIGTERM:
-	  {
-	    // exit properly by finishing processing the last events.
-	    Program::Exit();
+        case SIGINT:
+        case SIGABRT:
+        case SIGTERM:
+          {
+            // exit properly by finishing processing the last events.
+            Program::Exit();
 
-	    break;
-	  }
-	}
+            break;
+          }
+        }
     }
 
 #if defined(INFINIT_UNIX)
     ///
     /// this method attaches a broker to the program's event loop.
     ///
-    Status		Program::Attach(Broker&			broker)
+    Status              Program::Attach(Broker&                 broker)
     {
-      ::QAbstractEventDispatcher*	dispatcher;
+      ::QAbstractEventDispatcher*       dispatcher;
 
       enter();
 
@@ -174,9 +174,9 @@ namespace elle
     ///
     /// this method detaches a broker from the program's event loop.
     ///
-    Status		Program::Detach(Broker&			broker)
+    Status              Program::Detach(Broker&                 broker)
     {
-      ::QAbstractEventDispatcher*	dispatcher;
+      ::QAbstractEventDispatcher*       dispatcher;
 
       enter();
 
@@ -215,7 +215,7 @@ namespace elle
     {
       // releae the core.
       if (this->core != NULL)
-	delete this->core;
+        delete this->core;
     }
 
   }

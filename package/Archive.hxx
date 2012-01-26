@@ -42,19 +42,19 @@ namespace elle
     template <typename T>
     struct ArchiveType
     {
-      static const Natural8	Value = Archive::TypeUnknown;
+      static const Natural8     Value = Archive::TypeUnknown;
     };
 
     ///
     /// this macro-function links the type to the enum value in a simple
     /// call.
     ///
-#define ArchiveDeclare(_type_)						\
-  template <>								\
-  struct ArchiveType<_type_>						\
-  {									\
-    static const Natural8			Value =			\
-      Archive::Type ## _type_;						\
+#define ArchiveDeclare(_type_)                                          \
+  template <>                                                           \
+  struct ArchiveType<_type_>                                            \
+  {                                                                     \
+    static const Natural8                       Value =                 \
+      Archive::Type ## _type_;                                          \
   };
 
     ///
@@ -88,24 +88,24 @@ namespace elle
     /// note that the Elle type is also serialized to make things easier.
     ///
     template <typename T, Boolean C>
-    Status	Archive::Behaviour<T, C>::Serialize(Archive&	archive,
-						    const T&	element)
+    Status      Archive::Behaviour<T, C>::Serialize(Archive&    archive,
+                                                    const T&    element)
     {
-      const Natural8	type = ArchiveType<T>::Value;
+      const Natural8    type = ArchiveType<T>::Value;
 
       enter();
 
       // serialization mode only.
       if (archive.mode != Archive::ModeSerialization)
-	escape("unable to serialize while not in serialization mode");
+        escape("unable to serialize while not in serialization mode");
 
       // store the type.
       if (archive.Store(type) == StatusError)
-	escape("unable to store the type");
+        escape("unable to store the type");
 
       // store the element.
       if (archive.Store(element) == StatusError)
-	escape("unable to store the element");
+        escape("unable to store the element");
 
       leave();
     }
@@ -114,29 +114,29 @@ namespace elle
     /// this method extract a basic type.
     ///
     template <typename T, Boolean C>
-    Status	Archive::Behaviour<T, C>::Extract(Archive&	archive,
-						  T&		element)
+    Status      Archive::Behaviour<T, C>::Extract(Archive&      archive,
+                                                  T&            element)
     {
-      Natural8	type;
+      Natural8  type;
 
       enter();
 
       // serialization mode only.
       if (archive.mode != Archive::ModeExtraction)
-	escape("unable to extract while not in extraction mode");
+        escape("unable to extract while not in extraction mode");
 
       // load the type.
       if (archive.Load(type) == StatusError)
-	escape("unable to load the type");
+        escape("unable to load the type");
 
       // check the type.
       if (type != ArchiveType<T>::Value)
-	escape("invalid type: next element of type '%u'",
-	       type);
+        escape("invalid type: next element of type '%u'",
+               type);
 
       // load the element.
       if (archive.Load(element) == StatusError)
-	escape("unable to load the element");
+        escape("unable to load the element");
 
       leave();
     }
@@ -148,9 +148,9 @@ namespace elle
     /// hence provide the Serialize() and Extract() methods.
     ///
     template <typename T>
-    Status		Archive::Behaviour<T, true>::Serialize(
-			  Archive&				archive,
-			  const Archivable&			element)
+    Status              Archive::Behaviour<T, true>::Serialize(
+                          Archive&                              archive,
+                          const Archivable&                     element)
     {
       return (element.Serialize(archive));
     }
@@ -159,9 +159,9 @@ namespace elle
     /// this method extract a compound type.
     ///
     template <typename T>
-    Status		Archive::Behaviour<T, true>::Extract(
-			  Archive&				archive,
-			  Archivable&				element)
+    Status              Archive::Behaviour<T, true>::Extract(
+                          Archive&                              archive,
+                          Archivable&                           element)
     {
       return (element.Extract(archive));
     }
@@ -174,33 +174,33 @@ namespace elle
     /// this template serializes a single item.
     ///
     template <typename T>
-    Status		Archive::Serialize(const T&		element)
+    Status              Archive::Serialize(const T&             element)
     {
       return
-	(Archive::Behaviour<T,
-	                    ArchiveType<T>::Value
+        (Archive::Behaviour<T,
+                            ArchiveType<T>::Value
                               ==
                             Archive::TypeUnknown>::Serialize(*this,
-							     element));
+                                                             element));
     }
 
     ///
     /// this method serializes a set of items.
     ///
     template <typename T,
-	      typename... TT>
-    Status		Archive::Serialize(const T&		parameter,
-					   const TT&...		parameters)
+              typename... TT>
+    Status              Archive::Serialize(const T&             parameter,
+                                           const TT&...         parameters)
     {
       enter();
 
       // serialize the first items.
       if (this->Serialize(parameter) == StatusError)
-	escape("unable to serialize the first item");
+        escape("unable to serialize the first item");
 
       // serialize the additional items.
       if (this->Serialize(parameters...) == StatusError)
-	escape("unable to serialize the additional parameters");
+        escape("unable to serialize the additional parameters");
 
       leave();
     }
@@ -213,33 +213,33 @@ namespace elle
     /// this template extracts a single item.
     ///
     template <typename T>
-    Status		Archive::Extract(T&			element)
+    Status              Archive::Extract(T&                     element)
     {
       return
-	(Archive::Behaviour<T,
-	                    ArchiveType<T>::Value
+        (Archive::Behaviour<T,
+                            ArchiveType<T>::Value
                               ==
                             Archive::TypeUnknown>::Extract(*this,
-							   element));
+                                                           element));
     }
 
     ///
     /// this method extracts a set of items.
     ///
     template <typename T,
-	      typename... TT>
-    Status		Archive::Extract(T&			parameter,
-					 TT&...			parameters)
+              typename... TT>
+    Status              Archive::Extract(T&                     parameter,
+                                         TT&...                 parameters)
     {
       enter();
 
       // extract the first item.
       if (this->Extract(parameter) == StatusError)
-	escape("unable to extract the first item");
+        escape("unable to extract the first item");
 
       // extract the additional items.
       if (this->Extract(parameters...) == StatusError)
-	escape("unable to extract the additional items");
+        escape("unable to extract the additional items");
 
       leave();
     }
@@ -252,21 +252,21 @@ namespace elle
     /// this method recycles an archive.
     ///
     template <typename T>
-    Status		Archive::Recycle(const T*		object)
+    Status              Archive::Recycle(const T*               object)
     {
       // release the resources.
       this->~Archive();
 
       if (object == NULL)
-	{
-	  // initialize the object with default values.
-	  new (this) T;
-	}
+        {
+          // initialize the object with default values.
+          new (this) T;
+        }
       else
-	{
-	  // initialize the object with defined values.
-	  new (this) T(*object);
-	}
+        {
+          // initialize the object with defined values.
+          new (this) T(*object);
+        }
 
       // return StatusOk in order to avoid including Report, Status and Maid.
       return (StatusOk);
@@ -281,15 +281,15 @@ namespace elle
     /// archive.
     ///
     template <typename T>
-    Status		Archive::Print(const T&			element,
-				       const Natural32		margin)
+    Status              Archive::Print(const T&                 element,
+                                       const Natural32          margin)
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[" << core::Type<T>::Name << "] "
-		<< element << std::endl;
+                << element << std::endl;
 
       leave();
     }

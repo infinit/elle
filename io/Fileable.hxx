@@ -52,68 +52,68 @@ namespace elle
       //
       // methods
       //
-      virtual Status	Load(const Path&			path)
+      virtual Status    Load(const Path&                        path)
       {
-	Archive		archive;
-	Region		region;
+        Archive         archive;
+        Region          region;
 
-	enter();
+        enter();
 
-	// read the file's content.
-	if (File::Read(path, region) == StatusError)
-	  escape("unable to read the file's content");
+        // read the file's content.
+        if (File::Read(path, region) == StatusError)
+          escape("unable to read the file's content");
 
-	// detach the data from the region.
-	if (region.Detach() == StatusError)
-	  escape("unable to detach the data");
+        // detach the data from the region.
+        if (region.Detach() == StatusError)
+          escape("unable to detach the data");
 
-	// prepare the archive.
-	if (archive.Acquire(region) == StatusError)
-	  escape("unable to prepare the archive");
+        // prepare the archive.
+        if (archive.Acquire(region) == StatusError)
+          escape("unable to prepare the archive");
 
-	// extract the object.
-	if (this->Extract(archive) == StatusError)
-	  escape("unable to extract the archive");
+        // extract the object.
+        if (this->Extract(archive) == StatusError)
+          escape("unable to extract the archive");
 
-	leave();
+        leave();
       }
 
-      virtual Status	Store(const Path&			path) const
+      virtual Status    Store(const Path&                       path) const
       {
-	Archive		archive;
+        Archive         archive;
 
-	enter();
+        enter();
 
-	// create an archive.
-	if (archive.Create() == StatusError)
-	  escape("unable to create the archive");
+        // create an archive.
+        if (archive.Create() == StatusError)
+          escape("unable to create the archive");
 
-	// serialize the object.
-	if (this->Serialize(archive) == StatusError)
-	  escape("unable to serialize the object");
+        // serialize the object.
+        if (this->Serialize(archive) == StatusError)
+          escape("unable to serialize the object");
 
-	// write the file's content.
-	if (File::Write(path, Region(archive.contents,
-				     archive.size)) == StatusError)
-	  escape("unable to write the file's content");
+        // write the file's content.
+        if (File::Write(path, Region(archive.contents,
+                                     archive.size)) == StatusError)
+          escape("unable to write the file's content");
 
-	leave();
+        leave();
       }
 
-      virtual Status	Erase(const Path&			path) const
+      virtual Status    Erase(const Path&                       path) const
       {
-	enter();
+        enter();
 
-	// erase the file.
-	if (File::Erase(path) == StatusError)
-	  escape("unable to erase the file");
+        // erase the file.
+        if (File::Erase(path) == StatusError)
+          escape("unable to erase the file");
 
-	leave();
+        leave();
       }
 
-      virtual Status	Exist(const Path&			path) const
+      virtual Status    Exist(const Path&                       path) const
       {
-	return (File::Exist(path));
+        return (File::Exist(path));
       }
     };
 
@@ -132,64 +132,64 @@ namespace elle
       //
       // methods
       //
-      virtual Status	Load(const Path&			path)
+      virtual Status    Load(const Path&                        path)
       {
-	Region		region;
-	String		string;
+        Region          region;
+        String          string;
 
-	enter();
+        enter();
 
-	// read the file's content.
-	if (File::Read(path, region) == StatusError)
-	  escape("unable to read the file's content");
+        // read the file's content.
+        if (File::Read(path, region) == StatusError)
+          escape("unable to read the file's content");
 
-	// decode and extract the object.
-	if (Hexadecimal::Decode(
-	      String(reinterpret_cast<const char*>(region.contents),
-		     region.size),
-	      *this) == StatusError)
-	  escape("unable to decode the object");
+        // decode and extract the object.
+        if (Hexadecimal::Decode(
+              String(reinterpret_cast<const char*>(region.contents),
+                     region.size),
+              *this) == StatusError)
+          escape("unable to decode the object");
 
-	leave();
+        leave();
       }
 
-      virtual Status	Store(const Path&			path) const
+      virtual Status    Store(const Path&                       path) const
       {
-	String		string;
-	Region		region;
+        String          string;
+        Region          region;
 
-	enter();
+        enter();
 
-	// encode in hexadecimal.
-	if (Hexadecimal::Encode(*this, string) == StatusError)
-	  escape("unable to encode the object in hexadecimal");
+        // encode in hexadecimal.
+        if (Hexadecimal::Encode(*this, string) == StatusError)
+          escape("unable to encode the object in hexadecimal");
 
-	// wrap the string.
-	if (region.Wrap(reinterpret_cast<const Byte*>(string.c_str()),
-			string.length()) == StatusError)
-	  escape("unable to wrap the string in a region");
+        // wrap the string.
+        if (region.Wrap(reinterpret_cast<const Byte*>(string.c_str()),
+                        string.length()) == StatusError)
+          escape("unable to wrap the string in a region");
 
-	// write the file's content.
-	if (File::Write(path, region) == StatusError)
-	  escape("unable to write the file's content");
+        // write the file's content.
+        if (File::Write(path, region) == StatusError)
+          escape("unable to write the file's content");
 
-	leave();
+        leave();
       }
 
-      virtual Status	Erase(const Path&			path) const
+      virtual Status    Erase(const Path&                       path) const
       {
-	enter();
+        enter();
 
-	// erase the file.
-	if (File::Erase(path) == StatusError)
-	  escape("unable to erase the file");
+        // erase the file.
+        if (File::Erase(path) == StatusError)
+          escape("unable to erase the file");
 
-	leave();
+        leave();
       }
 
-      virtual Status	Exist(const Path&			path) const
+      virtual Status    Exist(const Path&                       path) const
       {
-	return (File::Exist(path));
+        return (File::Exist(path));
       }
     };
 
@@ -208,63 +208,63 @@ namespace elle
       //
       // methods
       //
-      virtual Status	Load(const Path&			path)
+      virtual Status    Load(const Path&                        path)
       {
-	Region		region;
-	String		string;
+        Region          region;
+        String          string;
 
-	enter();
+        enter();
 
-	// read the file's content.
-	if (File::Read(path, region) == StatusError)
-	  escape("unable to read the file's content");
+        // read the file's content.
+        if (File::Read(path, region) == StatusError)
+          escape("unable to read the file's content");
 
-	// decode and extract the object.
-	if (Base64::Decode(String(reinterpret_cast<char*>(region.contents),
-				  region.size),
-			   *this) == StatusError)
-	  escape("unable to decode the object");
+        // decode and extract the object.
+        if (Base64::Decode(String(reinterpret_cast<char*>(region.contents),
+                                  region.size),
+                           *this) == StatusError)
+          escape("unable to decode the object");
 
-	leave();
+        leave();
       }
 
-      virtual Status	Store(const Path&			path) const
+      virtual Status    Store(const Path&                       path) const
       {
-	String		string;
-	Region		region;
+        String          string;
+        Region          region;
 
-	enter();
+        enter();
 
-	// encode in base64.
-	if (Base64::Encode(*this, string) == StatusError)
-	  escape("unable to encode the object in base64");
+        // encode in base64.
+        if (Base64::Encode(*this, string) == StatusError)
+          escape("unable to encode the object in base64");
 
-	// wrap the string.
-	if (region.Wrap(reinterpret_cast<const Byte*>(string.c_str()),
-			string.length()) == StatusError)
-	  escape("unable to wrap the string in a region");
+        // wrap the string.
+        if (region.Wrap(reinterpret_cast<const Byte*>(string.c_str()),
+                        string.length()) == StatusError)
+          escape("unable to wrap the string in a region");
 
-	// write the file's content.
-	if (File::Write(path, region) == StatusError)
-	  escape("unable to write the file's content");
+        // write the file's content.
+        if (File::Write(path, region) == StatusError)
+          escape("unable to write the file's content");
 
-	leave();
+        leave();
       }
 
-      virtual Status	Erase(const Path&			path) const
+      virtual Status    Erase(const Path&                       path) const
       {
-	enter();
+        enter();
 
-	// erase the file.
-	if (File::Erase(path) == StatusError)
-	  escape("unable to erase the file");
+        // erase the file.
+        if (File::Erase(path) == StatusError)
+          escape("unable to erase the file");
 
-	leave();
+        leave();
       }
 
-      virtual Status	Exist(const Path&			path) const
+      virtual Status    Exist(const Path&                       path) const
       {
-	return (File::Exist(path));
+        return (File::Exist(path));
       }
     };
 
@@ -283,32 +283,32 @@ namespace elle
       //
       // methods
       //
-      virtual Status	Load(const Path&)
+      virtual Status    Load(const Path&)
       {
-	enter();
+        enter();
 
-	escape("this method should never have been called");
+        escape("this method should never have been called");
       }
 
-      virtual Status	Store(const Path&) const
+      virtual Status    Store(const Path&) const
       {
-	enter();
+        enter();
 
-	escape("this method should never have been called");
+        escape("this method should never have been called");
       }
 
-      virtual Status	Erase(const Path&) const
+      virtual Status    Erase(const Path&) const
       {
-	enter();
+        enter();
 
-	escape("this method should never have been called");
+        escape("this method should never have been called");
       }
 
-      virtual Status	Exist(const Path&) const
+      virtual Status    Exist(const Path&) const
       {
-	enter();
+        enter();
 
-	escape("this method should never have been called");
+        escape("this method should never have been called");
       }
     };
 

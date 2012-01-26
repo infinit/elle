@@ -42,54 +42,54 @@ namespace elle
       template <typename T>
       struct Bare
       {
-	typedef T				Type;
+        typedef T                               Type;
       };
 
       // constant
       template <typename T>
       struct Constant
       {
-	typedef const T				Type;
+        typedef const T                         Type;
       };
 
       // pointer
       template <typename T>
       struct Pointer
       {
-	typedef T*				Type;
+        typedef T*                              Type;
       };
 
       // reference
       template <typename T>
       struct Reference
       {
-	typedef T&				Type;
+        typedef T&                              Type;
       };
 
       // iterator
       template <typename T>
       struct Iterator
       {
-	typedef typename T::iterator		Type;
+        typedef typename T::iterator            Type;
       };
 
       template <typename T>
       struct Iterator<const T>
       {
-	// invalid use: no Type defined.
+        // invalid use: no Type defined.
       };
 
       // scoutor
       template <typename T>
       struct Scoutor
       {
-	// invalid use: no Type defined.
+        // invalid use: no Type defined.
       };
 
       template <typename T>
       struct Scoutor<const T>
       {
-	typedef typename T::const_iterator	Type;
+        typedef typename T::const_iterator      Type;
       };
 
     };

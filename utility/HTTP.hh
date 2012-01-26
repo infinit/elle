@@ -50,66 +50,66 @@ namespace elle
       // enumerations
       //
       enum Code
-	{
-	  CodeOk = 200,
+        {
+          CodeOk = 200,
 
-	  CodeUnauthorized = 401,
-	  CodeForbidden = 403,
-	  CodeNotFound = 404,
+          CodeUnauthorized = 401,
+          CodeForbidden = 403,
+          CodeNotFound = 404,
 
-	  CodeInternalServerError = 500
-	};
+          CodeInternalServerError = 500
+        };
 
       //
       // types
       //
-      typedef String			Content;
+      typedef String                    Content;
 
       //
       // constants
       //
-      static const String		Agent;
+      static const String               Agent;
 
-      struct				Trash
+      struct                            Trash
       {
-	static Content			_Content;
-	static Code			_Code;
+        static Content                  _Content;
+        static Code                     _Code;
       };
 
-      static Character			Error[CURL_ERROR_SIZE];
+      static Character                  Error[CURL_ERROR_SIZE];
 
       //
       // static methods
       //
-      static Status	Get(const URI&,
-			    String& = Trash::_Content,
-			    Code& = Trash::_Code);
-      static Status	Post(const URI&,
-			     const String&,
-			     const String&,
-			     String& = Trash::_Content,
-			     Code& = Trash::_Code);
-      static Status	Put(const URI&,
-			    const String&,
-			    const String&,
-			    String& = Trash::_Content,
-			    Code& = Trash::_Code);
-      static Status	Delete(const URI&,
-			       String& = Trash::_Content,
-			       Code& = Trash::_Code);
+      static Status     Get(const URI&,
+                            String& = Trash::_Content,
+                            Code& = Trash::_Code);
+      static Status     Post(const URI&,
+                             const String&,
+                             const String&,
+                             String& = Trash::_Content,
+                             Code& = Trash::_Code);
+      static Status     Put(const URI&,
+                            const String&,
+                            const String&,
+                            String& = Trash::_Content,
+                            Code& = Trash::_Code);
+      static Status     Delete(const URI&,
+                               String& = Trash::_Content,
+                               Code& = Trash::_Code);
 
     private:
       //
       // static methods
       //
-      static size_t	Read(void*,
-			     size_t,
-			     size_t,
-			     void*);
-      static size_t	Write(void*,
-			      size_t,
-			      size_t,
-			      void*);
+      static size_t     Read(void*,
+                             size_t,
+                             size_t,
+                             void*);
+      static size_t     Write(void*,
+                              size_t,
+                              size_t,
+                              void*);
     };
 
   }

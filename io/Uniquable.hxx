@@ -40,26 +40,26 @@ namespace elle
       //
       // methods
       //
-      Status		Save(Unique&				unique) const
+      Status            Save(Unique&                            unique) const
       {
-	enter();
+        enter();
 
-	// encode the object in hexadecimal.
-	if (Hexadecimal::Encode(*this, unique) == StatusError)
-	  escape("unable to encode the object in hexadecimal");
+        // encode the object in hexadecimal.
+        if (Hexadecimal::Encode(*this, unique) == StatusError)
+          escape("unable to encode the object in hexadecimal");
 
-	leave();
+        leave();
       }
 
-      Status		Restore(const Unique&			unique)
+      Status            Restore(const Unique&                   unique)
       {
-	enter();
+        enter();
 
-	// decode the unique and reconstitute the object.
-	if (Hexadecimal::Decode(unique, *this) == StatusError)
-	  escape("unable to decode the hexadecimal unique");
+        // decode the unique and reconstitute the object.
+        if (Hexadecimal::Decode(unique, *this) == StatusError)
+          escape("unable to decode the hexadecimal unique");
 
-	leave();
+        leave();
       }
     };
 
@@ -78,26 +78,26 @@ namespace elle
       //
       // methods
       //
-      Status		Save(Unique&				unique) const
+      Status            Save(Unique&                            unique) const
       {
-	enter();
+        enter();
 
-	// encode the object in base64.
-	if (Base64::Encode(*this, unique) == StatusError)
-	  escape("unable to encode the object in base64");
+        // encode the object in base64.
+        if (Base64::Encode(*this, unique) == StatusError)
+          escape("unable to encode the object in base64");
 
-	leave();
+        leave();
       }
 
-      Status		Restore(const Unique&			unique)
+      Status            Restore(const Unique&                   unique)
       {
-	enter();
+        enter();
 
-	// decode the unique and reconstitute the object.
-	if (Base64::Decode(unique, *this) == StatusError)
-	  escape("unable to decode the base64 unique");
+        // decode the unique and reconstitute the object.
+        if (Base64::Decode(unique, *this) == StatusError)
+          escape("unable to decode the base64 unique");
 
-	leave();
+        leave();
       }
     };
 
@@ -116,18 +116,18 @@ namespace elle
       //
       // operators
       //
-      virtual Status	Save(Unique&) const
+      virtual Status    Save(Unique&) const
       {
-	enter();
+        enter();
 
-	escape("this method should never have been called");
+        escape("this method should never have been called");
       }
 
-      virtual Status	Restore(const Unique&)
+      virtual Status    Restore(const Unique&)
       {
-	enter();
+        enter();
 
-	escape("this method should never have been called");
+        escape("this method should never have been called");
       }
     };
 
@@ -145,11 +145,11 @@ namespace std
   /// this function implements the << operator for uniquables.
   ///
   template <const elle::io::Format F>
-  ostream&		operator<<(
-                          ostream&				stream,
-			  const elle::io::Uniquable<F>&		object)
+  ostream&              operator<<(
+                          ostream&                              stream,
+                          const elle::io::Uniquable<F>&         object)
   {
-    elle::io::Unique			unique;
+    elle::io::Unique                    unique;
 
     enter();
 

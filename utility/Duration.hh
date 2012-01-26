@@ -46,22 +46,22 @@ namespace elle
       // enumerations
       //
       enum Unit
-	{
-	  UnitUnknown,
+        {
+          UnitUnknown,
 
-	  UnitNanoseconds,
-	  UnitMicroseconds,
-	  UnitMilliseconds,
-	  UnitSeconds,
-	  UnitMinutes
-	};
+          UnitNanoseconds,
+          UnitMicroseconds,
+          UnitMilliseconds,
+          UnitSeconds,
+          UnitMinutes
+        };
 
       //
       // constructors & destructors
       //
       Duration();
       Duration(const Unit,
-	       const Natural64);
+               const Natural64);
 
       //
       // interfaces
@@ -69,20 +69,20 @@ namespace elle
 
       // object
       declare(Duration);
-      Boolean		operator==(const Duration&) const;
+      Boolean           operator==(const Duration&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      Status            Serialize(Archive&) const;
+      Status            Extract(Archive&);
 
       //
       // attributes
       //
-      Unit		unit;
-      Natural64		value;
+      Unit              unit;
+      Natural64         value;
     };
 
   }

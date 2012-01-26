@@ -27,7 +27,7 @@ namespace elle
     ///
     /// this defines the seed length in bits.
     ///
-    const Natural32		Seed::Length = 1024;
+    const Natural32             Seed::Length = 1024;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -36,7 +36,7 @@ namespace elle
     ///
     /// this method generates a random seed.
     ///
-    Status		Seed::Generate()
+    Status              Seed::Generate()
     {
       return (this->Generate(Seed::Length));
     }
@@ -44,9 +44,9 @@ namespace elle
     ///
     /// this method generates a seed based on the given length.
     ///
-    Status		Seed::Generate(const Natural32		length)
+    Status              Seed::Generate(const Natural32          length)
     {
-      Natural32		size;
+      Natural32         size;
 
       enter();
 
@@ -55,7 +55,7 @@ namespace elle
 
       // randomize the region.
       if (Random::Generate(this->region, size) == StatusError)
-	escape("unable to generate the region");
+        escape("unable to generate the region");
 
       leave();
     }
@@ -66,25 +66,25 @@ namespace elle
     /// note that this operation should be performed by the seed initiator
     /// only.
     ///
-    Status		Seed::Rotate(const PrivateKey&		k,
-				     Seed&			seed) const
+    Status              Seed::Rotate(const PrivateKey&          k,
+                                     Seed&                      seed) const
     {
-      Code		code;
+      Code              code;
 
       enter();
 
       // encrypt the seed object with the given private key.
       if (k.Encrypt(*this, code) == StatusError)
-	escape("unable to 'encrypt' the seed");
+        escape("unable to 'encrypt' the seed");
 
       // detach the memory from the code.
       if (code.region.Detach() == StatusError)
-	escape("unable to detach the memory");
+        escape("unable to detach the memory");
 
       // assign the code's region to the output seed.
       if (seed.region.Acquire(code.region.contents,
-			      code.region.size) == StatusError)
-	escape("unable to acquire the region");
+                              code.region.size) == StatusError)
+        escape("unable to acquire the region");
 
       leave();
     }
@@ -92,26 +92,26 @@ namespace elle
     ///
     /// this method derives the seed with the initiator's public key.
     ///
-    Status		Seed::Derive(const PublicKey&		K,
-				     Seed&			seed) const
+    Status              Seed::Derive(const PublicKey&           K,
+                                     Seed&                      seed) const
     {
-      Code		code;
-      Region		chunk;
+      Code              code;
+      Region            chunk;
 
       enter();
 
       // wrap the seed's region.
       if (chunk.Wrap(this->region.contents,
-		     this->region.size) == StatusError)
-	escape("unable to wrap the region");
+                     this->region.size) == StatusError)
+        escape("unable to wrap the region");
 
       // create a code based on the chunk.
       if (code.Create(chunk) == StatusError)
-	escape("unable to create the code");
+        escape("unable to create the code");
 
       // decrypt the code with the given public key.
       if (K.Decrypt(code, seed) == StatusError)
-	escape("unable to 'decrypt' the seed");
+        escape("unable to 'decrypt' the seed");
 
       leave();
     }
@@ -123,17 +123,17 @@ namespace elle
     ///
     /// this method check if two objects match.
     ///
-    Boolean		Seed::operator==(const Seed&		element) const
+    Boolean             Seed::operator==(const Seed&            element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the internal region.
       if (this->region != element.region)
-	false();
+        false();
 
       true();
     }
@@ -150,9 +150,9 @@ namespace elle
     ///
     /// this method dumps the seed internals.
     ///
-    Status		Seed::Dump(const Natural32		margin) const
+    Status              Seed::Dump(const Natural32              margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
@@ -160,7 +160,7 @@ namespace elle
 
       // dump the region.
       if (this->region.Dump(margin + 2) == StatusError)
-	escape("unable to dump the region");
+        escape("unable to dump the region");
 
       leave();
     }
@@ -172,13 +172,13 @@ namespace elle
     ///
     /// this method serializes a seed object.
     ///
-    Status		Seed::Serialize(Archive&		archive) const
+    Status              Seed::Serialize(Archive&                archive) const
     {
       enter();
 
       // serialize the internal region.
       if (archive.Serialize(this->region) == StatusError)
-	escape("unable to serialize the internal region");
+        escape("unable to serialize the internal region");
 
       leave();
     }
@@ -186,13 +186,13 @@ namespace elle
     ///
     /// this method extract a seed from the given archive.
     ///
-    Status		Seed::Extract(Archive&			archive)
+    Status              Seed::Extract(Archive&                  archive)
     {
       enter();
 
       // extract the region.
       if (archive.Extract(this->region) == StatusError)
-	escape("unable to extract the internal region");
+        escape("unable to extract the internal region");
 
       leave();
     }

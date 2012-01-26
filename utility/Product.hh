@@ -29,7 +29,7 @@ namespace elle
     ///
     /// this type represents a factory product.
     ///
-    typedef Natural32		Product;
+    typedef Natural32           Product;
 
   }
 }

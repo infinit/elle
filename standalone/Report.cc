@@ -37,7 +37,7 @@ namespace elle
     ///
     /// this global variable represent the report of the current thread/fiber.
     ///
-    Report*		Report::Current = NULL;
+    Report*             Report::Current = NULL;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -47,7 +47,7 @@ namespace elle
     /// this method initializes the report by allocating a default
     /// report object.
     ///
-    Status		Report::Initialize()
+    Status              Report::Initialize()
     {
       enter();
 
@@ -56,7 +56,7 @@ namespace elle
 
       // register the govern callback to the fiber system.
       if (Fiber::Register(Callback<>::Infer(&Report::Govern)) == StatusError)
-	escape("unable to register the govern callback");
+        escape("unable to register the govern callback");
 
       leave();
     }
@@ -64,7 +64,7 @@ namespace elle
     ///
     /// this method cleans the report system.
     ///
-    Status		Report::Clean()
+    Status              Report::Clean()
     {
       enter();
 
@@ -82,13 +82,13 @@ namespace elle
     ///
     /// note that this method returns true or false.
     ///
-    Status		Report::Instance(Report*&		report)
+    Status              Report::Instance(Report*&               report)
     {
       enter();
 
       // verify the report's presence.
       if (Report::Current == NULL)
-	false();
+        false();
 
       report = Report::Current;
 
@@ -99,53 +99,53 @@ namespace elle
     /// this method initializes, saves, restores and cleans the report for
     /// the given fiber, in other words govern the fiber's environment.
     ///
-    Status		Report::Govern(const Phase		phase,
-				       Fiber*			fiber)
+    Status              Report::Govern(const Phase              phase,
+                                       Fiber*                   fiber)
     {
       enter();
 
       // perform an operation depending on the phase.
       switch (phase)
-	{
-	case PhaseInitialize:
-	  {
-	    // allocate a new report and install it.
-	    Report::Current = new Report;
+        {
+        case PhaseInitialize:
+          {
+            // allocate a new report and install it.
+            Report::Current = new Report;
 
-	    break;
-	  }
-	case PhaseSave:
-	  {
-	    // save the report in the fiber's environment.
-	    if (fiber->environment->Store("report",
-					  Report::Current) == StatusError)
-	      escape("unable to store the report in the environment");
+            break;
+          }
+        case PhaseSave:
+          {
+            // save the report in the fiber's environment.
+            if (fiber->environment->Store("report",
+                                          Report::Current) == StatusError)
+              escape("unable to store the report in the environment");
 
-	    // set the pointer to NULL, for safety purposes.
-	    Report::Current = NULL;
+            // set the pointer to NULL, for safety purposes.
+            Report::Current = NULL;
 
-	    break;
-	  }
-	case PhaseRestore:
-	  {
-	    // load the report from the environment.
-	    if (fiber->environment->Load("report",
-					 Report::Current) == StatusError)
-	      escape("unable to load the report from the environment");
+            break;
+          }
+        case PhaseRestore:
+          {
+            // load the report from the environment.
+            if (fiber->environment->Load("report",
+                                         Report::Current) == StatusError)
+              escape("unable to load the report from the environment");
 
-	    break;
-	  }
-	case PhaseClean:
-	  {
-	    // delete the report.
-	    delete Report::Current;
+            break;
+          }
+        case PhaseClean:
+          {
+            // delete the report.
+            delete Report::Current;
 
-	    // reinitialize the report to NULL, for safety purposes.
-	    Report::Current = NULL;
+            // reinitialize the report to NULL, for safety purposes.
+            Report::Current = NULL;
 
-	    break;
-	  }
-	}
+            break;
+          }
+        }
 
       leave();
     }
@@ -164,22 +164,22 @@ namespace elle
     ///
     /// copy constructor.
     ///
-    Report::Report(const Report&				report)
+    Report::Report(const Report&                                report)
     {
-      Report::Scoutor	scoutor;
+      Report::Scoutor   scoutor;
 
       // go through the container.
       for (scoutor = report.container.begin();
-	   scoutor != report.container.end();
-	   scoutor++)
-	{
-	  Report::Entry*	entry = *scoutor;
+           scoutor != report.container.end();
+           scoutor++)
+        {
+          Report::Entry*        entry = *scoutor;
 
-	  // record the entry.
-	  this->Record(entry->location,
-		       entry->time,
-		       entry->message);
-	}
+          // record the entry.
+          this->Record(entry->location,
+                       entry->time,
+                       entry->message);
+        }
     }
 
     ///
@@ -198,32 +198,32 @@ namespace elle
     ///
     /// this method flushes the report.
     ///
-    Void		Report::Flush()
+    Void                Report::Flush()
     {
       // go through all the remaining items.
       while (this->container.empty() == false)
-	{
-	  Report::Entry*	entry;
+        {
+          Report::Entry*        entry;
 
-	  // retrieve the front item.
-	  entry = this->container.front();
+          // retrieve the front item.
+          entry = this->container.front();
 
-	  // delete the item.
-	  delete entry;
+          // delete the item.
+          delete entry;
 
-	  // remove it.
-	  this->container.pop_front();
-	}
+          // remove it.
+          this->container.pop_front();
+        }
     }
 
     ///
     /// this method adds a message to the report.
     ///
-    Void		Report::Record(const String&		location,
-				       const String&		time,
-				       const String&		message)
+    Void                Report::Record(const String&            location,
+                                       const String&            time,
+                                       const String&            message)
     {
-      Report::Entry*	entry;
+      Report::Entry*    entry;
 
       // allocate the entry.
       entry = new Report::Entry;
@@ -240,25 +240,25 @@ namespace elle
     ///
     /// this method adds a set of messages to the report.
     ///
-    Void		Report::Record(const Report&		report)
+    Void                Report::Record(const Report&            report)
     {
-      Report::Scoutor	scoutor;
+      Report::Scoutor   scoutor;
 
       // go through the record and record every message.
       for (scoutor = report.container.begin();
-	   scoutor != report.container.end();
-	   scoutor++)
-	{
-	  Report::Entry*	entry = *scoutor;
+           scoutor != report.container.end();
+           scoutor++)
+        {
+          Report::Entry*        entry = *scoutor;
 
-	  // create the message by prepending a two-character margin.
-	  entry->message = entry->message;
+          // create the message by prepending a two-character margin.
+          entry->message = entry->message;
 
-	  // store the entry.
-	  this->Record(entry->location,
-		       entry->time,
-		       entry->message);
-	}
+          // store the entry.
+          this->Record(entry->location,
+                       entry->time,
+                       entry->message);
+        }
     }
 
 //
@@ -268,10 +268,10 @@ namespace elle
     ///
     /// this method dumps the report.
     ///
-    Status		Report::Dump(const Natural32		margin) const
+    Status              Report::Dump(const Natural32            margin) const
     {
-      Report::Scoutor	scoutor;
-      String		alignment(margin, ' ');
+      Report::Scoutor   scoutor;
+      String            alignment(margin, ' ');
 
       enter();
 
@@ -279,20 +279,20 @@ namespace elle
 
       // go through the container.
       for (scoutor = this->container.begin();
-	   scoutor != this->container.end();
-	   scoutor++)
-	{
-	  Report::Entry*	entry = *scoutor;
+           scoutor != this->container.end();
+           scoutor++)
+        {
+          Report::Entry*        entry = *scoutor;
 
-	  // display the entry.
-	  std::cout << "  "
-		    << entry->message
-		    << " ("
-		    << entry->location
-		    << ") @ "
-		    << entry->time
-		    << std::endl;
-	}
+          // display the entry.
+          std::cout << "  "
+                    << entry->message
+                    << " ("
+                    << entry->location
+                    << ") @ "
+                    << entry->time
+                    << std::endl;
+        }
 
       leave();
     }
@@ -304,30 +304,30 @@ namespace elle
     ///
     /// this method serializes a report.
     ///
-    Status		Report::Serialize(Archive&		archive) const
+    Status              Report::Serialize(Archive&              archive) const
     {
-      Report::Scoutor	scoutor;
+      Report::Scoutor   scoutor;
 
       enter();
 
       // serialize the number of messages.
       if (archive.Serialize(
-	    static_cast<Natural32>(this->container.size())) == StatusError)
-	escape("unable to serialize the number of messages");
+            static_cast<Natural32>(this->container.size())) == StatusError)
+        escape("unable to serialize the number of messages");
 
       // go through the container.
       for (scoutor = this->container.begin();
-	   scoutor != this->container.end();
-	   scoutor++)
-	{
-	  Report::Entry*	entry = *scoutor;
+           scoutor != this->container.end();
+           scoutor++)
+        {
+          Report::Entry*        entry = *scoutor;
 
-	  // serialize the entry.
-	  if (archive.Serialize(entry->location,
-				entry->time,
-				entry->message) == StatusError)
-	    escape("unable to serialize the entry");
-	}
+          // serialize the entry.
+          if (archive.Serialize(entry->location,
+                                entry->time,
+                                entry->message) == StatusError)
+            escape("unable to serialize the entry");
+        }
 
       leave();
     }
@@ -335,34 +335,34 @@ namespace elle
     ///
     /// this method extracts a report.
     ///
-    Status		Report::Extract(Archive&		archive)
+    Status              Report::Extract(Archive&                archive)
     {
-      Natural32		size;
-      Natural32		i;
+      Natural32         size;
+      Natural32         i;
 
       enter();
 
       // extract the number of messages.
       if (archive.Extract(size) == StatusError)
-	escape("unable to extract the number of messages");
+        escape("unable to extract the number of messages");
 
       // iterate and recreate the messages.
       for (i = 0; i < size; i++)
-	{
-	  Report::Entry*	entry;
+        {
+          Report::Entry*        entry;
 
-	  // allocate a new entry.
-	  entry = new Report::Entry;
+          // allocate a new entry.
+          entry = new Report::Entry;
 
-	  // extract the entry.
-	  if (archive.Extract(entry->location,
-			      entry->time,
-			      entry->message) == StatusError)
-	    escape("unable to serialize the entry");
+          // extract the entry.
+          if (archive.Extract(entry->location,
+                              entry->time,
+                              entry->message) == StatusError)
+            escape("unable to serialize the entry");
 
-	  // push the extract entry in the container.
-	  this->container.push_front(entry);
-	}
+          // push the extract entry in the container.
+          this->container.push_front(entry);
+        }
 
       leave();
     }
@@ -374,7 +374,7 @@ namespace elle
     ///
     /// this method returns the size of the report object.
     ///
-    Status		Report::Imprint(Natural32&		size) const
+    Status              Report::Imprint(Natural32&              size) const
     {
       enter();
 
@@ -387,7 +387,7 @@ namespace elle
     ///
     /// this method clones the current report.
     ///
-    Status		Report::Clone(Report*&			object) const
+    Status              Report::Clone(Report*&                  object) const
     {
       enter();
 
@@ -400,7 +400,7 @@ namespace elle
     ///
     /// this method check if two reports match.
     ///
-    Boolean		Report::operator==(const Report&) const
+    Boolean             Report::operator==(const Report&) const
     {
       enter();
 
@@ -410,7 +410,7 @@ namespace elle
     ///
     /// this operator compares two reports.
     ///
-    Boolean		Report::operator<(const Report&) const
+    Boolean             Report::operator<(const Report&) const
     {
       enter();
 
@@ -420,7 +420,7 @@ namespace elle
     ///
     /// this operator compares two reports.
     ///
-    Boolean		Report::operator>(const Report&) const
+    Boolean             Report::operator>(const Report&) const
     {
       enter();
 
@@ -430,17 +430,17 @@ namespace elle
     ///
     /// this method copies a report.
     ///
-    Report&		Report::operator=(const Report&		element)
+    Report&             Report::operator=(const Report&         element)
     {
       enter();
 
       // test if the reports are identical.
       if (this == &element)
-	return (*this);
+        return (*this);
 
       // recycle the report.
       if (this->Recycle(&element) == StatusError)
-	yield(*this, "unable to recycle the report");
+        yield(*this, "unable to recycle the report");
 
       return (*this);
     }
@@ -450,7 +450,7 @@ namespace elle
     /// function can be automatically generated through the Embed(Report, T)
     /// macro function.
     ///
-    Boolean		Report::operator!=(const Report&	element) const
+    Boolean             Report::operator!=(const Report&        element) const
     {
       return (!(*this == element));
     }
@@ -458,7 +458,7 @@ namespace elle
     ///
     /// this operator compares two reports.
     ///
-    Boolean		Report::operator<=(const Report&) const
+    Boolean             Report::operator<=(const Report&) const
     {
       enter();
 
@@ -468,7 +468,7 @@ namespace elle
     ///
     /// this operator compares two reports.
     ///
-    Boolean		Report::operator>=(const Report&) const
+    Boolean             Report::operator>=(const Report&) const
     {
       enter();
 

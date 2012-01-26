@@ -47,9 +47,9 @@ namespace elle
     /// according to the given types.
     ///
     template <typename R,
-	      typename... T>
+              typename... T>
     class Callback< R,
-		    Parameters<T...> >:
+                    Parameters<T...> >:
       public Routine
     {
     public:
@@ -57,12 +57,12 @@ namespace elle
       // constants
       //
       static const Callback< R,
-			     Parameters<T...> >		Null;
+                             Parameters<T...> >         Null;
 
       //
       // types
       //
-      typedef Parameters<T...>		P;
+      typedef Parameters<T...>          P;
 
       //
       // constructors & destructors
@@ -71,15 +71,15 @@ namespace elle
       Callback(typename Function<R, P>::Handler);
       template <typename C>
       Callback(typename Method<R, P>::template Wrap<C>::Handler,
-	       C*);
+               C*);
       Callback(const Callback<R, P>&);
       ~Callback();
 
       //
       // methods
       //
-      R			Call(T...) const;
-      Void		Trigger(T...) const;
+      R                 Call(T...) const;
+      Void              Trigger(T...) const;
 
       //
       // interfaces
@@ -89,15 +89,15 @@ namespace elle
       declare(_(Callback< R, Parameters<T...> >));
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
       union
       {
-	Function<R, P>*		function;
-	Method<R, P>*		method;
+        Function<R, P>*         function;
+        Method<R, P>*           method;
       };
     };
 
@@ -112,15 +112,15 @@ namespace elle
       // static methods
       //
       template <typename R,
-		typename... T>
+                typename... T>
       static Callback< R,
-		       Parameters<T...> >	Infer(R (*)(T...));
+                       Parameters<T...> >       Infer(R (*)(T...));
       template <typename R,
-		typename C,
-		typename... T>
+                typename C,
+                typename... T>
       static Callback< R,
-		       Parameters<T...> >	Infer(R (C::*)(T...),
-						      C*);
+                       Parameters<T...> >       Infer(R (C::*)(T...),
+                                                      C*);
     };
 
   }

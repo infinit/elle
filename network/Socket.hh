@@ -61,27 +61,27 @@ namespace elle
       // enumerations
       //
       enum Type
-	{
-	  TypeUnknown,
+        {
+          TypeUnknown,
 
-	  TypeAbstract = 0x1,
+          TypeAbstract = 0x1,
 
-	  TypeLocal = TypeAbstract | 0x0,
-	  TypeTCP = TypeAbstract | 0x2,
+          TypeLocal = TypeAbstract | 0x0,
+          TypeTCP = TypeAbstract | 0x2,
 
-	  TypeUDP = 0x4
-	};
+          TypeUDP = 0x4
+        };
 
       enum Mode
-	{
-	  ModeAsynchronous,
-	  ModeSynchronous
-	};
+        {
+          ModeAsynchronous,
+          ModeSynchronous
+        };
 
       //
       // static methods
       //
-      static Status	Ship(Parcel*);
+      static Status     Ship(Parcel*);
 
       //
       // constructors & destructors
@@ -93,32 +93,32 @@ namespace elle
       // methods
       //
       template <typename I>
-      Status		Send(const I,
-			     const Event& = Event::Null,
-			     const Locus& = Locus::Null);
+      Status            Send(const I,
+                             const Event& = Event::Null,
+                             const Locus& = Locus::Null);
       template <typename O>
-      Status		Receive(const Event&,
-				O);
+      Status            Receive(const Event&,
+                                O);
       template <typename I,
-		typename O>
-      Status		Call(const I,
-			     O,
-			     const Locus& = Locus::Null);
+                typename O>
+      Status            Call(const I,
+                             O,
+                             const Locus& = Locus::Null);
       template <typename I>
-      Status		Reply(const I,
-			      Session* = NULL);
+      Status            Reply(const I,
+                              Session* = NULL);
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Type		type;
+      Type              type;
     };
 
   }

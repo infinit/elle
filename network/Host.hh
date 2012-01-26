@@ -52,30 +52,30 @@ namespace elle
       //
       // constants
       //
-      static const Host		Null;
+      static const Host         Null;
 
       //
       // enumerations
       //
       enum Type
-	{
-	  TypeNull,
-	  TypeAny,
-	  TypeIP,
-	  TypeBroadcast
-	};
+        {
+          TypeNull,
+          TypeAny,
+          TypeIP,
+          TypeBroadcast
+        };
 
       //
       // types
       //
-      typedef std::vector<Host>				Container;
-      typedef typename Container::iterator		Iterator;
-      typedef typename Container::const_iterator	Scoutor;
+      typedef std::vector<Host>                         Container;
+      typedef typename Container::iterator              Iterator;
+      typedef typename Container::const_iterator        Scoutor;
 
       //
       // static methods
       //
-      static Status	Hosts(Container&);
+      static Status     Hosts(Container&);
 
       //
       // constructors & destructors
@@ -85,8 +85,8 @@ namespace elle
       //
       // methods
       //
-      Status		Create(const Type);
-      Status		Create(const String&);
+      Status            Create(const Type);
+      Status            Create(const String&);
 
       //
       // interfaces
@@ -94,22 +94,22 @@ namespace elle
 
       // object
       declare(Host);
-      Boolean		operator==(const Host&) const;
-      Boolean		operator<(const Host&) const;
-      Boolean		operator>(const Host&) const;
+      Boolean           operator==(const Host&) const;
+      Boolean           operator<(const Host&) const;
+      Boolean           operator>(const Host&) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      Status            Serialize(Archive&) const;
+      Status            Extract(Archive&);
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Type		type;
-      ::QHostAddress	location;
+      Type              type;
+      ::QHostAddress    location;
     };
 
   }

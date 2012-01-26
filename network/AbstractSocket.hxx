@@ -34,31 +34,31 @@ namespace elle
     /// this method sends a packet in an asynchronous manner.
     ///
     template <typename I>
-    Status		AbstractSocket::Send(const I		inputs,
-					     const Event&	event)
+    Status              AbstractSocket::Send(const I            inputs,
+                                             const Event&       event)
     {
       enter();
 
       switch (this->type)
-	{
-	case Socket::TypeLocal:
-	  {
-	    LocalSocket*	socket = static_cast<LocalSocket*>(this);
+        {
+        case Socket::TypeLocal:
+          {
+            LocalSocket*        socket = static_cast<LocalSocket*>(this);
 
-	    return (socket->Send(inputs, event));
-	  }
-	case Socket::TypeTCP:
-	  {
-	    TCPSocket*		socket = static_cast<TCPSocket*>(this);
+            return (socket->Send(inputs, event));
+          }
+        case Socket::TypeTCP:
+          {
+            TCPSocket*          socket = static_cast<TCPSocket*>(this);
 
-	    return (socket->Send(inputs, event));
-	  }
-	default:
-	  {
-	    escape("unknown or unhandled socket type '%u'\n",
-		   this->type);
-	  }
-	}
+            return (socket->Send(inputs, event));
+          }
+        default:
+          {
+            escape("unknown or unhandled socket type '%u'\n",
+                   this->type);
+          }
+        }
 
       escape("invalid socket type");
     }
@@ -67,31 +67,31 @@ namespace elle
     /// this method receives a packet by blocking.
     ///
     template <typename O>
-    Status		AbstractSocket::Receive(const Event&	event,
-						O		outputs)
+    Status              AbstractSocket::Receive(const Event&    event,
+                                                O               outputs)
     {
       enter();
 
       switch (this->type)
-	{
-	case Socket::TypeLocal:
-	  {
-	    LocalSocket*	socket = static_cast<LocalSocket*>(this);
+        {
+        case Socket::TypeLocal:
+          {
+            LocalSocket*        socket = static_cast<LocalSocket*>(this);
 
-	    return (socket->Receive(event, outputs));
-	  }
-	case Socket::TypeTCP:
-	  {
-	    TCPSocket*		socket = static_cast<TCPSocket*>(this);
+            return (socket->Receive(event, outputs));
+          }
+        case Socket::TypeTCP:
+          {
+            TCPSocket*          socket = static_cast<TCPSocket*>(this);
 
-	    return (socket->Receive(event, outputs));
-	  }
-	default:
-	  {
-	    escape("unknown or unhandled socket type '%u'\n",
-		   this->type);
-	  }
-	}
+            return (socket->Receive(event, outputs));
+          }
+        default:
+          {
+            escape("unknown or unhandled socket type '%u'\n",
+                   this->type);
+          }
+        }
 
       leave();
     }
@@ -101,32 +101,32 @@ namespace elle
     /// synchronous way.
     ///
     template <typename I,
-	      typename O>
-    Status		AbstractSocket::Call(const I		inputs,
-					     O			outputs)
+              typename O>
+    Status              AbstractSocket::Call(const I            inputs,
+                                             O                  outputs)
     {
       enter();
 
       switch (this->type)
-	{
-	case Socket::TypeLocal:
-	  {
-	    LocalSocket*	socket = static_cast<LocalSocket*>(this);
+        {
+        case Socket::TypeLocal:
+          {
+            LocalSocket*        socket = static_cast<LocalSocket*>(this);
 
-	    return (socket->Call(inputs, outputs));
-	  }
-	case Socket::TypeTCP:
-	  {
-	    TCPSocket*		socket = static_cast<TCPSocket*>(this);
+            return (socket->Call(inputs, outputs));
+          }
+        case Socket::TypeTCP:
+          {
+            TCPSocket*          socket = static_cast<TCPSocket*>(this);
 
-	    return (socket->Call(inputs, outputs));
-	  }
-	default:
-	  {
-	    escape("unknown or unhandled socket type '%u'\n",
-		   this->type);
-	  }
-	}
+            return (socket->Call(inputs, outputs));
+          }
+        default:
+          {
+            escape("unknown or unhandled socket type '%u'\n",
+                   this->type);
+          }
+        }
 
       leave();
     }
@@ -135,31 +135,31 @@ namespace elle
     /// this method replies to the freshly received call.
     ///
     template <typename I>
-    Status		AbstractSocket::Reply(const I		inputs,
-					      Session*		session)
+    Status              AbstractSocket::Reply(const I           inputs,
+                                              Session*          session)
     {
       enter();
 
       switch (this->type)
-	{
-	case Socket::TypeLocal:
-	  {
-	    LocalSocket*	socket = static_cast<LocalSocket*>(this);
+        {
+        case Socket::TypeLocal:
+          {
+            LocalSocket*        socket = static_cast<LocalSocket*>(this);
 
-	    return (socket->Reply(inputs, session));
-	  }
-	case Socket::TypeTCP:
-	  {
-	    TCPSocket*		socket = static_cast<TCPSocket*>(this);
+            return (socket->Reply(inputs, session));
+          }
+        case Socket::TypeTCP:
+          {
+            TCPSocket*          socket = static_cast<TCPSocket*>(this);
 
-	    return (socket->Reply(inputs, session));
-	  }
-	default:
-	  {
-	    escape("unknown or unhandled socket type '%u'\n",
-		   this->type);
-	  }
-	}
+            return (socket->Reply(inputs, session));
+          }
+        default:
+          {
+            escape("unknown or unhandled socket type '%u'\n",
+                   this->type);
+          }
+        }
 
       leave();
     }

@@ -24,22 +24,22 @@ namespace elle
     /// this method computes the footprint of the given type.
     ///
     template <typename T>
-    Status		Footprint::Compute(const T&		element,
-					   Natural32&		size)
+    Status              Footprint::Compute(const T&             element,
+                                           Natural32&           size)
     {
-      Footprint		footprint;
+      Footprint         footprint;
 
       enter();
 
       // create the footprint i.e archive in order to set it in
       // serialization mode.
       if (footprint.Create() == StatusError)
-	escape("unable to create the footprint");
+        escape("unable to create the footprint");
 
       // serialize the element with the footprint as argument so
       // as to compute its footprint.
       if (footprint.Serialize(element) == StatusError)
-	escape("unable to serialize the element");
+        escape("unable to serialize the element");
 
       // return the footprint's size.
       size = footprint.size;
@@ -55,21 +55,21 @@ namespace elle
     /// this method recycles a footprint.
     ///
     template <typename T>
-    Status		Footprint::Recycle(const T*		object)
+    Status              Footprint::Recycle(const T*             object)
     {
       // release the resources.
       this->~Footprint();
 
       if (object == NULL)
-	{
-	  // initialize the object with default values.
-	  new (this) T;
-	}
+        {
+          // initialize the object with default values.
+          new (this) T;
+        }
       else
-	{
-	  // initialize the object with defined values.
-	  new (this) T(*object);
-	}
+        {
+          // initialize the object with defined values.
+          new (this) T(*object);
+        }
 
       // return StatusOk in order to avoid including Report, Status and Maid.
       return (StatusOk);

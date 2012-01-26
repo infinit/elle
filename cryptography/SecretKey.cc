@@ -30,29 +30,29 @@ namespace elle
     /// this magic is recorded in encrypted text so that the decryption process
     /// can know that it has been salted.
     ///
-    const Character		SecretKey::Magic[] = "Salted__";
+    const Character             SecretKey::Magic[] = "Salted__";
 
     ///
     /// this is the default length used when generating passwords, in bits.
     ///
-    const Natural32		SecretKey::Default::Length = 512;
+    const Natural32             SecretKey::Default::Length = 512;
 
     ///
     /// this is the encryption algorithm used by the SecretKey class.
     ///
-    const ::EVP_CIPHER*		SecretKey::Algorithms::Cipher =
+    const ::EVP_CIPHER*         SecretKey::Algorithms::Cipher =
       ::EVP_aes_256_cbc();
 
     ///
     /// this is the hash algorithm used by the encryption process.
     ///
-    const ::EVP_MD*		SecretKey::Algorithms::Digest =
+    const ::EVP_MD*             SecretKey::Algorithms::Digest =
       ::EVP_md5();
 
     ///
     /// this defines a null secret key.
     ///
-    const SecretKey		SecretKey::Null;
+    const SecretKey             SecretKey::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -72,15 +72,15 @@ namespace elle
     ///
     /// this method builds a key based on the given password.
     ///
-    Status		SecretKey::Create(const String&		password)
+    Status              SecretKey::Create(const String&         password)
     {
       enter();
 
       // assign the password to the internal key object.
       if (this->region.Duplicate(
-	    reinterpret_cast<const Byte*>(password.c_str()),
-	    password.length()) == StatusError)
-	escape("unable to assign the given password to the key");
+            reinterpret_cast<const Byte*>(password.c_str()),
+            password.length()) == StatusError)
+        escape("unable to assign the given password to the key");
 
       leave();
     }
@@ -88,7 +88,7 @@ namespace elle
     ///
     /// this method generates a key with the default length.
     ///
-    Status		SecretKey::Generate()
+    Status              SecretKey::Generate()
     {
       return (this->Generate(SecretKey::Default::Length));
     }
@@ -98,9 +98,9 @@ namespace elle
     ///
     /// the argument length represents the length of the key, in bits.
     ///
-    Status		SecretKey::Generate(const Natural32	length)
+    Status              SecretKey::Generate(const Natural32     length)
     {
-      Natural32		size;
+      Natural32         size;
 
       enter();
 
@@ -109,11 +109,11 @@ namespace elle
 
       // prepare the password.
       if (this->region.Prepare(size) == StatusError)
-	escape("unable to prepare the key");
+        escape("unable to prepare the key");
 
       // generate the key.
       if (Random::Generate(this->region, size) == StatusError)
-	escape("unable to generate the region");
+        escape("unable to generate the region");
 
       leave();
     }
@@ -121,15 +121,15 @@ namespace elle
     ///
     /// this method encrypts the given plain text.
     ///
-    Status		SecretKey::Encrypt(const Plain&		plain,
-					   Cipher&		cipher) const
+    Status              SecretKey::Encrypt(const Plain&         plain,
+                                           Cipher&              cipher) const
     {
-      unsigned char	key[EVP_MAX_KEY_LENGTH];
-      unsigned char	iv[EVP_MAX_IV_LENGTH];
-      unsigned char	salt[PKCS5_SALT_LEN];
-      Natural32		capacity;
-      int		size;
-      ::EVP_CIPHER_CTX	context;
+      unsigned char     key[EVP_MAX_KEY_LENGTH];
+      unsigned char     iv[EVP_MAX_IV_LENGTH];
+      unsigned char     salt[PKCS5_SALT_LEN];
+      Natural32         capacity;
+      int               size;
+      ::EVP_CIPHER_CTX  context;
 
       wrap(context);
       enterx(local(context, ::EVP_CIPHER_CTX_cleanup));
@@ -139,14 +139,14 @@ namespace elle
 
       // generate the key and IV based on the salt and password.
       if (::EVP_BytesToKey(SecretKey::Algorithms::Cipher,
-			   SecretKey::Algorithms::Digest,
-			   salt,
-			   this->region.contents,
-			   this->region.size,
-			   1,
-			   key,
-			   iv) != sizeof (key))
-	escape("the generated key's size does not match the one expected");
+                           SecretKey::Algorithms::Digest,
+                           salt,
+                           this->region.contents,
+                           this->region.size,
+                           1,
+                           key,
+                           iv) != sizeof (key))
+        escape("the generated key's size does not match the one expected");
 
       // initialise the context.
       ::EVP_CIPHER_CTX_init(&context);
@@ -156,52 +156,52 @@ namespace elle
 
       // initialise the ciphering process.
       if (::EVP_EncryptInit_ex(&context,
-			       SecretKey::Algorithms::Cipher,
-			       NULL,
-			       key,
-			       iv) == 0)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+                               SecretKey::Algorithms::Cipher,
+                               NULL,
+                               key,
+                               iv) == 0)
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // retreive the cipher-specific block size.
       capacity = ::EVP_CIPHER_CTX_block_size(&context);
 
       // allocate the cipher.
       if (cipher.region.Prepare(sizeof (SecretKey::Magic) -
-				1 +
-				sizeof (salt) +
-				plain.size +
-				capacity) == StatusError)
-	escape("unable to reserve memory for the cipher");
+                                1 +
+                                sizeof (salt) +
+                                plain.size +
+                                capacity) == StatusError)
+        escape("unable to reserve memory for the cipher");
 
       // push the magic string directly into the cipher.
       ::memcpy(cipher.region.contents,
-	       SecretKey::Magic,
-	       sizeof (SecretKey::Magic) - 1);
+               SecretKey::Magic,
+               sizeof (SecretKey::Magic) - 1);
 
       // push the salt directly into the cipher.
       ::memcpy(cipher.region.contents + sizeof (SecretKey::Magic) - 1,
-	       salt,
-	       sizeof (salt));
+               salt,
+               sizeof (salt));
 
       // initialise the cipher's size.
       cipher.region.size = sizeof (SecretKey::Magic) - 1 + sizeof (salt);
 
       // cipher the plain text.
       if (::EVP_EncryptUpdate(&context,
-			      cipher.region.contents + cipher.region.size,
-			      &size,
-			      plain.contents,
-			      plain.size) == 0)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+                              cipher.region.contents + cipher.region.size,
+                              &size,
+                              plain.contents,
+                              plain.size) == 0)
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // update the cipher size.
       cipher.region.size += size;
 
       // finialise the ciphering process.
       if (::EVP_EncryptFinal_ex(&context,
-				cipher.region.contents + cipher.region.size,
-				&size) == 0)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+                                cipher.region.contents + cipher.region.size,
+                                &size) == 0)
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // update the cipher size.
       cipher.region.size += size;
@@ -218,40 +218,40 @@ namespace elle
     ///
     /// this method decrypts the given cipher.
     ///
-    Status		SecretKey::Decrypt(const Cipher&	cipher,
-					   Clear&		clear) const
+    Status              SecretKey::Decrypt(const Cipher&        cipher,
+                                           Clear&               clear) const
     {
-      unsigned char	key[EVP_MAX_KEY_LENGTH];
-      unsigned char	iv[EVP_MAX_IV_LENGTH];
-      unsigned char	salt[PKCS5_SALT_LEN];
-      Natural32		capacity;
-      int		size;
-      ::EVP_CIPHER_CTX	context;
+      unsigned char     key[EVP_MAX_KEY_LENGTH];
+      unsigned char     iv[EVP_MAX_IV_LENGTH];
+      unsigned char     salt[PKCS5_SALT_LEN];
+      Natural32         capacity;
+      int               size;
+      ::EVP_CIPHER_CTX  context;
 
       wrap(context);
       enterx(local(context, ::EVP_CIPHER_CTX_cleanup));
 
       // check whether the cipher was produced with a salt.
       if (::memcmp(SecretKey::Magic,
-		   cipher.region.contents,
-		   sizeof (SecretKey::Magic) - 1) != 0)
-	escape("this encrypted information was produced without any salt");
+                   cipher.region.contents,
+                   sizeof (SecretKey::Magic) - 1) != 0)
+        escape("this encrypted information was produced without any salt");
 
       // copy the salt for the sack of clarity.
       ::memcpy(salt,
-	       cipher.region.contents + sizeof (Magic) - 1,
-	       sizeof (salt));
+               cipher.region.contents + sizeof (Magic) - 1,
+               sizeof (salt));
 
       // generate the key and IV based on the salt and password.
       if (::EVP_BytesToKey(SecretKey::Algorithms::Cipher,
-			   SecretKey::Algorithms::Digest,
-			   salt,
-			   this->region.contents,
-			   this->region.size,
-			   1,
-			   key,
-			   iv) != sizeof (key))
-	escape("the generated key's size does not match the one expected");
+                           SecretKey::Algorithms::Digest,
+                           salt,
+                           this->region.contents,
+                           this->region.size,
+                           1,
+                           key,
+                           iv) != sizeof (key))
+        escape("the generated key's size does not match the one expected");
 
       // initialise the context.
       ::EVP_CIPHER_CTX_init(&context);
@@ -262,41 +262,41 @@ namespace elle
 
       // initialise the ciphering process.
       if (::EVP_DecryptInit_ex(&context,
-			       SecretKey::Algorithms::Cipher,
-			       NULL,
-			       key,
-			       iv) == 0)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+                               SecretKey::Algorithms::Cipher,
+                               NULL,
+                               key,
+                               iv) == 0)
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // retreive the cipher-specific block size.
       capacity = ::EVP_CIPHER_CTX_block_size(&context);
 
       // allocate the clear.
       if (clear.Prepare(cipher.region.size -
-			(sizeof (SecretKey::Magic) - 1 + sizeof (salt)) +
-			capacity) == StatusError)
-	escape("unable to reserve memory for the clear text");
+                        (sizeof (SecretKey::Magic) - 1 + sizeof (salt)) +
+                        capacity) == StatusError)
+        escape("unable to reserve memory for the clear text");
 
       // cipher the cipher text.
       if (::EVP_DecryptUpdate(&context,
-			      clear.contents,
-			      &size,
-			      cipher.region.contents +
-			      sizeof (SecretKey::Magic) - 1 +
-			      sizeof (salt),
-			      cipher.region.size -
-			      (sizeof (SecretKey::Magic) - 1 +
-			       sizeof (salt))) == 0)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+                              clear.contents,
+                              &size,
+                              cipher.region.contents +
+                              sizeof (SecretKey::Magic) - 1 +
+                              sizeof (salt),
+                              cipher.region.size -
+                              (sizeof (SecretKey::Magic) - 1 +
+                               sizeof (salt))) == 0)
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // update the clear size.
       clear.size += size;
 
       // finalise the ciphering process.
       if (::EVP_DecryptFinal_ex(&context,
-				clear.contents + size,
-				&size) == 0)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+                                clear.contents + size,
+                                &size) == 0)
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // update the clear size.
       clear.size += size;
@@ -317,17 +317,17 @@ namespace elle
     ///
     /// this method check if two objects match.
     ///
-    Boolean		SecretKey::operator==(const SecretKey&	element) const
+    Boolean             SecretKey::operator==(const SecretKey&  element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the internal region.
       if (this->region != element.region)
-	false();
+        false();
 
       true();
     }
@@ -344,25 +344,25 @@ namespace elle
     ///
     /// this method dumps the secret key internals.
     ///
-    Status		SecretKey::Dump(const Natural32		margin) const
+    Status              SecretKey::Dump(const Natural32         margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
       // display the key depending on its value.
       if (*this == SecretKey::Null)
-	{
-	  std::cout << alignment << "[SecretKey] " << none << std::endl;
-	}
+        {
+          std::cout << alignment << "[SecretKey] " << none << std::endl;
+        }
       else
-	{
-	  std::cout << alignment << "[SecretKey] " << std::endl;
+        {
+          std::cout << alignment << "[SecretKey] " << std::endl;
 
-	  // dump the region.
-	  if (this->region.Dump(margin + 2) == StatusError)
-	    escape("unable to dump the secret key");
-	}
+          // dump the region.
+          if (this->region.Dump(margin + 2) == StatusError)
+            escape("unable to dump the secret key");
+        }
 
       leave();
     }
@@ -374,13 +374,13 @@ namespace elle
     ///
     /// this method serializes a secret key object.
     ///
-    Status		SecretKey::Serialize(Archive&		archive) const
+    Status              SecretKey::Serialize(Archive&           archive) const
     {
       enter();
 
       // serialize the internal key.
       if (archive.Serialize(this->region) == StatusError)
-	escape("unable to serialize the internal key");
+        escape("unable to serialize the internal key");
 
       leave();
     }
@@ -388,13 +388,13 @@ namespace elle
     ///
     /// this method extract a secret key from the given archive.
     ///
-    Status		SecretKey::Extract(Archive&		archive)
+    Status              SecretKey::Extract(Archive&             archive)
     {
       enter();
 
       // extract the key.
       if (archive.Extract(this->region) == StatusError)
-	escape("unable to extract the internal key");
+        escape("unable to extract the internal key");
 
       leave();
     }

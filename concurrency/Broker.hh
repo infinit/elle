@@ -73,22 +73,22 @@ namespace elle
       //
       // methods
       //
-      Status		Activate();
-      Status		Deactivate();
+      Status            Activate();
+      Status            Deactivate();
 
       //
       // callbacks
       //
-      Status		Trigger();
+      Status            Trigger();
 
       //
       // attributes
       //
 #if defined(INFINIT_UNIX)
-      Natural16			descriptor;
-      ::QSocketNotifier		notifier;
+      Natural16                 descriptor;
+      ::QSocketNotifier         notifier;
 #elif defined(INFINIT_WIN32)
-      ::QWinEventNotifier	notifier;
+      ::QWinEventNotifier       notifier;
 #else
 # error "unsupported platform"
 #endif
@@ -96,26 +96,26 @@ namespace elle
       //
       // signals
       //
-      struct			Signals
+      struct                    Signals
       {
-	Signal<
-	  Parameters<
+        Signal<
+          Parameters<
 #if defined(INFINIT_UNIX)
-	    Natural16
+            Natural16
 #elif defined(INFINIT_WIN32)
-	    HANDLE
+            HANDLE
 #else
 # error "unsupported platform"
 #endif
-	    >
-	  >			ready;
-      }				signal;
+            >
+          >                     ready;
+      }                         signal;
 
     private slots:
       //
       // slots
       //
-      void		_trigger();
+      void              _trigger();
     };
 
   }

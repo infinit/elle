@@ -50,28 +50,28 @@ namespace elle
     /// to the callback.
     ///
     template <typename R,
-	      typename... U>
+              typename... U>
     class Closure< R,
-		   Parameters<U...> >:
+                   Parameters<U...> >:
       public Entity
     {
     public:
       //
       // types
       //
-      typedef Parameters<U...>		P;
+      typedef Parameters<U...>          P;
 
       //
       // constructors & destructors
       //
       Closure(Callback< R, Parameters<U...> >,
-	      U&...);
+              U&...);
 
       //
       // methods
       //
-      R			Call();
-      Void		Trigger();
+      R                 Call();
+      Void              Trigger();
 
       //
       // interfaces
@@ -81,13 +81,13 @@ namespace elle
       declare(_(Closure< R, Parameters<U...> >));
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Callback< R, Parameters<U...> >	callback;
-      Arguments< Parameters<U...> >	arguments;
+      Callback< R, Parameters<U...> >   callback;
+      Arguments< Parameters<U...> >     arguments;
     };
 
     ///
@@ -113,30 +113,30 @@ namespace elle
     ///   Callback< Parameters<Natural32, String> >
     ///
     template <typename R,
-	      typename... U,
-	      typename... V>
+              typename... U,
+              typename... V>
     class Closure< R,
-		   Parameters<U...>,
-		   Parameters<V...> >:
+                   Parameters<U...>,
+                   Parameters<V...> >:
       public Entity
     {
     public:
       //
       // types
       //
-      typedef Parameters<U..., V...>	P;
+      typedef Parameters<U..., V...>    P;
 
       //
       // constructors & destructors
       //
       Closure(Callback< R, Parameters<U..., V...> >,
-	      U&...);
+              U&...);
 
       //
       // methods
       //
-      R			Call(V&...);
-      Void		Trigger(V&...);
+      R                 Call(V&...);
+      Void              Trigger(V&...);
 
       //
       // interfaces
@@ -146,13 +146,13 @@ namespace elle
       declare(_(Closure< R, Parameters<U...>, Parameters<V...> >));
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Callback< R, Parameters<U..., V...> >	callback;
-      Arguments< Parameters<U...> >		arguments;
+      Callback< R, Parameters<U..., V...> >     callback;
+      Arguments< Parameters<U...> >             arguments;
     };
 
     ///
@@ -166,32 +166,32 @@ namespace elle
       // static methods
       //
       template <typename R,
-		typename... U>
+                typename... U>
       static Closure< R,
-		      Parameters<U...> >	Infer(R (*)(U...));
+                      Parameters<U...> >        Infer(R (*)(U...));
       template <typename R,
-		typename C,
-		typename... U>
+                typename C,
+                typename... U>
       static Closure< R,
-		      Parameters<U...> >	Infer(R (C::*)(U...),
-						      C*);
+                      Parameters<U...> >        Infer(R (C::*)(U...),
+                                                      C*);
 
       template <typename R,
-		typename... U,
-		typename... V>
+                typename... U,
+                typename... V>
       static Closure< R,
-		      Parameters<U...>,
-		      Parameters<V...> >	Infer(R (*)(U..., V...),
-						      U&...);
+                      Parameters<U...>,
+                      Parameters<V...> >        Infer(R (*)(U..., V...),
+                                                      U&...);
       template <typename R,
-		typename C,
-		typename... U,
-		typename... V>
+                typename C,
+                typename... U,
+                typename... V>
       static Closure< R,
-		      Parameters<U...>,
-		      Parameters<V...> >	Infer(R (C::*)(U..., V...),
-						      C*,
-						      U&...);
+                      Parameters<U...>,
+                      Parameters<V...> >        Infer(R (C::*)(U..., V...),
+                                                      C*,
+                                                      U&...);
     };
 
   }

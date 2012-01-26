@@ -61,8 +61,8 @@ namespace elle
       //
       Parcel();
       Parcel(Session*,
-	     Header*,
-	     Data*);
+             Header*,
+             Data*);
       ~Parcel();
 
       //
@@ -70,15 +70,15 @@ namespace elle
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Session*		session;
+      Session*          session;
 
-      Header*		header;
-      Data*		data;
+      Header*           header;
+      Data*             data;
     };
 
   }

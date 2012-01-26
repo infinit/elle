@@ -23,7 +23,7 @@ namespace elle
     ///
     /// this type wraps the C double type.
     ///
-    typedef double		Real;
+    typedef double              Real;
 
   }
 }

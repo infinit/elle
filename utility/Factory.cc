@@ -39,20 +39,20 @@ namespace elle
     ///
     /// this method clears the factory registered products..
     //
-    Status		Factory::Clear()
+    Status              Factory::Clear()
     {
-      Factory::Scoutor	scoutor;
+      Factory::Scoutor  scoutor;
 
       enter();
 
       // go through the container.
       for (scoutor = this->container.begin();
-	   scoutor != this->container.end();
-	   scoutor++)
-	{
-	  // delete the functionoid.
-	  delete scoutor->second;
-	}
+           scoutor != this->container.end();
+           scoutor++)
+        {
+          // delete the functionoid.
+          delete scoutor->second;
+        }
 
       // clear the container.
       this->container.clear();
@@ -67,10 +67,10 @@ namespace elle
     ///
     /// this method dumps the factory.
     ///
-    Status		Factory::Dump(const Natural32		margin) const
+    Status              Factory::Dump(const Natural32           margin) const
     {
-      String		alignment(margin, ' ');
-      Factory::Scoutor	scoutor;
+      String            alignment(margin, ' ');
+      Factory::Scoutor  scoutor;
 
       enter();
 
@@ -78,12 +78,12 @@ namespace elle
 
       // go through the map.
       for (scoutor = this->container.begin();
-	   scoutor != this->container.end();
-	   scoutor++)
-	{
-	  std::cout << alignment << Dumpable::Shift
-		    << scoutor->first << std::endl;
-	}
+           scoutor != this->container.end();
+           scoutor++)
+        {
+          std::cout << alignment << Dumpable::Shift
+                    << scoutor->first << std::endl;
+        }
 
       leave();
     }

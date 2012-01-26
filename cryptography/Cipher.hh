@@ -50,7 +50,7 @@ namespace elle
       //
       // constants
       //
-      static const Cipher		Null;
+      static const Cipher               Null;
 
       //
       // constructors & destructors
@@ -63,19 +63,19 @@ namespace elle
 
       // object
       declare(Cipher);
-      Boolean		operator==(const Cipher&) const;
+      Boolean           operator==(const Cipher&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      Status            Serialize(Archive&) const;
+      Status            Extract(Archive&);
 
       //
       // attributes
       //
-      Region		region;
+      Region            region;
     };
 
   }

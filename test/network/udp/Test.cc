@@ -23,49 +23,49 @@ namespace elle
 // ---------- functions -------------------------------------------------------
 //
 
-    Status		Main(const Natural32			argc,
-			     const Character*			argv[])
+    Status              Main(const Natural32                    argc,
+                             const Character*                   argv[])
     {
-      Node		node;
+      Node              node;
 
       enter();
 
       // check the arguments.
       if (argc != 4)
-	{
-	  std::cerr << "[usage] " << argv[0] << " _name_ _host_ _port_"
-		    << std::endl;
+        {
+          std::cerr << "[usage] " << argv[0] << " _name_ _host_ _port_"
+                    << std::endl;
 
-	  exit(1);
-	}
+          exit(1);
+        }
 
       // init the library.
       if (Elle::Initialize() == StatusError)
-	escape("unable to initialize the Elle library");
+        escape("unable to initialize the Elle library");
 
       // set up the program
       if (Program::Setup() == StatusError)
-	escape("unable to set up the program");
+        escape("unable to set up the program");
 
       // set up the node
       if (node.Setup(String(argv[1]),
-		     String(argv[2]),
-		     static_cast<Port>(::strtoul(argv[3],
-						 NULL,
-						 0))) == StatusError)
-	escape("unable to start the node");
+                     String(argv[2]),
+                     static_cast<Port>(::strtoul(argv[3],
+                                                 NULL,
+                                                 0))) == StatusError)
+        escape("unable to start the node");
 
       // start the node.
       if (node.Run() == StatusError)
-	escape("unable to start the node");
+        escape("unable to start the node");
 
       // launch the program.
       if (Program::Launch() == StatusError)
-	escape("an error occured during the event processing");
+        escape("an error occured during the event processing");
 
       // clean the library.
       if (Elle::Clean() == StatusError)
-	escape("unable to clean the Elle library");
+        escape("unable to clean the Elle library");
 
       leave();
     }
@@ -77,8 +77,8 @@ namespace elle
 // ---------- main ------------------------------------------------------------
 //
 
-int			main(const int				argc,
-			     const char*			argv[])
+int                     main(const int                          argc,
+                             const char*                        argv[])
 {
   if (elle::test::Main(argc, argv) == elle::radix::StatusError)
     {

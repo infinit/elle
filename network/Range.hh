@@ -33,7 +33,7 @@ namespace elle
     template <const Natural32 S>
     struct Capacity
     {
-      static const Natural32	Size = S;
+      static const Natural32    Size = S;
     };
 
     ///

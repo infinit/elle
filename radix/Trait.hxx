@@ -27,73 +27,73 @@ namespace elle
     template <typename T>
     struct Trait::Bare<T&>
     {
-      typedef T					Type;
+      typedef T                                 Type;
     };
 
     template <typename T>
     struct Trait::Bare<T*>
     {
-      typedef T					Type;
+      typedef T                                 Type;
     };
 
     template <typename T>
     struct Trait::Bare<const T>
     {
-      typedef T					Type;
+      typedef T                                 Type;
     };
 
     template <typename T>
     struct Trait::Bare<const T&>
     {
-      typedef T					Type;
+      typedef T                                 Type;
     };
 
     template <typename T>
     struct Trait::Bare<const T*>
     {
-      typedef T					Type;
+      typedef T                                 Type;
     };
 
     template <typename... T>
     struct Trait::Bare< Parameters<T...> >
     {
-      typedef Parameters<T...>			Type;
+      typedef Parameters<T...>                  Type;
     };
 
     template <typename... T>
     struct Trait::Bare< Parameters<T&...> >
     {
-      typedef Parameters<T...>			Type;
+      typedef Parameters<T...>                  Type;
     };
 
     template <typename... T>
     struct Trait::Bare< Parameters<T*...> >
     {
-      typedef Parameters<T...>			Type;
+      typedef Parameters<T...>                  Type;
     };
 
     template <typename... T>
     struct Trait::Bare< Parameters<const T...> >
     {
-      typedef Parameters<T...>			Type;
+      typedef Parameters<T...>                  Type;
     };
 
     template <typename... T>
     struct Trait::Bare< Parameters<const T&...> >
     {
-      typedef Parameters<T...>			Type;
+      typedef Parameters<T...>                  Type;
     };
 
     template <typename... T>
     struct Trait::Bare< Parameters<const T*...> >
     {
-      typedef Parameters<T...>			Type;
+      typedef Parameters<T...>                  Type;
     };
 
     template <>
     struct Trait::Bare< Parameters<> >
     {
-      typedef Parameters<>			Type;
+      typedef Parameters<>                      Type;
     };
 
 //
@@ -107,49 +107,49 @@ namespace elle
     template <typename T>
     struct Trait::Constant<const T>
     {
-      typedef const T				Type;
+      typedef const T                           Type;
     };
 
     template <typename T>
     struct Trait::Constant<T&>
     {
-      typedef const T&				Type;
+      typedef const T&                          Type;
     };
 
     template <typename T>
     struct Trait::Constant<T*>
     {
-      typedef const T*				Type;
+      typedef const T*                          Type;
     };
 
     template <typename... T>
     struct Trait::Constant< Parameters<T...> >
     {
-      typedef Parameters<const T...>		Type;
+      typedef Parameters<const T...>            Type;
     };
 
     template <typename... T>
     struct Trait::Constant< Parameters<T&...> >
     {
-      typedef Parameters<const T&...>		Type;
+      typedef Parameters<const T&...>           Type;
     };
 
     template <typename... T>
     struct Trait::Constant< Parameters<T*...> >
     {
-      typedef Parameters<const T*...>		Type;
+      typedef Parameters<const T*...>           Type;
     };
 
     template <typename... T>
     struct Trait::Constant< Parameters<const T...> >
     {
-      typedef Parameters<const T...>		Type;
+      typedef Parameters<const T...>            Type;
     };
 
     template <>
     struct Trait::Constant< Parameters<> >
     {
-      typedef Parameters<>			Type;
+      typedef Parameters<>                      Type;
     };
 
 //
@@ -163,19 +163,19 @@ namespace elle
     template <typename T>
     struct Trait::Pointer<T*>
     {
-      typedef T*				Type;
+      typedef T*                                Type;
     };
 
     template <typename... T>
     struct Trait::Pointer< Parameters<T...> >
     {
-      typedef Parameters<T*...>			Type;
+      typedef Parameters<T*...>                 Type;
     };
 
     template <typename... T>
     struct Trait::Pointer< Parameters<T*...> >
     {
-      typedef Parameters<T*...>			Type;
+      typedef Parameters<T*...>                 Type;
     };
 
 //
@@ -189,19 +189,19 @@ namespace elle
     template <typename T>
     struct Trait::Reference<T&>
     {
-      typedef T&				Type;
+      typedef T&                                Type;
     };
 
     template <typename... T>
     struct Trait::Reference< Parameters<T...> >
     {
-      typedef Parameters<T&...>			Type;
+      typedef Parameters<T&...>                 Type;
     };
 
     template <typename... T>
     struct Trait::Reference< Parameters<T&...> >
     {
-      typedef Parameters<T&...>			Type;
+      typedef Parameters<T&...>                 Type;
     };
 
   }

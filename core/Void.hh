@@ -23,7 +23,7 @@ namespace elle
     ///
     /// this type represents the absence of type.
     ///
-    typedef void		Void;
+    typedef void                Void;
 
   }
 }

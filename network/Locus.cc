@@ -31,7 +31,7 @@ namespace elle
     ///
     /// the definition of a Null locus.
     ///
-    const Locus			Locus::Null;
+    const Locus                 Locus::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -53,24 +53,24 @@ namespace elle
     /// this method creates an locus from a string of the form
     /// 'host:port'.
     ///
-    Status		Locus::Create(const String&		string)
+    Status              Locus::Create(const String&             string)
     {
-      Natural32		separator;
+      Natural32         separator;
 
       enter();
 
       // locate the ':' separator.
       if ((separator = string.find_first_of(':')) == string.npos)
-	escape("unable to locate the host/port separator ':'");
+        escape("unable to locate the host/port separator ':'");
 
       // create the host.
       if (this->host.Create(string.substr(0, separator)) == StatusError)
-	escape("unable to create the host");
+        escape("unable to create the host");
 
       // create the port.
       this->port =
-	static_cast<Port>(::strtoul(string.substr(separator + 1).c_str(),
-				    NULL, 0));
+        static_cast<Port>(::strtoul(string.substr(separator + 1).c_str(),
+                                    NULL, 0));
 
       leave();
     }
@@ -78,8 +78,8 @@ namespace elle
     ///
     /// this method creates an locus.
     ///
-    Status		Locus::Create(const Host&		host,
-				      const Port		port)
+    Status              Locus::Create(const Host&               host,
+                                      const Port                port)
     {
       enter();
 
@@ -96,18 +96,18 @@ namespace elle
     ///
     /// checks if two objects match.
     ///
-    Boolean		Locus::operator==(const Locus&		element) const
+    Boolean             Locus::operator==(const Locus&          element) const
     {
       enter();
 
       // check the locus as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the internal values.
       if ((this->host != element.host) ||
-	  (this->port != element.port))
-	false();
+          (this->port != element.port))
+        false();
 
       true();
     }
@@ -115,25 +115,25 @@ namespace elle
     ///
     /// compare two objects.
     ///
-    Boolean		Locus::operator<(const Locus&		element) const
+    Boolean             Locus::operator<(const Locus&           element) const
     {
       enter();
 
       // check the locus as this may actually be the same object.
       if (this == &element)
-	false();
+        false();
 
       // compare the host.
       if (this->host < element.host)
-	true();
+        true();
       else if (this->host > element.host)
-	false();
+        false();
 
       // compare the port.
       if (this->port < element.port)
-	true();
+        true();
       else if (this->port > element.port)
-	false();
+        false();
 
       false();
     }
@@ -141,7 +141,7 @@ namespace elle
     ///
     /// compare two objects.
     ///
-    Boolean		Locus::operator>(const Locus&		element) const
+    Boolean             Locus::operator>(const Locus&           element) const
     {
       return (!(this->operator<=(element)));
     }
@@ -158,14 +158,14 @@ namespace elle
     ///
     /// this method serializes the locus.
     ///
-    Status		Locus::Serialize(Archive&		archive) const
+    Status              Locus::Serialize(Archive&               archive) const
     {
       enter();
 
       // serialize the host and port.
       if (archive.Serialize(this->host,
-			    this->port) == StatusError)
-	escape("unable to serialize the locus attributes");
+                            this->port) == StatusError)
+        escape("unable to serialize the locus attributes");
 
       leave();
     }
@@ -173,14 +173,14 @@ namespace elle
     ///
     /// this method extracts an locus.
     ///
-    Status		Locus::Extract(Archive&			archive)
+    Status              Locus::Extract(Archive&                 archive)
     {
       enter();
 
       // extract the locus.
       if (archive.Extract(this->host,
-			  this->port) == StatusError)
-	escape("unable to extract the locus attributes");
+                          this->port) == StatusError)
+        escape("unable to extract the locus attributes");
 
       leave();
     }
@@ -192,19 +192,19 @@ namespace elle
     ///
     /// this method dumps an locus.
     ///
-    Status		Locus::Dump(const Natural32		margin) const
+    Status              Locus::Dump(const Natural32             margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Locus]" << std::endl;
 
       if (this->host.Dump(margin + 2) == StatusError)
-	escape("unable to dump the host");
+        escape("unable to dump the host");
 
       std::cout << alignment << Dumpable::Shift << "[Port] "
-		<< std::dec << this->port << std::endl;
+                << std::dec << this->port << std::endl;
 
       leave();
     }

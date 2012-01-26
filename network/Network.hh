@@ -72,20 +72,20 @@ namespace elle
       /// this class represents the functionoid used to forward the call.
       ///
       class Functionoid:
-	public Entity
+        public Entity
       {
       public:
-	//
-	// constructors & destructors
-	//
-	virtual ~Functionoid()
-	{
-	}
+        //
+        // constructors & destructors
+        //
+        virtual ~Functionoid()
+        {
+        }
 
-	//
-	// methods
-	//
-	virtual Status	Call(Archive&) const = 0;
+        //
+        // methods
+        //
+        virtual Status  Call(Archive&) const = 0;
       };
 
       ///
@@ -94,58 +94,58 @@ namespace elle
       ///
       template <typename P>
       class Selectionoid:
-	public Functionoid
+        public Functionoid
       {
       public:
-	//
-	// constructors & destructors
-	//
-	Selectionoid(const P&);
+        //
+        // constructors & destructors
+        //
+        Selectionoid(const P&);
 
-	//
-	// methods
-	//
-	Status		Call(Archive&) const;
+        //
+        // methods
+        //
+        Status          Call(Archive&) const;
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	Status		Dump(const Natural32) const;
+        // dumpable
+        Status          Dump(const Natural32) const;
 
-	//
-	// attributes
-	//
-	P		procedure;
+        //
+        // attributes
+        //
+        P               procedure;
       };
 
       //
       // types
       //
-      typedef std::map<const Tag, Functionoid*>		Container;
-      typedef typename Container::iterator		Iterator;
-      typedef typename Container::const_iterator	Scoutor;
+      typedef std::map<const Tag, Functionoid*>         Container;
+      typedef typename Container::iterator              Iterator;
+      typedef typename Container::const_iterator        Scoutor;
 
       //
       // static methods
       //
-      static Status	Initialize();
-      static Status	Clean();
+      static Status     Initialize();
+      static Status     Clean();
 
       template <const Tag I,
-		const Tag O,
-		const Tag E>
-      static Status	Register(const Procedure<I, O, E>&);
+                const Tag O,
+                const Tag E>
+      static Status     Register(const Procedure<I, O, E>&);
 
-      static Status	Dispatch(Parcel*);
+      static Status     Dispatch(Parcel*);
 
-      static Status	Show(const Natural32 = 0);
+      static Status     Show(const Natural32 = 0);
 
       //
       // static attributes
       //
-      static Container	Procedures;
+      static Container  Procedures;
     };
 
   }

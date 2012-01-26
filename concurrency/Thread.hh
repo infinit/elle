@@ -45,11 +45,11 @@ namespace elle
       //
       // static methods
       //
-      static Thread*	Retrieve();
+      static Thread*    Retrieve();
       template <typename T>
-      static Thread*	Retrieve(T*);
+      static Thread*    Retrieve(T*);
 
-      Status		Start();
+      Status            Start();
 
       //
       // constructors & destructors
@@ -60,10 +60,10 @@ namespace elle
       //
       // interface
       //
-      virtual Status	Run() = 0;
+      virtual Status    Run() = 0;
 
       // qthread
-      void		run();
+      void              run();
     };
 
   }

@@ -31,7 +31,7 @@ namespace elle
     ///
     /// this method creates a pattern.
     ///
-    Status		Pattern::Create(const String&		string)
+    Status              Pattern::Create(const String&           string)
     {
       enter();
 
@@ -48,17 +48,17 @@ namespace elle
     ///
     /// this method check if two objects match.
     ///
-    Boolean		Pattern::operator==(const Pattern&	element) const
+    Boolean             Pattern::operator==(const Pattern&      element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the internal.
       if (this->string != element.string)
-	false();
+        false();
 
       true();
     }
@@ -75,14 +75,14 @@ namespace elle
     ///
     /// this method dumps the object's internal.
     ///
-    Status		Pattern::Dump(const Natural32		margin) const
+    Status              Pattern::Dump(const Natural32           margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Pattern] "
-		<< this->string << std::endl;
+                << this->string << std::endl;
 
       leave();
     }

@@ -50,8 +50,8 @@ namespace elle
     /// Mutex with a Section in order to make sure the mutex is always
     /// unlocked when leaving the scope. this class can be used as follows:
     ///
-    ///   Mutex			mutex;
-    ///   Mutex::Zone		zone(mutex);
+    ///   Mutex                 mutex;
+    ///   Mutex::Zone           zone(mutex);
     ///
     ///   zone.Lock();
     ///
@@ -72,21 +72,21 @@ namespace elle
       typedef Section<
         Parameters<>,
         Parameters<>
-        >							S;
+        >                                                       S;
       typedef Closure<
-	Void,
-	Parameters<>,
-	Parameters<>
-	>							L;
+        Void,
+        Parameters<>,
+        Parameters<>
+        >                                                       L;
       typedef Closure<
-	Void,
-	Parameters<>,
-	Parameters<>
-	>							U;
+        Void,
+        Parameters<>,
+        Parameters<>
+        >                                                       U;
       typedef Callback<
-	Void,
-	Parameters<>
-	>							C;
+        Void,
+        Parameters<>
+        >                                                       C;
 
       //
       // classes
@@ -97,32 +97,32 @@ namespace elle
       /// when leaving a scope.
       ///
       class Zone:
-	public Entity
+        public Entity
       {
       public:
-	//
-	// constructors & destructors
-	//
-	Zone(Mutex&);
+        //
+        // constructors & destructors
+        //
+        Zone(Mutex&);
 
-	//
-	// methods
-	//
-	Void		Lock();
-	Void		Unlock();
+        //
+        // methods
+        //
+        Void            Lock();
+        Void            Unlock();
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	Status		Dump(const Natural32 = 0) const;
+        // dumpable
+        Status          Dump(const Natural32 = 0) const;
 
-	//
-	// attributes
-	//
-	Mutex&		mutex;
-	S		section;
+        //
+        // attributes
+        //
+        Mutex&          mutex;
+        S               section;
       };
 
       //
@@ -133,10 +133,10 @@ namespace elle
       //
       // methods
       //
-      Void		Lock();
-      Void		Unlock();
+      Void              Lock();
+      Void              Unlock();
 
-      Status		Try();
+      Status            Try();
 
       //
       // interfaces
@@ -146,12 +146,12 @@ namespace elle
       declare(Mutex);
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Boolean		locked;
+      Boolean           locked;
     };
 
   }

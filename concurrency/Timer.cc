@@ -42,11 +42,11 @@ namespace elle
     {
       // stop and delete the timer, if present.
       if (this->timer != NULL)
-	{
-	  this->timer->stop();
-	  this->timer->deleteLater();
+        {
+          this->timer->stop();
+          this->timer->deleteLater();
           this->timer = NULL;
-	}
+        }
     }
 
 //
@@ -56,7 +56,7 @@ namespace elle
     ///
     /// this method sets up the timer by recording the callback.
     ///
-    Status		Timer::Create(const Mode		mode)
+    Status              Timer::Create(const Mode                mode)
     {
       enter();
 
@@ -68,12 +68,12 @@ namespace elle
 
       // set the timer mode.
       if (this->mode == Timer::ModeSingle)
-	this->timer->setSingleShot(true);
+        this->timer->setSingleShot(true);
 
       // connect the signal.
       if (this->connect(this->timer, SIGNAL(timeout()),
-			this, SLOT(_timeout())) == false)
-	escape("unable to connect the timeout signal");
+                        this, SLOT(_timeout())) == false)
+        escape("unable to connect the timeout signal");
 
       leave();
     }
@@ -81,7 +81,7 @@ namespace elle
     ///
     /// this method starts the timer according the the mode and duration.
     ///
-    Status		Timer::Start(const Natural32		duration)
+    Status              Timer::Start(const Natural32            duration)
     {
       enter();
 
@@ -94,7 +94,7 @@ namespace elle
     ///
     /// this method stops the timer.
     ///
-    Status		Timer::Stop()
+    Status              Timer::Stop()
     {
       enter();
 
@@ -107,7 +107,7 @@ namespace elle
     ///
     /// this method restarts the timer according the the mode and duration.
     ///
-    Status		Timer::Restart(const Natural32		duration)
+    Status              Timer::Restart(const Natural32          duration)
     {
       enter();
 
@@ -125,13 +125,13 @@ namespace elle
     /// this callback is triggered in a new fiber so that it can
     /// wait for events or resources.
     ///
-    Status		Timer::Timeout()
+    Status              Timer::Timeout()
     {
       enter();
 
       // emit the signal.
       if (this->signal.timeout.Emit() == StatusError)
-	escape("unable to emit the signal");
+        escape("unable to emit the signal");
 
       leave();
     }
@@ -143,9 +143,9 @@ namespace elle
     ///
     /// this method dumps the timer.
     ///
-    Status		Timer::Dump(const Natural32		margin) const
+    Status              Timer::Dump(const Natural32             margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
@@ -153,15 +153,15 @@ namespace elle
 
       // dump the mode.
       std::cout << alignment << Dumpable::Shift << "[Mode] "
-		<< this->mode << std::endl;
+                << this->mode << std::endl;
 
       // dump the interval.
       std::cout << alignment << Dumpable::Shift << "[Interval] "
-		<< this->timer->interval() << std::endl;
+                << this->timer->interval() << std::endl;
 
       // dump the signal.
       if (this->signal.timeout.Dump(margin + 2) == StatusError)
-	escape("unable to dump the signal");
+        escape("unable to dump the signal");
 
       leave();
     }
@@ -173,17 +173,17 @@ namespace elle
     ///
     /// this slot is triggered whenever the timer timeouts.
     ///
-    void		Timer::_timeout()
+    void                Timer::_timeout()
     {
       Closure< Status,
-	       Parameters<> >	closure(Callback<>::Infer(&Timer::Timeout,
-							  this));
+               Parameters<> >   closure(Callback<>::Infer(&Timer::Timeout,
+                                                          this));
 
       enter();
 
       // trigger the callback in a new fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	yield(_(), "unable to spawn a fiber");
+        yield(_(), "unable to spawn a fiber");
 
       release();
     }

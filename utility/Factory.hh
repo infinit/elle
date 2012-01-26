@@ -61,28 +61,28 @@ namespace elle
       /// this class is the base class for factory functionoids.
       ///
       class Functionoid:
-	public Entity
+        public Entity
       {
       public:
-	//
-	// constructors & destructors
-	//
-	virtual ~Functionoid()
-	{
-	}
+        //
+        // constructors & destructors
+        //
+        virtual ~Functionoid()
+        {
+        }
 
-	//
-	// methods
-	//
+        //
+        // methods
+        //
 
-	///
-	/// this method must be redefined in every sub-class.
-	///
-	/// note that using a template method would have been better but
-	/// since template methods cannot be virtual, the argument is assumed
-	/// to be a derived entity.
-	///
-	virtual Status	Allocate(Meta*&) const = 0;
+        ///
+        /// this method must be redefined in every sub-class.
+        ///
+        /// note that using a template method would have been better but
+        /// since template methods cannot be virtual, the argument is assumed
+        /// to be a derived entity.
+        ///
+        virtual Status  Allocate(Meta*&) const = 0;
       };
 
       ///
@@ -91,31 +91,31 @@ namespace elle
       ///
       template <typename T>
       class Generatoid:
-	public Functionoid
+        public Functionoid
       {
       public:
-	//
-	// constructors & destructors
-	//
-	Generatoid(const Product&);
+        //
+        // constructors & destructors
+        //
+        Generatoid(const Product&);
 
-	//
-	// methods
-	//
-	Status		Allocate(Meta*&) const;
+        //
+        // methods
+        //
+        Status          Allocate(Meta*&) const;
 
-	//
-	// attributes
-	//
-	Product		identifier;
+        //
+        // attributes
+        //
+        Product         identifier;
       };
 
       //
       // types
       //
-      typedef std::map<const Product, Functionoid*>	Container;
-      typedef Container::iterator			Iterator;
-      typedef Container::const_iterator			Scoutor;
+      typedef std::map<const Product, Functionoid*>     Container;
+      typedef Container::iterator                       Iterator;
+      typedef Container::const_iterator                 Scoutor;
 
       //
       // constructors & destructors
@@ -126,24 +126,24 @@ namespace elle
       // methods
       //
       template <typename T>
-      Status		Register(const Product&);
+      Status            Register(const Product&);
       template <typename U>
-      Status		Build(const Product&,
-			      U*&) const;
+      Status            Build(const Product&,
+                              U*&) const;
 
-      Status		Clear();
+      Status            Clear();
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Container		container;
+      Container         container;
     };
 
   }

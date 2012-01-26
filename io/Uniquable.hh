@@ -64,22 +64,22 @@ namespace elle
       /// this method returns in the Unique, the string-based representation
       /// of the object's archive.
       ///
-      Status		Save(Unique&) const
+      Status            Save(Unique&) const
       {
-	enter();
+        enter();
 
-	escape("this method should never have been called");
+        escape("this method should never have been called");
       }
 
       ///
       /// this method reconstructs the living object based on the
       /// unique string representation.
       ///
-      Status		Restore(const Unique&)
+      Status            Restore(const Unique&)
       {
-	enter();
+        enter();
 
-	escape("this method should never have been called");
+        escape("this method should never have been called");
       }
     };
 
@@ -94,8 +94,8 @@ namespace std
 {
 
   template <const elle::io::Format F>
-  ostream&		operator<<(ostream&,
-				   const elle::io::Uniquable<F>&);
+  ostream&              operator<<(ostream&,
+                                   const elle::io::Uniquable<F>&);
 
 }
 

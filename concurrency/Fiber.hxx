@@ -33,7 +33,7 @@ namespace elle
     /// and jumping back.
     ///
     template <typename... T>
-    Void		Fiber::Launch(Closure<Status, T...>*	closure)
+    Void                Fiber::Launch(Closure<Status, T...>*    closure)
     {
       enter();
 
@@ -64,7 +64,7 @@ namespace elle
     /// this method spawns a fiber.
     ///
     template <typename... T>
-    Status		Fiber::Spawn(Closure<Status, T...>&	closure)
+    Status              Fiber::Spawn(Closure<Status, T...>&     closure)
     {
       enter();
 
@@ -78,8 +78,8 @@ namespace elle
 
       // declare a launch function pointer in order to bypass the type
       // checking system through casts.
-      Void		(*launch)(Closure<Status, T...>*) = &Fiber::Launch;
-      Fiber*		fiber;
+      Void              (*launch)(Closure<Status, T...>*) = &Fiber::Launch;
+      Fiber*            fiber;
 
       // set the current fiber as suspended.
       Fiber::Current->state = Fiber::StateSuspended;
@@ -132,7 +132,7 @@ namespace elle
 
       // set the new context.
       if (::swapcontext(&Fiber::Program->context,
-			&Fiber::Current->context) == -1)
+                        &Fiber::Current->context) == -1)
         escape("unable to set the context");
 
       Fiber::CheckCurrentFiber();
@@ -145,8 +145,8 @@ namespace elle
     /// expected to continue.
     ///
     template <typename T>
-    Status		Fiber::Wait(const Event&		event,
-                                    T*&				data)
+    Status              Fiber::Wait(const Event&                event,
+                                    T*&                         data)
     {
       enter();
 
@@ -199,8 +199,8 @@ namespace elle
     /// this simple scheme prevents conflicts.
     ///
     template <typename T>
-    Status		Fiber::Wait(const Resource*		resource,
-                                    T*&				data)
+    Status              Fiber::Wait(const Resource*             resource,
+                                    T*&                         data)
     {
       enter();
 
@@ -245,11 +245,11 @@ namespace elle
     /// this method wakes up the fiber waiting for the given event.
     ///
     template <typename T>
-    Status		Fiber::Awaken(const Event&		event,
-                                      T*			data)
+    Status              Fiber::Awaken(const Event&              event,
+                                      T*                        data)
     {
-      Fiber::F::Iterator	iterator;
-      Boolean			awaken;
+      Fiber::F::Iterator        iterator;
+      Boolean                   awaken;
 
       enter();
 
@@ -263,24 +263,24 @@ namespace elle
       // locate, awaken and remove fibers as long as found.
       while (Fiber::Locate(event, iterator) == true)
         {
-          Fiber*	fiber = *iterator;
+          Fiber*        fiber = *iterator;
 
-	  // set the boolean to true.
-	  awaken = true;
+          // set the boolean to true.
+          awaken = true;
 
-	  // set the data.
-	  fiber->data = static_cast<Meta*>(data);
+          // set the data.
+          fiber->data = static_cast<Meta*>(data);
 
-	  // set the state as awaken.
-	  fiber->state = Fiber::StateAwaken;
+          // set the state as awaken.
+          fiber->state = Fiber::StateAwaken;
 
-	  // reset the type.
-	  fiber->type = Fiber::TypeNone;
+          // reset the type.
+          fiber->type = Fiber::TypeNone;
 
-	  // delete and reset the event.
-	  delete fiber->event;
-	  fiber->event = NULL;
-	}
+          // delete and reset the event.
+          delete fiber->event;
+          fiber->event = NULL;
+        }
 
       // return true if at least one fiber has been awaken.
       if (awaken == true)
@@ -293,11 +293,11 @@ namespace elle
     /// this method wakes up the fibers waiting for the given resource.
     ///
     template <typename T>
-    Status		Fiber::Awaken(const Resource*		resource,
-                                      T*			data)
+    Status              Fiber::Awaken(const Resource*           resource,
+                                      T*                        data)
     {
-      Fiber::F::Iterator	iterator;
-      Boolean			awaken;
+      Fiber::F::Iterator        iterator;
+      Boolean                   awaken;
 
       enter();
 
@@ -311,23 +311,23 @@ namespace elle
       // locate, awaken and remove fibers as long as found.
       while (Fiber::Locate(resource, iterator) == true)
         {
-          Fiber*	fiber = *iterator;
+          Fiber*        fiber = *iterator;
 
-	  // set the boolean to true.
-	  awaken = true;
+          // set the boolean to true.
+          awaken = true;
 
-	  // set the data.
-	  fiber->data = static_cast<Meta*>(data);
+          // set the data.
+          fiber->data = static_cast<Meta*>(data);
 
-	  // set the state as awaken.
-	  fiber->state = Fiber::StateAwaken;
+          // set the state as awaken.
+          fiber->state = Fiber::StateAwaken;
 
-	  // reset the type.
-	  fiber->type = Fiber::TypeNone;
+          // reset the type.
+          fiber->type = Fiber::TypeNone;
 
-	  // reset the resource.
-	  fiber->resource = NULL;
-	}
+          // reset the resource.
+          fiber->resource = NULL;
+        }
 
       // return true if at least one fiber has been awaken.
       if (awaken == true)

@@ -40,8 +40,8 @@ namespace elle
       //
       // static methods
       //
-      static Status	Initialize();
-      static Status	Clean();
+      static Status     Initialize();
+      static Status     Clean();
     };
 
   }

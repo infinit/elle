@@ -25,8 +25,8 @@ namespace std
   /// this method displays a Natural8 type. without it the stream naturally
   /// displays it as a character.
   ///
-  ostream&		operator<<(ostream&			stream,
-				   const elle::core::Natural8&	element)
+  ostream&              operator<<(ostream&                     stream,
+                                   const elle::core::Natural8&  element)
   {
     // cast it into a number.
     stream << static_cast<elle::core::Natural32>(element);

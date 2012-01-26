@@ -56,9 +56,9 @@ namespace elle
     /// lock and unlock methods. finally, Hurdle::C provides a shortcut for
     /// Hurdle-specific callbacks.
     ///
-    ///   Hurdle	hurdle;
+    ///   Hurdle        hurdle;
     ///
-    ///   Hurdle::S	section(
+    ///   Hurdle::S     section(
     ///     Hurdle::L(Hurdle::C(&Hurdle::Lock, &hurdle)),
     ///     Hurdle::U(Hurdle::C(&Hurdle::Unlock, &hurdle)));
     ///
@@ -75,9 +75,9 @@ namespace elle
     /// provides a Locker helper class.
     ///
     template <typename... L,
-	      typename... U>
+              typename... U>
     class Section< Parameters<L...>,
-		   Parameters<U...> >:
+                   Parameters<U...> >:
       public Entity
     {
     public:
@@ -85,64 +85,64 @@ namespace elle
       // enumerations
       //
       enum State
-	{
-	  StateUnlocked,
-	  StateLocked
-	};
+        {
+          StateUnlocked,
+          StateLocked
+        };
 
       //
       // constructors & destructors
       //
       Section(Closure<
-	        Void,
-	        Parameters<L...>,
-		Parameters<>
-	        >,
-	      Closure<
-	        Void,
-	        Parameters<U...>,
-		Parameters<>
-	        >);
+                Void,
+                Parameters<L...>,
+                Parameters<>
+                >,
+              Closure<
+                Void,
+                Parameters<U...>,
+                Parameters<>
+                >);
       Section(Closure<
-	        Void,
-	        Parameters<L...>,
-		Parameters<>
-	        >&,
-	      Closure<
-	        Void,
-	        Parameters<U...>,
-		Parameters<>
-	        >&);
+                Void,
+                Parameters<L...>,
+                Parameters<>
+                >&,
+              Closure<
+                Void,
+                Parameters<U...>,
+                Parameters<>
+                >&);
       ~Section();
 
       //
       // methods
       //
-      Void		Enter();
-      Void		Leave();
+      Void              Enter();
+      Void              Leave();
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      State		state;
+      State             state;
 
       Closure<
-	Void,
-	Parameters<L...>,
-	Parameters<>
-	>		lock;
+        Void,
+        Parameters<L...>,
+        Parameters<>
+        >               lock;
       Closure<
-	Void,
-	Parameters<U...>,
-	Parameters<>
-	>		unlock;
+        Void,
+        Parameters<U...>,
+        Parameters<>
+        >               unlock;
     };
 
   }

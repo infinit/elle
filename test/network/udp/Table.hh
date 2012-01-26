@@ -44,48 +44,48 @@ namespace elle
       //
       // types
       //
-      typedef std::list<Neighbour*>		Container;
-      typedef Container::iterator		Iterator;
-      typedef Container::const_iterator		Scoutor;
+      typedef std::list<Neighbour*>             Container;
+      typedef Container::iterator               Iterator;
+      typedef Container::const_iterator         Scoutor;
 
       //
       // methods
       //
-      Status		Create(Node*);
+      Status            Create(Node*);
 
-      Status		Update(const Locus&,
-			       const String&);
-      Status		Refresh(const Locus&);
-      Status		Remove(const Locus&);
-      Status		Locate(const Locus&,
-			       Iterator&);
+      Status            Update(const Locus&,
+                               const String&);
+      Status            Refresh(const Locus&);
+      Status            Remove(const Locus&);
+      Status            Locate(const Locus&,
+                               Iterator&);
 
-      Status		Merge(const Table&);
+      Status            Merge(const Table&);
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      Status            Serialize(Archive&) const;
+      Status            Extract(Archive&);
 
       //
       // attributes
       //
-      Node*		node;
+      Node*             node;
 
-      Timer		timer;
+      Timer             timer;
 
-      Container		container;
+      Container         container;
 
       //
       // callbacks
       //
-      Status		Renew();
+      Status            Renew();
     };
 
   }

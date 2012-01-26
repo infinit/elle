@@ -58,10 +58,10 @@ namespace elle
       // enumerations
       //
       enum Mode
-	{
-	  ModeSingle,
-	  ModeRepetition
-	};
+        {
+          ModeSingle,
+          ModeRepetition
+        };
 
       //
       // constructors & destructors
@@ -72,45 +72,45 @@ namespace elle
       //
       // methods
       //
-      Status		Create(const Mode);
-      Status		Start(const Natural32 = 0);
-      Status		Stop();
-      Status		Restart(const Natural32 = 0);
+      Status            Create(const Mode);
+      Status            Start(const Natural32 = 0);
+      Status            Stop();
+      Status            Restart(const Natural32 = 0);
 
       //
       // callbacks
       //
-      Status		Timeout();
+      Status            Timeout();
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Mode		mode;
+      Mode              mode;
 
-      ::QTimer*		timer;
+      ::QTimer*         timer;
 
       //
       // signals
       //
       struct
       {
-	Signal<
-	  Parameters<>
-	  >		timeout;
-      }			signal;
+        Signal<
+          Parameters<>
+          >             timeout;
+      }                 signal;
 
     private slots:
       //
       // slots
       //
-      void		_timeout();
+      void              _timeout();
     };
 
   }

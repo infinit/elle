@@ -23,62 +23,62 @@ namespace elle
 // ---------- functions -------------------------------------------------------
 //
 
-    Status		Main(const Natural32			argc,
-			     const Character*			argv[])
+    Status              Main(const Natural32                    argc,
+                             const Character*                   argv[])
     {
-      Server		server;
-      Client		client;
+      Server            server;
+      Client            client;
 
       enter();
 
       // check the arguments.
       if (argc != 3)
-	{
-	  std::cerr << "[usage] " << argv[0] << " _type{client/server}_ "
-		    << "_address_" << std::endl;
+        {
+          std::cerr << "[usage] " << argv[0] << " _type{client/server}_ "
+                    << "_address_" << std::endl;
 
-	  exit(1);
-	}
+          exit(1);
+        }
 
       // init the library.
       if (Elle::Initialize() == StatusError)
-	escape("unable to initialize the Elle library");
+        escape("unable to initialize the Elle library");
 
       // setup the program.
       if (Program::Setup() == StatusError)
-	escape("unable to set up the program");
+        escape("unable to set up the program");
 
       // launch either the client or the server.
       if (String(argv[1]) == String("server"))
-	{
-	  // set up the server.
-	  if (server.Setup(argv[2]) == StatusError)
-	    escape("unable to set up the server");
+        {
+          // set up the server.
+          if (server.Setup(argv[2]) == StatusError)
+            escape("unable to set up the server");
 
-	  // start the server.
-	  if (server.Run() == StatusError)
-	    escape("unable to run the server");
-	}
+          // start the server.
+          if (server.Run() == StatusError)
+            escape("unable to run the server");
+        }
       else if (String(argv[1]) == String("client"))
-	{
-	  // set up the client.
-	  if (client.Setup(argv[2]) == StatusError)
-	    escape("unable to set up the client");
+        {
+          // set up the client.
+          if (client.Setup(argv[2]) == StatusError)
+            escape("unable to set up the client");
 
-	  // start the client.
-	  if (client.Run() == StatusError)
-	    escape("unable to run the client");
-	}
+          // start the client.
+          if (client.Run() == StatusError)
+            escape("unable to run the client");
+        }
       else
-	escape("unknown type");
+        escape("unknown type");
 
       // launch the program.
       if (Program::Launch() == StatusError)
-	escape("an error occured during the event processing");
+        escape("an error occured during the event processing");
 
       // clean the library.
       if (Elle::Clean() == StatusError)
-	escape("unable to clean the Elle library");
+        escape("unable to clean the Elle library");
 
       leave();
     }
@@ -90,8 +90,8 @@ namespace elle
 // ---------- main ------------------------------------------------------------
 //
 
-int			main(const int				argc,
-			     const char*			argv[])
+int                     main(const int                          argc,
+                             const char*                        argv[])
 {
   if (elle::test::Main(argc, argv) == elle::radix::StatusError)
     {

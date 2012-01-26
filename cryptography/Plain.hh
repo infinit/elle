@@ -32,7 +32,7 @@ namespace elle
     /// this class represents plain data that can be used for cryptographic
     /// purposes.
     ///
-    typedef Region	Plain;
+    typedef Region      Plain;
 
   }
 }

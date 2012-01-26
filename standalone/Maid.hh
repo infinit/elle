@@ -43,9 +43,9 @@ namespace elle
     ///
     /// the following example illustrates the problem:
     ///
-    /// void		foo(B*			b)
+    /// void            foo(B*                  b)
     /// {
-    ///   A*		a;
+    ///   A*            a;
     ///
     ///   a = new A(42);
     ///
@@ -77,7 +77,7 @@ namespace elle
     /// of the called function and forward the exception such that the
     /// source code will look like this:
     ///
-    /// void		foo()
+    /// void            foo()
     /// {
     ///   [...]
     ///
@@ -93,7 +93,7 @@ namespace elle
     ///   [...]
     /// }
     ///
-    /// void		bar()
+    /// void            bar()
     /// {
     ///   [...]
     ///
@@ -109,7 +109,7 @@ namespace elle
     ///   [...]
     /// }
     ///
-    /// void		baz()
+    /// void            baz()
     /// {
     ///   [...]
     ///
@@ -157,10 +157,10 @@ namespace elle
     ///
     /// the following illustrates how to use the system:
     ///
-    /// void		foo()
+    /// void            foo()
     /// {
-    ///   ::RSA*	rsa;
-    ///   PublicKey*	pk;
+    ///   ::RSA*        rsa;
+    ///   PublicKey*    pk;
     ///
     ///   enterx(instance(pk),
     ///         slab(rsa, ::RSA_free));
@@ -180,9 +180,9 @@ namespace elle
     /// the system when to start and stop tracking the
     /// variable through track() and untrack().
     ///
-    /// void		foo()
+    /// void            foo()
     /// {
-    ///   ::EVP_MD_CTX	context;
+    ///   ::EVP_MD_CTX  context;
     ///
     ///   wrap(context);
     ///   enterx(local(context, ::EVP_MD_CTX_cleanup));
@@ -207,10 +207,10 @@ namespace elle
       // enumerations
       //
       enum Type
-	{
-	  TypeDelete,
-	  TypeRoutine,
-	};
+        {
+          TypeDelete,
+          TypeRoutine,
+        };
 
       //
       // classes
@@ -227,31 +227,31 @@ namespace elle
       class Guard
       {
       public:
-	//
-	// types
-	//
+        //
+        // types
+        //
 
-	//
-	// constructors & destructors
-	//
-	virtual ~Guard()
-	{
-	}
+        //
+        // constructors & destructors
+        //
+        virtual ~Guard()
+        {
+        }
 
-	//
-	// operators
-	//
-	void*			operator new(size_t,
-					     void*		memory)
-	{
-	  // return the same pointer.
-	  return (memory);
-	}
+        //
+        // operators
+        //
+        void*                   operator new(size_t,
+                                             void*              memory)
+        {
+          // return the same pointer.
+          return (memory);
+        }
 
-	void			operator delete(void*)
-	{
-	  // do not release any memory as this will be done automatically.
-	}
+        void                    operator delete(void*)
+        {
+          // do not release any memory as this will be done automatically.
+        }
       };
 
       ///
@@ -265,38 +265,38 @@ namespace elle
       class Garrison
       {
       public:
-	//
-	// constant
-	//
-	static const Natural32		Capacity = 9;
+        //
+        // constant
+        //
+        static const Natural32          Capacity = 9;
 
-	//
-	// attributes
-	//
-	Guard*			guards[Capacity];
-	Natural32		size;
+        //
+        // attributes
+        //
+        Guard*                  guards[Capacity];
+        Natural32               size;
 
-	//
-	// constructors & destructors
-	//
-	Garrison(Natural32,
-		 ...);
-	~Garrison();
+        //
+        // constructors & destructors
+        //
+        Garrison(Natural32,
+                 ...);
+        ~Garrison();
 
-	//
-	// operators
-	//
-	void*			operator new(size_t,
-					     void*		memory)
-	{
-	  // return the same pointer.
-	  return (memory);
-	}
+        //
+        // operators
+        //
+        void*                   operator new(size_t,
+                                             void*              memory)
+        {
+          // return the same pointer.
+          return (memory);
+        }
 
-	void			operator delete(void*)
-	{
-	  // do not release any memory as this will be done automatically.
-	}
+        void                    operator delete(void*)
+        {
+          // do not release any memory as this will be done automatically.
+        }
       };
 
       ///
@@ -305,31 +305,31 @@ namespace elle
       ///
       template <typename T>
       class Instance:
-	public Guard
+        public Guard
       {
       public:
-	//
-	// constructors & destructors
-	//
-	Instance(T&						pointer):
-	  pointer(pointer)
-	{
-	}
+        //
+        // constructors & destructors
+        //
+        Instance(T&                                             pointer):
+          pointer(pointer)
+        {
+        }
 
-	~Instance()
-	{
-	  if (this->pointer != NULL)
-	    {
-	      delete this->pointer;
+        ~Instance()
+        {
+          if (this->pointer != NULL)
+            {
+              delete this->pointer;
 
-	      this->pointer = NULL;
-	    }
-	}
+              this->pointer = NULL;
+            }
+        }
 
-	//
-	// attributes
-	//
-	T&		pointer;
+        //
+        // attributes
+        //
+        T&              pointer;
       };
 
       ///
@@ -340,49 +340,49 @@ namespace elle
       ///
       template <typename T, typename F>
       class Slab:
-	public Guard
+        public Guard
       {
       public:
-	//
-	// constructors & destructors
-	//
-	Slab(T&							pointer,
-	     F							function):
-	  pointer(pointer),
-	  function(function)
-	{
-	}
+        //
+        // constructors & destructors
+        //
+        Slab(T&                                                 pointer,
+             F                                                  function):
+          pointer(pointer),
+          function(function)
+        {
+        }
 
-	~Slab()
-	{
-	  if (this->pointer != NULL)
-	    {
-	      (Void)this->function(this->pointer);
+        ~Slab()
+        {
+          if (this->pointer != NULL)
+            {
+              (Void)this->function(this->pointer);
 
-	      this->pointer = NULL;
-	    }
-	}
+              this->pointer = NULL;
+            }
+        }
 
-	//
-	// attributes
-	//
-	T&		pointer;
-	F		function;
+        //
+        // attributes
+        //
+        T&              pointer;
+        F               function;
       };
 
       //
       // static methods
       //
       template <typename... T>
-      static Garrison*		Install(Void*,
-					T...);
+      static Garrison*          Install(Void*,
+                                        T...);
       template <typename... T>
-      static Garrison*		Install(Void*);
+      static Garrison*          Install(Void*);
 
       template <typename T>
-      static Guard*		Monitor(Void*, T&);
+      static Guard*             Monitor(Void*, T&);
       template <typename T, typename F>
-      static Guard*		Monitor(Void*, T&, F);
+      static Guard*             Monitor(Void*, T&, F);
     };
 
   }

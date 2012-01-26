@@ -87,43 +87,43 @@ namespace elle
       // constructors & destructors
       //
       TCPServerPorter(const Callback<
-			Status,
-			Parameters<TCPSocket*>
-			>&);
+                        Status,
+                        Parameters<TCPSocket*>
+                        >&);
       ~TCPServerPorter();
 
       //
       // methods
       //
-      Status		Create(const Locus&);
+      Status            Create(const Locus&);
 
       //
       // callbacks
       //
-      Status		Accept();
+      Status            Accept();
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Locus			locus;
-      ::QTcpServer*		server;
+      Locus                     locus;
+      ::QTcpServer*             server;
       Callback<
-	Status,
-	Parameters<TCPSocket*>
-	>			callback;
+        Status,
+        Parameters<TCPSocket*>
+        >                       callback;
 
       //
       // slots
       //
     private slots:
-      void		_accept();
+      void              _accept();
     };
 
     ///
@@ -135,31 +135,31 @@ namespace elle
       //
       // types
       //
-      typedef std::map<const Locus, TCPServerPorter*>	Container;
-      typedef Container::iterator			Iterator;
-      typedef Container::const_iterator			Scoutor;
+      typedef std::map<const Locus, TCPServerPorter*>   Container;
+      typedef Container::iterator                       Iterator;
+      typedef Container::const_iterator                 Scoutor;
 
       //
       // static methods
       //
-      static Status	Initialize();
-      static Status	Clean();
+      static Status     Initialize();
+      static Status     Clean();
 
-      static Status	Listen(const Locus&,
-			       const Callback< Status,
-					       Parameters<TCPSocket*> >&);
-      static Status	Block(const Locus&);
-      static Status	Retrieve(const Locus&,
-				 TCPServerPorter*&);
-      static Status	Locate(const Locus&,
-			       Iterator* = NULL);
+      static Status     Listen(const Locus&,
+                               const Callback< Status,
+                                               Parameters<TCPSocket*> >&);
+      static Status     Block(const Locus&);
+      static Status     Retrieve(const Locus&,
+                                 TCPServerPorter*&);
+      static Status     Locate(const Locus&,
+                               Iterator* = NULL);
 
-      static Status	Show(const Natural32 = 0);
+      static Status     Show(const Natural32 = 0);
 
       //
       // static attributes
       //
-      static Container	Porters;
+      static Container  Porters;
     };
 
   }

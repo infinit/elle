@@ -41,7 +41,7 @@ namespace elle
     {
       // release the stack.
       if (this->stack != NULL)
-	::free(this->stack);
+        ::free(this->stack);
     }
 
 //
@@ -51,7 +51,7 @@ namespace elle
     ///
     /// this method allocates a new stack.
     ///
-    Status		Frame::Create(const Natural32		size)
+    Status              Frame::Create(const Natural32           size)
     {
       enter();
 
@@ -60,8 +60,8 @@ namespace elle
 
       // allocate the new stack.
       if ((this->stack =
-	   static_cast<Byte*>(::malloc(this->size))) == NULL)
-	escape("unable to allocate the stack");
+           static_cast<Byte*>(::malloc(this->size))) == NULL)
+        escape("unable to allocate the stack");
 
       leave();
     }
@@ -73,9 +73,9 @@ namespace elle
     ///
     /// this method dumps the stack.
     ///
-    Status		Frame::Dump(const Natural32		margin) const
+    Status              Frame::Dump(const Natural32             margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
@@ -83,7 +83,7 @@ namespace elle
 
       // dump the stack address.
       std::cout << alignment << Dumpable::Shift << "[Stack] "
-		<< std::hex << static_cast<Void*>(this->stack) << std::endl;
+                << std::hex << static_cast<Void*>(this->stack) << std::endl;
 
       leave();
     }

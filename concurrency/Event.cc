@@ -33,7 +33,7 @@ namespace elle
     ///
     /// this variable defines an unused hence null Event.
     ///
-    const Event				Event::Null;
+    const Event                         Event::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -54,17 +54,17 @@ namespace elle
     ///
     /// this method generates a new unique event.
     ///
-    Status		Event::Generate()
+    Status              Event::Generate()
     {
       enter();
 
       // try until the generated event is different from Null.
       do
-	{
-	  // generate the identifier.
-	  if (Random::Generate(this->identifier) == StatusError)
-	    escape("unable to generate the identifier");
-	} while (*this == Event::Null);
+        {
+          // generate the identifier.
+          if (Random::Generate(this->identifier) == StatusError)
+            escape("unable to generate the identifier");
+        } while (*this == Event::Null);
 
       leave();
     }
@@ -76,17 +76,17 @@ namespace elle
     ///
     /// this method check if two events match.
     ///
-    Boolean		Event::operator==(const Event&		element) const
+    Boolean             Event::operator==(const Event&          element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the identifier.
       if (this->identifier != element.identifier)
-	false();
+        false();
 
       true();
     }
@@ -94,7 +94,7 @@ namespace elle
     ///
     /// this operator compares two events.
     ///
-    Boolean		Event::operator<(const Event&		element) const
+    Boolean             Event::operator<(const Event&           element) const
     {
       return (this->identifier < element.identifier);
     }
@@ -111,13 +111,13 @@ namespace elle
     ///
     /// this method serializes the event.
     ///
-    Status		Event::Serialize(Archive&		archive) const
+    Status              Event::Serialize(Archive&               archive) const
     {
       enter();
 
       // serialize the attributes.
       if (archive.Serialize(this->identifier) == StatusError)
-	escape("unable to serialize the event attributes");
+        escape("unable to serialize the event attributes");
 
       leave();
     };
@@ -125,13 +125,13 @@ namespace elle
     ///
     /// this method extracts the event.
     ///
-    Status		Event::Extract(Archive&			archive)
+    Status              Event::Extract(Archive&                 archive)
     {
       enter();
 
       // extract the attributes.
       if (archive.Extract(this->identifier) == StatusError)
-	escape("unable to extract the event attributes");
+        escape("unable to extract the event attributes");
 
       leave();
     };
@@ -143,9 +143,9 @@ namespace elle
     ///
     /// this method dumps an event.
     ///
-    Status		Event::Dump(const Natural32		margin) const
+    Status              Event::Dump(const Natural32             margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 

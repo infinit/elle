@@ -48,7 +48,7 @@ namespace elle
     ///
     /// this method fills the instance with the current time.
     ///
-    Status		Time::Current()
+    Status              Time::Current()
     {
       enter();
 
@@ -61,7 +61,7 @@ namespace elle
     ///
     /// this method converts a time object into a time_t structure.
     ///
-    Status		Time::Get(::time_t&			time) const
+    Status              Time::Get(::time_t&                     time) const
     {
       enter();
 
@@ -74,7 +74,7 @@ namespace elle
     ///
     /// this method converts a time_t into a time object.
     ///
-    Status		Time::Set(const ::time_t&		time)
+    Status              Time::Set(const ::time_t&               time)
     {
       enter();
 
@@ -86,7 +86,7 @@ namespace elle
     ///
     /// this method converts a time object into a QDateTime structure.
     ///
-    Status		Time::Get(::QDateTime&			dt) const
+    Status              Time::Get(::QDateTime&                  dt) const
     {
       enter();
 
@@ -99,7 +99,7 @@ namespace elle
     ///
     /// this method converts a QDateTime into a time object.
     ///
-    Status		Time::Set(const ::QDateTime&		dt)
+    Status              Time::Set(const ::QDateTime&            dt)
     {
       enter();
 
@@ -113,7 +113,7 @@ namespace elle
     ///
     /// This method converts a FILETIME into a Time object.
     ///
-    Status              Time::Get(::FILETIME&			ft) const
+    Status              Time::Get(::FILETIME&                   ft) const
     {
       enter();
 
@@ -133,7 +133,7 @@ namespace elle
     ///
     /// This method converts a FILETIME into a Time object.
     ///
-    Status              Time::Set(const ::FILETIME&		ft)
+    Status              Time::Set(const ::FILETIME&             ft)
     {
       enter();
 
@@ -155,7 +155,7 @@ namespace elle
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Time::operator==(const Time&		element) const
+    Boolean             Time::operator==(const Time&            element) const
     {
       enter();
 
@@ -168,12 +168,12 @@ namespace elle
     ///
     /// this operator compares two times.
     ///
-    Boolean		Time::operator<(const Time&		element) const
+    Boolean             Time::operator<(const Time&             element) const
     {
       enter();
 
       if (this->nanoseconds < element.nanoseconds)
-	true();
+        true();
 
       false();
     }
@@ -181,12 +181,12 @@ namespace elle
     ///
     /// this operator compares two times.
     ///
-    Boolean		Time::operator>(const Time&		element) const
+    Boolean             Time::operator>(const Time&             element) const
     {
       enter();
 
       if (this->nanoseconds > element.nanoseconds)
-	true();
+        true();
 
       false();
     }
@@ -194,7 +194,7 @@ namespace elle
     ///
     /// this operator adds a time to the current one.
     ///
-    Time		Time::operator+(const Time&		element)
+    Time                Time::operator+(const Time&             element)
     {
       Time              time;
 
@@ -206,7 +206,7 @@ namespace elle
     ///
     /// this operator substracts a time to the current one.
     ///
-    Time		Time::operator-(const Time&		element)
+    Time                Time::operator-(const Time&             element)
     {
       Time              time;
 
@@ -218,7 +218,7 @@ namespace elle
     ///
     /// this operator adds a duration to the current time.
     ///
-    Time		Time::operator+(const Duration&		duration)
+    Time                Time::operator+(const Duration&         duration)
     {
       Time              result(*this);
 
@@ -226,49 +226,49 @@ namespace elle
 
       // depending on the unit.
       switch (duration.unit)
-	{
-	case Duration::UnitNanoseconds:
-	  {
-	    // add the value.
-	    result.nanoseconds += duration.value;
+        {
+        case Duration::UnitNanoseconds:
+          {
+            // add the value.
+            result.nanoseconds += duration.value;
 
-	    break;
-	  }
-	case Duration::UnitMicroseconds:
-	  {
-	    // add the value.
-	    result.nanoseconds += duration.value * 1000;
+            break;
+          }
+        case Duration::UnitMicroseconds:
+          {
+            // add the value.
+            result.nanoseconds += duration.value * 1000;
 
-	    break;
-	  }
-	case Duration::UnitMilliseconds:
-	  {
-	    // add the value.
+            break;
+          }
+        case Duration::UnitMilliseconds:
+          {
+            // add the value.
             result.nanoseconds += duration.value * 1000000;
 
-	    break;
-	  }
-	case Duration::UnitSeconds:
-	  {
-	    // add the value.
+            break;
+          }
+        case Duration::UnitSeconds:
+          {
+            // add the value.
             result.nanoseconds += duration.value * 1000000000LU;
 
-	    break;
-	  }
-	case Duration::UnitMinutes:
-	  {
-	    // add the value.
+            break;
+          }
+        case Duration::UnitMinutes:
+          {
+            // add the value.
             result.nanoseconds += duration.value * 1000000000LU * 60;
 
-	    break;
-	  }
-	case Duration::UnitUnknown:
-	  {
-	    log("unknown duration unit");
+            break;
+          }
+        case Duration::UnitUnknown:
+          {
+            log("unknown duration unit");
 
-	    goto _return;
-	  }
-	}
+            goto _return;
+          }
+        }
 
     _return:
       // release.
@@ -280,57 +280,57 @@ namespace elle
     ///
     /// this operator substracts a duration to the current time.
     ///
-    Time		Time::operator-(const Duration&		duration)
+    Time                Time::operator-(const Duration&         duration)
     {
-      Time		result(*this);
+      Time              result(*this);
 
       enter();
 
       // depending on the unit.
       switch (duration.unit)
-	{
-	case Duration::UnitNanoseconds:
-	  {
-	    // add the value.
+        {
+        case Duration::UnitNanoseconds:
+          {
+            // add the value.
             result.nanoseconds -= duration.value;
 
-	    break;
-	  }
-	case Duration::UnitMicroseconds:
-	  {
-	    // add the value.
+            break;
+          }
+        case Duration::UnitMicroseconds:
+          {
+            // add the value.
             result.nanoseconds -= duration.value * 1000;
 
-	    break;
-	  }
-	case Duration::UnitMilliseconds:
-	  {
-	    // add the value.
+            break;
+          }
+        case Duration::UnitMilliseconds:
+          {
+            // add the value.
             result.nanoseconds -= duration.value * 1000000;
 
-	    break;
-	  }
-	case Duration::UnitSeconds:
-	  {
-	    // add the value.
+            break;
+          }
+        case Duration::UnitSeconds:
+          {
+            // add the value.
             result.nanoseconds -= duration.value * 1000000000L;
 
-	    break;
-	  }
-	case Duration::UnitMinutes:
-	  {
-	    // add the value.
+            break;
+          }
+        case Duration::UnitMinutes:
+          {
+            // add the value.
             result.nanoseconds -= duration.value * 1000000000 * 60;
 
-	    break;
-	  }
-	case Duration::UnitUnknown:
-	  {
-	    log("unknown duration unit");
+            break;
+          }
+        case Duration::UnitUnknown:
+          {
+            log("unknown duration unit");
 
-	    goto _return;
-	  }
-	}
+            goto _return;
+          }
+        }
 
     _return:
 
@@ -352,11 +352,11 @@ namespace elle
     ///
     /// this function dumps an time object.
     ///
-    Status		Time::Dump(Natural32			margin) const
+    Status              Time::Dump(Natural32                    margin) const
     {
-      String		alignment(margin, ' ');
-      ::tm*		tm;
-      ::time_t		time;
+      String            alignment(margin, ' ');
+      ::tm*             tm;
+      ::time_t          time;
 
       enter();
 
@@ -369,7 +369,7 @@ namespace elle
       // display the time.
       std::cout << alignment << "[Time] "
                 << std::dec
-		<< (1900 + tm->tm_year) << "-" << (1 + tm->tm_mon)
+                << (1900 + tm->tm_year) << "-" << (1 + tm->tm_mon)
                 << "-" << (1 + tm->tm_mday) << " "
                 << tm->tm_hour << ":" << tm->tm_min << ":" << tm->tm_sec
                 << "." << (this->nanoseconds % 1000)
@@ -385,13 +385,13 @@ namespace elle
     ///
     /// this method serializes the time object.
     ///
-    Status		Time::Serialize(Archive&		archive) const
+    Status              Time::Serialize(Archive&                archive) const
     {
       enter();
 
       // serialize the internal attributes.
       if (archive.Serialize(this->nanoseconds) == StatusError)
-	escape("unable to serialize the attributes");
+        escape("unable to serialize the attributes");
 
       leave();
     }
@@ -399,13 +399,13 @@ namespace elle
     ///
     /// this method extracts the time object.
     ///
-    Status		Time::Extract(Archive&			archive)
+    Status              Time::Extract(Archive&                  archive)
     {
       enter();
 
       // extract the internal attributes.
       if (archive.Extract(this->nanoseconds) == StatusError)
-	escape("unable to extract the attributes");
+        escape("unable to extract the attributes");
 
       leave();
     }

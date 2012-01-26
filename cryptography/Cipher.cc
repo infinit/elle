@@ -33,7 +33,7 @@ namespace elle
     ///
     /// this defines a null cipher.
     ///
-    const Cipher		Cipher::Null;
+    const Cipher                Cipher::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -53,17 +53,17 @@ namespace elle
     ///
     /// this method check if two ciphers match.
     ///
-    Boolean		Cipher::operator==(const Cipher&	element) const
+    Boolean             Cipher::operator==(const Cipher&        element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the regions.
       if (this->region != element.region)
-	false();
+        false();
 
       true();
     }
@@ -80,25 +80,25 @@ namespace elle
     ///
     /// this method dumps the cipher.
     ///
-    Status		Cipher::Dump(const Natural32		margin) const
+    Status              Cipher::Dump(const Natural32            margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
       // display the cipher depending on its value.
       if (*this == Cipher::Null)
-	{
-	  std::cout << alignment << "[Cipher] " << none << std::endl;
-	}
+        {
+          std::cout << alignment << "[Cipher] " << none << std::endl;
+        }
       else
-	{
-	  std::cout << alignment << "[Cipher] " << std::endl;
+        {
+          std::cout << alignment << "[Cipher] " << std::endl;
 
-	  // dump the region.
-	  if (this->region.Dump(margin + 2) == StatusError)
-	      escape("unable to dump the region");
-	}
+          // dump the region.
+          if (this->region.Dump(margin + 2) == StatusError)
+              escape("unable to dump the region");
+        }
 
       leave();
     }
@@ -110,13 +110,13 @@ namespace elle
     ///
     /// this method serializes a cipher object.
     ///
-    Status		Cipher::Serialize(Archive&		archive) const
+    Status              Cipher::Serialize(Archive&              archive) const
     {
       enter();
 
       // serialize the region.
       if (archive.Serialize(this->region) == StatusError)
-	escape("unable to serialize the region");
+        escape("unable to serialize the region");
 
       leave();
     }
@@ -124,13 +124,13 @@ namespace elle
     ///
     /// this method extracts a cipher object.
     ///
-    Status		Cipher::Extract(Archive&		archive)
+    Status              Cipher::Extract(Archive&                archive)
     {
       enter();
 
       // extract the content.
       if (archive.Extract(this->region) == StatusError)
-	escape("unable to extract the region");
+        escape("unable to extract the region");
 
       leave();
     }

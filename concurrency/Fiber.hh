@@ -98,29 +98,29 @@ namespace elle
       //
       // constants
       //
-      static const Natural32		Size;
-      static const Natural32		Capacity;
+      static const Natural32            Size;
+      static const Natural32            Capacity;
 
       //
       // enumerations
       //
       enum State
-	{
-	  StateUnknown,
-	  StateActive,
-	  StateAwaken,
-	  StateSuspended,
-	  StateCompleted
-	};
+        {
+          StateUnknown,
+          StateActive,
+          StateAwaken,
+          StateSuspended,
+          StateCompleted
+        };
 
 
       enum Type
-	{
-	  TypeNone,
-	  TypeEvent,
-	  TypeResource,
-	  TypeFiber
-	};
+        {
+          TypeNone,
+          TypeEvent,
+          TypeResource,
+          TypeFiber
+        };
 
       //
       // structures
@@ -129,95 +129,95 @@ namespace elle
       // fibers
       struct F
       {
-	typedef std::list<Fiber*>			Container;
-	typedef Container::iterator			Iterator;
-	typedef Container::const_iterator		Scoutor;
+        typedef std::list<Fiber*>                       Container;
+        typedef Container::iterator                     Iterator;
+        typedef Container::const_iterator               Scoutor;
       };
 
       // cache
       struct C
       {
-	typedef std::list<Fiber*>			Container;
-	typedef Container::iterator			Iterator;
-	typedef Container::const_iterator		Scoutor;
+        typedef std::list<Fiber*>                       Container;
+        typedef Container::iterator                     Iterator;
+        typedef Container::const_iterator               Scoutor;
       };
 
       // phases
       struct P
       {
-	typedef std::vector<
-	  Callback<
-	    Status,
-	    Parameters<Phase, Fiber*> >* >              Container;
-	typedef Container::iterator			Iterator;
-	typedef Container::const_iterator		Scoutor;
+        typedef std::vector<
+          Callback<
+            Status,
+            Parameters<Phase, Fiber*> >* >              Container;
+        typedef Container::iterator                     Iterator;
+        typedef Container::const_iterator               Scoutor;
       };
 
       //
       // static attributes
       //
-      static F::Container	Fibers;
+      static F::Container       Fibers;
 
-      static Fiber*		Program;
-      static Fiber*		Current;
+      static Fiber*             Program;
+      static Fiber*             Current;
 
-      static C::Container	Cache;
+      static C::Container       Cache;
 
-      static Meta*		Trash;
+      static Meta*              Trash;
 
-      static P::Container	Phases;
+      static P::Container       Phases;
 
       static bool               IsScheduling;
 
       //
       // static methods
       //
-      static Status	Initialize();
-      static Status	Clean();
+      static Status     Initialize();
+      static Status     Clean();
 
       template <typename... T>
-      static Status	Spawn(Closure<Status, T...>&);
+      static Status     Spawn(Closure<Status, T...>&);
       template <typename... T>
-      static Void	Launch(Closure<Status, T...>*);
+      static Void       Launch(Closure<Status, T...>*);
 
       template <typename T = Meta>
-      static Status	Wait(const Event&,
-			     T*& = reinterpret_cast<T*&>(Trash));
+      static Status     Wait(const Event&,
+                             T*& = reinterpret_cast<T*&>(Trash));
       template <typename T = Meta>
-      static Status	Awaken(const Event&,
-			       T* = static_cast<T*>(NULL));
+      static Status     Awaken(const Event&,
+                               T* = static_cast<T*>(NULL));
 
       template <typename T = Meta>
-      static Status	Wait(const Resource*,
-			     T*& = reinterpret_cast<T*&>(Trash));
+      static Status     Wait(const Resource*,
+                             T*& = reinterpret_cast<T*&>(Trash));
       template <typename T = Meta>
-      static Status	Awaken(const Resource*,
-			       T* = static_cast<T*>(NULL));
+      static Status     Awaken(const Resource*,
+                               T* = static_cast<T*>(NULL));
 
-      static Status	Sleep(const Natural32);
-      static Status	Yield();
+      static Status     Sleep(const Natural32);
+      static Status     Yield();
 
-      static Status	Register(const
-				   Callback<
-				     Status,
-				     Parameters<Phase, Fiber*>
-				     >);
-      static Status	Trigger(Phase);
+      static Status     Register(const
+                                   Callback<
+                                     Status,
+                                     Parameters<Phase, Fiber*>
+                                     >);
+      static Status     Trigger(Phase);
 
-      static Status	Schedule();
+      static Status     Schedule();
 
-      static Status	New(Fiber*&);
-      static Status	Delete(Fiber*);
+      static Status     New(Fiber*&);
+      static Status     Delete(Fiber*);
 
-      static Status	Add(Fiber*);
-      static Status	Remove(Fiber*);
+      static Status     Add(Fiber*);
+      static Status     Remove(Fiber*);
 
-      static Status	Locate(const Event&,
-			       F::Iterator&);
-      static Status	Locate(const Resource*,
-			       F::Iterator&);
+      static Status     Locate(const Event&,
+                               F::Iterator&);
+      static Status     Locate(const Resource*,
+                               F::Iterator&);
 
-      static Status	Show(const Natural32 = 0);
+      static Status     Show(const Natural32 = 0);
 
       //
       // constructors & destructors
@@ -228,42 +228,42 @@ namespace elle
       //
       // methods
       //
-      Status		Create(const Natural32 = Size);
+      Status            Create(const Natural32 = Size);
 
       //
       // callbacks
       //
-      Status		Timeout();
+      Status            Timeout();
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Fiber*		link;
+      Fiber*            link;
 
-      Frame*		frame;
-      ::ucontext_t	context;
+      Frame*            frame;
+      ::ucontext_t      context;
 
-      State		state;
+      State             state;
 
-      Type		type;
+      Type              type;
       union
       {
-	Event*		event;
-	const Resource*	resource;
+        Event*          event;
+        const Resource* resource;
       };
 
-      Environment*	environment;
+      Environment*      environment;
 
-      Meta*		data;
+      Meta*             data;
 
-      Timer*		timer;
+      Timer*            timer;
 
     private:
       static Status     CheckCurrentFiber();

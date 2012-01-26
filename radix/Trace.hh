@@ -65,10 +65,10 @@ namespace elle
       //
       // constants
       //
-      static const Natural32		Capacity = 30;
+      static const Natural32            Capacity = 30;
 
-      static Character			Location[32];
-      static Natural32			Length;
+      static Character                  Location[32];
+      static Natural32                  Length;
 
       //
       // constructors & destructors
@@ -78,34 +78,34 @@ namespace elle
       //
       // methods
       //
-      Status		Generate();
+      Status            Generate();
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Void*		address;
+      Void*             address;
 
-      Void*		frames[Capacity];
-      Natural32		size;
+      Void*             frames[Capacity];
+      Natural32         size;
 
       //
       // static methods
       //
-      static Status	Store(Void*);
-      static Status	Erase(Void*);
-      static Status	Exist(Void*);
+      static Status     Store(Void*);
+      static Status     Erase(Void*);
+      static Status     Exist(Void*);
 
-      static Status	Initialize();
-      static Status	Clean();
+      static Status     Initialize();
+      static Status     Clean();
 
-      static Status	Show(const Natural32 = 0);
+      static Status     Show(const Natural32 = 0);
     };
 
   }

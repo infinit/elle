@@ -25,11 +25,11 @@ namespace elle
     /// union of the inputs Parameters types.
     ///
     template <typename... T1,
-	      typename... T2>
+              typename... T2>
     struct Set::Union< Parameters<T1...>,
-		       Parameters<T2...> >
+                       Parameters<T2...> >
     {
-      typedef Parameters<T1..., T2...>		Type;
+      typedef Parameters<T1..., T2...>          Type;
     };
 
   }

@@ -51,17 +51,17 @@ namespace elle
       //
       // constants
       //
-      static const String	Alphabet;
+      static const String       Alphabet;
 
       //
       // static methods
       //
-      static Status	Validate(const String&);
+      static Status     Validate(const String&);
 
-      static Status	Encode(const Region&,
-			       String&);
-      static Status	Decode(const String&,
-			       Region&);
+      static Status     Encode(const Region&,
+                               String&);
+      static Status     Decode(const String&,
+                               Region&);
 
       //
       // forward methods
@@ -75,34 +75,34 @@ namespace elle
       /// build archives and we are already receiving an archive.
       ///
 
-      static Status	Encode(const Archive&		archive,
-			       String&			string)
+      static Status     Encode(const Archive&           archive,
+                               String&                  string)
       {
-	return (Base64::Encode(Region(archive.contents, archive.size),
-			       string));
+        return (Base64::Encode(Region(archive.contents, archive.size),
+                               string));
       }
 
-      Status		Decrypt(const String&		string,
-				Archive&		archive)
+      Status            Decrypt(const String&           string,
+                                Archive&                archive)
       {
-	Region		region;
+        Region          region;
 
-	enter();
+        enter();
 
-	// decode the string.
-	if (Base64::Decode(string, region) == StatusError)
-	  escape("unable to decode the string");
+        // decode the string.
+        if (Base64::Decode(string, region) == StatusError)
+          escape("unable to decode the string");
 
-	// prepare the archive.
-	if (archive.Acquire(region) == StatusError)
-	  escape("unable to prepare the archive");
+        // prepare the archive.
+        if (archive.Acquire(region) == StatusError)
+          escape("unable to prepare the archive");
 
-	// detach the data so that not both the region and archive
-	// release the data.
-	if (region.Detach() == StatusError)
-	  escape("unable to detach the region's data");
+        // detach the data so that not both the region and archive
+        // release the data.
+        if (region.Detach() == StatusError)
+          escape("unable to detach the region's data");
 
-	leave();
+        leave();
       }
 
       //
@@ -111,111 +111,111 @@ namespace elle
 
       // encrypt
       template <typename T1>
-      static Status	Encode(const T1&,
-			       String&);
+      static Status     Encode(const T1&,
+                               String&);
       template <typename T1,
-		typename T2>
-      static Status	Encode(const T1&,
-			       const T2&,
-			       String&);
+                typename T2>
+      static Status     Encode(const T1&,
+                               const T2&,
+                               String&);
       template <typename T1,
-		typename T2,
-		typename T3>
-      static Status	Encode(const T1&,
-			       const T2&,
-			       const T3&,
-			       String&);
+                typename T2,
+                typename T3>
+      static Status     Encode(const T1&,
+                               const T2&,
+                               const T3&,
+                               String&);
       template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4>
-      static Status	Encode(const T1&,
-			       const T2&,
-			       const T3&,
-			       const T4&,
-			       String&);
+                typename T2,
+                typename T3,
+                typename T4>
+      static Status     Encode(const T1&,
+                               const T2&,
+                               const T3&,
+                               const T4&,
+                               String&);
       template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5>
-      static Status	Encode(const T1&,
-			       const T2&,
-			       const T3&,
-			       const T4&,
-			       const T5&,
-			       String&);
+                typename T2,
+                typename T3,
+                typename T4,
+                typename T5>
+      static Status     Encode(const T1&,
+                               const T2&,
+                               const T3&,
+                               const T4&,
+                               const T5&,
+                               String&);
       template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6>
-      static Status	Encode(const T1&,
-			       const T2&,
-			       const T3&,
-			       const T4&,
-			       const T5&,
-			       const T6&,
-			       String&);
+                typename T2,
+                typename T3,
+                typename T4,
+                typename T5,
+                typename T6>
+      static Status     Encode(const T1&,
+                               const T2&,
+                               const T3&,
+                               const T4&,
+                               const T5&,
+                               const T6&,
+                               String&);
       template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6,
-		typename T7>
-      static Status	Encode(const T1&,
-			       const T2&,
-			       const T3&,
-			       const T4&,
-			       const T5&,
-			       const T6&,
-			       const T7&,
-			       String&);
+                typename T2,
+                typename T3,
+                typename T4,
+                typename T5,
+                typename T6,
+                typename T7>
+      static Status     Encode(const T1&,
+                               const T2&,
+                               const T3&,
+                               const T4&,
+                               const T5&,
+                               const T6&,
+                               const T7&,
+                               String&);
       template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6,
-		typename T7,
-		typename T8>
-      static Status	Encode(const T1&,
-			       const T2&,
-			       const T3&,
-			       const T4&,
-			       const T5&,
-			       const T6&,
-			       const T7&,
-			       const T8&,
-			       String&);
+                typename T2,
+                typename T3,
+                typename T4,
+                typename T5,
+                typename T6,
+                typename T7,
+                typename T8>
+      static Status     Encode(const T1&,
+                               const T2&,
+                               const T3&,
+                               const T4&,
+                               const T5&,
+                               const T6&,
+                               const T7&,
+                               const T8&,
+                               String&);
       template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6,
-		typename T7,
-		typename T8,
-		typename T9>
-      static Status	Encode(const T1&,
-			       const T2&,
-			       const T3&,
-			       const T4&,
-			       const T5&,
-			       const T6&,
-			       const T7&,
-			       const T8&,
-			       const T9&,
-			       String&);
+                typename T2,
+                typename T3,
+                typename T4,
+                typename T5,
+                typename T6,
+                typename T7,
+                typename T8,
+                typename T9>
+      static Status     Encode(const T1&,
+                               const T2&,
+                               const T3&,
+                               const T4&,
+                               const T5&,
+                               const T6&,
+                               const T7&,
+                               const T8&,
+                               const T9&,
+                               String&);
 
       // decode
       template <typename T,
-		typename... TT>
-      static Status	Decode(const String&,
-			       T&,
-			       TT&...);
+                typename... TT>
+      static Status     Decode(const String&,
+                               T&,
+                               TT&...);
     };
 
   }

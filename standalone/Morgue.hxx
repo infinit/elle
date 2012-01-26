@@ -39,29 +39,29 @@ namespace elle
     /// this is done in this method.
     ///
     template <typename T>
-    Status		Morgue::Register(T*			instance)
+    Status              Morgue::Register(T*                     instance)
     {
       enter();
 
       // if the timer has not been allocated, set it up.
       if (this->timer == NULL)
-	{
-	  // allocate the timer.
-	  this->timer = new Timer;
+        {
+          // allocate the timer.
+          this->timer = new Timer;
 
-	  // create the timer.
-	  if (this->timer->Create(Timer::ModeRepetition) == StatusError)
-	    escape("unable to create the timer");
+          // create the timer.
+          if (this->timer->Create(Timer::ModeRepetition) == StatusError)
+            escape("unable to create the timer");
 
-	  // subscribe to the timer's signal.
-	  if (this->timer->signal.timeout.Subscribe(
-	        Callback<>::Infer(&Morgue::Bury, this)) == StatusError)
-	    escape("unable to subscribe to the signal");
+          // subscribe to the timer's signal.
+          if (this->timer->signal.timeout.Subscribe(
+                Callback<>::Infer(&Morgue::Bury, this)) == StatusError)
+            escape("unable to subscribe to the signal");
 
-	  // start the timer.
-	  if (this->timer->Start(Morgue::Frequency) == StatusError)
-	    escape("unable to start the timer");
-	}
+          // start the timer.
+          if (this->timer->Start(Morgue::Frequency) == StatusError)
+            escape("unable to start the timer");
+        }
 
       // add the instance to the container.
       this->container.push_back(static_cast<Meta*>(instance));

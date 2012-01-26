@@ -35,34 +35,34 @@ namespace elle
       //
       // constants
       //
-      static const Natural32			Rate = 10000;
+      static const Natural32                    Rate = 10000;
 
       //
       // methods
       //
-      Status		Setup(const String&,
-			      const String&,
-			      const Port);
+      Status            Setup(const String&,
+                              const String&,
+                              const Port);
 
-      Status		Run();
+      Status            Run();
 
       //
       // attributes
       //
-      String		host;
-      Port		port;
+      String            host;
+      Port              port;
 
-      UDPSocket		socket;
+      UDPSocket         socket;
 
-      String		name;
-      Table		table;
+      String            name;
+      Table             table;
 
       //
       // callbacks
       //
-      Status		Handle(const String&,
-			       const Table&);
-      Status		Refresh();
+      Status            Handle(const String&,
+                               const Table&);
+      Status            Refresh();
     };
 
   }
