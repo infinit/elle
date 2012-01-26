@@ -24,7 +24,7 @@ namespace application
   ///
   /// this value defines the component's name.
   ///
-  const elle::Character		Component[] = "8passport";
+  const elle::Character         Component[] = "8passport";
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -33,10 +33,10 @@ namespace application
   ///
   /// this method creates a new passport.
   ///
-  elle::Status		Passport::Create()
+  elle::Status          Passport::Create()
   {
-    lune::Authority	authority;
-    lune::Passport	passport;
+    lune::Authority     authority;
+    lune::Passport      passport;
 
     enter();
 
@@ -46,60 +46,60 @@ namespace application
     {
       // check if the authority exists.
       if (authority.Exist() == elle::StatusFalse)
-	escape("unable to locate the authority file");
+        escape("unable to locate the authority file");
     }
 
     //
     // retrieve the authority.
     //
     {
-      elle::String		prompt;
-      elle::String		pass;
+      elle::String              prompt;
+      elle::String              pass;
 
       // prompt the user for the passphrase.
       prompt = "Enter passphrase for the authority: ";
 
       if (elle::Console::Input(
             pass,
-	    prompt,
-	    elle::Console::OptionPassword) == elle::StatusError)
-	escape("unable to read the input");
+            prompt,
+            elle::Console::OptionPassword) == elle::StatusError)
+        escape("unable to read the input");
 
       // load the authority.
       if (authority.Load() == elle::StatusError)
-	escape("unable to load the authority");
+        escape("unable to load the authority");
 
       // decrypt the authority.
       if (authority.Decrypt(pass) == elle::StatusError)
-	escape("unable to decrypt the authority");
+        escape("unable to decrypt the authority");
     }
 
     //
     // create the passport.
     //
     {
-      hole::Label		label;
-      elle::Region		region;
+      hole::Label               label;
+      elle::Region              region;
 
       // generate a random region.
       if (elle::Random::Generate(region) == elle::StatusError)
-	escape("unable to generate a random region");
+        escape("unable to generate a random region");
 
       // create a label.
       if (label.Create(region) == elle::StatusError)
-	escape("unable to create a label");
+        escape("unable to create a label");
 
       // create the passport.
       if (passport.Create(label) == elle::StatusError)
-	escape("unable to create the passport");
+        escape("unable to create the passport");
 
       // seal the passport.
       if (passport.Seal(authority) == elle::StatusError)
-	escape("unable to seal the passport");
+        escape("unable to seal the passport");
 
       // store the passport.
       if (passport.Store() == elle::StatusError)
-	escape("unable to store the passport");
+        escape("unable to store the passport");
     }
 
     leave();
@@ -108,18 +108,18 @@ namespace application
   ///
   /// this method destroys the existing passport.
   ///
-  elle::Status		Passport::Destroy()
+  elle::Status          Passport::Destroy()
   {
-    lune::Passport	passport;
+    lune::Passport      passport;
 
     enter();
 
     // does the passport exist.
     if (passport.Exist() == elle::StatusTrue)
       {
-	// remove the passport.
-	if (passport.Erase() == elle::StatusError)
-	  escape("unable to erase the passport");
+        // remove the passport.
+        if (passport.Erase() == elle::StatusError)
+          escape("unable to erase the passport");
       }
 
     leave();
@@ -128,9 +128,9 @@ namespace application
   ///
   /// this method retrieves and displays information on the passport.
   ///
-  elle::Status		Passport::Information()
+  elle::Status          Passport::Information()
   {
-    lune::Passport	passport;
+    lune::Passport      passport;
 
     enter();
 
@@ -140,7 +140,7 @@ namespace application
     {
       // does the passport exist.
       if (passport.Exist() == elle::StatusFalse)
-	escape("this passport does not seem to exist");
+        escape("this passport does not seem to exist");
     }
 
     //
@@ -149,11 +149,11 @@ namespace application
     {
       // load the passport.
       if (passport.Load() == elle::StatusError)
-	escape("unable to load the passport");
+        escape("unable to load the passport");
 
       // validate the passport.
       if (passport.Validate(Infinit::Authority) == elle::StatusError)
-	escape("unable to validate the passport");
+        escape("unable to validate the passport");
     }
 
     //
@@ -162,7 +162,7 @@ namespace application
     {
       // dump the passport.
       if (passport.Dump() == elle::StatusError)
-	escape("unable to dump the passport");
+        escape("unable to dump the passport");
     }
 
     leave();
@@ -175,10 +175,10 @@ namespace application
   ///
   /// the main function.
   ///
-  elle::Status		Main(elle::Natural32			argc,
-			     elle::Character*			argv[])
+  elle::Status          Main(elle::Natural32                    argc,
+                             elle::Character*                   argv[])
   {
-    Passport::Operation	operation;
+    Passport::Operation operation;
 
     enterx(instance(Infinit::Parser));
 
@@ -219,37 +219,37 @@ namespace application
     // register the options.
     if (Infinit::Parser->Register(
           "Help",
-	  'h',
-	  "help",
-	  "display the help",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'h',
+          "help",
+          "display the help",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Create",
-	  'c',
-	  "create",
-	  "create a new passport",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'c',
+          "create",
+          "create a new passport",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Destroy",
-	  'd',
-	  "destroy",
-	  "destroy an existing passport",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'd',
+          "destroy",
+          "destroy an existing passport",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Information",
-	  'x',
-	  "information",
-	  "display information regarding a passport",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'x',
+          "information",
+          "display information regarding a passport",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // parse.
@@ -259,23 +259,23 @@ namespace application
     // test the option.
     if (Infinit::Parser->Test("Help") == elle::StatusTrue)
       {
-	// display the usage.
-	Infinit::Parser->Usage();
+        // display the usage.
+        Infinit::Parser->Usage();
 
-	// quit.
-	leave();
+        // quit.
+        leave();
       }
 
     // check the mutually exclusive options.
     if ((Infinit::Parser->Test("Create") == elle::StatusTrue) &&
-	(Infinit::Parser->Test("Destroy") == elle::StatusTrue) &&
-	(Infinit::Parser->Test("Information") == elle::StatusTrue))
+        (Infinit::Parser->Test("Destroy") == elle::StatusTrue) &&
+        (Infinit::Parser->Test("Information") == elle::StatusTrue))
       {
-	// display the usage.
-	Infinit::Parser->Usage();
+        // display the usage.
+        Infinit::Parser->Usage();
 
-	escape("the create, destroy and information options are "
-	       "mutually exclusive");
+        escape("the create, destroy and information options are "
+               "mutually exclusive");
       }
 
     // test the option.
@@ -294,45 +294,45 @@ namespace application
     switch (operation)
       {
       case Passport::OperationCreate:
-	{
-	  // create the passport.
-	  if (Passport::Create() == elle::StatusError)
-	    escape("unable to create the passport");
+        {
+          // create the passport.
+          if (Passport::Create() == elle::StatusError)
+            escape("unable to create the passport");
 
-	  // display a message.
-	  std::cout << "The passport has been created successfully!"
-		    << std::endl;
+          // display a message.
+          std::cout << "The passport has been created successfully!"
+                    << std::endl;
 
-	  break;
-	}
+          break;
+        }
       case Passport::OperationDestroy:
-	{
-	  // destroy the passport.
-	  if (Passport::Destroy() == elle::StatusError)
-	    escape("unable to destroy the passport");
+        {
+          // destroy the passport.
+          if (Passport::Destroy() == elle::StatusError)
+            escape("unable to destroy the passport");
 
-	  // display a message.
-	  std::cout << "The passport has been destroyed successfully!"
-		    << std::endl;
+          // display a message.
+          std::cout << "The passport has been destroyed successfully!"
+                    << std::endl;
 
-	  break;
-	}
+          break;
+        }
       case Passport::OperationInformation:
-	{
-	  // get information on the passport.
-	  if (Passport::Information() == elle::StatusError)
-	    escape("unable to retrieve information on the passport");
+        {
+          // get information on the passport.
+          if (Passport::Information() == elle::StatusError)
+            escape("unable to retrieve information on the passport");
 
-	  break;
-	}
+          break;
+        }
       case Passport::OperationUnknown:
       default:
-	{
-	  // display the usage.
-	  Infinit::Parser->Usage();
+        {
+          // display the usage.
+          Infinit::Parser->Usage();
 
-	  escape("please specify an operation to perform");
-	}
+          escape("please specify an operation to perform");
+        }
       }
 
     // delete the parser.
@@ -373,22 +373,22 @@ namespace application
 ///
 /// this is the program entry point.
 ///
-int			main(int				argc,
-                             char**				argv)
+int                     main(int                                argc,
+                             char**                             argv)
 {
   try
     {
       if (application::Main(argc, argv) == elle::StatusError)
-	{
-	  show();
+        {
+          show();
 
-	  return (1);
-	}
+          return (1);
+        }
     }
   catch (std::exception& e)
     {
       std::cout << "The program has been terminated following "
-		<< "a fatal error (" << e.what() << ")." << std::endl;
+                << "a fatal error (" << e.what() << ")." << std::endl;
 
       return (1);
     }

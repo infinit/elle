@@ -24,9 +24,9 @@ namespace application
     ///
     /// this function dumps an memoirs object.
     ///
-    elle::Status	Memoirs::Dump(elle::Natural32		margin) const
+    elle::Status        Memoirs::Dump(elle::Natural32           margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
@@ -35,7 +35,7 @@ namespace application
 
       // dump the archive.
       if (this->archive.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the archive");
+        escape("unable to dump the archive");
 
       leave();
     }
@@ -47,7 +47,7 @@ namespace application
   ///
   /// this method serializes the memoirs object.
   ///
-  elle::Status		Memoirs::Serialize(elle::Archive&	archive) const
+  elle::Status          Memoirs::Serialize(elle::Archive&       archive) const
   {
     enter();
 
@@ -61,7 +61,7 @@ namespace application
   ///
   /// this method extracts the memoirs object.
   ///
-  elle::Status		Memoirs::Extract(elle::Archive&		archive)
+  elle::Status          Memoirs::Extract(elle::Archive&         archive)
   {
     enter();
 
@@ -83,9 +83,9 @@ namespace application
   /// method handles the archive specifically, making sure that no
   /// copy is performed.
   ///
-  elle::Status		Memoirs::Load(const elle::Path&		path)
+  elle::Status          Memoirs::Load(const elle::Path&         path)
   {
-    elle::Region	region;
+    elle::Region        region;
 
     enter();
 
@@ -111,17 +111,17 @@ namespace application
   /// method handles the archive specifically, making sure that no
   /// copy is performed.
   ///
-  elle::Status		Memoirs::Store(const elle::Path&	path)
+  elle::Status          Memoirs::Store(const elle::Path&        path)
     const
   {
     enter();
 
     // write the file's content.
     if (elle::File::Write(
-	  path,
-	  elle::Region(
-	    this->archive.contents,
-	    this->archive.size)) == elle::StatusError)
+          path,
+          elle::Region(
+            this->archive.contents,
+            this->archive.size)) == elle::StatusError)
       escape("unable to write the file's content");
 
     leave();

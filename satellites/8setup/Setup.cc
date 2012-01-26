@@ -24,7 +24,7 @@ namespace application
   ///
   /// this value defines the component's name.
   ///
-  const elle::Character		Component[] = "8setup";
+  const elle::Character         Component[] = "8setup";
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -33,10 +33,10 @@ namespace application
   ///
   /// this method initializes the user's environment.
   ///
-  elle::Status		Setup::Initialize()
+  elle::Status          Setup::Initialize()
   {
-    elle::Path		path;
-    lune::Configuration	configuration;
+    elle::Path          path;
+    lune::Configuration configuration;
 
     enter();
 
@@ -46,21 +46,21 @@ namespace application
     {
       // create the home path.
       if (path.Create(lune::Lune::Home) == elle::StatusError)
-	escape("unable to create the path");
+        escape("unable to create the path");
 
       // if the user directory does not exist, create it.
       if (elle::Directory::Exist(path) == elle::StatusFalse)
-	{
-	  // create the directory.
-	  if (elle::Directory::Create(path) == elle::StatusError)
-	    escape("unable to create the directory");
-	}
+        {
+          // create the directory.
+          if (elle::Directory::Create(path) == elle::StatusError)
+            escape("unable to create the directory");
+        }
       else
-	{
-	  // clear the directory.
-	  if (elle::Directory::Clear(path) == elle::StatusError)
-	    escape("unable to clear the directory");
-	}
+        {
+          // clear the directory.
+          if (elle::Directory::Clear(path) == elle::StatusError)
+            escape("unable to clear the directory");
+        }
     }
 
     //
@@ -69,15 +69,15 @@ namespace application
     {
       // pull the default parameters.
       if (configuration.Pull() == elle::StatusError)
-	escape("unable to pull the configuration parameters");
+        escape("unable to pull the configuration parameters");
 
       // push the current parameters.
       if (configuration.Push() == elle::StatusError)
-	escape("unable to pus the parameters");
+        escape("unable to pus the parameters");
 
       // store the configuration.
       if (configuration.Store() == elle::StatusError)
-	escape("unable to store the configuration");
+        escape("unable to store the configuration");
     }
 
     leave();
@@ -86,9 +86,9 @@ namespace application
   ///
   /// this method cleans the user's environment.
   ///
-  elle::Status		Setup::Clean()
+  elle::Status          Setup::Clean()
   {
-    elle::Path		path;
+    elle::Path          path;
 
     enter();
 
@@ -96,15 +96,15 @@ namespace application
     // remove the configuration, if necessary.
     //
     {
-      lune::Configuration	configuration;
+      lune::Configuration       configuration;
 
       // if the configuration exists...
       if (configuration.Exist() == elle::StatusTrue)
-	{
-	  // remove it.
-	  if (configuration.Erase() == elle::StatusError)
-	    escape("unable to erase the configuration");
-	}
+        {
+          // remove it.
+          if (configuration.Erase() == elle::StatusError)
+            escape("unable to erase the configuration");
+        }
     }
 
     //
@@ -113,19 +113,19 @@ namespace application
     {
       // create the home path.
       if (path.Create(lune::Lune::Home) == elle::StatusError)
-	escape("unable to create the path");
+        escape("unable to create the path");
 
       // if the user directory exists, clear it and remove it.
       if (elle::Directory::Exist(path) == elle::StatusTrue)
-	{
-	  // clear the content.
-	  if (elle::Directory::Clear(path) == elle::StatusError)
-	    escape("unable to clear the directory");
+        {
+          // clear the content.
+          if (elle::Directory::Clear(path) == elle::StatusError)
+            escape("unable to clear the directory");
 
-	  // remove the directory.
-	  if (elle::Directory::Remove(path) == elle::StatusError)
-	    escape("unable to remove the directory");
-	}
+          // remove the directory.
+          if (elle::Directory::Remove(path) == elle::StatusError)
+            escape("unable to remove the directory");
+        }
     }
 
     leave();
@@ -138,10 +138,10 @@ namespace application
   ///
   /// the main function.
   ///
-  elle::Status		Main(elle::Natural32			argc,
-			     elle::Character*			argv[])
+  elle::Status          Main(elle::Natural32                    argc,
+                             elle::Character*                   argv[])
   {
-    Setup::Operation	operation;
+    Setup::Operation    operation;
 
     enterx(instance(Infinit::Parser));
 
@@ -182,28 +182,28 @@ namespace application
     // register the options.
     if (Infinit::Parser->Register(
           "Help",
-	  'h',
-	  "help",
-	  "display the help",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'h',
+          "help",
+          "display the help",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Initialize",
-	  'i',
-	  "initialize",
-	  "initialize the user's infinit environment",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'i',
+          "initialize",
+          "initialize the user's infinit environment",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Clean",
-	  'c',
-	  "clean",
-	  "clean the user's infinit environment",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'c',
+          "clean",
+          "clean the user's infinit environment",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // parse.
@@ -213,21 +213,21 @@ namespace application
     // test the option.
     if (Infinit::Parser->Test("Help") == elle::StatusTrue)
       {
-	// display the usage.
-	Infinit::Parser->Usage();
+        // display the usage.
+        Infinit::Parser->Usage();
 
-	// quit.
-	leave();
+        // quit.
+        leave();
       }
 
     // check the mutually exclusive options.
     if ((Infinit::Parser->Test("Initialize") == elle::StatusTrue) &&
-	(Infinit::Parser->Test("Clean") == elle::StatusTrue))
+        (Infinit::Parser->Test("Clean") == elle::StatusTrue))
       {
-	// display the usage.
-	Infinit::Parser->Usage();
+        // display the usage.
+        Infinit::Parser->Usage();
 
-	escape("the initialize and clean options are mutually exclusive");
+        escape("the initialize and clean options are mutually exclusive");
       }
 
     // test the option.
@@ -242,39 +242,39 @@ namespace application
     switch (operation)
       {
       case Setup::OperationInitialize:
-	{
-	  // initialize the environment.
-	  if (Setup::Initialize() == elle::StatusError)
-	    escape("unable to initialize the environment");
+        {
+          // initialize the environment.
+          if (Setup::Initialize() == elle::StatusError)
+            escape("unable to initialize the environment");
 
-	  // display a message.
-	  std::cout << "The infinit environment has been "
-		    << "initialized successfully!"
-		    << std::endl;
+          // display a message.
+          std::cout << "The infinit environment has been "
+                    << "initialized successfully!"
+                    << std::endl;
 
-	  break;
-	}
+          break;
+        }
       case Setup::OperationClean:
-	{
-	  // clean the environment.
-	  if (Setup::Clean() == elle::StatusError)
-	    escape("unable to clean the environment");
+        {
+          // clean the environment.
+          if (Setup::Clean() == elle::StatusError)
+            escape("unable to clean the environment");
 
-	  // display a message.
-	  std::cout << "The infinit environment has been "
-		    << "cleaned successfully!"
-		    << std::endl;
+          // display a message.
+          std::cout << "The infinit environment has been "
+                    << "cleaned successfully!"
+                    << std::endl;
 
-	  break;
-	}
+          break;
+        }
       case Setup::OperationUnknown:
       default:
-	{
-	  // display the usage.
-	  Infinit::Parser->Usage();
+        {
+          // display the usage.
+          Infinit::Parser->Usage();
 
-	  escape("please specify an operation to perform");
-	}
+          escape("please specify an operation to perform");
+        }
       }
 
     // delete the parser.
@@ -315,22 +315,22 @@ namespace application
 ///
 /// this is the program entry point.
 ///
-int			main(int				argc,
-                             char**				argv)
+int                     main(int                                argc,
+                             char**                             argv)
 {
   try
     {
       if (application::Main(argc, argv) == elle::StatusError)
-	{
-	  show();
+        {
+          show();
 
-	  return (1);
-	}
+          return (1);
+        }
     }
   catch (std::exception& e)
     {
       std::cout << "The program has been terminated following "
-		<< "a fatal error (" << e.what() << ")." << std::endl;
+                << "a fatal error (" << e.what() << ")." << std::endl;
 
       return (1);
     }

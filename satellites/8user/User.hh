@@ -38,19 +38,19 @@ namespace application
     //
     enum Operation
       {
-	OperationUnknown = 0,
+        OperationUnknown = 0,
 
-	OperationCreate,
-	OperationDestroy,
-	OperationInformation
+        OperationCreate,
+        OperationDestroy,
+        OperationInformation
       };
 
     //
     // static methods
     //
-    static elle::Status		Create(const elle::String&);
-    static elle::Status		Destroy(const elle::String&);
-    static elle::Status		Information(const elle::String&);
+    static elle::Status         Create(const elle::String&);
+    static elle::Status         Destroy(const elle::String&);
+    static elle::Status         Information(const elle::String&);
   };
 
 }

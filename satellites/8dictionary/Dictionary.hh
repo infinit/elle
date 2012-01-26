@@ -38,33 +38,33 @@ namespace application
     //
     enum Operation
       {
-	OperationUnknown = 0,
+        OperationUnknown = 0,
 
-	OperationAdd,
-	OperationRemove,
-	OperationDump,
-	OperationShow
+        OperationAdd,
+        OperationRemove,
+        OperationDump,
+        OperationShow
       };
 
     enum Type
       {
-	TypeUnknown = 0,
+        TypeUnknown = 0,
 
-	TypeUser,
-	TypeGroup
+        TypeUser,
+        TypeGroup
       };
 
     //
     // static methods
     //
-    static elle::Status		Add(const Type&,
-				    const elle::String&,
-				    const elle::Unique&);
-    static elle::Status		Remove(const Type&,
-				       const elle::String&);
-    static elle::Status		Dump(const Type&,
-				     const elle::String&);
-    static elle::Status		Show(const Type&);
+    static elle::Status         Add(const Type&,
+                                    const elle::String&,
+                                    const elle::Unique&);
+    static elle::Status         Remove(const Type&,
+                                       const elle::String&);
+    static elle::Status         Dump(const Type&,
+                                     const elle::String&);
+    static elle::Status         Show(const Type&);
   };
 
 }

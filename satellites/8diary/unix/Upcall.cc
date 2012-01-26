@@ -26,7 +26,7 @@ namespace application
     ///
     /// this method creates the upcall by initializing the archive.
     ///
-    elle::Status	Upcall::Create(const Operation		operation)
+    elle::Status        Upcall::Create(const Operation          operation)
     {
       enter();
 
@@ -40,7 +40,7 @@ namespace application
     /// this method specifies the upcall's result and serializes it
     /// right away.
     ///
-    elle::Status	Upcall::Result(const elle::Integer32	result)
+    elle::Status        Upcall::Result(const elle::Integer32    result)
     {
       enter();
 
@@ -66,9 +66,9 @@ namespace application
     ///
     /// this function dumps an diary object.
     ///
-    elle::Status	Upcall::Dump(elle::Natural32		margin) const
+    elle::Status        Upcall::Dump(elle::Natural32            margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
@@ -76,26 +76,26 @@ namespace application
 
       // display the operation.
       std::cout << alignment << elle::Dumpable::Shift
-		<< "[Operation] " << this->operation
-		<< std::endl;
+                << "[Operation] " << this->operation
+                << std::endl;
 
       // display the inputs.
       std::cout << alignment << elle::Dumpable::Shift
-		<< "[Inputs]" << std::endl;
+                << "[Inputs]" << std::endl;
 
       if (this->inputs.Dump(margin + 4) == elle::StatusError)
-	escape("unable to dump the archive");
+        escape("unable to dump the archive");
 
       // display the outputs.
       std::cout << alignment << elle::Dumpable::Shift
-		<< "[Outputs]" << std::endl;
+                << "[Outputs]" << std::endl;
 
       if (this->outputs.Dump(margin + 4) == elle::StatusError)
-	escape("unable to dump the archive");
+        escape("unable to dump the archive");
 
       // display the result.
       std::cout << alignment << elle::Dumpable::Shift
-		<< "[Result] " << this->operation << std::endl;
+                << "[Result] " << this->operation << std::endl;
 
       leave();
     }
@@ -107,16 +107,16 @@ namespace application
     ///
     /// this method serializes the diary object.
     ///
-    elle::Status	Upcall::Serialize(elle::Archive&	archive) const
+    elle::Status        Upcall::Serialize(elle::Archive&        archive) const
     {
       enter();
 
       // serialize the attributes.
       if (archive.Serialize(static_cast<elle::Natural32>(this->operation),
-			    this->inputs,
-			    this->outputs,
-			    this->result) == elle::StatusError)
-	escape("unable to serialize the attributes");
+                            this->inputs,
+                            this->outputs,
+                            this->result) == elle::StatusError)
+        escape("unable to serialize the attributes");
 
       leave();
     }
@@ -124,18 +124,18 @@ namespace application
     ///
     /// this method extracts the diary object.
     ///
-    elle::Status	Upcall::Extract(elle::Archive&		archive)
+    elle::Status        Upcall::Extract(elle::Archive&          archive)
     {
-      elle::Natural32	operation;
+      elle::Natural32   operation;
 
       enter();
 
       // extract the attributes.
       if (archive.Extract(operation,
-			  this->inputs,
-			  this->outputs,
-			  this->result) == elle::StatusError)
-	escape("unable to extract the attributes");
+                          this->inputs,
+                          this->outputs,
+                          this->result) == elle::StatusError)
+        escape("unable to extract the attributes");
 
       // set the operation.
       this->operation = static_cast<Upcall::Operation>(operation);

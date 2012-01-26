@@ -30,17 +30,17 @@ namespace application
   ///
   /// this value defines the component's name.
   ///
-  const elle::Character		Component[] = "8shell";
+  const elle::Character         Component[] = "8shell";
 
   ///
   /// this variable contains the address of the current object.
   ///
-  nucleus::Address		Shell::Address;
+  nucleus::Address              Shell::Address;
 
   ///
   /// the shell commands.
   ///
-  Shell::Command		Commands[] =
+  Shell::Command                Commands[] =
     {
       { "help", Shell::Help },
       { "quit", Shell::Quit },
@@ -55,9 +55,9 @@ namespace application
   ///
   /// this command displays the help.
   ///
-  elle::Status		Shell::Help(const elle::String&)
+  elle::Status          Shell::Help(const elle::String&)
   {
-    elle::Natural32	i;
+    elle::Natural32     i;
 
     enter();
 
@@ -72,7 +72,7 @@ namespace application
   ///
   /// this command quits the shell.
   ///
-  elle::Status		Shell::Quit(const elle::String&)
+  elle::Status          Shell::Quit(const elle::String&)
   {
     enter();
 
@@ -85,11 +85,11 @@ namespace application
   ///
   /// this command dumps a block given its address
   ///
-  elle::Status		Shell::Dump(const elle::String&		line)
+  elle::Status          Shell::Dump(const elle::String&         line)
   {
-    std::istringstream	iss(line);
-    elle::String	command;
-    elle::String	address;
+    std::istringstream  iss(line);
+    elle::String        command;
+    elle::String        address;
 
     // XXX XXX -> ameliorer Parser
 
@@ -114,10 +114,10 @@ namespace application
   ///
   /// the main function.
   ///
-  elle::Status		Main(elle::Natural32			argc,
-			     elle::Character*			argv[])
+  elle::Status          Main(elle::Natural32                    argc,
+                             elle::Character*                   argv[])
   {
-    elle::Character*	line;
+    elle::Character*    line;
 
     enterx(instance(Infinit::Parser));
 
@@ -155,28 +155,28 @@ namespace application
     // register the options.
     if (Infinit::Parser->Register(
           "Help",
-	  'h',
-	  "help",
-	  "display the help",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'h',
+          "help",
+          "display the help",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the option.
     if (Infinit::Parser->Register(
-	  "User",
-	  'u',
-	  "user",
-	  "specifies the name of the user",
-	  elle::Parser::KindRequired) == elle::StatusError)
+          "User",
+          'u',
+          "user",
+          "specifies the name of the user",
+          elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // register the option.
     if (Infinit::Parser->Register(
-	  "Network",
-	  'n',
-	  "network",
-	  "specifies the name of the network",
-	  elle::Parser::KindRequired) == elle::StatusError)
+          "Network",
+          'n',
+          "network",
+          "specifies the name of the network",
+          elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // parse.
@@ -186,31 +186,31 @@ namespace application
     // test the option.
     if (Infinit::Parser->Test("Help") == elle::StatusTrue)
       {
-	// display the usage.
-	Infinit::Parser->Usage();
+        // display the usage.
+        Infinit::Parser->Usage();
 
-	// quit.
-	leave();
+        // quit.
+        leave();
       }
 
     // retrieve the user name.
     if (Infinit::Parser->Value("User",
-			       Infinit::User) == elle::StatusError)
+                               Infinit::User) == elle::StatusError)
       {
-	// display the usage.
-	Infinit::Parser->Usage();
+        // display the usage.
+        Infinit::Parser->Usage();
 
-	escape("unable to retrieve the user name");
+        escape("unable to retrieve the user name");
       }
 
     // retrieve the network name.
     if (Infinit::Parser->Value("Network",
-			       Infinit::Network) == elle::StatusError)
+                               Infinit::Network) == elle::StatusError)
       {
-	// display the usage.
-	Infinit::Parser->Usage();
+        // display the usage.
+        Infinit::Parser->Usage();
 
-	escape("unable to retrieve the network name");
+        escape("unable to retrieve the network name");
       }
 
     // initialize the Agent library.
@@ -224,24 +224,24 @@ namespace application
     // wait for and trigger commands.
     while ((line = ::readline("$> ")) != NULL)
       {
-	elle::Natural32	i;
+        elle::Natural32 i;
 
-	// look for the command.
-	for (i = 0; Commands[i].name != NULL; i++)
-	  {
-	    // trigger the command.
-	    if (elle::String(Commands[i].name) == elle::String(line))
-	      {
-		if (Commands[i].function(line) == elle::StatusError)
-		  show();
+        // look for the command.
+        for (i = 0; Commands[i].name != NULL; i++)
+          {
+            // trigger the command.
+            if (elle::String(Commands[i].name) == elle::String(line))
+              {
+                if (Commands[i].function(line) == elle::StatusError)
+                  show();
 
-		break;
-	      }
-	  }
+                break;
+              }
+          }
 
-	// no command found.
-	if (Commands[i].name == NULL)
-	  std::cerr << "Unknown command '" << line << "'" << std::endl;
+        // no command found.
+        if (Commands[i].name == NULL)
+          std::cerr << "Unknown command '" << line << "'" << std::endl;
       }
 
     // delete the parser.
@@ -290,22 +290,22 @@ namespace application
 ///
 /// this is the program entry point.
 ///
-int			main(int				argc,
-                             char**				argv)
+int                     main(int                                argc,
+                             char**                             argv)
 {
   try
     {
       if (application::Main(argc, argv) == elle::StatusError)
-	{
-	  show();
+        {
+          show();
 
-	  return (1);
-	}
+          return (1);
+        }
     }
   catch (std::exception& e)
     {
       std::cout << "The program has been terminated following "
-		<< "a fatal error (" << e.what() << ")." << std::endl;
+                << "a fatal error (" << e.what() << ")." << std::endl;
 
       return (1);
     }

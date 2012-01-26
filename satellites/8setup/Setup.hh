@@ -38,17 +38,17 @@ namespace application
     //
     enum Operation
       {
-	OperationUnknown = 0,
+        OperationUnknown = 0,
 
-	OperationInitialize,
-	OperationClean
+        OperationInitialize,
+        OperationClean
       };
 
     //
     // static methods
     //
-    static elle::Status		Initialize();
-    static elle::Status		Clean();
+    static elle::Status         Initialize();
+    static elle::Status         Clean();
   };
 
 }

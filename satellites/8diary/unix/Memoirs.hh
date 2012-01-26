@@ -16,7 +16,7 @@
 //
 
 #ifndef FUSE_USE_VERSION
-# define FUSE_USE_VERSION		26
+# define FUSE_USE_VERSION               26
 #endif
 
 //
@@ -52,11 +52,11 @@ namespace application
       // enumerations
       //
       enum Mode
-	{
-	  ModeUnknown,
-	  ModeRecord,
-	  ModeReplay
-	};
+        {
+          ModeUnknown,
+          ModeRecord,
+          ModeReplay
+        };
 
       //
       // constructors & destructors
@@ -67,36 +67,36 @@ namespace application
       //
       // methods
       //
-      elle::Status		Initialize(const elle::String&,
-					   const elle::String&);
-      elle::Status		Initialize(const elle::Natural32,
-					   const elle::Natural32);
-      elle::Status		Clean();
+      elle::Status              Initialize(const elle::String&,
+                                           const elle::String&);
+      elle::Status              Initialize(const elle::Natural32,
+                                           const elle::Natural32);
+      elle::Status              Clean();
 
-      elle::Status		Write(const Upcall&);
-      elle::Status		Read(Upcall&);
+      elle::Status              Write(const Upcall&);
+      elle::Status              Read(Upcall&);
 
-      elle::Status		End() const;
+      elle::Status              End() const;
 
       //
       // interfaces
       //
 
       // dumpable
-      elle::Status		Dump(const elle::Natural32 = 0) const;
+      elle::Status              Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      Mode			mode;
+      Mode                      mode;
 
-      ::fuse_operations		fuse;
+      ::fuse_operations         fuse;
 
       struct
       {
-	elle::Natural32		from;
-	elle::Natural32		to;
-      }				offsets;
+        elle::Natural32         from;
+        elle::Natural32         to;
+      }                         offsets;
     };
 
   }

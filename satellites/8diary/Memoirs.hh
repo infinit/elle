@@ -37,20 +37,20 @@ namespace application
     //
 
     // dumpable
-    elle::Status	Dump(const elle::Natural32 = 0) const;
+    elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // archivable
-    elle::Status	Serialize(elle::Archive&) const;
-    elle::Status	Extract(elle::Archive&);
+    elle::Status        Serialize(elle::Archive&) const;
+    elle::Status        Extract(elle::Archive&);
 
     // fileable
-    elle::Status	Load(const elle::Path&);
-    elle::Status	Store(const elle::Path&) const;
+    elle::Status        Load(const elle::Path&);
+    elle::Status        Store(const elle::Path&) const;
 
     //
     // attributes
     //
-    elle::Archive		archive;
+    elle::Archive               archive;
   };
 
 }

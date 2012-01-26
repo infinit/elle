@@ -24,7 +24,7 @@ namespace application
   ///
   /// this value defines the component's name.
   ///
-  const elle::Character		Component[] = "8diary";
+  const elle::Character         Component[] = "8diary";
 
 //
 // ---------- functions -------------------------------------------------------
@@ -33,10 +33,10 @@ namespace application
   ///
   /// the main function.
   ///
-  elle::Status		Main(elle::Natural32			argc,
-			     elle::Character*			argv[])
+  elle::Status          Main(elle::Natural32                    argc,
+                             elle::Character*                   argv[])
   {
-    Diary::Operation	operation;
+    Diary::Operation    operation;
 
     enterx(instance(Infinit::Parser));
 
@@ -73,106 +73,106 @@ namespace application
     // register the options.
     if (Infinit::Parser->Register(
           "Help",
-	  'h',
-	  "help",
-	  "display the help",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'h',
+          "help",
+          "display the help",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Record",
-	  'c',
-	  "record",
-	  "activate the event recording",
-	  elle::Parser::KindRequired) == elle::StatusError)
+          'c',
+          "record",
+          "activate the event recording",
+          elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Replay",
-	  'y',
-	  "replay",
-	  "activate the event replaying",
-	  elle::Parser::KindRequired) == elle::StatusError)
+          'y',
+          "replay",
+          "activate the event replaying",
+          elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Dump",
-	  'd',
-	  "dump",
-	  "activate the dumping of the given diary",
-	  elle::Parser::KindRequired) == elle::StatusError)
+          'd',
+          "dump",
+          "activate the dumping of the given diary",
+          elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Mountpoint",
-	  'm',
-	  "mounpoint",
-	  "specify the path to the file system mounpoint",
-	  elle::Parser::KindRequired) == elle::StatusError)
+          'm',
+          "mounpoint",
+          "specify the path to the file system mounpoint",
+          elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Mirror",
-	  'i',
-	  "mirror",
-	  "specify the path to the directory which must be mirrored through "
-	  "the mounpoint",
-	  elle::Parser::KindRequired) == elle::StatusError)
+          'i',
+          "mirror",
+          "specify the path to the directory which must be mirrored through "
+          "the mounpoint",
+          elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "From",
-	  'f',
-	  "from",
-	  "specify the number of the first operation to be triggered from "
-	  "the diary",
-	  elle::Parser::KindRequired) == elle::StatusError)
+          'f',
+          "from",
+          "specify the number of the first operation to be triggered from "
+          "the diary",
+          elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // register the option.
     if (Infinit::Parser->Register(
-	  "User",
-	  'u',
-	  "user",
-	  "specifies the name of the user",
-	  elle::Parser::KindRequired) == elle::StatusError)
+          "User",
+          'u',
+          "user",
+          "specifies the name of the user",
+          elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // register the option.
     if (Infinit::Parser->Register(
-	  "Network",
-	  'n',
-	  "network",
-	  "specifies the name of the network",
-	  elle::Parser::KindRequired) == elle::StatusError)
+          "Network",
+          'n',
+          "network",
+          "specifies the name of the network",
+          elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "To",
-	  't',
-	  "to",
-	  "specify the number of the last operation to be triggered from "
-	  "the diary",
-	  elle::Parser::KindRequired) == elle::StatusError)
+          't',
+          "to",
+          "specify the number of the last operation to be triggered from "
+          "the diary",
+          elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // add an example.
     if (Infinit::Parser->Example(
-	  "-c test.dia -m ~/local/mnt/test/ -i /tmp/test") ==
-	elle::StatusError)
+          "-c test.dia -m ~/local/mnt/test/ -i /tmp/test") ==
+        elle::StatusError)
       escape("unable to set an example");
 
     // add an example.
     if (Infinit::Parser->Example(
-	  "-y test.dia -u myuser -n mynetwork") ==
-	elle::StatusError)
+          "-y test.dia -u myuser -n mynetwork") ==
+        elle::StatusError)
       escape("unable to set an example");
 
     // parse.
@@ -182,11 +182,11 @@ namespace application
     // test the option.
     if (Infinit::Parser->Test("Help") == elle::StatusTrue)
       {
-	// display the usage.
-	Infinit::Parser->Usage();
+        // display the usage.
+        Infinit::Parser->Usage();
 
-	// quit.
-	leave();
+        // quit.
+        leave();
       }
 
     // initialize the Etoile library.
@@ -195,8 +195,8 @@ namespace application
 
     // check the mutually exclusive options.
     if ((Infinit::Parser->Test("Record") == elle::StatusTrue) &&
-	(Infinit::Parser->Test("Replay") == elle::StatusTrue) &&
-	(Infinit::Parser->Test("Dump") == elle::StatusTrue))
+        (Infinit::Parser->Test("Replay") == elle::StatusTrue) &&
+        (Infinit::Parser->Test("Dump") == elle::StatusTrue))
       escape("the record and replay options are mutually exclusive");
 
     // test the option.
@@ -215,200 +215,200 @@ namespace application
     switch (operation)
       {
       case Diary::OperationRecord:
-	{
-	  elle::String		mountpoint;
-	  elle::String		mirror;
-	  elle::String		string;
-	  elle::Path		path;
+        {
+          elle::String          mountpoint;
+          elle::String          mirror;
+          elle::String          string;
+          elle::Path            path;
 
-	  // retrieve the string-based path.
-	  if (Infinit::Parser->Value("Record",
-				     string) == elle::StatusError)
-	    escape("unable to retrieve the path value");
+          // retrieve the string-based path.
+          if (Infinit::Parser->Value("Record",
+                                     string) == elle::StatusError)
+            escape("unable to retrieve the path value");
 
-	  // create the path.
-	  if (path.Create(string) == elle::StatusError)
-	    escape("unable to create the path");
+          // create the path.
+          if (path.Create(string) == elle::StatusError)
+            escape("unable to create the path");
 
-	  // retrieve the mountpoint.
-	  if (Infinit::Parser->Value("Mountpoint",
-				     mountpoint) == elle::StatusError)
-	    escape("unable to retrieve the mountpoint value");
+          // retrieve the mountpoint.
+          if (Infinit::Parser->Value("Mountpoint",
+                                     mountpoint) == elle::StatusError)
+            escape("unable to retrieve the mountpoint value");
 
-	  // retrieve the mirror.
-	  if (Infinit::Parser->Value("Mirror",
-				     mirror) == elle::StatusError)
-	    escape("unable to retrieve the mirror value");
+          // retrieve the mirror.
+          if (Infinit::Parser->Value("Mirror",
+                                     mirror) == elle::StatusError)
+            escape("unable to retrieve the mirror value");
 
 #if defined(INFINIT_UNIX)
-	  {
-	    unix::Memoirs	memoirs;
+          {
+            unix::Memoirs       memoirs;
 
-	    // initialize the memoirs.
-	    if (memoirs.Initialize(mountpoint, mirror) == elle::StatusError)
-	      escape("unable to initialize the memoirs");
+            // initialize the memoirs.
+            if (memoirs.Initialize(mountpoint, mirror) == elle::StatusError)
+              escape("unable to initialize the memoirs");
 
-	    // launch the program.
-	    if (elle::Program::Launch() == elle::StatusError)
-	      escape("an error occured while processing events");
+            // launch the program.
+            if (elle::Program::Launch() == elle::StatusError)
+              escape("an error occured while processing events");
 
-	    // clean the memoirs.
-	    if (memoirs.Clean() == elle::StatusError)
-	      escape("unable to clean the memoirs");
+            // clean the memoirs.
+            if (memoirs.Clean() == elle::StatusError)
+              escape("unable to clean the memoirs");
 
-	    // store the memoirs.
-	    if (memoirs.Store(path) == elle::StatusError)
-	      escape("unable to store the memoirs");
-	  }
+            // store the memoirs.
+            if (memoirs.Store(path) == elle::StatusError)
+              escape("unable to store the memoirs");
+          }
 #elif defined(INFINIT_WIN32)
-	  {
-	    // XXX todo: windows
-	  }
+          {
+            // XXX todo: windows
+          }
 #else
 # error "unsupported platform"
 #endif
 
-	  // display a message.
-	  std::cout << "The sequence of file system operations have been "
-		    << "successfully recorded in '" << path.string << "'!"
-		    << std::endl;
+          // display a message.
+          std::cout << "The sequence of file system operations have been "
+                    << "successfully recorded in '" << path.string << "'!"
+                    << std::endl;
 
-	  break;
-	}
+          break;
+        }
       case Diary::OperationReplay:
-	{
-	  elle::String		string;
-	  elle::Path		path;
-	  elle::Natural32	from;
-	  elle::Natural32	to;
+        {
+          elle::String          string;
+          elle::Path            path;
+          elle::Natural32       from;
+          elle::Natural32       to;
 
-	  // retrieve the string-based path.
-	  if (Infinit::Parser->Value("Replay",
-				     string) == elle::StatusError)
-	    escape("unable to retrieve the path value");
+          // retrieve the string-based path.
+          if (Infinit::Parser->Value("Replay",
+                                     string) == elle::StatusError)
+            escape("unable to retrieve the path value");
 
-	  // create the path.
-	  if (path.Create(string) == elle::StatusError)
-	    escape("unable to create the path");
+          // create the path.
+          if (path.Create(string) == elle::StatusError)
+            escape("unable to create the path");
 
-	  // initialize the indexes.
-	  from = 0;
-	  to = elle::Variable::Maximum(to);
+          // initialize the indexes.
+          from = 0;
+          to = elle::Variable::Maximum(to);
 
-	  // retrieve the from.
-	  if ((Infinit::Parser->Test("From") == elle::StatusTrue) &&
-	      (Infinit::Parser->Value(
-	         "From",
-		 from) == elle::StatusError))
-	      escape("unable to retrieve the from value");
+          // retrieve the from.
+          if ((Infinit::Parser->Test("From") == elle::StatusTrue) &&
+              (Infinit::Parser->Value(
+                 "From",
+                 from) == elle::StatusError))
+              escape("unable to retrieve the from value");
 
-	  // retrieve the to.
-	  if ((Infinit::Parser->Test("To") == elle::StatusTrue) &&
-	      (Infinit::Parser->Value(
-	         "To",
-		 to) == elle::StatusError))
-	    escape("unable to retrieve the to value");
+          // retrieve the to.
+          if ((Infinit::Parser->Test("To") == elle::StatusTrue) &&
+              (Infinit::Parser->Value(
+                 "To",
+                 to) == elle::StatusError))
+            escape("unable to retrieve the to value");
 
-	  // retrieve the user name.
-	  if (Infinit::Parser->Value("User",
-				     Infinit::User) == elle::StatusError)
-	    escape("unable to retrieve the user name");
+          // retrieve the user name.
+          if (Infinit::Parser->Value("User",
+                                     Infinit::User) == elle::StatusError)
+            escape("unable to retrieve the user name");
 
-	  // retrieve the network name.
-	  if (Infinit::Parser->Value("Network",
-				     Infinit::Network) == elle::StatusError)
-	    escape("unable to retrieve the network name");
+          // retrieve the network name.
+          if (Infinit::Parser->Value("Network",
+                                     Infinit::Network) == elle::StatusError)
+            escape("unable to retrieve the network name");
 
-	  // initialize the Hole library.
-	  if (hole::Hole::Initialize() == elle::StatusError)
-	    escape("unable to initialize Hole");
+          // initialize the Hole library.
+          if (hole::Hole::Initialize() == elle::StatusError)
+            escape("unable to initialize Hole");
 
-	  // initialize the Agent library.
-	  if (agent::Agent::Initialize() == elle::StatusError)
-	    escape("unable to initialize Agent");
+          // initialize the Agent library.
+          if (agent::Agent::Initialize() == elle::StatusError)
+            escape("unable to initialize Agent");
 
 #if defined(INFINIT_UNIX)
-	  {
-	    unix::Memoirs	memoirs;
+          {
+            unix::Memoirs       memoirs;
 
-	    // load the memoirs.
-	    if (memoirs.Load(path) == elle::StatusError)
-	      escape("unable to load the memoirs");
+            // load the memoirs.
+            if (memoirs.Load(path) == elle::StatusError)
+              escape("unable to load the memoirs");
 
-	    // initialize the memoirs.
-	    if (memoirs.Initialize(from, to) == elle::StatusError)
-	      escape("unable to initialize the memoirs");
+            // initialize the memoirs.
+            if (memoirs.Initialize(from, to) == elle::StatusError)
+              escape("unable to initialize the memoirs");
 
-	    // launch the program.
-	    if (elle::Program::Launch() == elle::StatusError)
-	      escape("an error occured while processing events");
+            // launch the program.
+            if (elle::Program::Launch() == elle::StatusError)
+              escape("an error occured while processing events");
 
-	    // clean the memoirs.
-	    if (memoirs.Clean() == elle::StatusError)
-	      escape("unable to clean the memoirs");
-	  }
+            // clean the memoirs.
+            if (memoirs.Clean() == elle::StatusError)
+              escape("unable to clean the memoirs");
+          }
 #elif defined(INFINIT_WIN32)
-	  {
-	    // XXX todo: windows
-	  }
+          {
+            // XXX todo: windows
+          }
 #else
 # error "unsupported platform"
 #endif
 
-	  // clean the Agent library.
-	  if (agent::Agent::Clean() == elle::StatusError)
-	    escape("unable to clean Agent");
+          // clean the Agent library.
+          if (agent::Agent::Clean() == elle::StatusError)
+            escape("unable to clean Agent");
 
-	  // clean Hole.
-	  if (hole::Hole::Clean() == elle::StatusError)
-	    escape("unable to clean Hole");
+          // clean Hole.
+          if (hole::Hole::Clean() == elle::StatusError)
+            escape("unable to clean Hole");
 
-	  break;
-	}
+          break;
+        }
       case Diary::OperationDump:
-	{
-	  elle::String		string;
-	  elle::Path		path;
+        {
+          elle::String          string;
+          elle::Path            path;
 
-	  // retrieve the string-based path.
-	  if (Infinit::Parser->Value("Dump",
-				     string) == elle::StatusError)
-	    escape("unable to retrieve the path value");
+          // retrieve the string-based path.
+          if (Infinit::Parser->Value("Dump",
+                                     string) == elle::StatusError)
+            escape("unable to retrieve the path value");
 
-	  // create the path.
-	  if (path.Create(string) == elle::StatusError)
-	    escape("unable to create the path");
+          // create the path.
+          if (path.Create(string) == elle::StatusError)
+            escape("unable to create the path");
 
 #if defined(INFINIT_UNIX)
-	  {
-	    unix::Memoirs	memoirs;
+          {
+            unix::Memoirs       memoirs;
 
-	    // load the memoirs.
-	    if (memoirs.Load(path) == elle::StatusError)
-	      escape("unable to load the memoirs");
+            // load the memoirs.
+            if (memoirs.Load(path) == elle::StatusError)
+              escape("unable to load the memoirs");
 
-	    // dump the memoirs.
-	    if (memoirs.Dump() == elle::StatusError)
-	      escape("unable to dump the memoirs");
-	  }
+            // dump the memoirs.
+            if (memoirs.Dump() == elle::StatusError)
+              escape("unable to dump the memoirs");
+          }
 #elif defined(INFINIT_WIN32)
-	  {
-	    // XXX todo: windows
-	  }
+          {
+            // XXX todo: windows
+          }
 #else
 # error "unsupported platform"
 #endif
 
-	  break;
-	}
+          break;
+        }
       case Diary::OperationUnknown:
       default:
-	{
-	  // display the usage.
-	  Infinit::Parser->Usage();
+        {
+          // display the usage.
+          Infinit::Parser->Usage();
 
-	  escape("please specify an operation to perform");
-	}
+          escape("please specify an operation to perform");
+        }
       }
 
     // delete the parser.
@@ -449,22 +449,22 @@ namespace application
 ///
 /// this is the program entry point.
 ///
-int			main(int				argc,
-                             char**				argv)
+int                     main(int                                argc,
+                             char**                             argv)
 {
   try
     {
       if (application::Main(argc, argv) == elle::StatusError)
-	{
-	  show();
+        {
+          show();
 
-	  return (1);
-	}
+          return (1);
+        }
     }
   catch (std::exception& e)
     {
       std::cout << "The program has been terminated following "
-		<< "a fatal error (" << e.what() << ")." << std::endl;
+                << "a fatal error (" << e.what() << ")." << std::endl;
 
       return (1);
     }

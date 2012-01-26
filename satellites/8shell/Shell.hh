@@ -41,21 +41,21 @@ namespace application
     //
     typedef struct
     {
-      const elle::Character*	name;
-      elle::Status		(*function)(const elle::String&);
-    }				Command;
+      const elle::Character*    name;
+      elle::Status              (*function)(const elle::String&);
+    }                           Command;
 
     //
     // methods
     //
-    static elle::Status		Help(const elle::String&);
-    static elle::Status		Quit(const elle::String&);
-    static elle::Status		Dump(const elle::String&);
+    static elle::Status         Help(const elle::String&);
+    static elle::Status         Quit(const elle::String&);
+    static elle::Status         Dump(const elle::String&);
 
     //
     // attributes
     //
-    static nucleus::Address	Address;
+    static nucleus::Address     Address;
   };
 
 }

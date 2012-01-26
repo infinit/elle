@@ -38,45 +38,45 @@ namespace application
       // enumerations
       //
       enum Operation
-	{
-	  OperationGetattr,
-	  OperationFgetattr,
-	  OperationUtimens,
-	  OperationOpendir,
-	  OperationReaddir,
-	  OperationReleasedir,
-	  OperationMkdir,
-	  OperationRmdir,
-	  OperationAccess,
-	  OperationChmod,
-	  OperationChown,
-	  OperationSetxattr,
-	  OperationGetxattr,
-	  OperationListxattr,
-	  OperationRemovexattr,
-	  OperationSymlink,
-	  OperationReadlink,
-	  OperationCreate,
-	  OperationOpen,
-	  OperationWrite,
-	  OperationRead,
-	  OperationTruncate,
-	  OperationFtruncate,
-	  OperationRelease,
-	  OperationRename,
-	  OperationUnlink
-	};
+        {
+          OperationGetattr,
+          OperationFgetattr,
+          OperationUtimens,
+          OperationOpendir,
+          OperationReaddir,
+          OperationReleasedir,
+          OperationMkdir,
+          OperationRmdir,
+          OperationAccess,
+          OperationChmod,
+          OperationChown,
+          OperationSetxattr,
+          OperationGetxattr,
+          OperationListxattr,
+          OperationRemovexattr,
+          OperationSymlink,
+          OperationReadlink,
+          OperationCreate,
+          OperationOpen,
+          OperationWrite,
+          OperationRead,
+          OperationTruncate,
+          OperationFtruncate,
+          OperationRelease,
+          OperationRename,
+          OperationUnlink
+        };
 
       //
       // methods
       //
-      elle::Status	Create(const Operation);
+      elle::Status      Create(const Operation);
 
       template <typename... T>
-      elle::Status	Inputs(const T&...);
+      elle::Status      Inputs(const T&...);
       template <typename... T>
-      elle::Status	Outputs(const T&...);
-      elle::Status	Result(const elle::Integer32);
+      elle::Status      Outputs(const T&...);
+      elle::Status      Result(const elle::Integer32);
 
       //
       // interfaces
@@ -86,19 +86,19 @@ namespace application
       declare(Upcall);
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      Operation		operation;
-      elle::Archive	inputs;
-      elle::Archive	outputs;
-      elle::Integer32	result;
+      Operation         operation;
+      elle::Archive     inputs;
+      elle::Archive     outputs;
+      elle::Integer32   result;
     };
 
   }

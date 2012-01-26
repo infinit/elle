@@ -39,38 +39,38 @@ namespace application
     //
     enum Operation
       {
-	OperationUnknown = 0,
+        OperationUnknown = 0,
 
-	OperationLookup,
-	OperationConsult,
-	OperationGrant,
-	OperationRevoke
+        OperationLookup,
+        OperationConsult,
+        OperationGrant,
+        OperationRevoke
       };
 
     //
     // static callbacks
     //
-    static elle::Status		Disconnected();
-    static elle::Status		Error(const elle::String&);
+    static elle::Status         Disconnected();
+    static elle::Status         Error(const elle::String&);
 
     //
     // static methods
     //
-    static elle::Status		Connect();
+    static elle::Status         Connect();
 
-    static elle::Status		Lookup(const etoile::path::Way&,
-				       const nucleus::Subject&);
-    static elle::Status		Consult(const etoile::path::Way&);
-    static elle::Status		Grant(const etoile::path::Way&,
-				      const nucleus::Subject&,
-				      const nucleus::Permissions);
-    static elle::Status		Revoke(const etoile::path::Way&,
-				       const nucleus::Subject&);
+    static elle::Status         Lookup(const etoile::path::Way&,
+                                       const nucleus::Subject&);
+    static elle::Status         Consult(const etoile::path::Way&);
+    static elle::Status         Grant(const etoile::path::Way&,
+                                      const nucleus::Subject&,
+                                      const nucleus::Permissions);
+    static elle::Status         Revoke(const etoile::path::Way&,
+                                       const nucleus::Subject&);
 
     //
     // static attributes
     //
-    static elle::LocalSocket	Socket;
+    static elle::LocalSocket    Socket;
   };
 
 }

@@ -40,11 +40,11 @@ namespace application
     //
     enum Operation
       {
-	OperationUnknown = 0,
+        OperationUnknown = 0,
 
-	OperationRecord,
-	OperationReplay,
-	OperationDump
+        OperationRecord,
+        OperationReplay,
+        OperationDump
       };
   };
 

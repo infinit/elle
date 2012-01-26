@@ -24,7 +24,7 @@ namespace application
   ///
   /// this value defines the component's name.
   ///
-  const elle::Character		Component[] = "8dictionary";
+  const elle::Character         Component[] = "8dictionary";
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -33,11 +33,11 @@ namespace application
   ///
   /// this method adds an entry.
   ///
-  elle::Status		Dictionary::Add(const Dictionary::Type&	type,
-					const elle::String&	name,
-					const elle::Unique&	identifier)
+  elle::Status          Dictionary::Add(const Dictionary::Type& type,
+                                        const elle::String&     name,
+                                        const elle::Unique&     identifier)
   {
-    lune::Dictionary	dictionary;
+    lune::Dictionary    dictionary;
 
     enter();
 
@@ -45,11 +45,11 @@ namespace application
     // check the arguments.
     //
     {
-      lune::Identity	identity;
+      lune::Identity    identity;
 
       // does the user identity exist.
       if (identity.Exist() == elle::StatusFalse)
-	escape("this user does not seem to exist");
+        escape("this user does not seem to exist");
     }
 
     //
@@ -58,49 +58,49 @@ namespace application
     {
       // load the dictionary if it exists.
       if (dictionary.Exist() == elle::StatusTrue)
-	{
-	  // load the dictionary.
-	  if (dictionary.Load() == elle::StatusError)
-	    escape("unable to load the dictionary");
-	}
+        {
+          // load the dictionary.
+          if (dictionary.Load() == elle::StatusError)
+            escape("unable to load the dictionary");
+        }
     }
 
     // perform the action depending on the type.
     switch (type)
       {
       case Dictionary::TypeUser:
-	{
-	  elle::PublicKey	K;
+        {
+          elle::PublicKey       K;
 
-	  // restore the public key from the identifier.
-	  if (K.Restore(identifier) == elle::StatusError)
-	    escape("unable to restore the public key");
+          // restore the public key from the identifier.
+          if (K.Restore(identifier) == elle::StatusError)
+            escape("unable to restore the public key");
 
-	  // add an entry.
-	  if (dictionary.users.Add(name, K) == elle::StatusError)
-	    escape("unable to add the user entry to the dictionary");
+          // add an entry.
+          if (dictionary.users.Add(name, K) == elle::StatusError)
+            escape("unable to add the user entry to the dictionary");
 
-	  break;
-	}
+          break;
+        }
       case Dictionary::TypeGroup:
-	{
-	  nucleus::Address	address;
+        {
+          nucleus::Address      address;
 
-	  // restore the address from the identifier.
-	  if (address.Restore(identifier) == elle::StatusError)
-	    escape("unable to restore the address");
+          // restore the address from the identifier.
+          if (address.Restore(identifier) == elle::StatusError)
+            escape("unable to restore the address");
 
-	  // add an entry.
-	  if (dictionary.groups.Add(name, address) == elle::StatusError)
-	    escape("unable to add the group entry to the dictionary");
+          // add an entry.
+          if (dictionary.groups.Add(name, address) == elle::StatusError)
+            escape("unable to add the group entry to the dictionary");
 
-	  break;
-	}
+          break;
+        }
       case Dictionary::TypeUnknown:
       default:
-	{
-	  escape("please specify a type of entry to add");
-	}
+        {
+          escape("please specify a type of entry to add");
+        }
       }
 
     //
@@ -109,7 +109,7 @@ namespace application
     {
       // store the dictionary file.
       if (dictionary.Store() == elle::StatusError)
-	escape("unable to store the dictionary");
+        escape("unable to store the dictionary");
     }
 
     leave();
@@ -118,10 +118,10 @@ namespace application
   ///
   /// this method removes an entry.
   ///
-  elle::Status		Dictionary::Remove(const Dictionary::Type& type,
-					   const elle::String&	name)
+  elle::Status          Dictionary::Remove(const Dictionary::Type& type,
+                                           const elle::String&  name)
   {
-    lune::Dictionary	dictionary;
+    lune::Dictionary    dictionary;
 
     enter();
 
@@ -129,11 +129,11 @@ namespace application
     // check the arguments.
     //
     {
-      lune::Identity	identity;
+      lune::Identity    identity;
 
       // does the user identity exist.
       if (identity.Exist() == elle::StatusFalse)
-	escape("this user does not seem to exist");
+        escape("this user does not seem to exist");
     }
 
     //
@@ -142,37 +142,37 @@ namespace application
     {
       // load the dictionary if it exists.
       if (dictionary.Exist() == elle::StatusTrue)
-	{
-	  // load the dictionary file.
-	  if (dictionary.Load() == elle::StatusError)
-	    escape("unable to load the dictionary");
-	}
+        {
+          // load the dictionary file.
+          if (dictionary.Load() == elle::StatusError)
+            escape("unable to load the dictionary");
+        }
     }
 
     // perform the action depending on the type.
     switch (type)
       {
       case Dictionary::TypeUser:
-	{
-	  // remove an entry.
-	  if (dictionary.users.Remove(name) == elle::StatusError)
-	    escape("unable to remove the user entry");
+        {
+          // remove an entry.
+          if (dictionary.users.Remove(name) == elle::StatusError)
+            escape("unable to remove the user entry");
 
-	  break;
-	}
+          break;
+        }
       case Dictionary::TypeGroup:
-	{
-	  // remove an entry.
-	  if (dictionary.groups.Remove(name) == elle::StatusError)
-	    escape("unable to remove the group entry");
+        {
+          // remove an entry.
+          if (dictionary.groups.Remove(name) == elle::StatusError)
+            escape("unable to remove the group entry");
 
-	  break;
-	}
+          break;
+        }
       case Dictionary::TypeUnknown:
       default:
-	{
-	  escape("please specify a type of entry to remove");
-	}
+        {
+          escape("please specify a type of entry to remove");
+        }
       }
 
     //
@@ -181,7 +181,7 @@ namespace application
     {
       // store the dictionary file.
       if (dictionary.Store() == elle::StatusError)
-	escape("unable to store the dictionary");
+        escape("unable to store the dictionary");
     }
 
     leave();
@@ -190,9 +190,9 @@ namespace application
   ///
   /// this method shows all the entries.
   ///
-  elle::Status		Dictionary::Show(const Dictionary::Type& type)
+  elle::Status          Dictionary::Show(const Dictionary::Type& type)
   {
-    lune::Dictionary	dictionary;
+    lune::Dictionary    dictionary;
 
     enter();
 
@@ -200,11 +200,11 @@ namespace application
     // check the arguments.
     //
     {
-      lune::Identity	identity;
+      lune::Identity    identity;
 
       // does the user identity exist.
       if (identity.Exist() == elle::StatusFalse)
-	escape("this user does not seem to exist");
+        escape("this user does not seem to exist");
     }
 
     //
@@ -213,55 +213,55 @@ namespace application
     {
       // load the dictionary if it exists.
       if (dictionary.Exist() == elle::StatusTrue)
-	{
-	  // load the dictionary file.
-	  if (dictionary.Load() == elle::StatusError)
-	    escape("unable to load the dictionary");
-	}
+        {
+          // load the dictionary file.
+          if (dictionary.Load() == elle::StatusError)
+            escape("unable to load the dictionary");
+        }
     }
 
     // perform the action depending on the type.
     switch (type)
       {
       case Dictionary::TypeUser:
-	{
-	  lune::Map<elle::PublicKey>::Scoutor scoutor;
+        {
+          lune::Map<elle::PublicKey>::Scoutor scoutor;
 
-	  // go through the user dictionary.
-	  for (scoutor = dictionary.users.container.begin();
-	       scoutor != dictionary.users.container.end();
-	       scoutor++)
-	    {
-	      lune::Map<elle::PublicKey>::Entry* entry = *scoutor;
+          // go through the user dictionary.
+          for (scoutor = dictionary.users.container.begin();
+               scoutor != dictionary.users.container.end();
+               scoutor++)
+            {
+              lune::Map<elle::PublicKey>::Entry* entry = *scoutor;
 
-	      std::cout << entry->name << " :: "
-			<< entry->value << std::endl;
-	    }
+              std::cout << entry->name << " :: "
+                        << entry->value << std::endl;
+            }
 
-	  break;
-	}
+          break;
+        }
       case Dictionary::TypeGroup:
-	{
-	  lune::Map<nucleus::Address>::Scoutor scoutor;
+        {
+          lune::Map<nucleus::Address>::Scoutor scoutor;
 
-	  // go through the group dictionary.
-	  for (scoutor = dictionary.groups.container.begin();
-	       scoutor != dictionary.groups.container.end();
-	       scoutor++)
-	    {
-	      lune::Map<nucleus::Address>::Entry* entry = *scoutor;
+          // go through the group dictionary.
+          for (scoutor = dictionary.groups.container.begin();
+               scoutor != dictionary.groups.container.end();
+               scoutor++)
+            {
+              lune::Map<nucleus::Address>::Entry* entry = *scoutor;
 
-	      std::cout << entry->name << " :: "
-			<< entry->value << std::endl;
-	    }
+              std::cout << entry->name << " :: "
+                        << entry->value << std::endl;
+            }
 
-	  break;
-	}
+          break;
+        }
       case Dictionary::TypeUnknown:
       default:
-	{
-	  escape("please specify a type of entry to show");
-	}
+        {
+          escape("please specify a type of entry to show");
+        }
       }
 
     leave();
@@ -270,10 +270,10 @@ namespace application
   ///
   /// this method dump an entry.
   ///
-  elle::Status		Dictionary::Dump(const Dictionary::Type& type,
-					 const elle::String&	name)
+  elle::Status          Dictionary::Dump(const Dictionary::Type& type,
+                                         const elle::String&    name)
   {
-    lune::Dictionary	dictionary;
+    lune::Dictionary    dictionary;
 
     enter();
 
@@ -281,11 +281,11 @@ namespace application
     // check the arguments.
     //
     {
-      lune::Identity	identity;
+      lune::Identity    identity;
 
       // does the user identity exist.
       if (identity.Exist() == elle::StatusFalse)
-	escape("this user does not seem to exist");
+        escape("this user does not seem to exist");
     }
 
     //
@@ -294,59 +294,59 @@ namespace application
     {
       // load the dictionary if it exists.
       if (dictionary.Exist() == elle::StatusTrue)
-	{
-	  // load the dictionary file.
-	  if (dictionary.Load() == elle::StatusError)
-	    escape("unable to load the dictionary");
-	}
+        {
+          // load the dictionary file.
+          if (dictionary.Load() == elle::StatusError)
+            escape("unable to load the dictionary");
+        }
     }
 
     // perform the action depending on the type.
     switch (type)
       {
       case Dictionary::TypeUser:
-	{
-	  elle::PublicKey*	K;
-	  elle::Unique		unique;
+        {
+          elle::PublicKey*      K;
+          elle::Unique          unique;
 
-	  // retrieve the entry.
-	  if (dictionary.users.Lookup(name, K) != elle::StatusTrue)
-	    escape("unable to look up the user entry");
+          // retrieve the entry.
+          if (dictionary.users.Lookup(name, K) != elle::StatusTrue)
+            escape("unable to look up the user entry");
 
-	  // retrive the public key's unique.
-	  if (K->Save(unique) == elle::StatusError)
-	    escape("unable to save the public key's unique");
+          // retrive the public key's unique.
+          if (K->Save(unique) == elle::StatusError)
+            escape("unable to save the public key's unique");
 
-	  // dump the information.
-	  std::cout << name << " :: "
-		    << unique << std::endl;
+          // dump the information.
+          std::cout << name << " :: "
+                    << unique << std::endl;
 
-	  break;
-	}
+          break;
+        }
       case Dictionary::TypeGroup:
-	{
-	  nucleus::Address*	address;
-	  elle::Unique		unique;
+        {
+          nucleus::Address*     address;
+          elle::Unique          unique;
 
-	  // retrieve the entry.
-	  if (dictionary.groups.Lookup(name, address) != elle::StatusTrue)
-	    escape("unable to look up the group entry");
+          // retrieve the entry.
+          if (dictionary.groups.Lookup(name, address) != elle::StatusTrue)
+            escape("unable to look up the group entry");
 
-	  // retrive the address's unique.
-	  if (address->Save(unique) == elle::StatusError)
-	    escape("unable to save the address's unique");
+          // retrive the address's unique.
+          if (address->Save(unique) == elle::StatusError)
+            escape("unable to save the address's unique");
 
-	  // dump the information.
-	  std::cout << name << " :: "
-		    << unique << std::endl;
+          // dump the information.
+          std::cout << name << " :: "
+                    << unique << std::endl;
 
-	  break;
-	}
+          break;
+        }
       case Dictionary::TypeUnknown:
       default:
-	{
-	  escape("please specify a type of entry to dump");
-	}
+        {
+          escape("please specify a type of entry to dump");
+        }
       }
 
     leave();
@@ -359,10 +359,10 @@ namespace application
   ///
   /// the main function.
   ///
-  elle::Status		Main(elle::Natural32			argc,
-			     elle::Character*			argv[])
+  elle::Status          Main(elle::Natural32                    argc,
+                             elle::Character*                   argv[])
   {
-    Dictionary::Operation	operation;
+    Dictionary::Operation       operation;
 
     enterx(instance(Infinit::Parser));
 
@@ -403,82 +403,82 @@ namespace application
     // register the options.
     if (Infinit::Parser->Register(
           "Help",
-	  'h',
-	  "help",
-	  "display the help",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'h',
+          "help",
+          "display the help",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Add",
-	  'a',
-	  "add",
-	  "add a dictionary record",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'a',
+          "add",
+          "add a dictionary record",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Remove",
-	  'r',
-	  "remove",
-	  "remove a dictionary record",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'r',
+          "remove",
+          "remove a dictionary record",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Show",
-	  's',
-	  "show",
-	  "show all the dictionary records",
-	  elle::Parser::KindNone) == elle::StatusError)
+          's',
+          "show",
+          "show all the dictionary records",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Dump",
-	  'd',
-	  "dump",
-	  "dump a specific dictionary record",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'd',
+          "dump",
+          "dump a specific dictionary record",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "User",
-	  'u',
-	  "user",
-	  "indicate the type of the record to be a user",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'u',
+          "user",
+          "indicate the type of the record to be a user",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Group",
-	  'g',
-	  "group",
-	  "indicate the type of the record to be a group",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'g',
+          "group",
+          "indicate the type of the record to be a group",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Name",
-	  'n',
-	  "name",
-	  "specify the local UNIX/Windows/etc. name of the user/group entry",
-	  elle::Parser::KindRequired) == elle::StatusError)
+          'n',
+          "name",
+          "specify the local UNIX/Windows/etc. name of the user/group entry",
+          elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Identifier",
-	  'i',
-	  "identifier",
-	  "specify the user/group Infinit base64 identifier",
-	  elle::Parser::KindRequired) == elle::StatusError)
+          'i',
+          "identifier",
+          "specify the user/group Infinit base64 identifier",
+          elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // parse.
@@ -488,34 +488,34 @@ namespace application
     // test the option.
     if (Infinit::Parser->Test("Help") == elle::StatusTrue)
       {
-	// display the usage.
-	Infinit::Parser->Usage();
+        // display the usage.
+        Infinit::Parser->Usage();
 
-	// quit.
-	leave();
+        // quit.
+        leave();
       }
 
     // check the mutually exclusive options.
     if ((Infinit::Parser->Test("Add") == elle::StatusTrue) &&
-	(Infinit::Parser->Test("Remove") == elle::StatusTrue) &&
-	(Infinit::Parser->Test("Dump") == elle::StatusTrue) &&
-	(Infinit::Parser->Test("Show") == elle::StatusTrue))
+        (Infinit::Parser->Test("Remove") == elle::StatusTrue) &&
+        (Infinit::Parser->Test("Dump") == elle::StatusTrue) &&
+        (Infinit::Parser->Test("Show") == elle::StatusTrue))
       {
-	// display the usage.
-	Infinit::Parser->Usage();
+        // display the usage.
+        Infinit::Parser->Usage();
 
-	escape("the add, remove, dump and show options are "
-	       "mutually exclusive");
+        escape("the add, remove, dump and show options are "
+               "mutually exclusive");
       }
 
     // check the mutually exclusive options.
     if ((Infinit::Parser->Test("User") == elle::StatusTrue) &&
-	(Infinit::Parser->Test("Group") == elle::StatusTrue))
+        (Infinit::Parser->Test("Group") == elle::StatusTrue))
       {
-	// display the usage.
-	Infinit::Parser->Usage();
+        // display the usage.
+        Infinit::Parser->Usage();
 
-	escape("the user and group types cannot be activated together");
+        escape("the user and group types cannot be activated together");
       }
 
     // test the option.
@@ -538,118 +538,118 @@ namespace application
     switch (operation)
       {
       case Dictionary::OperationAdd:
-	{
-	  Dictionary::Type	type;
-	  elle::String		name;
-	  elle::Unique		identifier;
+        {
+          Dictionary::Type      type;
+          elle::String          name;
+          elle::Unique          identifier;
 
-	  // retrieve the name.
-	  if (Infinit::Parser->Value("Name", name) == elle::StatusError)
-	    escape("unable to retrieve the name value");
+          // retrieve the name.
+          if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+            escape("unable to retrieve the name value");
 
-	  // retrieve the type.
-	  if (Infinit::Parser->Test("User") == elle::StatusTrue)
-	    type = Dictionary::TypeUser;
-	  else if (Infinit::Parser->Test("Group") == elle::StatusTrue)
-	    type = Dictionary::TypeGroup;
-	  else
-	    escape("please specify the type of the entity: user or group");
+          // retrieve the type.
+          if (Infinit::Parser->Test("User") == elle::StatusTrue)
+            type = Dictionary::TypeUser;
+          else if (Infinit::Parser->Test("Group") == elle::StatusTrue)
+            type = Dictionary::TypeGroup;
+          else
+            escape("please specify the type of the entity: user or group");
 
-	  // retrieve the identifier.
-	  if (Infinit::Parser->Value("Identifier",
-				     identifier) == elle::StatusError)
-	    escape("unable to retrieve the identifier value");
+          // retrieve the identifier.
+          if (Infinit::Parser->Value("Identifier",
+                                     identifier) == elle::StatusError)
+            escape("unable to retrieve the identifier value");
 
-	  // add a record.
-	  if (Dictionary::Add(type,
-			      name,
-			      identifier) == elle::StatusError)
-	    escape("unable to add a mapping");
+          // add a record.
+          if (Dictionary::Add(type,
+                              name,
+                              identifier) == elle::StatusError)
+            escape("unable to add a mapping");
 
-	  // display a message.
-	  std::cout << "The record has been added successfully!"
-		    << std::endl;
+          // display a message.
+          std::cout << "The record has been added successfully!"
+                    << std::endl;
 
-	  break;
-	}
+          break;
+        }
       case Dictionary::OperationRemove:
-	{
-	  Dictionary::Type	type;
-	  elle::String		name;
+        {
+          Dictionary::Type      type;
+          elle::String          name;
 
-	  // retrieve the name.
-	  if (Infinit::Parser->Value("Name", name) == elle::StatusError)
-	    escape("unable to retrieve the name value");
+          // retrieve the name.
+          if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+            escape("unable to retrieve the name value");
 
-	  // retrieve the type.
-	  if (Infinit::Parser->Test("User") == elle::StatusTrue)
-	    type = Dictionary::TypeUser;
-	  else if (Infinit::Parser->Test("Group") == elle::StatusTrue)
-	    type = Dictionary::TypeGroup;
-	  else
-	    escape("please specify the type of the entity: user or group");
+          // retrieve the type.
+          if (Infinit::Parser->Test("User") == elle::StatusTrue)
+            type = Dictionary::TypeUser;
+          else if (Infinit::Parser->Test("Group") == elle::StatusTrue)
+            type = Dictionary::TypeGroup;
+          else
+            escape("please specify the type of the entity: user or group");
 
-	  // remove a record.
-	  if (Dictionary::Remove(type,
-				 name) == elle::StatusError)
-	    escape("unable to remove the mapping");
+          // remove a record.
+          if (Dictionary::Remove(type,
+                                 name) == elle::StatusError)
+            escape("unable to remove the mapping");
 
-	  // display a message.
-	  std::cout << "The record has been removed successfully!"
-		    << std::endl;
+          // display a message.
+          std::cout << "The record has been removed successfully!"
+                    << std::endl;
 
-	  break;
-	}
+          break;
+        }
       case Dictionary::OperationDump:
-	{
-	  Dictionary::Type	type;
-	  elle::String		name;
+        {
+          Dictionary::Type      type;
+          elle::String          name;
 
-	  // retrieve the name.
-	  if (Infinit::Parser->Value("Name", name) == elle::StatusError)
-	    escape("unable to retrieve the name value");
+          // retrieve the name.
+          if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+            escape("unable to retrieve the name value");
 
-	  // retrieve the type.
-	  if (Infinit::Parser->Test("User") == elle::StatusTrue)
-	    type = Dictionary::TypeUser;
-	  else if (Infinit::Parser->Test("Group") == elle::StatusTrue)
-	    type = Dictionary::TypeGroup;
-	  else
-	    escape("please specify the type of the entity: user or group");
+          // retrieve the type.
+          if (Infinit::Parser->Test("User") == elle::StatusTrue)
+            type = Dictionary::TypeUser;
+          else if (Infinit::Parser->Test("Group") == elle::StatusTrue)
+            type = Dictionary::TypeGroup;
+          else
+            escape("please specify the type of the entity: user or group");
 
-	  // dump the record.
-	  if (Dictionary::Dump(type,
-			       name) == elle::StatusError)
-	    escape("unable to dump the mapping");
+          // dump the record.
+          if (Dictionary::Dump(type,
+                               name) == elle::StatusError)
+            escape("unable to dump the mapping");
 
-	  break;
-	}
+          break;
+        }
       case Dictionary::OperationShow:
-	{
-	  Dictionary::Type	type;
+        {
+          Dictionary::Type      type;
 
-	  // retrieve the type.
-	  if (Infinit::Parser->Test("User") == elle::StatusTrue)
-	    type = Dictionary::TypeUser;
-	  else if (Infinit::Parser->Test("Group") == elle::StatusTrue)
-	    type = Dictionary::TypeGroup;
-	  else
-	    escape("please specify the type of the entity: user or group");
+          // retrieve the type.
+          if (Infinit::Parser->Test("User") == elle::StatusTrue)
+            type = Dictionary::TypeUser;
+          else if (Infinit::Parser->Test("Group") == elle::StatusTrue)
+            type = Dictionary::TypeGroup;
+          else
+            escape("please specify the type of the entity: user or group");
 
-	  // show the records.
-	  if (Dictionary::Show(type) == elle::StatusError)
-	    escape("unable to show the mappings");
+          // show the records.
+          if (Dictionary::Show(type) == elle::StatusError)
+            escape("unable to show the mappings");
 
-	  break;
-	}
+          break;
+        }
       case Dictionary::OperationUnknown:
       default:
-	{
-	  // display the usage.
-	  Infinit::Parser->Usage();
+        {
+          // display the usage.
+          Infinit::Parser->Usage();
 
-	  escape("please specify an operation to perform");
-	}
+          escape("please specify an operation to perform");
+        }
       }
 
     // delete the parser.
@@ -690,22 +690,22 @@ namespace application
 ///
 /// this is the program entry point.
 ///
-int			main(int				argc,
-                             char**				argv)
+int                     main(int                                argc,
+                             char**                             argv)
 {
   try
     {
       if (application::Main(argc, argv) == elle::StatusError)
-	{
-	  show();
+        {
+          show();
 
-	  return (1);
-	}
+          return (1);
+        }
     }
   catch (std::exception& e)
     {
       std::cout << "The program has been terminated following "
-		<< "a fatal error (" << e.what() << ")." << std::endl;
+                << "a fatal error (" << e.what() << ")." << std::endl;
 
       return (1);
     }

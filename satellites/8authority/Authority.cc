@@ -24,14 +24,14 @@ namespace application
   ///
   /// this value defines the component's name.
   ///
-  const elle::Character		Component[] = "8authority";
+  const elle::Character         Component[] = "8authority";
 
   ///
   /// this value defines the authority key pair length.
   ///
   /// the length is kept high in order to make attacks more difficult.
   ///
-  const elle::Natural32		Authority::Length = 4096;
+  const elle::Natural32         Authority::Length = 4096;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -40,12 +40,12 @@ namespace application
   ///
   /// this method creates a new authority.
   ///
-  elle::Status		Authority::Create()
+  elle::Status          Authority::Create()
   {
-    elle::String	prompt;
-    elle::String	pass;
-    elle::KeyPair	pair;
-    lune::Authority	authority;
+    elle::String        prompt;
+    elle::String        pass;
+    elle::KeyPair       pair;
+    lune::Authority     authority;
 
     enter();
 
@@ -54,8 +54,8 @@ namespace application
 
     if (elle::Console::Input(
           pass,
-	  prompt,
-	  elle::Console::OptionPassword) == elle::StatusError)
+          prompt,
+          elle::Console::OptionPassword) == elle::StatusError)
       escape("unable to read the input");
 
     // generate the authority key pair.
@@ -80,11 +80,11 @@ namespace application
   ///
   /// this method destroys the existing authority.
   ///
-  elle::Status		Authority::Destroy()
+  elle::Status          Authority::Destroy()
   {
-    elle::String	prompt;
-    elle::KeyPair	pair;
-    lune::Authority	authority;
+    elle::String        prompt;
+    elle::KeyPair       pair;
+    lune::Authority     authority;
 
     enter();
 
@@ -98,12 +98,12 @@ namespace application
   ///
   /// this method retrieves and displays information on the authority.
   ///
-  elle::Status		Authority::Information()
+  elle::Status          Authority::Information()
   {
-    elle::String	prompt;
-    elle::String	pass;
-    lune::Authority	authority;
-    elle::Unique	unique;
+    elle::String        prompt;
+    elle::String        pass;
+    lune::Authority     authority;
+    elle::Unique        unique;
 
     enter();
 
@@ -116,8 +116,8 @@ namespace application
 
     if (elle::Console::Input(
           pass,
-	  prompt,
-	  elle::Console::OptionPassword) == elle::StatusError)
+          prompt,
+          elle::Console::OptionPassword) == elle::StatusError)
       escape("unable to read the input");
 
     // load the authority.
@@ -150,10 +150,10 @@ namespace application
   ///
   /// the main function.
   ///
-  elle::Status		Main(elle::Natural32			argc,
-			     elle::Character*			argv[])
+  elle::Status          Main(elle::Natural32                    argc,
+                             elle::Character*                   argv[])
   {
-    Authority::Operation	operation;
+    Authority::Operation        operation;
 
     enterx(instance(Infinit::Parser));
 
@@ -194,37 +194,37 @@ namespace application
     // register the options.
     if (Infinit::Parser->Register(
           "Help",
-	  'h',
-	  "help",
-	  "display the help",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'h',
+          "help",
+          "display the help",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Create",
-	  'c',
-	  "create",
-	  "create the authority",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'c',
+          "create",
+          "create the authority",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Destroy",
-	  'd',
-	  "destroy",
-	  "destroy the existing authority",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'd',
+          "destroy",
+          "destroy the existing authority",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Information",
-	  'x',
-	  "information",
-	  "display information regarding the authority",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'x',
+          "information",
+          "display information regarding the authority",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // parse.
@@ -234,23 +234,23 @@ namespace application
     // test the option.
     if (Infinit::Parser->Test("Help") == elle::StatusTrue)
       {
-	// display the usage.
-	Infinit::Parser->Usage();
+        // display the usage.
+        Infinit::Parser->Usage();
 
-	// quit.
-	leave();
+        // quit.
+        leave();
       }
 
     // check the mutually exclusive options.
     if ((Infinit::Parser->Test("Create") == elle::StatusTrue) &&
-	(Infinit::Parser->Test("Destroy") == elle::StatusTrue) &&
-	(Infinit::Parser->Test("Information") == elle::StatusTrue))
+        (Infinit::Parser->Test("Destroy") == elle::StatusTrue) &&
+        (Infinit::Parser->Test("Information") == elle::StatusTrue))
       {
-	// display the usage.
-	Infinit::Parser->Usage();
+        // display the usage.
+        Infinit::Parser->Usage();
 
-	escape("the create, destroy and information options are "
-	       "mutually exclusive");
+        escape("the create, destroy and information options are "
+               "mutually exclusive");
       }
 
     // test the option.
@@ -269,45 +269,45 @@ namespace application
     switch (operation)
       {
       case Authority::OperationCreate:
-	{
-	  // create the authority.
-	  if (Authority::Create() == elle::StatusError)
-	    escape("unable to create the authority");
+        {
+          // create the authority.
+          if (Authority::Create() == elle::StatusError)
+            escape("unable to create the authority");
 
-	  // display a message.
-	  std::cout << "The authority has been created successfully!"
-		    << std::endl;
+          // display a message.
+          std::cout << "The authority has been created successfully!"
+                    << std::endl;
 
-	  break;
-	}
+          break;
+        }
       case Authority::OperationDestroy:
-	{
-	  // destroy the authority.
-	  if (Authority::Destroy() == elle::StatusError)
-	    escape("unable to destroy the authority");
+        {
+          // destroy the authority.
+          if (Authority::Destroy() == elle::StatusError)
+            escape("unable to destroy the authority");
 
-	  // display a message.
-	  std::cout << "The authority has been destroyed successfully!"
-		    << std::endl;
+          // display a message.
+          std::cout << "The authority has been destroyed successfully!"
+                    << std::endl;
 
-	  break;
-	}
+          break;
+        }
       case Authority::OperationInformation:
-	{
-	  // get information on the authority.
-	  if (Authority::Information() == elle::StatusError)
-	    escape("unable to retrieve information on the authority");
+        {
+          // get information on the authority.
+          if (Authority::Information() == elle::StatusError)
+            escape("unable to retrieve information on the authority");
 
-	  break;
-	}
+          break;
+        }
       case Authority::OperationUnknown:
       default:
-	{
-	  // display the usage.
-	  Infinit::Parser->Usage();
+        {
+          // display the usage.
+          Infinit::Parser->Usage();
 
-	  escape("please specify an operation to perform");
-	}
+          escape("please specify an operation to perform");
+        }
       }
 
     // delete the parser.
@@ -348,22 +348,22 @@ namespace application
 ///
 /// this is the program entry point.
 ///
-int			main(int				argc,
-                             char**				argv)
+int                     main(int                                argc,
+                             char**                             argv)
 {
   try
     {
       if (application::Main(argc, argv) == elle::StatusError)
-	{
-	  show();
+        {
+          show();
 
-	  return (1);
-	}
+          return (1);
+        }
     }
   catch (std::exception& e)
     {
       std::cout << "The program has been terminated following "
-		<< "a fatal error (" << e.what() << ")." << std::endl;
+                << "a fatal error (" << e.what() << ")." << std::endl;
 
       return (1);
     }

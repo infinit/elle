@@ -71,46 +71,46 @@ namespace application
       //
       // static methods
       //
-      static elle::Status	Getattr(Upcall&);
-      static elle::Status	Fgetattr(Upcall&);
-      static elle::Status	Utimens(Upcall&);
-      static elle::Status	Opendir(Upcall&);
-      static elle::Status	Readdir(Upcall&);
-      static elle::Status	Releasedir(Upcall&);
-      static elle::Status	Mkdir(Upcall&);
-      static elle::Status	Rmdir(Upcall&);
-      static elle::Status	Access(Upcall&);
-      static elle::Status	Chmod(Upcall&);
-      static elle::Status	Chown(Upcall&);
-      static elle::Status	Setxattr(Upcall&);
-      static elle::Status	Getxattr(Upcall&);
-      static elle::Status	Listxattr(Upcall&);
-      static elle::Status	Removexattr(Upcall&);
-      static elle::Status	Symlink(Upcall&);
-      static elle::Status	Readlink(Upcall&);
-      static elle::Status	Create(Upcall&);
-      static elle::Status	Open(Upcall&);
-      static elle::Status	Write(Upcall&);
-      static elle::Status	Read(Upcall&);
-      static elle::Status	Truncate(Upcall&);
-      static elle::Status	Ftruncate(Upcall&);
-      static elle::Status	Release(Upcall&);
-      static elle::Status	Rename(Upcall&);
-      static elle::Status	Unlink(Upcall&);
+      static elle::Status       Getattr(Upcall&);
+      static elle::Status       Fgetattr(Upcall&);
+      static elle::Status       Utimens(Upcall&);
+      static elle::Status       Opendir(Upcall&);
+      static elle::Status       Readdir(Upcall&);
+      static elle::Status       Releasedir(Upcall&);
+      static elle::Status       Mkdir(Upcall&);
+      static elle::Status       Rmdir(Upcall&);
+      static elle::Status       Access(Upcall&);
+      static elle::Status       Chmod(Upcall&);
+      static elle::Status       Chown(Upcall&);
+      static elle::Status       Setxattr(Upcall&);
+      static elle::Status       Getxattr(Upcall&);
+      static elle::Status       Listxattr(Upcall&);
+      static elle::Status       Removexattr(Upcall&);
+      static elle::Status       Symlink(Upcall&);
+      static elle::Status       Readlink(Upcall&);
+      static elle::Status       Create(Upcall&);
+      static elle::Status       Open(Upcall&);
+      static elle::Status       Write(Upcall&);
+      static elle::Status       Read(Upcall&);
+      static elle::Status       Truncate(Upcall&);
+      static elle::Status       Ftruncate(Upcall&);
+      static elle::Status       Release(Upcall&);
+      static elle::Status       Rename(Upcall&);
+      static elle::Status       Unlink(Upcall&);
 
-      static elle::Status	Initialize(Memoirs*);
-      static elle::Status	Clean();
+      static elle::Status       Initialize(Memoirs*);
+      static elle::Status       Clean();
 
-      static elle::Status	Process();
+      static elle::Status       Process();
 
       //
       // static attributes
       //
-      static Memoirs*		Reference;
+      static Memoirs*           Reference;
       static elle::Entrance<
-	elle::Status,
-	elle::Parameters<>
-	>*			Entrance;
+        elle::Status,
+        elle::Parameters<>
+        >*                      Entrance;
     };
 
   }

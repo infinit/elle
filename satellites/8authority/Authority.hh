@@ -36,26 +36,26 @@ namespace application
     //
     // constants
     //
-    static const elle::Natural32		Length;
+    static const elle::Natural32                Length;
 
     //
     // enumerations
     //
     enum Operation
       {
-	OperationUnknown = 0,
+        OperationUnknown = 0,
 
-	OperationCreate,
-	OperationDestroy,
-	OperationInformation
+        OperationCreate,
+        OperationDestroy,
+        OperationInformation
       };
 
     //
     // static methods
     //
-    static elle::Status		Create();
-    static elle::Status		Destroy();
-    static elle::Status		Information();
+    static elle::Status         Create();
+    static elle::Status         Destroy();
+    static elle::Status         Information();
   };
 
 }

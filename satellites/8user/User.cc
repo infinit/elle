@@ -24,7 +24,7 @@ namespace application
   ///
   /// this value defines the component's name.
   ///
-  const elle::Character		Component[] = "8user";
+  const elle::Character         Component[] = "8user";
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -34,14 +34,14 @@ namespace application
   /// this method creates a new user by generating a new key pair and
   /// storing a user block.
   ///
-  elle::Status		User::Create(const elle::String&	name)
+  elle::Status          User::Create(const elle::String&        name)
   {
-    elle::String	prompt;
-    elle::String	pass;
-    elle::KeyPair	pair;
-    lune::Authority	authority;
-    lune::Identity	identity;
-    lune::Dictionary	dictionary;
+    elle::String        prompt;
+    elle::String        pass;
+    elle::KeyPair       pair;
+    lune::Authority     authority;
+    lune::Identity      identity;
+    lune::Dictionary    dictionary;
 
     enter();
 
@@ -62,8 +62,8 @@ namespace application
 
     if (elle::Console::Input(
           pass,
-	  prompt,
-	  elle::Console::OptionPassword) == elle::StatusError)
+          prompt,
+          elle::Console::OptionPassword) == elle::StatusError)
       escape("unable to read the input");
 
     // load the authority.
@@ -79,8 +79,8 @@ namespace application
 
     if (elle::Console::Input(
           pass,
-	  prompt,
-	  elle::Console::OptionPassword) == elle::StatusError)
+          prompt,
+          elle::Console::OptionPassword) == elle::StatusError)
       escape("unable to read the input");
 
     // generate a key pair.
@@ -113,7 +113,7 @@ namespace application
   ///
   /// this method destroys an existing user.
   ///
-  elle::Status		User::Destroy(const elle::String&	name)
+  elle::Status          User::Destroy(const elle::String&       name)
   {
     enter();
 
@@ -121,57 +121,57 @@ namespace application
     // remove the identity.
     //
     {
-      lune::Identity	identity;
+      lune::Identity    identity;
 
       // check the argument.
       if (name.empty() == true)
-	escape("unable to destroy a user without a user name");
+        escape("unable to destroy a user without a user name");
 
       // check if the user already exists.
       if (identity.Exist(name) == elle::StatusFalse)
-	escape("this user does not seem to exist");
+        escape("this user does not seem to exist");
 
       // destroy the identity.
       if (identity.Erase(name) == elle::StatusFalse)
-	escape("unable to erase the identity file");
+        escape("unable to erase the identity file");
     }
 
     //
     // remove the dictionary, if necessary.
     //
     {
-      lune::Dictionary	dictionary;
+      lune::Dictionary  dictionary;
 
       // if the dictionary exists...
       if (dictionary.Exist(name) == elle::StatusTrue)
-	{
-	  // remove it.
-	  if (dictionary.Erase(name) == elle::StatusError)
-	    escape("unable to erase the dictionary");
-	}
+        {
+          // remove it.
+          if (dictionary.Erase(name) == elle::StatusError)
+            escape("unable to erase the dictionary");
+        }
     }
 
     //
     // remove the user directory.
     //
     {
-      elle::Path	path;
+      elle::Path        path;
 
       // create the user path.
       if (path.Create(lune::Lune::User::Root) == elle::StatusError)
-	escape("unable to create the path");
+        escape("unable to create the path");
 
       // complete the path with the user name.
       if (path.Complete(elle::Piece("%USER%", name)) == elle::StatusError)
-	escape("unable to complete the path");
+        escape("unable to complete the path");
 
       // clear the user directory content.
       if (elle::Directory::Clear(path) == elle::StatusError)
-	escape("unable to clear the directory");
+        escape("unable to clear the directory");
 
       // remove the directory.
       if (elle::Directory::Remove(path) == elle::StatusError)
-	escape("unable to erase the directory");
+        escape("unable to erase the directory");
     }
 
     leave();
@@ -180,13 +180,13 @@ namespace application
   ///
   /// this method displays information on the given user.
   ///
-  elle::Status		User::Information(const elle::String&	name)
+  elle::Status          User::Information(const elle::String&   name)
   {
-    elle::String	prompt;
-    elle::String	pass;
-    lune::Identity	identity;
-    elle::PublicKey	K;
-    elle::Unique	unique;
+    elle::String        prompt;
+    elle::String        pass;
+    lune::Identity      identity;
+    elle::PublicKey     K;
+    elle::Unique        unique;
 
     enter();
 
@@ -203,8 +203,8 @@ namespace application
 
     if (elle::Console::Input(
           pass,
-	  prompt,
-	  elle::Console::OptionPassword) == elle::StatusError)
+          prompt,
+          elle::Console::OptionPassword) == elle::StatusError)
       escape("unable to read the input");
 
     // load the identity.
@@ -240,10 +240,10 @@ namespace application
   ///
   /// the main function.
   ///
-  elle::Status		Main(elle::Natural32			argc,
-			     elle::Character*			argv[])
+  elle::Status          Main(elle::Natural32                    argc,
+                             elle::Character*                   argv[])
   {
-    User::Operation	operation;
+    User::Operation     operation;
 
     enterx(instance(Infinit::Parser));
 
@@ -280,46 +280,46 @@ namespace application
     // register the options.
     if (Infinit::Parser->Register(
           "Help",
-	  'h',
-	  "help",
-	  "display the help",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'h',
+          "help",
+          "display the help",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Create",
-	  'c',
-	  "create",
-	  "create a user",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'c',
+          "create",
+          "create a user",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Destroy",
-	  'd',
-	  "destroy",
-	  "destroy an existing network",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'd',
+          "destroy",
+          "destroy an existing network",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Information",
-	  'x',
-	  "information",
-	  "display information regarding the user",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'x',
+          "information",
+          "display information regarding the user",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Name",
-	  'n',
-	  "name",
-	  "specify the user name",
-	  elle::Parser::KindRequired) == elle::StatusError)
+          'n',
+          "name",
+          "specify the user name",
+          elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // parse.
@@ -329,23 +329,23 @@ namespace application
     // test the option.
     if (Infinit::Parser->Test("Help") == elle::StatusTrue)
       {
-	// display the usage.
-	Infinit::Parser->Usage();
+        // display the usage.
+        Infinit::Parser->Usage();
 
-	// quit.
-	leave();
+        // quit.
+        leave();
       }
 
     // check the mutually exclusive options.
     if ((Infinit::Parser->Test("Create") == elle::StatusTrue) &&
-	(Infinit::Parser->Test("Destroy") == elle::StatusTrue) &&
-	(Infinit::Parser->Test("Information") == elle::StatusTrue))
+        (Infinit::Parser->Test("Destroy") == elle::StatusTrue) &&
+        (Infinit::Parser->Test("Information") == elle::StatusTrue))
       {
-	// display the usage.
-	Infinit::Parser->Usage();
+        // display the usage.
+        Infinit::Parser->Usage();
 
-	escape("the create, destroy and information options are "
-	       "mutually exclusive");
+        escape("the create, destroy and information options are "
+               "mutually exclusive");
       }
 
     // test the option.
@@ -364,63 +364,63 @@ namespace application
     switch (operation)
       {
       case User::OperationCreate:
-	{
-	  elle::String		name;
+        {
+          elle::String          name;
 
-	  // retrieve the name.
-	  if (Infinit::Parser->Value("Name", name) == elle::StatusError)
-	    escape("unable to retrieve the name value");
+          // retrieve the name.
+          if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+            escape("unable to retrieve the name value");
 
-	  // create a user.
-	  if (User::Create(name) == elle::StatusError)
-	    escape("unable to create the user");
+          // create a user.
+          if (User::Create(name) == elle::StatusError)
+            escape("unable to create the user");
 
-	  // display a message.
-	  std::cout << "The user has been created successfully!"
-		    << std::endl;
+          // display a message.
+          std::cout << "The user has been created successfully!"
+                    << std::endl;
 
-	  break;
-	}
+          break;
+        }
       case User::OperationDestroy:
-	{
-	  elle::String		name;
+        {
+          elle::String          name;
 
-	  // retrieve the name.
-	  if (Infinit::Parser->Value("Name", name) == elle::StatusError)
-	    escape("unable to retrieve the name value");
+          // retrieve the name.
+          if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+            escape("unable to retrieve the name value");
 
-	  // destroy a user.
-	  if (User::Destroy(name) == elle::StatusError)
-	    escape("unable to destroy the user");
+          // destroy a user.
+          if (User::Destroy(name) == elle::StatusError)
+            escape("unable to destroy the user");
 
-	  // display a message.
-	  std::cout << "The user has been destroyed successfully!"
-		    << std::endl;
+          // display a message.
+          std::cout << "The user has been destroyed successfully!"
+                    << std::endl;
 
-	  break;
-	}
+          break;
+        }
       case User::OperationInformation:
-	{
-	  elle::String		name;
+        {
+          elle::String          name;
 
-	  // retrieve the name.
-	  if (Infinit::Parser->Value("Name", name) == elle::StatusError)
-	    escape("unable to retrieve the name value");
+          // retrieve the name.
+          if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+            escape("unable to retrieve the name value");
 
-	  // display information.
-	  if (User::Information(name) == elle::StatusError)
-	    escape("unable to display information on the user");
+          // display information.
+          if (User::Information(name) == elle::StatusError)
+            escape("unable to display information on the user");
 
-	  break;
-	}
+          break;
+        }
       case User::OperationUnknown:
       default:
-	{
-	  // display the usage.
-	  Infinit::Parser->Usage();
+        {
+          // display the usage.
+          Infinit::Parser->Usage();
 
-	  escape("please specify an operation to perform");
-	}
+          escape("please specify an operation to perform");
+        }
       }
 
     // delete the parser.
@@ -457,22 +457,22 @@ namespace application
 ///
 /// this is the program entry point.
 ///
-int			main(int				argc,
-                             char**				argv)
+int                     main(int                                argc,
+                             char**                             argv)
 {
   try
     {
       if (application::Main(argc, argv) == elle::StatusError)
-	{
-	  show();
+        {
+          show();
 
-	  return (1);
-	}
+          return (1);
+        }
     }
   catch (std::exception& e)
     {
       std::cout << "The program has been terminated following "
-		<< "a fatal error (" << e.what() << ")." << std::endl;
+                << "a fatal error (" << e.what() << ")." << std::endl;
 
       return (1);
     }

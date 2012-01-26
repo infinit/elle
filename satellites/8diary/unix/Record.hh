@@ -71,103 +71,103 @@ namespace application
       //
 
       // general purpose
-      static int		Getattr(const char*,
-					struct stat*);
-      static int		Fgetattr(const char*,
-					 struct stat*,
-					 struct ::fuse_file_info*);
-      static int		Utimens(const char*,
-					const struct timespec[2]);
+      static int                Getattr(const char*,
+                                        struct stat*);
+      static int                Fgetattr(const char*,
+                                         struct stat*,
+                                         struct ::fuse_file_info*);
+      static int                Utimens(const char*,
+                                        const struct timespec[2]);
 
     // directory
-      static int		Opendir(const char*,
-					struct ::fuse_file_info*);
-      static int		Readdir(const char*,
-					void*,
-					::fuse_fill_dir_t,
-					off_t,
-					struct ::fuse_file_info*);
-      static int		Releasedir(const char*,
-					   struct ::fuse_file_info*);
-      static int		Mkdir(const char*,
-				      mode_t);
-      static int		Rmdir(const char*);
+      static int                Opendir(const char*,
+                                        struct ::fuse_file_info*);
+      static int                Readdir(const char*,
+                                        void*,
+                                        ::fuse_fill_dir_t,
+                                        off_t,
+                                        struct ::fuse_file_info*);
+      static int                Releasedir(const char*,
+                                           struct ::fuse_file_info*);
+      static int                Mkdir(const char*,
+                                      mode_t);
+      static int                Rmdir(const char*);
 
       // access
-      static int		Access(const char*,
-				       int);
-      static int		Chmod(const char*,
-				      mode_t);
-      static int		Chown(const char*,
-				      uid_t,
-				      gid_t);
+      static int                Access(const char*,
+                                       int);
+      static int                Chmod(const char*,
+                                      mode_t);
+      static int                Chown(const char*,
+                                      uid_t,
+                                      gid_t);
 
 #ifdef HAVE_SETXATTR
       // attribute
-      static int		Setxattr(const char*,
-					 const char*,
-					 const char*,
-					 size_t,
-					 int);
-      static int		Getxattr(const char*,
-					 const char*,
-					 char*,
-					 size_t);
-      static int		Listxattr(const char*,
-					  char*,
-					  size_t);
-      static int		Removexattr(const char*,
-					    const char*);
+      static int                Setxattr(const char*,
+                                         const char*,
+                                         const char*,
+                                         size_t,
+                                         int);
+      static int                Getxattr(const char*,
+                                         const char*,
+                                         char*,
+                                         size_t);
+      static int                Listxattr(const char*,
+                                          char*,
+                                          size_t);
+      static int                Removexattr(const char*,
+                                            const char*);
 #endif
 
       // link
-      static int		Symlink(const char*,
-					const char*);
-      static int		Readlink(const char*,
-					 char*,
-					 size_t);
+      static int                Symlink(const char*,
+                                        const char*);
+      static int                Readlink(const char*,
+                                         char*,
+                                         size_t);
 
       // file
-      static int		Create(const char*,
-				       mode_t,
-				       struct ::fuse_file_info*);
-      static int		Open(const char*,
-				     struct ::fuse_file_info*);
-      static int		Write(const char*,
-				      const char*,
-				      size_t,
-				      off_t,
-				      struct ::fuse_file_info*);
-      static int		Read(const char*,
-				     char*,
-				     size_t,
-				     off_t,
-				     struct ::fuse_file_info*);
-      static int		Truncate(const char*,
-					 off_t);
-      static int		Ftruncate(const char*,
-					  off_t,
-					  struct ::fuse_file_info*);
-      static int		Release(const char*,
-					struct ::fuse_file_info*);
+      static int                Create(const char*,
+                                       mode_t,
+                                       struct ::fuse_file_info*);
+      static int                Open(const char*,
+                                     struct ::fuse_file_info*);
+      static int                Write(const char*,
+                                      const char*,
+                                      size_t,
+                                      off_t,
+                                      struct ::fuse_file_info*);
+      static int                Read(const char*,
+                                     char*,
+                                     size_t,
+                                     off_t,
+                                     struct ::fuse_file_info*);
+      static int                Truncate(const char*,
+                                         off_t);
+      static int                Ftruncate(const char*,
+                                          off_t,
+                                          struct ::fuse_file_info*);
+      static int                Release(const char*,
+                                        struct ::fuse_file_info*);
 
       // objects
-      static int		Rename(const char*,
-				       const char*);
-      static int		Unlink(const char*);
+      static int                Rename(const char*,
+                                       const char*);
+      static int                Unlink(const char*);
 
       //
       // static methods
       //
-      static elle::Status	Initialize(Memoirs*,
-					   const elle::String&);
-      static elle::Status	Clean();
+      static elle::Status       Initialize(Memoirs*,
+                                           const elle::String&);
+      static elle::Status       Clean();
 
       //
       // static attributes
       //
-      static struct ::fuse_operations	Operations;
-      static Memoirs*			Reference;
+      static struct ::fuse_operations   Operations;
+      static Memoirs*                   Reference;
     };
 
   }
