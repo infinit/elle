@@ -31,7 +31,7 @@ namespace elle
     ///
     /// this type defines a network port.
     ///
-    typedef Natural16		Port;
+    typedef Natural16           Port;
 
   }
 }

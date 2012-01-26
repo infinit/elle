@@ -35,7 +35,7 @@ namespace elle
 // ---------- externs ---------------------------------------------------------
 //
 
-  extern const Character	Component[];
+  extern const Character        Component[];
 
 //
 // ---------- constants -------------------------------------------------------
@@ -44,7 +44,7 @@ namespace elle
   ///
   /// this constant defines the number of tags reserved by Elle.
   ///
-  const Natural32		Tags = 10;
+  const Natural32               Tags = 10;
 
 }
 
@@ -96,14 +96,14 @@ namespace elle
 
 // None
 message(elle::TagNone,
-	parameters());
+        parameters());
 
 // Ok
 message(elle::TagOk,
-	parameters());
+        parameters());
 
 // Error
 message(elle::TagError,
-	parameters(elle::standalone::Report));
+        parameters(elle::standalone::Report));
 
 #endif

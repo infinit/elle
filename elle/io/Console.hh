@@ -41,18 +41,18 @@ namespace elle
       // enumerations
       //
       enum Option
-	{
-	  OptionNone,
+        {
+          OptionNone,
 
-	  OptionPassword
-	};
+          OptionPassword
+        };
 
       //
       // static methods
       //
-      static Status	Input(String&,
-			      const String& = "",
-			      const Option = OptionNone);
+      static Status     Input(String&,
+                              const String& = "",
+                              const Option = OptionNone);
     };
 
   }

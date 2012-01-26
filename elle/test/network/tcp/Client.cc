@@ -26,13 +26,13 @@ namespace elle
     ///
     /// this method initializes the client.
     ///
-    Status		Client::Setup(const String&		line)
+    Status              Client::Setup(const String&             line)
     {
       enter();
 
       // create the locus.
       if (this->locus.Create(line) == StatusError)
-	escape("unable to create the locus");
+        escape("unable to create the locus");
 
       leave();
     }
@@ -40,7 +40,7 @@ namespace elle
     ///
     /// this method is the thread entry locus.
     ///
-    Status		Client::Run()
+    Status              Client::Run()
     {
       enter();
 
@@ -49,17 +49,17 @@ namespace elle
 
       // register the message.
       if (Network::Register(
-	    Procedure<TagChallenge>(
-	      Callback<>::Infer(&Client::Challenge, this))) == StatusError)
-	escape("unable to register the challenge message");
+            Procedure<TagChallenge>(
+              Callback<>::Infer(&Client::Challenge, this))) == StatusError)
+        escape("unable to register the challenge message");
 
       // create the socket.
       if (this->socket.Create() == StatusError)
-	escape("unable to create the socket");
+        escape("unable to create the socket");
 
       // connect the socket.
       if (this->socket.Connect(this->locus) == StatusError)
-	escape("unable to connect to the bridge");
+        escape("unable to connect to the bridge");
 
       leave();
     }
@@ -71,9 +71,9 @@ namespace elle
     ///
     /// this method handles messages.
     ///
-      Status		Client::Challenge(const String&		text)
+      Status            Client::Challenge(const String&         text)
     {
-      String		response("RESPONSE");
+      String            response("RESPONSE");
 
       enter();
 
@@ -82,8 +82,8 @@ namespace elle
 
       // reply.
       if (this->socket.Reply(
-	    Inputs<TagResponse>(response)) == StatusError)
-	escape("unable to return the response");
+            Inputs<TagResponse>(response)) == StatusError)
+        escape("unable to return the response");
 
       leave();
     }

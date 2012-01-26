@@ -24,10 +24,10 @@ namespace elle
     /// the constructor.
     ///
     template <typename R,
-	      typename... U>
+              typename... U>
     Closure< R, Parameters<U...> >::Closure(
-        Callback< R, Parameters<U...> >				callback,
-	U&...							objects):
+        Callback< R, Parameters<U...> >                         callback,
+        U&...                                                   objects):
       callback(callback),
       arguments(objects...)
     {
@@ -38,8 +38,8 @@ namespace elle
     /// the pre-defined arguments.
     ///
     template <typename R,
-	      typename... U>
-    R		Closure< R, Parameters<U...> >::Call()
+              typename... U>
+    R           Closure< R, Parameters<U...> >::Call()
     {
       return (this->arguments.Call(this->callback));
     }
@@ -48,8 +48,8 @@ namespace elle
     /// this method triggers the closure without checking the return value.
     ///
     template <typename R,
-	      typename... U>
-    Void	Closure< R, Parameters<U...> >::Trigger()
+              typename... U>
+    Void        Closure< R, Parameters<U...> >::Trigger()
     {
       this->arguments.Trigger(this->callback);
     }
@@ -58,18 +58,18 @@ namespace elle
     /// this macro-function call generates the object.
     ///
     embed(_(Closure< R, Parameters<U...> >),
-	  _(template <typename R,
-		      typename... U>));
+          _(template <typename R,
+                      typename... U>));
 
     ///
     /// this method dumps the closure.
     ///
     template <typename R,
-	      typename... U>
+              typename... U>
     Status
-    Closure< R, Parameters<U...> >::Dump(const Natural32	margin) const
+    Closure< R, Parameters<U...> >::Dump(const Natural32        margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
@@ -77,11 +77,11 @@ namespace elle
 
       // dump the callback.
       if (this->callback.Dump(margin + 2) == StatusError)
-	escape("unable to dump the callback");
+        escape("unable to dump the callback");
 
       // dump the arguments.
       if (this->arguments.Dump(margin + 2) == StatusError)
-	escape("unable to dump the arguments");
+        escape("unable to dump the arguments");
 
       leave();
     }
@@ -94,13 +94,13 @@ namespace elle
     /// the constructor.
     ///
     template <typename R,
-	      typename... U,
-	      typename... V>
+              typename... U,
+              typename... V>
     Closure< R,
-	     Parameters<U...>,
-	     Parameters<V...> >::Closure(
-	Callback< R, Parameters<U..., V...> >			callback,
-	U&...							objects):
+             Parameters<U...>,
+             Parameters<V...> >::Closure(
+        Callback< R, Parameters<U..., V...> >                   callback,
+        U&...                                                   objects):
       callback(callback),
       arguments(objects...)
     {
@@ -111,11 +111,11 @@ namespace elle
     /// the pre-defined arguments.
     ///
     template <typename R,
-	      typename... U,
-	      typename... V>
-    R		Closure< R,
-			 Parameters<U...>,
-			 Parameters<V...> >::Call(V&...		objects)
+              typename... U,
+              typename... V>
+    R           Closure< R,
+                         Parameters<U...>,
+                         Parameters<V...> >::Call(V&...         objects)
     {
       return (this->arguments.Trigger(this->callback, objects...));
     }
@@ -124,11 +124,11 @@ namespace elle
     /// this method triggers the closure without checking the return value.
     ///
     template <typename R,
-	      typename... U,
-	      typename... V>
-    Void	Closure< R,
-			 Parameters<U...>,
-			 Parameters<V...> >::Trigger(V&...	objects)
+              typename... U,
+              typename... V>
+    Void        Closure< R,
+                         Parameters<U...>,
+                         Parameters<V...> >::Trigger(V&...      objects)
     {
       this->arguments.Trigger(this->callback, objects...);
     }
@@ -137,22 +137,22 @@ namespace elle
     /// this macro-function call generates the object.
     ///
     embed(_(Closure< R, Parameters<U...>, Parameters<V...> >),
-	  _(template <typename R,
-		      typename... U,
-		      typename... V>));
+          _(template <typename R,
+                      typename... U,
+                      typename... V>));
 
     ///
     /// this method dumps the closure.
     ///
     template <typename R,
-	      typename... U,
-	      typename... V>
+              typename... U,
+              typename... V>
     Status
     Closure< R,
-	     Parameters<U...>,
-	     Parameters<V...> >::Dump(const Natural32		margin) const
+             Parameters<U...>,
+             Parameters<V...> >::Dump(const Natural32           margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
@@ -160,11 +160,11 @@ namespace elle
 
       // dump the callback.
       if (this->callback.Dump(margin + 2) == StatusError)
-	escape("unable to dump the callback");
+        escape("unable to dump the callback");
 
       // dump the arguments.
       if (this->arguments.Dump(margin + 2) == StatusError)
-	escape("unable to dump the arguments");
+        escape("unable to dump the arguments");
 
       leave();
     }
@@ -177,26 +177,26 @@ namespace elle
     /// this method returns a closure of the type of the given function.
     ///
     template <typename R,
-	      typename... U>
+              typename... U>
     Closure< R, Parameters<U...> >
-    Closure<>::Infer(R					(*handler)(U...))
+    Closure<>::Infer(R                                  (*handler)(U...))
     {
       return (Closure< R, Parameters<U...> >(
-		Callback<>::Infer(handler)));
+                Callback<>::Infer(handler)));
     }
 
     ///
     /// this method returns a closure of the type of the given method.
     ///
     template <typename R,
-	      typename C,
-	      typename... U>
+              typename C,
+              typename... U>
     Closure< R, Parameters<U...> >
-    Closure<>::Infer(R					(C::*handler)(U...),
-		     C*					object)
+    Closure<>::Infer(R                                  (C::*handler)(U...),
+                     C*                                 object)
     {
       return (Closure< R, Parameters<U...> >(
-	        Callback<>::Infer(handler, object)));
+                Callback<>::Infer(handler, object)));
     }
 
     ///
@@ -204,15 +204,15 @@ namespace elle
     /// initial arguments.
     ///
     template <typename R,
-	      typename... U,
-	      typename... V>
+              typename... U,
+              typename... V>
     Closure< R, Parameters<U...>, Parameters<V...> >
-    Closure<>::Infer(R					(*handler)(U...,
-								   V...),
-		     U&...				arguments)
+    Closure<>::Infer(R                                  (*handler)(U...,
+                                                                   V...),
+                     U&...                              arguments)
     {
       return (Closure< R, Parameters<U...>, Parameters<V...> >(
-	        Callback<>::Infer(handler), arguments...));
+                Callback<>::Infer(handler), arguments...));
     }
 
     ///
@@ -220,17 +220,17 @@ namespace elle
     /// initial arguments.
     ///
     template <typename R,
-	      typename C,
-	      typename... U,
-	      typename... V>
+              typename C,
+              typename... U,
+              typename... V>
     Closure< R, Parameters<U...>, Parameters<V...> >
-    Closure<>::Infer(R					(C::*handler)(U...,
-								      V...),
-		     C*					object,
-		     U&...				arguments)
+    Closure<>::Infer(R                                  (C::*handler)(U...,
+                                                                      V...),
+                     C*                                 object,
+                     U&...                              arguments)
     {
       return (Closure< R, Parameters<U...>, Parameters<V...> >(
-		Callback<>::Infer(handler, object), arguments...));
+                Callback<>::Infer(handler, object), arguments...));
     }
 
   }

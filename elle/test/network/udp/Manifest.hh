@@ -30,11 +30,11 @@ namespace elle
 
     enum Tag
       {
-	TagNone = 0,
+        TagNone = 0,
 
         TagProbe = 1000,
 
-	Tags = TagProbe + 1
+        Tags = TagProbe + 1
       };
 
   }
@@ -45,7 +45,7 @@ namespace elle
 //
 
 outward(elle::test::TagProbe,
-	parameters(elle::core::String&,
-		   elle::test::Table&));
+        parameters(elle::core::String&,
+                   elle::test::Table&));
 
 #endif

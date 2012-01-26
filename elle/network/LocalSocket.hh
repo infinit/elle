@@ -79,7 +79,7 @@ namespace elle
       //
       // constants
       //
-      static const Natural32		Timeout;
+      static const Natural32            Timeout;
 
       //
       // constructors & destructors
@@ -90,63 +90,63 @@ namespace elle
       //
       // methods
       //
-      Status		Create();
-      Status		Create(::QLocalSocket*);
+      Status            Create();
+      Status            Create(::QLocalSocket*);
 
-      Status		Connect(const String&,
-				Socket::Mode =
-				  Socket::ModeAsynchronous);
-      Status		Disconnect();
+      Status            Connect(const String&,
+                                Socket::Mode =
+                                  Socket::ModeAsynchronous);
+      Status            Disconnect();
 
-      Status		Write(const Packet&);
+      Status            Write(const Packet&);
 
-      Status		Read();
-      Status		Fetch();
+      Status            Read();
+      Status            Fetch();
 
-      Status		Target(String&) const;
+      Status            Target(String&) const;
 
       template <typename I>
-      Status		Send(const I,
-			     const Event& = Event::Null);
+      Status            Send(const I,
+                             const Event& = Event::Null);
       template <typename O>
-      Status		Receive(const Event&,
-				O);
+      Status            Receive(const Event&,
+                                O);
       template <typename I,
-		typename O>
-      Status		Call(const I,
-			     O);
+                typename O>
+      Status            Call(const I,
+                             O);
       template <typename I>
-      Status		Reply(const I,
-			      Session* = NULL);
+      Status            Reply(const I,
+                              Session* = NULL);
 
       //
       // callbacks
       //
-      Status		Dispatch();
-      Status		Abort();
+      Status            Dispatch();
+      Status            Abort();
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      String		name;
+      String            name;
 
-      ::QLocalSocket*	socket;
+      ::QLocalSocket*   socket;
 
     private slots:
       //
       // slots
       //
-      void		_connected();
-      void		_disconnected();
-      void		_ready();
-      void		_error(const QLocalSocket::LocalSocketError);
+      void              _connected();
+      void              _disconnected();
+      void              _ready();
+      void              _error(const QLocalSocket::LocalSocketError);
     };
 
   }

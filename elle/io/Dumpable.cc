@@ -34,7 +34,7 @@ namespace elle
     /// this string represents the shifting used when displaying
     /// information.
     ///
-    const String		Dumpable::Shift(2, ' ');
+    const String                Dumpable::Shift(2, ' ');
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -43,7 +43,7 @@ namespace elle
     ///
     /// this method dumps an object.
     ///
-    Status		Dumpable::Dump(const Natural32) const
+    Status              Dumpable::Dump(const Natural32) const
     {
       enter();
 

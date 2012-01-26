@@ -96,46 +96,46 @@ namespace elle
       /// operating a serialization or an extraction.
       ///
       enum Mode
-	{
-	  ModeUnknown,
-	  ModeSerialization,
-	  ModeExtraction
-	};
+        {
+          ModeUnknown,
+          ModeSerialization,
+          ModeExtraction
+        };
 
       ///
       /// this enumeration indicates whether the archive has taken control
       /// over the region used for extraction.
       ///
       enum Control
-	{
-	  ControlUnknown,
-	  ControlAcquired,
-	  ControlWrapped
-	};
+        {
+          ControlUnknown,
+          ControlAcquired,
+          ControlWrapped
+        };
 
       ///
       /// this enumeration types every basic element archives are composed of.
       ///
       enum Type
-	{
-	  TypeUnknown = 0,
-	  TypeNull,
-	  TypeBoolean,
-	  TypeCharacter,
-	  TypeReal,
-	  TypeInteger8,
-	  TypeInteger16,
-	  TypeInteger32,
-	  TypeInteger64,
-	  TypeNatural8,
-	  TypeNatural16,
-	  TypeNatural32,
-	  TypeNatural64,
-	  TypeLarge,
-	  TypeString,
-	  TypeRegion,
-	  TypeArchive
-	};
+        {
+          TypeUnknown = 0,
+          TypeNull,
+          TypeBoolean,
+          TypeCharacter,
+          TypeReal,
+          TypeInteger8,
+          TypeInteger16,
+          TypeInteger32,
+          TypeInteger64,
+          TypeNatural8,
+          TypeNatural16,
+          TypeNatural32,
+          TypeNatural64,
+          TypeLarge,
+          TypeString,
+          TypeRegion,
+          TypeArchive
+        };
 
       //
       // constructors & destructors
@@ -147,94 +147,94 @@ namespace elle
       //
       // methods
       //
-      Status		Create();
+      Status            Create();
 
-      Status		Acquire(const Region&);
-      Status		Wrap(const Region&);
+      Status            Acquire(const Region&);
+      Status            Wrap(const Region&);
 
-      Status		Serialize();
+      Status            Serialize();
       template <typename T>
-      Status		Serialize(const T&);
+      Status            Serialize(const T&);
       template <typename T,
-		typename... TT>
-      Status		Serialize(const T&,
-				  const TT&...);
+                typename... TT>
+      Status            Serialize(const T&,
+                                  const TT&...);
 
-      Status		Extract();
+      Status            Extract();
       template <typename T>
-      Status		Extract(T&);
+      Status            Extract(T&);
       template <typename T,
-		typename... TT>
-      Status		Extract(T&,
-				TT&...);
+                typename... TT>
+      Status            Extract(T&,
+                                TT&...);
 
-      Status		Fetch(enum Type&);
+      Status            Fetch(enum Type&);
 
       //
       // virtual methods
       //
-      virtual Status	Store(const Null&);
-      virtual Status	Store(const Boolean&);
-      virtual Status	Store(const Character&);
-      virtual Status	Store(const Real&);
-      virtual Status	Store(const Integer8&);
-      virtual Status	Store(const Integer16&);
-      virtual Status	Store(const Integer32&);
-      virtual Status	Store(const Integer64&);
-      virtual Status	Store(const Natural8&);
-      virtual Status	Store(const Natural16&);
-      virtual Status	Store(const Natural32&);
-      virtual Status	Store(const Natural64&);
-      virtual Status	Store(const Large&);
-      virtual Status	Store(const String&);
-      virtual Status	Store(const Region&);
-      virtual Status	Store(const Archive&);
+      virtual Status    Store(const Null&);
+      virtual Status    Store(const Boolean&);
+      virtual Status    Store(const Character&);
+      virtual Status    Store(const Real&);
+      virtual Status    Store(const Integer8&);
+      virtual Status    Store(const Integer16&);
+      virtual Status    Store(const Integer32&);
+      virtual Status    Store(const Integer64&);
+      virtual Status    Store(const Natural8&);
+      virtual Status    Store(const Natural16&);
+      virtual Status    Store(const Natural32&);
+      virtual Status    Store(const Natural64&);
+      virtual Status    Store(const Large&);
+      virtual Status    Store(const String&);
+      virtual Status    Store(const Region&);
+      virtual Status    Store(const Archive&);
 
-      virtual Status	Load(Null&);
-      virtual Status	Load(Boolean&);
-      virtual Status	Load(Character&);
-      virtual Status	Load(Real&);
-      virtual Status	Load(Integer8&);
-      virtual Status	Load(Integer16&);
-      virtual Status	Load(Integer32&);
-      virtual Status	Load(Integer64&);
-      virtual Status	Load(Natural8&);
-      virtual Status	Load(Natural16&);
-      virtual Status	Load(Natural32&);
-      virtual Status	Load(Natural64&);
-      virtual Status	Load(Large&);
-      virtual Status	Load(String&);
-      virtual Status	Load(Region&);
-      virtual Status	Load(Archive&);
+      virtual Status    Load(Null&);
+      virtual Status    Load(Boolean&);
+      virtual Status    Load(Character&);
+      virtual Status    Load(Real&);
+      virtual Status    Load(Integer8&);
+      virtual Status    Load(Integer16&);
+      virtual Status    Load(Integer32&);
+      virtual Status    Load(Integer64&);
+      virtual Status    Load(Natural8&);
+      virtual Status    Load(Natural16&);
+      virtual Status    Load(Natural32&);
+      virtual Status    Load(Natural64&);
+      virtual Status    Load(Large&);
+      virtual Status    Load(String&);
+      virtual Status    Load(Region&);
+      virtual Status    Load(Archive&);
 
       //
       // static methods
       //
       template <typename T>
-      static Status	Print(const T&,
-			      const Natural32);
-      static Status	Print(const Region&,
-			      const Natural32);
+      static Status     Print(const T&,
+                              const Natural32);
+      static Status     Print(const Region&,
+                              const Natural32);
 
       //
       // behaviours
       //
       template <typename T, Boolean C>
-      struct		Behaviour
+      struct            Behaviour
       {
-	static Status		Serialize(Archive&,
-					  const T&);
-	static Status		Extract(Archive&,
-					T&);
+        static Status           Serialize(Archive&,
+                                          const T&);
+        static Status           Extract(Archive&,
+                                        T&);
       };
 
       template <typename T>
-      struct		Behaviour<T, true>
+      struct            Behaviour<T, true>
       {
-	static Status		Serialize(Archive&,
-					  const Archivable&);
-	static Status		Extract(Archive&,
-					Archivable&);
+        static Status           Serialize(Archive&,
+                                          const Archivable&);
+        static Status           Extract(Archive&,
+                                        Archivable&);
       };
 
       //
@@ -242,30 +242,30 @@ namespace elle
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       // object-like
       template <typename T>
-      Status		Recycle(const T* = NULL);
+      Status            Recycle(const T* = NULL);
 
-      virtual Status	Imprint(Natural32&) const;
-      virtual Status	Clone(Archive*&) const;
+      virtual Status    Imprint(Natural32&) const;
+      virtual Status    Clone(Archive*&) const;
 
-      Archive&		operator=(const Archive&);
-      Boolean		operator==(const Archive&) const;
-      Boolean		operator!=(const Archive&) const;
+      Archive&          operator=(const Archive&);
+      Boolean           operator==(const Archive&) const;
+      Boolean           operator!=(const Archive&) const;
 
       //
       // attributes
       //
-      Mode			mode;
-      Control			control;
+      Mode                      mode;
+      Control                   control;
 
-      Byte*&			contents;
-      size_t&			size;
-      size_t			offset;
+      Byte*&                    contents;
+      size_t&                   size;
+      size_t                    offset;
 
-      ::msgpack::sbuffer	buffer;
+      ::msgpack::sbuffer        buffer;
     };
 
   }

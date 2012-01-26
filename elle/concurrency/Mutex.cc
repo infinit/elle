@@ -27,17 +27,17 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Mutex::Zone::Zone(Mutex&					mutex):
+    Mutex::Zone::Zone(Mutex&                                    mutex):
       mutex(mutex),
       section(L(C(&Mutex::Lock, &this->mutex)),
-	      U(C(&Mutex::Unlock, &this->mutex)))
+              U(C(&Mutex::Unlock, &this->mutex)))
     {
     }
 
     ///
     /// this method locks the mutex.
     ///
-    Void		Mutex::Zone::Lock()
+    Void                Mutex::Zone::Lock()
     {
       // call the section's Enter() method.
       this->section.Enter();
@@ -46,7 +46,7 @@ namespace elle
     ///
     /// this method unlocks the mutex.
     ///
-    Void		Mutex::Zone::Unlock()
+    Void                Mutex::Zone::Unlock()
     {
       // call the section's Leave() method.
       this->section.Leave();
@@ -55,9 +55,9 @@ namespace elle
     ///
     /// this method dumps the mutex.
     ///
-    Status		Mutex::Zone::Dump(const Natural32	margin) const
+    Status              Mutex::Zone::Dump(const Natural32       margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
@@ -65,11 +65,11 @@ namespace elle
 
       // dump the mutex.
       if (this->mutex.Dump(margin + 2) == StatusError)
-	escape("unable to dump the mutex");
+        escape("unable to dump the mutex");
 
       // dump the section.
       if (this->section.Dump(margin + 2) == StatusError)
-	escape("unable to dump the section");
+        escape("unable to dump the section");
 
       leave();
     }
@@ -90,22 +90,22 @@ namespace elle
     /// this method locks the mutex, if possible, or blocks the fiber
     /// until the mutex gets unlocked.
     ///
-    Void		Mutex::Lock()
+    Void                Mutex::Lock()
     {
       enter();
 
       // has the lock been acquired, wait for it to get released.
       while (this->locked == true)
-	{
-	  //
-	  // in this case, the current fiber must be blocked until
-	  // the mutex gets released.
-	  //
+        {
+          //
+          // in this case, the current fiber must be blocked until
+          // the mutex gets released.
+          //
 
-	  // wait for the mutex.
-	  if (Fiber::Wait(this) == StatusError)
-	    yield(_(), "an error occured while waiting on the resource");
-	}
+          // wait for the mutex.
+          if (Fiber::Wait(this) == StatusError)
+            yield(_(), "an error occured while waiting on the resource");
+        }
 
       // first, set the mutex as being locked so that another writer
       // does not acquire it.
@@ -117,7 +117,7 @@ namespace elle
     ///
     /// this method unlocks the mutex.
     ///
-    Void		Mutex::Unlock()
+    Void                Mutex::Unlock()
     {
       enter();
 
@@ -127,7 +127,7 @@ namespace elle
       // and finally, awaken the fibers potentially blocked on the
       // mutex.
       if (Fiber::Awaken(this) == StatusError)
-	yield(_(), "unable to awaken the fibers");
+        yield(_(), "unable to awaken the fibers");
 
       release();
     }
@@ -136,13 +136,13 @@ namespace elle
     /// this method returns true if the given access would be authorised
     /// without blocking.
     ///
-    Status		Mutex::Try()
+    Status              Mutex::Try()
     {
       enter();
 
       // has the lock been acquired, return false.
       if (this->locked == true)
-	false();
+        false();
 
       true();
     }
@@ -155,9 +155,9 @@ namespace elle
     ///
     /// this method dumps the mutex.
     ///
-    Status		Mutex::Dump(const Natural32		margin) const
+    Status              Mutex::Dump(const Natural32             margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
@@ -165,7 +165,7 @@ namespace elle
 
       // dump the locked boolean.
       std::cout << alignment << Dumpable::Shift
-		<< "[Locked] " << this->locked << std::endl;
+                << "[Locked] " << this->locked << std::endl;
 
       leave();
     }

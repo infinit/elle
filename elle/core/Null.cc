@@ -27,7 +27,7 @@ namespace elle
     /// this global variable is useful for avoiding the caller to declare a
     /// variable of this type.
     ///
-    Null			none = Nil;
+    Null                        none = Nil;
 
   }
 }
@@ -42,8 +42,8 @@ namespace std
   ///
   /// this method displays a Null type i.e the Nil value.
   ///
-  ostream&		operator<<(ostream&		stream,
-				   const elle::core::Null&)
+  ostream&              operator<<(ostream&             stream,
+                                   const elle::core::Null&)
   {
     stream << "(nil)";
 

@@ -34,10 +34,10 @@ namespace elle
       //
       // methods
       //
-      static Status	Create(Archive&,
-			       const Natural32,
-			       const Boolean);
-      static Status	Verify(Archive&);
+      static Status     Create(Archive&,
+                               const Natural32,
+                               const Boolean);
+      static Status     Verify(Archive&);
     };
 
   }

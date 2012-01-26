@@ -58,8 +58,8 @@ namespace elle
     ///
     /// wrap constructor: identical behaviour to Wrap().
     ///
-    Region::Region(const Byte*					contents,
-		   Natural64					size):
+    Region::Region(const Byte*                                  contents,
+                   Natural64                                    size):
       type(Region::TypeChunk),
       options(Region::OptionNone),
       contents(const_cast<Byte*>(contents)),
@@ -71,7 +71,7 @@ namespace elle
     ///
     /// copy constructor.
     ///
-    Region::Region(const Region&				region):
+    Region::Region(const Region&                                region):
       type(region.type),
       options(region.options),
       contents(NULL),
@@ -80,27 +80,27 @@ namespace elle
     {
       // according to the type...
       switch (region.type)
-	{
-	case TypeUnknown:
-	  {
-	    break;
-	  }
-	case TypeChunk:
-	  {
-	    this->contents = region.contents;
-	    this->size = region.size;
-	    this->capacity = region.capacity;
+        {
+        case TypeUnknown:
+          {
+            break;
+          }
+        case TypeChunk:
+          {
+            this->contents = region.contents;
+            this->size = region.size;
+            this->capacity = region.capacity;
 
-	    break;
-	  }
-	case TypeBuffer:
-	  {
-	    this->options = Region::OptionNone;
+            break;
+          }
+        case TypeBuffer:
+          {
+            this->options = Region::OptionNone;
 
-	    if (this->Duplicate(region.contents, region.size) == StatusError)
-	      fail("unable to assign the element's data");
-	  }
-	}
+            if (this->Duplicate(region.contents, region.size) == StatusError)
+              fail("unable to assign the element's data");
+          }
+        }
     }
 
     ///
@@ -110,9 +110,9 @@ namespace elle
     {
       // release resources.
       if ((this->contents != NULL) &&
-	  (this->type == Region::TypeBuffer) &&
-	  ((this->options & Region::OptionDetach) == 0))
-	::free(this->contents);
+          (this->type == Region::TypeBuffer) &&
+          ((this->options & Region::OptionDetach) == 0))
+        ::free(this->contents);
     }
 
 //
@@ -128,14 +128,14 @@ namespace elle
     /// since this could happen, the constness is removed, hence leaving
     /// the choice to the region's user.
     ///
-    Status		Region::Wrap(const Byte*		contents,
-				     Natural64			size)
+    Status              Region::Wrap(const Byte*                contents,
+                                     Natural64                  size)
     {
       enter();
 
       // check if the operation is valid.
       if (this->type != Region::TypeUnknown)
-	escape("region already in use");
+        escape("region already in use");
 
       // set the type.
       this->type = Region::TypeChunk;
@@ -150,14 +150,14 @@ namespace elle
     ///
     /// this method takes over the ownership of the given memory area.
     ///
-    Status		Region::Acquire(Byte*			contents,
-					Natural64		size)
+    Status              Region::Acquire(Byte*                   contents,
+                                        Natural64               size)
     {
       enter();
 
       // check if the operation is valid.
       if (this->type != Region::TypeUnknown)
-	escape("region already in use");
+        escape("region already in use");
 
       // set the type.
       this->type = Region::TypeBuffer;
@@ -174,21 +174,21 @@ namespace elle
     /// this method can be used for pre-allocating the memory for
     /// an upcoming direct-copy assignment.
     ///
-    Status		Region::Prepare(const Natural64		capacity)
+    Status              Region::Prepare(const Natural64         capacity)
     {
       enter();
 
       // check the type.
       if (this->type == Region::TypeChunk)
-	escape("unable to prepare an already in use chunk region");
+        escape("unable to prepare an already in use chunk region");
 
       // set the type.
       this->type = Region::TypeBuffer;
 
       // allocate memory.
       if ((this->contents =
-	   static_cast<Byte*>(::realloc(this->contents, capacity))) == NULL)
-	escape(::strerror(errno));
+           static_cast<Byte*>(::realloc(this->contents, capacity))) == NULL)
+        escape(::strerror(errno));
 
       // update the capacity. note that the size should be updated
       // manually when the direct copy is made.
@@ -201,22 +201,22 @@ namespace elle
     ///
     /// this method assigns a data region, building a so-called buffer.
     ///
-    Status		Region::Duplicate(const Byte*		contents,
-					  Natural64		size)
+    Status              Region::Duplicate(const Byte*           contents,
+                                          Natural64             size)
     {
       enter();
 
       // check the type.
       if (this->type == Region::TypeChunk)
-	escape("unable to prepare an already in use chunk region");
+        escape("unable to prepare an already in use chunk region");
 
       // set the type.
       this->type = Region::TypeBuffer;
 
       // allocate the required memory.
       if ((this->contents =
-	   static_cast<Byte*>(::realloc(this->contents, size))) == NULL)
-	escape(::strerror(errno));
+           static_cast<Byte*>(::realloc(this->contents, size))) == NULL)
+        escape(::strerror(errno));
 
       // copy the data.
       ::memcpy(this->contents, contents, size);
@@ -239,46 +239,46 @@ namespace elle
     /// region. besides, note that this method does not set the size but
     /// only deals with making sure the capacity is sufficient.
     ///
-    Status		Region::Adjust(const Natural64		size)
+    Status              Region::Adjust(const Natural64          size)
     {
       enter();
 
       // check the type.
       if (this->type == Region::TypeChunk)
-	escape("unable to prepare an already in use chunk region");
+        escape("unable to prepare an already in use chunk region");
 
       // if the region is a virgin.
       if (this->type == Region::TypeUnknown)
-	{
-	  if (this->Prepare(size) == StatusError)
-	    escape("unable to prepare the region for the first time");
+        {
+          if (this->Prepare(size) == StatusError)
+            escape("unable to prepare the region for the first time");
 
 #ifdef REGION_CLEAR
-	  // initialize the memory's content.
-	  ::memset(this->contents, 0x0, this->capacity);
+          // initialize the memory's content.
+          ::memset(this->contents, 0x0, this->capacity);
 #endif
-	}
+        }
       else
-	{
-	  // if there is enough space, just leave.
-	  if (size <= this->capacity)
-	    leave();
+        {
+          // if there is enough space, just leave.
+          if (size <= this->capacity)
+            leave();
 
-	  // otherwise, enlarge the buffer's capacity.
-	  this->capacity = size;
+          // otherwise, enlarge the buffer's capacity.
+          this->capacity = size;
 
-	  if ((this->contents =
-	       static_cast<Byte*>(::realloc(this->contents,
-					    this->capacity))) == NULL)
-	    escape(::strerror(errno));
+          if ((this->contents =
+               static_cast<Byte*>(::realloc(this->contents,
+                                            this->capacity))) == NULL)
+            escape(::strerror(errno));
 
 #ifdef REGION_CLEAR
-	  // initialize the memory's content.
-	  ::memset(this->contents + this->size,
-		   0x0,
-		   this->capacity - this->size);
+          // initialize the memory's content.
+          ::memset(this->contents + this->size,
+                   0x0,
+                   this->capacity - this->size);
 #endif
-	}
+        }
 
       leave();
     }
@@ -286,22 +286,22 @@ namespace elle
     ///
     /// this method adds data to the buffer region.
     ///
-    Status		Region::Append(const Byte*		contents,
-				       const Natural64		size)
+    Status              Region::Append(const Byte*              contents,
+                                       const Natural64          size)
     {
       enter();
 
       // check the type.
       if (this->type == Region::TypeChunk)
-	escape("unable to prepare an already in use chunk region");
+        escape("unable to prepare an already in use chunk region");
 
       // make sure the buffer is large enough.
       if (this->Adjust(this->size + size) == StatusError)
-	escape("unable to reserve enough space for the new piece");
+        escape("unable to reserve enough space for the new piece");
 
       // copy the region into the buffer.
       if (this->Write(this->size, contents, size) == StatusError)
-	escape("unable to append the data");
+        escape("unable to append the data");
 
       leave();
     }
@@ -310,15 +310,15 @@ namespace elle
     /// this method allows the caller to read data anywhere in the
     /// region.
     ///
-    Status		Region::Read(const Natural64		offset,
-				     Byte*			contents,
-				     const Natural64		size) const
+    Status              Region::Read(const Natural64            offset,
+                                     Byte*                      contents,
+                                     const Natural64            size) const
     {
       enter();
 
       // check that the copy stays in the bounds.
       if ((offset + size) > this->size)
-	escape("this operation is out of bounds");
+        escape("this operation is out of bounds");
 
       // copy the data.
       ::memcpy(contents, this->contents + offset, size);
@@ -330,22 +330,22 @@ namespace elle
     /// this method allows the caller to write data anywhere in the
     /// region.
     ///
-    Status		Region::Write(const Natural64		offset,
-				      const Byte*		contents,
-				      const Natural64		size)
+    Status              Region::Write(const Natural64           offset,
+                                      const Byte*               contents,
+                                      const Natural64           size)
     {
       enter();
 
       // check that the copy stays in the bounds.
       if ((offset + size) > this->capacity)
-	escape("this operation is out of bounds");
+        escape("this operation is out of bounds");
 
       // copy the data.
       ::memcpy(this->contents + offset, contents, size);
 
       // update the size.
       if ((offset + size) > this->size)
-	this->size = offset + size;
+        this->size = offset + size;
 
       leave();
     }
@@ -354,13 +354,13 @@ namespace elle
     /// this method detaches the data from the object, making
     /// the data still alive after the object's destruction.
     ///
-    Status		Region::Detach()
+    Status              Region::Detach()
     {
       enter();
 
       // check the type.
       if (this->type != Region::TypeBuffer)
-	escape("unable to detach non-buffer regions");
+        escape("unable to detach non-buffer regions");
 
       // activate the option.
       this->options = Region::OptionDetach;
@@ -378,23 +378,23 @@ namespace elle
     /// note that the Hexadecimal utility class is not used to avoid
     /// dependencies since this class is critical.
     ///
-    Status		Region::Dump(const Natural32		margin) const
+    Status              Region::Dump(const Natural32            margin) const
     {
-      Natural32		space = 78 - margin - Dumpable::Shift.length();
-      String		alignment(margin, ' ');
-      Natural32		i;
-      Natural32		j;
+      Natural32         space = 78 - margin - Dumpable::Shift.length();
+      String            alignment(margin, ' ');
+      Natural32         i;
+      Natural32         j;
 
       enter();
 
       std::cout << alignment
-		<< "[Region] "
-		<< "type(" << this->type << ") "
-		<< "options(" << this->options << ") "
-		<< "address(" << static_cast<Void*>(this->contents) << ") "
-		<< "size(" << std::dec << this->size << ") "
-		<< "capacity(" << std::dec << this->capacity << ")"
-		<< std::endl;
+                << "[Region] "
+                << "type(" << this->type << ") "
+                << "options(" << this->options << ") "
+                << "address(" << static_cast<Void*>(this->contents) << ") "
+                << "size(" << std::dec << this->size << ") "
+                << "capacity(" << std::dec << this->capacity << ")"
+                << std::endl;
 
       // since a byte is represented by two characters.
       space = space / 2;
@@ -404,30 +404,30 @@ namespace elle
 
       // display the region.
       for (i = 0; i < (this->size / space); i++)
-	{
-	  std::cout << alignment << Dumpable::Shift;
+        {
+          std::cout << alignment << Dumpable::Shift;
 
-	  for (j = 0; j < space; j++)
-	    std::cout << std::nouppercase
-		      << std::hex
-		      << std::setw(2)
-		      << this->contents[i * space + j];
+          for (j = 0; j < space; j++)
+            std::cout << std::nouppercase
+                      << std::hex
+                      << std::setw(2)
+                      << this->contents[i * space + j];
 
-	  std::cout << std::endl;
-	}
+          std::cout << std::endl;
+        }
 
       if ((this->size % space) != 0)
-	{
-	  std::cout << alignment << Dumpable::Shift;
+        {
+          std::cout << alignment << Dumpable::Shift;
 
-	  for (j = 0; j < (this->size % space); j++)
-	    std::cout << std::nouppercase
-		      << std::hex
-		      << std::setw(2)
-		      << this->contents[i * space + j];
+          for (j = 0; j < (this->size % space); j++)
+            std::cout << std::nouppercase
+                      << std::hex
+                      << std::setw(2)
+                      << this->contents[i * space + j];
 
-	  std::cout << std::endl;
-	}
+          std::cout << std::endl;
+        }
 
       leave();
     }
@@ -439,7 +439,7 @@ namespace elle
     ///
     /// this method returns the size of the region object.
     ///
-    Status		Region::Imprint(Natural32&		size) const
+    Status              Region::Imprint(Natural32&              size) const
     {
       enter();
 
@@ -452,7 +452,7 @@ namespace elle
     ///
     /// this method clones the current region.
     ///
-    Status		Region::Clone(Region*&			object) const
+    Status              Region::Clone(Region*&                  object) const
     {
       enter();
 
@@ -465,21 +465,21 @@ namespace elle
     ///
     /// this method check if two regions match.
     ///
-    Boolean		Region::operator==(const Region&	element) const
+    Boolean             Region::operator==(const Region&        element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // check the size.
       if (this->size != element.size)
-	false();
+        false();
 
       // check the content.
       if (::memcmp(this->contents, element.contents, element.size) == 0)
-	true();
+        true();
 
       false();
     }
@@ -487,21 +487,21 @@ namespace elle
     ///
     /// this operator compares two regions.
     ///
-    Boolean		Region::operator<(const Region&		element) const
+    Boolean             Region::operator<(const Region&         element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // check the size.
       if (this->size != element.size)
-	false();
+        false();
 
       // check the content.
       if (::memcmp(this->contents, element.contents, element.size) < 0)
-	true();
+        true();
 
       false();
     }
@@ -509,7 +509,7 @@ namespace elle
     ///
     /// this operator compares two regions.
     ///
-    Boolean		Region::operator>(const Region&		element) const
+    Boolean             Region::operator>(const Region&         element) const
     {
       return (!(this->operator<=(element)));
     }
@@ -517,17 +517,17 @@ namespace elle
     ///
     /// this method copies a region.
     ///
-    Region&		Region::operator=(const Region&		element)
+    Region&             Region::operator=(const Region&         element)
     {
       enter();
 
       // test if the regions are identical.
       if (this == &element)
-	return (*this);
+        return (*this);
 
       // recycle the region.
       if (this->Recycle(&element) == StatusError)
-	yield(*this, "unable to recycle the region");
+        yield(*this, "unable to recycle the region");
 
       return (*this);
     }
@@ -537,7 +537,7 @@ namespace elle
     /// function can be automatically generated through the Embed(Region, T)
     /// macro function.
     ///
-    Boolean		Region::operator!=(const Region&	element) const
+    Boolean             Region::operator!=(const Region&        element) const
     {
       return (!(this->operator==(element)));
     }
@@ -545,7 +545,7 @@ namespace elle
     ///
     /// this operator compares two regions.
     ///
-    Boolean		Region::operator<=(const Region&	element) const
+    Boolean             Region::operator<=(const Region&        element) const
     {
       return (this->operator<(element) || this->operator==(element));
     }
@@ -553,7 +553,7 @@ namespace elle
     ///
     /// this operator compares two regions.
     ///
-    Boolean		Region::operator>=(const Region&	element) const
+    Boolean             Region::operator>=(const Region&        element) const
     {
       return (this->operator>(element) || this->operator==(element));
     }

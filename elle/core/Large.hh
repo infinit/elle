@@ -32,7 +32,7 @@ namespace elle
     ///
     /// this type wraps BIGNUMs.
     ///
-    typedef ::BIGNUM	Large;
+    typedef ::BIGNUM    Large;
 
   }
 }
@@ -44,8 +44,8 @@ namespace elle
 namespace std
 {
 
-  ostream&		operator<<(ostream&,
-				   const elle::core::Large&);
+  ostream&              operator<<(ostream&,
+                                   const elle::core::Large&);
 
 }
 

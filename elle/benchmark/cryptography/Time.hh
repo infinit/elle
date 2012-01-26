@@ -37,15 +37,15 @@ namespace elle
       //
       // methods
       //
-      Status			Start();
-      Status			Stop();
-      Status			Print();
+      Status                    Start();
+      Status                    Stop();
+      Status                    Print();
 
       //
       // attributes
       //
-      struct ::timeval		start;
-      struct ::timeval		stop;
+      struct ::timeval          start;
+      struct ::timeval          stop;
     };
 
   }

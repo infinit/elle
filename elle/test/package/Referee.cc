@@ -23,17 +23,17 @@ namespace elle
 // ---------- definitions -----------------------------------------------------
 //
 
-    std::list<Element*>			Referee::List;
+    std::list<Element*>                 Referee::List;
 
 //
 // ---------- methods ---------------------------------------------------------
 //
 
-    Status		Referee::Push(const Archive::Type	type,
-				      const void*		data,
-				      const Natural32		size)
+    Status              Referee::Push(const Archive::Type       type,
+                                      const void*               data,
+                                      const Natural32           size)
     {
-      Element*		element;
+      Element*          element;
 
       enterx(instance(element));
 
@@ -42,7 +42,7 @@ namespace elle
       element->type = type;
 
       if ((element->data = ::malloc(size)) == NULL)
-	escape("unable to allocate memory");
+        escape("unable to allocate memory");
 
       ::memcpy(element->data, data, size);
 
@@ -55,16 +55,16 @@ namespace elle
       leave();
     }
 
-    Status		Referee::Pop(Archive::Type&		type,
-				     void*&			data,
-				     Natural32&			size)
+    Status              Referee::Pop(Archive::Type&             type,
+                                     void*&                     data,
+                                     Natural32&                 size)
     {
-      Element*		element;
+      Element*          element;
 
       enter();
 
       if (Referee::List.empty() == true)
-	escape("the referee does not contain any element any more");
+        escape("the referee does not contain any element any more");
 
       element = Referee::List.front();
 
@@ -79,22 +79,22 @@ namespace elle
       leave();
     }
 
-    Status		Referee::Flush()
+    Status              Referee::Flush()
     {
-      Element*		element;
+      Element*          element;
 
       enter();
 
       while (Referee::List.empty() == false)
-	{
-	  element = Referee::List.front();
+        {
+          element = Referee::List.front();
 
-	  ::free(element->data);
+          ::free(element->data);
 
-	  Referee::List.pop_front();
+          Referee::List.pop_front();
 
-	  delete element;
-	}
+          delete element;
+        }
 
       leave();
     }

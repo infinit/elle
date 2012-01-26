@@ -47,11 +47,11 @@ namespace elle
     template <template <typename...> class C>
     Status
     Signal< Parameters<T...> >::Subscribe(const C<
-					    Status,
-					    Parameters<T...>
-					    >			object)
+                                            Status,
+                                            Parameters<T...>
+                                            >                   object)
     {
-      Stream		useless;
+      Stream            useless;
 
       return (this->Subscribe(object, useless));
     }
@@ -64,23 +64,23 @@ namespace elle
     template <template <typename...> class C>
     Status
     Signal< Parameters<T...> >::Subscribe(const C<
-					    Status,
-					    Parameters<T...>
-					    >			object,
-					  Stream&		stream)
+                                            Status,
+                                            Parameters<T...>
+                                            >                   object,
+                                          Stream&               stream)
     {
       Selectionoid<
-	C<
-	  Status,
-	  Parameters<T...>
-	  >
-	>*			selectionoid;
+        C<
+          Status,
+          Parameters<T...>
+          >
+        >*                      selectionoid;
       std::pair<
-	Signal<
-	  Parameters<T...>
-	  >::Iterator,
-	Boolean
-	>			result;
+        Signal<
+          Parameters<T...>
+          >::Iterator,
+        Boolean
+        >                       result;
 
       enterx(instance(selectionoid));
 
@@ -89,26 +89,26 @@ namespace elle
 
       // create a new selectionoid.
       selectionoid =
-	new Selectionoid<
-	  C<
-	    Status,
-	    Parameters<T...>
-	    >
-	  >(object);
+        new Selectionoid<
+          C<
+            Status,
+            Parameters<T...>
+            >
+          >(object);
 
       // insert the selectionoid in the container.
       result = this->container.insert(
-	         std::pair<const Signal<
-		             Parameters<T...>
-		             >::Stream,
-			   Signal<
-			     Parameters<T...>
-			     >::Functionoid*>(this->counter,
-		                              selectionoid));
+                 std::pair<const Signal<
+                             Parameters<T...>
+                             >::Stream,
+                           Signal<
+                             Parameters<T...>
+                             >::Functionoid*>(this->counter,
+                                              selectionoid));
 
       // check if the insertion was successful.
       if (result.second == false)
-	escape("unable to insert the selectoinoid in the container");
+        escape("unable to insert the selectoinoid in the container");
 
       // waive the selectionoid tracking.
       waive(selectionoid);
@@ -121,16 +121,16 @@ namespace elle
     ///
     template <typename... T>
     Status
-    Signal< Parameters<T...> >::Unsubscribe(const Stream	stream)
+    Signal< Parameters<T...> >::Unsubscribe(const Stream        stream)
     {
-      Signal< Parameters<T...> >::Functionoid*	functionoid;
-      Signal< Parameters<T...> >::Iterator	iterator;
+      Signal< Parameters<T...> >::Functionoid*  functionoid;
+      Signal< Parameters<T...> >::Iterator      iterator;
 
       enter();
 
       // locate the functionoid.
       if ((iterator = this->container.find(stream)) != this->container.end())
-	escape("unable to locate the given stream");
+        escape("unable to locate the given stream");
 
       // retrieve the functionoid.
       functionoid = iterator->second;
@@ -149,27 +149,27 @@ namespace elle
     ///
     template <typename... T>
     Status
-    Signal< Parameters<T...> >::Emit(T...			arguments)
+    Signal< Parameters<T...> >::Emit(T...                       arguments)
     {
-      Signal< Parameters<T...> >::Scoutor	scoutor;
+      Signal< Parameters<T...> >::Scoutor       scoutor;
 
       enter();
 
       // go through the container.
       for (scoutor = this->container.begin();
-	   scoutor != this->container.end();
-	   scoutor++)
-	{
-	  Signal< Parameters<T...> >::Functionoid*	functionoid =
-	    scoutor->second;
+           scoutor != this->container.end();
+           scoutor++)
+        {
+          Signal< Parameters<T...> >::Functionoid*      functionoid =
+            scoutor->second;
 
-	  // call the functionoid's object.
-	  if (functionoid->Call(arguments...) == StatusError)
-	    {
-	      // if an error occured, log it.
-	      log("an error occured while processing a signal");
-	    }
-	}
+          // call the functionoid's object.
+          if (functionoid->Call(arguments...) == StatusError)
+            {
+              // if an error occured, log it.
+              log("an error occured while processing a signal");
+            }
+        }
 
       leave();
     }
@@ -181,21 +181,21 @@ namespace elle
     Status
     Signal< Parameters<T...> >::Flush()
     {
-      Signal< Parameters<T...> >::Scoutor	scoutor;
+      Signal< Parameters<T...> >::Scoutor       scoutor;
 
       enter();
 
       // go through the container.
       for (scoutor = this->container.begin();
-	   scoutor != this->container.end();
-	   scoutor++)
-	{
-	  Signal< Parameters<T...> >::Functionoid*	functionoid =
-	    scoutor->second;
+           scoutor != this->container.end();
+           scoutor++)
+        {
+          Signal< Parameters<T...> >::Functionoid*      functionoid =
+            scoutor->second;
 
-	  // delete the functionoid.
-	  delete functionoid;
-	}
+          // delete the functionoid.
+          delete functionoid;
+        }
 
       // clear the container.
       this->container.clear();
@@ -213,7 +213,7 @@ namespace elle
     template <typename... T>
     template <typename Y>
     Signal< Parameters<T...> >::
-     Selectionoid<Y>::Selectionoid(const Y&			object):
+     Selectionoid<Y>::Selectionoid(const Y&                     object):
       object(object)
     {
     }
@@ -225,7 +225,7 @@ namespace elle
     template <typename Y>
     Status
     Signal< Parameters<T...> >::
-     Selectionoid<Y>::Call(T&...				arguments)
+     Selectionoid<Y>::Call(T&...                                arguments)
       const
     {
       return (this->object.Call(arguments...));
@@ -238,13 +238,13 @@ namespace elle
     template <typename Y>
     Status
     Signal< Parameters<T...> >::
-     Selectionoid<Y>::Dump(const Natural32			margin) const
+     Selectionoid<Y>::Dump(const Natural32                      margin) const
     {
       enter();
 
       // dump the object.
       if (this->object.Dump(margin) == StatusError)
-	escape("unable to dump the object");
+        escape("unable to dump the object");
 
       leave();
     }

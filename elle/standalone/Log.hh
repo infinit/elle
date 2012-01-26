@@ -47,17 +47,17 @@ namespace elle
       //
       // static methods
       //
-      static Status	Initialize();
-      static Status	Clean();
+      static Status     Initialize();
+      static Status     Clean();
 
-      static Status	Setup(const String&);
+      static Status     Setup(const String&);
 
-      static Status	Instance(Log*&);
+      static Status     Instance(Log*&);
 
       //
       // static attributes
       //
-      static Log*		Current;
+      static Log*               Current;
 
       //
       // constructors & destructors
@@ -68,9 +68,9 @@ namespace elle
       //
       // methods
       //
-      Void		Record(const String&,
-			       const String&,
-			       const String&);
+      Void              Record(const String&,
+                               const String&,
+                               const String&);
 
       //
       // attributes

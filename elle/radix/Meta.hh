@@ -50,22 +50,22 @@ namespace elle
       //
       // constants
       //
-      struct				Debug
+      struct                            Debug
       {
-	static const Boolean		Status;
-	static Boolean			State;
+        static const Boolean            Status;
+        static Boolean                  State;
       };
 
       //
       // static methods
       //
-      static Status	Initialize();
-      static Status	Clean();
+      static Status     Initialize();
+      static Status     Clean();
 
-      static Status	Enable();
-      static Status	Disable();
+      static Status     Enable();
+      static Status     Disable();
 
-      static Status	Show(const Natural32 = 0);
+      static Status     Show(const Natural32 = 0);
 
       //
       // constructors & destructors
@@ -75,15 +75,15 @@ namespace elle
       //
       // operators
       //
-      void*		operator new(size_t);
-      void*		operator new(size_t,
-				     void*);
+      void*             operator new(size_t);
+      void*             operator new(size_t,
+                                     void*);
 
-      void*		operator new[](size_t);
-      void*		operator new[](size_t,
-				       void*);
+      void*             operator new[](size_t);
+      void*             operator new[](size_t,
+                                       void*);
 
-      void		operator delete(void*);
+      void              operator delete(void*);
     };
 
   }

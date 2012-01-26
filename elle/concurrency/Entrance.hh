@@ -50,9 +50,9 @@ namespace elle
     /// event since it carries information i.e the potential arguments.
     ///
     template <typename R,
-	      typename... T>
+              typename... T>
     class Entrance< R,
-		    Parameters<T...> >:
+                    Parameters<T...> >:
       public Entity
     {
     public:
@@ -66,18 +66,18 @@ namespace elle
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // callbacks
       //
-      Status		Timeout();
+      Status            Timeout();
 
       //
       // attributes
       //
-      Closure< R, Parameters<T...> >	closure;
-      Timer				timer;
+      Closure< R, Parameters<T...> >    closure;
+      Timer                             timer;
     };
 
   }

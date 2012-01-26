@@ -38,19 +38,19 @@ namespace elle
       //
       // methods
       //
-      Status		Setup(const String&);
-      Status		Run();
+      Status            Setup(const String&);
+      Status            Run();
 
       //
       // callbacks
       //
-      Status		Connection(LocalSocket*);
+      Status            Connection(LocalSocket*);
 
       //
       // attributes
       //
-      String			line;
-      std::list<LocalSocket*>	sockets;
+      String                    line;
+      std::list<LocalSocket*>   sockets;
     };
 
   }

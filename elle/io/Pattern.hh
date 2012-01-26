@@ -46,7 +46,7 @@ namespace elle
       //
       // methods
       //
-      Status		Create(const String&);
+      Status            Create(const String&);
 
       //
       // interfaces
@@ -54,17 +54,17 @@ namespace elle
 
       // object
       declare(Pattern);
-      Boolean		operator==(const Pattern&) const;
+      Boolean           operator==(const Pattern&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       // archivable: nothing
 
       //
       // attributes
       //
-      String		string;
+      String            string;
     };
 
   }

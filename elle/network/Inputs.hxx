@@ -34,9 +34,9 @@ namespace elle
     /// Bundle instance for nothing.
     ///
     template <const Tag G,
-	      typename... T>
+              typename... T>
     inline
-    typename Message<G>::B::Inputs	Inputs(const T&...	objects)
+    typename Message<G>::B::Inputs      Inputs(const T&...      objects)
     {
       return (typename Message<G>::B::Inputs(objects...));
     }

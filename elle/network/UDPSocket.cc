@@ -44,7 +44,7 @@ namespace elle
     {
       // release the socket.
       if (this->socket != NULL)
-	this->socket->deleteLater();
+        this->socket->deleteLater();
     }
 
 //
@@ -54,7 +54,7 @@ namespace elle
     ///
     /// this method creates a socket and connects the default signals.
     ///
-    Status		UDPSocket::Create()
+    Status              UDPSocket::Create()
     {
       enter();
 
@@ -63,27 +63,27 @@ namespace elle
 
       // bind the socket.
       if (this->socket->bind() == false)
-	escape(this->socket->errorString().toStdString().c_str());
+        escape(this->socket->errorString().toStdString().c_str());
 
       // retrieve the port.
       this->port = this->socket->localPort();
 
       // subscribe to the signal.
       if (this->signal.ready.Subscribe(
-	    Callback<>::Infer(&UDPSocket::Dispatch, this)) == StatusError)
-	escape("unable to subscribe to the signal");
+            Callback<>::Infer(&UDPSocket::Dispatch, this)) == StatusError)
+        escape("unable to subscribe to the signal");
 
       // connect the QT signals, depending on the mode.
       if (this->connect(this->socket, SIGNAL(readyRead()),
-			this, SLOT(_ready())) == false)
-	escape("unable to connect the signal");
+                        this, SLOT(_ready())) == false)
+        escape("unable to connect the signal");
 
       if (this->connect(
-	    this->socket,
-	    SIGNAL(error(const QAbstractSocket::SocketError)),
-	    this,
-	    SLOT(_error(const QAbstractSocket::SocketError))) == false)
-	escape("unable to connect to signal");
+            this->socket,
+            SIGNAL(error(const QAbstractSocket::SocketError)),
+            this,
+            SLOT(_error(const QAbstractSocket::SocketError))) == false)
+        escape("unable to connect to signal");
 
       leave();
     }
@@ -91,7 +91,7 @@ namespace elle
     ///
     /// this method creates a socket with a specific port.
     ///
-    Status		UDPSocket::Create(const Port		port)
+    Status              UDPSocket::Create(const Port            port)
     {
       enter();
 
@@ -103,24 +103,24 @@ namespace elle
 
       // bind the socket to the port.
       if (this->socket->bind(this->port) == false)
-	escape(this->socket->errorString().toStdString().c_str());
+        escape(this->socket->errorString().toStdString().c_str());
 
       // subscribe to the signal.
       if (this->signal.ready.Subscribe(
-	    Callback<>::Infer(&UDPSocket::Dispatch, this)) == StatusError)
-	escape("unable to subscribe to the signal");
+            Callback<>::Infer(&UDPSocket::Dispatch, this)) == StatusError)
+        escape("unable to subscribe to the signal");
 
       // connect the QT signals.
       if (this->connect(this->socket, SIGNAL(readyRead()),
-			this, SLOT(Fetch())) == false)
-	escape("unable to connect the signal");
+                        this, SLOT(Fetch())) == false)
+        escape("unable to connect the signal");
 
       if (this->connect(
-	    this->socket,
-	    SIGNAL(error(const QAbstractSocket::SocketError)),
-	    this,
-	    SLOT(_error(const QAbstractSocket::SocketError))) == false)
-	escape("unable to connect to signal");
+            this->socket,
+            SIGNAL(error(const QAbstractSocket::SocketError)),
+            this,
+            SLOT(_error(const QAbstractSocket::SocketError))) == false)
+        escape("unable to connect to signal");
 
       leave();
     }
@@ -129,18 +129,18 @@ namespace elle
     /// this method writes a packet on the socket so that it gets sent
     /// to the given locus.
     ///
-    Status		UDPSocket::Write(const Locus&		locus,
-					 const Packet&		packet)
+    Status              UDPSocket::Write(const Locus&           locus,
+                                         const Packet&          packet)
     {
       enter();
 
       // push the datagram into the socket.
       if (this->socket->writeDatagram(
-	    reinterpret_cast<const char*>(packet.contents),
-	    packet.size,
-	    locus.host.location,
-	    locus.port) != static_cast<qint64>(packet.size))
-	escape(this->socket->errorString().toStdString().c_str());
+            reinterpret_cast<const char*>(packet.contents),
+            packet.size,
+            locus.host.location,
+            locus.port) != static_cast<qint64>(packet.size))
+        escape(this->socket->errorString().toStdString().c_str());
 
       leave();
     }
@@ -160,10 +160,10 @@ namespace elle
     ///
     /// the method returns a raw with the read data.
     ///
-    Status		UDPSocket::Read(Locus&			locus,
-					Raw&			raw)
+    Status              UDPSocket::Read(Locus&                  locus,
+                                        Raw&                    raw)
     {
-      Natural32		size;
+      Natural32         size;
 
       enter();
 
@@ -172,23 +172,23 @@ namespace elle
 
       // check if there is data to be read.
       if (size == 0)
-	leave();
+        leave();
 
       // set the locus as being an IP locus.
       if (locus.host.Create(Host::TypeIP) == StatusError)
-	escape("unable to create an IP locus");
+        escape("unable to create an IP locus");
 
       // prepare the raw
       if (raw.Prepare(size) == StatusError)
-	escape("unable to prepare the raw");
+        escape("unable to prepare the raw");
 
       // read the datagram from the socket.
       if (this->socket->readDatagram(
-	    reinterpret_cast<char*>(raw.contents),
-	    size,
-	    &locus.host.location,
-	    &locus.port) != size)
-	escape(this->socket->errorString().toStdString().c_str());
+            reinterpret_cast<char*>(raw.contents),
+            size,
+            &locus.host.location,
+            &locus.port) != size)
+        escape(this->socket->errorString().toStdString().c_str());
 
       // set the raw's size.
       raw.size = size;
@@ -203,9 +203,9 @@ namespace elle
     ///
     /// this method dumps the socket's state.
     ///
-    Status		UDPSocket::Dump(const Natural32		margin) const
+    Status              UDPSocket::Dump(const Natural32         margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
@@ -213,7 +213,7 @@ namespace elle
 
       // dump the socket.
       if (Socket::Dump(margin + 2) == StatusError)
-	escape("unable to dump the socket");
+        escape("unable to dump the socket");
 
       leave();
     }
@@ -225,82 +225,82 @@ namespace elle
     ///
     /// this callback fetches parcels and dispatches them.
     ///
-    Status		UDPSocket::Dispatch()
+    Status              UDPSocket::Dispatch()
     {
-      Locus		locus;
-      Natural32		offset;
-      Raw		raw;
+      Locus             locus;
+      Natural32         offset;
+      Raw               raw;
 
       enter();
 
       // read from the socket.
       if (this->Read(locus, raw) == StatusError)
-	escape("unable to read from the socket");
+        escape("unable to read from the socket");
 
       // initialize the offset.
       offset = 0;
 
       while (true)
-	{
-	  Packet	packet;
-	  Region	frame;
-	  Parcel*	parcel;
+        {
+          Packet        packet;
+          Region        frame;
+          Parcel*       parcel;
 
-	  enterx(instance(parcel));
+          enterx(instance(parcel));
 
-	  // create the frame based on the previously extracted raw.
-	  if (frame.Wrap(raw.contents + offset,
-			 raw.size - offset) == StatusError)
-	    escape("unable to wrap a frame in the raw");
+          // create the frame based on the previously extracted raw.
+          if (frame.Wrap(raw.contents + offset,
+                         raw.size - offset) == StatusError)
+            escape("unable to wrap a frame in the raw");
 
-	  // prepare the packet based on the frame.
-	  if (packet.Wrap(frame) == StatusError)
-	    escape("unable to prepare the packet");
+          // prepare the packet based on the frame.
+          if (packet.Wrap(frame) == StatusError)
+            escape("unable to prepare the packet");
 
-	  // allocate the parcel.
-	  parcel = new Parcel;
+          // allocate the parcel.
+          parcel = new Parcel;
 
-	  // extract the header.
-	  if (parcel->header->Extract(packet) == StatusError)
-	    escape("unable to extract the header");
+          // extract the header.
+          if (parcel->header->Extract(packet) == StatusError)
+            escape("unable to extract the header");
 
-	  // if there is not enough data in the raw to complete the parcel...
-	  if ((packet.size - packet.offset) < parcel->header->size)
-	    {
-	      // since the parcel will not be built, delete the instance.
-	      delete parcel;
+          // if there is not enough data in the raw to complete the parcel...
+          if ((packet.size - packet.offset) < parcel->header->size)
+            {
+              // since the parcel will not be built, delete the instance.
+              delete parcel;
 
-	      // waive tracking.
-	      waive(parcel);
+              // waive tracking.
+              waive(parcel);
 
-	      // exit the loop since there is not enough data anyway.
-	      break;
-	    }
+              // exit the loop since there is not enough data anyway.
+              break;
+            }
 
-	  // extract the data.
-	  if (packet.Extract(*parcel->data) == StatusError)
-	    escape("unable to extract the data");
+          // extract the data.
+          if (packet.Extract(*parcel->data) == StatusError)
+            escape("unable to extract the data");
 
-	  // move to the next frame by setting the offset at the end of
-	  // the extracted frame.
-	  offset = offset + packet.offset;
+          // move to the next frame by setting the offset at the end of
+          // the extracted frame.
+          offset = offset + packet.offset;
 
-	  // create the session.
-	  if (parcel->session->Create(this,
-				      locus,
-				      parcel->header->event) == StatusError)
-	    escape("unable to create the session");
+          // create the session.
+          if (parcel->session->Create(this,
+                                      locus,
+                                      parcel->header->event) == StatusError)
+            escape("unable to create the session");
 
-	  // trigger the network shipment mechanism.
-	  if (Socket::Ship(parcel) == StatusError)
-	    log("an error occured while shipping the parcel");
+          // trigger the network shipment mechanism.
+          if (Socket::Ship(parcel) == StatusError)
+            log("an error occured while shipping the parcel");
 
-	  // stop tracking the parcel.
-	  waive(parcel);
+          // stop tracking the parcel.
+          waive(parcel);
 
-	  // release the resources.
-	  release();
-	}
+          // release the resources.
+          release();
+        }
 
       leave();
     }
@@ -312,21 +312,21 @@ namespace elle
     ///
     /// this slot is triggered when data is ready on the socket.
     ///
-    void		UDPSocket::_ready()
+    void                UDPSocket::_ready()
     {
       Closure<
-	Status,
-	Parameters<>
-	>		closure(Callback<>::Infer(&Signal<
-						    Parameters<>
-						    >::Emit,
-						  &this->signal.ready));
+        Status,
+        Parameters<>
+        >               closure(Callback<>::Infer(&Signal<
+                                                    Parameters<>
+                                                    >::Emit,
+                                                  &this->signal.ready));
 
       enter();
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	yield(_(), "unable to spawn a fiber");
+        yield(_(), "unable to spawn a fiber");
 
       release();
     }
@@ -338,28 +338,28 @@ namespace elle
     /// written completely ::QLocalSocket::LocalSocketError because the
     /// QT parser is incapable of recognising the type.
     ///
-    void		UDPSocket::_error(
+    void                UDPSocket::_error(
                           const QAbstractSocket::SocketError)
     {
-      String		cause(this->socket->errorString().toStdString());
+      String            cause(this->socket->errorString().toStdString());
       Closure<
-	Status,
-	Parameters<
-	  const String&
-	  >
-	>		closure(Callback<>::Infer(&Signal<
-						    Parameters<
-						      const String&
-						      >
-						    >::Emit,
-						  &this->signal.error),
-				cause);
+        Status,
+        Parameters<
+          const String&
+          >
+        >               closure(Callback<>::Infer(&Signal<
+                                                    Parameters<
+                                                      const String&
+                                                      >
+                                                    >::Emit,
+                                                  &this->signal.error),
+                                cause);
 
       enter();
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	yield(_(), "unable to spawn a fiber");
+        yield(_(), "unable to spawn a fiber");
 
       release();
     }

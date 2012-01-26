@@ -31,7 +31,7 @@ namespace elle
     ///
     /// this type represents a message in its network format i.e an archive.
     ///
-    typedef Archive		Packet;
+    typedef Archive             Packet;
 
   }
 }

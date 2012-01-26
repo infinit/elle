@@ -47,16 +47,16 @@ namespace elle
     /// this class represents a method.
     ///
     template <typename R,
-	      typename... T>
+              typename... T>
     class Method< R,
-		  Parameters<T...> >:
+                  Parameters<T...> >:
       public Object
     {
     public:
       //
       // types
       //
-      typedef Parameters<T...>		P;
+      typedef Parameters<T...>          P;
 
       //
       // classes
@@ -70,14 +70,14 @@ namespace elle
       /// this class is a base for inheritance.
       ///
       class Shell:
-	public Object
+        public Object
       {
       public:
-	//
-	// methods
-	//
-	virtual R	Call(T...) = 0;
-	virtual Void	Trigger(T...) = 0;
+        //
+        // methods
+        //
+        virtual R       Call(T...) = 0;
+        virtual Void    Trigger(T...) = 0;
       };
 
       ///
@@ -85,41 +85,41 @@ namespace elle
       ///
       template <typename C>
       class Wrap:
-	public Shell
+        public Shell
       {
       public:
-	//
-	// types
-	//
-	typedef R			(C::*Handler)(T...);
+        //
+        // types
+        //
+        typedef R                       (C::*Handler)(T...);
 
-	//
-	// constructors & destructors
-	//
-	Wrap(Handler,
-	     C*);
+        //
+        // constructors & destructors
+        //
+        Wrap(Handler,
+             C*);
 
-	//
-	// methods
-	//
-	R		Call(T...);
-	Void		Trigger(T...);
+        //
+        // methods
+        //
+        R               Call(T...);
+        Void            Trigger(T...);
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// object
-	declare(Wrap<C>);
+        // object
+        declare(Wrap<C>);
 
-	// dumpable
-	Status		Dump(const Natural32 = 0) const;
+        // dumpable
+        Status          Dump(const Natural32 = 0) const;
 
-	//
-	// attributes
-	//
-	C*		object;
-	Handler		handler;
+        //
+        // attributes
+        //
+        C*              object;
+        Handler         handler;
       };
 
       //
@@ -127,15 +127,15 @@ namespace elle
       //
       template <typename C>
       Method(R (C::*)(T...),
-	     C*);
+             C*);
       Method(const Method<R, P>&);
       ~Method();
 
       //
       // methods
       //
-      R			Call(T...);
-      Void		Trigger(T...);
+      R                 Call(T...);
+      Void              Trigger(T...);
 
       //
       // interfaces
@@ -145,12 +145,12 @@ namespace elle
       declare(_(Method<R, P>));
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Shell*		shell;
+      Shell*            shell;
     };
 
     ///
@@ -164,10 +164,10 @@ namespace elle
       // static methods
       //
       template <typename R,
-		typename C,
-		typename... T>
-      static Method< R, Parameters<T...> >	Infer(R (C::*)(T...),
-						      C*);
+                typename C,
+                typename... T>
+      static Method< R, Parameters<T...> >      Infer(R (C::*)(T...),
+                                                      C*);
     };
 
   }

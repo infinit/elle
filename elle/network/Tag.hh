@@ -35,7 +35,7 @@ namespace elle
     ///
     /// note that the Range can be used to allocate such tags in a safe way.
     ///
-    typedef Natural32		Tag;
+    typedef Natural32           Tag;
 
 //
 // ---------- tag -------------------------------------------------------------
@@ -44,7 +44,7 @@ namespace elle
     ///
     /// this defines that unknown tag value.
     ///
-    const Tag			TagUnknown = 0;
+    const Tag                   TagUnknown = 0;
 
   }
 }

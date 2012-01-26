@@ -32,15 +32,15 @@ namespace elle
       //
       // methods
       //
-      static Integer64	Generate(Integer64		minimum,
-				 Integer64		maximum)
+      static Integer64  Generate(Integer64              minimum,
+                                 Integer64              maximum)
       {
-	Integer64	base = static_cast<Integer64>(rand());
+        Integer64       base = static_cast<Integer64>(rand());
 
-	if ((base >= minimum) && (base <= maximum))
-	  return (base);
+        if ((base >= minimum) && (base <= maximum))
+          return (base);
 
-	return (base % ((maximum - minimum) + 1) + minimum);
+        return (base % ((maximum - minimum) + 1) + minimum);
       }
     };
 

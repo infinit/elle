@@ -87,43 +87,43 @@ namespace elle
       // constructors & destructors
       //
       LocalServerPorter(const Callback<
-			  Status,
-			  Parameters<LocalSocket*>
-			  >&);
+                          Status,
+                          Parameters<LocalSocket*>
+                          >&);
       ~LocalServerPorter();
 
       //
       // methods
       //
-      Status		Create(const String&);
+      Status            Create(const String&);
 
       //
       // callbacks
       //
-      Status		Accept();
+      Status            Accept();
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      String			name;
-      ::QLocalServer*		server;
+      String                    name;
+      ::QLocalServer*           server;
       Callback<
-	Status,
-	Parameters<LocalSocket*>
-	>			callback;
+        Status,
+        Parameters<LocalSocket*>
+        >                       callback;
 
       //
       // slots
       //
     private slots:
-      void		_accept();
+      void              _accept();
     };
 
     ///
@@ -137,31 +137,31 @@ namespace elle
       // types
       //
       typedef std::map<const String,
-		       LocalServerPorter*>		Container;
-      typedef Container::iterator			Iterator;
-      typedef Container::const_iterator			Scoutor;
+                       LocalServerPorter*>              Container;
+      typedef Container::iterator                       Iterator;
+      typedef Container::const_iterator                 Scoutor;
 
       //
       // static methods
       //
-      static Status	Initialize();
-      static Status	Clean();
+      static Status     Initialize();
+      static Status     Clean();
 
-      static Status	Listen(const String&,
-			       const Callback< Status,
-					       Parameters<LocalSocket*> >&);
-      static Status	Block(const String&);
-      static Status	Retrieve(const String&,
-				 LocalServerPorter*&);
-      static Status	Locate(const String&,
-			       Iterator* = NULL);
+      static Status     Listen(const String&,
+                               const Callback< Status,
+                                               Parameters<LocalSocket*> >&);
+      static Status     Block(const String&);
+      static Status     Retrieve(const String&,
+                                 LocalServerPorter*&);
+      static Status     Locate(const String&,
+                               Iterator* = NULL);
 
-      static Status	Show(const Natural32 = 0);
+      static Status     Show(const Natural32 = 0);
 
       //
       // static attributes
       //
-      static Container	Porters;
+      static Container  Porters;
     };
 
   }

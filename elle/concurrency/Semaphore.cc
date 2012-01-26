@@ -27,20 +27,20 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Semaphore::Zone::Zone(Semaphore&				semaphore,
-			  const Natural32			n):
+    Semaphore::Zone::Zone(Semaphore&                            semaphore,
+                          const Natural32                       n):
       semaphore(semaphore),
       n(n),
 
       section(A(C(&Semaphore::Acquire, &this->semaphore), this->n),
-	      R(C(&Semaphore::Release, &this->semaphore), this->n))
+              R(C(&Semaphore::Release, &this->semaphore), this->n))
     {
     }
 
     ///
     /// this method locks the semaphore according to the zone's resources.
     ///
-    Void		Semaphore::Zone::Acquire()
+    Void                Semaphore::Zone::Acquire()
     {
       // call the section's Enter() method.
       this->section.Enter();
@@ -49,7 +49,7 @@ namespace elle
     ///
     /// this method unlocks the semaphore according to the zone's resources.
     ///
-    Void		Semaphore::Zone::Release()
+    Void                Semaphore::Zone::Release()
     {
       // call the section's Leave() method.
       this->section.Leave();
@@ -58,9 +58,9 @@ namespace elle
     ///
     /// this method dumps the semaphore.
     ///
-    Status		Semaphore::Zone::Dump(const Natural32	margin) const
+    Status              Semaphore::Zone::Dump(const Natural32   margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
@@ -68,11 +68,11 @@ namespace elle
 
       // dump the semaphore.
       if (this->semaphore.Dump(margin + 2) == StatusError)
-	escape("unable to dump the semaphore");
+        escape("unable to dump the semaphore");
 
       // dump the section.
       if (this->section.Dump(margin + 2) == StatusError)
-	escape("unable to dump the section");
+        escape("unable to dump the section");
 
       leave();
     }
@@ -84,7 +84,7 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Semaphore::Semaphore(const Natural32			n):
+    Semaphore::Semaphore(const Natural32                        n):
       acquired(0),
       available(n)
     {
@@ -95,22 +95,22 @@ namespace elle
     /// or blocks the fiber until the semaphore has enough available
     /// resources.
     ///
-    Void		Semaphore::Acquire(const Natural32	n)
+    Void                Semaphore::Acquire(const Natural32      n)
     {
       enter();
 
       // are there enough resources to be acquired...
       while (this->available < n)
-	{
-	  //
-	  // in this case, the current fiber must be blocked until
-	  // the semaphore gets enough resources released.
-	  //
+        {
+          //
+          // in this case, the current fiber must be blocked until
+          // the semaphore gets enough resources released.
+          //
 
-	  // wait for the semaphore.
-	  if (Fiber::Wait(this) == StatusError)
-	    yield(_(), "an error occured while waiting on the resource");
-	}
+          // wait for the semaphore.
+          if (Fiber::Wait(this) == StatusError)
+            yield(_(), "an error occured while waiting on the resource");
+        }
 
       // increase/decrease the number of acquired/available resources.
       this->acquired += n;
@@ -122,7 +122,7 @@ namespace elle
     ///
     /// this method releases some of the semaphore's resources.
     ///
-    Void		Semaphore::Release(const Natural32	n)
+    Void                Semaphore::Release(const Natural32      n)
     {
       enter();
 
@@ -133,7 +133,7 @@ namespace elle
       // and finally, awaken the fibers potentially blocked on the
       // semaphore.
       if (Fiber::Awaken(this) == StatusError)
-	yield(_(), "unable to awaken the fibers");
+        yield(_(), "unable to awaken the fibers");
 
       release();
     }
@@ -142,13 +142,13 @@ namespace elle
     /// this method returns true if the given access would be authorised
     /// without blocking.
     ///
-    Status		Semaphore::Try(const Natural32		n)
+    Status              Semaphore::Try(const Natural32          n)
     {
       enter();
 
       // are there enough resources to be acquired...
       if (this->available < n)
-	false();
+        false();
 
       true();
     }
@@ -161,9 +161,9 @@ namespace elle
     ///
     /// this method dumps the semaphore.
     ///
-    Status		Semaphore::Dump(const Natural32		margin) const
+    Status              Semaphore::Dump(const Natural32         margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
@@ -171,11 +171,11 @@ namespace elle
 
       // dump the number of acquired resources.
       std::cout << alignment << Dumpable::Shift
-		<< "[Acquired] " << std::dec << this->acquired << std::endl;
+                << "[Acquired] " << std::dec << this->acquired << std::endl;
 
       // dump the number of available resources.
       std::cout << alignment << Dumpable::Shift
-		<< "[Available] " << std::dec << this->available << std::endl;
+                << "[Available] " << std::dec << this->available << std::endl;
 
       leave();
     }

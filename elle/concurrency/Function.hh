@@ -46,21 +46,21 @@ namespace elle
     /// this class represents a function.
     ///
     template <typename R,
-	      typename... T>
+              typename... T>
     class Function< R,
-		    Parameters<T...> >:
+                    Parameters<T...> >:
       public Object
     {
     public:
       //
       // types
       //
-      typedef Parameters<T...>		P;
+      typedef Parameters<T...>          P;
 
       //
       // types
       //
-      typedef R				(*Handler)(T...);
+      typedef R                         (*Handler)(T...);
 
       //
       // constructors & destructors
@@ -71,8 +71,8 @@ namespace elle
       //
       // methods
       //
-      R			Call(T...);
-      Void		Trigger(T...);
+      R                 Call(T...);
+      Void              Trigger(T...);
 
       //
       // interfaces
@@ -82,12 +82,12 @@ namespace elle
       declare(_(Function<R, P>));
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Handler		handler;
+      Handler           handler;
     };
 
     ///
@@ -101,8 +101,8 @@ namespace elle
       // static methods
       //
       template <typename R,
-		typename... T>
-      static Function< R, Parameters<T...> >	Infer(R (*)(T...));
+                typename... T>
+      static Function< R, Parameters<T...> >    Infer(R (*)(T...));
     };
 
   }

@@ -31,8 +31,8 @@ namespace elle
     /// this method stores an element.
     ///
     template <typename T>
-    Status		Environment::Store(const String&	name,
-					   T*			value)
+    Status              Environment::Store(const String&        name,
+                                           T*                   value)
     {
       enter();
 
@@ -47,30 +47,30 @@ namespace elle
     /// this method loads a value.
     ///
     template <typename T>
-    Status		Environment::Load(const String&		name,
-					  T*&			value)
+    Status              Environment::Load(const String&         name,
+                                          T*&                   value)
     {
-      Environment::Iterator	iterator;
+      Environment::Iterator     iterator;
 
       enter();
 
       // go through the elements.
       for (iterator = this->container.begin();
-	   iterator != this->container.end();
-	   iterator++)
-	{
-	  // check if this is the looked for element.
-	  if (iterator->first == name)
-	    {
-	      // return the value.
-	      value = static_cast<T*>(iterator->second);
+           iterator != this->container.end();
+           iterator++)
+        {
+          // check if this is the looked for element.
+          if (iterator->first == name)
+            {
+              // return the value.
+              value = static_cast<T*>(iterator->second);
 
-	      // remove the item
-	      this->container.erase(iterator);
+              // remove the item
+              this->container.erase(iterator);
 
-	      leave();
-	    }
-	}
+              leave();
+            }
+        }
 
       escape("unable to locate the element `%s'", name.c_str());
     }

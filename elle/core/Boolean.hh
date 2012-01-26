@@ -32,7 +32,7 @@ namespace elle
     ///
     /// this is a generic type for booleans.
     ///
-    typedef bool	Boolean;
+    typedef bool        Boolean;
 
   }
 }

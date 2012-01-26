@@ -29,7 +29,7 @@ namespace elle
     /// this method has been introduced because there is no way to known
     /// the size of an object when its base class is manipulated.
     ///
-    Status		Object::Imprint(Natural32&) const
+    Status              Object::Imprint(Natural32&) const
     {
       enter();
 
@@ -40,7 +40,7 @@ namespace elle
     /// this method clones the current object by allocating a new
     /// one through the copy constructor.
     ///
-    Status		Object::Clone(Object*&) const
+    Status              Object::Clone(Object*&) const
     {
       enter();
 
@@ -54,7 +54,7 @@ namespace elle
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Object::operator==(const Object&) const
+    Boolean             Object::operator==(const Object&) const
     {
       enter();
 
@@ -64,7 +64,7 @@ namespace elle
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Object::operator<(const Object&) const
+    Boolean             Object::operator<(const Object&) const
     {
       enter();
 
@@ -74,7 +74,7 @@ namespace elle
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Object::operator>(const Object&) const
+    Boolean             Object::operator>(const Object&) const
     {
       enter();
 
@@ -84,7 +84,7 @@ namespace elle
     ///
     /// this operator adds an object to the current one.
     ///
-    Object		Object::operator+(const Object&)
+    Object              Object::operator+(const Object&)
     {
       enter();
 
@@ -97,7 +97,7 @@ namespace elle
     /// this method (i) starts by checking if the given object
     /// is not the current one before (ii) calling Recycle().
     ///
-    Object&		Object::operator=(const Object&)
+    Object&             Object::operator=(const Object&)
     {
       enter();
 
@@ -109,7 +109,7 @@ namespace elle
     /// function can be automatically generated through the Embed(Object, T)
     /// macro function.
     ///
-    Boolean		Object::operator!=(const Object&) const
+    Boolean             Object::operator!=(const Object&) const
     {
       enter();
 
@@ -119,7 +119,7 @@ namespace elle
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Object::operator<=(const Object&) const
+    Boolean             Object::operator<=(const Object&) const
     {
       enter();
 
@@ -129,7 +129,7 @@ namespace elle
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Object::operator>=(const Object&) const
+    Boolean             Object::operator>=(const Object&) const
     {
       enter();
 

@@ -31,7 +31,7 @@ namespace elle
     ///
     /// this type wraps C++ strings.
     ///
-    typedef std::string		String;
+    typedef std::string         String;
 
   }
 }

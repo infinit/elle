@@ -27,10 +27,10 @@ namespace elle
     ///
     enum Phase
       {
-	PhaseInitialize,
-	PhaseSave,
-	PhaseRestore,
-	PhaseClean
+        PhaseInitialize,
+        PhaseSave,
+        PhaseRestore,
+        PhaseClean
       };
 
   }

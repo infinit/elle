@@ -32,25 +32,25 @@ namespace std
   ///
   ///   std::cout << chop("chiche") << std::endl;
   ///
-  elle::core::String	chop(const elle::core::String&		string,
-			     const elle::core::Natural32	limit)
+  elle::core::String    chop(const elle::core::String&          string,
+                             const elle::core::Natural32        limit)
   {
-    std::ostringstream	stream;
+    std::ostringstream  stream;
 
     enter();
 
     // display the string depending on its length.
     if (string.length() < limit)
       {
-	// display the string in its entirety.
-	stream << string;
+        // display the string in its entirety.
+        stream << string;
       }
     else
       {
-	// otherwise chop it.
-	stream << string.substr(0, limit / 2)
-	       << "..."
-	       << string.substr(string.length() - (limit / 2));
+        // otherwise chop it.
+        stream << string.substr(0, limit / 2)
+               << "..."
+               << string.substr(string.length() - (limit / 2));
       }
 
     // release.
@@ -63,15 +63,15 @@ namespace std
   /// this method is equivalent to the previous one but for Uniquable
   /// instances, making it even easier to display such objects.
   ///
-  ///   PrivateKey	k;
+  ///   PrivateKey      k;
   ///
   ///   std::cout << chop(k) << std::endl;
   ///
   template <const elle::io::Format F>
-  elle::core::String	chop(const elle::io::Uniquable<F>&	uniquable,
-			     const elle::core::Natural32	limit)
+  elle::core::String    chop(const elle::io::Uniquable<F>&      uniquable,
+                             const elle::core::Natural32        limit)
   {
-    elle::io::Unique	unique;
+    elle::io::Unique    unique;
 
     enter();
 

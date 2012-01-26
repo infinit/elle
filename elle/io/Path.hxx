@@ -33,13 +33,13 @@ namespace elle
     /// this template resolves a single piece of the path's pattern.
     ///
     template <typename T>
-    Status		Path::Complete(T			piece)
+    Status              Path::Complete(T                        piece)
     {
       enter();
 
       // resolve the piece.
       if (this->Complete(piece.name, piece.value) == StatusError)
-	escape("unable to resolve the piece");
+        escape("unable to resolve the piece");
 
       leave();
     }
@@ -48,19 +48,19 @@ namespace elle
     /// this method resolves the given set of pieces for the path's pattern.
     ///
     template <typename T,
-	      typename... TT>
-    Status		Path::Complete(T			piece,
-				       TT...			pieces)
+              typename... TT>
+    Status              Path::Complete(T                        piece,
+                                       TT...                    pieces)
     {
       enter();
 
       // resolve the given piece.
       if (this->Complete(piece) == StatusError)
-	escape("unable to resolve the first piece");
+        escape("unable to resolve the first piece");
 
       // resolve the additional pieces.
       if (this->Complete(pieces...) == StatusError)
-	escape("unable to resolve the additional pieces");
+        escape("unable to resolve the additional pieces");
 
       leave();
     }

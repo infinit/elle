@@ -102,29 +102,29 @@ namespace elle
       /// re-setting them to their default values.
       ///
       template <typename T>
-      Status		Recycle(const T* = NULL);
+      Status            Recycle(const T* = NULL);
 
       ///
       /// this method returns the size of the object.
       ///
-      virtual Status	Imprint(Natural32&) const;
+      virtual Status    Imprint(Natural32&) const;
 
       ///
       /// this method clones the current object.
       ///
-      virtual Status	Clone(Object*&) const;
+      virtual Status    Clone(Object*&) const;
 
       //
       // operators
       //
-      virtual Boolean	operator==(const Object&) const;
-      virtual Boolean	operator<(const Object&) const;
-      virtual Boolean	operator>(const Object&) const;
-      virtual Object	operator+(const Object&);
-      virtual Object&	operator=(const Object&);
-      virtual Boolean	operator!=(const Object&) const;
-      virtual Boolean	operator<=(const Object&) const;
-      virtual Boolean	operator>=(const Object&) const;
+      virtual Boolean   operator==(const Object&) const;
+      virtual Boolean   operator<(const Object&) const;
+      virtual Boolean   operator>(const Object&) const;
+      virtual Object    operator+(const Object&);
+      virtual Object&   operator=(const Object&);
+      virtual Boolean   operator!=(const Object&) const;
+      virtual Boolean   operator<=(const Object&) const;
+      virtual Boolean   operator>=(const Object&) const;
     };
 
   }

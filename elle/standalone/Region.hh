@@ -65,88 +65,88 @@ namespace elle
       /// and managed memory area.
       ///
       enum Type
-	{
-	  TypeUnknown = 0,
-	  TypeChunk,
-	  TypeBuffer
-	};
+        {
+          TypeUnknown = 0,
+          TypeChunk,
+          TypeBuffer
+        };
 
       ///
       /// the detach option, activated through Detach(), guarantee
       /// that the data will not be released when the object is destroyed.
       ///
       enum Options
-	{
-	  OptionNone = 0,
-	  OptionDetach
-	};
+        {
+          OptionNone = 0,
+          OptionDetach
+        };
 
       //
       // constructors & destructors
       //
       Region();
       Region(const Byte*,
-	     Natural64);
+             Natural64);
       Region(const Region&);
       ~Region();
 
       //
       // methods
       //
-      Status		Wrap(const Byte*,
-			     Natural64);
-      Status		Acquire(Byte*,
-				Natural64);
+      Status            Wrap(const Byte*,
+                             Natural64);
+      Status            Acquire(Byte*,
+                                Natural64);
 
-      Status		Prepare(const Natural64);
-      Status		Duplicate(const Byte*,
-				  Natural64);
+      Status            Prepare(const Natural64);
+      Status            Duplicate(const Byte*,
+                                  Natural64);
 
-      Status		Adjust(const Natural64);
-      Status		Append(const Byte*,
-			       const Natural64);
+      Status            Adjust(const Natural64);
+      Status            Append(const Byte*,
+                               const Natural64);
 
-      Status		Read(const Natural64,
-			     Byte*,
-			     const Natural64) const;
-      Status		Write(const Natural64,
-			      const Byte*,
-			      const Natural64);
+      Status            Read(const Natural64,
+                             Byte*,
+                             const Natural64) const;
+      Status            Write(const Natural64,
+                              const Byte*,
+                              const Natural64);
 
-      Status		Detach();
+      Status            Detach();
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       // object-like
       template <typename T>
-      Status		Recycle(const T* = NULL);
+      Status            Recycle(const T* = NULL);
 
-      virtual Status	Imprint(Natural32&) const;
-      virtual Status	Clone(Region*&) const;
+      virtual Status    Imprint(Natural32&) const;
+      virtual Status    Clone(Region*&) const;
 
-      virtual Boolean	operator==(const Region&) const;
-      virtual Boolean	operator<(const Region&) const;
-      virtual Boolean	operator>(const Region&) const;
+      virtual Boolean   operator==(const Region&) const;
+      virtual Boolean   operator<(const Region&) const;
+      virtual Boolean   operator>(const Region&) const;
 
-      virtual Region&	operator=(const Region&);
-      virtual Boolean	operator!=(const Region&) const;
-      virtual Boolean	operator<=(const Region&) const;
-      virtual Boolean	operator>=(const Region&) const;
+      virtual Region&   operator=(const Region&);
+      virtual Boolean   operator!=(const Region&) const;
+      virtual Boolean   operator<=(const Region&) const;
+      virtual Boolean   operator>=(const Region&) const;
 
       //
       // attributes
       //
-      Type		type;
-      Options		options;
+      Type              type;
+      Options           options;
 
-      Byte*		contents;
-      Natural64		size;
-      Natural64		capacity;
+      Byte*             contents;
+      Natural64         size;
+      Natural64         capacity;
     };
 
   }

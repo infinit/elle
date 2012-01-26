@@ -28,8 +28,8 @@ namespace elle
     /// memory variable i.e within the caller's stack frame.
     ///
     template <typename T>
-    inline Maid::Guard*		Maid::Monitor(Void*		memory,
-					      T&		pointer)
+    inline Maid::Guard*         Maid::Monitor(Void*             memory,
+                                              T&                pointer)
     {
       // first initialize the pointer to null.
       pointer = NULL;
@@ -47,9 +47,9 @@ namespace elle
     /// memory variable i.e within the caller's stack frame.
     ///
     template <typename T, typename F>
-    inline Maid::Guard*		Maid::Monitor(Void*		memory,
-					      T&		pointer,
-					      F			function)
+    inline Maid::Guard*         Maid::Monitor(Void*             memory,
+                                              T&                pointer,
+                                              F                 function)
     {
       // first initialize the pointer to null.
       pointer = NULL;
@@ -66,8 +66,8 @@ namespace elle
     /// memory variable i.e within the caller's stack frame.
     ///
     template <typename... T>
-    inline Maid::Garrison*	Maid::Install(Void*		memory,
-					      T...		guards)
+    inline Maid::Garrison*      Maid::Install(Void*             memory,
+                                              T...              guards)
     {
       // create the Garrison instance.
       return (new (memory) Maid::Garrison(sizeof... (T), guards...));
@@ -79,7 +79,7 @@ namespace elle
     /// the time.
     ///
     template <typename... T>
-    inline Maid::Garrison*	Maid::Install(Void*)
+    inline Maid::Garrison*      Maid::Install(Void*)
     {
       return (NULL);
     }

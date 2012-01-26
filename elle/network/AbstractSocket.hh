@@ -69,24 +69,24 @@ namespace elle
       // enumerations
       //
       enum State
-	{
-	  StateUnconnected,
-	  StateConnecting,
-	  StateConnected,
-	  StateDisconnected
-	};
+        {
+          StateUnconnected,
+          StateConnecting,
+          StateConnected,
+          StateDisconnected
+        };
 
       //
       // constants
       //
-      static const Natural32			Capacity;
+      static const Natural32                    Capacity;
 
       //
       // types
       //
-      typedef std::list<Parcel*>		Container;
-      typedef Container::iterator		Iterator;
-      typedef Container::const_iterator		Scoutor;
+      typedef std::list<Parcel*>                Container;
+      typedef Container::iterator               Iterator;
+      typedef Container::const_iterator         Scoutor;
 
       //
       // constructors & destructors
@@ -98,58 +98,58 @@ namespace elle
       // methods
       //
       template <typename I>
-      Status		Send(const I,
-			     const Event& = Event::Null);
+      Status            Send(const I,
+                             const Event& = Event::Null);
       template <typename O>
-      Status		Receive(const Event&,
-				O);
+      Status            Receive(const Event&,
+                                O);
       template <typename I,
-		typename O>
-      Status		Call(const I,
-			     O);
+                typename O>
+      Status            Call(const I,
+                             O);
       template <typename I>
-      Status		Reply(const I,
-			      Session* = NULL);
+      Status            Reply(const I,
+                              Session* = NULL);
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // signals
       //
       struct
       {
-	Signal<
-	  Parameters<>
-	  >		connected;
-	Signal<
-	  Parameters<>
-	  >		disconnected;
-	Signal<
-	  Parameters<>
-	  >		ready;
-	Signal<
-	  Parameters<
-	    const String&
-	    >
-	  >		error;
-      }			signal;
+        Signal<
+          Parameters<>
+          >             connected;
+        Signal<
+          Parameters<>
+          >             disconnected;
+        Signal<
+          Parameters<>
+          >             ready;
+        Signal<
+          Parameters<
+            const String&
+            >
+          >             error;
+      }                 signal;
 
       //
       // attributes
       //
-      State		state;
+      State             state;
 
-      Region*		buffer;
-      Natural32		offset;
+      Region*           buffer;
+      Natural32         offset;
 
-      Container		queue;
+      Container         queue;
 
-      Timer*		timer;
+      Timer*            timer;
     };
 
   }

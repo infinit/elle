@@ -45,14 +45,14 @@ namespace elle
     ///
     /// this value can obviously be changed to true to activate debugging.
     ///
-    const Boolean		Meta::Debug::Status = false;
+    const Boolean               Meta::Debug::Status = false;
 
     ///
     /// this value states if the debugging has been started or not.
     ///
     /// this variable should always be set to false at the beginning.
     ///
-    Boolean			Meta::Debug::State = false;
+    Boolean                     Meta::Debug::State = false;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -61,23 +61,23 @@ namespace elle
     ///
     /// this method initializes the meta.
     ///
-    Status		Meta::Initialize()
+    Status              Meta::Initialize()
     {
       enter();
 
       // if the debug has been activated.
       if (Meta::Debug::Status == true)
-	{
+        {
 #if defined(INFINIT_UNIX)
-	  // initialize the traces.
-	  if (Trace::Initialize() == StatusError)
-	    escape("unable to initialize the trace system");
+          // initialize the traces.
+          if (Trace::Initialize() == StatusError)
+            escape("unable to initialize the trace system");
 #endif
 
-	  // enable the logging.
-	  if (Meta::Enable() == StatusError)
-	    escape("unable to enable the meta logging");
-	}
+          // enable the logging.
+          if (Meta::Enable() == StatusError)
+            escape("unable to enable the meta logging");
+        }
 
       leave();
     }
@@ -85,27 +85,27 @@ namespace elle
     ///
     /// this method cleans the meta.
     ///
-    Status		Meta::Clean()
+    Status              Meta::Clean()
     {
       enter();
 
       // if traces exist, dump them.
       if (Meta::Debug::Status == true)
-	{
-	  // disable the logging.
-	  if (Meta::Disable() == StatusError)
-	    escape("unable to disable the meta logging");
+        {
+          // disable the logging.
+          if (Meta::Disable() == StatusError)
+            escape("unable to disable the meta logging");
 
-	  // show the traces.
-	  if (Meta::Show() == StatusError)
-	    escape("unable to show the meta");
+          // show the traces.
+          if (Meta::Show() == StatusError)
+            escape("unable to show the meta");
 
 #if defined(INFINIT_UNIX)
-	  // clean the traces.
-	  if (Trace::Clean() == StatusError)
-	    escape("unable to clean the trace system");
+          // clean the traces.
+          if (Trace::Clean() == StatusError)
+            escape("unable to clean the trace system");
 #endif
-	}
+        }
 
       leave();
     }
@@ -113,7 +113,7 @@ namespace elle
     ///
     /// this method enables the allocation logging.
     ///
-    Status		Meta::Enable()
+    Status              Meta::Enable()
     {
       enter();
 
@@ -126,7 +126,7 @@ namespace elle
     ///
     /// this method disables the allocation logging.
     ///
-    Status		Meta::Disable()
+    Status              Meta::Disable()
     {
       enter();
 
@@ -139,9 +139,9 @@ namespace elle
     ///
     /// this method dumps all the traces.
     ///
-    Status		Meta::Show(const Natural32		margin)
+    Status              Meta::Show(const Natural32              margin)
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
@@ -149,13 +149,13 @@ namespace elle
 
       // if traces exist, dump them.
       if (Meta::Debug::Status == true)
-	{
+        {
 #if defined(INFINIT_UNIX)
-	  // show the traces.
-	  if (Trace::Show(margin + 2) == elle::StatusError)
-	    escape("unable to show the traces");
+          // show the traces.
+          if (Trace::Show(margin + 2) == elle::StatusError)
+            escape("unable to show the traces");
 #endif
-	}
+        }
 
       leave();
     }
@@ -181,28 +181,28 @@ namespace elle
     /// note that since new operators cannot return NULL, all the errors
     /// handling is skipped.
     ///
-    void*		Meta::operator new(size_t		size)
+    void*               Meta::operator new(size_t               size)
     {
-      void*		address;
+      void*             address;
 
       // allocate memory on the heap
       address = ::malloc(size);
 
       // only proceed if debugging has been activated.
       if ((Meta::Debug::Status == true) &&
-	  (Meta::Debug::State == true))
-	{
+          (Meta::Debug::State == true))
+        {
 #if defined(INFINIT_UNIX)
-	  // store the trace.
-	  if (Trace::Store(address) == StatusError)
-	    {
-	      log("unable to store the trace for %p",
-		  address);
+          // store the trace.
+          if (Trace::Store(address) == StatusError)
+            {
+              log("unable to store the trace for %p",
+                  address);
 
-	      goto _corps;
-	    }
+              goto _corps;
+            }
 #endif
-	}
+        }
 
     _corps:
       return (address);
@@ -212,8 +212,8 @@ namespace elle
     /// this operator is called whenever an object is allocated in
     /// a given memory area referenced by _address_.
     ///
-    void*		Meta::operator new(size_t,
-					   void*		address)
+    void*               Meta::operator new(size_t,
+                                           void*                address)
     {
       // return the address of the already reserved memory area.
       return (address);
@@ -225,28 +225,28 @@ namespace elle
     /// note that since new operators cannot return NULL, all the errors
     /// handling is skipped.
     ///
-    void*		Meta::operator new[](size_t		size)
+    void*               Meta::operator new[](size_t             size)
     {
-      void*		address;
+      void*             address;
 
       // allocate memory on the heap
       address = ::malloc(size);
 
       // only proceed if debugging has been activated.
       if ((Meta::Debug::Status == true) &&
-	  (Meta::Debug::State == true))
-	{
+          (Meta::Debug::State == true))
+        {
 #if defined(INFINIT_UNIX)
-	  // store the trace.
-	  if (Trace::Store(address) == StatusError)
-	    {
-	      log("unable to store the trace for %p",
-		  address);
+          // store the trace.
+          if (Trace::Store(address) == StatusError)
+            {
+              log("unable to store the trace for %p",
+                  address);
 
-	      goto _corps;
-	    }
+              goto _corps;
+            }
 #endif
-	}
+        }
 
     _corps:
       return (address);
@@ -256,8 +256,8 @@ namespace elle
     /// this operator is called whenever an object is allocated in
     /// a given memory area referenced by _address_.
     ///
-    void*		Meta::operator new[](size_t,
-					     void*		address)
+    void*               Meta::operator new[](size_t,
+                                             void*              address)
     {
       // return the address of the already reserved memory area.
       return (address);
@@ -266,23 +266,23 @@ namespace elle
     ///
     /// this method releases previously-reserved memory.
     ///
-    void		Meta::operator delete(void*		address)
+    void                Meta::operator delete(void*             address)
     {
       // only proceed if debugging has been activated.
       if ((Meta::Debug::Status == true) &&
-	  (Meta::Debug::State == true))
-	{
+          (Meta::Debug::State == true))
+        {
 #if defined(INFINIT_UNIX)
-	  // erase the trace.
-	  if (Trace::Erase(address) == StatusError)
-	    {
-	      log("unable to erase the trace for %p",
-		  address);
+          // erase the trace.
+          if (Trace::Erase(address) == StatusError)
+            {
+              log("unable to erase the trace for %p",
+                  address);
 
-	      goto _corps;
-	    }
+              goto _corps;
+            }
 #endif
-	}
+        }
 
     _corps:
 

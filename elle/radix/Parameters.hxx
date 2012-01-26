@@ -51,7 +51,7 @@ namespace elle
       //
       // constants
       //
-      static const Natural32	Quantum = 0;
+      static const Natural32    Quantum = 0;
     };
 
     ///
@@ -63,256 +63,256 @@ namespace elle
       //
       // types
       //
-      typedef T1		P1;
+      typedef T1                P1;
 
       //
       // constants
       //
-      static const Natural32	Quantum = 1;
+      static const Natural32    Quantum = 1;
     };
 
     ///
     /// two parameter.
     ///
     template <typename T1,
-	      typename T2>
+              typename T2>
     struct Parameters<T1,
-		      T2>
+                      T2>
     {
       //
       // types
       //
-      typedef T1		P1;
-      typedef T2		P2;
+      typedef T1                P1;
+      typedef T2                P2;
 
       //
       // constants
       //
-      static const Natural32	Quantum = 2;
+      static const Natural32    Quantum = 2;
     };
 
     ///
     /// three parameter.
     ///
     template <typename T1,
-	      typename T2,
-	      typename T3>
+              typename T2,
+              typename T3>
     struct Parameters<T1,
-		      T2,
-		      T3>
+                      T2,
+                      T3>
     {
       //
       // types
       //
-      typedef T1		P1;
-      typedef T2		P2;
-      typedef T3		P3;
+      typedef T1                P1;
+      typedef T2                P2;
+      typedef T3                P3;
 
       //
       // constants
       //
-      static const Natural32	Quantum = 3;
+      static const Natural32    Quantum = 3;
     };
 
     ///
     /// four parameter.
     ///
     template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4>
+              typename T2,
+              typename T3,
+              typename T4>
     struct Parameters<T1,
-		      T2,
-		      T3,
-		      T4>
+                      T2,
+                      T3,
+                      T4>
     {
       //
       // types
       //
-      typedef T1		P1;
-      typedef T2		P2;
-      typedef T3		P3;
-      typedef T4		P4;
+      typedef T1                P1;
+      typedef T2                P2;
+      typedef T3                P3;
+      typedef T4                P4;
 
       //
       // constants
       //
-      static const Natural32	Quantum = 4;
+      static const Natural32    Quantum = 4;
     };
 
     ///
     /// five parameter.
     ///
     template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5>
+              typename T2,
+              typename T3,
+              typename T4,
+              typename T5>
     struct Parameters<T1,
-		      T2,
-		      T3,
-		      T4,
-		      T5>
+                      T2,
+                      T3,
+                      T4,
+                      T5>
     {
       //
       // types
       //
-      typedef T1		P1;
-      typedef T2		P2;
-      typedef T3		P3;
-      typedef T4		P4;
-      typedef T5		P5;
+      typedef T1                P1;
+      typedef T2                P2;
+      typedef T3                P3;
+      typedef T4                P4;
+      typedef T5                P5;
 
       //
       // constants
       //
-      static const Natural32	Quantum = 5;
+      static const Natural32    Quantum = 5;
     };
 
     ///
     /// six parameter.
     ///
     template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5,
-	      typename T6>
+              typename T2,
+              typename T3,
+              typename T4,
+              typename T5,
+              typename T6>
     struct Parameters<T1,
-		      T2,
-		      T3,
-		      T4,
-		      T5,
-		      T6>
+                      T2,
+                      T3,
+                      T4,
+                      T5,
+                      T6>
     {
       //
       // types
       //
-      typedef T1		P1;
-      typedef T2		P2;
-      typedef T3		P3;
-      typedef T4		P4;
-      typedef T5		P5;
-      typedef T6		P6;
+      typedef T1                P1;
+      typedef T2                P2;
+      typedef T3                P3;
+      typedef T4                P4;
+      typedef T5                P5;
+      typedef T6                P6;
 
       //
       // constants
       //
-      static const Natural32	Quantum = 6;
+      static const Natural32    Quantum = 6;
     };
 
     ///
     /// seven parameter.
     ///
     template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5,
-	      typename T6,
-	      typename T7>
+              typename T2,
+              typename T3,
+              typename T4,
+              typename T5,
+              typename T6,
+              typename T7>
     struct Parameters<T1,
-		      T2,
-		      T3,
-		      T4,
-		      T5,
-		      T6,
-		      T7>
+                      T2,
+                      T3,
+                      T4,
+                      T5,
+                      T6,
+                      T7>
     {
       //
       // types
       //
-      typedef T1		P1;
-      typedef T2		P2;
-      typedef T3		P3;
-      typedef T4		P4;
-      typedef T5		P5;
-      typedef T6		P6;
-      typedef T7		P7;
+      typedef T1                P1;
+      typedef T2                P2;
+      typedef T3                P3;
+      typedef T4                P4;
+      typedef T5                P5;
+      typedef T6                P6;
+      typedef T7                P7;
 
       //
       // constants
       //
-      static const Natural32	Quantum = 7;
+      static const Natural32    Quantum = 7;
     };
 
     ///
     /// eight parameter.
     ///
     template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5,
-	      typename T6,
-	      typename T7,
-	      typename T8>
+              typename T2,
+              typename T3,
+              typename T4,
+              typename T5,
+              typename T6,
+              typename T7,
+              typename T8>
     struct Parameters<T1,
-		      T2,
-		      T3,
-		      T4,
-		      T5,
-		      T6,
-		      T7,
-		      T8>
+                      T2,
+                      T3,
+                      T4,
+                      T5,
+                      T6,
+                      T7,
+                      T8>
     {
       //
       // types
       //
-      typedef T1		P1;
-      typedef T2		P2;
-      typedef T3		P3;
-      typedef T4		P4;
-      typedef T5		P5;
-      typedef T6		P6;
-      typedef T7		P7;
-      typedef T8		P8;
+      typedef T1                P1;
+      typedef T2                P2;
+      typedef T3                P3;
+      typedef T4                P4;
+      typedef T5                P5;
+      typedef T6                P6;
+      typedef T7                P7;
+      typedef T8                P8;
 
       //
       // constants
       //
-      static const Natural32	Quantum = 8;
+      static const Natural32    Quantum = 8;
     };
 
     ///
     /// nine parameter.
     ///
     template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5,
-	      typename T6,
-	      typename T7,
-	      typename T8,
-	      typename T9>
+              typename T2,
+              typename T3,
+              typename T4,
+              typename T5,
+              typename T6,
+              typename T7,
+              typename T8,
+              typename T9>
     struct Parameters<T1,
-		      T2,
-		      T3,
-		      T4,
-		      T5,
-		      T6,
-		      T7,
-		      T8,
-		      T9>
+                      T2,
+                      T3,
+                      T4,
+                      T5,
+                      T6,
+                      T7,
+                      T8,
+                      T9>
     {
       //
       // types
       //
-      typedef T1		P1;
-      typedef T2		P2;
-      typedef T3		P3;
-      typedef T4		P4;
-      typedef T5		P5;
-      typedef T6		P6;
-      typedef T7		P7;
-      typedef T8		P8;
-      typedef T9		P9;
+      typedef T1                P1;
+      typedef T2                P2;
+      typedef T3                P3;
+      typedef T4                P4;
+      typedef T5                P5;
+      typedef T6                P6;
+      typedef T7                P7;
+      typedef T8                P8;
+      typedef T9                P9;
 
       //
       // constants
       //
-      static const Natural32	Quantum = 9;
+      static const Natural32    Quantum = 9;
     };
 
   }

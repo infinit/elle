@@ -29,7 +29,7 @@ Status fiber1()
   enter();
   log_here;
   Closure< Status,
-           Parameters<> >	closure(Callback<>::Infer(&fiber2));
+           Parameters<> >       closure(Callback<>::Infer(&fiber2));
 
   Fiber::Spawn(closure);
   log_here;
@@ -93,7 +93,7 @@ QtObj::tetons()
   log_here;
   Fiber::Initialize();
   Closure< Status,
-           Parameters<> >	closure(Callback<>::Infer(&fiber1));
+           Parameters<> >       closure(Callback<>::Infer(&fiber1));
 
   Fiber::Spawn(closure);
   log_here;

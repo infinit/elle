@@ -39,42 +39,42 @@ namespace elle
       //
       // constants
       //
-      static const Natural32		Timeout = 20000;
+      static const Natural32            Timeout = 20000;
 
       //
       // attributes
       //
-      Node*		node;
+      Node*             node;
 
-      Timer		timer;
+      Timer             timer;
 
-      Locus		locus;
-      String		name;
+      Locus             locus;
+      String            name;
 
       //
       // methods
       //
-      Status		Create(Node*,
-			       const Locus&,
-			       const String&);
-      Status		Update(const String&);
-      Status		Refresh();
+      Status            Create(Node*,
+                               const Locus&,
+                               const String&);
+      Status            Update(const String&);
+      Status            Refresh();
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      Status            Serialize(Archive&) const;
+      Status            Extract(Archive&);
 
       //
       // callbacks
       //
-      Status		Discard();
+      Status            Discard();
     };
 
   }

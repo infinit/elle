@@ -28,12 +28,12 @@ namespace elle
 
     enum Tag
       {
-	TagNone = 0,
+        TagNone = 0,
 
         TagChallenge = 1000,
         TagResponse,
 
-	Tags = TagResponse + 1
+        Tags = TagResponse + 1
       };
 
   }
@@ -44,7 +44,7 @@ namespace elle
 //
 
 outward(elle::test::TagChallenge,
-	parameters(elle::core::String&));
+        parameters(elle::core::String&));
 inward(elle::test::TagResponse,
        parameters(elle::core::String&));
 

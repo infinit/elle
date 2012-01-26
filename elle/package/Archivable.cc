@@ -34,7 +34,7 @@ namespace elle
     ///
     /// this method serializes an object.
     ///
-    Status		Archivable::Serialize(Archive&) const
+    Status              Archivable::Serialize(Archive&) const
     {
       enter();
 
@@ -44,7 +44,7 @@ namespace elle
     ///
     /// this method extract an object.
     ///
-    Status		Archivable::Extract(Archive&)
+    Status              Archivable::Extract(Archive&)
     {
       enter();
 

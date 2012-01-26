@@ -28,7 +28,7 @@ namespace elle
     /// this struct is used to define a set of parameters since it is
     /// not possible to do something like that:
     ///
-    ///   typedef T...		Types;
+    ///   typedef T...          Types;
     ///
     /// note that many variadic template classes then rely on the
     /// Parameters structure such as Callback, Arguments, Closure etc.

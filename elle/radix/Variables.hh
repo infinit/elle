@@ -49,13 +49,13 @@ namespace elle
       // methods
       //
       template <template <typename...> class E1,
-		template <typename...> class E2,
-		typename... U,
-		typename... V>
+                template <typename...> class E2,
+                typename... U,
+                typename... V>
       static
       Variables< Parameters<U..., V...> >
       Union(E1< Parameters<U...> >&,
-	    E2< Parameters<V...> >&);
+            E2< Parameters<V...> >&);
     };
 
   }

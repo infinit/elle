@@ -41,7 +41,7 @@ namespace elle
       //
       // constants
       //
-      static const String		Shift;
+      static const String               Shift;
 
       //
       // constructors & destructors
@@ -53,7 +53,7 @@ namespace elle
       //
       // methods
       //
-      virtual Status	Dump(const Natural32 = 0) const;
+      virtual Status    Dump(const Natural32 = 0) const;
     };
 
   }

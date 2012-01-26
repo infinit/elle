@@ -59,21 +59,21 @@ namespace elle
       //
       // static methods
       //
-      static Status	Initialize();
-      static Status	Clean();
+      static Status     Initialize();
+      static Status     Clean();
 
-      static Status	Instance(Session*&);
+      static Status     Instance(Session*&);
 
-      static Status	Assign(Session*);
-      static Status	Clear();
+      static Status     Assign(Session*);
+      static Status     Clear();
 
-      static Status	Govern(const Phase,
-			       Fiber*);
+      static Status     Govern(const Phase,
+                               Fiber*);
 
       //
       // static attributes
       //
-      static Session*	Current;
+      static Session*   Current;
 
       //
       // constructors & destructors
@@ -83,23 +83,23 @@ namespace elle
       //
       // methods
       //
-      Status		Create(Socket*,
-			       const Locus&,
-			       const Event&);
+      Status            Create(Socket*,
+                               const Locus&,
+                               const Event&);
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Socket*		socket;
-      Locus		locus;
-      Event		event;
+      Socket*           socket;
+      Locus             locus;
+      Event             event;
     };
 
   }

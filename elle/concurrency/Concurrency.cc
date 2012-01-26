@@ -26,17 +26,17 @@ namespace elle
     ///
     /// this method initializes the concurrency module.
     ///
-    Status		Concurrency::Initialize()
+    Status              Concurrency::Initialize()
     {
       enter();
 
       // initialize the program.
       if (Program::Initialize() == StatusError)
-	escape("unable to initialize the program");
+        escape("unable to initialize the program");
 
       // initialize the fiber system.
       if (Fiber::Initialize() == StatusError)
-	escape("unable to initialize the fiber system");
+        escape("unable to initialize the fiber system");
 
       leave();
     }
@@ -44,17 +44,17 @@ namespace elle
     ///
     /// this method cleans the concurrency module.
     ///
-    Status		Concurrency::Clean()
+    Status              Concurrency::Clean()
     {
       enter();
 
       // clean the fiber system.
       if (Fiber::Clean() == StatusError)
-	escape("unable to clean the fiber system");
+        escape("unable to clean the fiber system");
 
       // clean the program.
       if (Program::Clean() == StatusError)
-	escape("unable to clean the program");
+        escape("unable to clean the program");
 
       leave();
     }

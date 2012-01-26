@@ -23,7 +23,7 @@ namespace elle
     ///
     /// for portability purposes, this type wraps the C type for characters.
     ///
-    typedef char	Character;
+    typedef char        Character;
 
   }
 }

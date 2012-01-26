@@ -58,8 +58,8 @@ namespace elle
     ///
     /// with the the Challenge() method:
     ///
-    ///   Status	Challenge(const String&			string,
-    ///				  Digest&			digest)
+    ///   Status        Challenge(const String&                 string,
+    ///                           Digest&                       digest)
     ///   {
     ///     [...]
     ///   }
@@ -74,8 +74,8 @@ namespace elle
     /// the caller embedding a report i.e a set of error messages.
     ///
     template <const Tag I,
-	      const Tag O = TagNone,
-	      const Tag E = TagError>
+              const Tag O = TagNone,
+              const Tag E = TagError>
     class Procedure:
       public Object
     {
@@ -88,29 +88,29 @@ namespace elle
           Set::Union<
             typename
               Trait::Constant<
-	        typename Message<I>::P
-	      >::Type,
+                typename Message<I>::P
+              >::Type,
             typename Message<O>::P
-            >::Type				R;
+            >::Type                             R;
 
       //
       // constructors & destructors
       //
       Procedure(const Callback< Status,
-				R >,
-		const Callback< Status,
-		                Parameters<> > =
-		  Callback< Status,
-			    Parameters<> >::Null,
-		const Callback< Status,
-				Parameters<> > =
-		  Callback< Status,
-			    Parameters<> >::Null);
+                                R >,
+                const Callback< Status,
+                                Parameters<> > =
+                  Callback< Status,
+                            Parameters<> >::Null,
+                const Callback< Status,
+                                Parameters<> > =
+                  Callback< Status,
+                            Parameters<> >::Null);
 
       //
       // methods
       //
-      Status		Skeleton(Archive&) const;
+      Status            Skeleton(Archive&) const;
 
       //
       // interfaces
@@ -120,24 +120,24 @@ namespace elle
       declare(_(Procedure<I, O, E>));
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
       Callback<
-	Status,
-	R
-	>		routine;
+        Status,
+        R
+        >               routine;
 
       Callback<
-	Status,
-	Parameters<>
-	>		prolog;
+        Status,
+        Parameters<>
+        >               prolog;
       Callback<
-	Status,
-	Parameters<>
-	>		epilog;
+        Status,
+        Parameters<>
+        >               epilog;
     };
 
   }

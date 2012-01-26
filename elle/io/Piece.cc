@@ -33,8 +33,8 @@ namespace elle
     ///
     /// the constructor.
     ///
-    Piece::Piece(const String&					name,
-		 const String&					value):
+    Piece::Piece(const String&                                  name,
+                 const String&                                  value):
       name(name),
       value(value)
     {
@@ -47,17 +47,17 @@ namespace elle
     ///
     /// this method check if two objects match.
     ///
-    Boolean		Piece::operator==(const Piece&		element) const
+    Boolean             Piece::operator==(const Piece&          element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the internal.
       if ((this->name != element.name) || (this->value != element.value))
-	false();
+        false();
 
       true();
     }
@@ -74,17 +74,17 @@ namespace elle
     ///
     /// this method dumps the object's internal.
     ///
-    Status		Piece::Dump(const Natural32		margin) const
+    Status              Piece::Dump(const Natural32             margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Piece] "
-		<< this->name
-		<< ": "
-		<< this->value
-		<< std::endl;
+                << this->name
+                << ": "
+                << this->value
+                << std::endl;
 
       leave();
     }

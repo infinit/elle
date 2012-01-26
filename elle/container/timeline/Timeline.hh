@@ -56,44 +56,44 @@ namespace elle
       ///
       template <typename T>
       class Timeline:
-	public Entity
+        public Entity
       {
       public:
-	//
-	// types
-	//
-	typedef std::pair<const Time, Bucket<T>*>	Value;
-	typedef std::map<const Time, Bucket<T>*>	Container;
-	typedef typename Container::iterator		Iterator;
-	typedef typename Container::const_iterator	Scoutor;
+        //
+        // types
+        //
+        typedef std::pair<const Time, Bucket<T>*>       Value;
+        typedef std::map<const Time, Bucket<T>*>        Container;
+        typedef typename Container::iterator            Iterator;
+        typedef typename Container::const_iterator      Scoutor;
 
-	//
-	// constructors & destructors
-	//
-	Timeline();
-	~Timeline();
+        //
+        // constructors & destructors
+        //
+        Timeline();
+        ~Timeline();
 
-	//
-	// methods
-	//
-	Status		Insert(const Time&,
-			       T&);
-	Status		Delete(const Time&,
-			       T&);
+        //
+        // methods
+        //
+        Status          Insert(const Time&,
+                               T&);
+        Status          Delete(const Time&,
+                               T&);
 
-	Status		Clear();
+        Status          Clear();
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	Status		Dump(const Natural32 = 0) const;
+        // dumpable
+        Status          Dump(const Natural32 = 0) const;
 
-	//
-	// attributes
-	//
-	Container	container;
+        //
+        // attributes
+        //
+        Container       container;
       };
 
     }

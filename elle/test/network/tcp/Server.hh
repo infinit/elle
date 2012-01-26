@@ -40,19 +40,19 @@ namespace elle
       //
       // methods
       //
-      Status		Setup(const String&);
-      Status		Run();
+      Status            Setup(const String&);
+      Status            Run();
 
       //
       // callbacks
       //
-      Status		Connection(TCPSocket*);
+      Status            Connection(TCPSocket*);
 
       //
       // attributes
       //
-      Locus		locus;
-      TCPSocket*	socket;
+      Locus             locus;
+      TCPSocket*        socket;
     };
 
   }

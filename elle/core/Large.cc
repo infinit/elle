@@ -30,11 +30,11 @@ namespace std
   ///
   /// this method streams a Large number in its hexadecimal form.
   ///
-  ostream&		operator<<(ostream&		stream,
-				   const elle::core::Large&	element)
+  ostream&              operator<<(ostream&             stream,
+                                   const elle::core::Large&     element)
   {
-    static const elle::core::Natural32	Length = 50;
-    char*				hexadecimal;
+    static const elle::core::Natural32  Length = 50;
+    char*                               hexadecimal;
 
     // transform the number into hexadecimal.
     hexadecimal = ::BN_bn2hex(&element);
@@ -42,16 +42,16 @@ namespace std
     // display the string, depending on its length.
     if (::strlen(hexadecimal) < Length)
       {
-	// if the string is short enough, display it in its entirety.
-	stream << hexadecimal;
+        // if the string is short enough, display it in its entirety.
+        stream << hexadecimal;
       }
     else
       {
-	elle::core::String		string(hexadecimal);
+        elle::core::String              string(hexadecimal);
 
-	// otherwise chop it and display the begining and the end only.
-	stream << string.substr(0, Length / 2) << "..."
-	       << string.substr(string.length() - (Length / 2));
+        // otherwise chop it and display the begining and the end only.
+        stream << string.substr(0, Length / 2) << "..."
+               << string.substr(string.length() - (Length / 2));
       }
 
     // free the hexadecimal.

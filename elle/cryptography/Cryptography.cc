@@ -35,7 +35,7 @@ namespace elle
     /// this method initialises everything related to the cryptographic
     /// classes.
     ///
-    Status		Cryptography::Initialize()
+    Status              Cryptography::Initialize()
     {
       enter();
 
@@ -47,11 +47,11 @@ namespace elle
 
       // initialize the random generator.
       if (Random::Initialize() == StatusError)
-	escape("unable to initialize the random generator");
+        escape("unable to initialize the random generator");
 
       // initialize the key pair generation context.
       if (KeyPair::Initialize() == StatusError)
-	escape("unable to initialize the key pair generation context");
+        escape("unable to initialize the key pair generation context");
 
       leave();
     }
@@ -59,17 +59,17 @@ namespace elle
     ///
     /// this method cleans static cryptographic resources.
     ///
-    Status		Cryptography::Clean()
+    Status              Cryptography::Clean()
     {
       enter();
 
       // clean the key pair generation context.
       if (KeyPair::Clean() == StatusError)
-	escape("unable to initialize the key pair generation context");
+        escape("unable to initialize the key pair generation context");
 
       // clean the random generator.
       if (Random::Clean() == StatusError)
-	escape("unable to clean the random generator");
+        escape("unable to clean the random generator");
 
       // free the current threads error queue.
       ::ERR_remove_state(0);

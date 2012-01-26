@@ -31,7 +31,7 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Broker::Broker(const Natural16				descriptor):
+    Broker::Broker(const Natural16                              descriptor):
       descriptor(descriptor),
       notifier(descriptor, ::QSocketNotifier::Read)
     {
@@ -40,7 +40,7 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Broker::Broker(HANDLE					hEvent):
+    Broker::Broker(HANDLE                                       hEvent):
       notifier(hEvent)
     {
     }
@@ -55,20 +55,20 @@ namespace elle
     ///
     /// this method activates the broker.
     ///
-    Status		Broker::Activate()
+    Status              Broker::Activate()
     {
       enter();
 
 #if defined(INFINIT_UNIX)
       // connect the QT signals.
       if (this->connect(&this->notifier, SIGNAL(activated(int)),
-			this, SLOT(_trigger())) == false)
-	escape("unable to connect the signal");
+                        this, SLOT(_trigger())) == false)
+        escape("unable to connect the signal");
 #elif defined(INFINIT_WIN32)
       // connect the QT signals.
       if (this->connect(&this->notifier, SIGNAL(activated(HANDLE)),
-			this, SLOT(_trigger())) == false)
-	escape("unable to connect the signal");
+                        this, SLOT(_trigger())) == false)
+        escape("unable to connect the signal");
 #else
 # error "unsupported platform"
 #endif
@@ -79,20 +79,20 @@ namespace elle
     ///
     /// this method deactivates the broker.
     ///
-    Status		Broker::Deactivate()
+    Status              Broker::Deactivate()
     {
       enter();
 
 #if defined(INFINIT_UNIX)
       // disconnect the QT signals.
       if (this->disconnect(&this->notifier, SIGNAL(activated(int)),
-			   this, SLOT(_trigger())) == false)
-	escape("unable to disconnect from the signal");
+                           this, SLOT(_trigger())) == false)
+        escape("unable to disconnect from the signal");
 #elif defined(INFINIT_WIN32)
       // disconnect the QT signals.
       if (this->disconnect(&this->notifier, SIGNAL(activated(HANDLE)),
-			   this, SLOT(_trigger())) == false)
-	escape("unable to disconnect from the signal");
+                           this, SLOT(_trigger())) == false)
+        escape("unable to disconnect from the signal");
 #else
 # error "unsupported platform"
 #endif
@@ -108,18 +108,18 @@ namespace elle
     /// this callback is triggered in a new fiber so that it can
     /// wait for events or resources.
     ///
-    Status		Broker::Trigger()
+    Status              Broker::Trigger()
     {
       enter();
 
 #if defined(INFINIT_UNIX)
       // emit the signal.
       if (this->signal.ready.Emit(this->descriptor) == StatusError)
-	escape("unable to emit the signal");
+        escape("unable to emit the signal");
 #elif defined(INFINIT_WIN32)
       // emit the signal.
       if (this->signal.ready.Emit(this->notifier.handle()) == StatusError)
-	escape("unable to emit the signal");
+        escape("unable to emit the signal");
 #else
 # error "unsupported platform"
 #endif
@@ -136,11 +136,11 @@ namespace elle
     ///
     /// the callback is therefored triggered.
     ///
-    void		Broker::_trigger()
+    void                Broker::_trigger()
     {
       Closure< Status,
-	       Parameters<> >	closure(Callback<>::Infer(&Broker::Trigger,
-							  this));
+               Parameters<> >   closure(Callback<>::Infer(&Broker::Trigger,
+                                                          this));
 
       enter();
 
@@ -154,21 +154,21 @@ namespace elle
       //           diseppear: launching Infinit and trying CTRL^C does
       //           not work without this code.
       {
-	struct timeval	timeout = { 0, 0 };
-	::fd_set	set;
+        struct timeval  timeout = { 0, 0 };
+        ::fd_set        set;
 
-	FD_ZERO(&set);
+        FD_ZERO(&set);
 
-	FD_SET(this->descriptor, &set);
+        FD_SET(this->descriptor, &set);
 
-	if (::select(FD_SETSIZE, &set, NULL, NULL, &timeout) == 0)
-	  return;
+        if (::select(FD_SETSIZE, &set, NULL, NULL, &timeout) == 0)
+          return;
       }
 #endif
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	yield(_(), "unable to spawn a fiber");
+        yield(_(), "unable to spawn a fiber");
 
       release();
     }

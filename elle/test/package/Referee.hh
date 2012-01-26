@@ -30,9 +30,9 @@ namespace elle
 
     struct Element
     {
-      Archive::Type	type;
-      void*		data;
-      Natural32		size;
+      Archive::Type     type;
+      void*             data;
+      Natural32         size;
     };
 
 //
@@ -45,19 +45,19 @@ namespace elle
       //
       // methods
       //
-      static Status	Push(const Archive::Type,
-			     const void*,
-			     const Natural32);
-      static Status	Pop(Archive::Type&,
-			    void*&,
-			    Natural32&);
+      static Status     Push(const Archive::Type,
+                             const void*,
+                             const Natural32);
+      static Status     Pop(Archive::Type&,
+                            void*&,
+                            Natural32&);
 
-      static Status	Flush();
+      static Status     Flush();
 
       //
       // attributes
       //
-      static std::list<Element*>	List;
+      static std::list<Element*>        List;
     };
 
   }

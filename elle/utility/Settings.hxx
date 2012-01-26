@@ -26,18 +26,18 @@ namespace elle
     template <typename T>
     struct SettingsType
     {
-      static const Byte		Value = Settings::TypeUnknown;
+      static const Byte         Value = Settings::TypeUnknown;
     };
 
     ///
     /// this macro-function link the type to the enum value in a simple
     /// call.
     ///
-#define SettingsDeclare(_type_)						\
-  template <>								\
-  struct SettingsType<_type_>						\
-  {									\
-    static const Byte		Value = Settings::Type ## _type_;	\
+#define SettingsDeclare(_type_)                                         \
+  template <>                                                           \
+  struct SettingsType<_type_>                                           \
+  {                                                                     \
+    static const Byte           Value = Settings::Type ## _type_;       \
   };
 
     ///
@@ -66,24 +66,24 @@ namespace elle
     /// this method sets a basic type.
     ///
     template <typename T, Boolean C>
-    Status	Settings::Behaviour<T, C>::Set(Settings&	settings,
-					       const String&	identifier,
-					       const String&	name,
-					       const T&		value)
+    Status      Settings::Behaviour<T, C>::Set(Settings&        settings,
+                                               const String&    identifier,
+                                               const String&    name,
+                                               const T&         value)
     {
-      String	string;
+      String    string;
 
       enter();
 
       // transform the value into a string-based format.
       if (Variable::Convert(value, string) == StatusFalse)
-	escape("unable to convert the value for '%s' to the section '%s'",
-	       name.c_str(), identifier.c_str());
+        escape("unable to convert the value for '%s' to the section '%s'",
+               name.c_str(), identifier.c_str());
 
       // write the value.
       if (settings.Write(identifier, name, string) == StatusError)
-	escape("unable to write the value '%s' for '%s' to the section '%s'",
-	       string.c_str(), name.c_str(), identifier.c_str());
+        escape("unable to write the value '%s' for '%s' to the section '%s'",
+               string.c_str(), name.c_str(), identifier.c_str());
 
       leave();
     }
@@ -92,29 +92,29 @@ namespace elle
     /// this method gets a basic type.
     ///
     template <typename T, Boolean C>
-    Status	Settings::Behaviour<T, C>::Get(Settings&	settings,
-					       const String&	identifier,
-					       const String&	name,
-					       T&		value)
+    Status      Settings::Behaviour<T, C>::Get(Settings&        settings,
+                                               const String&    identifier,
+                                               const String&    name,
+                                               T&               value)
     {
-      String	string;
+      String    string;
 
       enter();
 
       // if the item does not exist, return the default value.
       if (settings.Find(identifier, name) == StatusFalse)
-	escape("unable to locate the value for '%s' in section '%s'",
-	       name.c_str(), identifier.c_str());
+        escape("unable to locate the value for '%s' in section '%s'",
+               name.c_str(), identifier.c_str());
 
       // otherwise, read the item from the settings.
       if (settings.Read(identifier, name, string) == StatusError)
-	escape("unable to read the value for '%s' to the section '%s'",
-	       name.c_str(), identifier.c_str());
+        escape("unable to read the value for '%s' to the section '%s'",
+               name.c_str(), identifier.c_str());
 
       // convert the string into the type.
       if (Variable::Convert(string, value) == StatusFalse)
-	escape("unable to convert the value '%s' for '%s' to the section '%s'",
-	       string.c_str(), name.c_str(), identifier.c_str());
+        escape("unable to convert the value '%s' for '%s' to the section '%s'",
+               string.c_str(), name.c_str(), identifier.c_str());
 
       leave();
     }
@@ -123,34 +123,34 @@ namespace elle
     /// this method gets a basic type, with a potential default value.
     ///
     template <typename T, Boolean C>
-    Status	Settings::Behaviour<T, C>::Get(Settings&	settings,
-					       const String&	identifier,
-					       const String&	name,
-					       T&		value,
-					       const T		D)
+    Status      Settings::Behaviour<T, C>::Get(Settings&        settings,
+                                               const String&    identifier,
+                                               const String&    name,
+                                               T&               value,
+                                               const T          D)
     {
-      String	string;
+      String    string;
 
       enter();
 
       // if the item does not exist, return the default value.
       if (settings.Find(identifier, name) == StatusFalse)
-	{
-	  // set the value with the default.
-	  value = D;
+        {
+          // set the value with the default.
+          value = D;
 
-	  leave();
-	}
+          leave();
+        }
 
       // otherwise, read the item from the settings.
       if (settings.Read(identifier, name, string) == StatusError)
-	escape("unable to read the value for '%s' to the section '%s'",
-	       name.c_str(), identifier.c_str());
+        escape("unable to read the value for '%s' to the section '%s'",
+               name.c_str(), identifier.c_str());
 
       // convert the string into the type.
       if (Variable::Convert(string, value) == StatusFalse)
-	escape("unable to convert the value '%s' for '%s' to the section '%s'",
-	       string.c_str(), name.c_str(), identifier.c_str());
+        escape("unable to convert the value '%s' for '%s' to the section '%s'",
+               string.c_str(), name.c_str(), identifier.c_str());
 
       leave();
     }
@@ -163,25 +163,25 @@ namespace elle
     ///
     template <typename T>
     template <const Format F>
-    Status	Settings::Behaviour<T, true>::Set(
-		  Settings&					settings,
-		  const String&					identifier,
-		  const String&					name,
-		  const Uniquable<F>&				object)
+    Status      Settings::Behaviour<T, true>::Set(
+                  Settings&                                     settings,
+                  const String&                                 identifier,
+                  const String&                                 name,
+                  const Uniquable<F>&                           object)
     {
-      Unique	unique;
+      Unique    unique;
 
       enter();
 
       // save the object in a unique representation.
       if (object.Save(unique) == StatusError)
-	escape("unable to save the object for '%s' to the section '%s'",
-	       name.c_str(), identifier.c_str());
+        escape("unable to save the object for '%s' to the section '%s'",
+               name.c_str(), identifier.c_str());
 
       // write the value.
       if (settings.Write(identifier, name, unique) == StatusError)
-	escape("unable to write the value '%s' for '%s' to the section '%s'",
-	       unique.c_str(), name.c_str(), identifier.c_str());
+        escape("unable to write the value '%s' for '%s' to the section '%s'",
+               unique.c_str(), name.c_str(), identifier.c_str());
 
       leave();
     }
@@ -191,31 +191,31 @@ namespace elle
     ///
     template <typename T>
     template <const Format F>
-    Status	Settings::Behaviour<T, true>::Get(
-		  Settings&					settings,
-		  const String&					identifier,
-		  const String&					name,
-		  Uniquable<F>&					object)
+    Status      Settings::Behaviour<T, true>::Get(
+                  Settings&                                     settings,
+                  const String&                                 identifier,
+                  const String&                                 name,
+                  Uniquable<F>&                                 object)
     {
-      Unique	unique;
+      Unique    unique;
 
       enter();
 
       // if the item does not exist, return the default value.
       if (settings.Find(identifier, name) == StatusFalse)
-	escape("unable to locate the item for '%s' to the section '%s'",
-	       name.c_str(), identifier.c_str());
+        escape("unable to locate the item for '%s' to the section '%s'",
+               name.c_str(), identifier.c_str());
 
       // otherwise, read the item from the settings.
       if (settings.Read(identifier, name, unique) == StatusError)
-	escape("unable to read the value for '%s' to the section '%s'",
-	       name.c_str(), identifier.c_str());
+        escape("unable to read the value for '%s' to the section '%s'",
+               name.c_str(), identifier.c_str());
 
       // restore the object.
       if (object.Restore(unique) == StatusError)
-	escape("unable to restore the object '%s' for '%s' to the "
-	       "section '%s'",
-	       unique.c_str(), name.c_str(), identifier.c_str());
+        escape("unable to restore the object '%s' for '%s' to the "
+               "section '%s'",
+               unique.c_str(), name.c_str(), identifier.c_str());
 
       leave();
     }
@@ -225,45 +225,45 @@ namespace elle
     ///
     template <typename T>
     template <const Format F>
-    Status	Settings::Behaviour<T, true>::Get(
-		  Settings&					settings,
-		  const String&					identifier,
-		  const String&					name,
-		  Uniquable<F>&					object,
-		  const Uniquable<F>				D)
+    Status      Settings::Behaviour<T, true>::Get(
+                  Settings&                                     settings,
+                  const String&                                 identifier,
+                  const String&                                 name,
+                  Uniquable<F>&                                 object,
+                  const Uniquable<F>                            D)
     {
-      Unique	unique;
+      Unique    unique;
 
       enter();
 
       // if the item does not exist, return the default value.
       if (settings.Find(identifier, name) == StatusFalse)
-	{
-	  // save the default value.
-	  if (D.Save(unique) == StatusError)
-	    escape("unable to save the default value for '%s' to the "
-		   "section '%s'",
-		   name.c_str(), identifier.c_str());
+        {
+          // save the default value.
+          if (D.Save(unique) == StatusError)
+            escape("unable to save the default value for '%s' to the "
+                   "section '%s'",
+                   name.c_str(), identifier.c_str());
 
-	  // restore the object with the default unique.
-	  if (object.Restore(unique) == StatusError)
-	    escape("unable to restore the object for '%s' to the "
-		   "section '%s'",
-		   name.c_str(), identifier.c_str());
+          // restore the object with the default unique.
+          if (object.Restore(unique) == StatusError)
+            escape("unable to restore the object for '%s' to the "
+                   "section '%s'",
+                   name.c_str(), identifier.c_str());
 
-	  leave();
-	}
+          leave();
+        }
 
       // otherwise, read the item from the settings.
       if (settings.Read(identifier, name, unique) == StatusError)
-	escape("unable to read the value for '%s' to the section '%s'",
-	       name.c_str(), identifier.c_str());
+        escape("unable to read the value for '%s' to the section '%s'",
+               name.c_str(), identifier.c_str());
 
       // restore the object.
       if (object.Restore(unique) == StatusError)
-	escape("unable to restore the object '%s' for '%s' to the "
-	       "section '%s'",
-	       unique.c_str(), name.c_str(), identifier.c_str());
+        escape("unable to restore the object '%s' for '%s' to the "
+               "section '%s'",
+               unique.c_str(), name.c_str(), identifier.c_str());
 
       leave();
     }
@@ -277,18 +277,18 @@ namespace elle
     /// according to the given type.
     ///
     template <typename T>
-    Status		Settings::Set(const String&		identifier,
-				      const String&		name,
-				      const T&			value)
+    Status              Settings::Set(const String&             identifier,
+                                      const String&             name,
+                                      const T&                  value)
     {
       return
-	(Settings::Behaviour<T,
-			     SettingsType<T>::Value
-			       ==
-			     Settings::TypeUnknown>::Set(*this,
-							 identifier,
-							 name,
-							 value));
+        (Settings::Behaviour<T,
+                             SettingsType<T>::Value
+                               ==
+                             Settings::TypeUnknown>::Set(*this,
+                                                         identifier,
+                                                         name,
+                                                         value));
     }
 
     ///
@@ -296,18 +296,18 @@ namespace elle
     /// according to the given type.
     ///
     template <typename T>
-    Status		Settings::Get(const String&		identifier,
-				      const String&		name,
-				      T&			value)
+    Status              Settings::Get(const String&             identifier,
+                                      const String&             name,
+                                      T&                        value)
     {
       return
-	(Settings::Behaviour<T,
-			     SettingsType<T>::Value
-			       ==
-			     Settings::TypeUnknown>::Get(*this,
-							 identifier,
-							 name,
-							 value));
+        (Settings::Behaviour<T,
+                             SettingsType<T>::Value
+                               ==
+                             Settings::TypeUnknown>::Get(*this,
+                                                         identifier,
+                                                         name,
+                                                         value));
     }
 
     ///
@@ -315,20 +315,20 @@ namespace elle
     /// according to the given type.
     ///
     template <typename T>
-    Status		Settings::Get(const String&		identifier,
-				      const String&		name,
-				      T&			value,
-				      const T&			D)
+    Status              Settings::Get(const String&             identifier,
+                                      const String&             name,
+                                      T&                        value,
+                                      const T&                  D)
     {
       return
-	(Settings::Behaviour<T,
-			     SettingsType<T>::Value
-			       ==
-			     Settings::TypeUnknown>::Get(*this,
-							 identifier,
-							 name,
-							 value,
-							 D));
+        (Settings::Behaviour<T,
+                             SettingsType<T>::Value
+                               ==
+                             Settings::TypeUnknown>::Get(*this,
+                                                         identifier,
+                                                         name,
+                                                         value,
+                                                         D));
     }
 
   }

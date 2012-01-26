@@ -37,7 +37,7 @@ namespace elle
     ///
     /// this global variable represent the log for the current program.
     ///
-    Log*		Log::Current = NULL;
+    Log*                Log::Current = NULL;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -46,7 +46,7 @@ namespace elle
     ///
     /// this method initializes the log system.
     ///
-    Status		Log::Initialize()
+    Status              Log::Initialize()
     {
       enter();
 
@@ -58,13 +58,13 @@ namespace elle
     ///
     /// this method cleans the log system.
     ///
-    Status		Log::Clean()
+    Status              Log::Clean()
     {
       enter();
 
       // if the log exists, delete it.
       if (Log::Current != NULL)
-	delete Log::Current;
+        delete Log::Current;
 
       leave();
     }
@@ -73,7 +73,7 @@ namespace elle
     /// this method sets up the log by allocating a default
     /// log object.
     ///
-    Status		Log::Setup(const String&		path)
+    Status              Log::Setup(const String&                path)
     {
       enter();
 
@@ -88,13 +88,13 @@ namespace elle
     ///
     /// note that this method returns true or false.
     ///
-    Status		Log::Instance(Log*&			log)
+    Status              Log::Instance(Log*&                     log)
     {
       enter();
 
       // verify the log's presence.
       if (Log::Current == NULL)
-	false();
+        false();
 
       log = Log::Current;
 
@@ -108,7 +108,7 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Log::Log(const String&					path)
+    Log::Log(const String&                                      path)
       : stream_(path.c_str(), std::ios_base::out | std::ios_base::trunc)
     {
     }
@@ -127,11 +127,11 @@ namespace elle
     ///
     /// this method adds a message to the log.
     ///
-    Void		Log::Record(const String&		location,
-				    const String&		time,
-				    const String&		message)
+    Void                Log::Record(const String&               location,
+                                    const String&               time,
+                                    const String&               message)
     {
-      Report*			report;
+      Report*                   report;
 
       //
       // log the actual message.
@@ -145,14 +145,14 @@ namespace elle
       // retrieve the report.
       if (Report::Instance(report) == StatusTrue)
         {
-          Report::Scoutor	scoutor;
+          Report::Scoutor       scoutor;
 
           // go through the report messages.
           for (scoutor = report->container.begin();
                scoutor != report->container.end();
                scoutor++)
             {
-              Report::Entry*		entry = *scoutor;
+              Report::Entry*            entry = *scoutor;
 
               // build the report.
               stream_ << "  "

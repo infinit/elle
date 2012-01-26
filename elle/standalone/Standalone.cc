@@ -26,21 +26,21 @@ namespace elle
     ///
     /// this method initializes the module.
     ///
-    Status		Standalone::Initialize()
+    Status              Standalone::Initialize()
     {
       enter();
 
       // initialize the report.
       if (Report::Initialize() == StatusError)
-	escape("unable to initialize the report");
+        escape("unable to initialize the report");
 
       // initialize the log.
       if (Log::Initialize() == StatusError)
-	escape("unable to initialize the log");
+        escape("unable to initialize the log");
 
       // initialize the morgue.
       if (Morgue::Initialize() == StatusError)
-	escape("unable to initialize the morgue");
+        escape("unable to initialize the morgue");
 
       leave();
     }
@@ -48,21 +48,21 @@ namespace elle
     ///
     /// this method cleans the module.
     ///
-    Status		Standalone::Clean()
+    Status              Standalone::Clean()
     {
       enter();
 
       // clean the morgue class.
       if (Morgue::Clean() == StatusError)
-	escape("unable to clean the morgue");
+        escape("unable to clean the morgue");
 
       // clean the log.
       if (Log::Clean() == StatusError)
-	escape("unable to clean the log");
+        escape("unable to clean the log");
 
       // clean the report.
       if (Report::Clean() == StatusError)
-	escape("unable to clean the report");
+        escape("unable to clean the report");
 
       leave();
     }

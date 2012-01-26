@@ -33,8 +33,8 @@ namespace elle
     /// the default constructor.
     ///
     template <typename R,
-	      typename... T>
-    Function< R, Parameters<T...> >::Function(Handler		handler):
+              typename... T>
+    Function< R, Parameters<T...> >::Function(Handler           handler):
       handler(handler)
     {
     }
@@ -43,14 +43,14 @@ namespace elle
     /// the copy constructor.
     ///
     template <typename R,
-	      typename... T>
+              typename... T>
     Function< R, Parameters<T...> >::Function(
-				       const Function<
-					 R,
-				         Parameters<
-					   T...
-					   >
-				         >&			function):
+                                       const Function<
+                                         R,
+                                         Parameters<
+                                           T...
+                                           >
+                                         >&                     function):
       Object(function),
 
       handler(function.handler)
@@ -65,9 +65,9 @@ namespace elle
     /// this method calls the handler.
     ///
     template <typename R,
-	      typename... T>
+              typename... T>
     R
-    Function< R, Parameters<T...> >::Call(T...			arguments)
+    Function< R, Parameters<T...> >::Call(T...                  arguments)
     {
       return (this->handler(arguments...));
     }
@@ -76,9 +76,9 @@ namespace elle
     /// this method triggers the handler without checking the return value.
     ///
     template <typename R,
-	      typename... T>
+              typename... T>
     Void
-    Function< R, Parameters<T...> >::Trigger(T...		arguments)
+    Function< R, Parameters<T...> >::Trigger(T...               arguments)
     {
       this->handler(arguments...);
     }
@@ -91,8 +91,8 @@ namespace elle
     /// this macro-function call generates the object.
     ///
     embed(_(Function< R, Parameters<T...> >),
-	  _(template <typename R,
-		      typename... T>));
+          _(template <typename R,
+                      typename... T>));
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -102,11 +102,11 @@ namespace elle
     /// this method dumps the function state.
     ///
     template <typename R,
-	      typename... T>
+              typename... T>
     Status
-    Function< R, Parameters<T...> >::Dump(const Natural32	margin) const
+    Function< R, Parameters<T...> >::Dump(const Natural32       margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
@@ -114,11 +114,11 @@ namespace elle
 
       // dump the quantum.
       std::cout << alignment << Dumpable::Shift << "[Quantum] "
-		<< std::dec << sizeof... (T) << std::endl;
+                << std::dec << sizeof... (T) << std::endl;
 
       // dump the handler.
       std::cout << alignment << Dumpable::Shift << "[Handler] "
-		<< std::hex << this->handler << std::endl;
+                << std::hex << this->handler << std::endl;
 
       leave();
     }
@@ -131,9 +131,9 @@ namespace elle
     /// this method returns a function of the type of the given handler.
     ///
     template <typename R,
-	      typename... T>
+              typename... T>
     Function< R, Parameters<T...> >
-    Function<>::Infer(R					(*handler)(T...))
+    Function<>::Infer(R                                 (*handler)(T...))
     {
       return (Function< R, Parameters<T...> >(handler));
     }

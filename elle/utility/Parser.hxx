@@ -26,18 +26,18 @@ namespace elle
     template <typename T>
     struct ParserType
     {
-      static const Byte		Value = Parser::TypeUnknown;
+      static const Byte         Value = Parser::TypeUnknown;
     };
 
     ///
     /// this macro-function link the type to the enum value in a simple
     /// call.
     ///
-#define ParserDeclare(_type_)						\
-  template <>								\
-  struct ParserType<_type_>						\
-  {									\
-    static const Byte		Value = Parser::Type ## _type_;	\
+#define ParserDeclare(_type_)                                           \
+  template <>                                                           \
+  struct ParserType<_type_>                                             \
+  {                                                                     \
+    static const Byte           Value = Parser::Type ## _type_; \
   };
 
     ///
@@ -70,33 +70,33 @@ namespace elle
     /// with an argument, the method returns an error.
     ///
     template <typename T, Boolean C>
-    Status	Parser::Behaviour<T, C>::Value(Parser&		parser,
-					       const String&	name,
-					       T&		value)
+    Status      Parser::Behaviour<T, C>::Value(Parser&          parser,
+                                               const String&    name,
+                                               T&               value)
     {
-      Parser::Option*	option;
+      Parser::Option*   option;
 
       enter();
 
       // locate the option.
       if (parser.Locate(name, option) == StatusFalse)
-	escape("unable to locate the option '%s'",
-	       name.c_str());
+        escape("unable to locate the option '%s'",
+               name.c_str());
 
       // if the option has not been activated, return an error.
       if (option->state == Parser::StateDeactivated)
-	escape("the option '%s' has not been activated",
-	       name.c_str());
+        escape("the option '%s' has not been activated",
+               name.c_str());
 
       // if no argument has been provided, return an error.
       if (option->value == NULL)
-	escape("the option '%s' has not been provided with an argument",
-	       name.c_str());
+        escape("the option '%s' has not been provided with an argument",
+               name.c_str());
 
       // convert the string-based argument to the given type, if possible.
       if (Variable::Convert(*option->value, value) == StatusFalse)
-	escape("unable to convert the argument '%s' for the option '%s'",
-	       option->value->c_str(), name.c_str());
+        escape("unable to convert the argument '%s' for the option '%s'",
+               option->value->c_str(), name.c_str());
 
       leave();
     }
@@ -110,29 +110,29 @@ namespace elle
     /// to assign the default value.
     ///
     template <typename T, Boolean C>
-    Status	Parser::Behaviour<T, C>::Value(Parser&		parser,
-					       const String&	name,
-					       T&		value,
-					       const T		D)
+    Status      Parser::Behaviour<T, C>::Value(Parser&          parser,
+                                               const String&    name,
+                                               T&               value,
+                                               const T          D)
     {
-      Parser::Option*	option;
+      Parser::Option*   option;
 
       enter();
 
       // locate the option.
       if ((parser.Locate(name, option) == StatusTrue) &&
-	  (option->value != NULL))
-	{
-	  // convert the string-based argument to the given type, if possible.
-	  if (Variable::Convert(*option->value, value) == StatusFalse)
-	    escape("unable to convert the argument '%s' for the option '%s'",
-		   option->value->c_str(), name.c_str());
-	}
+          (option->value != NULL))
+        {
+          // convert the string-based argument to the given type, if possible.
+          if (Variable::Convert(*option->value, value) == StatusFalse)
+            escape("unable to convert the argument '%s' for the option '%s'",
+                   option->value->c_str(), name.c_str());
+        }
       else
-	{
-	  // set the default value.
-	  value = D;
-	}
+        {
+          // set the default value.
+          value = D;
+        }
 
       leave();
     }
@@ -145,34 +145,34 @@ namespace elle
     ///
     template <typename T>
     template <const Format F>
-    Status	Parser::Behaviour<T, true>::Value(
-		  Parser&					parser,
-		  const String&					name,
-		  Uniquable<F>&					object)
+    Status      Parser::Behaviour<T, true>::Value(
+                  Parser&                                       parser,
+                  const String&                                 name,
+                  Uniquable<F>&                                 object)
     {
-      Parser::Option*	option;
+      Parser::Option*   option;
 
       enter();
 
       // locate the option.
       if (parser.Locate(name, option) == StatusFalse)
-	escape("unable to locate the option '%s'",
-	       name.c_str());
+        escape("unable to locate the option '%s'",
+               name.c_str());
 
       // if the option has not been activated, return an error.
       if (option->state == Parser::StateDeactivated)
-	escape("the option '%s' has not been activated",
-	       name.c_str());
+        escape("the option '%s' has not been activated",
+               name.c_str());
 
       // if no argument has been provided, return an error.
       if (option->value == NULL)
-	escape("the option '%s' has not been provided with an argument",
-	       name.c_str());
+        escape("the option '%s' has not been provided with an argument",
+               name.c_str());
 
       // restore the object.
       if (object.Restore(*option->value) == StatusError)
-	escape("unable to restore the object '%s' for the option '%s'",
-	       option->value->c_str(), name.c_str());
+        escape("unable to restore the object '%s' for the option '%s'",
+               option->value->c_str(), name.c_str());
 
       leave();
     }
@@ -187,39 +187,39 @@ namespace elle
     ///
     template <typename T>
     template <const Format F>
-    Status	Parser::Behaviour<T, true>::Value(
-		  Parser&					parser,
-		  const String&					name,
-		  Uniquable<F>&					object,
-		  const Uniquable<F>				D)
+    Status      Parser::Behaviour<T, true>::Value(
+                  Parser&                                       parser,
+                  const String&                                 name,
+                  Uniquable<F>&                                 object,
+                  const Uniquable<F>                            D)
     {
-      Parser::Option*	option;
+      Parser::Option*   option;
 
       enter();
 
       // locate the option.
       if ((parser.Locate(name, option) == StatusTrue) &&
-	  (option->value != NULL))
-	{
-	  // restore the object.
-	  if (object.Restore(*option->value) == StatusError)
-	    escape("unable to restore the object '%s' for the option '%s'",
-		   option->value->c_str(), name.c_str());
-	}
+          (option->value != NULL))
+        {
+          // restore the object.
+          if (object.Restore(*option->value) == StatusError)
+            escape("unable to restore the object '%s' for the option '%s'",
+                   option->value->c_str(), name.c_str());
+        }
       else
-	{
-	  Unique	unique;
+        {
+          Unique        unique;
 
-	  // save the default value.
-	  if (D.Save(unique) == StatusError)
-	    escape("unable to save the default value for the option '%s'",
-		   name.c_str());
+          // save the default value.
+          if (D.Save(unique) == StatusError)
+            escape("unable to save the default value for the option '%s'",
+                   name.c_str());
 
-	  // restore the object.
-	  if (object.Restore(unique) == StatusError)
-	    escape("unable to restore the object '%s' for the option '%s'",
-		   unique.c_str(), name.c_str());
-	}
+          // restore the object.
+          if (object.Restore(unique) == StatusError)
+            escape("unable to restore the object '%s' for the option '%s'",
+                   unique.c_str(), name.c_str());
+        }
 
       leave();
     }
@@ -233,16 +233,16 @@ namespace elle
     /// according to the given type.
     ///
     template <typename T>
-    Status		Parser::Value(const String&		name,
-				      T&			value)
+    Status              Parser::Value(const String&             name,
+                                      T&                        value)
     {
       return
-	(Parser::Behaviour<T,
-			   ParserType<T>::Value
-			     ==
-			   Parser::TypeUnknown>::Value(*this,
-						       name,
-						       value));
+        (Parser::Behaviour<T,
+                           ParserType<T>::Value
+                             ==
+                           Parser::TypeUnknown>::Value(*this,
+                                                       name,
+                                                       value));
     }
 
     ///
@@ -250,18 +250,18 @@ namespace elle
     /// the call according to the given type.
     ///
     template <typename T>
-    Status		Parser::Value(const String&		name,
-				      T&			value,
-				      const T&			D)
+    Status              Parser::Value(const String&             name,
+                                      T&                        value,
+                                      const T&                  D)
     {
       return
-	(Parser::Behaviour<T,
-			   ParserType<T>::Value
-			     ==
-			   Parser::TypeUnknown>::Value(*this,
-						       name,
-						       value,
-						       D));
+        (Parser::Behaviour<T,
+                           ParserType<T>::Value
+                             ==
+                           Parser::TypeUnknown>::Value(*this,
+                                                       name,
+                                                       value,
+                                                       D));
     }
 
   }

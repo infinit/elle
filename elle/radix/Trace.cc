@@ -48,12 +48,12 @@ namespace elle
     ///
     /// this variable contains the path to traces directory.
     ///
-    Character				Trace::Location[32];
+    Character                           Trace::Location[32];
 
     ///
     /// this variable contains the length of the location.
     ///
-    Natural32				Trace::Length;
+    Natural32                           Trace::Length;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -62,7 +62,7 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Trace::Trace(Void*						address):
+    Trace::Trace(Void*                                          address):
       address(address),
       size(0)
     {
@@ -75,7 +75,7 @@ namespace elle
     ///
     /// this method generates a trace for the current stack.
     ///
-    Status		Trace::Generate()
+    Status              Trace::Generate()
     {
       enter();
 
@@ -92,11 +92,11 @@ namespace elle
     ///
     /// this method dumps the trace.
     ///
-    Status		Trace::Dump(const Natural32		margin) const
+    Status              Trace::Dump(const Natural32             margin) const
     {
-      String		alignment(margin, ' ');
-      char**		symbols;
-      Natural32		i;
+      String            alignment(margin, ' ');
+      char**            symbols;
+      Natural32         i;
 
       enter();
 
@@ -104,103 +104,103 @@ namespace elle
 
       // dump the address.
       std::cout << alignment << Dumpable::Shift << "[Address] "
-		<< this->address << std::endl;
+                << this->address << std::endl;
 
       std::cout << alignment << Dumpable::Shift << "[Stack] " << std::endl;
 
       // transform the frames into human-kind-of-readable strings.
       if ((symbols = ::backtrace_symbols(this->frames, this->size)) == NULL)
-	escape("unable to resolve the frame frames into symbols");
+        escape("unable to resolve the frame frames into symbols");
 
       // go through the symbols.
       for (i = 0; i < this->size; i++)
-	{
-	  String	line(symbols[i]);
-	  Character*	symbol;
-	  Integer32	first;
-	  Integer32	last;
-	  Integer32	index;
-	  int		status;
+        {
+          String        line(symbols[i]);
+          Character*    symbol;
+          Integer32     first;
+          Integer32     last;
+          Integer32     index;
+          int           status;
 
-	  // find a parenthese, indicating the beginning of the mangled name.
-	  if ((index = line.find_first_of("(")) == String::npos)
-	    {
-	      // display the identifier, as such.
-	      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
-			<< line << std::endl;
+          // find a parenthese, indicating the beginning of the mangled name.
+          if ((index = line.find_first_of("(")) == String::npos)
+            {
+              // display the identifier, as such.
+              std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+                        << line << std::endl;
 
-	      continue;
-	    }
+              continue;
+            }
 
-	  // set the first index as following the parenthese.
-	  first = index;
+          // set the first index as following the parenthese.
+          first = index;
 
-	  // find the + character, indicating the end of the mangled name.
-	  if ((index = line.find_first_of("+", first)) == String::npos)
-	    {
-	      // display the identifier, as such.
-	      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
-			<< line << std::endl;
+          // find the + character, indicating the end of the mangled name.
+          if ((index = line.find_first_of("+", first)) == String::npos)
+            {
+              // display the identifier, as such.
+              std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+                        << line << std::endl;
 
-	      continue;
-	    }
+              continue;
+            }
 
-	  // set the last index as precedin the + character.
-	  last = index;
+          // set the last index as precedin the + character.
+          last = index;
 
-	  // ignore if the name is empty.
-	  if ((last - 1) == first)
-	    {
-	      // display the identifier, as such.
-	      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
-			<< line << std::endl;
+          // ignore if the name is empty.
+          if ((last - 1) == first)
+            {
+              // display the identifier, as such.
+              std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+                        << line << std::endl;
 
-	      continue;
-	    }
+              continue;
+            }
 
-	  // initialize the symbol.
-	  symbol = NULL;
+          // initialize the symbol.
+          symbol = NULL;
 
-	  // try to demangle the name.
-	  symbol = abi::__cxa_demangle(line.substr(first + 1,
-						   last - 1 - first).c_str(),
-				       NULL,
-				       NULL,
-				       &status);
+          // try to demangle the name.
+          symbol = abi::__cxa_demangle(line.substr(first + 1,
+                                                   last - 1 - first).c_str(),
+                                       NULL,
+                                       NULL,
+                                       &status);
 
-	  // look at the result of the demangling process.
-	  switch (status)
-	    {
-	    case -1:
-	    case -3:
-	      {
-		// release the symbol, if set.
-		if (symbol != NULL)
-		  ::free(symbol);
+          // look at the result of the demangling process.
+          switch (status)
+            {
+            case -1:
+            case -3:
+              {
+                // release the symbol, if set.
+                if (symbol != NULL)
+                  ::free(symbol);
 
-		// release the symbols array.
-		::free(symbols);
+                // release the symbols array.
+                ::free(symbols);
 
-		// an error occured.
-		escape("an error occured while demangling a symbol");
-	      }
-	    case -2:
-	      {
-		// display the identifier, as such.
-		std::cout << alignment << Dumpable::Shift << Dumpable::Shift
-			  << line << std::endl;
+                // an error occured.
+                escape("an error occured while demangling a symbol");
+              }
+            case -2:
+              {
+                // display the identifier, as such.
+                std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+                          << line << std::endl;
 
-		continue;
-	      }
-	    }
+                continue;
+              }
+            }
 
-	  // display the demangled symbol.
-	  std::cout << alignment << Dumpable::Shift << Dumpable::Shift
-		    << symbol << std::endl;
+          // display the demangled symbol.
+          std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+                    << symbol << std::endl;
 
-	  // release the symbol's memory.
-	  ::free(symbol);
-	}
+          // release the symbol's memory.
+          ::free(symbol);
+        }
 
       // release the symbols array.
       ::free(symbols);
@@ -215,9 +215,9 @@ namespace elle
     ///
     /// this method initializes the trace system.
     ///
-    Status		Trace::Initialize()
+    Status              Trace::Initialize()
     {
-      Path		path;
+      Path              path;
 
       enter();
 
@@ -232,21 +232,21 @@ namespace elle
 
       // create the path.
       if (path.Create(Trace::Location) == StatusError)
-	escape("unable to create the path");
+        escape("unable to create the path");
 
       // if the directory exists.
       if (Directory::Exist(path) == StatusTrue)
-	{
-	  // clear the directory.
-	  if (Directory::Clear(path) == StatusError)
-	    escape("unable to clear the directory");
-	}
+        {
+          // clear the directory.
+          if (Directory::Clear(path) == StatusError)
+            escape("unable to clear the directory");
+        }
       else
-	{
-	  // create the directory.
-	  if (Directory::Create(path) == StatusError)
-	    escape("unable to create the directory");
-	}
+        {
+          // create the directory.
+          if (Directory::Create(path) == StatusError)
+            escape("unable to create the directory");
+        }
 
       leave();
     }
@@ -254,27 +254,27 @@ namespace elle
     ///
     /// this method cleans the system.
     ///
-    Status		Trace::Clean()
+    Status              Trace::Clean()
     {
-      Path		path;
+      Path              path;
 
       enter();
 
       // create the path.
       if (path.Create(Trace::Location) == StatusError)
-	escape("unable to create the path");
+        escape("unable to create the path");
 
       // if the directory exists.
       if (Directory::Exist(path) == StatusTrue)
-	{
-	  // clear the directory.
-	  if (Directory::Clear(path) == StatusError)
-	    escape("unable to clear the directory");
+        {
+          // clear the directory.
+          if (Directory::Clear(path) == StatusError)
+            escape("unable to clear the directory");
 
-	  // remove the directory.
-	  if (Directory::Remove(path) == StatusError)
-	    escape("unable to remove the directory");
-	}
+          // remove the directory.
+          if (Directory::Remove(path) == StatusError)
+            escape("unable to remove the directory");
+        }
 
       leave();
     }
@@ -282,59 +282,59 @@ namespace elle
     ///
     /// this method stores an additional trace.
     ///
-    Status		Trace::Store(Void*			address)
+    Status              Trace::Store(Void*                      address)
     {
-      Trace		trace(address);
-      Natural32		size =
-	sizeof (Void*) +
-	Trace::Capacity * sizeof (Void*) +
-	sizeof (Natural32);
-      Byte		buffer[size];
-      Character		path[Trace::Length +
-			     1 +
-			     2 + (sizeof (Void*) / sizeof (Byte)) * 2 +
-			     1];
-      int		fd;
+      Trace             trace(address);
+      Natural32         size =
+        sizeof (Void*) +
+        Trace::Capacity * sizeof (Void*) +
+        sizeof (Natural32);
+      Byte              buffer[size];
+      Character         path[Trace::Length +
+                             1 +
+                             2 + (sizeof (Void*) / sizeof (Byte)) * 2 +
+                             1];
+      int               fd;
 
       enter();
 
       // generate the trace.
       if (trace.Generate() == StatusError)
-	escape("unable to generate the trace");
+        escape("unable to generate the trace");
 
       // copy the data into the buffer.
       ::memcpy(buffer + 0,
-	       &trace.address,
-	       sizeof (Void*));
+               &trace.address,
+               sizeof (Void*));
 
       ::memcpy(buffer + sizeof (Void*),
-	       &trace.frames,
-	       Trace::Capacity * sizeof (Void*));
+               &trace.frames,
+               Trace::Capacity * sizeof (Void*));
 
       ::memcpy(buffer + sizeof (Void*) + Trace::Capacity * sizeof (Void*),
-	       &trace.size,
-	       sizeof (Natural32));
+               &trace.size,
+               sizeof (Natural32));
 
       // build the path.
       ::sprintf(path,
-		"%s/%p",
-		Trace::Location, address);
+                "%s/%p",
+                Trace::Location, address);
 
       // open the file.
       if ((fd = ::open(path,
-		       O_CREAT | O_TRUNC | O_WRONLY,
-		       0600)) == -1)
-	escape(::strerror(errno));
+                       O_CREAT | O_TRUNC | O_WRONLY,
+                       0600)) == -1)
+        escape(::strerror(errno));
 
       // write the text to the file.
       if (::write(fd,
-		  buffer,
-		  size) != static_cast<ssize_t>(size))
-	{
-	  ::close(fd);
+                  buffer,
+                  size) != static_cast<ssize_t>(size))
+        {
+          ::close(fd);
 
-	  escape(::strerror(errno));
-	}
+          escape(::strerror(errno));
+        }
 
       // close the file.
       ::close(fd);
@@ -345,36 +345,36 @@ namespace elle
     ///
     /// this method erases a trace.
     ///
-    Status		Trace::Erase(Void*			address)
+    Status              Trace::Erase(Void*                      address)
     {
-      Character		path[Trace::Length +
-			     1 +
-			     2 + (sizeof (Void*) / sizeof (Byte)) * 2 +
-			     1];
-      struct ::stat	stat;
+      Character         path[Trace::Length +
+                             1 +
+                             2 + (sizeof (Void*) / sizeof (Byte)) * 2 +
+                             1];
+      struct ::stat     stat;
 
       enter();
 
       // build the path.
       ::sprintf(path,
-		"%s/%p",
-		Trace::Location, address);
+                "%s/%p",
+                Trace::Location, address);
 
       // does the path points to something.
       if (::stat(path, &stat) != 0)
-	{
-	  Trace		trace(address);
+        {
+          Trace         trace(address);
 
-	  // generate the trace.
-	  if (trace.Generate() == StatusError)
-	    escape("unable to generate the trace");
+          // generate the trace.
+          if (trace.Generate() == StatusError)
+            escape("unable to generate the trace");
 
-	  // dump the trace.
-	  if (trace.Dump() == StatusError)
-	    escape("unable to dump the trace");
+          // dump the trace.
+          if (trace.Dump() == StatusError)
+            escape("unable to dump the trace");
 
-	  escape("this trace does not seem to exist");
-	}
+          escape("this trace does not seem to exist");
+        }
 
       // unlink the file.
       ::unlink(path);
@@ -386,11 +386,11 @@ namespace elle
     /// this method displays the remaining addresses i.e the traces
     /// of the addresses which have not been released.
     ///
-    Status		Trace::Show(const Natural32		margin)
+    Status              Trace::Show(const Natural32             margin)
     {
-      String		alignment(margin, ' ');
-      ::DIR*		dp;
-      struct ::dirent*	entry;
+      String            alignment(margin, ' ');
+      ::DIR*            dp;
+      struct ::dirent*  entry;
 
       enter();
 
@@ -398,72 +398,72 @@ namespace elle
 
       // open the directory.
       if ((dp = ::opendir(Trace::Location)) == NULL)
-	escape("unable to open the directory");
+        escape("unable to open the directory");
 
       // go through the entries.
       while ((entry = ::readdir(dp)) != NULL)
-	{
-	  Character	path[Trace::Length +
-			     1 +
-			     ::strlen(entry->d_name) +
-			     1];
-	  struct ::stat	stat;
+        {
+          Character     path[Trace::Length +
+                             1 +
+                             ::strlen(entry->d_name) +
+                             1];
+          struct ::stat stat;
 
-	  // ignore the '.' and '..' entries.
-	  if ((::strcmp(entry->d_name, ".") == 0) ||
-	      (::strcmp(entry->d_name, "..") == 0))
-	    continue;
+          // ignore the '.' and '..' entries.
+          if ((::strcmp(entry->d_name, ".") == 0) ||
+              (::strcmp(entry->d_name, "..") == 0))
+            continue;
 
-	  // build the path.
-	  ::sprintf(path,
-		    "%s/%s",
-		    Trace::Location, entry->d_name);
+          // build the path.
+          ::sprintf(path,
+                    "%s/%s",
+                    Trace::Location, entry->d_name);
 
-	  // retrieve information on the file.
-	  if (::stat(path, &stat) != 0)
-	    escape("unable to retrieve information on the file");
+          // retrieve information on the file.
+          if (::stat(path, &stat) != 0)
+            escape("unable to retrieve information on the file");
 
-	  Character	buffer[stat.st_size];
-	  int		fd;
+          Character     buffer[stat.st_size];
+          int           fd;
 
-	  // open the file.
-	  if ((fd = ::open(path, O_RDONLY)) == -1)
-	    escape(::strerror(errno));
+          // open the file.
+          if ((fd = ::open(path, O_RDONLY)) == -1)
+            escape(::strerror(errno));
 
-	  // read the file's content.
-	  if (::read(fd, buffer, static_cast<size_t>(stat.st_size)) == -1)
-	    {
-	      ::close(fd);
+          // read the file's content.
+          if (::read(fd, buffer, static_cast<size_t>(stat.st_size)) == -1)
+            {
+              ::close(fd);
 
-	      escape(::strerror(errno));
-	    }
+              escape(::strerror(errno));
+            }
 
-	  // close the file.
-	  ::close(fd);
+          // close the file.
+          ::close(fd);
 
-	  Void*		address;
+          Void*         address;
 
-	  // copy the address.
-	  ::memcpy(&address,
-		   buffer + 0,
-		   sizeof (Void*));
+          // copy the address.
+          ::memcpy(&address,
+                   buffer + 0,
+                   sizeof (Void*));
 
-	  Trace		trace(address);
+          Trace         trace(address);
 
-	  // copy the frames.
-	  ::memcpy(&trace.frames,
-		   buffer + sizeof (Void*),
-		   Trace::Capacity * sizeof (Void*));
+          // copy the frames.
+          ::memcpy(&trace.frames,
+                   buffer + sizeof (Void*),
+                   Trace::Capacity * sizeof (Void*));
 
-	  // copy the size.
-	  ::memcpy(&trace.size,
-		   buffer + sizeof (Void*) + Trace::Capacity * sizeof (Void*),
-		   sizeof (Natural32));
+          // copy the size.
+          ::memcpy(&trace.size,
+                   buffer + sizeof (Void*) + Trace::Capacity * sizeof (Void*),
+                   sizeof (Natural32));
 
-	  // dump the trace.
-	  if (trace.Dump(margin + 2) == StatusError)
-	    escape("unable to dump the trace");
-	}
+          // dump the trace.
+          if (trace.Dump(margin + 2) == StatusError)
+            escape("unable to dump the trace");
+        }
 
       // close the directory.
       ::closedir(dp);

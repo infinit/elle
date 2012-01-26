@@ -50,29 +50,29 @@ namespace elle
       /// this enumeration represents the endianness.
       ///
       enum Order
-	{
-	  OrderLittle = 0x1,
-	  OrderBig
-	};
+        {
+          OrderLittle = 0x1,
+          OrderBig
+        };
 
       //
       // constants
       //
-      static Order			Endianness;
+      static Order                      Endianness;
 
       struct Path
       {
-	static Character		Separator;
-	static String			Home;
-	static String			Root;
-	static String			Current;
+        static Character                Separator;
+        static String                   Home;
+        static String                   Root;
+        static String                   Current;
       };
 
       //
       // static methods
       //
-      static Status	Initialize();
-      static Status	Clean();
+      static Status     Initialize();
+      static Status     Clean();
     };
 
   }

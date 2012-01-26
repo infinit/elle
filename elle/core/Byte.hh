@@ -29,7 +29,7 @@ namespace elle
     ///
     /// this type represents a byte.
     ///
-    typedef Natural8	Byte;
+    typedef Natural8    Byte;
 
   }
 }

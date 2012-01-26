@@ -32,7 +32,7 @@ namespace elle
     /// this type represents a message's data section which contains the
     /// arguments.
     ///
-    typedef Archive		Data;
+    typedef Archive             Data;
 
   }
 }

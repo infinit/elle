@@ -37,7 +37,7 @@ namespace elle
     ///
     /// a constructor which specifies the type of socket.
     ///
-    Socket::Socket(const Socket::Type				type):
+    Socket::Socket(const Socket::Type                           type):
       type(type)
     {
     }
@@ -49,9 +49,9 @@ namespace elle
     ///
     /// this method dumps the socket-related information.
     ///
-    Status		Socket::Dump(const Natural32		margin) const
+    Status              Socket::Dump(const Natural32            margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
@@ -59,7 +59,7 @@ namespace elle
 
       // dump the type.
       std::cout << alignment << Dumpable::Shift
-		<< "[Type] " << std::dec << this->type << std::endl;
+                << "[Type] " << std::dec << this->type << std::endl;
 
       leave();
     }
@@ -71,13 +71,13 @@ namespace elle
     ///
     /// this method takes a parcel and dispatches it.
     ///
-    Status		Socket::Ship(Parcel*			parcel)
+    Status              Socket::Ship(Parcel*                    parcel)
     {
       enter();
 
       // otherwise, trigger the network dispatching mechanism.
       if (Network::Dispatch(parcel) == StatusError)
-	log("an error occured while dispatching a message");
+        log("an error occured while dispatching a message");
 
       leave();
     }

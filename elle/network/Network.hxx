@@ -33,31 +33,31 @@ namespace elle
     /// callback is triggered.
     ///
     template <const Tag I,
-	      const Tag O,
-	      const Tag E>
-    Status		Network::Register(const Procedure<I, O, E>& procedure)
+              const Tag O,
+              const Tag E>
+    Status              Network::Register(const Procedure<I, O, E>& procedure)
     {
-      Selectionoid< Procedure<I, O, E> >*	selectionoid;
-      std::pair<Network::Iterator, Boolean>	result;
+      Selectionoid< Procedure<I, O, E> >*       selectionoid;
+      std::pair<Network::Iterator, Boolean>     result;
 
       enterx(instance(selectionoid));
 
       // check if this tag has already been recorded.
       if (Network::Procedures.find(I) != Network::Procedures.end())
-	escape("this tag seems to have already been recorded");
+        escape("this tag seems to have already been recorded");
 
       // create a new selectionoid.
       selectionoid = new Selectionoid< Procedure<I, O, E> >(procedure);
 
       // insert the selectionoid in the container.
       result = Network::Procedures.insert(
-	         std::pair<const Tag,
-			   Network::Functionoid*>(I,
-						  selectionoid));
+                 std::pair<const Tag,
+                           Network::Functionoid*>(I,
+                                                  selectionoid));
 
       // check if the insertion was successful.
       if (result.second == false)
-	escape("unable to insert the selectoinoid in the container");
+        escape("unable to insert the selectoinoid in the container");
 
       // waive the selectionoid tracking.
       waive(selectionoid);
@@ -73,7 +73,7 @@ namespace elle
     /// default constructor.
     ///
     template <typename P>
-    Network::Selectionoid<P>::Selectionoid(const P&		procedure):
+    Network::Selectionoid<P>::Selectionoid(const P&             procedure):
       procedure(procedure)
     {
     }
@@ -83,7 +83,7 @@ namespace elle
     /// Skeleton() method.
     ///
     template <typename P>
-    Status	Network::Selectionoid<P>::Call(Archive&		archive) const
+    Status      Network::Selectionoid<P>::Call(Archive&         archive) const
     {
       return (this->procedure.Skeleton(archive));
     }
@@ -92,13 +92,13 @@ namespace elle
     /// this method dumps the selectionoid.
     ///
     template <typename P>
-    Status	Network::Selectionoid<P>::Dump(const Natural32	margin) const
+    Status      Network::Selectionoid<P>::Dump(const Natural32  margin) const
     {
       enter();
 
       // dump the object.
       if (this->procedure.Dump(margin) == StatusError)
-	escape("unable to dump the object");
+        escape("unable to dump the object");
 
       leave();
     }

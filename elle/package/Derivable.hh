@@ -62,21 +62,21 @@ namespace elle
       // enumerations
       //
       enum Policy
-	{
-	  PolicyUnknown,
-	  PolicyDynamic,
-	  PolicyStatic
-	};
+        {
+          PolicyUnknown,
+          PolicyDynamic,
+          PolicyStatic
+        };
 
       //
       // constructors & destructors
       //
       Derivable();
       Derivable(const Product&,
-		const T&);
+                const T&);
       Derivable(const Factory&);
       Derivable(const Factory&,
-		T&);
+                T&);
       Derivable(const Derivable<T>&);
       ~Derivable();
 
@@ -84,7 +84,7 @@ namespace elle
       // methods
       //
       template <typename U>
-      Status		Infer(U*&) const;
+      Status            Infer(U*&) const;
 
       //
       // interfaces
@@ -94,19 +94,19 @@ namespace elle
       declare(Derivable);
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      Status            Serialize(Archive&) const;
+      Status            Extract(Archive&);
 
       //
       // attributes
       //
-      Policy		policy;
-      const Factory*	factory;
-      Product		product;
-      T*		object;
+      Policy            policy;
+      const Factory*    factory;
+      Product           product;
+      T*                object;
     };
 
   }

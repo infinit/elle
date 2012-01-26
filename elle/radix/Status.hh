@@ -28,13 +28,13 @@ namespace elle
     ///
     enum Status
       {
-	StatusUnknown,
+        StatusUnknown,
 
-	StatusFalse = false,
-	StatusTrue = true,
+        StatusFalse = false,
+        StatusTrue = true,
 
-	StatusOk = 42,
-	StatusError = 666
+        StatusOk = 42,
+        StatusError = 666
       };
 
   }

@@ -26,24 +26,24 @@ namespace elle
     ///
     /// this method dumps the environment.
     ///
-    Status		Environment::Dump(const Natural32	margin) const
+    Status              Environment::Dump(const Natural32       margin) const
     {
-      String			alignment(margin, ' ');
-      Environment::Scoutor	scoutor;
+      String                    alignment(margin, ' ');
+      Environment::Scoutor      scoutor;
 
       enter();
 
       std::cout << alignment << "[Environment] "
-		<< this->container.size() << std::endl;
+                << this->container.size() << std::endl;
 
       // go through the container.
       for (scoutor = this->container.begin();
-	   scoutor != this->container.end();
-	   scoutor++)
-	{
-	  std::cout << alignment << Dumpable::Shift << scoutor->first
-		    << " :: " << scoutor->second << std::endl;
-	}
+           scoutor != this->container.end();
+           scoutor++)
+        {
+          std::cout << alignment << Dumpable::Shift << scoutor->first
+                    << " :: " << scoutor->second << std::endl;
+        }
 
       leave();
     }
