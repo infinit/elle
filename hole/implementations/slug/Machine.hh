@@ -39,89 +39,89 @@ namespace hole
       /// XXX represents the current host
       ///
       class Machine:
-	public elle::Entity
+        public elle::Entity
       {
       public:
-	//
-	// constants
-	//
-	struct					Default
-	{
-	  static const elle::Natural16		Port;
-	};
+        //
+        // constants
+        //
+        struct                                  Default
+        {
+          static const elle::Natural16          Port;
+        };
 
-	static const elle::Natural32		Timeout;
+        static const elle::Natural32            Timeout;
 
-	//
-	// enumerations
-	//
-	enum State
-	  {
-	    StateDetached,
-	    StateAttached
-	  };
+        //
+        // enumerations
+        //
+        enum State
+          {
+            StateDetached,
+            StateAttached
+          };
 
-	//
-	// constructors & destructors
-	//
-	Machine();
-	~Machine();
+        //
+        // constructors & destructors
+        //
+        Machine();
+        ~Machine();
 
-	//
-	// methods
-	//
-	elle::Status		Launch();
+        //
+        // methods
+        //
+        elle::Status            Launch();
 
-	elle::Status		Put(const nucleus::Address&,
-				    const nucleus::ImmutableBlock&);
-	elle::Status		Put(const nucleus::Address&,
-				    const nucleus::MutableBlock&);
-	elle::Status		Get(const nucleus::Address&,
-				    nucleus::ImmutableBlock&);
-	elle::Status		Get(const nucleus::Address&,
-				    const nucleus::Version&,
-				    nucleus::MutableBlock&);
-	elle::Status		Kill(const nucleus::Address&);
+        elle::Status            Put(const nucleus::Address&,
+                                    const nucleus::ImmutableBlock&);
+        elle::Status            Put(const nucleus::Address&,
+                                    const nucleus::MutableBlock&);
+        elle::Status            Get(const nucleus::Address&,
+                                    nucleus::ImmutableBlock&);
+        elle::Status            Get(const nucleus::Address&,
+                                    const nucleus::Version&,
+                                    nucleus::MutableBlock&);
+        elle::Status            Kill(const nucleus::Address&);
 
-	//
-	// callbacks
-	//
-	elle::Status		Alone();
+        //
+        // callbacks
+        //
+        elle::Status            Alone();
 
-	elle::Status		Connection(elle::TCPSocket*);
-	elle::Status		Authenticate(const lune::Passport&,
-					     const elle::Port&);
-	elle::Status		Authenticated(const Cluster&);
+        elle::Status            Connection(elle::TCPSocket*);
+        elle::Status            Authenticate(const lune::Passport&,
+                                             const elle::Port&);
+        elle::Status            Authenticated(const Cluster&);
 
-	elle::Status		Sweep(Host*);
-	elle::Status		Synchronised();
+        elle::Status            Sweep(Host*);
+        elle::Status            Synchronised();
 
-	elle::Status		Push(const nucleus::Address&,
-				     const
-				       nucleus::Derivable<nucleus::Block>&);
-	elle::Status		Pull(const nucleus::Address&,
-				     const nucleus::Version&);
-	elle::Status		Wipe(const nucleus::Address&);
+        elle::Status            Push(const nucleus::Address&,
+                                     const
+                                       nucleus::Derivable<nucleus::Block>&);
+        elle::Status            Pull(const nucleus::Address&,
+                                     const nucleus::Version&);
+        elle::Status            Wipe(const nucleus::Address&);
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	elle::Status		Dump(const elle::Natural32 = 0) const;
+        // dumpable
+        elle::Status            Dump(const elle::Natural32 = 0) const;
 
-	//
-	// attributes
-	//
-	State			state;
-	elle::Port		port;
+        //
+        // attributes
+        //
+        State                   state;
+        elle::Port              port;
 
-	Guestlist		guestlist;
-	Neighbourhood		neighbourhood;
+        Guestlist               guestlist;
+        Neighbourhood           neighbourhood;
 
-	elle::Timer*		timer;
+        elle::Timer*            timer;
 
-	Synchroniser*		synchroniser;
+        Synchroniser*           synchroniser;
       };
 
     }

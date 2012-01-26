@@ -28,10 +28,10 @@ namespace hole
       class Assignment
       {
       public:
-	//
-	// static methods
-	//
-	static elle::Status	Assign();
+        //
+        // static methods
+        //
+        static elle::Status     Assign();
       };
 
     }

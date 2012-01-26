@@ -40,10 +40,10 @@ namespace hole
       class Local
       {
       public:
-	//
-	// static attributes
-	//
-	static Machine*		Computer;
+        //
+        // static attributes
+        //
+        static Machine*         Computer;
       };
 
     }

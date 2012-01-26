@@ -30,13 +30,13 @@ namespace hole
       ///
       /// this value defines the component's name.
       ///
-      const elle::Character		Component[] = "remote";
+      const elle::Character             Component[] = "remote";
 
       ///
       /// this global variable makes the machine i.e the current host
       /// accessible from every instance of the implementation.
       ///
-      Machine*				Remote::Computer = NULL;
+      Machine*                          Remote::Computer = NULL;
 
     }
   }

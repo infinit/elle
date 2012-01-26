@@ -29,12 +29,12 @@ namespace hole
   ///
   /// the component name.
   ///
-  extern const elle::Character	Component[];
+  extern const elle::Character  Component[];
 
   ///
   /// this constants defines the number of tags to reserve for hole.
   ///
-  const elle::Natural32		Tags = 0;
+  const elle::Natural32         Tags = 0;
 
 }
 

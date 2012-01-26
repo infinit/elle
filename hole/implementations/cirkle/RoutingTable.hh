@@ -35,44 +35,44 @@ namespace hole
       /// XXX
       ///
       class RoutingTable:
-	public elle::Entity
+        public elle::Entity
       {
       public:
-	//
-	// types
-	//
-	typedef std::map<const Label, Neighbour*>	Container;
-	typedef typename Container::iterator		Iterator;
-	typedef typename Container::const_iterator	Scoutor;
+        //
+        // types
+        //
+        typedef std::map<const Label, Neighbour*>       Container;
+        typedef typename Container::iterator            Iterator;
+        typedef typename Container::const_iterator      Scoutor;
 
-	//
-	// constructors & destructors
-	//
-	~RoutingTable();
+        //
+        // constructors & destructors
+        //
+        ~RoutingTable();
 
-	//
-	// methods
-	//
-	elle::Status		Add(const Label&,
-				    Neighbour*);
-	elle::Status		Exist(const Label&);
-	elle::Status		Retrieve(const Label&,
-					 Neighbour*&);
-	elle::Status		Remove(const Label&);
-	elle::Status		Locate(const Label&,
-				       Iterator* = NULL);
+        //
+        // methods
+        //
+        elle::Status            Add(const Label&,
+                                    Neighbour*);
+        elle::Status            Exist(const Label&);
+        elle::Status            Retrieve(const Label&,
+                                         Neighbour*&);
+        elle::Status            Remove(const Label&);
+        elle::Status            Locate(const Label&,
+                                       Iterator* = NULL);
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	elle::Status		Dump(const elle::Natural32 = 0) const;
+        // dumpable
+        elle::Status            Dump(const elle::Natural32 = 0) const;
 
-	//
-	// attributes
-	//
-	Container		container;
+        //
+        // attributes
+        //
+        Container               container;
       };
 
     }

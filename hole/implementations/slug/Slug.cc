@@ -30,12 +30,12 @@ namespace hole
       ///
       /// this value defines the component's name.
       ///
-      const elle::Character		Component[] = "slug";
+      const elle::Character             Component[] = "slug";
 
       ///
       /// XXX
       ///
-      Machine*				Slug::Computer = NULL;
+      Machine*                          Slug::Computer = NULL;
 
     }
   }

@@ -29,8 +29,8 @@ namespace hole
       ///
       /// default constructor.
       ///
-      Implementation::Implementation(const nucleus::Network&	network):
-	Holeable(network)
+      Implementation::Implementation(const nucleus::Network&    network):
+        Holeable(network)
       {
       }
 
@@ -42,133 +42,133 @@ namespace hole
       /// this method tries to connect to the server. if impossible, a server
       /// is author .
       ///
-      elle::Status	Implementation::Join()
+      elle::Status      Implementation::Join()
       {
-	enter();
+        enter();
 
-	// allocate the machine.
-	Remote::Computer = new Machine;
+        // allocate the machine.
+        Remote::Computer = new Machine;
 
-	// launch it.
-	if (Remote::Computer->Launch() == elle::StatusError)
-	  escape("unable to launch the computer");
+        // launch it.
+        if (Remote::Computer->Launch() == elle::StatusError)
+          escape("unable to launch the computer");
 
-	leave();
+        leave();
       }
 
       ///
       /// this method cleans the peer.
       ///
-      elle::Status	Implementation::Leave()
+      elle::Status      Implementation::Leave()
       {
-	enter();
+        enter();
 
-	// delete the machine.
-	delete Remote::Computer;
+        // delete the machine.
+        delete Remote::Computer;
 
-	leave();
+        leave();
       }
 
       ///
       /// this method stores an immutable block.
       ///
-      elle::Status	Implementation::Put(
-			  const nucleus::Address&		address,
-			  const nucleus::ImmutableBlock&	 block)
+      elle::Status      Implementation::Put(
+                          const nucleus::Address&               address,
+                          const nucleus::ImmutableBlock&         block)
       {
-	enter();
+        enter();
 
-	// check if the machine is a client.
-	if (Remote::Computer->role != Machine::RoleClient)
-	  escape("the hole is not acting as a remote client as it should");
+        // check if the machine is a client.
+        if (Remote::Computer->role != Machine::RoleClient)
+          escape("the hole is not acting as a remote client as it should");
 
-	// forward the request to the machine.
-	if (Remote::Computer->client->Put(address, block) == elle::StatusError)
-	  escape("unable to put the block");
+        // forward the request to the machine.
+        if (Remote::Computer->client->Put(address, block) == elle::StatusError)
+          escape("unable to put the block");
 
-	leave();
+        leave();
       }
 
       ///
       /// this method stores a mutable block.
       ///
-      elle::Status	Implementation::Put(
-			  const nucleus::Address&		address,
-			  const nucleus::MutableBlock&		block)
+      elle::Status      Implementation::Put(
+                          const nucleus::Address&               address,
+                          const nucleus::MutableBlock&          block)
       {
-	enter();
+        enter();
 
-	// check if the machine is a client.
-	if (Remote::Computer->role != Machine::RoleClient)
-	  escape("the hole is not acting as a remote client as it should");
+        // check if the machine is a client.
+        if (Remote::Computer->role != Machine::RoleClient)
+          escape("the hole is not acting as a remote client as it should");
 
-	// forward the request to the machine.
-	if (Remote::Computer->client->Put(address, block) == elle::StatusError)
-	  escape("unable to put the block");
+        // forward the request to the machine.
+        if (Remote::Computer->client->Put(address, block) == elle::StatusError)
+          escape("unable to put the block");
 
-	leave();
+        leave();
       }
 
       ///
       /// this method retrieves an immutable block.
       ///
-      elle::Status	Implementation::Get(
-			  const nucleus::Address&		address,
-			  nucleus::ImmutableBlock&		block)
+      elle::Status      Implementation::Get(
+                          const nucleus::Address&               address,
+                          nucleus::ImmutableBlock&              block)
       {
-	enter();
+        enter();
 
-	// check if the machine is a client.
-	if (Remote::Computer->role != Machine::RoleClient)
-	  escape("the hole is not acting as a remote client as it should");
+        // check if the machine is a client.
+        if (Remote::Computer->role != Machine::RoleClient)
+          escape("the hole is not acting as a remote client as it should");
 
-	// forward the request to the machine.
-	if (Remote::Computer->client->Get(address, block) == elle::StatusError)
-	  escape("unable to get the block");
+        // forward the request to the machine.
+        if (Remote::Computer->client->Get(address, block) == elle::StatusError)
+          escape("unable to get the block");
 
-	leave();
+        leave();
       }
 
       ///
       /// this method retrieves a mutable block.
       ///
-      elle::Status	Implementation::Get(
-			  const nucleus::Address&		address,
-			  const nucleus::Version&		version,
-			  nucleus::MutableBlock&		block)
+      elle::Status      Implementation::Get(
+                          const nucleus::Address&               address,
+                          const nucleus::Version&               version,
+                          nucleus::MutableBlock&                block)
       {
-	enter();
+        enter();
 
-	// check if the machine is a client.
-	if (Remote::Computer->role != Machine::RoleClient)
-	  escape("the hole is not acting as a remote client as it should");
+        // check if the machine is a client.
+        if (Remote::Computer->role != Machine::RoleClient)
+          escape("the hole is not acting as a remote client as it should");
 
-	// forward the request to the machine.
-	if (Remote::Computer->client->Get(address,
-					  version,
-					  block) == elle::StatusError)
-	  escape("unable to get the block");
+        // forward the request to the machine.
+        if (Remote::Computer->client->Get(address,
+                                          version,
+                                          block) == elle::StatusError)
+          escape("unable to get the block");
 
-	leave();
+        leave();
       }
 
       ///
       /// this method removes a block.
       ///
-      elle::Status	Implementation::Kill(
-			  const nucleus::Address&		address)
+      elle::Status      Implementation::Kill(
+                          const nucleus::Address&               address)
       {
-	enter();
+        enter();
 
-	// check if the machine is a client.
-	if (Remote::Computer->role != Machine::RoleClient)
-	  escape("the hole is not acting as a remote client as it should");
+        // check if the machine is a client.
+        if (Remote::Computer->role != Machine::RoleClient)
+          escape("the hole is not acting as a remote client as it should");
 
-	// forward the request to the machine.
-	if (Remote::Computer->client->Kill(address) == elle::StatusError)
-	  escape("unable to kill the block");
+        // forward the request to the machine.
+        if (Remote::Computer->client->Kill(address) == elle::StatusError)
+          escape("unable to kill the block");
 
-	leave();
+        leave();
       }
 
 //
@@ -178,24 +178,24 @@ namespace hole
       ///
       /// this method dumps the implementation.
       ///
-      elle::Status	Implementation::Dump(const elle::Natural32 margin)
-	const
+      elle::Status      Implementation::Dump(const elle::Natural32 margin)
+        const
       {
-	elle::String	alignment(margin, ' ');
+        elle::String    alignment(margin, ' ');
 
-	enter();
+        enter();
 
-	std::cout << alignment << "[Implementation] Remote" << std::endl;
+        std::cout << alignment << "[Implementation] Remote" << std::endl;
 
-	// dump the parent.
-	if (Holeable::Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the holeabl");
+        // dump the parent.
+        if (Holeable::Dump(margin + 2) == elle::StatusError)
+          escape("unable to dump the holeabl");
 
-	// dump the machine.
-	if (Remote::Computer->Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the machine");
+        // dump the machine.
+        if (Remote::Computer->Dump(margin + 2) == elle::StatusError)
+          escape("unable to dump the machine");
 
-	leave();
+        leave();
       }
 
     }

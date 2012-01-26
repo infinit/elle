@@ -38,12 +38,12 @@ namespace hole
       ///
       /// XXX
       ///
-      extern const elle::Character	Component[];
+      extern const elle::Character      Component[];
 
       ///
       /// XXX
       ///
-      const elle::Natural32		Tags = 30;
+      const elle::Natural32             Tags = 30;
 
     }
   }
@@ -75,18 +75,18 @@ namespace hole
       // enumerations
       //
       enum Tag
-	{
-	  TagAuthenticate = elle::Range<Component>::First + 1,
-	  TagAuthenticated,
+        {
+          TagAuthenticate = elle::Range<Component>::First + 1,
+          TagAuthenticated,
 
-	  TagSynchronise,
-	  TagBank,
+          TagSynchronise,
+          TagBank,
 
-	  TagPush,
-	  TagPull,
-	  TagBlock,
-	  TagWipe
-	};
+          TagPush,
+          TagPull,
+          TagBlock,
+          TagWipe
+        };
 
     }
   }
@@ -101,25 +101,25 @@ namespace hole
 ///
 
 message(hole::implementations::slug::TagAuthenticate,
-	parameters(lune::Passport&,
-		   elle::Port&))
+        parameters(lune::Passport&,
+                   elle::Port&))
 message(hole::implementations::slug::TagAuthenticated,
-	parameters(hole::implementations::slug::Cluster&))
+        parameters(hole::implementations::slug::Cluster&))
 
 message(hole::implementations::slug::TagSynchronise,
-	parameters())
+        parameters())
 message(hole::implementations::slug::TagBank,
-	parameters(hole::implementations::slug::Bank&))
+        parameters(hole::implementations::slug::Bank&))
 
 message(hole::implementations::slug::TagPush,
-	parameters(nucleus::Address&,
-		   nucleus::Derivable<nucleus::Block>&));
+        parameters(nucleus::Address&,
+                   nucleus::Derivable<nucleus::Block>&));
 message(hole::implementations::slug::TagPull,
-	parameters(nucleus::Address&,
-		   nucleus::Version&));
+        parameters(nucleus::Address&,
+                   nucleus::Version&));
 message(hole::implementations::slug::TagBlock,
-	parameters(nucleus::Derivable<nucleus::Block>&));
+        parameters(nucleus::Derivable<nucleus::Block>&));
 message(hole::implementations::slug::TagWipe,
-	parameters(nucleus::Address&));
+        parameters(nucleus::Address&));
 
 #endif

@@ -30,8 +30,8 @@ namespace hole
       ///
       Cluster::~Cluster()
       {
-	// simply clear the content.
-	this->container.clear();
+        // simply clear the content.
+        this->container.clear();
       }
 
 //
@@ -41,24 +41,24 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Cluster::Create(const Neighbourhood&	neighbourhood)
+      elle::Status      Cluster::Create(const Neighbourhood&    neighbourhood)
       {
-	Neighbourhood::Scoutor	scoutor;
+        Neighbourhood::Scoutor  scoutor;
 
-	enter();
+        enter();
 
-	// go through the entries.
-	for (scoutor = neighbourhood.container.begin();
-	     scoutor != neighbourhood.container.end();
-	     scoutor++)
-	  {
-	    Host*		host = scoutor->second;
+        // go through the entries.
+        for (scoutor = neighbourhood.container.begin();
+             scoutor != neighbourhood.container.end();
+             scoutor++)
+          {
+            Host*               host = scoutor->second;
 
-	    // add the host's locus.
-	    this->container.push_back(host->locus);
-	  }
+            // add the host's locus.
+            this->container.push_back(host->locus);
+          }
 
-	leave();
+        leave();
       }
 
 //
@@ -78,63 +78,63 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Cluster::Serialize(elle::Archive&	archive) const
+      elle::Status      Cluster::Serialize(elle::Archive&       archive) const
       {
-	Cluster::Scoutor	scoutor;
-	elle::Natural32		size;
+        Cluster::Scoutor        scoutor;
+        elle::Natural32         size;
 
-	enter();
+        enter();
 
-	// retrieve the size of the container.
-	size = this->container.size();
+        // retrieve the size of the container.
+        size = this->container.size();
 
-	// serialize the number of entries.
-	if (archive.Serialize(size) == elle::StatusError)
-	  escape("unable to serialize the size");
+        // serialize the number of entries.
+        if (archive.Serialize(size) == elle::StatusError)
+          escape("unable to serialize the size");
 
-	// go through the container.
-	for (scoutor = this->container.begin();
-	     scoutor != this->container.end();
-	     scoutor++)
-	  {
-	    elle::Locus		locus = *scoutor;
+        // go through the container.
+        for (scoutor = this->container.begin();
+             scoutor != this->container.end();
+             scoutor++)
+          {
+            elle::Locus         locus = *scoutor;
 
-	    // serialize the locus.
-	    if (archive.Serialize(locus) == elle::StatusError)
-	      escape("unable to serialize the locus");
-	  }
+            // serialize the locus.
+            if (archive.Serialize(locus) == elle::StatusError)
+              escape("unable to serialize the locus");
+          }
 
-	leave();
+        leave();
       }
 
       ///
       /// XXX
       ///
-      elle::Status	Cluster::Extract(elle::Archive&		archive)
+      elle::Status      Cluster::Extract(elle::Archive&         archive)
       {
-	elle::Natural32	size;
-	elle::Natural32	i;
+        elle::Natural32 size;
+        elle::Natural32 i;
 
-	enter();
+        enter();
 
-	// extract the number of entries.
-	if (archive.Extract(size) == elle::StatusError)
-	  escape("unable to extract the size");
+        // extract the number of entries.
+        if (archive.Extract(size) == elle::StatusError)
+          escape("unable to extract the size");
 
-	// go through the entries.
-	for (i = 0; i < size; i++)
-	  {
-	    elle::Locus	locus;
+        // go through the entries.
+        for (i = 0; i < size; i++)
+          {
+            elle::Locus locus;
 
-	    // extract the locus.
-	    if (archive.Extract(locus) == elle::StatusError)
-	      escape("unable to extract the locus");
+            // extract the locus.
+            if (archive.Extract(locus) == elle::StatusError)
+              escape("unable to extract the locus");
 
-	    // record the locus.
-	    this->container.push_back(locus);
-	  }
+            // record the locus.
+            this->container.push_back(locus);
+          }
 
-	leave();
+        leave();
       }
 
 //
@@ -144,29 +144,29 @@ namespace hole
       ///
       /// this function dumps a cluster.
       ///
-      elle::Status	Cluster::Dump(elle::Natural32	margin) const
+      elle::Status      Cluster::Dump(elle::Natural32   margin) const
       {
-	elle::String		alignment(margin, ' ');
-	Cluster::Scoutor	scoutor;
+        elle::String            alignment(margin, ' ');
+        Cluster::Scoutor        scoutor;
 
-	enter();
+        enter();
 
-	// display the name.
-	std::cout << alignment << "[Cluster]" << std::endl;
+        // display the name.
+        std::cout << alignment << "[Cluster]" << std::endl;
 
-	// go through the entries.
-	for (scoutor = this->container.begin();
-	     scoutor != this->container.end();
-	     scoutor++)
-	  {
-	    elle::Locus		locus = *scoutor;
+        // go through the entries.
+        for (scoutor = this->container.begin();
+             scoutor != this->container.end();
+             scoutor++)
+          {
+            elle::Locus         locus = *scoutor;
 
-	    // dump the locus.
-	    if (locus.Dump(margin + 2) == elle::StatusError)
-	      escape("unable to dump the locus");
-	  }
+            // dump the locus.
+            if (locus.Dump(margin + 2) == elle::StatusError)
+              escape("unable to dump the locus");
+          }
 
-	leave();
+        leave();
       }
 
     }

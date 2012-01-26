@@ -37,12 +37,12 @@ namespace hole
       ///
       /// XXX
       ///
-      extern const elle::Character	Component[];
+      extern const elle::Character      Component[];
 
       ///
       /// XXX
       ///
-      const elle::Natural32		Tags = 30;
+      const elle::Natural32             Tags = 30;
 
     }
   }
@@ -74,19 +74,19 @@ namespace hole
       // enumerations
       //
       enum Tag
-	{
-	  TagChallenge = elle::Range<Component>::First + 1,
-	  TagPassport,
-	  TagPort,
-	  TagAuthenticated,
+        {
+          TagChallenge = elle::Range<Component>::First + 1,
+          TagPassport,
+          TagPort,
+          TagAuthenticated,
 
-	  TagUpdate,
+          TagUpdate,
 
-	  TagPush,
-	  TagPull,
-	  TagBlock,
-	  TagWipe
-	};
+          TagPush,
+          TagPull,
+          TagBlock,
+          TagWipe
+        };
 
     }
   }
@@ -101,26 +101,26 @@ namespace hole
 ///
 
 message(hole::implementations::cirkle::TagChallenge,
-	parameters())
+        parameters())
 message(hole::implementations::cirkle::TagPassport,
-	parameters(lune::Passport))
+        parameters(lune::Passport))
 message(hole::implementations::cirkle::TagPort,
-	parameters(elle::Port))
+        parameters(elle::Port))
 message(hole::implementations::cirkle::TagAuthenticated,
-	parameters())
+        parameters())
 
 message(hole::implementations::cirkle::TagUpdate,
-	parameters(hole::implementations::cirkle::Cluster))
+        parameters(hole::implementations::cirkle::Cluster))
 
 message(hole::implementations::cirkle::TagPush,
-	parameters(nucleus::Address,
-		   nucleus::Derivable<nucleus::Block>));
+        parameters(nucleus::Address,
+                   nucleus::Derivable<nucleus::Block>));
 message(hole::implementations::cirkle::TagPull,
-	parameters(nucleus::Address,
-		   nucleus::Version));
+        parameters(nucleus::Address,
+                   nucleus::Version));
 message(hole::implementations::cirkle::TagBlock,
-	parameters(nucleus::Derivable<nucleus::Block>));
+        parameters(nucleus::Derivable<nucleus::Block>));
 message(hole::implementations::cirkle::TagWipe,
-	parameters(nucleus::Address));
+        parameters(nucleus::Address));
 
 #endif

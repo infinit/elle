@@ -28,8 +28,8 @@ namespace hole
   ///
   /// the main function.
   ///
-  elle::Status		Main(elle::Natural32			argc,
-			     elle::Character*			argv[])
+  elle::Status          Main(elle::Natural32                    argc,
+                             elle::Character*                   argv[])
   {
     enterx(instance(Infinit::Parser));
 
@@ -58,28 +58,28 @@ namespace hole
 
     // specify a program description.
     if (Infinit::Parser->Description(Infinit::Version +
-				     " "+
-				     "Copyright (c) 2008, 2009, 2010, 2011, "
-				     "Julien Quintard, All rights "
-				     "reserved.\n") == elle::StatusError)
+                                     " "+
+                                     "Copyright (c) 2008, 2009, 2010, 2011, "
+                                     "Julien Quintard, All rights "
+                                     "reserved.\n") == elle::StatusError)
       escape("unable to set the description");
 
     // register the options.
     if (Infinit::Parser->Register(
           "Help",
-	  'h',
-	  "help",
-	  "display the help",
-	  elle::Parser::KindNone) == elle::StatusError)
+          'h',
+          "help",
+          "display the help",
+          elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the option.
     if (Infinit::Parser->Register(
-	  "Network",
-	  'n',
-	  "network",
-	  "specifies the name of the network",
-	  elle::Parser::KindRequired) == elle::StatusError)
+          "Network",
+          'n',
+          "network",
+          "specifies the name of the network",
+          elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // parse.
@@ -89,21 +89,21 @@ namespace hole
     // test the option.
     if (Infinit::Parser->Test("Help") == elle::StatusTrue)
       {
-	// display the usage.
-	Infinit::Parser->Usage();
+        // display the usage.
+        Infinit::Parser->Usage();
 
-	// quit.
-	leave();
+        // quit.
+        leave();
       }
 
     // retrieve the network name.
     if (Infinit::Parser->Value("Network",
-			       Infinit::Network) == elle::StatusError)
+                               Infinit::Network) == elle::StatusError)
       {
-	// display the usage.
-	Infinit::Parser->Usage();
+        // display the usage.
+        Infinit::Parser->Usage();
 
-	escape("unable to retrieve the network name");
+        escape("unable to retrieve the network name");
       }
 
     // initialize the Hole library.
@@ -152,22 +152,22 @@ namespace hole
 ///
 /// this is the program entry point.
 ///
-int			main(int				argc,
-                             char*				argv[])
+int                     main(int                                argc,
+                             char*                              argv[])
 {
   try
     {
       if (hole::Main(argc, argv) == elle::StatusError)
-	{
-	  show();
+        {
+          show();
 
-	  return (1);
-	}
+          return (1);
+        }
     }
   catch (...)
     {
       std::cout << "The program has been terminated following "
-		<< "a fatal error" << std::endl;
+                << "a fatal error" << std::endl;
 
       return (1);
     }

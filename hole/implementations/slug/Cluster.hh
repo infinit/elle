@@ -39,44 +39,44 @@ namespace hole
       /// XXX
       ///
       class Cluster:
-	public elle::Object
+        public elle::Object
       {
       public:
-	//
-	// types
-	//
-	typedef std::list<elle::Locus>			Container;
-	typedef typename Container::iterator		Iterator;
-	typedef typename Container::const_iterator	Scoutor;
+        //
+        // types
+        //
+        typedef std::list<elle::Locus>                  Container;
+        typedef typename Container::iterator            Iterator;
+        typedef typename Container::const_iterator      Scoutor;
 
-	//
-	// constructors & destructors
-	//
-	~Cluster();
+        //
+        // constructors & destructors
+        //
+        ~Cluster();
 
-	//
-	// methods
-	//
-	elle::Status		Create(const Neighbourhood&);
+        //
+        // methods
+        //
+        elle::Status            Create(const Neighbourhood&);
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// object
-	declare(Cluster);
+        // object
+        declare(Cluster);
 
-	// dumpable
-	elle::Status		Dump(const elle::Natural32 = 0) const;
+        // dumpable
+        elle::Status            Dump(const elle::Natural32 = 0) const;
 
-	// archivable
-	elle::Status		Serialize(elle::Archive&) const;
-	elle::Status		Extract(elle::Archive&);
+        // archivable
+        elle::Status            Serialize(elle::Archive&) const;
+        elle::Status            Extract(elle::Archive&);
 
-	//
-	// attributes
-	//
-	Container		container;
+        //
+        // attributes
+        //
+        Container               container;
       };
 
     }

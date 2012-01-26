@@ -40,75 +40,75 @@ namespace hole
       /// parallel.
       ///
       class Server:
-	public elle::Entity
+        public elle::Entity
       {
       public:
-	//
-	// types
-	//
-	typedef std::map<elle::TCPSocket*, Customer*>	Container;
-	typedef typename Container::iterator		Iterator;
-	typedef typename Container::const_iterator	Scoutor;
+        //
+        // types
+        //
+        typedef std::map<elle::TCPSocket*, Customer*>   Container;
+        typedef typename Container::iterator            Iterator;
+        typedef typename Container::const_iterator      Scoutor;
 
-	//
-	// constructors & destructors
-	//
-	Server(const elle::Locus&);
-	~Server();
+        //
+        // constructors & destructors
+        //
+        Server(const elle::Locus&);
+        ~Server();
 
-	//
-	// methods
-	//
-	elle::Status		Launch();
+        //
+        // methods
+        //
+        elle::Status            Launch();
 
-	elle::Status		Add(elle::TCPSocket*,
-				    Customer*);
-	elle::Status		Remove(elle::TCPSocket*);
-	elle::Status		Retrieve(elle::TCPSocket*,
-					 Customer*&);
-	elle::Status		Locate(elle::TCPSocket*,
-				       Iterator* = NULL);
+        elle::Status            Add(elle::TCPSocket*,
+                                    Customer*);
+        elle::Status            Remove(elle::TCPSocket*);
+        elle::Status            Retrieve(elle::TCPSocket*,
+                                         Customer*&);
+        elle::Status            Locate(elle::TCPSocket*,
+                                       Iterator* = NULL);
 
-	elle::Status		Put(const nucleus::Address&,
-				    const nucleus::ImmutableBlock&);
-	elle::Status		Put(const nucleus::Address&,
-				    const nucleus::MutableBlock&);
-	elle::Status		Get(const nucleus::Address&,
-				    nucleus::ImmutableBlock&);
-	elle::Status		Get(const nucleus::Address&,
-				    const nucleus::Version&,
-				    nucleus::MutableBlock&);
-	elle::Status		Kill(const nucleus::Address&);
+        elle::Status            Put(const nucleus::Address&,
+                                    const nucleus::ImmutableBlock&);
+        elle::Status            Put(const nucleus::Address&,
+                                    const nucleus::MutableBlock&);
+        elle::Status            Get(const nucleus::Address&,
+                                    nucleus::ImmutableBlock&);
+        elle::Status            Get(const nucleus::Address&,
+                                    const nucleus::Version&,
+                                    nucleus::MutableBlock&);
+        elle::Status            Kill(const nucleus::Address&);
 
-	//
-	// callbacks
-	//
-	elle::Status		Connection(elle::TCPSocket*);
+        //
+        // callbacks
+        //
+        elle::Status            Connection(elle::TCPSocket*);
 
-	elle::Status		Challenge(const lune::Passport&);
+        elle::Status            Challenge(const lune::Passport&);
 
-	elle::Status		Sweep(Customer*);
+        elle::Status            Sweep(Customer*);
 
-	elle::Status		Push(const nucleus::Address&,
-				     const
-				       nucleus::Derivable<nucleus::Block>&);
-	elle::Status		Pull(const nucleus::Address&,
-				     const nucleus::Version&);
-	elle::Status		Wipe(const nucleus::Address&);
+        elle::Status            Push(const nucleus::Address&,
+                                     const
+                                       nucleus::Derivable<nucleus::Block>&);
+        elle::Status            Pull(const nucleus::Address&,
+                                     const nucleus::Version&);
+        elle::Status            Wipe(const nucleus::Address&);
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	elle::Status		Dump(const elle::Natural32 = 0) const;
+        // dumpable
+        elle::Status            Dump(const elle::Natural32 = 0) const;
 
-	//
-	// attributes
-	//
-	elle::Locus		locus;
+        //
+        // attributes
+        //
+        elle::Locus             locus;
 
-	Container		container;
+        Container               container;
       };
 
     }

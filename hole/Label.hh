@@ -43,7 +43,7 @@ namespace hole
     //
     // constants
     //
-    static const Label		Null;
+    static const Label          Null;
 
     //
     // constructors & destructors
@@ -56,7 +56,7 @@ namespace hole
     // methods
     //
     template <typename T>
-    elle::Status	Create(const T&);
+    elle::Status        Create(const T&);
 
     //
     // interfaces
@@ -64,20 +64,20 @@ namespace hole
 
     // object
     declare(Label);
-    elle::Boolean	operator==(const Label&) const;
-    elle::Boolean	operator<(const Label&) const;
+    elle::Boolean       operator==(const Label&) const;
+    elle::Boolean       operator<(const Label&) const;
 
     // dumpable
-    elle::Status	Dump(const elle::Natural32 = 0) const;
+    elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // archivable
-    elle::Status	Serialize(elle::Archive&) const;
-    elle::Status	Extract(elle::Archive&);
+    elle::Status        Serialize(elle::Archive&) const;
+    elle::Status        Extract(elle::Archive&);
 
     //
     // attributes
     //
-    elle::Digest*	digest;
+    elle::Digest*       digest;
   };
 
 }

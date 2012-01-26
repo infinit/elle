@@ -34,64 +34,64 @@ namespace hole
       /// XXX
       ///
       class Neighbour:
-	public elle::Entity
+        public elle::Entity
       {
       public:
-	//
-	// constants
-	//
-	static const elle::Natural32		Timeout;
+        //
+        // constants
+        //
+        static const elle::Natural32            Timeout;
 
-	//
-	// enumerations
-	//
-	enum State
-	  {
-	    StateUnauthenticated,
-	    StateAuthenticated
-	  };
+        //
+        // enumerations
+        //
+        enum State
+          {
+            StateUnauthenticated,
+            StateAuthenticated
+          };
 
-	//
-	// constructors & destructors
-	//
-	Neighbour();
-	~Neighbour();
+        //
+        // constructors & destructors
+        //
+        Neighbour();
+        ~Neighbour();
 
-	//
-	// methods
-	//
-	elle::Status	Create(const elle::Locus&);
-	elle::Status	Create(elle::Gate*);
+        //
+        // methods
+        //
+        elle::Status    Create(const elle::Locus&);
+        elle::Status    Create(elle::Gate*);
 
-	elle::Status	Connect();
+        elle::Status    Connect();
 
-	//
-	// callbacks
-	//
-	elle::Status	Discard();
+        //
+        // callbacks
+        //
+        elle::Status    Discard();
 
-	elle::Status	Monitor();
+        elle::Status    Monitor();
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	elle::Status	Dump(const elle::Natural32 = 0) const;
+        // dumpable
+        elle::Status    Dump(const elle::Natural32 = 0) const;
 
-	//
-	// attributes
-	//
-	State		state;
+        //
+        // attributes
+        //
+        State           state;
 
-	elle::Locus	locus;
-	Label		label;
+        elle::Locus     locus;
+        Label           label;
 
-	elle::Port	port;
+        elle::Port      port;
 
-	elle::Gate*	gate;
+        elle::Gate*     gate;
 
-	elle::Timer*	timer;
+        elle::Timer*    timer;
       };
 
     }

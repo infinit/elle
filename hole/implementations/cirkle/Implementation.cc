@@ -29,8 +29,8 @@ namespace hole
       ///
       /// default constructor.
       ///
-      Implementation::Implementation(const nucleus::Network&	network):
-	Holeable(network)
+      Implementation::Implementation(const nucleus::Network&    network):
+        Holeable(network)
       {
       }
 
@@ -42,113 +42,113 @@ namespace hole
       /// this method tries to connect to the server. if impossible, a server
       /// is author .
       ///
-      elle::Status	Implementation::Join()
+      elle::Status      Implementation::Join()
       {
-	enter();
+        enter();
 
-	// allocate the machine.
-	Cirkle::Computer = new Machine;
+        // allocate the machine.
+        Cirkle::Computer = new Machine;
 
-	// launch it.
-	if (Cirkle::Computer->Launch() == elle::StatusError)
-	  escape("unable to launch the computer");
+        // launch it.
+        if (Cirkle::Computer->Launch() == elle::StatusError)
+          escape("unable to launch the computer");
 
-	leave();
+        leave();
       }
 
       ///
       /// this method cleans the peer.
       ///
-      elle::Status	Implementation::Leave()
+      elle::Status      Implementation::Leave()
       {
-	enter();
+        enter();
 
-	// delete the machine.
-	delete Cirkle::Computer;
+        // delete the machine.
+        delete Cirkle::Computer;
 
-	leave();
+        leave();
       }
 
       ///
       /// this method stores an immutable block.
       ///
-      elle::Status	Implementation::Put(
-			  const nucleus::Address&		address,
-			  const nucleus::ImmutableBlock&	 block)
+      elle::Status      Implementation::Put(
+                          const nucleus::Address&               address,
+                          const nucleus::ImmutableBlock&         block)
       {
-	enter();
+        enter();
 
-	// forward the request to the machine.
-	if (Cirkle::Computer->Put(address, block) == elle::StatusError)
-	  escape("unable to put the block");
+        // forward the request to the machine.
+        if (Cirkle::Computer->Put(address, block) == elle::StatusError)
+          escape("unable to put the block");
 
-	leave();
+        leave();
       }
 
       ///
       /// this method stores a mutable block.
       ///
-      elle::Status	Implementation::Put(
-			  const nucleus::Address&		address,
-			  const nucleus::MutableBlock&		block)
+      elle::Status      Implementation::Put(
+                          const nucleus::Address&               address,
+                          const nucleus::MutableBlock&          block)
       {
-	enter();
+        enter();
 
-	// forward the request to the machine.
-	if (Cirkle::Computer->Put(address, block) == elle::StatusError)
-	  escape("unable to put the block");
+        // forward the request to the machine.
+        if (Cirkle::Computer->Put(address, block) == elle::StatusError)
+          escape("unable to put the block");
 
-	leave();
+        leave();
       }
 
       ///
       /// this method retrieves an immutable block.
       ///
-      elle::Status	Implementation::Get(
-			  const nucleus::Address&		address,
-			  nucleus::ImmutableBlock&		block)
+      elle::Status      Implementation::Get(
+                          const nucleus::Address&               address,
+                          nucleus::ImmutableBlock&              block)
       {
-	enter();
+        enter();
 
-	// forward the request to the machine.
-	if (Cirkle::Computer->Get(address, block) == elle::StatusError)
-	  escape("unable to get the block");
+        // forward the request to the machine.
+        if (Cirkle::Computer->Get(address, block) == elle::StatusError)
+          escape("unable to get the block");
 
-	leave();
+        leave();
       }
 
       ///
       /// this method retrieves a mutable block.
       ///
-      elle::Status	Implementation::Get(
-			  const nucleus::Address&		address,
-			  const nucleus::Version&		version,
-			  nucleus::MutableBlock&		block)
+      elle::Status      Implementation::Get(
+                          const nucleus::Address&               address,
+                          const nucleus::Version&               version,
+                          nucleus::MutableBlock&                block)
       {
-	enter();
+        enter();
 
-	// forward the request to the machine.
-	if (Cirkle::Computer->Get(address,
-				  version,
-				  block) == elle::StatusError)
-	  escape("unable to get the block");
+        // forward the request to the machine.
+        if (Cirkle::Computer->Get(address,
+                                  version,
+                                  block) == elle::StatusError)
+          escape("unable to get the block");
 
-	leave();
+        leave();
       }
 
       ///
       /// this method removes a block.
       ///
-      elle::Status	Implementation::Kill(
-			  const nucleus::Address&		address)
+      elle::Status      Implementation::Kill(
+                          const nucleus::Address&               address)
       {
-	enter();
+        enter();
 
-	// forward the request to the machine.
-	if (Cirkle::Computer->Kill(address) == elle::StatusError)
-	  escape("unable to kill the block");
+        // forward the request to the machine.
+        if (Cirkle::Computer->Kill(address) == elle::StatusError)
+          escape("unable to kill the block");
 
-	leave();
+        leave();
       }
 
 //
@@ -158,24 +158,24 @@ namespace hole
       ///
       /// this method dumps the implementation.
       ///
-      elle::Status	Implementation::Dump(const elle::Natural32 margin)
-	const
+      elle::Status      Implementation::Dump(const elle::Natural32 margin)
+        const
       {
-	elle::String	alignment(margin, ' ');
+        elle::String    alignment(margin, ' ');
 
-	enter();
+        enter();
 
-	std::cout << alignment << "[Implementation] Cirkle" << std::endl;
+        std::cout << alignment << "[Implementation] Cirkle" << std::endl;
 
-	// dump the parent.
-	if (Holeable::Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the holeabl");
+        // dump the parent.
+        if (Holeable::Dump(margin + 2) == elle::StatusError)
+          escape("unable to dump the holeabl");
 
-	// dump the machine.
-	if (Cirkle::Computer->Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the machine");
+        // dump the machine.
+        if (Cirkle::Computer->Dump(margin + 2) == elle::StatusError)
+          escape("unable to dump the machine");
 
-	leave();
+        leave();
       }
 
     }

@@ -32,25 +32,25 @@ namespace hole
       /// XXX
       ///
       class Bank:
-	public elle::Object
+        public elle::Object
       {
       public:
-	//
-	// methods
-	//
-	// XXX
+        //
+        // methods
+        //
+        // XXX
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	elle::Status		Dump(const elle::Natural32 = 0) const;
+        // dumpable
+        elle::Status            Dump(const elle::Natural32 = 0) const;
 
-	//
-	// attributes
-	//
-	// XXX
+        //
+        // attributes
+        //
+        // XXX
       };
 
     }

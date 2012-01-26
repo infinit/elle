@@ -37,29 +37,29 @@ namespace hole
       /// the machine.
       ///
       class Machine:
-	public elle::Entity
+        public elle::Entity
       {
       public:
-	//
-	// methods
-	//
-	elle::Status		Put(const nucleus::Address&,
-				    const nucleus::ImmutableBlock&);
-	elle::Status		Put(const nucleus::Address&,
-				    const nucleus::MutableBlock&);
-	elle::Status		Get(const nucleus::Address&,
-				    nucleus::ImmutableBlock&);
-	elle::Status		Get(const nucleus::Address&,
-				    const nucleus::Version&,
-				    nucleus::MutableBlock&);
-	elle::Status		Kill(const nucleus::Address&);
+        //
+        // methods
+        //
+        elle::Status            Put(const nucleus::Address&,
+                                    const nucleus::ImmutableBlock&);
+        elle::Status            Put(const nucleus::Address&,
+                                    const nucleus::MutableBlock&);
+        elle::Status            Get(const nucleus::Address&,
+                                    nucleus::ImmutableBlock&);
+        elle::Status            Get(const nucleus::Address&,
+                                    const nucleus::Version&,
+                                    nucleus::MutableBlock&);
+        elle::Status            Kill(const nucleus::Address&);
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	elle::Status		Dump(const elle::Natural32 = 0) const;
+        // dumpable
+        elle::Status            Dump(const elle::Natural32 = 0) const;
       };
 
     }

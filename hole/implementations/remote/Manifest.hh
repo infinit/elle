@@ -35,13 +35,13 @@ namespace hole
       ///
       /// the component name.
       ///
-      extern const elle::Character	Component[];
+      extern const elle::Character      Component[];
 
       ///
       /// this constants defines the number of tags to reserve for
       /// this implementation.
       ///
-      const elle::Natural32		Tags = 20;
+      const elle::Natural32             Tags = 20;
 
     }
   }
@@ -73,17 +73,17 @@ namespace hole
       // enumerations
       //
       enum Tag
-	{
-	  TagChallenge = elle::Range<Component>::First + 1,
-	  TagAuthenticated,
+        {
+          TagChallenge = elle::Range<Component>::First + 1,
+          TagAuthenticated,
 
-	  TagPush,
-	  TagPull,
-	  TagBlock,
-	  TagWipe,
+          TagPush,
+          TagPull,
+          TagBlock,
+          TagWipe,
 
-	  TagException
-	};
+          TagException
+        };
 
     }
   }
@@ -98,22 +98,22 @@ namespace hole
 ///
 
 message(hole::implementations::remote::TagChallenge,
-	parameters(lune::Passport&));
+        parameters(lune::Passport&));
 message(hole::implementations::remote::TagAuthenticated,
-	parameters());
+        parameters());
 
 message(hole::implementations::remote::TagPush,
-	parameters(nucleus::Address&,
-		   nucleus::Derivable<nucleus::Block>&));
+        parameters(nucleus::Address&,
+                   nucleus::Derivable<nucleus::Block>&));
 message(hole::implementations::remote::TagPull,
-	parameters(nucleus::Address&,
-		   nucleus::Version&));
+        parameters(nucleus::Address&,
+                   nucleus::Version&));
 message(hole::implementations::remote::TagBlock,
-	parameters(nucleus::Derivable<nucleus::Block>&));
+        parameters(nucleus::Derivable<nucleus::Block>&));
 message(hole::implementations::remote::TagWipe,
-	parameters(nucleus::Address&));
+        parameters(nucleus::Address&));
 
 message(hole::implementations::remote::TagException,
-	parameters(elle::Report&));
+        parameters(elle::Report&));
 
 #endif

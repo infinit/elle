@@ -37,31 +37,31 @@ namespace hole
     //
     // interface
     //
-    virtual elle::Status	Join() = 0;
-    virtual elle::Status	Leave() = 0;
+    virtual elle::Status        Join() = 0;
+    virtual elle::Status        Leave() = 0;
 
-    virtual elle::Status	Put(const nucleus::Address&,
-				    const nucleus::ImmutableBlock&) = 0;
-    virtual elle::Status	Put(const nucleus::Address&,
-				    const nucleus::MutableBlock&) = 0;
-    virtual elle::Status	Get(const nucleus::Address&,
-				    nucleus::ImmutableBlock&) = 0;
-    virtual elle::Status	Get(const nucleus::Address&,
-				    const nucleus::Version&,
-				    nucleus::MutableBlock&) = 0;
-    virtual elle::Status	Kill(const nucleus::Address&) = 0;
+    virtual elle::Status        Put(const nucleus::Address&,
+                                    const nucleus::ImmutableBlock&) = 0;
+    virtual elle::Status        Put(const nucleus::Address&,
+                                    const nucleus::MutableBlock&) = 0;
+    virtual elle::Status        Get(const nucleus::Address&,
+                                    nucleus::ImmutableBlock&) = 0;
+    virtual elle::Status        Get(const nucleus::Address&,
+                                    const nucleus::Version&,
+                                    nucleus::MutableBlock&) = 0;
+    virtual elle::Status        Kill(const nucleus::Address&) = 0;
 
     //
     // interfaces
     //
 
     // dumpable
-    elle::Status		Dump(const elle::Natural32 = 0) const;
+    elle::Status                Dump(const elle::Natural32 = 0) const;
 
     //
     // attributes
     //
-    nucleus::Network		network;
+    nucleus::Network            network;
   };
 
 }

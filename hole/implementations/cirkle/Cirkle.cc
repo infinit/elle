@@ -30,12 +30,12 @@ namespace hole
       ///
       /// this value defines the component's name.
       ///
-      const elle::Character		Component[] = "cirkle";
+      const elle::Character             Component[] = "cirkle";
 
       ///
       /// XXX
       ///
-      Machine*				Cirkle::Computer = NULL;
+      Machine*                          Cirkle::Computer = NULL;
 
     }
   }

@@ -40,24 +40,24 @@ namespace hole
     //
     // static methods
     //
-    static elle::Status		Initialize();
-    static elle::Status		Clean();
+    static elle::Status         Initialize();
+    static elle::Status         Clean();
 
-    static elle::Status		Origin(nucleus::Address&);
-    static elle::Status		Push(const nucleus::Address&,
-				     const nucleus::Block&);
-    static elle::Status		Pull(const nucleus::Address&,
-				     const nucleus::Version&,
-				     nucleus::Block&);
-    static elle::Status		Wipe(const nucleus::Address&);
+    static elle::Status         Origin(nucleus::Address&);
+    static elle::Status         Push(const nucleus::Address&,
+                                     const nucleus::Block&);
+    static elle::Status         Pull(const nucleus::Address&,
+                                     const nucleus::Version&,
+                                     nucleus::Block&);
+    static elle::Status         Wipe(const nucleus::Address&);
 
     //
     // static attributes
     //
-    static lune::Descriptor	Descriptor;
-    static lune::Passport	Passport;
+    static lune::Descriptor     Descriptor;
+    static lune::Passport       Passport;
 
-    static Holeable*		Implementation;
+    static Holeable*            Implementation;
   };
 
 }

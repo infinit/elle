@@ -35,35 +35,35 @@ namespace hole
       /// the cirkle hole implementation.
       ///
       class Implementation:
-	public Holeable
+        public Holeable
       {
       public:
-	//
-	// constructors & destructors
-	//
-	Implementation(const nucleus::Network&);
+        //
+        // constructors & destructors
+        //
+        Implementation(const nucleus::Network&);
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// holeable
-	elle::Status		Join();
-	elle::Status		Leave();
+        // holeable
+        elle::Status            Join();
+        elle::Status            Leave();
 
-	elle::Status		Put(const nucleus::Address&,
-				    const nucleus::ImmutableBlock&);
-	elle::Status		Put(const nucleus::Address&,
-				    const nucleus::MutableBlock&);
-	elle::Status		Get(const nucleus::Address&,
-				    nucleus::ImmutableBlock&);
-	elle::Status		Get(const nucleus::Address&,
-				    const nucleus::Version&,
-				    nucleus::MutableBlock&);
-	elle::Status		Kill(const nucleus::Address&);
+        elle::Status            Put(const nucleus::Address&,
+                                    const nucleus::ImmutableBlock&);
+        elle::Status            Put(const nucleus::Address&,
+                                    const nucleus::MutableBlock&);
+        elle::Status            Get(const nucleus::Address&,
+                                    nucleus::ImmutableBlock&);
+        elle::Status            Get(const nucleus::Address&,
+                                    const nucleus::Version&,
+                                    nucleus::MutableBlock&);
+        elle::Status            Kill(const nucleus::Address&);
 
-	// dumpable
-	elle::Status		Dump(const elle::Natural32 = 0) const;
+        // dumpable
+        elle::Status            Dump(const elle::Natural32 = 0) const;
       };
 
     }

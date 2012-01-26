@@ -35,65 +35,65 @@ namespace hole
       /// i.e the server.
       ///
       class Client:
-	public elle::Entity
+        public elle::Entity
       {
       public:
-	//
-	// enumerations
-	//
-	enum State
-	  {
-	    StateUnknown,
-	    StateConnected,
-	    StateAuthenticated
-	  };
+        //
+        // enumerations
+        //
+        enum State
+          {
+            StateUnknown,
+            StateConnected,
+            StateAuthenticated
+          };
 
-	//
-	// constructors & destructors
-	//
-	Client(const elle::Locus&);
-	~Client();
+        //
+        // constructors & destructors
+        //
+        Client(const elle::Locus&);
+        ~Client();
 
-	//
-	// methods
-	//
-	elle::Status		Launch();
+        //
+        // methods
+        //
+        elle::Status            Launch();
 
-	elle::Status		Put(const nucleus::Address&,
-				    const nucleus::ImmutableBlock&);
-	elle::Status		Put(const nucleus::Address&,
-				    const nucleus::MutableBlock&);
-	elle::Status		Get(const nucleus::Address&,
-				    nucleus::ImmutableBlock&);
-	elle::Status		Get(const nucleus::Address&,
-				    const nucleus::Version&,
-				    nucleus::MutableBlock&);
-	elle::Status		Kill(const nucleus::Address&);
+        elle::Status            Put(const nucleus::Address&,
+                                    const nucleus::ImmutableBlock&);
+        elle::Status            Put(const nucleus::Address&,
+                                    const nucleus::MutableBlock&);
+        elle::Status            Get(const nucleus::Address&,
+                                    nucleus::ImmutableBlock&);
+        elle::Status            Get(const nucleus::Address&,
+                                    const nucleus::Version&,
+                                    nucleus::MutableBlock&);
+        elle::Status            Kill(const nucleus::Address&);
 
-	//
-	// callbacks
-	//
-	elle::Status		Connected();
-	elle::Status		Disconnected();
-	elle::Status		Error(const elle::String&);
+        //
+        // callbacks
+        //
+        elle::Status            Connected();
+        elle::Status            Disconnected();
+        elle::Status            Error(const elle::String&);
 
-	elle::Status		Authenticated();
-	elle::Status		Exception(const elle::Report&);
+        elle::Status            Authenticated();
+        elle::Status            Exception(const elle::Report&);
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	elle::Status		Dump(const elle::Natural32 = 0) const;
+        // dumpable
+        elle::Status            Dump(const elle::Natural32 = 0) const;
 
-	//
-	// attributes
-	//
-	State			state;
+        //
+        // attributes
+        //
+        State                   state;
 
-	elle::Locus		locus;
-	elle::TCPSocket*	socket;
+        elle::Locus             locus;
+        elle::TCPSocket*        socket;
       };
 
     }

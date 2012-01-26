@@ -33,70 +33,70 @@ namespace hole
       /// i.e the machine.
       ///
       class Customer:
-	public elle::Entity
+        public elle::Entity
       {
       public:
-	//
-	// constants
-	//
-	static const elle::Natural32		Timeout;
+        //
+        // constants
+        //
+        static const elle::Natural32            Timeout;
 
-	//
-	// enumerations
-	//
-	enum State
-	  {
-	    StateUnknown,
-	    StateConnected,
-	    StateAuthenticated,
-	    StateDead
-	  };
+        //
+        // enumerations
+        //
+        enum State
+          {
+            StateUnknown,
+            StateConnected,
+            StateAuthenticated,
+            StateDead
+          };
 
-	//
-	// constructors & destructors
-	//
-	Customer();
-	~Customer();
+        //
+        // constructors & destructors
+        //
+        Customer();
+        ~Customer();
 
-	//
-	// methods
-	//
-	elle::Status		Create(elle::TCPSocket*);
+        //
+        // methods
+        //
+        elle::Status            Create(elle::TCPSocket*);
 
-	//
-	// callbacks
-	//
-	elle::Status		Disconnected();
-	elle::Status		Error(const elle::String&);
+        //
+        // callbacks
+        //
+        elle::Status            Disconnected();
+        elle::Status            Error(const elle::String&);
 
-	elle::Status		Abort();
+        elle::Status            Abort();
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	elle::Status		Dump(const elle::Natural32 = 0) const;
+        // dumpable
+        elle::Status            Dump(const elle::Natural32 = 0) const;
 
-	//
-	// signals
-	//
-	struct
-	{
-	  elle::Signal<
-	    elle::Parameters<
-  	      Customer*
-	      >
-	    >			dead;
-	}			signal;
+        //
+        // signals
+        //
+        struct
+        {
+          elle::Signal<
+            elle::Parameters<
+              Customer*
+              >
+            >                   dead;
+        }                       signal;
 
-	//
-	// attributes
-	//
-	State			state;
+        //
+        // attributes
+        //
+        State                   state;
 
-	elle::TCPSocket*	socket;
-	elle::Timer*		timer;
+        elle::TCPSocket*        socket;
+        elle::Timer*            timer;
       };
 
     }

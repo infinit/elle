@@ -24,7 +24,7 @@ namespace hole
   ///
   /// default constructor.
   ///
-  Holeable::Holeable(const nucleus::Network&			network):
+  Holeable::Holeable(const nucleus::Network&                    network):
     network(network)
   {
   }
@@ -43,9 +43,9 @@ namespace hole
   ///
   /// this method dumps the implementation.
   ///
-  elle::Status		Holeable::Dump(const elle::Natural32	margin) const
+  elle::Status          Holeable::Dump(const elle::Natural32    margin) const
   {
-    elle::String	alignment(margin, ' ');
+    elle::String        alignment(margin, ' ');
 
     enter();
 

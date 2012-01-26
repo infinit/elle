@@ -35,47 +35,47 @@ namespace hole
       /// XXX
       ///
       class Neighbourhood:
-	public elle::Entity
+        public elle::Entity
       {
       public:
-	//
-	// types
-	//
-	typedef std::pair<const elle::Locus, Host*>	Value;
-	typedef std::map<const elle::Locus, Host*>	Container;
-	typedef typename Container::iterator		Iterator;
-	typedef typename Container::const_iterator	Scoutor;
+        //
+        // types
+        //
+        typedef std::pair<const elle::Locus, Host*>     Value;
+        typedef std::map<const elle::Locus, Host*>      Container;
+        typedef typename Container::iterator            Iterator;
+        typedef typename Container::const_iterator      Scoutor;
 
-	//
-	// constructors & destructors
-	//
-	~Neighbourhood();
+        //
+        // constructors & destructors
+        //
+        ~Neighbourhood();
 
-	//
-	// methods
-	//
-	elle::Status		Add(const elle::Locus&,
-				    Host*);
-	elle::Status		Exist(const elle::Locus&) const;
-	elle::Status		Retrieve(const elle::Locus&,
-					 Host*&) const;
-	elle::Status		Remove(const elle::Locus&);
-	elle::Status		Locate(const elle::Locus&,
-				       Scoutor&) const;
-	elle::Status		Locate(const elle::Locus&,
-				       Iterator&);
+        //
+        // methods
+        //
+        elle::Status            Add(const elle::Locus&,
+                                    Host*);
+        elle::Status            Exist(const elle::Locus&) const;
+        elle::Status            Retrieve(const elle::Locus&,
+                                         Host*&) const;
+        elle::Status            Remove(const elle::Locus&);
+        elle::Status            Locate(const elle::Locus&,
+                                       Scoutor&) const;
+        elle::Status            Locate(const elle::Locus&,
+                                       Iterator&);
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	elle::Status		Dump(const elle::Natural32 = 0) const;
+        // dumpable
+        elle::Status            Dump(const elle::Natural32 = 0) const;
 
-	//
-	// attributes
-	//
-	Container		container;
+        //
+        // attributes
+        //
+        Container               container;
       };
 
     }

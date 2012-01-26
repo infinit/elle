@@ -32,41 +32,41 @@ namespace hole
       /// XXX
       ///
       class Synchroniser:
-	public elle::Entity
+        public elle::Entity
       {
       public:
-	//
-	// methods
-	//
-	elle::Status		Start();
+        //
+        // methods
+        //
+        elle::Status            Start();
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	elle::Status		Dump(const elle::Natural32 = 0) const;
+        // dumpable
+        elle::Status            Dump(const elle::Natural32 = 0) const;
 
-	//
-	// callbacks
-	//
-	elle::Status		Run();
+        //
+        // callbacks
+        //
+        elle::Status            Run();
 
-	//
-	// signals
-	//
-	struct
-	{
-	  elle::Signal<
-	    elle::Parameters<
-	      >
-	    >			synchronised;
-	}			signal;
+        //
+        // signals
+        //
+        struct
+        {
+          elle::Signal<
+            elle::Parameters<
+              >
+            >                   synchronised;
+        }                       signal;
 
-	//
-	// attributes
-	//
-	elle::Timer		timer;
+        //
+        // attributes
+        //
+        elle::Timer             timer;
       };
 
     }

@@ -30,8 +30,8 @@ namespace hole
       ///
       RoutingTable::~RoutingTable()
       {
-	// simply clear the content.
-	this->container.clear();
+        // simply clear the content.
+        this->container.clear();
       }
 
 //
@@ -41,57 +41,57 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	RoutingTable::Add(const Label&		label,
-					  Neighbour*		neighbour)
+      elle::Status      RoutingTable::Add(const Label&          label,
+                                          Neighbour*            neighbour)
       {
-	std::pair<RoutingTable::Iterator, elle::Boolean>	result;
+        std::pair<RoutingTable::Iterator, elle::Boolean>        result;
 
-	enter();
+        enter();
 
-	// insert the neighbour in the container.
-	result = this->container.insert(std::pair<const Label,
-						  Neighbour*>(label,
-							      neighbour));
+        // insert the neighbour in the container.
+        result = this->container.insert(std::pair<const Label,
+                                                  Neighbour*>(label,
+                                                              neighbour));
 
-	// check if the insertion was successful.
-	if (result.second == false)
-	  escape("unable to insert the neighbour in the container");
+        // check if the insertion was successful.
+        if (result.second == false)
+          escape("unable to insert the neighbour in the container");
 
-	leave();
+        leave();
       }
 
       ///
       /// XXX
       ///
-      elle::Status	RoutingTable::Exist(const Label&	label)
+      elle::Status      RoutingTable::Exist(const Label&        label)
       {
-	enter();
+        enter();
 
-	// try to locate the label.
-	if (this->Locate(label) == elle::StatusTrue)
-	  true();
+        // try to locate the label.
+        if (this->Locate(label) == elle::StatusTrue)
+          true();
 
-	false();
+        false();
       }
 
       ///
       /// XXX
       ///
-      elle::Status	RoutingTable::Retrieve(const Label&	label,
-					       Neighbour*&	neighbour)
+      elle::Status      RoutingTable::Retrieve(const Label&     label,
+                                               Neighbour*&      neighbour)
       {
-	RoutingTable::Iterator	iterator;
+        RoutingTable::Iterator  iterator;
 
-	enter();
+        enter();
 
-	// try to locate the label.
-	if (this->Locate(label, &iterator) == elle::StatusFalse)
-	  escape("unable to locate the given label");
+        // try to locate the label.
+        if (this->Locate(label, &iterator) == elle::StatusFalse)
+          escape("unable to locate the given label");
 
-	// return the associated neighbour.
-	neighbour = iterator->second;
+        // return the associated neighbour.
+        neighbour = iterator->second;
 
-	leave();
+        leave();
       }
 
       ///
@@ -100,42 +100,42 @@ namespace hole
       /// note that the neighbour objects are not deleted since the
       /// routing table entries reference the neighbourhood.
       ///
-      elle::Status	RoutingTable::Remove(const Label&	label)
+      elle::Status      RoutingTable::Remove(const Label&       label)
       {
-	RoutingTable::Iterator	iterator;
+        RoutingTable::Iterator  iterator;
 
-	enter();
+        enter();
 
-	// try to locate the label.
-	if (this->Locate(label, &iterator) == elle::StatusFalse)
-	  escape("unable to locate the given label");
+        // try to locate the label.
+        if (this->Locate(label, &iterator) == elle::StatusFalse)
+          escape("unable to locate the given label");
 
-	// erase the iterator.
-	this->container.erase(iterator);
+        // erase the iterator.
+        this->container.erase(iterator);
 
-	leave();
+        leave();
       }
 
       ///
       /// XXX
       ///
-      elle::Status	RoutingTable::Locate(const Label&	label,
-					     Iterator*		iterator)
+      elle::Status      RoutingTable::Locate(const Label&       label,
+                                             Iterator*          iterator)
       {
-	RoutingTable::Iterator	i;
+        RoutingTable::Iterator  i;
 
-	enter();
+        enter();
 
-	// try to locate the neighbour.
-	if ((i = this->container.find(label)) != this->container.end())
-	  {
-	    if (iterator != NULL)
-	      *iterator = i;
+        // try to locate the neighbour.
+        if ((i = this->container.find(label)) != this->container.end())
+          {
+            if (iterator != NULL)
+              *iterator = i;
 
-	    true();
-	  }
+            true();
+          }
 
-	false();
+        false();
       }
 
 //
@@ -145,38 +145,38 @@ namespace hole
       ///
       /// this function dumps a routing table object.
       ///
-      elle::Status	RoutingTable::Dump(elle::Natural32	margin) const
+      elle::Status      RoutingTable::Dump(elle::Natural32      margin) const
       {
-	elle::String		alignment(margin, ' ');
-	RoutingTable::Scoutor	scoutor;
+        elle::String            alignment(margin, ' ');
+        RoutingTable::Scoutor   scoutor;
 
-	enter();
+        enter();
 
-	// display the name.
-	std::cout << alignment << "[RoutingTable]" << std::endl;
+        // display the name.
+        std::cout << alignment << "[RoutingTable]" << std::endl;
 
-	// go through the entries.
-	for (scoutor = this->container.begin();
-	     scoutor != this->container.end();
-	     scoutor++)
-	  {
-	    // dump the entry.
-	    std::cout << alignment << elle::Dumpable::Shift
-		      << "[Entry]" << std::endl;
+        // go through the entries.
+        for (scoutor = this->container.begin();
+             scoutor != this->container.end();
+             scoutor++)
+          {
+            // dump the entry.
+            std::cout << alignment << elle::Dumpable::Shift
+                      << "[Entry]" << std::endl;
 
-	    // dump the label.
-	    if (scoutor->first.Dump(margin + 4) == elle::StatusError)
-	      escape("unable to dump the label");
+            // dump the label.
+            if (scoutor->first.Dump(margin + 4) == elle::StatusError)
+              escape("unable to dump the label");
 
-	    // dump the neighbour address.
-	    std::cout << alignment
-		      << elle::Dumpable::Shift
-		      << elle::Dumpable::Shift
-		      << "[Neighbour] "
-		      << std::hex << scoutor->second << std::endl;
-	  }
+            // dump the neighbour address.
+            std::cout << alignment
+                      << elle::Dumpable::Shift
+                      << elle::Dumpable::Shift
+                      << "[Neighbour] "
+                      << std::hex << scoutor->second << std::endl;
+          }
 
-	leave();
+        leave();
       }
 
     }

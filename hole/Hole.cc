@@ -25,22 +25,22 @@ namespace hole
   ///
   /// this value defines the component's name.
   ///
-  const elle::Character		Component[] = "hole";
+  const elle::Character         Component[] = "hole";
 
   ///
   /// this variable contains the network descriptor.
   ///
-  lune::Descriptor		Hole::Descriptor;
+  lune::Descriptor              Hole::Descriptor;
 
   ///
   /// this variable contains the device passport.
   ///
-  lune::Passport		Hole::Passport;
+  lune::Passport                Hole::Passport;
 
   ///
   /// this variable holds the hole implementation.
   ///
-  Holeable*			Hole::Implementation = NULL;
+  Holeable*                     Hole::Implementation = NULL;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -50,9 +50,9 @@ namespace hole
   /// this method initializes the hole by allocating and initializing
   /// the implementation.
   ///
-  elle::Status		Hole::Initialize()
+  elle::Status          Hole::Initialize()
   {
-    nucleus::Network	network;
+    nucleus::Network    network;
 
     enter();
 
@@ -66,19 +66,19 @@ namespace hole
     {
       // does the network exist.
       if (Hole::Descriptor.Exist(Infinit::Network) == elle::StatusFalse)
-	escape("this network does not seem to exist");
+        escape("this network does not seem to exist");
 
       // load the descriptor.
       if (Hole::Descriptor.Load(Infinit::Network) == elle::StatusError)
-	escape("unable to load the descriptor");
+        escape("unable to load the descriptor");
 
       // pull the attributes.
       if (Hole::Descriptor.Pull() == elle::StatusError)
-	escape("unable to pull the descriptor's attributes");
+        escape("unable to pull the descriptor's attributes");
 
       // validate the descriptor.
       if (Hole::Descriptor.Validate(Infinit::Authority) == elle::StatusError)
-	escape("unable to validate the descriptor");
+        escape("unable to validate the descriptor");
     }
 
     //
@@ -87,15 +87,15 @@ namespace hole
     {
       // does the network exist.
       if (Hole::Passport.Exist() == elle::StatusFalse)
-	escape("the device passport does not seem to exist");
+        escape("the device passport does not seem to exist");
 
       // load the passport.
       if (Hole::Passport.Load() == elle::StatusError)
-	escape("unable to load the passport");
+        escape("unable to load the passport");
 
       // validate the passport.
       if (Hole::Passport.Validate(Infinit::Authority) == elle::StatusError)
-	escape("unable to validate the passport");
+        escape("unable to validate the passport");
     }
 
     // enable the meta logging.
@@ -110,42 +110,42 @@ namespace hole
     switch (Hole::Descriptor.model.type)
       {
       case Model::TypeLocal:
-	{
-	  // allocate the instance.
-	  Hole::Implementation =
-	    new implementations::local::Implementation(network);
+        {
+          // allocate the instance.
+          Hole::Implementation =
+            new implementations::local::Implementation(network);
 
-	  break;
-	}
+          break;
+        }
       case Model::TypeRemote:
-	{
-	  // allocate the instance.
-	  Hole::Implementation =
-	    new implementations::remote::Implementation(network);
+        {
+          // allocate the instance.
+          Hole::Implementation =
+            new implementations::remote::Implementation(network);
 
-	  break;
-	}
+          break;
+        }
       case Model::TypeSlug:
         {
-	  // allocate the instance.
+          // allocate the instance.
           Hole::Implementation =
             new implementations::slug::Implementation(network);
 
           break;
         }
       case Model::TypeCirkle:
-	{
-	  /* XXX
-	  // allocate the instance.
-	  Hole::Implementation =
-	    new implementations::cirkle::Implementation(network);
-	  */
+        {
+          /* XXX
+          // allocate the instance.
+          Hole::Implementation =
+            new implementations::cirkle::Implementation(network);
+          */
 
-	  break;
-	}
+          break;
+        }
       default:
-	escape("unknown or not-yet-supported model '%u'",
-	       Hole::Descriptor.model.type);
+        escape("unknown or not-yet-supported model '%u'",
+               Hole::Descriptor.model.type);
       }
 
     // join the network
@@ -161,7 +161,7 @@ namespace hole
   /// the components are recycled just to make sure the memory is
   /// released before the Meta allocator terminates.
   ///
-  elle::Status		Hole::Clean()
+  elle::Status          Hole::Clean()
   {
     enter();
 
@@ -178,7 +178,7 @@ namespace hole
   ///
   /// this method returns the address of the root block i.e the origin.
   ///
-  elle::Status		Hole::Origin(nucleus::Address&		address)
+  elle::Status          Hole::Origin(nucleus::Address&          address)
   {
     enter();
 
@@ -191,8 +191,8 @@ namespace hole
   ///
   /// this method stores the given block.
   ///
-  elle::Status		Hole::Push(const nucleus::Address&	address,
-				   const nucleus::Block&	block)
+  elle::Status          Hole::Push(const nucleus::Address&      address,
+                                   const nucleus::Block&        block)
   {
     enter();
 
@@ -203,38 +203,38 @@ namespace hole
     switch (address.family)
       {
       case nucleus::FamilyContentHashBlock:
-	{
-	  const nucleus::ImmutableBlock*	ib;
+        {
+          const nucleus::ImmutableBlock*        ib;
 
-	  // cast to an immutable block.
-	  ib = static_cast<const nucleus::ImmutableBlock*>(&block);
+          // cast to an immutable block.
+          ib = static_cast<const nucleus::ImmutableBlock*>(&block);
 
-	  // store the immutable block.
-	  if (Hole::Implementation->Put(address, *ib) == elle::StatusError)
-	    escape("unable to put the block");
+          // store the immutable block.
+          if (Hole::Implementation->Put(address, *ib) == elle::StatusError)
+            escape("unable to put the block");
 
-	  break;
-	}
+          break;
+        }
       case nucleus::FamilyPublicKeyBlock:
       case nucleus::FamilyOwnerKeyBlock:
       case nucleus::FamilyImprintBlock:
-	{
-	  const nucleus::MutableBlock*		mb;
+        {
+          const nucleus::MutableBlock*          mb;
 
-	  // cast to a mutable block.
-	  mb = static_cast<const nucleus::MutableBlock*>(&block);
+          // cast to a mutable block.
+          mb = static_cast<const nucleus::MutableBlock*>(&block);
 
-	  // store the mutable block.
-	  if (Hole::Implementation->Put(address, *mb) == elle::StatusError)
-	    escape("unable to put the block");
+          // store the mutable block.
+          if (Hole::Implementation->Put(address, *mb) == elle::StatusError)
+            escape("unable to put the block");
 
-	  break;
-	}
+          break;
+        }
       default:
-	{
-	  escape("unknown block family '%u'",
-		 address.family);
-	}
+        {
+          escape("unknown block family '%u'",
+                 address.family);
+        }
       }
 
     leave();
@@ -243,9 +243,9 @@ namespace hole
   ///
   /// this method returns the block associated with the given address.
   ///
-  elle::Status		Hole::Pull(const nucleus::Address&	address,
-				   const nucleus::Version&	version,
-				   nucleus::Block&		block)
+  elle::Status          Hole::Pull(const nucleus::Address&      address,
+                                   const nucleus::Version&      version,
+                                   nucleus::Block&              block)
   {
     enter();
 
@@ -254,39 +254,39 @@ namespace hole
     switch (address.family)
       {
       case nucleus::FamilyContentHashBlock:
-	{
-	  nucleus::ImmutableBlock*	ib;
+        {
+          nucleus::ImmutableBlock*      ib;
 
-	  // cast to an immutable block.
-	  ib = static_cast<nucleus::ImmutableBlock*>(&block);
+          // cast to an immutable block.
+          ib = static_cast<nucleus::ImmutableBlock*>(&block);
 
-	  // retrieve the immutable block.
-	  if (Hole::Implementation->Get(address, *ib) == elle::StatusError)
-	    escape("unable to get the block");
+          // retrieve the immutable block.
+          if (Hole::Implementation->Get(address, *ib) == elle::StatusError)
+            escape("unable to get the block");
 
-	  break;
-	}
+          break;
+        }
       case nucleus::FamilyPublicKeyBlock:
       case nucleus::FamilyOwnerKeyBlock:
       case nucleus::FamilyImprintBlock:
-	{
-	  nucleus::MutableBlock*	mb;
+        {
+          nucleus::MutableBlock*        mb;
 
-	  // cast to a mutable block.
-	  mb = static_cast<nucleus::MutableBlock*>(&block);
+          // cast to a mutable block.
+          mb = static_cast<nucleus::MutableBlock*>(&block);
 
-	  // retrieve the mutable block.
-	  if (Hole::Implementation->Get(address, version,
-					*mb) == elle::StatusError)
-	    escape("unable to get the block");
+          // retrieve the mutable block.
+          if (Hole::Implementation->Get(address, version,
+                                        *mb) == elle::StatusError)
+            escape("unable to get the block");
 
-	  break;
-	}
+          break;
+        }
       default:
-	{
-	  escape("unknown block family '%u'",
-		 address.family);
-	}
+        {
+          escape("unknown block family '%u'",
+                 address.family);
+        }
       }
 
     leave();
@@ -295,7 +295,7 @@ namespace hole
   ///
   /// this method removes the block associated with the given address.
   ///
-  elle::Status		Hole::Wipe(const nucleus::Address&	address)
+  elle::Status          Hole::Wipe(const nucleus::Address&      address)
   {
     enter();
 

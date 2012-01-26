@@ -34,47 +34,47 @@ namespace hole
       /// XXX
       ///
       class Guestlist:
-	public elle::Entity
+        public elle::Entity
       {
       public:
-	//
-	// types
-	//
-	typedef std::pair<elle::TCPSocket*, Host*>	Value;
-	typedef std::map<elle::TCPSocket*, Host*>	Container;
-	typedef typename Container::iterator		Iterator;
-	typedef typename Container::const_iterator	Scoutor;
+        //
+        // types
+        //
+        typedef std::pair<elle::TCPSocket*, Host*>      Value;
+        typedef std::map<elle::TCPSocket*, Host*>       Container;
+        typedef typename Container::iterator            Iterator;
+        typedef typename Container::const_iterator      Scoutor;
 
-	//
-	// constructors & destructors
-	//
-	~Guestlist();
+        //
+        // constructors & destructors
+        //
+        ~Guestlist();
 
-	//
-	// methods
-	//
-	elle::Status		Add(elle::TCPSocket*,
-				    Host*);
-	elle::Status		Exist(elle::TCPSocket*) const;
-	elle::Status		Retrieve(elle::TCPSocket*,
-					 Host*&) const;
-	elle::Status		Remove(elle::TCPSocket*);
-	elle::Status		Locate(elle::TCPSocket*,
-				       Scoutor&) const;
-	elle::Status		Locate(elle::TCPSocket*,
-				       Iterator&);
+        //
+        // methods
+        //
+        elle::Status            Add(elle::TCPSocket*,
+                                    Host*);
+        elle::Status            Exist(elle::TCPSocket*) const;
+        elle::Status            Retrieve(elle::TCPSocket*,
+                                         Host*&) const;
+        elle::Status            Remove(elle::TCPSocket*);
+        elle::Status            Locate(elle::TCPSocket*,
+                                       Scoutor&) const;
+        elle::Status            Locate(elle::TCPSocket*,
+                                       Iterator&);
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	elle::Status		Dump(const elle::Natural32 = 0) const;
+        // dumpable
+        elle::Status            Dump(const elle::Natural32 = 0) const;
 
-	//
-	// attributes
-	//
-	Container		container;
+        //
+        // attributes
+        //
+        Container               container;
       };
 
     }

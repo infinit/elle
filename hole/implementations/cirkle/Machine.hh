@@ -38,87 +38,87 @@ namespace hole
       /// XXX represents the current host
       ///
       class Machine:
-	public elle::Entity
+        public elle::Entity
       {
       public:
-	//
-	// constants
-	//
-	struct					Default
-	{
-	  static const elle::Natural16		Port;
-	};
+        //
+        // constants
+        //
+        struct                                  Default
+        {
+          static const elle::Natural16          Port;
+        };
 
-	static const elle::Natural32		Frequency;
+        static const elle::Natural32            Frequency;
 
-	//
-	// enumerations
-	//
-	enum State
-	  {
-	    StateUnauthenticated,
-	    StateAuthenticated
-	  };
+        //
+        // enumerations
+        //
+        enum State
+          {
+            StateUnauthenticated,
+            StateAuthenticated
+          };
 
-	//
-	// constructors & destructors
-	//
-	Machine();
+        //
+        // constructors & destructors
+        //
+        Machine();
 
-	//
-	// methods
-	//
-	elle::Status		Launch();
+        //
+        // methods
+        //
+        elle::Status            Launch();
 
-	elle::Status		Put(const nucleus::Address&,
-				    const nucleus::ImmutableBlock&);
-	elle::Status		Put(const nucleus::Address&,
-				    const nucleus::MutableBlock&);
-	elle::Status		Get(const nucleus::Address&,
-				    nucleus::ImmutableBlock&);
-	elle::Status		Get(const nucleus::Address&,
-				    const nucleus::Version&,
-				    nucleus::MutableBlock&);
-	elle::Status		Kill(const nucleus::Address&);
+        elle::Status            Put(const nucleus::Address&,
+                                    const nucleus::ImmutableBlock&);
+        elle::Status            Put(const nucleus::Address&,
+                                    const nucleus::MutableBlock&);
+        elle::Status            Get(const nucleus::Address&,
+                                    nucleus::ImmutableBlock&);
+        elle::Status            Get(const nucleus::Address&,
+                                    const nucleus::Version&,
+                                    nucleus::MutableBlock&);
+        elle::Status            Kill(const nucleus::Address&);
 
-	//
-	// callbacks
-	//
-	elle::Status		Connection(elle::Gate*);
+        //
+        // callbacks
+        //
+        elle::Status            Connection(elle::Gate*);
 
-	elle::Status		Challenge();
-	elle::Status		Passport(const lune::Passport&);
-	elle::Status		Port(const elle::Port&);
-	elle::Status		Authenticated();
-	elle::Status		Update(const Cluster&);
+        elle::Status            Challenge();
+        elle::Status            Passport(const lune::Passport&);
+        elle::Status            Port(const elle::Port&);
+        elle::Status            Authenticated();
+        elle::Status            Update(const Cluster&);
 
-	elle::Status		Gossip();
+        elle::Status            Gossip();
 
-	elle::Status		Push(const nucleus::Address&,
-				     const
-				       nucleus::Derivable<nucleus::Block>&);
-	elle::Status		Pull(const nucleus::Address&,
-				     const nucleus::Version&);
-	elle::Status		Wipe(const nucleus::Address&);
+        elle::Status            Push(const nucleus::Address&,
+                                     const
+                                       nucleus::Derivable<nucleus::Block>&);
+        elle::Status            Pull(const nucleus::Address&,
+                                     const nucleus::Version&);
+        elle::Status            Wipe(const nucleus::Address&);
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	elle::Status		Dump(const elle::Natural32 = 0) const;
+        // dumpable
+        elle::Status            Dump(const elle::Natural32 = 0) const;
 
-	//
-	// attributes
-	//
-	State			state;
+        //
+        // attributes
+        //
+        State                   state;
 
-	Neighbourhood		neighbourhood;
-	RoutingTable		routingtable;
+        Neighbourhood           neighbourhood;
+        RoutingTable            routingtable;
 
-	elle::Timer		timer;
+        elle::Timer             timer;
 
-	elle::Port		port;
+        elle::Port              port;
       };
 
     }

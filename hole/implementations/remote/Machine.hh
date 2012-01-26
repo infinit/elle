@@ -35,47 +35,47 @@ namespace hole
       /// this class represents the current host.
       ///
       class Machine:
-	public elle::Entity
+        public elle::Entity
       {
       public:
-	//
-	// enumerations
-	//
-	enum Role
-	  {
-	    RoleUnknown,
-	    RoleServer,
-	    RoleClient
-	  };
+        //
+        // enumerations
+        //
+        enum Role
+          {
+            RoleUnknown,
+            RoleServer,
+            RoleClient
+          };
 
-	//
-	// constructors & destructors
-	//
-	Machine();
-	~Machine();
+        //
+        // constructors & destructors
+        //
+        Machine();
+        ~Machine();
 
-	//
-	// methods
-	//
-	elle::Status		Launch();
+        //
+        // methods
+        //
+        elle::Status            Launch();
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	elle::Status		Dump(const elle::Natural32 = 0) const;
+        // dumpable
+        elle::Status            Dump(const elle::Natural32 = 0) const;
 
-	//
-	// attributes
-	//
-	Role			role;
+        //
+        // attributes
+        //
+        Role                    role;
 
-	union
-	{
-	  Server*		server;
-	  Client*		client;
-	};
+        union
+        {
+          Server*               server;
+          Client*               client;
+        };
       };
 
     }

@@ -43,7 +43,7 @@ namespace hole
         //
         // static attributes
         //
-        static Machine*		Computer;
+        static Machine*         Computer;
       };
 
     }

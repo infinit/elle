@@ -35,44 +35,44 @@ namespace hole
       /// XXX
       ///
       class Neighbourhood:
-	public elle::Entity
+        public elle::Entity
       {
       public:
-	//
-	// types
-	//
-	typedef std::map<const elle::Locus, Neighbour*>	Container;
-	typedef typename Container::iterator		Iterator;
-	typedef typename Container::const_iterator	Scoutor;
+        //
+        // types
+        //
+        typedef std::map<const elle::Locus, Neighbour*> Container;
+        typedef typename Container::iterator            Iterator;
+        typedef typename Container::const_iterator      Scoutor;
 
-	//
-	// constructors & destructors
-	//
-	~Neighbourhood();
+        //
+        // constructors & destructors
+        //
+        ~Neighbourhood();
 
-	//
-	// methods
-	//
-	elle::Status		Add(const elle::Locus&,
-				    Neighbour*);
-	elle::Status		Exist(const elle::Locus&);
-	elle::Status		Retrieve(const elle::Locus&,
-					 Neighbour*&);
-	elle::Status		Remove(const elle::Locus&);
-	elle::Status		Locate(const elle::Locus&,
-				       Iterator* = NULL);
+        //
+        // methods
+        //
+        elle::Status            Add(const elle::Locus&,
+                                    Neighbour*);
+        elle::Status            Exist(const elle::Locus&);
+        elle::Status            Retrieve(const elle::Locus&,
+                                         Neighbour*&);
+        elle::Status            Remove(const elle::Locus&);
+        elle::Status            Locate(const elle::Locus&,
+                                       Iterator* = NULL);
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	elle::Status		Dump(const elle::Natural32 = 0) const;
+        // dumpable
+        elle::Status            Dump(const elle::Natural32 = 0) const;
 
-	//
-	// attributes
-	//
-	Container		container;
+        //
+        // attributes
+        //
+        Container               container;
       };
 
     }

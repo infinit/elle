@@ -23,7 +23,7 @@ namespace hole
   /// hashing it.
   ///
   template <typename T>
-  elle::Status		Label::Create(const T&			parameter)
+  elle::Status          Label::Create(const T&                  parameter)
   {
     enter();
 
@@ -36,7 +36,7 @@ namespace hole
 
     // compute the digest based on the parameters including the family.
     if (elle::OneWay::Hash(parameter,
-			   *this->digest) == elle::StatusError)
+                           *this->digest) == elle::StatusError)
       escape("unable to hash the given parameter(s)");
 
     leave();

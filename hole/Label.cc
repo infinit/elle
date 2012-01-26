@@ -24,7 +24,7 @@ namespace hole
   ///
   /// this variable can easily be used for comparing with invalid labels.
   ///
-  const Label			Label::Null;
+  const Label                   Label::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -41,17 +41,17 @@ namespace hole
   ///
   /// this is the copy constructor.
   ///
-  Label::Label(const Label&				label):
+  Label::Label(const Label&                             label):
     Object(label)
   {
     // copy the digest, if present.
     if (label.digest != NULL)
       {
-	this->digest = new elle::Digest(*label.digest);
+        this->digest = new elle::Digest(*label.digest);
       }
     else
       {
-	this->digest = NULL;
+        this->digest = NULL;
       }
   }
 
@@ -72,7 +72,7 @@ namespace hole
   ///
   /// this operator compares two objects.
   ///
-  elle::Boolean		Label::operator==(const Label&	element) const
+  elle::Boolean         Label::operator==(const Label&  element) const
   {
     enter();
 
@@ -83,13 +83,13 @@ namespace hole
     // if both are NULL or equal return true, false otherwise
     if ((this->digest == NULL) || (element.digest == NULL))
       {
-	if (this->digest != element.digest)
-	  false();
+        if (this->digest != element.digest)
+          false();
       }
     else
       {
-	if (*this->digest != *element.digest)
-	  false();
+        if (*this->digest != *element.digest)
+          false();
       }
 
     true();
@@ -98,7 +98,7 @@ namespace hole
   ///
   /// this operator compares two objects.
   ///
-  elle::Boolean		Label::operator<(const Label&	element) const
+  elle::Boolean         Label::operator<(const Label&   element) const
   {
     enter();
 
@@ -133,9 +133,9 @@ namespace hole
   ///
   /// this function dumps an label object.
   ///
-  elle::Status		Label::Dump(elle::Natural32		margin) const
+  elle::Status          Label::Dump(elle::Natural32             margin) const
   {
-    elle::String	alignment(margin, ' ');
+    elle::String        alignment(margin, ' ');
 
     enter();
 
@@ -145,14 +145,14 @@ namespace hole
     // display the label depending on its value.
     if (*this == Label::Null)
       {
-	std::cout << alignment << elle::Dumpable::Shift
-		  << "[Digest] " << elle::none << std::endl;
+        std::cout << alignment << elle::Dumpable::Shift
+                  << "[Digest] " << elle::none << std::endl;
       }
     else
       {
-	// dump the digest.
-	if (this->digest->Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the digest");
+        // dump the digest.
+        if (this->digest->Dump(margin + 2) == elle::StatusError)
+          escape("unable to dump the digest");
       }
 
     leave();
@@ -165,21 +165,21 @@ namespace hole
   ///
   /// this method serializes the label object.
   ///
-  elle::Status		Label::Serialize(elle::Archive&	archive) const
+  elle::Status          Label::Serialize(elle::Archive& archive) const
   {
     enter();
 
     if (this->digest != NULL)
       {
-	// serialize the internal digest.
-	if (archive.Serialize(*this->digest) == elle::StatusError)
-	  escape("unable to serialize the digest");
+        // serialize the internal digest.
+        if (archive.Serialize(*this->digest) == elle::StatusError)
+          escape("unable to serialize the digest");
       }
     else
       {
-	// serialize 'none'.
-	if (archive.Serialize(elle::none) == elle::StatusError)
-	  escape("unable to serialize 'none'");
+        // serialize 'none'.
+        if (archive.Serialize(elle::none) == elle::StatusError)
+          escape("unable to serialize 'none'");
       }
 
     leave();
@@ -188,9 +188,9 @@ namespace hole
   ///
   /// this method extracts the label object.
   ///
-  elle::Status		Label::Extract(elle::Archive&		archive)
+  elle::Status          Label::Extract(elle::Archive&           archive)
   {
-    elle::Archive::Type	type;
+    elle::Archive::Type type;
 
     enter();
 
@@ -200,18 +200,18 @@ namespace hole
 
     if (type == elle::Archive::TypeNull)
       {
-	// nothing to do, keep the digest to NULL.
-	if (archive.Extract(elle::none) == elle::StatusError)
-	  escape("unable to extract null");
+        // nothing to do, keep the digest to NULL.
+        if (archive.Extract(elle::none) == elle::StatusError)
+          escape("unable to extract null");
       }
     else
       {
-	// allocate a digest.
-	this->digest = new elle::Digest;
+        // allocate a digest.
+        this->digest = new elle::Digest;
 
-	// extract the internal digest.
-	if (archive.Extract(*this->digest) == elle::StatusError)
-	  escape("unable to extract the digest");
+        // extract the internal digest.
+        if (archive.Extract(*this->digest) == elle::StatusError)
+          escape("unable to extract the digest");
       }
 
     leave();

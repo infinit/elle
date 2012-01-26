@@ -53,10 +53,10 @@ namespace hole
       class Remote
       {
       public:
-	//
-	// static attributes
-	//
-	static Machine*		Computer;
+        //
+        // static attributes
+        //
+        static Machine*         Computer;
       };
 
     }

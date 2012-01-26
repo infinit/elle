@@ -34,79 +34,79 @@ namespace hole
       /// XXX
       ///
       class Host:
-	public elle::Entity
+        public elle::Entity
       {
       public:
-	//
-	// enumerations
-	//
-	enum State
-	  {
-	    StateUnknown,
-	    StateConnected,
-	    StateAuthenticated,
-	    StateDead
-	  };
+        //
+        // enumerations
+        //
+        enum State
+          {
+            StateUnknown,
+            StateConnected,
+            StateAuthenticated,
+            StateDead
+          };
 
-	//
-	// constants
-	//
-	static const elle::Natural32		Timeout;
+        //
+        // constants
+        //
+        static const elle::Natural32            Timeout;
 
-	//
-	// constructors & destructors
-	//
-	Host();
-	~Host();
+        //
+        // constructors & destructors
+        //
+        Host();
+        ~Host();
 
-	//
-	// methods
-	//
-	elle::Status	Create(const elle::Locus&);
-	elle::Status	Create(elle::TCPSocket*);
+        //
+        // methods
+        //
+        elle::Status    Create(const elle::Locus&);
+        elle::Status    Create(elle::TCPSocket*);
 
-	elle::Status	Connect();
-	elle::Status	Disconnect();
+        elle::Status    Connect();
+        elle::Status    Disconnect();
 
-	elle::Status	Authenticated();
+        elle::Status    Authenticated();
 
-	//
-	// callbacks
-	//
+        //
+        // callbacks
+        //
         elle::Status    Connected();
         elle::Status    Disconnected();
         elle::Status    Error(const elle::String&);
         elle::Status    Abort();
 
-	//
-	// interfaces
-	//
+        //
+        // interfaces
+        //
 
-	// dumpable
-	elle::Status	Dump(const elle::Natural32 = 0) const;
+        // dumpable
+        elle::Status    Dump(const elle::Natural32 = 0) const;
 
-	//
-	// signals
-	//
-	struct
-	{
-	  elle::Signal<
-	    elle::Parameters<
-  	      Host*
-	      >
-	    >			dead;
-	}			signal;
+        //
+        // signals
+        //
+        struct
+        {
+          elle::Signal<
+            elle::Parameters<
+              Host*
+              >
+            >                   dead;
+        }                       signal;
 
-	//
-	// attributes
-	//
-	State			state;
+        //
+        // attributes
+        //
+        State                   state;
 
-	elle::Locus		locus;
+        elle::Locus             locus;
 
-	elle::TCPSocket*	socket;
+        elle::TCPSocket*        socket;
 
-	elle::Timer*		timer;
+        elle::Timer*            timer;
       };
 
     }

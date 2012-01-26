@@ -36,15 +36,15 @@ namespace hole
     //
     enum Type
       {
-	TypeUnknown = 0,
+        TypeUnknown = 0,
 
-	TypeLocal,
-	TypeRemote,
-	TypeSlug,
-	TypeCirkle,
-	TypeKool,
+        TypeLocal,
+        TypeRemote,
+        TypeSlug,
+        TypeCirkle,
+        TypeKool,
 
-	Types = TypeKool,
+        Types = TypeKool,
       };
 
     //
@@ -52,23 +52,23 @@ namespace hole
     //
     struct Descriptor
     {
-      Type		type;
-      elle::String	name;
+      Type              type;
+      elle::String      name;
     };
 
     //
     // constants
     //
-    static const Model			Null;
-    static const Descriptor		Descriptors[Types];
+    static const Model                  Null;
+    static const Descriptor             Descriptors[Types];
 
     //
     // static methods
     //
-    static elle::Status	Convert(const elle::String&,
-				Type&);
-    static elle::Status	Convert(const Type,
-				elle::String&);
+    static elle::Status Convert(const elle::String&,
+                                Type&);
+    static elle::Status Convert(const Type,
+                                elle::String&);
 
     //
     // constructors & destructors
@@ -79,8 +79,8 @@ namespace hole
     //
     // methods
     //
-    elle::Status	Create(const Type);
-    elle::Status	Create(const elle::String&);
+    elle::Status        Create(const Type);
+    elle::Status        Create(const elle::String&);
 
     //
     // interfaces
@@ -88,19 +88,19 @@ namespace hole
 
     // object
     declare(Model);
-    elle::Boolean	operator==(const Model&) const;
+    elle::Boolean       operator==(const Model&) const;
 
     // dumpable
-    elle::Status	Dump(const elle::Natural32 = 0) const;
+    elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // archivable
-    elle::Status	Serialize(elle::Archive&) const;
-    elle::Status	Extract(elle::Archive&);
+    elle::Status        Serialize(elle::Archive&) const;
+    elle::Status        Extract(elle::Archive&);
 
     //
     // attributes
     //
-    Type		type;
+    Type                type;
   };
 
 }
