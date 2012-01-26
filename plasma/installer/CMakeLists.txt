@@ -4,6 +4,7 @@ file(GLOB installer_ui *.ui)
 file(GLOB installer_moc_hdrs MainWindow.hh)
 
 SET(QT_USE_QTNETWORK true)
+SET(QT_USE_QTGUI true)
 
 INCLUDE(${QT_USE_FILE})
 ADD_DEFINITIONS(${QT_DEFINITIONS})
