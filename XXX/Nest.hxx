@@ -23,27 +23,27 @@ namespace nucleus
 ///
 /// XXX
 ///
-#define NestRegister(_handle_)						\
-  if (Nest::Register(_handle._object) == elle::StatusError)		\
+#define NestRegister(_handle_)                                          \
+  if (Nest::Register(_handle._object) == elle::StatusError)             \
     escape("unable to register the new block to the nest");
 
 ///
 /// this macro-function makes it easier to load a block.
 ///
-#define NestLoad(_handle_)						\
-  if (_handle_.address != Address::Null)				\
-    {									\
-      if (_handle_._object == NULL)					\
-	{								\
-	  printf("NEST LOAD\n");					\
-	}								\
-    }									\
+#define NestLoad(_handle_)                                              \
+  if (_handle_.address != Address::Null)                                \
+    {                                                                   \
+      if (_handle_._object == NULL)                                     \
+        {                                                               \
+          printf("NEST LOAD\n");                                        \
+        }                                                               \
+    }                                                                   \
   if (_handle_._object != NULL)
 
 ///
 /// this macro-function makes it easier to unload a block.
 ///
-#define NestUnload(_handle_)						\
+#define NestUnload(_handle_)                                            \
   printf("NEST UNLOAD\n");
 
   }

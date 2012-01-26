@@ -24,7 +24,7 @@ namespace nucleus
     /// XXX
     ///
     template <typename T>
-    const Handle<T>			Handle::Null;
+    const Handle<T>                     Handle::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -43,7 +43,7 @@ namespace nucleus
     /// XXX
     ///
     template <typename T>
-    Handle<T>::Handle(T*					object):
+    Handle<T>::Handle(T*                                        object):
       XXX Address::Some
 
 XXX
@@ -71,7 +71,7 @@ XXX
     {
       // delete the object, if present.
       if (this->_object != NULL)
-	delete this->_object;
+        delete this->_object;
     }
 
 //
@@ -82,8 +82,8 @@ XXX
     /// XXX
     ///
     template <typename T>
-    elle::Status	Handle<T>::Create(const Address&	address,
-					  T*			object)
+    elle::Status        Handle<T>::Create(const Address&        address,
+                                          T*                    object)
     {
       enter();
 
@@ -102,7 +102,7 @@ XXX
     /// XXX
     ///
     template <typename T>
-    elle::Status	Handle<T>::Dump(const elle::Natural32	margin)
+    elle::Status        Handle<T>::Dump(const elle::Natural32   margin)
     {
       enter();
 
@@ -110,20 +110,20 @@ XXX
 
       // dump the hiearchy.
       if (this->_object != NULL)
-	{
-	  // dump the hierarchy, if present.
-	  std::cout << alignment << elle::Dumpable::Shift
-		    << "[_Object]" << std::endl;
+        {
+          // dump the hierarchy, if present.
+          std::cout << alignment << elle::Dumpable::Shift
+                    << "[_Object]" << std::endl;
 
-	  if (this->_object->Dump(margin + 4) == elle::StatusError)
-	    escape("unable to dump the nodule");
-	}
+          if (this->_object->Dump(margin + 4) == elle::StatusError)
+            escape("unable to dump the nodule");
+        }
       else
-	{
-	  std::cout << alignment << elle::Dumpable::Shift
-		    << elle::Dumpable::Shift
-		    << "[_Object] " << elle::none << std::endl;
-	}
+        {
+          std::cout << alignment << elle::Dumpable::Shift
+                    << elle::Dumpable::Shift
+                    << "[_Object] " << elle::none << std::endl;
+        }
 
       leave();
     }

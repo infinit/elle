@@ -29,8 +29,8 @@
 ///
 /// this is the entry point of infinit.
 ///
-elle::Status		Main(elle::Natural32			argc,
-                             elle::Character*			argv[])
+elle::Status            Main(elle::Natural32                    argc,
+                             elle::Character*                   argv[])
 {
   enterx(instance(Infinit::Parser));
 
@@ -72,20 +72,20 @@ elle::Status		Main(elle::Natural32			argc,
 
   // register the option.
   if (Infinit::Parser->Register(
-	"Network",
-	'n',
-	"network",
-	"specifies the name of the network",
-	elle::Parser::KindRequired) == elle::StatusError)
+        "Network",
+        'n',
+        "network",
+        "specifies the name of the network",
+        elle::Parser::KindRequired) == elle::StatusError)
     escape("unable to register the option");
 
   // register the option.
   if (Infinit::Parser->Register(
-	"Mountpoint",
-	'm',
-	"mountpoint",
-	"specifies the mount point",
-	elle::Parser::KindRequired) == elle::StatusError)
+        "Mountpoint",
+        'm',
+        "mountpoint",
+        "specifies the mount point",
+        elle::Parser::KindRequired) == elle::StatusError)
     escape("unable to register the option");
 
   // parse.
@@ -105,7 +105,7 @@ elle::Status		Main(elle::Natural32			argc,
   // retrieve the user name.
 #if defined(INFINIT_UNIX)
   {
-    struct ::passwd*	pw;
+    struct ::passwd*    pw;
 
     // retrieve the current password
     if ((pw = ::getpwuid(geteuid())) == NULL)
@@ -116,8 +116,8 @@ elle::Status		Main(elle::Natural32			argc,
   }
 #elif defined(INFINIT_WIN32)
   {
-    char		username[1024];
-    DWORD		length = sizeof (username);
+    char                username[1024];
+    DWORD               length = sizeof (username);
 
     // retrieve the username.
     if (!::GetUserName(username, &length))
@@ -132,7 +132,7 @@ elle::Status		Main(elle::Natural32			argc,
 
   // retrieve the network name.
   if (Infinit::Parser->Value("Network",
-			     Infinit::Network) == elle::StatusError)
+                             Infinit::Network) == elle::StatusError)
     {
       // display the usage.
       Infinit::Parser->Usage();
@@ -142,7 +142,7 @@ elle::Status		Main(elle::Natural32			argc,
 
   // retrieve the mount point.
   if (Infinit::Parser->Value("Mountpoint",
-			     Infinit::Mountpoint) == elle::StatusError)
+                             Infinit::Mountpoint) == elle::StatusError)
     {
       // display the usage.
       Infinit::Parser->Usage();
@@ -227,8 +227,8 @@ elle::Status		Main(elle::Natural32			argc,
 // ---------- main ------------------------------------------------------------
 //
 
-int			main(int				argc,
-                             char*				argv[])
+int                     main(int                                argc,
+                             char*                              argv[])
 {
   try
     {
@@ -236,8 +236,8 @@ int			main(int				argc,
         {
           show();
 
-	  return (1);
-	}
+          return (1);
+        }
     }
   catch (...)
     {

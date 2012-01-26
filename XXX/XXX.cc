@@ -55,7 +55,7 @@ int main(int argc, char** argv)
       printf("-------------> %s\n", name);
 
       if (p->Add(name, new nucleus::Catalog) == elle::StatusError)
-	fail("XXX");
+        fail("XXX");
     }
 
   if (p->Check() == elle::StatusError)
@@ -65,7 +65,7 @@ int main(int argc, char** argv)
 
   for (int i = 0; i < n; i++)
     {
-      nucleus::Catalog*	c;
+      nucleus::Catalog* c;
       char name[1024];
 
       memset(name, 0x0, sizeof (name));
@@ -76,7 +76,7 @@ int main(int argc, char** argv)
       //p->Dump();
 
       if (p->Locate(name, c) == elle::StatusError)
-	fail("XXX");
+        fail("XXX");
     }
 
   if (p->Check() == elle::StatusError)
@@ -96,7 +96,7 @@ int main(int argc, char** argv)
       // p->Dump();
 
       if (p->Remove(name) == elle::StatusError)
-	fail("XXX");
+        fail("XXX");
     }
 
   if (p->Check() == elle::StatusError)

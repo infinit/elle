@@ -26,7 +26,7 @@ namespace nucleus
     ///
     /// this method initializes the porcupine.
     ///
-    elle::Status	Porcupine<>::Initialize()
+    elle::Status        Porcupine<>::Initialize()
     {
       enter();
 
@@ -34,13 +34,13 @@ namespace nucleus
       // catalog-specific initialization.
       //
       {
-	// initialize the seam.
-	if (Seam<nucleus::Catalog>::Initialize() == elle::StatusError)
-	  escape("unable to initialize the seam");
+        // initialize the seam.
+        if (Seam<nucleus::Catalog>::Initialize() == elle::StatusError)
+          escape("unable to initialize the seam");
 
-	// initialize the quill.
-	if (Quill<nucleus::Catalog>::Initialize() == elle::StatusError)
-	  escape("unable to initialize the quill");
+        // initialize the quill.
+        if (Quill<nucleus::Catalog>::Initialize() == elle::StatusError)
+          escape("unable to initialize the quill");
       }
 
       // XXX
@@ -51,7 +51,7 @@ namespace nucleus
     ///
     /// this method cleans the porcupine.
     ///
-    elle::Status	Porcupine<>::Clean()
+    elle::Status        Porcupine<>::Clean()
     {
       enter();
 
@@ -59,13 +59,13 @@ namespace nucleus
       // catalog-specific cleaning.
       //
       {
-	// clean the quill.
-	if (Quill<nucleus::Catalog>::Clean() == elle::StatusError)
-	  escape("unable to clean the quill");
+        // clean the quill.
+        if (Quill<nucleus::Catalog>::Clean() == elle::StatusError)
+          escape("unable to clean the quill");
 
-	// clean the seam.
-	if (Seam<nucleus::Catalog>::Clean() == elle::StatusError)
-	  escape("unable to clean the seam");
+        // clean the seam.
+        if (Seam<nucleus::Catalog>::Clean() == elle::StatusError)
+          escape("unable to clean the seam");
       }
 
       // XXX

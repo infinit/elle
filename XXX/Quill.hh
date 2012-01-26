@@ -58,34 +58,34 @@ namespace nucleus
       //
       // static attributes
       //
-      static elle::Natural32	Footprint;
+      static elle::Natural32    Footprint;
 
       //
       // static methods
       //
-      static elle::Status	Initialize();
-      static elle::Status	Clean();
+      static elle::Status       Initialize();
+      static elle::Status       Clean();
 
       //
       // types
       //
-      typedef Inlet<V, V>				I;
+      typedef Inlet<V, V>                               I;
 
       //
       // types
       //
-      typedef std::map<const typename V::K, I*>			Container;
+      typedef std::map<const typename V::K, I*>                 Container;
 
-      struct							Iterator
+      struct                                                    Iterator
       {
-	typedef typename Container::iterator			Forward;
-	typedef typename Container::reverse_iterator		Backward;
+        typedef typename Container::iterator                    Forward;
+        typedef typename Container::reverse_iterator            Backward;
       };
 
-      struct							Scoutor
+      struct                                                    Scoutor
       {
-	typedef typename Container::const_iterator		Forward;
-	typedef typename Container::const_reverse_iterator	Backward;
+        typedef typename Container::const_iterator              Forward;
+        typedef typename Container::const_reverse_iterator      Backward;
       };
 
       //
@@ -93,75 +93,75 @@ namespace nucleus
       //
       Quill();
       Quill(const elle::Callback<
-	      elle::Status,
-	      elle::Parameters<
-		const Address&,
-		Nodule<V>*&
-		>
-	      >&,
-	    const elle::Callback<
-	      elle::Status,
-	      elle::Parameters<
-		const Address&,
-		const Nodule<V>*
-		>
-	      >&);
+              elle::Status,
+              elle::Parameters<
+                const Address&,
+                Nodule<V>*&
+                >
+              >&,
+            const elle::Callback<
+              elle::Status,
+              elle::Parameters<
+                const Address&,
+                const Nodule<V>*
+                >
+              >&);
       ~Quill();
 
       //
       // methods
       //
-      elle::Status		Create();
+      elle::Status              Create();
 
-      elle::Status		Insert(const typename V::K&,
-				       V*);
-      elle::Status		Insert(I*);
+      elle::Status              Insert(const typename V::K&,
+                                       V*);
+      elle::Status              Insert(I*);
 
-      elle::Status		Delete(typename Iterator::Forward&);
-      elle::Status		Delete(V*);
-      elle::Status		Delete(const typename V::K&);
+      elle::Status              Delete(typename Iterator::Forward&);
+      elle::Status              Delete(V*);
+      elle::Status              Delete(const typename V::K&);
 
-      elle::Status		Exist(const typename V::K&);
+      elle::Status              Exist(const typename V::K&);
 
-      elle::Status		Lookup(const typename V::K&,
-				       typename Iterator::Forward&);
-      elle::Status		Lookup(const typename V::K&,
-				       I*&);
-      elle::Status		Lookup(const typename V::K&,
-				       V*&);
+      elle::Status              Lookup(const typename V::K&,
+                                       typename Iterator::Forward&);
+      elle::Status              Lookup(const typename V::K&,
+                                       I*&);
+      elle::Status              Lookup(const typename V::K&,
+                                       V*&);
 
-      elle::Status		Locate(const typename V::K&,
-				       typename Iterator::Forward&);
-      elle::Status		Locate(const typename V::K&,
-				       I*&);
-      elle::Status		Locate(const typename V::K&,
-				       V*&);
+      elle::Status              Locate(const typename V::K&,
+                                       typename Iterator::Forward&);
+      elle::Status              Locate(const typename V::K&,
+                                       I*&);
+      elle::Status              Locate(const typename V::K&,
+                                       V*&);
 
-      elle::Status		Split(Quill<V>*&);
-      elle::Status		Merge(Quill<V>*);
+      elle::Status              Split(Quill<V>*&);
+      elle::Status              Merge(Quill<V>*);
 
       //
       // interfaces
       //
 
       // nodule
-      elle::Status		Mayor(typename V::K&) const;
-      elle::Status		Maiden(typename V::K&) const;
-      elle::Status		Search(const typename V::K&,
-				       Quill<V>*&);
-      elle::Status		Check() const;
+      elle::Status              Mayor(typename V::K&) const;
+      elle::Status              Maiden(typename V::K&) const;
+      elle::Status              Search(const typename V::K&,
+                                       Quill<V>*&);
+      elle::Status              Check() const;
 
       // dumpable
-      elle::Status		Dump(const elle::Natural32 = 0) const;
+      elle::Status              Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status		Serialize(elle::Archive&) const;
-      elle::Status		Extract(elle::Archive&);
+      elle::Status              Serialize(elle::Archive&) const;
+      elle::Status              Extract(elle::Archive&);
 
       //
       // attributes
       //
-      Container			container;
+      Container                 container;
     };
 
   }

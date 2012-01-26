@@ -48,7 +48,7 @@ namespace nucleus
     /// size.
     ///
     template <typename V,
-	      typename T>
+              typename T>
     class Inlet:
       public elle::Object
     {
@@ -58,28 +58,28 @@ namespace nucleus
       //
       Inlet();
       Inlet(const typename V::K&,
-	    T*);
+            T*);
       Inlet(const typename V::K&,
-	    const Address&);
+            const Address&);
 
       //
       // interfaces
       //
 
       // dumpable
-      elle::Status		Dump(const elle::Natural32 = 0) const;
+      elle::Status              Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status		Serialize(elle::Archive&) const;
-      elle::Status		Extract(elle::Archive&);
+      elle::Status              Serialize(elle::Archive&) const;
+      elle::Status              Extract(elle::Archive&);
 
       //
       // attributes
       //
-      typename V::K		key;
-      Handle<T>			value;
+      typename V::K             key;
+      Handle<T>                 value;
 
-      elle::Footprint		_footprint;
+      elle::Footprint           _footprint;
     };
 
   }

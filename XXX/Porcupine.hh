@@ -110,48 +110,48 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status		Add(const typename V::K&,
-				    V*);
-      elle::Status		Exist(const typename V::K&);
-      elle::Status		Locate(const typename V::K&,
-				       V*&);
-      elle::Status		Remove(const typename V::K&);
+      elle::Status              Add(const typename V::K&,
+                                    V*);
+      elle::Status              Exist(const typename V::K&);
+      elle::Status              Locate(const typename V::K&,
+                                       V*&);
+      elle::Status              Remove(const typename V::K&);
 
       template <typename N,
-		typename W>
-      elle::Status		Insert(N*,
-				       const typename V::K&,
-				       W*);
+                typename W>
+      elle::Status              Insert(N*,
+                                       const typename V::K&,
+                                       W*);
       template <typename N>
-      elle::Status		Delete(N*,
-				       const typename V::K&);
+      elle::Status              Delete(N*,
+                                       const typename V::K&);
 
-      elle::Status		Grow();
-      elle::Status		Shrink();
+      elle::Status              Grow();
+      elle::Status              Shrink();
 
-      elle::Status		Search(const typename V::K&,
-				       Quill<V>*&);
+      elle::Status              Search(const typename V::K&,
+                                       Quill<V>*&);
 
-      elle::Status		Check() const;
+      elle::Status              Check() const;
 
-      elle::Status		Load(const Address&,
-				     Nodule<V>*&);
-      elle::Status		Unload(const Address&,
-				       const Nodule<V>*);
+      elle::Status              Load(const Address&,
+                                     Nodule<V>*&);
+      elle::Status              Unload(const Address&,
+                                       const Nodule<V>*);
 
       //
       // interfaces
       //
 
       // dumpable
-      elle::Status		Dump(const elle::Natural32 = 0) const;
+      elle::Status              Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      elle::Natural32		height;
+      elle::Natural32           height;
 
-      Handle< Nodule<V> >	root;
+      Handle< Nodule<V> >       root;
     };
 
     ///
@@ -165,8 +165,8 @@ namespace nucleus
       //
       // static methods
       //
-      static elle::Status	Initialize();
-      static elle::Status	Clean();
+      static elle::Status       Initialize();
+      static elle::Status       Clean();
     };
 
   }

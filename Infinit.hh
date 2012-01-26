@@ -28,27 +28,27 @@ public:
   //
   // constants
   //
-  static const elle::String		Key;
-  static const elle::String		Version;
-  static const elle::String		Copyright;
+  static const elle::String             Key;
+  static const elle::String             Version;
+  static const elle::String             Copyright;
 
   //
   // globals
   //
-  static lune::Authority		Authority;
-  static lune::Configuration		Configuration;
+  static lune::Authority                Authority;
+  static lune::Configuration            Configuration;
 
-  static elle::Parser*			Parser;
+  static elle::Parser*                  Parser;
 
-  static elle::String			User;
-  static elle::String			Network;
-  static elle::String			Mountpoint;
+  static elle::String                   User;
+  static elle::String                   Network;
+  static elle::String                   Mountpoint;
 
   //
   // methods
   //
-  static elle::Status		Initialize();
-  static elle::Status		Clean();
+  static elle::Status           Initialize();
+  static elle::Status           Clean();
 };
 
 #endif

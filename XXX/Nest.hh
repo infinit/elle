@@ -33,7 +33,7 @@ namespace nucleus
       //
       // static methods
       //
-      static elle::Status	Register(Block*);
+      static elle::Status       Register(Block*);
     };
 
   }

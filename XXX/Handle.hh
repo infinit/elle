@@ -40,7 +40,7 @@ namespace nucleus
       //
       // constants
       //
-      static const Handle		Null;
+      static const Handle               Null;
 
       //
       // constructors & destructors
@@ -53,16 +53,16 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status	Create(const Address&,
-			       T*);
+      elle::Status      Create(const Address&,
+                               T*);
 
       //
       // attributes
       //
-      Address		address;
+      Address           address;
 
-      T*		_object;
-      Placement		_placement;
+      T*                _object;
+      Placement         _placement;
     };
 
   }

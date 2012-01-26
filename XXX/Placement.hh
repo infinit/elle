@@ -29,7 +29,7 @@ namespace nucleus
     ///
     /// XXX
     ///
-    typedef elle::Natural32	Placement;
+    typedef elle::Natural32     Placement;
 
   }
 }

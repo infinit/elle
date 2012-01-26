@@ -26,7 +26,7 @@ namespace nucleus
     ///
     /// XXX
     ///
-    elle::Status	Nest::Register(Block*			block)
+    elle::Status        Nest::Register(Block*                   block)
     {
       enter();
 

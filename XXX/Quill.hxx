@@ -43,19 +43,19 @@ namespace nucleus
     ///
     template <typename V>
     Quill<V>::Quill(const elle::Callback<
-		      elle::Status,
-		      elle::Parameters<
-		        const Address&,
-			Nodule<V>*&
-			>
-		      >&					load,
-		    const elle::Callback<
-		      elle::Status,
-		      elle::Parameters<
-			const Address&,
-			const Nodule<V>*
-			>
-		      >&					unload):
+                      elle::Status,
+                      elle::Parameters<
+                        const Address&,
+                        Nodule<V>*&
+                        >
+                      >&                                        load,
+                    const elle::Callback<
+                      elle::Status,
+                      elle::Parameters<
+                        const Address&,
+                        const Nodule<V>*
+                        >
+                      >&                                        unload):
       Nodule<V>(Nodule<V>::TypeQuill, load, unload)
     {
     }
@@ -66,18 +66,18 @@ namespace nucleus
     template <typename V>
     Quill<V>::~Quill()
     {
-      typename Quill<V>::Scoutor::Forward	scoutor;
+      typename Quill<V>::Scoutor::Forward       scoutor;
 
       // go through the container.
       for (scoutor = this->container.begin();
-	   scoutor != this->container.end();
-	   scoutor++)
-	{
-	  Quill<V>::I*	inlet = scoutor->second;
+           scoutor != this->container.end();
+           scoutor++)
+        {
+          Quill<V>::I*  inlet = scoutor->second;
 
-	  // delete the inlet.
-	  delete inlet;
-	}
+          // delete the inlet.
+          delete inlet;
+        }
 
       // clear the container.
       this->container.clear();
@@ -91,7 +91,7 @@ namespace nucleus
     /// this method creates a quill.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Create()
+    elle::Status        Quill<V>::Create()
     {
       enter();
 
@@ -108,10 +108,10 @@ namespace nucleus
     /// this method inserts a value in the quill.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Insert(const typename V::K&	key,
-					 V*			value)
+    elle::Status        Quill<V>::Insert(const typename V::K&   key,
+                                         V*                     value)
     {
-      typename Quill<V>::I*	inlet;
+      typename Quill<V>::I*     inlet;
 
       enterx(instance(inlet));
 
@@ -120,7 +120,7 @@ namespace nucleus
 
       // add the inlet to the quill.
       if (this->Insert(inlet) == elle::StatusError)
-	escape("unable to add the value to the quill");
+        escape("unable to add the value to the quill");
 
       // waive.
       waive(inlet);
@@ -132,29 +132,29 @@ namespace nucleus
     /// this method inserts an inlet in the quill.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Insert(I*			inlet)
+    elle::Status        Quill<V>::Insert(I*                     inlet)
     {
       std::pair<typename Quill<V>::Iterator::Forward,
-		elle::Boolean>					result;
+                elle::Boolean>                                  result;
 
       enter();
 
       // check if this key has already been recorded.
       if (this->container.find(inlet->key) != this->container.end())
-	escape("this key seems to have already been recorded");
+        escape("this key seems to have already been recorded");
 
       // insert the inlet in the container.
       result = this->container.insert(
-	         std::pair<const typename V::K,
-			   Quill<V>::I*>(inlet->key, inlet));
+                 std::pair<const typename V::K,
+                           Quill<V>::I*>(inlet->key, inlet));
 
       // check if the insertion was successful.
       if (result.second == false)
-	escape("unable to insert the inlet in the container");
+        escape("unable to insert the inlet in the container");
 
       // compute the inlet's footprint.
       if (inlet->_footprint.Compute() == elle::StatusError)
-	escape("unable to compute the inlet's footprint");
+        escape("unable to compute the inlet's footprint");
 
       // add the inlet footprint to the quill's.
       this->_footprint.size += inlet->_footprint.size;
@@ -169,10 +169,10 @@ namespace nucleus
     /// this method deletes an entry from the quill, given an iterator.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Delete(
-			  typename Iterator::Forward&		iterator)
+    elle::Status        Quill<V>::Delete(
+                          typename Iterator::Forward&           iterator)
     {
-      Quill<V>::I*	inlet;
+      Quill<V>::I*      inlet;
 
       enter();
 
@@ -181,7 +181,7 @@ namespace nucleus
 
       // compute the inlet's footprint.
       if (inlet->_footprint.Compute() == elle::StatusError)
-	escape("unable to compute the inlet's footprint");
+        escape("unable to compute the inlet's footprint");
 
       // substract the inlet footprint to the quill's.
       this->_footprint.size -= inlet->_footprint.size;
@@ -202,19 +202,19 @@ namespace nucleus
     /// this method deletes a value from the quill.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Delete(V*			value)
+    elle::Status        Quill<V>::Delete(V*                     value)
     {
-      typename Quill<V>::Iterator::Forward	iterator;
+      typename Quill<V>::Iterator::Forward      iterator;
 
       enter();
 
       // locate the inlet for the given value.
       if (this->Locate(value, iterator) == elle::StatusError)
-	escape("unable to locate the given nodule");
+        escape("unable to locate the given nodule");
 
       // delete the entry associated with the given iterator.
       if (this->Delete(iterator) == elle::StatusError)
-	escape("unable to delete the entry associated with the iterator");
+        escape("unable to delete the entry associated with the iterator");
 
       leave();
     }
@@ -223,19 +223,19 @@ namespace nucleus
     /// this method deletes a key from the quill.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Delete(const typename V::K&	key)
+    elle::Status        Quill<V>::Delete(const typename V::K&   key)
     {
-      typename Quill<V>::Iterator::Forward	iterator;
+      typename Quill<V>::Iterator::Forward      iterator;
 
       enter();
 
       // locate the inlet for the given key.
       if (this->Locate(key, iterator) == elle::StatusError)
-	escape("unable to locate the given key");
+        escape("unable to locate the given key");
 
       // delete the entry associated with the given iterator.
       if (this->Delete(iterator) == elle::StatusError)
-	escape("unable to delete the entry associated with the iterator");
+        escape("unable to delete the entry associated with the iterator");
 
       leave();
     }
@@ -244,13 +244,13 @@ namespace nucleus
     /// this method returns true if the given key exists in the quill.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Exist(const typename V::K&	key)
+    elle::Status        Quill<V>::Exist(const typename V::K&    key)
     {
       enter();
 
       // locate the given key.
       if (this->container.find(key) == this->container.end())
-	false();
+        false();
 
       true();
     }
@@ -263,29 +263,29 @@ namespace nucleus
     /// exact key but for the key just greater than the given one.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Lookup(
-			  const typename V::K&			key,
-			  typename Iterator::Forward&		iterator)
+    elle::Status        Quill<V>::Lookup(
+                          const typename V::K&                  key,
+                          typename Iterator::Forward&           iterator)
     {
       enter();
 
       // go through the container.
       for (iterator = this->container.begin();
-	   iterator != this->container.end();
-	   iterator++)
-	{
-	  Quill<V>::I*	inlet = iterator->second;
+           iterator != this->container.end();
+           iterator++)
+        {
+          Quill<V>::I*  inlet = iterator->second;
 
-	  // check if this inlet is responsible for the given key or
-	  // the end of the quill has been reached.
-	  if ((key <= iterator->first) ||
-	      (inlet == this->container.rbegin()->second))
-	    {
-	      // return with the correct iterator set.
-	      
-	      leave();
-	    }
-	}
+          // check if this inlet is responsible for the given key or
+          // the end of the quill has been reached.
+          if ((key <= iterator->first) ||
+              (inlet == this->container.rbegin()->second))
+            {
+              // return with the correct iterator set.
+              
+              leave();
+            }
+        }
 
       escape("unable to look up the entry responsible for the given key");
     }
@@ -294,16 +294,16 @@ namespace nucleus
     /// this method returns the inlet responsible for the given key.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Lookup(const typename V::K&	key,
-					 I*&			inlet)
+    elle::Status        Quill<V>::Lookup(const typename V::K&   key,
+                                         I*&                    inlet)
     {
-      typename Quill<V>::Iterator::Forward	iterator;
+      typename Quill<V>::Iterator::Forward      iterator;
 
       enter();
 
       // lookup the entry responsible for the given key.
       if (this->Lookup(key, iterator) == elle::StatusError)
-	escape("unable to locate the entry");
+        escape("unable to locate the entry");
 
       // return the inlet.
       inlet = iterator->second;
@@ -315,16 +315,16 @@ namespace nucleus
     /// this method returns the value responsible for the given key.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Lookup(const typename V::K&	key,
-					 V*&			value)
+    elle::Status        Quill<V>::Lookup(const typename V::K&   key,
+                                         V*&                    value)
     {
-      Quill<V>::I*	inlet;
+      Quill<V>::I*      inlet;
 
       enter();
 
       // lookup the inlet associated with the given key.
       if (this->Lookup(key, inlet) == elle::StatusError)
-	escape("unable to locate the inlet");
+        escape("unable to locate the inlet");
 
       // load the value block.
       NestLoad(inlet, value);
@@ -340,15 +340,15 @@ namespace nucleus
     /// the given key.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Locate(
-			  const typename V::K&			key,
-			  typename Iterator::Forward&		iterator)
+    elle::Status        Quill<V>::Locate(
+                          const typename V::K&                  key,
+                          typename Iterator::Forward&           iterator)
     {
       enter();
 
       // locate the given key.
       if ((iterator = this->container.find(key)) == this->container.end())
-	escape("unable to locate the given key");
+        escape("unable to locate the given key");
 
       leave();
     }
@@ -357,16 +357,16 @@ namespace nucleus
     /// this method returns the inlet associated with the given key.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Locate(const typename V::K&	key,
-					 I*&			inlet)
+    elle::Status        Quill<V>::Locate(const typename V::K&   key,
+                                         I*&                    inlet)
     {
-      typename Quill<V>::Iterator::Forward	iterator;
+      typename Quill<V>::Iterator::Forward      iterator;
 
       enter();
 
       // locate the given key.
       if (this->Locate(key, iterator) == elle::StatusError)
-	escape("unable to locate the entry associated with the given key");
+        escape("unable to locate the entry associated with the given key");
 
       // return the inlet.
       inlet = iterator->second;
@@ -378,16 +378,16 @@ namespace nucleus
     /// this method returns the value associated with the given key.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Locate(const typename V::K&	key,
-					 V*&			value)
+    elle::Status        Quill<V>::Locate(const typename V::K&   key,
+                                         V*&                    value)
     {
-      Quill<V>::I*	inlet;
+      Quill<V>::I*      inlet;
 
       enter();
 
       // locate the given key.
       if (this->Locate(key, inlet) == elle::StatusError)
-	escape("unable to locate the inlet associated with the given key");
+        escape("unable to locate the inlet associated with the given key");
 
       // load the value block.
       NestLoad(inlet, value);
@@ -403,27 +403,27 @@ namespace nucleus
     /// _right_ variable the newly created quill.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Split(Quill<V>*&		right)
+    elle::Status        Quill<V>::Split(Quill<V>*&              right)
     {
-      elle::Natural32	size;
-      Quill<V>*		r;
+      elle::Natural32   size;
+      Quill<V>*         r;
 
       enterx(instance(r));
 
       // initialize _size_ as being the future left quills' size.
       size =
-	hole::Hole::Descriptor.extent * hole::Hole::Descriptor.contention;
+        hole::Hole::Descriptor.extent * hole::Hole::Descriptor.contention;
 
       // allocate a new quill.
       r = new Quill<V>(this->_load, this->_unload);
 
       // create the quill.
       if (r->Create() == elle::StatusError)
-	escape("unable to create the quill");
+        escape("unable to create the quill");
 
       // export inlets from the current seam into the new seam.
       if (this->Export(r, size) == elle::StatusError)
-	escape("unable to export inlets");
+        escape("unable to export inlets");
 
       // set the output right quill.
       right = r;
@@ -439,34 +439,34 @@ namespace nucleus
     /// them into a single one i.e the current one.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Merge(Quill<V>*		quill)
+    elle::Status        Quill<V>::Merge(Quill<V>*               quill)
     {
-      typename V::K	t;
-      typename V::K	q;
+      typename V::K     t;
+      typename V::K     q;
 
       enter();
 
       // retrieve the mayor key.
       if (this->Mayor(t) == elle::StatusError)
-	escape("unable to retrieve the mayor key");
+        escape("unable to retrieve the mayor key");
 
       // retrieve the mayor key.
       if (quill->Mayor(q) == elle::StatusError)
-	escape("unable to retrieve the mayor key");
+        escape("unable to retrieve the mayor key");
 
       // check which nodule has the lowest keys.
       if (q < t)
-	{
-	  // in this case, export the lower quill's inlets into the current's.
-	  if (quill->Export(this) == elle::StatusError)
-	    escape("unable to export the inlets");
-	}
+        {
+          // in this case, export the lower quill's inlets into the current's.
+          if (quill->Export(this) == elle::StatusError)
+            escape("unable to export the inlets");
+        }
       else
-	{
-	  // otherwise, import the higher quill's inlets into the current's.
-	  if (this->Import(quill) == elle::StatusError)
-	    escape("unable to import the inlets");
-	}
+        {
+          // otherwise, import the higher quill's inlets into the current's.
+          if (this->Import(quill) == elle::StatusError)
+            escape("unable to import the inlets");
+        }
 
       leave();
     }
@@ -479,7 +479,7 @@ namespace nucleus
     /// this method returns the mayor key i.e the key with the higest value.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Mayor(typename V::K&		mayor) const
+    elle::Status        Quill<V>::Mayor(typename V::K&          mayor) const
     {
       enter();
 
@@ -493,13 +493,13 @@ namespace nucleus
     /// this method returns the maiden key i.e the single remaining key.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Maiden(typename V::K&		maiden) const
+    elle::Status        Quill<V>::Maiden(typename V::K&         maiden) const
     {
       enter();
 
       // check if a single inlet is present.
       if (this->container.size() != 1)
-	escape("unable to retrieve the maiden; multiple inlets are present");
+        escape("unable to retrieve the maiden; multiple inlets are present");
 
       // return the maiden key.
       maiden = this->container.begin()->first;
@@ -513,8 +513,8 @@ namespace nucleus
     /// since the current nodule is a quill, it is its responsability.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Search(const typename V::K&,
-					 Quill<V>*&		quill)
+    elle::Status        Quill<V>::Search(const typename V::K&,
+                                         Quill<V>*&             quill)
     {
       enter();
 
@@ -528,23 +528,23 @@ namespace nucleus
     /// this method checks the quill's consistency.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Check() const
+    elle::Status        Quill<V>::Check() const
     {
-      typename Quill<V>::Scoutor::Forward	scoutor;
+      typename Quill<V>::Scoutor::Forward       scoutor;
 
       enter();
 
       // go through the inlets.
       for (scoutor = this->container.begin();
-	   scoutor != this->container.end();
-	   scoutor++)
-	{
-	  Quill<V>::I*				inlet = scoutor->second;
+           scoutor != this->container.end();
+           scoutor++)
+        {
+          Quill<V>::I*                          inlet = scoutor->second;
 
-	  // check the key.
-	  if (inlet->key != scoutor->first)
-	    escape("invalid key");
-	}
+          // check the key.
+          if (inlet->key != scoutor->first)
+            escape("invalid key");
+        }
 
       leave();
     }
@@ -557,11 +557,11 @@ namespace nucleus
     /// this method dumps the quill.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Dump(const elle::Natural32	margin)
+    elle::Status        Quill<V>::Dump(const elle::Natural32    margin)
       const
     {
-      elle::String				alignment(margin, ' ');
-      typename Quill<V>::Scoutor::Forward	scoutor;
+      elle::String                              alignment(margin, ' ');
+      typename Quill<V>::Scoutor::Forward       scoutor;
 
       enter();
 
@@ -569,21 +569,21 @@ namespace nucleus
 
       // dump the parent nodule.
       if (Nodule<V>::Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the parent nodule");
+        escape("unable to dump the parent nodule");
 
       // dump the inlets.
       std::cout << alignment << elle::Dumpable::Shift
-		<< "[Inlets] " << this->container.size() << std::endl;
+                << "[Inlets] " << this->container.size() << std::endl;
 
       // go through the container.
       for (scoutor = this->container.begin();
-	   scoutor != this->container.end();
-	   scoutor++)
-	{
-	  // dump the inlet.
-	  if (scoutor->second->Dump(margin + 4) == elle::StatusError)
-	    escape("unable to dump the inlet");
-	}
+           scoutor != this->container.end();
+           scoutor++)
+        {
+          // dump the inlet.
+          if (scoutor->second->Dump(margin + 4) == elle::StatusError)
+            escape("unable to dump the inlet");
+        }
 
       leave();
     }
@@ -596,33 +596,33 @@ namespace nucleus
     /// this method archives the quill.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Serialize(elle::Archive&	archive) const
+    elle::Status        Quill<V>::Serialize(elle::Archive&      archive) const
     {
-      typename Quill<V>::Scoutor::Forward	scoutor;
-      elle::Natural32				size;
+      typename Quill<V>::Scoutor::Forward       scoutor;
+      elle::Natural32                           size;
 
       enter();
 
       // serialize the parent nodule.
       if (Nodule<V>::Serialize(archive) == elle::StatusError)
-	escape("unable to serialize the parent nodule");
+        escape("unable to serialize the parent nodule");
 
       // retrieve the container size.
       size = this->container.size();
 
       // serialize the container size.
       if (archive.Serialize(size) == elle::StatusError)
-	escape("unable to serialize the size");
+        escape("unable to serialize the size");
 
       // go through the container.
       for (scoutor = this->container.begin();
-	   scoutor != this->container.end();
-	   scoutor++)
-	{
-	  // serialize the key and inlet.
-	  if (archive.Serialize(*scoutor->second) == elle::StatusError)
-	    escape("unable to serialize the key/inlet tuple");
-	}
+           scoutor != this->container.end();
+           scoutor++)
+        {
+          // serialize the key and inlet.
+          if (archive.Serialize(*scoutor->second) == elle::StatusError)
+            escape("unable to serialize the key/inlet tuple");
+        }
 
       leave();
     }
@@ -631,44 +631,44 @@ namespace nucleus
     /// this method extracts the attributes.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Extract(elle::Archive&	archive)
+    elle::Status        Quill<V>::Extract(elle::Archive&        archive)
     {
-      elle::Natural32	size;
-      elle::Natural32	i;
+      elle::Natural32   size;
+      elle::Natural32   i;
 
       enter();
 
       // extract the parent nodule.
       if (Nodule<V>::Extract(archive) == elle::StatusError)
-	escape("unable to extract the parent nodule");
+        escape("unable to extract the parent nodule");
 
       // extract the container size.
       if (archive.Extract(size) == elle::StatusError)
-	escape("unable to extract the size");
+        escape("unable to extract the size");
 
       // iterator.
       for (i = 0; i < size; i++)
-	{
-	  Quill<V>::I*	inlet;
+        {
+          Quill<V>::I*  inlet;
 
-	  enterx(instance(inlet));
+          enterx(instance(inlet));
 
-	  // allocate an inlet.
-	  inlet = new Quill<V>::I;
+          // allocate an inlet.
+          inlet = new Quill<V>::I;
 
-	  // extract the key and inlet.
-	  if (archive.Extract(*inlet) == elle::StatusError)
-	    escape("unable to extract the key/inlet tuple");
+          // extract the key and inlet.
+          if (archive.Extract(*inlet) == elle::StatusError)
+            escape("unable to extract the key/inlet tuple");
 
-	  // add the tuple to the quill.
-	  if (this->Insert(inlet) == elle::StatusError)
-	    escape("unable to add the key/tuple inlet to the quill");
+          // add the tuple to the quill.
+          if (this->Insert(inlet) == elle::StatusError)
+            escape("unable to add the key/tuple inlet to the quill");
 
-	  // waive.
-	  waive(inlet);
+          // waive.
+          waive(inlet);
 
-	  release();
-	}
+          release();
+        }
 
       leave();
     }
@@ -681,7 +681,7 @@ namespace nucleus
     /// this variable defines the quills' initial footprint.
     ///
     template <typename V>
-    elle::Natural32	Quill<V>::Footprint;
+    elle::Natural32     Quill<V>::Footprint;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -691,26 +691,26 @@ namespace nucleus
     /// this method initializes the quills.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Initialize()
+    elle::Status        Quill<V>::Initialize()
     {
-      Quill<V>		quill;
+      Quill<V>          quill;
 
       enter();
 
       // compute the initial footprint from which the Insert(), Delete()
       // methods will work in order to adjust it.
       if (quill._footprint.Compute() == elle::StatusError)
-	escape("unable to compute the footprint");
+        escape("unable to compute the footprint");
 
       // retrieve the initial quill footprint.
       Quill<V>::Footprint = quill._footprint.size;
 
       // register the quills to the nucleus' factory.
       {
-	// register the catalog-specific quill.
-	if (Nucleus::Factory.Register< proton::Quill<neutron::Catalog> >
-	    (neutron::ComponentQuillCatalog) == elle::StatusError)
-	  escape("unable to register the factory product");
+        // register the catalog-specific quill.
+        if (Nucleus::Factory.Register< proton::Quill<neutron::Catalog> >
+            (neutron::ComponentQuillCatalog) == elle::StatusError)
+          escape("unable to register the factory product");
       }
 
       leave();
@@ -720,7 +720,7 @@ namespace nucleus
     /// this method cleans the quills.
     ///
     template <typename V>
-    elle::Status	Quill<V>::Clean()
+    elle::Status        Quill<V>::Clean()
     {
       enter();
 

@@ -61,92 +61,92 @@ namespace nucleus
       // enumerations
       //
       enum Type
-	{
-	  TypeSeam,
-	  TypeQuill
-	};
+        {
+          TypeSeam,
+          TypeQuill
+        };
 
       //
       // constructors & destructors
       //
       Nodule(const Type);
       Nodule(const Type,
-	     const elle::Callback<
-	       elle::Status,
-	       elle::Parameters<
-		 const Address&,
-		 Nodule<V>*&
-		 >
-	       >&,
-	     const elle::Callback<
-	       elle::Status,
-	       elle::Parameters<
-		 const Address&,
-		 const Nodule<V>*
-		 >
-	       >&);
+             const elle::Callback<
+               elle::Status,
+               elle::Parameters<
+                 const Address&,
+                 Nodule<V>*&
+                 >
+               >&,
+             const elle::Callback<
+               elle::Status,
+               elle::Parameters<
+                 const Address&,
+                 const Nodule<V>*
+                 >
+               >&);
 
       //
       // methods
       //
       template <typename T>
-      elle::Status		Export(T*,
-				       const elle::Natural32 = 0);
+      elle::Status              Export(T*,
+                                       const elle::Natural32 = 0);
       template <typename T>
-      elle::Status		Import(T*,
-				       const elle::Natural32 = 0);
+      elle::Status              Import(T*,
+                                       const elle::Natural32 = 0);
 
       template <typename T>
-      elle::Status		Split(T*&);
+      elle::Status              Split(T*&);
       template <typename T>
-      elle::Status		Merge(T*);
+      elle::Status              Merge(T*);
 
       //
       // virtual methods
       //
-      virtual elle::Status	Mayor(typename V::K&) const = 0;
-      virtual elle::Status	Maiden(typename V::K&) const = 0;
-      virtual elle::Status	Search(const typename V::K&,
-				       Quill<V>*&) = 0;
-      virtual elle::Status	Check() const = 0;
+      virtual elle::Status      Mayor(typename V::K&) const = 0;
+      virtual elle::Status      Maiden(typename V::K&) const = 0;
+      virtual elle::Status      Search(const typename V::K&,
+                                       Quill<V>*&) = 0;
+      virtual elle::Status      Check() const = 0;
 
       //
       // interfaces
       //
 
       // dumpable
-      elle::Status		Dump(const elle::Natural32 = 0) const;
+      elle::Status              Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status		Serialize(elle::Archive&) const;
-      elle::Status		Extract(elle::Archive&);
+      elle::Status              Serialize(elle::Archive&) const;
+      elle::Status              Extract(elle::Archive&);
 
       //
       // attributes
       //
-      Type			type;
-      Address			parent;
-      Address			left;
-      Address			right;
+      Type                      type;
+      Address                   parent;
+      Address                   left;
+      Address                   right;
 
       elle::Callback<
-	elle::Status,
-	elle::Parameters<
-	  const Address&,
-	  Nodule<V>*&
-	  >
-	>			_load;
+        elle::Status,
+        elle::Parameters<
+          const Address&,
+          Nodule<V>*&
+          >
+        >                       _load;
       elle::Callback<
-	elle::Status,
-	elle::Parameters<
-	  const Address&,
-	  const Nodule<V>*
-	  >
-	>			_unload;
-      Seam<V>*			_parent;
-      Nodule*			_left;
-      Nodule*			_right;
-      elle::Footprint		_footprint;
+        elle::Status,
+        elle::Parameters<
+          const Address&,
+          const Nodule<V>*
+          >
+        >                       _unload;
+      Seam<V>*                  _parent;
+      Nodule*                   _left;
+      Nodule*                   _right;
+      elle::Footprint           _footprint;
     };
 
   }
