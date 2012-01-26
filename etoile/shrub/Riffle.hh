@@ -52,10 +52,10 @@ namespace etoile
       //
       // types
       //
-      typedef std::pair<path::Slab, Riffle*>	Value;
-      typedef std::map<path::Slab, Riffle*>	Container;
-      typedef Container::iterator		Iterator;
-      typedef Container::const_iterator		Scoutor;
+      typedef std::pair<path::Slab, Riffle*>    Value;
+      typedef std::map<path::Slab, Riffle*>     Container;
+      typedef Container::iterator               Iterator;
+      typedef Container::const_iterator         Scoutor;
 
       //
       // constructors & destructors
@@ -65,35 +65,35 @@ namespace etoile
       //
       // methods
       //
-      elle::Status		Create(const path::Slab&,
-				       const nucleus::Location&,
-				       Riffle* = NULL);
+      elle::Status              Create(const path::Slab&,
+                                       const nucleus::Location&,
+                                       Riffle* = NULL);
 
-      elle::Status		Resolve(const path::Slab&,
-					Riffle*&);
-      elle::Status		Update(const path::Slab&,
-				       const nucleus::Location&);
-      elle::Status		Destroy(const path::Slab&);
+      elle::Status              Resolve(const path::Slab&,
+                                        Riffle*&);
+      elle::Status              Update(const path::Slab&,
+                                       const nucleus::Location&);
+      elle::Status              Destroy(const path::Slab&);
 
-      elle::Status		Flush();
+      elle::Status              Flush();
 
       //
       // interfaces
       //
 
       // dumpable
-      elle::Status		Dump(const elle::Natural32 = 0);
+      elle::Status              Dump(const elle::Natural32 = 0);
 
       //
       // attributes
       //
-      path::Slab		slab;
-      nucleus::Location		location;
+      path::Slab                slab;
+      nucleus::Location         location;
 
-      elle::Time		timestamp;
+      elle::Time                timestamp;
 
-      Riffle*			parent;
-      Container			children;
+      Riffle*                   parent;
+      Container                 children;
     };
 
   }

@@ -65,37 +65,37 @@ namespace etoile
       // enumerations
       //
       enum State
-	{
-	  StateClean,
-	  StateUpdated
-	};
+        {
+          StateClean,
+          StateUpdated
+        };
 
       //
       // types
       //
       typedef std::map<const Identifier,
-		       Actor*>				Container;
-      typedef Container::iterator			Iterator;
-      typedef Container::const_iterator			Scoutor;
+                       Actor*>                          Container;
+      typedef Container::iterator                       Iterator;
+      typedef Container::const_iterator                 Scoutor;
 
       //
       // static methods
       //
-      static elle::Status	Initialize();
-      static elle::Status	Clean();
+      static elle::Status       Initialize();
+      static elle::Status       Clean();
 
-      static elle::Status	Add(const Identifier&,
-				    Actor*);
-      static elle::Status	Select(const Identifier&,
-				       Actor*&);
-      static elle::Status	Remove(const Identifier&);
+      static elle::Status       Add(const Identifier&,
+                                    Actor*);
+      static elle::Status       Select(const Identifier&,
+                                       Actor*&);
+      static elle::Status       Remove(const Identifier&);
 
-      static elle::Status	Show(const elle::Natural32 = 0);
+      static elle::Status       Show(const elle::Natural32 = 0);
 
       //
       // static attributes
       //
-      static Container		Actors;
+      static Container          Actors;
 
       //
       // constructors & destructors
@@ -106,21 +106,21 @@ namespace etoile
       //
       // methods
       //
-      elle::Status	Operate(const Operation);
+      elle::Status      Operate(const Operation);
 
       //
       // interfaces
       //
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      Identifier	identifier;
-      Scope*		scope;
-      State		state;
+      Identifier        identifier;
+      Scope*            scope;
+      State             state;
     };
 
   }

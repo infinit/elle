@@ -26,7 +26,7 @@ namespace etoile
     ///
     /// this defines a null chemin.
     ///
-    const Chemin			Chemin::Null;
+    const Chemin                        Chemin::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -46,53 +46,53 @@ namespace etoile
     ///
     /// this method creates a chemin.
     ///
-    elle::Status	Chemin::Create(const Route&		route,
-				       const Venue&		venue,
-				       const nucleus::Size	size)
+    elle::Status        Chemin::Create(const Route&             route,
+                                       const Venue&             venue,
+                                       const nucleus::Size      size)
     {
       enter();
 
       // clear the route because the chemin may have been used for
       // something else before.
       if (this->route.Clear() == elle::StatusError)
-	escape("unable to clear the route");
+        escape("unable to clear the route");
 
       // do the same for the venue.
       if (this->venue.Clear() == elle::StatusError)
-	escape("unable to clear the venue");
+        escape("unable to clear the venue");
 
       //
       // import the route.
       //
       {
-	Route::Scoutor	scoutor;
-	nucleus::Size	i;
+        Route::Scoutor  scoutor;
+        nucleus::Size   i;
 
-	// go through the route.
-	for (scoutor = route.elements.begin(), i = 0;
-	     (scoutor != route.elements.end()) && (i < size);
-	     scoutor++, i++)
-	  {
-	    // record the route element.
-	    this->route.elements.push_back(*scoutor);
-	  }
+        // go through the route.
+        for (scoutor = route.elements.begin(), i = 0;
+             (scoutor != route.elements.end()) && (i < size);
+             scoutor++, i++)
+          {
+            // record the route element.
+            this->route.elements.push_back(*scoutor);
+          }
       }
 
       //
       // import the venue.
       //
       {
-	Venue::Scoutor	scoutor;
-	nucleus::Size	i;
+        Venue::Scoutor  scoutor;
+        nucleus::Size   i;
 
-	// go through the venue.
-	for (scoutor = venue.elements.begin(), i = 0;
-	     (scoutor != venue.elements.end()) && (i < size);
-	     scoutor++, i++)
-	  {
-	    // record the venue element.
-	    this->venue.elements.push_back(*scoutor);
-	  }
+        // go through the venue.
+        for (scoutor = venue.elements.begin(), i = 0;
+             (scoutor != venue.elements.end()) && (i < size);
+             scoutor++, i++)
+          {
+            // record the venue element.
+            this->venue.elements.push_back(*scoutor);
+          }
       }
 
       leave();
@@ -101,19 +101,19 @@ namespace etoile
     ///
     /// this method generates a Location based on the route and venue.
     ///
-    elle::Status	Chemin::Locate(nucleus::Location&	location) const
+    elle::Status        Chemin::Locate(nucleus::Location&       location) const
     {
       enter();
 
       // check the size of the venue.
       if (this->venue.elements.size() == 0)
-	escape("the venue seems to be empty");
+        escape("the venue seems to be empty");
 
       // set the location's attributes according to the venue last element.
       location.address =
-	this->venue.elements[this->venue.elements.size() - 1].address;
+        this->venue.elements[this->venue.elements.size() - 1].address;
       location.version =
-	this->venue.elements[this->venue.elements.size() - 1].version;
+        this->venue.elements[this->venue.elements.size() - 1].version;
 
       leave();
     }
@@ -125,18 +125,18 @@ namespace etoile
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	Chemin::operator==(const Chemin&	element) const
+    elle::Boolean       Chemin::operator==(const Chemin&        element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the attributes..
       if ((this->route != element.route) ||
-	  (this->venue != element.venue))
-	false();
+          (this->venue != element.venue))
+        false();
 
       true();
     }
@@ -144,17 +144,17 @@ namespace etoile
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	Chemin::operator<(const Chemin&		element) const
+    elle::Boolean       Chemin::operator<(const Chemin&         element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	false();
+        false();
 
       // compare the route only.
       if (this->route < element.route)
-	true();
+        true();
 
       false();
     }
@@ -171,9 +171,9 @@ namespace etoile
     ///
     /// this method dumps a chemin.
     ///
-    elle::Status	Chemin::Dump(const elle::Natural32	margin) const
+    elle::Status        Chemin::Dump(const elle::Natural32      margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
@@ -181,11 +181,11 @@ namespace etoile
 
       // dump the route.
       if (this->route.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the route");
+        escape("unable to dump the route");
 
       // dump the venue.
       if (this->venue.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the venue");
+        escape("unable to dump the venue");
 
       leave();
     }
@@ -197,14 +197,14 @@ namespace etoile
     ///
     /// this method serializes the object.
     ///
-    elle::Status	Chemin::Serialize(elle::Archive&	archive) const
+    elle::Status        Chemin::Serialize(elle::Archive&        archive) const
     {
       enter();
 
       // serialize the attributes.
       if (archive.Serialize(this->route,
-			    this->venue) == elle::StatusError)
-	escape("unable to serialize the attribtues");
+                            this->venue) == elle::StatusError)
+        escape("unable to serialize the attribtues");
 
       leave();
     }
@@ -212,14 +212,14 @@ namespace etoile
     ///
     /// this method extracts the object.
     ///
-    elle::Status	Chemin::Extract(elle::Archive&	archive)
+    elle::Status        Chemin::Extract(elle::Archive&  archive)
     {
       enter();
 
       // extract the attributes.
       if (archive.Extract(this->route,
-			  this->venue) == elle::StatusError)
-	escape("unable to extract the attributes");
+                          this->venue) == elle::StatusError)
+        escape("unable to extract the attributes");
 
       leave();
     }

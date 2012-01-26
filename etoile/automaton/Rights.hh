@@ -38,13 +38,13 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Determine(gear::Object&);
-      static elle::Status	Recompute(gear::Object&);
-      static elle::Status	Update(gear::Object&,
-				       const nucleus::Permissions&);
+      static elle::Status       Determine(gear::Object&);
+      static elle::Status       Recompute(gear::Object&);
+      static elle::Status       Update(gear::Object&,
+                                       const nucleus::Permissions&);
 
-      static elle::Status	Operate(gear::Object&,
-					const gear::Operation&);
+      static elle::Status       Operate(gear::Object&,
+                                        const gear::Operation&);
     };
 
   }

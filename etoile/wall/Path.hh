@@ -38,11 +38,11 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Resolve(const path::Way&,
-					path::Chemin&);
+      static elle::Status       Resolve(const path::Way&,
+                                        path::Chemin&);
 
-      static elle::Status	Locate(const path::Way&,
-				       path::Way&);
+      static elle::Status       Locate(const path::Way&,
+                                       path::Way&);
     };
 
   }

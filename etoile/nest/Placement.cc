@@ -26,17 +26,17 @@ namespace etoile
     ///
     /// this variable holds the current placement counter.
     ///
-    const elle::Natural64		Placement::Zero = 0;
+    const elle::Natural64               Placement::Zero = 0;
 
     ///
     /// this variable defines an unused hence null Placement.
     ///
-    const Placement			Placement::Null;
+    const Placement                     Placement::Null;
 
     ///
     /// this variable holds the current placement counter.
     ///
-    elle::Natural64			Placement::Counter =
+    elle::Natural64                     Placement::Counter =
       Placement::Zero + 1;
 
 //
@@ -58,7 +58,7 @@ namespace etoile
     ///
     /// this method generates a new unique placement.
     ///
-    elle::Status	Placement::Generate()
+    elle::Status        Placement::Generate()
     {
       enter();
 
@@ -75,18 +75,18 @@ namespace etoile
     ///
     /// this method check if two placements match.
     ///
-    elle::Boolean	Placement::operator==(const Placement& element)
+    elle::Boolean       Placement::operator==(const Placement& element)
       const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the placement.
       if (this->value != element.value)
-	false();
+        false();
 
       true();
     }
@@ -94,7 +94,7 @@ namespace etoile
     ///
     /// this operator compares two placements.
     ///
-    elle::Boolean	Placement::operator<(const Placement&	element) const
+    elle::Boolean       Placement::operator<(const Placement&   element) const
     {
       return (this->value < element.value);
     }
@@ -111,13 +111,13 @@ namespace etoile
     ///
     /// this method serializes the placement.
     ///
-    elle::Status	Placement::Serialize(elle::Archive&	archive) const
+    elle::Status        Placement::Serialize(elle::Archive&     archive) const
     {
       enter();
 
       // serialize the attributes.
       if (archive.Serialize(this->value) == elle::StatusError)
-	escape("unable to serialize the placement attributes");
+        escape("unable to serialize the placement attributes");
 
       leave();
     };
@@ -125,13 +125,13 @@ namespace etoile
     ///
     /// this method extracts the placement.
     ///
-    elle::Status	Placement::Extract(elle::Archive&	archive)
+    elle::Status        Placement::Extract(elle::Archive&       archive)
     {
       enter();
 
       // extract the attributes.
       if (archive.Extract(this->value) == elle::StatusError)
-	escape("unable to extract the placement attributes");
+        escape("unable to extract the placement attributes");
 
       leave();
     };
@@ -143,14 +143,14 @@ namespace etoile
     ///
     /// this method dumps an placement.
     ///
-    elle::Status	Placement::Dump(const elle::Natural32	margin) const
+    elle::Status        Placement::Dump(const elle::Natural32   margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Placement] "
-		<< std::dec << this->value << std::endl;
+                << std::dec << this->value << std::endl;
 
       leave();
     }

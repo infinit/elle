@@ -26,7 +26,7 @@ namespace etoile
     ///
     /// this constant is used a null definition.
     ///
-    const Venue			Venue::Null;
+    const Venue                 Venue::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -46,7 +46,7 @@ namespace etoile
     ///
     /// this method records the location.
     ///
-    elle::Status	Venue::Record(const nucleus::Location&	location)
+    elle::Status        Venue::Record(const nucleus::Location&  location)
     {
       enter();
 
@@ -59,20 +59,20 @@ namespace etoile
     ///
     /// this method records the next step of the venue.
     ///
-    elle::Status	Venue::Record(const nucleus::Address&	address,
-				      const nucleus::Version&	version)
+    elle::Status        Venue::Record(const nucleus::Address&   address,
+                                      const nucleus::Version&   version)
     {
-      nucleus::Location	location;
+      nucleus::Location location;
 
       enter();
 
       // create the location.
       if (location.Create(address, version) == elle::StatusError)
-	escape("unable to create the location");
+        escape("unable to create the location");
 
       // record the location.
       if (this->Record(location) == elle::StatusError)
-	escape("unable to record the location");
+        escape("unable to record the location");
 
       leave();
     }
@@ -80,7 +80,7 @@ namespace etoile
     ///
     /// this method clears the venue's content.
     ///
-    elle::Status	Venue::Clear()
+    elle::Status        Venue::Clear()
     {
       enter();
 
@@ -97,27 +97,27 @@ namespace etoile
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	Venue::operator==(const Venue&		element) const
+    elle::Boolean       Venue::operator==(const Venue&          element) const
     {
-      Venue::Scoutor	s;
-      Venue::Scoutor	t;
+      Venue::Scoutor    s;
+      Venue::Scoutor    t;
 
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the size.
       if (this->elements.size() != element.elements.size())
-	false();
+        false();
 
       // for every element.
       for (s = this->elements.begin(), t = element.elements.begin();
-	   s != this->elements.end();
-	   s++, t++)
-	if (*s != *t)
-	  false();
+           s != this->elements.end();
+           s++, t++)
+        if (*s != *t)
+          false();
 
       true();
     }
@@ -134,25 +134,25 @@ namespace etoile
     ///
     /// this method dumps a venue.
     ///
-    elle::Status	Venue::Dump(const elle::Natural32	margin) const
+    elle::Status        Venue::Dump(const elle::Natural32       margin) const
     {
-      elle::String	alignment(margin, ' ');
-      Venue::Scoutor	scoutor;
+      elle::String      alignment(margin, ' ');
+      Venue::Scoutor    scoutor;
 
       enter();
 
       std::cout << alignment << "[Venue] " << std::dec
-		<< this->elements.size() << std::endl;
+                << this->elements.size() << std::endl;
 
       // for every element.
       for (scoutor = this->elements.begin();
-	   scoutor != this->elements.end();
-	   scoutor++)
-	{
-	  // dump the location.
-	  if (scoutor->Dump(margin + 2) == elle::StatusError)
-	    escape("unable to dump the address");
-	}
+           scoutor != this->elements.end();
+           scoutor++)
+        {
+          // dump the location.
+          if (scoutor->Dump(margin + 2) == elle::StatusError)
+            escape("unable to dump the address");
+        }
 
       leave();
     }
@@ -164,10 +164,10 @@ namespace etoile
     ///
     /// this method serializes the object.
     ///
-    elle::Status	Venue::Serialize(elle::Archive&		archive) const
+    elle::Status        Venue::Serialize(elle::Archive&         archive) const
     {
-      Venue::Scoutor	scoutor;
-      elle::Natural32	size;
+      Venue::Scoutor    scoutor;
+      elle::Natural32   size;
 
       enter();
 
@@ -176,17 +176,17 @@ namespace etoile
 
       // serialize the size.
       if (archive.Serialize(size) == elle::StatusError)
-	escape("unable to serialize the size");
+        escape("unable to serialize the size");
 
       // for every element.
       for (scoutor = this->elements.begin();
-	   scoutor != this->elements.end();
-	   scoutor++)
-	{
-	  // serialize the location.
-	  if (archive.Serialize(*scoutor) == elle::StatusError)
-	    escape("unable to serialize the location");
-	}
+           scoutor != this->elements.end();
+           scoutor++)
+        {
+          // serialize the location.
+          if (archive.Serialize(*scoutor) == elle::StatusError)
+            escape("unable to serialize the location");
+        }
 
       leave();
     }
@@ -194,29 +194,29 @@ namespace etoile
     ///
     /// this method extracts the object.
     ///
-    elle::Status	Venue::Extract(elle::Archive&		archive)
+    elle::Status        Venue::Extract(elle::Archive&           archive)
     {
-      elle::Natural32	size;
-      elle::Natural32	i;
+      elle::Natural32   size;
+      elle::Natural32   i;
 
       enter();
 
       // extract the size.
       if (archive.Extract(size) == elle::StatusError)
-	escape("unable to extract the size");
+        escape("unable to extract the size");
 
       // for every element.
       for (i = 0; i < size; i++)
-	{
-	  nucleus::Location	location;
+        {
+          nucleus::Location     location;
 
-	  // extract the location.
-	  if (archive.Extract(location) == elle::StatusError)
-	    escape("unable to extract the location");
+          // extract the location.
+          if (archive.Extract(location) == elle::StatusError)
+            escape("unable to extract the location");
 
-	  // store the location in the elements.
-	  this->elements.push_back(location);
-	}
+          // store the location in the elements.
+          this->elements.push_back(location);
+        }
 
       leave();
     }

@@ -33,30 +33,30 @@ namespace etoile
     /// this method wraps the wall::Access::Lookup() method by
     /// translating the pointer-to-record into a local copy.
     ///
-    elle::Status	Wrapper::Access::Lookup(
-                          const gear::Identifier&		identifier,
-			  const nucleus::Subject&		subject,
-			  nucleus::Record&			record)
+    elle::Status        Wrapper::Access::Lookup(
+                          const gear::Identifier&               identifier,
+                          const nucleus::Subject&               subject,
+                          nucleus::Record&                      record)
     {
-      nucleus::Record*	r;
+      nucleus::Record*  r;
 
       enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] portal::Wrapper:Access::Lookup()\n");
+        printf("[etoile] portal::Wrapper:Access::Lookup()\n");
 
       // forward the call to wall.
       if (wall::Access::Lookup(identifier,
-			       subject,
-			       r) == elle::StatusError)
-	escape("unable to lookup the given subject");
+                               subject,
+                               r) == elle::StatusError)
+        escape("unable to lookup the given subject");
 
       // construct the record depending on the value of _r_.
       if (r != NULL)
-	record = *r;
+        record = *r;
       else
-	record = nucleus::Record::Null;
+        record = nucleus::Record::Null;
 
       leave();
     }
@@ -65,26 +65,26 @@ namespace etoile
     /// this method wraps the wall::Access::Consult() method by
     /// translating the range of pointer-to-record into a local copy.
     ///
-    elle::Status	Wrapper::Access::Consult(
-                          const gear::Identifier&		identifier,
-			  const nucleus::Index&			index,
-			  const nucleus::Size&			size,
-			  nucleus::Range<nucleus::Record>&	range)
+    elle::Status        Wrapper::Access::Consult(
+                          const gear::Identifier&               identifier,
+                          const nucleus::Index&                 index,
+                          const nucleus::Size&                  size,
+                          nucleus::Range<nucleus::Record>&      range)
     {
-      nucleus::Range<nucleus::Record>	r;
+      nucleus::Range<nucleus::Record>   r;
 
       enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] portal::Wrapper:Access::Consult()\n");
+        printf("[etoile] portal::Wrapper:Access::Consult()\n");
 
       // forward the call to wall.
       if (wall::Access::Consult(identifier,
-				index,
-				size,
-				r) == elle::StatusError)
-	escape("unable to consult the given object's access records");
+                                index,
+                                size,
+                                r) == elle::StatusError)
+        escape("unable to consult the given object's access records");
 
       // copy the range, duplicating every record in it.
       range = r;
@@ -100,30 +100,30 @@ namespace etoile
     /// this method wraps the wall::Attributes::Get() method by
     /// translating the pointer-to-trait into a local copy.
     ///
-    elle::Status	Wrapper::Attributes::Get(
-                          const gear::Identifier&		identifier,
-			  const elle::String&			name,
-			  nucleus::Trait&			trait)
+    elle::Status        Wrapper::Attributes::Get(
+                          const gear::Identifier&               identifier,
+                          const elle::String&                   name,
+                          nucleus::Trait&                       trait)
     {
-      nucleus::Trait*	t;
+      nucleus::Trait*   t;
 
       enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] portal::Wrapper:Attributes::Get()\n");
+        printf("[etoile] portal::Wrapper:Attributes::Get()\n");
 
       // forward the call to wall.
       if (wall::Attributes::Get(identifier,
-				name,
-				t) == elle::StatusError)
-	escape("unable to get the attribute");
+                                name,
+                                t) == elle::StatusError)
+        escape("unable to get the attribute");
 
       // construct the trait depending on the value of _t_.
       if (t != NULL)
-	trait = *t;
+        trait = *t;
       else
-	trait = nucleus::Trait::Null;
+        trait = nucleus::Trait::Null;
 
       leave();
     }
@@ -132,22 +132,22 @@ namespace etoile
     /// this method wraps the wall::Attribtues::Fetch() method by
     /// translating the set of pointer-to-trait into a local copy.
     ///
-    elle::Status	Wrapper::Attributes::Fetch(
-                          const gear::Identifier&		identifier,
-			  nucleus::Range<nucleus::Trait>&	range)
+    elle::Status        Wrapper::Attributes::Fetch(
+                          const gear::Identifier&               identifier,
+                          nucleus::Range<nucleus::Trait>&       range)
     {
-      nucleus::Range<nucleus::Trait>	r;
+      nucleus::Range<nucleus::Trait>    r;
 
       enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] portal::Wrapper:Attributes::Fetch()\n");
+        printf("[etoile] portal::Wrapper:Attributes::Fetch()\n");
 
       // forward the call to wall.
       if (wall::Attributes::Fetch(identifier,
-				  r) == elle::StatusError)
-	escape("unable to fetch the given object's attributes");
+                                  r) == elle::StatusError)
+        escape("unable to fetch the given object's attributes");
 
       // copy the range, duplicating every trait in it.
       range = r;
@@ -163,30 +163,30 @@ namespace etoile
     /// this method wraps the wall::Directory::Lookup() method by
     /// translating the pointer-to-entry into a local copy.
     ///
-    elle::Status	Wrapper::Directory::Lookup(
-                          const gear::Identifier&		identifier,
-			  const path::Slab&			slab,
-			  nucleus::Entry&			entry)
+    elle::Status        Wrapper::Directory::Lookup(
+                          const gear::Identifier&               identifier,
+                          const path::Slab&                     slab,
+                          nucleus::Entry&                       entry)
     {
-      nucleus::Entry*	e;
+      nucleus::Entry*   e;
 
       enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] portal::Wrapper:Directory::Lookup()\n");
+        printf("[etoile] portal::Wrapper:Directory::Lookup()\n");
 
       // forward the call to wall.
       if (wall::Directory::Lookup(identifier,
-				  slab,
-				  e) == elle::StatusError)
-	escape("unable to lookup the entry");
+                                  slab,
+                                  e) == elle::StatusError)
+        escape("unable to lookup the entry");
 
       // construct the entry depending on the value of _e_.
       if (e != NULL)
-	entry = *e;
+        entry = *e;
       else
-	entry = nucleus::Entry::Null;
+        entry = nucleus::Entry::Null;
 
       leave();
     }
@@ -195,26 +195,26 @@ namespace etoile
     /// this method wraps the wall::Directory::Consult() method by
     /// translating the set of pointer-to-entry into a local copy.
     ///
-    elle::Status	Wrapper::Directory::Consult(
-                          const gear::Identifier&		identifier,
-			  const nucleus::Index&			index,
-			  const nucleus::Size&			size,
-			  nucleus::Range<nucleus::Entry>&	range)
+    elle::Status        Wrapper::Directory::Consult(
+                          const gear::Identifier&               identifier,
+                          const nucleus::Index&                 index,
+                          const nucleus::Size&                  size,
+                          nucleus::Range<nucleus::Entry>&       range)
     {
-      nucleus::Range<nucleus::Entry>	r;
+      nucleus::Range<nucleus::Entry>    r;
 
       enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] portal::Wrapper:Directory::Consult()\n");
+        printf("[etoile] portal::Wrapper:Directory::Consult()\n");
 
       // forward the call to wall.
       if (wall::Directory::Consult(identifier,
-				   index,
-				   size,
-				   r) == elle::StatusError)
-	escape("unable to consult the given object's directory entries");
+                                   index,
+                                   size,
+                                   r) == elle::StatusError)
+        escape("unable to consult the given object's directory entries");
 
       // copy the range, duplicating every entry in it.
       range = r;

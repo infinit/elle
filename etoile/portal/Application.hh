@@ -40,23 +40,23 @@ namespace etoile
       //
       // constants
       //
-      static const elle::Natural32		Timeout;
+      static const elle::Natural32              Timeout;
 
       //
       // enumerations
       //
       enum State
-	{
-	  StateConnected = 1,
-	  StateAuthenticated,
-	  StateDisconnected
-	};
+        {
+          StateConnected = 1,
+          StateAuthenticated,
+          StateDisconnected
+        };
 
       enum Processing
-	{
-	  ProcessingOff = 0,
-	  ProcessingOn
-	};
+        {
+          ProcessingOff = 0,
+          ProcessingOn
+        };
 
       //
       // constructors & destructors
@@ -67,30 +67,30 @@ namespace etoile
       //
       // methods
       //
-      elle::Status	Create(elle::LocalSocket*);
+      elle::Status      Create(elle::LocalSocket*);
 
       //
       // callbacks
       //
-      elle::Status	Disconnected();
-      elle::Status	Error(const elle::String&);
-      elle::Status	Abort();
+      elle::Status      Disconnected();
+      elle::Status      Error(const elle::String&);
+      elle::Status      Abort();
 
       //
       // interfaces
       //
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      State			state;
-      Processing		processing;
+      State                     state;
+      Processing                processing;
 
-      elle::Timer*		timer;
-      elle::LocalSocket*	socket;
+      elle::Timer*              timer;
+      elle::LocalSocket*        socket;
     };
 
   }

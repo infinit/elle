@@ -53,17 +53,17 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Create(gear::Link&);
-      static elle::Status	Load(gear::Link&);
+      static elle::Status       Create(gear::Link&);
+      static elle::Status       Load(gear::Link&);
 
-      static elle::Status	Bind(gear::Link&,
-				     const path::Way&);
-      static elle::Status	Resolve(gear::Link&,
-					path::Way&);
+      static elle::Status       Bind(gear::Link&,
+                                     const path::Way&);
+      static elle::Status       Resolve(gear::Link&,
+                                        path::Way&);
 
-      static elle::Status	Discard(gear::Link&);
-      static elle::Status	Store(gear::Link&);
-      static elle::Status	Destroy(gear::Link&);
+      static elle::Status       Discard(gear::Link&);
+      static elle::Status       Store(gear::Link&);
+      static elle::Status       Destroy(gear::Link&);
     };
 
   }

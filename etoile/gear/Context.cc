@@ -26,7 +26,7 @@ namespace etoile
     ///
     /// default constructor.
     ///
-    Context::Context(const Nature				nature):
+    Context::Context(const Nature                               nature):
       nature(nature),
       state(Context::StateUnknown),
       operation(OperationUnknown)
@@ -40,9 +40,9 @@ namespace etoile
     ///
     /// this function dumps an context object.
     ///
-    elle::Status	Context::Dump(elle::Natural32		margin) const
+    elle::Status        Context::Dump(elle::Natural32           margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
@@ -51,19 +51,19 @@ namespace etoile
 
       // display the nature.
       std::cout << alignment << elle::Dumpable::Shift << "[Nature] "
-		<< this->nature << std::endl;
+                << this->nature << std::endl;
 
       // display the state.
       std::cout << alignment << elle::Dumpable::Shift << "[State] "
-		<< this->state << std::endl;
+                << this->state << std::endl;
 
       // display the operation.
       std::cout << alignment << elle::Dumpable::Shift << "[Operation] "
-		<< this->operation << std::endl;
+                << this->operation << std::endl;
 
       // dump the transcript.
       if (this->transcript.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the transcript");
+        escape("unable to dump the transcript");
 
       leave();
     }
@@ -75,15 +75,15 @@ namespace etoile
     ///
     /// this method serializes the context object.
     ///
-    elle::Status	Context::Serialize(elle::Archive&	archive) const
+    elle::Status        Context::Serialize(elle::Archive&       archive) const
     {
       enter();
 
       // serialize the attributes.
       if (archive.Serialize(
-	    static_cast<elle::Natural8>(this->nature),
-	    static_cast<elle::Natural8>(this->state)) == elle::StatusError)
-	escape("unable to serialize the attributes");
+            static_cast<elle::Natural8>(this->nature),
+            static_cast<elle::Natural8>(this->state)) == elle::StatusError)
+        escape("unable to serialize the attributes");
 
       leave();
     }
@@ -91,16 +91,16 @@ namespace etoile
     ///
     /// this method extracts the context object.
     ///
-    elle::Status	Context::Extract(elle::Archive&		archive)
+    elle::Status        Context::Extract(elle::Archive&         archive)
     {
       enter();
 
       // extract the attributes.
       if (archive.Extract(
-	    reinterpret_cast<elle::Natural8&>(this->nature),
-	    reinterpret_cast<elle::Natural8&>(this->state)) ==
-	  elle::StatusError)
-	escape("unable to extract the attributes");
+            reinterpret_cast<elle::Natural8&>(this->nature),
+            reinterpret_cast<elle::Natural8&>(this->state)) ==
+          elle::StatusError)
+        escape("unable to extract the attributes");
 
       leave();
     }

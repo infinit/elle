@@ -57,62 +57,62 @@ namespace etoile
       // enumerations
       //
       enum State
-	{
-	  StateNone,
-	  StateRefreshing,
-	  StateDisclosing
-	};
+        {
+          StateNone,
+          StateRefreshing,
+          StateDisclosing
+        };
 
       //
       // types
       //
       struct S
       {
-	struct O
-	{
-	  typedef std::map<const path::Chemin,
-			   Scope*>			Container;
-	  typedef Container::iterator			Iterator;
-	  typedef Container::const_iterator		Scoutor;
-	};
+        struct O
+        {
+          typedef std::map<const path::Chemin,
+                           Scope*>                      Container;
+          typedef Container::iterator                   Iterator;
+          typedef Container::const_iterator             Scoutor;
+        };
 
-	struct A
-	{
-	  typedef std::list<Scope*>			Container;
-	  typedef Container::iterator			Iterator;
-	  typedef Container::const_iterator		Scoutor;
-	};
+        struct A
+        {
+          typedef std::list<Scope*>                     Container;
+          typedef Container::iterator                   Iterator;
+          typedef Container::const_iterator             Scoutor;
+        };
       };
 
       struct A
       {
-	typedef std::list<Actor*>			Container;
-	typedef typename Container::iterator		Iterator;
-	typedef typename Container::const_iterator	Scoutor;
+        typedef std::list<Actor*>                       Container;
+        typedef typename Container::iterator            Iterator;
+        typedef typename Container::const_iterator      Scoutor;
       };
 
       //
       // static methods
       //
-      static elle::Status	Initialize();
-      static elle::Status	Clean();
+      static elle::Status       Initialize();
+      static elle::Status       Clean();
 
-      static elle::Status	Inclose(Scope*);
-      static elle::Status	Acquire(const path::Chemin&,
-					Scope*&);
-      static elle::Status	Supply(Scope*&);
-      static elle::Status	Relinquish(Scope*);
-      static elle::Status	Annihilate(Scope*);
+      static elle::Status       Inclose(Scope*);
+      static elle::Status       Acquire(const path::Chemin&,
+                                        Scope*&);
+      static elle::Status       Supply(Scope*&);
+      static elle::Status       Relinquish(Scope*);
+      static elle::Status       Annihilate(Scope*);
 
-      static elle::Status	Show(const elle::Natural32 = 0);
+      static elle::Status       Show(const elle::Natural32 = 0);
 
       //
       // static attributes
       //
-      struct				Scopes
+      struct                            Scopes
       {
-	static S::O::Container		Onymous;
-	static S::A::Container		Anonymous;
+        static S::O::Container          Onymous;
+        static S::A::Container          Anonymous;
       };
 
       //
@@ -125,52 +125,52 @@ namespace etoile
       //
       // methods
       //
-      elle::Status	Create();
+      elle::Status      Create();
 
-      elle::Status	Locate(Actor*,
-			       A::Iterator* = NULL);
+      elle::Status      Locate(Actor*,
+                               A::Iterator* = NULL);
 
-      elle::Status	Attach(Actor*);
-      elle::Status	Detach(Actor*);
-
-      template <typename T>
-      elle::Status	Use(T*&);
-
-      elle::Status	Operate(const Operation);
-
-      elle::Status	Shutdown();
+      elle::Status      Attach(Actor*);
+      elle::Status      Detach(Actor*);
 
       template <typename T>
-      elle::Status	Refresh();
+      elle::Status      Use(T*&);
+
+      elle::Status      Operate(const Operation);
+
+      elle::Status      Shutdown();
+
       template <typename T>
-      elle::Status	Disclose();
+      elle::Status      Refresh();
+      template <typename T>
+      elle::Status      Disclose();
 
       //
       // callbacks
       //
-      elle::Status	Supervisor();
+      elle::Status      Supervisor();
 
       //
       // interfaces
       //
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      State		state;
-      elle::Timer	timer;
+      State             state;
+      elle::Timer       timer;
 
-      path::Chemin	chemin;
+      path::Chemin      chemin;
 
-      Context*		context;
-      Chronicle*	chronicle;
+      Context*          context;
+      Chronicle*        chronicle;
 
-      A::Container	actors;
+      A::Container      actors;
 
-      elle::Hurdle	hurdle;
+      elle::Hurdle      hurdle;
     };
 
   }

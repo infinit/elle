@@ -26,10 +26,10 @@ namespace etoile
     ///
     enum Operation
       {
-	OperationUnknown,
-	OperationDiscard,
-	OperationStore,
-	OperationDestroy
+        OperationUnknown,
+        OperationDiscard,
+        OperationStore,
+        OperationDestroy
       };
 
   }

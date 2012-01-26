@@ -38,13 +38,13 @@ namespace etoile
     //
     // static methods
     //
-    static elle::Status	Initialize();
-    static elle::Status	Clean();
+    static elle::Status Initialize();
+    static elle::Status Clean();
 
     //
     // static attributes
     //
-    static lune::Phrase		Phrase;
+    static lune::Phrase         Phrase;
   };
 
 }

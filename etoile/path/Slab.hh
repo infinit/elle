@@ -34,7 +34,7 @@ namespace etoile
     /// such as '%23' should '%[0-9]+' be the associated version number
     /// regular expression.
     ///
-    typedef elle::String	Slab;
+    typedef elle::String        Slab;
 
   }
 }

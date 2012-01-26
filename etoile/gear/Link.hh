@@ -48,21 +48,21 @@ namespace etoile
       //
       // constants
       //
-      static const Nature			N = NatureLink;
+      static const Nature                       N = NatureLink;
 
       //
       // types
       //
-      typedef wall::Link			W;
-      typedef automaton::Link			A;
+      typedef wall::Link                        W;
+      typedef automaton::Link                   A;
       typedef elle::Callback<
-	        elle::Status,
-	        elle::Parameters<
-		  Link&
-		  >
-	        >				S;
+                elle::Status,
+                elle::Parameters<
+                  Link&
+                  >
+                >                               S;
 
-      typedef nucleus::Reference		C;
+      typedef nucleus::Reference                C;
 
       //
       // constructors & destructors
@@ -75,16 +75,16 @@ namespace etoile
       //
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      nucleus::Contents<C>*	contents;
+      nucleus::Contents<C>*     contents;
     };
 
   }

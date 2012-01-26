@@ -38,29 +38,29 @@ namespace etoile
       // enumerations
       //
       enum Type
-	{
-	  TypeUnknown,
-	  TypePush,
-	  TypeWipe
-	};
+        {
+          TypeUnknown,
+          TypePush,
+          TypeWipe
+        };
 
       //
       // constructors & destructors
       //
       Action(const nucleus::Address&,
-	     const nucleus::Block*);
+             const nucleus::Block*);
       Action(const nucleus::Address&);
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      const Type		type;
+      const Type                type;
 
-      const nucleus::Address	address;
-      const nucleus::Block*	block;
+      const nucleus::Address    address;
+      const nucleus::Block*     block;
     };
 
   }

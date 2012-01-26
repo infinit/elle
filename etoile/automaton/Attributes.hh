@@ -39,16 +39,16 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Set(gear::Object&,
-				    const elle::String&,
-				    const elle::String&);
-      static elle::Status	Get(gear::Object&,
-				    const elle::String&,
-				    nucleus::Trait*&);
-      static elle::Status	Fetch(gear::Object&,
-				      nucleus::Range<nucleus::Trait>&);
-      static elle::Status	Omit(gear::Object&,
-				     const elle::String&);
+      static elle::Status       Set(gear::Object&,
+                                    const elle::String&,
+                                    const elle::String&);
+      static elle::Status       Get(gear::Object&,
+                                    const elle::String&,
+                                    nucleus::Trait*&);
+      static elle::Status       Fetch(gear::Object&,
+                                      nucleus::Range<nucleus::Trait>&);
+      static elle::Status       Omit(gear::Object&,
+                                     const elle::String&);
     };
 
   }

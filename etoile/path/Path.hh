@@ -42,14 +42,14 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Initialize();
-      static elle::Status	Clean();
+      static elle::Status       Initialize();
+      static elle::Status       Clean();
 
-      static elle::Status	Resolve(const Route&,
-					Venue&);
-      static elle::Status	Parse(const Slab&,
-				      Slice&,
-				      nucleus::Version&);
+      static elle::Status       Resolve(const Route&,
+                                        Venue&);
+      static elle::Status       Parse(const Slab&,
+                                      Slice&,
+                                      nucleus::Version&);
     };
 
   }

@@ -39,16 +39,16 @@ namespace etoile
       // enumerations
       //
       enum Nature
-	{
-	  NatureNew,
-	  NatureExisting
-	};
+        {
+          NatureNew,
+          NatureExisting
+        };
 
       enum State
-	{
-	  StateUnloaded,
-	  StateLoaded
-	};
+        {
+          StateUnloaded,
+          StateLoaded
+        };
 
       //
       // constructors & destructors
@@ -59,18 +59,18 @@ namespace etoile
 
       // object
       declare(Handle);
-      elle::Boolean	operator==(const Handle&) const;
+      elle::Boolean     operator==(const Handle&) const;
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      State		state;
+      State             state;
 
-      Placement		placement;
-      nucleus::Address	address;
+      Placement         placement;
+      nucleus::Address  address;
     };
 
     /* XXX

@@ -30,15 +30,15 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Load(const nucleus::Address&,
-				     nucleus::Block&);
-      static elle::Status	Load(const Placement&,
-				     nucleus::Block&);
+      static elle::Status       Load(const nucleus::Address&,
+                                     nucleus::Block&);
+      static elle::Status       Load(const Placement&,
+                                     nucleus::Block&);
 
-      static elle::Status	Unload(const nucleus::Address&,
-				       const nucleus::Block&);
-      static elle::Status	Unload(const Placement&,
-				       const nucleus::Block&);
+      static elle::Status       Unload(const nucleus::Address&,
+                                       const nucleus::Block&);
+      static elle::Status       Unload(const Placement&,
+                                       const nucleus::Block&);
     };
     */
 

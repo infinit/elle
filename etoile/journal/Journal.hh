@@ -54,7 +54,7 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Record(gear::Scope*);
+      static elle::Status       Record(gear::Scope*);
     };
 
   }

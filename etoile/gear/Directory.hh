@@ -50,21 +50,21 @@ namespace etoile
       //
       // constants
       //
-      static const Nature			N = NatureDirectory;
+      static const Nature                       N = NatureDirectory;
 
       //
       // types
       //
-      typedef wall::Directory			W;
-      typedef automaton::Directory		A;
+      typedef wall::Directory                   W;
+      typedef automaton::Directory              A;
       typedef elle::Callback<
-	        elle::Status,
-	        elle::Parameters<
-		  Directory&
-		  >
-	        >				S;
+                elle::Status,
+                elle::Parameters<
+                  Directory&
+                  >
+                >                               S;
 
-      typedef nucleus::Catalog			C;
+      typedef nucleus::Catalog                  C;
 
       //
       // constructors & destructors
@@ -77,16 +77,16 @@ namespace etoile
       //
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      nucleus::Contents<C>*	contents;
+      nucleus::Contents<C>*     contents;
     };
 
   }

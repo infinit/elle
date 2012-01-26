@@ -32,7 +32,7 @@ namespace etoile
     /// for instance, the path /teton/avale/suce/ is composed of
     /// three slices: 'teton', 'avale' and 'suce'.
     ///
-    typedef elle::String	Slice;
+    typedef elle::String        Slice;
 
   }
 }

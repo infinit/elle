@@ -39,7 +39,7 @@ namespace etoile
       //
       // constants
       //
-      static const Way			Null;
+      static const Way                  Null;
 
       //
       // constructors & destructors
@@ -49,13 +49,13 @@ namespace etoile
       Way(const elle::Character&);
       Way(const elle::String&);
       Way(const Way&,
-	  Slice&);
+          Slice&);
       Way(const wchar_t * u16_str);
 
       //
       // methods
       //
-      elle::Status		Capacity(Length&) const;
+      elle::Status              Capacity(Length&) const;
 
 
       // interfaces
@@ -63,19 +63,19 @@ namespace etoile
 
       // object
       declare(Way);
-      elle::Boolean		operator==(const Way&) const;
+      elle::Boolean             operator==(const Way&) const;
 
       // dumpable
-      elle::Status		Dump(const elle::Natural32 = 0) const;
+      elle::Status              Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status		Serialize(elle::Archive&) const;
-      elle::Status		Extract(elle::Archive&);
+      elle::Status              Serialize(elle::Archive&) const;
+      elle::Status              Extract(elle::Archive&);
 
       //
       // attributes
       //
-      elle::String		path;
+      elle::String              path;
     };
 
   }

@@ -30,12 +30,12 @@ namespace etoile
     ///
     /// this route represents a null route.
     ///
-    const Route				Route::Null;
+    const Route                         Route::Null;
 
     ///
     /// this route represents the root directory.
     ///
-    Route				Route::Root;
+    Route                               Route::Root;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -44,15 +44,15 @@ namespace etoile
     ///
     /// this method initializes the path system.
     ///
-    elle::Status	Route::Initialize()
+    elle::Status        Route::Initialize()
     {
-      Way		root(elle::System::Path::Separator);
+      Way               root(elle::System::Path::Separator);
 
       enter();
 
       // create the reference root route.
       if (Route::Root.Create(root) == elle::StatusError)
-	escape("unable to create the route");
+        escape("unable to create the route");
 
       leave();
     }
@@ -60,7 +60,7 @@ namespace etoile
     ///
     /// this method cleans the path system.
     ///
-    elle::Status	Route::Clean()
+    elle::Status        Route::Clean()
     {
       enter();
 
@@ -105,80 +105,80 @@ namespace etoile
     /// if the first non-empty slab starts with '@[0-9]+', then this slab is
     /// used as the root one with the appropriate version number.
     ///
-    elle::Status	Route::Create(const Way&		way)
+    elle::Status        Route::Create(const Way&                way)
     {
-      elle::String::size_type	start;
-      elle::String::size_type	end;
-      Slab			slab;
+      elle::String::size_type   start;
+      elle::String::size_type   end;
+      Slab                      slab;
 
       enter();
 
       // check that the way starts with a leading '/'
       if (way.path[0] != elle::System::Path::Separator)
-	escape("the path must contain the leading path separator '%c'",
-	       elle::System::Path::Separator);
+        escape("the path must contain the leading path separator '%c'",
+               elle::System::Path::Separator);
 
       // clear the elements.
       this->elements.clear();
 
       // compute the next offsets.
       start =
-	way.path.find_first_not_of(elle::System::Path::Separator);
+        way.path.find_first_not_of(elle::System::Path::Separator);
       end =
-	way.path.find_first_of(elle::System::Path::Separator, start);
+        way.path.find_first_of(elle::System::Path::Separator, start);
 
       // check if at least one slab is present.
       if (start < way.path.length())
-	{
-	  // create the slab.
-	  slab = way.path.substr(start, end - start);
+        {
+          // create the slab.
+          slab = way.path.substr(start, end - start);
 
-	  // check if the slab represents the root directory i.e starts
-	  // with '@' and follows with a possible version number, should
-	  // the network support history though.
-	  if ((hole::Hole::Descriptor.history == true) &&
-	      (Infinit::Configuration.etoile.history.status == true) &&
-	      (slab[0] ==
-	       Infinit::Configuration.etoile.history.indicator.root))
-	    {
-	      // modify the '@' character with the version indicator '%'.
-	      slab[0] = Infinit::Configuration.etoile.history.indicator.slab;
+          // check if the slab represents the root directory i.e starts
+          // with '@' and follows with a possible version number, should
+          // the network support history though.
+          if ((hole::Hole::Descriptor.history == true) &&
+              (Infinit::Configuration.etoile.history.status == true) &&
+              (slab[0] ==
+               Infinit::Configuration.etoile.history.indicator.root))
+            {
+              // modify the '@' character with the version indicator '%'.
+              slab[0] = Infinit::Configuration.etoile.history.indicator.slab;
 
-	      // record the slab.
-	      this->elements.push_back(slab);
+              // record the slab.
+              this->elements.push_back(slab);
 
-	      // compute the next offsets.
-	      start =
-		way.path.find_first_not_of(elle::System::Path::Separator, end);
-	      end =
-		way.path.find_first_of(elle::System::Path::Separator, start);
-	    }
-	}
+              // compute the next offsets.
+              start =
+                way.path.find_first_not_of(elle::System::Path::Separator, end);
+              end =
+                way.path.find_first_of(elle::System::Path::Separator, start);
+            }
+        }
 
       // if no slab is present or the first slab does not represent the
       // root directory---i.e the elements container is empty---register
       // an empty root slab.
       if (this->elements.empty() == true)
-	{
-	  // record an empty root slab.
-	  this->elements.push_back("");
-	}
+        {
+          // record an empty root slab.
+          this->elements.push_back("");
+        }
 
       // then, go through the string.
       while (start < way.path.length())
-	{
-	  // create the slab.
-	  slab = way.path.substr(start, end - start);
+        {
+          // create the slab.
+          slab = way.path.substr(start, end - start);
 
-	  // add the section to the container.
-	  this->elements.push_back(slab);
+          // add the section to the container.
+          this->elements.push_back(slab);
 
-	  // compute the next offsets.
-	  start =
-	    way.path.find_first_not_of(elle::System::Path::Separator, end);
-	  end =
-	    way.path.find_first_of(elle::System::Path::Separator, start);
-	}
+          // compute the next offsets.
+          start =
+            way.path.find_first_not_of(elle::System::Path::Separator, end);
+          end =
+            way.path.find_first_of(elle::System::Path::Separator, start);
+        }
 
       leave();
     }
@@ -186,8 +186,8 @@ namespace etoile
     ///
     /// this method creates a route by appending a name to an existing route.
     ///
-    elle::Status	Route::Create(const Route&		route,
-				      const Slab&		slab)
+    elle::Status        Route::Create(const Route&              route,
+                                      const Slab&               slab)
     {
       enter();
 
@@ -203,7 +203,7 @@ namespace etoile
     ///
     /// this method clears the route's content.
     ///
-    elle::Status	Route::Clear()
+    elle::Status        Route::Clear()
     {
       enter();
 
@@ -220,27 +220,27 @@ namespace etoile
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	Route::operator==(const Route&		element) const
+    elle::Boolean       Route::operator==(const Route&          element) const
     {
-      Route::Scoutor	s;
-      Route::Scoutor	t;
+      Route::Scoutor    s;
+      Route::Scoutor    t;
 
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the size.
       if (this->elements.size() != element.elements.size())
-	false();
+        false();
 
       // for every element.
       for (s = this->elements.begin(), t = element.elements.begin();
-	   s != this->elements.end();
-	   s++, t++)
-	if (*s != *t)
-	  false();
+           s != this->elements.end();
+           s++, t++)
+        if (*s != *t)
+          false();
 
       true();
     }
@@ -248,33 +248,33 @@ namespace etoile
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	Route::operator<(const Route&		element) const
+    elle::Boolean       Route::operator<(const Route&           element) const
     {
-      Route::Scoutor	s;
-      Route::Scoutor	t;
+      Route::Scoutor    s;
+      Route::Scoutor    t;
 
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	false();
+        false();
 
       // compare the size.
       if (this->elements.size() < element.elements.size())
-	true();
+        true();
       else if (this->elements.size() > element.elements.size())
-	false();
+        false();
 
       // for every element.
       for (s = this->elements.begin(), t = element.elements.begin();
-	   s != this->elements.end();
-	   s++, t++)
-	{
-	  if (*s < *t)
-	    true();
-	  else if (*s > *t)
-	    false();
-	}
+           s != this->elements.end();
+           s++, t++)
+        {
+          if (*s < *t)
+            true();
+          else if (*s > *t)
+            false();
+        }
 
       // at this point, both routes seem identical.
       false();
@@ -292,25 +292,25 @@ namespace etoile
     ///
     /// this method dumps a route.
     ///
-    elle::Status	Route::Dump(const elle::Natural32	margin) const
+    elle::Status        Route::Dump(const elle::Natural32       margin) const
     {
-      elle::String	alignment(margin, ' ');
-      Route::Scoutor	scoutor;
+      elle::String      alignment(margin, ' ');
+      Route::Scoutor    scoutor;
 
       enter();
 
       std::cout << alignment << "[Route] " << std::dec
-		<< this->elements.size() << std::endl;
+                << this->elements.size() << std::endl;
 
       // for every element.
       for (scoutor = this->elements.begin();
-	   scoutor != this->elements.end();
-	   scoutor++)
-	{
-	  // dump the slab.
-	  std::cout << alignment << elle::Dumpable::Shift
-		    << *scoutor << std::endl;
-	}
+           scoutor != this->elements.end();
+           scoutor++)
+        {
+          // dump the slab.
+          std::cout << alignment << elle::Dumpable::Shift
+                    << *scoutor << std::endl;
+        }
 
       leave();
     }
@@ -322,10 +322,10 @@ namespace etoile
     ///
     /// this method serializes the object.
     ///
-    elle::Status	Route::Serialize(elle::Archive&		archive) const
+    elle::Status        Route::Serialize(elle::Archive&         archive) const
     {
-      Route::Scoutor	scoutor;
-      elle::Natural32	size;
+      Route::Scoutor    scoutor;
+      elle::Natural32   size;
 
       enter();
 
@@ -334,17 +334,17 @@ namespace etoile
 
       // serialize the size.
       if (archive.Serialize(size) == elle::StatusError)
-	escape("unable to serialize the size");
+        escape("unable to serialize the size");
 
       // for every element.
       for (scoutor = this->elements.begin();
-	   scoutor != this->elements.end();
-	   scoutor++)
-	{
-	  // serialize the slab.
-	  if (archive.Serialize(*scoutor) == elle::StatusError)
-	    escape("unable to serialize the slab");
-	}
+           scoutor != this->elements.end();
+           scoutor++)
+        {
+          // serialize the slab.
+          if (archive.Serialize(*scoutor) == elle::StatusError)
+            escape("unable to serialize the slab");
+        }
 
       leave();
     }
@@ -352,29 +352,29 @@ namespace etoile
     ///
     /// this method extracts the object.
     ///
-    elle::Status	Route::Extract(elle::Archive&		archive)
+    elle::Status        Route::Extract(elle::Archive&           archive)
     {
-      elle::Natural32	size;
-      elle::Natural32	i;
+      elle::Natural32   size;
+      elle::Natural32   i;
 
       enter();
 
       // extract the size.
       if (archive.Extract(size) == elle::StatusError)
-	escape("unable to extract the size");
+        escape("unable to extract the size");
 
       // for every element.
       for (i = 0; i < size; i++)
-	{
-	  Slab		slab;
+        {
+          Slab          slab;
 
-	  // extract the slab.
-	  if (archive.Extract(slab) == elle::StatusError)
-	    escape("unable to extract the slab");
+          // extract the slab.
+          if (archive.Extract(slab) == elle::StatusError)
+            escape("unable to extract the slab");
 
-	  // add the slab.
-	  this->elements.push_back(slab);
-	}
+          // add the slab.
+          this->elements.push_back(slab);
+        }
 
       leave();
     }

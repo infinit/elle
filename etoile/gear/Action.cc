@@ -26,8 +26,8 @@ namespace etoile
     ///
     /// push-specifc constructor.
     ///
-    Action::Action(const nucleus::Address&			address,
-		   const nucleus::Block*			block):
+    Action::Action(const nucleus::Address&                      address,
+                   const nucleus::Block*                        block):
       type(Action::TypePush),
       address(address),
       block(block)
@@ -37,7 +37,7 @@ namespace etoile
     ///
     /// wipe-specifc constructor.
     ///
-    Action::Action(const nucleus::Address&			address):
+    Action::Action(const nucleus::Address&                      address):
       type(Action::TypeWipe),
       address(address)
     {
@@ -50,9 +50,9 @@ namespace etoile
     ///
     /// this method dumps an action.
     ///
-    elle::Status	Action::Dump(const elle::Natural32	margin) const
+    elle::Status        Action::Dump(const elle::Natural32      margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
@@ -60,36 +60,36 @@ namespace etoile
 
       // display the type.
       std::cout << alignment << elle::Dumpable::Shift << "[Type] "
-		<< this->type << std::endl;
+                << this->type << std::endl;
 
       // dump according to the type.
       switch (this->type)
-	{
-	case Action::TypePush:
-	  {
-	    // display the address.
-	    if (this->address.Dump(margin + 2) == elle::StatusError)
-	      escape("unable to dump the address");
+        {
+        case Action::TypePush:
+          {
+            // display the address.
+            if (this->address.Dump(margin + 2) == elle::StatusError)
+              escape("unable to dump the address");
 
-	    // display the block.
-	    if (this->block->Dump(margin + 2) == elle::StatusError)
-	      escape("unable to dump the block");
+            // display the block.
+            if (this->block->Dump(margin + 2) == elle::StatusError)
+              escape("unable to dump the block");
 
-	    break;
-	  }
-	case Action::TypeWipe:
-	  {
-	    // display the address.
-	    if (this->address.Dump(margin + 2) == elle::StatusError)
-	      escape("unable to dump the address");
+            break;
+          }
+        case Action::TypeWipe:
+          {
+            // display the address.
+            if (this->address.Dump(margin + 2) == elle::StatusError)
+              escape("unable to dump the address");
 
-	    break;
-	  }
-	case Action::TypeUnknown:
-	  {
-	    escape("unknown action type");
-	  }
-	}
+            break;
+          }
+        case Action::TypeUnknown:
+          {
+            escape("unknown action type");
+          }
+        }
       
       leave();
     }

@@ -29,7 +29,7 @@ namespace etoile
     ///
     /// this type defines a path length.
     ///
-    typedef elle::Natural32	Length;
+    typedef elle::Natural32     Length;
 
   }
 }

@@ -57,14 +57,14 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Load(gear::Object&);
+      static elle::Status       Load(gear::Object&);
 
-      static elle::Status	Information(gear::Object&,
-					    miscellaneous::Abstract&);
+      static elle::Status       Information(gear::Object&,
+                                            miscellaneous::Abstract&);
 
-      static elle::Status	Discard(gear::Object&);
-      static elle::Status	Destroy(gear::Object&);
-      static elle::Status	Store(gear::Object&);
+      static elle::Status       Discard(gear::Object&);
+      static elle::Status       Destroy(gear::Object&);
+      static elle::Status       Store(gear::Object&);
     };
 
   }

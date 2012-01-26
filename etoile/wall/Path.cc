@@ -36,30 +36,30 @@ namespace etoile
     /// use a specific version of the named directory, file etc. contained
     /// in the path.
     ///
-    elle::Status	Path::Resolve(
-			  const path::Way&			way,
-			  path::Chemin&				chemin)
+    elle::Status        Path::Resolve(
+                          const path::Way&                      way,
+                          path::Chemin&                         chemin)
     {
-      path::Route	route;
-      path::Venue	venue;
+      path::Route       route;
+      path::Venue       venue;
 
       enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] wall::Path::Resolve()\n");
+        printf("[etoile] wall::Path::Resolve()\n");
 
       // create a route from the way.
       if (route.Create(way) == elle::StatusError)
-	escape("unable to create the route");
+        escape("unable to create the route");
 
       // resolve the way.
       if (path::Path::Resolve(route, venue) == elle::StatusError)
-	escape("unable to resolve the path");
+        escape("unable to resolve the path");
 
       // create the chemin.
       if (chemin.Create(route, venue) == elle::StatusError)
-	escape("unable to create the chemin");
+        escape("unable to create the chemin");
 
       leave();
     }
@@ -74,22 +74,22 @@ namespace etoile
     /// /home/mycure/local/mnt/infinit/tmp/teton.txt, this method would
     /// return a _path_ /tmp/teton.txt.
     ///
-    elle::Status	Path::Locate(
-                          const path::Way&			absolute,
-			  path::Way&				relative)
+    elle::Status        Path::Locate(
+                          const path::Way&                      absolute,
+                          path::Way&                            relative)
     {
       enter();
 
       // verify that the given way lies in the mountpoint.
       if (absolute.path.find(Infinit::Mountpoint) == elle::String::npos)
-	escape("the given way is not located in this Infinit file system");
+        escape("the given way is not located in this Infinit file system");
 
       // extract the relative path.
       relative.path = absolute.path.substr(Infinit::Mountpoint.length());
 
       // if the relative path is empty, just return the root directory.
       if (relative.path.empty() == true)
-	relative.path = elle::System::Path::Root;
+        relative.path = elle::System::Path::Root;
 
       leave();
     }

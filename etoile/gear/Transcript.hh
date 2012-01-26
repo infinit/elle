@@ -41,9 +41,9 @@ namespace etoile
       //
       // types
       //
-      typedef std::list<Action*>		Container;
-      typedef Container::iterator		Iterator;
-      typedef Container::const_iterator		Scoutor;
+      typedef std::list<Action*>                Container;
+      typedef Container::iterator               Iterator;
+      typedef Container::const_iterator         Scoutor;
 
       //
       // constructors & destructors
@@ -53,24 +53,24 @@ namespace etoile
       //
       // methods
       //
-      elle::Status	Push(const nucleus::Address&,
-			     const nucleus::Block*);
-      elle::Status	Wipe(const nucleus::Address&);
+      elle::Status      Push(const nucleus::Address&,
+                             const nucleus::Block*);
+      elle::Status      Wipe(const nucleus::Address&);
 
-      elle::Status	Clear(const Action::Type);
-      elle::Status	Flush();
+      elle::Status      Clear(const Action::Type);
+      elle::Status      Flush();
 
       //
       // interfaces
       //
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      Container		container;
+      Container         container;
     };
 
   }

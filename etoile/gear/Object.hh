@@ -69,19 +69,19 @@ namespace etoile
       //
       // constants
       //
-      static const Nature			N = NatureObject;
+      static const Nature                       N = NatureObject;
 
       //
       // types
       //
-      typedef wall::Object			W;
-      typedef automaton::Object			A;
+      typedef wall::Object                      W;
+      typedef automaton::Object                 A;
       typedef elle::Callback<
-	        elle::Status,
-	        elle::Parameters<
-		  Object&
-		  >
-	        >				S;
+                elle::Status,
+                elle::Parameters<
+                  Object&
+                  >
+                >                               S;
 
       //
       // constructors & destructors
@@ -95,28 +95,28 @@ namespace etoile
       //
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      nucleus::Location		location;
+      nucleus::Location         location;
 
-      nucleus::Object		object;
-      nucleus::Access*		access;
+      nucleus::Object           object;
+      nucleus::Access*          access;
 
       struct
       {
-	nucleus::Role		role;
-	nucleus::Permissions	permissions;
-	elle::SecretKey		key;
-	nucleus::Record		record;
-      }				rights;
-      nucleus::Author		author;
+        nucleus::Role           role;
+        nucleus::Permissions    permissions;
+        elle::SecretKey         key;
+        nucleus::Record         record;
+      }                         rights;
+      nucleus::Author           author;
     };
 
   }

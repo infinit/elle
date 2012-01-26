@@ -26,17 +26,17 @@ namespace etoile
     ///
     /// this method initializes the gear system.
     ///
-    elle::Status	Gear::Initialize()
+    elle::Status        Gear::Initialize()
     {
       enter();
 
       // initialize the actor system.
       if (Actor::Initialize() == elle::StatusError)
-	escape("unable to initialize the actor");
+        escape("unable to initialize the actor");
 
       // initialize the scope system.
       if (Scope::Initialize() == elle::StatusError)
-	escape("unable to initialize the scope");
+        escape("unable to initialize the scope");
 
       leave();
     }
@@ -44,17 +44,17 @@ namespace etoile
     ///
     /// this method cleans the gear system.
     ///
-    elle::Status	Gear::Clean()
+    elle::Status        Gear::Clean()
     {
       enter();
 
       // clean the actor system.
       if (Actor::Clean() == elle::StatusError)
-	escape("unable to clean the actor");
+        escape("unable to clean the actor");
 
       // clean the scope system.
       if (Scope::Clean() == elle::StatusError)
-	escape("unable to clean the scope");
+        escape("unable to clean the scope");
 
       leave();
     }

@@ -40,43 +40,43 @@ namespace etoile
     /// target record is returned. should this record be destroyed by another
     /// actor's operation, accessing it could make the system crash.
     /// 
-    elle::Status	Access::Lookup(
-			  const gear::Identifier&		identifier,
-			  const nucleus::Subject&		subject,
-			  nucleus::Record*&			record)
+    elle::Status        Access::Lookup(
+                          const gear::Identifier&               identifier,
+                          const nucleus::Subject&               subject,
+                          nucleus::Record*&                     record)
     {
-      gear::Actor*	actor;
-      gear::Scope*	scope;
-      gear::Object*	context;
+      gear::Actor*      actor;
+      gear::Scope*      scope;
+      gear::Object*     context;
 
       enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] wall::Access::Lookup()\n");
+        printf("[etoile] wall::Access::Lookup()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
-	escape("unable to select the actor");
+        escape("unable to select the actor");
 
       // retrieve the scope.
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeRead);
+      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeRead);
 
       // protect the access.
       zone.Lock();
       {
-	// retrieve the context.
-	if (scope->Use(context) == elle::StatusError)
-	  escape("unable to retrieve the context");
+        // retrieve the context.
+        if (scope->Use(context) == elle::StatusError)
+          escape("unable to retrieve the context");
 
-	// apply the lookup automaton on the context.
-	if (automaton::Access::Lookup(*context,
-				      subject,
-				      record) == elle::StatusError)
-	  escape("unable to lookup the access record");
+        // apply the lookup automaton on the context.
+        if (automaton::Access::Lookup(*context,
+                                      subject,
+                                      record) == elle::StatusError)
+          escape("unable to lookup the access record");
       }
       zone.Unlock();
 
@@ -90,45 +90,45 @@ namespace etoile
     /// the target records is returned. should one of the records be destroyed
     /// by another actor's operation, accessing it could make the system crash.
     /// 
-    elle::Status	Access::Consult(
-			  const gear::Identifier&		identifier,
-			  const nucleus::Index&			index,
-			  const nucleus::Size&			size,
-			  nucleus::Range<nucleus::Record>&	range)
+    elle::Status        Access::Consult(
+                          const gear::Identifier&               identifier,
+                          const nucleus::Index&                 index,
+                          const nucleus::Size&                  size,
+                          nucleus::Range<nucleus::Record>&      range)
     {
-      gear::Actor*	actor;
-      gear::Scope*	scope;
-      gear::Object*	context;
+      gear::Actor*      actor;
+      gear::Scope*      scope;
+      gear::Object*     context;
 
       enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] wall::Access::Consult()\n");
+        printf("[etoile] wall::Access::Consult()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
-	escape("unable to select the actor");
+        escape("unable to select the actor");
 
       // retrieve the scope.
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeRead);
+      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeRead);
 
       // protect the access.
       zone.Lock();
       {
-	// retrieve the context.
-	if (scope->Use(context) == elle::StatusError)
-	  escape("unable to retrieve the context");
+        // retrieve the context.
+        if (scope->Use(context) == elle::StatusError)
+          escape("unable to retrieve the context");
 
-	// apply the consult automaton on the context.
-	if (automaton::Access::Consult(*context,
-				       index,
-				       size,
-				       range) == elle::StatusError)
-	  escape("unable to consult the access records");
+        // apply the consult automaton on the context.
+        if (automaton::Access::Consult(*context,
+                                       index,
+                                       size,
+                                       range) == elle::StatusError)
+          escape("unable to consult the access records");
       }
       zone.Unlock();
 
@@ -138,46 +138,46 @@ namespace etoile
     ///
     /// this method grants the given access permissions to the subject.
     ///
-    elle::Status	Access::Grant(
-			  const gear::Identifier&		identifier,
-			  const nucleus::Subject&		subject,
-			  const nucleus::Permissions&		permissions)
+    elle::Status        Access::Grant(
+                          const gear::Identifier&               identifier,
+                          const nucleus::Subject&               subject,
+                          const nucleus::Permissions&           permissions)
     {
-      gear::Actor*	actor;
-      gear::Scope*	scope;
-      gear::Object*	context;
+      gear::Actor*      actor;
+      gear::Scope*      scope;
+      gear::Object*     context;
 
       enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] wall::Access::Grant()\n");
+        printf("[etoile] wall::Access::Grant()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
-	escape("unable to select the actor");
+        escape("unable to select the actor");
 
       // retrieve the scope.
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeWrite);
+      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
 
       // protect the access.
       zone.Lock();
       {
-	// retrieve the context.
-	if (scope->Use(context) == elle::StatusError)
-	  escape("unable to retrieve the context");
+        // retrieve the context.
+        if (scope->Use(context) == elle::StatusError)
+          escape("unable to retrieve the context");
 
-	// apply the grant automaton on the context.
-	if (automaton::Access::Grant(*context,
-				     subject,
-				     permissions) == elle::StatusError)
-	  escape("unable to grant access to the subject");
+        // apply the grant automaton on the context.
+        if (automaton::Access::Grant(*context,
+                                     subject,
+                                     permissions) == elle::StatusError)
+          escape("unable to grant access to the subject");
 
-	// set the actor's state.
-	actor->state = gear::Actor::StateUpdated;
+        // set the actor's state.
+        actor->state = gear::Actor::StateUpdated;
       }
       zone.Unlock();
 
@@ -188,44 +188,44 @@ namespace etoile
     /// this method removes the user's permissions from the access control
     /// list.
     ///
-    elle::Status	Access::Revoke(
-			  const gear::Identifier&		identifier,
-			  const nucleus::Subject&		subject)
+    elle::Status        Access::Revoke(
+                          const gear::Identifier&               identifier,
+                          const nucleus::Subject&               subject)
     {
-      gear::Actor*	actor;
-      gear::Scope*	scope;
-      gear::Object*	context;
+      gear::Actor*      actor;
+      gear::Scope*      scope;
+      gear::Object*     context;
 
       enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] wall::Access::Revoke()\n");
+        printf("[etoile] wall::Access::Revoke()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
-	escape("unable to select the actor");
+        escape("unable to select the actor");
 
       // retrieve the scope.
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeWrite);
+      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
 
       // protect the access.
       zone.Lock();
       {
-	// retrieve the context.
-	if (scope->Use(context) == elle::StatusError)
-	  escape("unable to retrieve the context");
+        // retrieve the context.
+        if (scope->Use(context) == elle::StatusError)
+          escape("unable to retrieve the context");
 
-	// apply the revoke automaton on the context.
-	if (automaton::Access::Revoke(*context,
-				      subject) == elle::StatusError)
-	  escape("unable to revoke the subject's access permissions");
+        // apply the revoke automaton on the context.
+        if (automaton::Access::Revoke(*context,
+                                      subject) == elle::StatusError)
+          escape("unable to revoke the subject's access permissions");
 
-	// set the actor's state.
-	actor->state = gear::Actor::StateUpdated;
+        // set the actor's state.
+        actor->state = gear::Actor::StateUpdated;
       }
       zone.Unlock();
 

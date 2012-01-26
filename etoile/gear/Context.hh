@@ -51,22 +51,22 @@ namespace etoile
       // enumerations
       //
       enum State
-	{
-	  StateUnknown,
+        {
+          StateUnknown,
 
-	  StateCreated,
-	  StateLoaded,
+          StateCreated,
+          StateLoaded,
 
-	  StateModified,
+          StateModified,
 
-	  StateDiscarded,
-	  StateStored,
-	  StateDestroyed,
+          StateDiscarded,
+          StateStored,
+          StateDestroyed,
 
-	  StateJournaled,
+          StateJournaled,
 
-	  StateCleaned
-	};
+          StateCleaned
+        };
 
       //
       // constructors & destructors
@@ -78,21 +78,21 @@ namespace etoile
       //
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      Nature		nature;
+      Nature            nature;
 
-      State		state;
-      Operation		operation;
+      State             state;
+      Operation         operation;
 
-      Transcript	transcript;
+      Transcript        transcript;
     };
 
   }

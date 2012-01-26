@@ -51,22 +51,22 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Create(gear::File&);
-      static elle::Status	Load(gear::File&);
+      static elle::Status       Create(gear::File&);
+      static elle::Status       Load(gear::File&);
 
-      static elle::Status	Write(gear::File&,
-				      const nucleus::Offset&,
-				      const elle::Region&);
-      static elle::Status	Read(gear::File&,
-				     const nucleus::Offset&,
-				     const nucleus::Size&,
-				     elle::Region&);
-      static elle::Status	Adjust(gear::File&,
-				       const nucleus::Size&);
+      static elle::Status       Write(gear::File&,
+                                      const nucleus::Offset&,
+                                      const elle::Region&);
+      static elle::Status       Read(gear::File&,
+                                     const nucleus::Offset&,
+                                     const nucleus::Size&,
+                                     elle::Region&);
+      static elle::Status       Adjust(gear::File&,
+                                       const nucleus::Size&);
 
-      static elle::Status	Discard(gear::File&);
-      static elle::Status	Destroy(gear::File&);
-      static elle::Status	Store(gear::File&);
+      static elle::Status       Discard(gear::File&);
+      static elle::Status       Destroy(gear::File&);
+      static elle::Status       Store(gear::File&);
     };
 
   }

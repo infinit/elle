@@ -49,33 +49,33 @@ namespace etoile
       //
       struct Access
       {
-	static elle::Status	Lookup(const gear::Identifier&,
-				       const nucleus::Subject&,
-				       nucleus::Record&);
-	static elle::Status	Consult(const gear::Identifier&,
-					const nucleus::Index&,
-					const nucleus::Size&,
-					nucleus::Range<nucleus::Record>&);
+        static elle::Status     Lookup(const gear::Identifier&,
+                                       const nucleus::Subject&,
+                                       nucleus::Record&);
+        static elle::Status     Consult(const gear::Identifier&,
+                                        const nucleus::Index&,
+                                        const nucleus::Size&,
+                                        nucleus::Range<nucleus::Record>&);
       };
 
       struct Attributes
       {
-	static elle::Status	Get(const gear::Identifier&,
-				    const elle::String&,
-				    nucleus::Trait&);
-	static elle::Status	Fetch(const gear::Identifier&,
-				      nucleus::Range<nucleus::Trait>&);
+        static elle::Status     Get(const gear::Identifier&,
+                                    const elle::String&,
+                                    nucleus::Trait&);
+        static elle::Status     Fetch(const gear::Identifier&,
+                                      nucleus::Range<nucleus::Trait>&);
       };
 
       struct Directory
       {
-	static elle::Status	Lookup(const gear::Identifier&,
-				       const path::Slab&,
-				       nucleus::Entry&);
-	static elle::Status	Consult(const gear::Identifier&,
-					const nucleus::Index&,
-					const nucleus::Size&,
-					nucleus::Range<nucleus::Entry>&);
+        static elle::Status     Lookup(const gear::Identifier&,
+                                       const path::Slab&,
+                                       nucleus::Entry&);
+        static elle::Status     Consult(const gear::Identifier&,
+                                        const nucleus::Index&,
+                                        const nucleus::Size&,
+                                        nucleus::Range<nucleus::Entry>&);
       };
     };
 

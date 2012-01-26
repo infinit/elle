@@ -32,24 +32,24 @@ namespace etoile
     /// this method fetches the object and opens the access block, should
     /// this block be present.
     ///
-    elle::Status	Object::Load(
-			  gear::Object&				context)
+    elle::Status        Object::Load(
+                          gear::Object&                         context)
     {
       enter();
 
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
-	leave();
+        leave();
 
       // retrieve the object block.
       if (depot::Depot::Pull(context.location.address,
-			     context.location.version,
-			     context.object) == elle::StatusError)
-	escape("unable to retrieve the object block");
+                             context.location.version,
+                             context.object) == elle::StatusError)
+        escape("unable to retrieve the object block");
 
       // compute the base in order to seal the block's original state.
       if (context.object._base.Create(context.object) == elle::StatusError)
-	escape("unable to compute the base");
+        escape("unable to compute the base");
 
       // set the context's state.
       context.state = gear::Context::StateLoaded;
@@ -61,15 +61,15 @@ namespace etoile
     /// this method generates an Abstract object which summarises the
     /// object's meta data.
     ///
-    elle::Status	Object::Information(
-			  gear::Object&				context,
-			  miscellaneous::Abstract&		abstract)
+    elle::Status        Object::Information(
+                          gear::Object&                         context,
+                          miscellaneous::Abstract&              abstract)
     {
       enter();
 
       // generate the abstract based on the object.
       if (abstract.Create(context.object) == elle::StatusError)
-	escape("unable to generate the abstract");
+        escape("unable to generate the abstract");
 
       leave();
     }
@@ -78,8 +78,8 @@ namespace etoile
     /// this method is called whenever the context is being closed without
     /// any modification having been performed.
     ///
-    elle::Status	Object::Discard(
-			  gear::Object&				context)
+    elle::Status        Object::Discard(
+                          gear::Object&                         context)
     {
       enter();
 
@@ -108,23 +108,23 @@ namespace etoile
     /// associated with an object, no matter the version, should take a
     /// look at the Purge() functionality.
     ///
-    elle::Status	Object::Destroy(
-			  gear::Object&				context)
+    elle::Status        Object::Destroy(
+                          gear::Object&                         context)
     {
       enter();
 
       // open the access.
       if (Access::Open(context) == elle::StatusError)
-	escape("unable to open the access block");
+        escape("unable to open the access block");
 
       // destroy the access.
       if (Access::Destroy(context) == elle::StatusError)
-	escape("unable to destroy the access");
+        escape("unable to destroy the access");
 
       // mark the object as needing to be removed.
       if (context.transcript.Wipe(context.location.address) ==
-	  elle::StatusError)
-	escape("unable to record the object for removal");
+          elle::StatusError)
+        escape("unable to record the object for removal");
 
       // set the context's state.
       context.state = gear::Context::StateDestroyed;
@@ -136,46 +136,46 @@ namespace etoile
     /// this method terminates the automaton by making the whole object
     /// consistent according to the set of modifications having been performed.
     ///
-    elle::Status	Object::Store(
-			  gear::Object&				context)
+    elle::Status        Object::Store(
+                          gear::Object&                         context)
     {
       enter();
 
       // close the access.
       if (Access::Close(context) == elle::StatusError)
-	escape("unable to close the access");
+        escape("unable to close the access");
 
       // if the object has been modified i.e is dirty.
       if (context.object._state == nucleus::StateDirty)
-	{
-	  // seal the object, depending on the presence of a referenced
-	  // access block.
-	  if (context.object.meta.access != nucleus::Address::Null)
-	    {
-	      // make sure the access block is loaded.
-	      if (Access::Open(context) == elle::StatusError)
-		escape("unable to open the access");
+        {
+          // seal the object, depending on the presence of a referenced
+          // access block.
+          if (context.object.meta.access != nucleus::Address::Null)
+            {
+              // make sure the access block is loaded.
+              if (Access::Open(context) == elle::StatusError)
+                escape("unable to open the access");
 
-	      // seal the object alone with the access block.
-	      if (context.object.Seal(
-		    agent::Agent::Identity.pair.k,
-		    *context.access) == elle::StatusError)
-		escape("unable to seal the object");
-	    }
-	  else
-	    {
-	      // seal the object alone i.e without passing an access block.
-	      if (context.object.Seal(
-		    agent::Agent::Identity.pair.k,
-		    nucleus::Access::Null) == elle::StatusError)
-		escape("unable to seal the object");
-	    }
+              // seal the object alone with the access block.
+              if (context.object.Seal(
+                    agent::Agent::Identity.pair.k,
+                    *context.access) == elle::StatusError)
+                escape("unable to seal the object");
+            }
+          else
+            {
+              // seal the object alone i.e without passing an access block.
+              if (context.object.Seal(
+                    agent::Agent::Identity.pair.k,
+                    nucleus::Access::Null) == elle::StatusError)
+                escape("unable to seal the object");
+            }
 
-	  // mark the block as needing to be stored.
-	  if (context.transcript.Push(context.location.address,
-				      &context.object) == elle::StatusError)
-	    escape("unable to record the object for storing");
-	}
+          // mark the block as needing to be stored.
+          if (context.transcript.Push(context.location.address,
+                                      &context.object) == elle::StatusError)
+            escape("unable to record the object for storing");
+        }
 
       // set the context's state.
       context.state = gear::Context::StateStored;

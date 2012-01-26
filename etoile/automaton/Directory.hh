@@ -54,28 +54,28 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Create(gear::Directory&);
-      static elle::Status	Load(gear::Directory&);
+      static elle::Status       Create(gear::Directory&);
+      static elle::Status       Load(gear::Directory&);
 
-      static elle::Status	Add(gear::Directory&,
-				    const path::Slice&,
-				    const nucleus::Address&);
-      static elle::Status	Lookup(gear::Directory&,
-				       const path::Slice&,
-				       nucleus::Entry*&);
-      static elle::Status	Consult(gear::Directory&,
-					const nucleus::Index&,
-					const nucleus::Size&,
-					nucleus::Range<nucleus::Entry>&);
-      static elle::Status	Rename(gear::Directory&,
-				       const path::Slice&,
-				       const path::Slice&);
-      static elle::Status	Remove(gear::Directory&,
-				       const path::Slice&);
+      static elle::Status       Add(gear::Directory&,
+                                    const path::Slice&,
+                                    const nucleus::Address&);
+      static elle::Status       Lookup(gear::Directory&,
+                                       const path::Slice&,
+                                       nucleus::Entry*&);
+      static elle::Status       Consult(gear::Directory&,
+                                        const nucleus::Index&,
+                                        const nucleus::Size&,
+                                        nucleus::Range<nucleus::Entry>&);
+      static elle::Status       Rename(gear::Directory&,
+                                       const path::Slice&,
+                                       const path::Slice&);
+      static elle::Status       Remove(gear::Directory&,
+                                       const path::Slice&);
 
-      static elle::Status	Discard(gear::Directory&);
-      static elle::Status	Destroy(gear::Directory&);
-      static elle::Status	Store(gear::Directory&);
+      static elle::Status       Discard(gear::Directory&);
+      static elle::Status       Destroy(gear::Directory&);
+      static elle::Status       Store(gear::Directory&);
     };
 
   }

@@ -85,31 +85,31 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Initialize();
-      static elle::Status	Clean();
+      static elle::Status       Initialize();
+      static elle::Status       Clean();
 
-      static elle::Status	Allocate(const elle::Natural32);
+      static elle::Status       Allocate(const elle::Natural32);
 
-      static elle::Status	Resolve(const path::Route&,
-					path::Venue&);
-      static elle::Status	Update(const path::Route&,
-				       const path::Venue&);
-      static elle::Status	Evict(const path::Route&);
+      static elle::Status       Resolve(const path::Route&,
+                                        path::Venue&);
+      static elle::Status       Update(const path::Route&,
+                                       const path::Venue&);
+      static elle::Status       Evict(const path::Route&);
 
-      static elle::Status	Show(const elle::Natural32 = 0);
+      static elle::Status       Show(const elle::Natural32 = 0);
 
       //
       // static callbacks
       //
-      static elle::Status	Sweeper();
+      static elle::Status       Sweeper();
 
       //
       // static attributes
       //
-      static Riffle*			Riffles;
+      static Riffle*                    Riffles;
 
-      static elle::Timeline<Riffle*>	Queue;
-      static elle::Timer		Timer;
+      static elle::Timeline<Riffle*>    Queue;
+      static elle::Timer                Timer;
     };
 
   }

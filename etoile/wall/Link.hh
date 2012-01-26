@@ -41,21 +41,21 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Create(gear::Identifier&);
-      static elle::Status	Load(const path::Chemin&,
-				     gear::Identifier&);
+      static elle::Status       Create(gear::Identifier&);
+      static elle::Status       Load(const path::Chemin&,
+                                     gear::Identifier&);
 
-      static elle::Status	Lock(const gear::Identifier&);
-      static elle::Status	Release(const gear::Identifier&);
-      static elle::Status	Bind(const gear::Identifier&,
-				     const path::Way&);
-      static elle::Status	Resolve(const gear::Identifier&,
-					path::Way&);
+      static elle::Status       Lock(const gear::Identifier&);
+      static elle::Status       Release(const gear::Identifier&);
+      static elle::Status       Bind(const gear::Identifier&,
+                                     const path::Way&);
+      static elle::Status       Resolve(const gear::Identifier&,
+                                        path::Way&);
 
-      static elle::Status	Discard(const gear::Identifier&);
-      static elle::Status	Store(const gear::Identifier&);
-      static elle::Status	Destroy(const gear::Identifier&);
-      static elle::Status	Purge(const gear::Identifier&);
+      static elle::Status       Discard(const gear::Identifier&);
+      static elle::Status       Store(const gear::Identifier&);
+      static elle::Status       Destroy(const gear::Identifier&);
+      static elle::Status       Purge(const gear::Identifier&);
     };
 
   }

@@ -25,12 +25,12 @@ namespace etoile
     ///
     enum Nature
       {
-	NatureUnknown,
+        NatureUnknown,
 
-	NatureObject,
-	NatureFile,
-	NatureDirectory,
-	NatureLink
+        NatureObject,
+        NatureFile,
+        NatureDirectory,
+        NatureLink
       };
 
   }

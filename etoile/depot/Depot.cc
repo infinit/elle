@@ -28,7 +28,7 @@ namespace etoile
     ///
     /// this method initializes the depot.
     ///
-    elle::Status	Depot::Initialize()
+    elle::Status        Depot::Initialize()
     {
       enter();
 
@@ -40,7 +40,7 @@ namespace etoile
     ///
     /// this method cleans the depot.
     ///
-    elle::Status	Depot::Clean()
+    elle::Status        Depot::Clean()
     {
       enter();
 
@@ -52,13 +52,13 @@ namespace etoile
     ///
     /// this method returns the address of the network's root block.
     ///
-    elle::Status	Depot::Origin(nucleus::Address&		address)
+    elle::Status        Depot::Origin(nucleus::Address&         address)
     {
       enter();
 
       // call the Hole.
       if (hole::Hole::Origin(address) == elle::StatusError)
-	escape("unable to retrieve the origin");
+        escape("unable to retrieve the origin");
 
       leave();
     }
@@ -66,14 +66,14 @@ namespace etoile
     ///
     /// this method stores the given block in the underlying storage layer.
     ///
-    elle::Status	Depot::Push(const nucleus::Address&	address,
-				    const nucleus::Block&	block)
+    elle::Status        Depot::Push(const nucleus::Address&     address,
+                                    const nucleus::Block&       block)
     {
       enter();
 
       // call the Hole.
       if (hole::Hole::Push(address, block) == elle::StatusError)
-	escape("unable to store the block");
+        escape("unable to store the block");
 
       leave();
     }
@@ -81,15 +81,15 @@ namespace etoile
     ///
     /// this method retrives a block from the underlying storage layer.
     ///
-    elle::Status	Depot::Pull(const nucleus::Address&	address,
-				    const nucleus::Version&	version,
-				    nucleus::Block&		block)
+    elle::Status        Depot::Pull(const nucleus::Address&     address,
+                                    const nucleus::Version&     version,
+                                    nucleus::Block&             block)
     {
       enter();
 
       // call the Hole.
       if (hole::Hole::Pull(address, version, block) == elle::StatusError)
-	escape("unable to retrieve the block");
+        escape("unable to retrieve the block");
 
       leave();
     }
@@ -97,13 +97,13 @@ namespace etoile
     ///
     /// this method permanently removes a block from the storage layer.
     ///
-    elle::Status	Depot::Wipe(const nucleus::Address&	address)
+    elle::Status        Depot::Wipe(const nucleus::Address&     address)
     {
       enter();
 
       // call the Hole.
       if (hole::Hole::Wipe(address) == elle::StatusError)
-	escape("unable to remove the block");
+        escape("unable to remove the block");
 
       leave();
     }

@@ -26,17 +26,17 @@ namespace etoile
     ///
     /// this variable holds the current identifier counter.
     ///
-    const elle::Natural64		Identifier::Zero = 0;
+    const elle::Natural64               Identifier::Zero = 0;
 
     ///
     /// this variable defines an unused hence null Identifier.
     ///
-    const Identifier			Identifier::Null;
+    const Identifier                    Identifier::Null;
 
     ///
     /// this variable holds the current identifier counter.
     ///
-    elle::Natural64			Identifier::Counter =
+    elle::Natural64                     Identifier::Counter =
       Identifier::Zero + 1;
 
 //
@@ -58,7 +58,7 @@ namespace etoile
     ///
     /// this method generates a new unique identifier.
     ///
-    elle::Status	Identifier::Generate()
+    elle::Status        Identifier::Generate()
     {
       enter();
 
@@ -75,18 +75,18 @@ namespace etoile
     ///
     /// this method check if two identifiers match.
     ///
-    elle::Boolean	Identifier::operator==(const Identifier& element)
+    elle::Boolean       Identifier::operator==(const Identifier& element)
       const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the identifier.
       if (this->value != element.value)
-	false();
+        false();
 
       true();
     }
@@ -94,7 +94,7 @@ namespace etoile
     ///
     /// this operator compares two identifiers.
     ///
-    elle::Boolean	Identifier::operator<(const Identifier&	element) const
+    elle::Boolean       Identifier::operator<(const Identifier& element) const
     {
       return (this->value < element.value);
     }
@@ -111,13 +111,13 @@ namespace etoile
     ///
     /// this method serializes the identifier.
     ///
-    elle::Status	Identifier::Serialize(elle::Archive&	archive) const
+    elle::Status        Identifier::Serialize(elle::Archive&    archive) const
     {
       enter();
 
       // serialize the attributes.
       if (archive.Serialize(this->value) == elle::StatusError)
-	escape("unable to serialize the identifier attributes");
+        escape("unable to serialize the identifier attributes");
 
       leave();
     };
@@ -125,13 +125,13 @@ namespace etoile
     ///
     /// this method extracts the identifier.
     ///
-    elle::Status	Identifier::Extract(elle::Archive&	archive)
+    elle::Status        Identifier::Extract(elle::Archive&      archive)
     {
       enter();
 
       // extract the attributes.
       if (archive.Extract(this->value) == elle::StatusError)
-	escape("unable to extract the identifier attributes");
+        escape("unable to extract the identifier attributes");
 
       leave();
     };
@@ -143,14 +143,14 @@ namespace etoile
     ///
     /// this method dumps an identifier.
     ///
-    elle::Status	Identifier::Dump(const elle::Natural32	margin) const
+    elle::Status        Identifier::Dump(const elle::Natural32  margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Identifier] "
-		<< std::dec << this->value << std::endl;
+                << std::dec << this->value << std::endl;
 
       leave();
     }

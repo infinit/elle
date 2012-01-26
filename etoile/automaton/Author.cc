@@ -31,56 +31,56 @@ namespace etoile
     /// this method forges the author objects require in order to prove
     /// the user had the permission to operate upon the object.
     ///
-    elle::Status	Author::Forge(gear::Object&		context)
+    elle::Status        Author::Forge(gear::Object&             context)
     {
       enter();
 
       // if an author exists, return.
       if (context.author != nucleus::Author::Null)
-	leave();
+        leave();
 
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
-	escape("unable to determine the rights");
+        escape("unable to determine the rights");
 
       // build the author object according to the subject's role.
       switch (context.rights.role)
-	{
-	case nucleus::RoleOwner:
-	  {
-	    // create an owner author.
-	    if (context.author.Create() == elle::StatusError)
-	      escape("unable to create the author");
+        {
+        case nucleus::RoleOwner:
+          {
+            // create an owner author.
+            if (context.author.Create() == elle::StatusError)
+              escape("unable to create the author");
 
-	    break;
-	  }
-	case nucleus::RoleLord:
-	  {
-	    nucleus::Index	index;
+            break;
+          }
+        case nucleus::RoleLord:
+          {
+            nucleus::Index      index;
 
-	    // open the access.
-	    if (Access::Open(context) == elle::StatusError)
-	      escape("unable to open the access");
+            // open the access.
+            if (Access::Open(context) == elle::StatusError)
+              escape("unable to open the access");
 
-	    // lookup the user's subject in the access records.
-	    if (context.access->Lookup(agent::Agent::Subject,
-				       index) == elle::StatusError)
-	      escape("unable to lookup the user's identity in the "
-		     "access block");
+            // lookup the user's subject in the access records.
+            if (context.access->Lookup(agent::Agent::Subject,
+                                       index) == elle::StatusError)
+              escape("unable to lookup the user's identity in the "
+                     "access block");
 
-	    // create a lord author.
-	    if (context.author.Create(index) == elle::StatusError)
-	      escape("unable to create the author");
+            // create a lord author.
+            if (context.author.Create(index) == elle::StatusError)
+              escape("unable to create the author");
 
-	    break;
-	  }
-	default:
-	  {
-	    // XXX to implement.
+            break;
+          }
+        default:
+          {
+            // XXX to implement.
 
-	    break;
-	  }
-	}
+            break;
+          }
+        }
 
       leave();
     }

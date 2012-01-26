@@ -36,15 +36,15 @@ namespace etoile
     ///
     /// XXX the scope is orphan at this point!
     ///
-    elle::Status	Journal::Record(gear::Scope*		scope)
+    elle::Status        Journal::Record(gear::Scope*            scope)
     {
-      gear::Transcript::Scoutor		scoutor;
+      gear::Transcript::Scoutor         scoutor;
 
       enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] journal::Journal::Record()\n");
+        printf("[etoile] journal::Journal::Record()\n");
 
       // set the context's state.
       scope->context->state = gear::Context::StateJournaled;
@@ -55,41 +55,41 @@ namespace etoile
 
       // go through the transcript's actions.
       for (scoutor = scope->context->transcript.container.begin();
-	   scoutor != scope->context->transcript.container.end();
-	   scoutor++)
-	{
-	  gear::Action*			action = *scoutor;
+           scoutor != scope->context->transcript.container.end();
+           scoutor++)
+        {
+          gear::Action*                 action = *scoutor;
 
-	  // perform the action.
-	  switch (action->type)
-	    {
-	    case gear::Action::TypePush:
-	      {
-		// store the block in the depot.
-		if (depot::Depot::Push(action->address,
-				       *action->block) == elle::StatusError)
-		  escape("unable to push the block in the depot");
+          // perform the action.
+          switch (action->type)
+            {
+            case gear::Action::TypePush:
+              {
+                // store the block in the depot.
+                if (depot::Depot::Push(action->address,
+                                       *action->block) == elle::StatusError)
+                  escape("unable to push the block in the depot");
 
-		break;
-	      }
-	    case gear::Action::TypeWipe:
-	      {
-		// wipe the block from the depot.
-		if (depot::Depot::Wipe(action->address) == elle::StatusError)
-		  escape("unable to wipe the block from the depot");
+                break;
+              }
+            case gear::Action::TypeWipe:
+              {
+                // wipe the block from the depot.
+                if (depot::Depot::Wipe(action->address) == elle::StatusError)
+                  escape("unable to wipe the block from the depot");
 
-		break;
-	      }
-	    case gear::Action::TypeUnknown:
-	      {
-		escape("unknown action type");
-	      }
-	    }
-	}
+                break;
+              }
+            case gear::Action::TypeUnknown:
+              {
+                escape("unknown action type");
+              }
+            }
+        }
 
       // flush the transcript since the actions have been performed.
       if (scope->context->transcript.Flush() == elle::StatusError)
-	escape("unable to clear the transcript");
+        escape("unable to clear the transcript");
 
       // set the context's state.
       scope->context->state = gear::Context::StateCleaned;

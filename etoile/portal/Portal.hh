@@ -50,37 +50,37 @@ namespace etoile
       //
       // types
       //
-      typedef std::pair<elle::LocalSocket*, Application*>	Value;
-      typedef std::map<elle::LocalSocket*, Application*>	Container;
-      typedef Container::iterator				Iterator;
-      typedef Container::const_iterator				Scoutor;
+      typedef std::pair<elle::LocalSocket*, Application*>       Value;
+      typedef std::map<elle::LocalSocket*, Application*>        Container;
+      typedef Container::iterator                               Iterator;
+      typedef Container::const_iterator                         Scoutor;
 
       //
       // static methods
       //
-      static elle::Status	Initialize();
-      static elle::Status	Clean();
+      static elle::Status       Initialize();
+      static elle::Status       Clean();
 
-      static elle::Status	Add(Application*);
-      static elle::Status	Retrieve(elle::LocalSocket*,
-					 Application*&);
-      static elle::Status	Remove(elle::LocalSocket*);
+      static elle::Status       Add(Application*);
+      static elle::Status       Retrieve(elle::LocalSocket*,
+                                         Application*&);
+      static elle::Status       Remove(elle::LocalSocket*);
 
-      static elle::Status	Show(const elle::Natural32 = 0);
+      static elle::Status       Show(const elle::Natural32 = 0);
 
       //
       // static callbacks
       //
-      static elle::Status	Connection(elle::LocalSocket*);
-      static elle::Status	Authenticate(const lune::Phrase&);
-      static elle::Status	Prolog();
-      static elle::Status	Epilog();
+      static elle::Status       Connection(elle::LocalSocket*);
+      static elle::Status       Authenticate(const lune::Phrase&);
+      static elle::Status       Prolog();
+      static elle::Status       Epilog();
 
       //
       // static attributes
       //
-      static elle::String	Line;
-      static Container		Applications;
+      static elle::String       Line;
+      static Container          Applications;
     };
 
   }

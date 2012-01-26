@@ -41,7 +41,7 @@ namespace etoile
     {
       // release the contents.
       if (this->contents != NULL)
-	delete this->contents;
+        delete this->contents;
     }
 
 //
@@ -51,9 +51,9 @@ namespace etoile
     ///
     /// this method dumps the contents along the the inherited object context.
     ///
-    elle::Status	Link::Dump(const elle::Natural32	margin) const
+    elle::Status        Link::Dump(const elle::Natural32        margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
@@ -61,19 +61,19 @@ namespace etoile
 
       // dump the inherited object.
       if (Object::Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the inherited object");
+        escape("unable to dump the inherited object");
 
       // dump the contents.
       if (this->contents != NULL)
-	{
-	  if (this->contents->Dump(margin + 4) == elle::StatusError)
-	    escape("unable to dump the contents");
-	}
+        {
+          if (this->contents->Dump(margin + 4) == elle::StatusError)
+            escape("unable to dump the contents");
+        }
       else
-	{
-	  std::cout << alignment << elle::Dumpable::Shift
-		    << "[Contents] " << elle::none << std::endl;
-	}
+        {
+          std::cout << alignment << elle::Dumpable::Shift
+                    << "[Contents] " << elle::none << std::endl;
+        }
 
       leave();
     }
@@ -85,23 +85,23 @@ namespace etoile
     ///
     /// this method serializes the link.
     ///
-    elle::Status	Link::Serialize(elle::Archive&		archive) const
+    elle::Status        Link::Serialize(elle::Archive&          archive) const
     {
       enter();
 
       // serialize the contents.
       if (this->contents == NULL)
-	{
-	  // serialize the contents.
-	  if (archive.Serialize(*this->contents) == elle::StatusError)
-	    escape("unable to serialize the contents");
-	}
+        {
+          // serialize the contents.
+          if (archive.Serialize(*this->contents) == elle::StatusError)
+            escape("unable to serialize the contents");
+        }
       else
-	{
-	  // serialize 'none'.
-	  if (archive.Serialize(elle::none) == elle::StatusError)
-	    escape("unable to serialize 'none'");
-	}
+        {
+          // serialize 'none'.
+          if (archive.Serialize(elle::none) == elle::StatusError)
+            escape("unable to serialize 'none'");
+        }
 
       leave();
     }
@@ -109,32 +109,32 @@ namespace etoile
     ///
     /// this method extracts the link.
     ///
-    elle::Status	Link::Extract(elle::Archive&		archive)
+    elle::Status        Link::Extract(elle::Archive&            archive)
     {
-      elle::Archive::Type	type;
+      elle::Archive::Type       type;
 
       enter();
 
       // fetch the next element's type.
       if (archive.Fetch(type) == elle::StatusError)
-	escape("unable to fetch the next element's type");
+        escape("unable to fetch the next element's type");
 
       // extract the access.
       if (type == elle::Archive::TypeNull)
-	{
-	  // extract 'none'.
-	  if (archive.Extract(elle::none) == elle::StatusError)
-	    escape("unable to extract 'none'");
-	}
+        {
+          // extract 'none'.
+          if (archive.Extract(elle::none) == elle::StatusError)
+            escape("unable to extract 'none'");
+        }
       else
-	{
-	  // allocate an contents.
-	  this->contents = new nucleus::Contents<typename Link::C>;
+        {
+          // allocate an contents.
+          this->contents = new nucleus::Contents<typename Link::C>;
 
-	  // extract the contents.
-	  if (archive.Extract(*this->contents) == elle::StatusError)
-	    escape("unable to extract the contents");
-	}
+          // extract the contents.
+          if (archive.Extract(*this->contents) == elle::StatusError)
+            escape("unable to extract the contents");
+        }
 
       leave();
     }

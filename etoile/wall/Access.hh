@@ -39,18 +39,18 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Lookup(const gear::Identifier&,
-				       const nucleus::Subject&,
-				       nucleus::Record*&);
-      static elle::Status	Consult(const gear::Identifier&,
-					const nucleus::Index&,
-					const nucleus::Size&,
-					nucleus::Range<nucleus::Record>&);
-      static elle::Status	Grant(const gear::Identifier&,
-				      const nucleus::Subject&,
-				      const nucleus::Permissions&);
-      static elle::Status	Revoke(const gear::Identifier&,
-				       const nucleus::Subject&);
+      static elle::Status       Lookup(const gear::Identifier&,
+                                       const nucleus::Subject&,
+                                       nucleus::Record*&);
+      static elle::Status       Consult(const gear::Identifier&,
+                                        const nucleus::Index&,
+                                        const nucleus::Size&,
+                                        nucleus::Range<nucleus::Record>&);
+      static elle::Status       Grant(const gear::Identifier&,
+                                      const nucleus::Subject&,
+                                      const nucleus::Permissions&);
+      static elle::Status       Revoke(const gear::Identifier&,
+                                       const nucleus::Subject&);
     };
 
   }

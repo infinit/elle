@@ -33,21 +33,21 @@ namespace etoile
     /// by casting it with the given type.
     ///
     template <typename T>
-    elle::Status	Scope::Use(T*&				context)
+    elle::Status        Scope::Use(T*&                          context)
     {
       enter();
 
       // first, if the scope's context is null, allocate one.
       if (this->context == NULL)
-	{
-	  // allocate a context according to the nature.
-	  this->context = new T;
-	}
+        {
+          // allocate a context according to the nature.
+          this->context = new T;
+        }
 
       // return the context by dynamically casting it.
       if ((context = dynamic_cast<T*>(this->context)) == NULL)
-	escape("invalid context nature: scope's(%u) target(%u)",
-	       this->context->nature, T::N);
+        escape("invalid context nature: scope's(%u) target(%u)",
+               this->context->nature, T::N);
 
       leave();
     }

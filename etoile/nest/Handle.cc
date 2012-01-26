@@ -36,7 +36,7 @@ namespace etoile
     ///
     /// address-specific constructor.
     ///
-    Handle::Handle(const nucleus::Address&			address):
+    Handle::Handle(const nucleus::Address&                      address):
       state(StateUnloaded),
       address(address)
     {
@@ -45,7 +45,7 @@ namespace etoile
     ///
     /// placement-specific constructor.
     ///
-    Handle::Handle(const Placement&				placement):
+    Handle::Handle(const Placement&                             placement):
       state(StateUnloaded),
       placement(placement)
     {
@@ -58,46 +58,46 @@ namespace etoile
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	Handle::operator==(const Handle&	element) const
+    elle::Boolean       Handle::operator==(const Handle&        element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // depending on the states.
       if ((this->state == Handle::StateLoaded) &&
-	  (element.state == Handle::StateLoaded))
-	{
-	  //
-	  // if both handles are loaded, compare the placements.
-	  //
+          (element.state == Handle::StateLoaded))
+        {
+          //
+          // if both handles are loaded, compare the placements.
+          //
 
-	  // compare the placements.
-	  if (this->placement != element.placement)
-	    false();
-	}
+          // compare the placements.
+          if (this->placement != element.placement)
+            false();
+        }
       else if ((this->state == Handle::StateUnloaded) &&
-	       (element.state == Handle::StateUnloaded))
-	{
-	  // compare the addresses.
-	  if (this->address != Address
-	}
+               (element.state == Handle::StateUnloaded))
+        {
+          // compare the addresses.
+          if (this->address != Address
+        }
 
       // if both addresses are different from null/some...
       if (this->address !=
       // if both are NULL or equal return true, false otherwise
       if ((this->digest == NULL) || (element.digest == NULL))
-	{
-	  if (this->digest != element.digest)
-	    false();
-	}
+        {
+          if (this->digest != element.digest)
+            false();
+        }
       else
-	{
-	  if (*this->digest != *element.digest)
-	    false();
-	}
+        {
+          if (*this->digest != *element.digest)
+            false();
+        }
 
       true();
     }
@@ -105,25 +105,25 @@ namespace etoile
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	Address::operator<(const Address&	element) const
+    elle::Boolean       Address::operator<(const Address&       element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	false();
+        false();
 
       // test for a null digest.
       if ((this->digest == NULL) && (element.digest == NULL))
-	false();
+        false();
       else if (this->digest == NULL)
-	true();
+        true();
       else if (element.digest == NULL)
-	false();
+        false();
 
       // compare the digests.
       if (*this->digest < *element.digest)
-	true();
+        true();
 
       false();
     }

@@ -27,13 +27,13 @@ namespace etoile
   ///
   /// this value defines the component's name.
   ///
-  const elle::Character		Component[] = "etoile";
+  const elle::Character         Component[] = "etoile";
 
   ///
   /// this variable contains the phrase associated with the Infinit's
   /// current instance.
   ///
-  lune::Phrase			Etoile::Phrase;
+  lune::Phrase                  Etoile::Phrase;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -42,7 +42,7 @@ namespace etoile
   ///
   /// this method initializes Etoile.
   ///
-  elle::Status		Etoile::Initialize()
+  elle::Status          Etoile::Initialize()
   {
     enter();
 
@@ -71,19 +71,19 @@ namespace etoile
     // connect to Etoile and trigger specific actions.
     //
     {
-      elle::String		string;
+      elle::String              string;
 
       // generate a random string.
       if (elle::Random::Generate(string) == elle::StatusError)
-	escape("unable to generate a random string");
+        escape("unable to generate a random string");
 
       // create the phrase.
       if (Etoile::Phrase.Create(string) == elle::StatusError)
-	escape("unable to create the phrase");
+        escape("unable to create the phrase");
 
       // store the phrase.
       if (Etoile::Phrase.Store(Infinit::Network) == elle::StatusError)
-	escape("unable to store the phrase");
+        escape("unable to store the phrase");
     }
 
     leave();
@@ -92,7 +92,7 @@ namespace etoile
   ///
   /// this method cleans Etoile.
   ///
-  elle::Status		Etoile::Clean()
+  elle::Status          Etoile::Clean()
   {
     enter();
 

@@ -42,52 +42,52 @@ namespace etoile
     /// note however that the object is not attached to the hierarchy
     /// and is therefore considered as orphan.
     ///
-    elle::Status	File::Create(
-			  gear::Identifier&			identifier)
+    elle::Status        File::Create(
+                          gear::Identifier&                     identifier)
     {
-      gear::Scope*	scope;
-      gear::File*	context;
-      gear::Actor*	actor;
+      gear::Scope*      scope;
+      gear::File*       context;
+      gear::Actor*      actor;
 
       enterx(instance(actor),
-	     slab(scope, gear::Scope::Annihilate));
+             slab(scope, gear::Scope::Annihilate));
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] wall::File::Create()\n");
+        printf("[etoile] wall::File::Create()\n");
 
       // acquire the scope.
       if (gear::Scope::Supply(scope) == elle::StatusError)
-	escape("unable to supply the scope");
+        escape("unable to supply the scope");
 
       // declare a critical section.
-      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeWrite);
+      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
 
       // protect the access.
       zone.Lock();
       {
-	// retrieve the context.
-	if (scope->Use(context) == elle::StatusError)
-	  escape("unable to retrieve the context");
+        // retrieve the context.
+        if (scope->Use(context) == elle::StatusError)
+          escape("unable to retrieve the context");
 
-	// allocate an actor.
-	actor = new gear::Actor(scope);
+        // allocate an actor.
+        actor = new gear::Actor(scope);
 
-	// return the identifier.
-	identifier = actor->identifier;
+        // return the identifier.
+        identifier = actor->identifier;
 
-	// apply the create automaton on the context.
-	if (automaton::File::Create(*context) == elle::StatusError)
-	  escape("unable to create the file");
+        // apply the create automaton on the context.
+        if (automaton::File::Create(*context) == elle::StatusError)
+          escape("unable to create the file");
 
-	// set the actor's state.
-	actor->state = gear::Actor::StateUpdated;
+        // set the actor's state.
+        actor->state = gear::Actor::StateUpdated;
 
-	// waive the actor.
-	waive(actor);
+        // waive the actor.
+        waive(actor);
 
-	// waive the scope.
-	waive(scope);
+        // waive the scope.
+        waive(scope);
       }
       zone.Unlock();
 
@@ -98,54 +98,54 @@ namespace etoile
     /// this method loads a file object given its chemin and initializes
     /// an associated context.
     ///
-    elle::Status	File::Load(
-			  const path::Chemin&			chemin,
-			  gear::Identifier&			identifier)
+    elle::Status        File::Load(
+                          const path::Chemin&                   chemin,
+                          gear::Identifier&                     identifier)
     {
-      gear::Scope*	scope;
-      gear::File*	context;
-      gear::Actor*	actor;
+      gear::Scope*      scope;
+      gear::File*       context;
+      gear::Actor*      actor;
 
       enterx(instance(actor),
-	     slab(scope, gear::Scope::Annihilate));
+             slab(scope, gear::Scope::Annihilate));
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] wall::File::Load()\n");
+        printf("[etoile] wall::File::Load()\n");
 
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::StatusError)
-	escape("unable to acquire the scope");
+        escape("unable to acquire the scope");
 
       // declare a critical section.
-      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeWrite);
+      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
 
       // protect the access.
       zone.Lock();
       {
-	// retrieve the context.
-	if (scope->Use(context) == elle::StatusError)
-	  escape("unable to retrieve the context");
+        // retrieve the context.
+        if (scope->Use(context) == elle::StatusError)
+          escape("unable to retrieve the context");
 
-	// allocate an actor.
-	actor = new gear::Actor(scope);
+        // allocate an actor.
+        actor = new gear::Actor(scope);
 
-	// return the identifier.
-	identifier = actor->identifier;
+        // return the identifier.
+        identifier = actor->identifier;
 
-	// locate the object based on the chemin.
-	if (chemin.Locate(context->location) == elle::StatusError)
-	  escape("unable to locate the file");
+        // locate the object based on the chemin.
+        if (chemin.Locate(context->location) == elle::StatusError)
+          escape("unable to locate the file");
 
-	// apply the load automaton on the context.
-	if (automaton::File::Load(*context) == elle::StatusError)
-	  escape("unable to load the file");
+        // apply the load automaton on the context.
+        if (automaton::File::Load(*context) == elle::StatusError)
+          escape("unable to load the file");
 
-	// waive the actor.
-	waive(actor);
+        // waive the actor.
+        waive(actor);
 
-	// waive the scope.
-	waive(scope);
+        // waive the scope.
+        waive(scope);
       }
       zone.Unlock();
 
@@ -158,14 +158,14 @@ namespace etoile
     /// the method returns true if the lock has been acquired or false
     /// otherwise.
     ///
-    elle::Status	File::Lock(
-			  const gear::Identifier&)
+    elle::Status        File::Lock(
+                          const gear::Identifier&)
     {
       enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] wall::File::Lock()\n");
+        printf("[etoile] wall::File::Lock()\n");
 
       // XXX to implement.
 
@@ -175,14 +175,14 @@ namespace etoile
     ///
     /// this method releases a previously locked file.
     ///
-    elle::Status	File::Release(
-			  const gear::Identifier&)
+    elle::Status        File::Release(
+                          const gear::Identifier&)
     {
       enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] wall::File::Release()\n");
+        printf("[etoile] wall::File::Release()\n");
 
       // XXX to implement.
 
@@ -192,46 +192,46 @@ namespace etoile
     ///
     /// this method writes the file with the given region of data.
     ///
-    elle::Status	File::Write(
-		          const gear::Identifier&		identifier,
-			  const nucleus::Offset&		offset,
-			  const elle::Region&			region)
+    elle::Status        File::Write(
+                          const gear::Identifier&               identifier,
+                          const nucleus::Offset&                offset,
+                          const elle::Region&                   region)
     {
-      gear::Actor*	actor;
-      gear::Scope*	scope;
-      gear::File*	context;
+      gear::Actor*      actor;
+      gear::Scope*      scope;
+      gear::File*       context;
 
       enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] wall::File::Write()\n");
+        printf("[etoile] wall::File::Write()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
-	escape("unable to select the actor");
+        escape("unable to select the actor");
 
       // retrieve the scope.
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeWrite);
+      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
 
       // protect the access.
       zone.Lock();
       {
-	// retrieve the context.
-	if (scope->Use(context) == elle::StatusError)
-	  escape("unable to retrieve the context");
+        // retrieve the context.
+        if (scope->Use(context) == elle::StatusError)
+          escape("unable to retrieve the context");
 
-	// apply the write automaton on the context.
-	if (automaton::File::Write(*context,
-				   offset,
-				   region) == elle::StatusError)
-	  escape("unable to write the file");
+        // apply the write automaton on the context.
+        if (automaton::File::Write(*context,
+                                   offset,
+                                   region) == elle::StatusError)
+          escape("unable to write the file");
 
-	// set the actor's state.
-	actor->state = gear::Actor::StateUpdated;
+        // set the actor's state.
+        actor->state = gear::Actor::StateUpdated;
       }
       zone.Unlock();
 
@@ -241,45 +241,45 @@ namespace etoile
     ///
     /// this method reads a region of the file.
     ///
-    elle::Status	File::Read(
-			  const gear::Identifier&		identifier,
-			  const nucleus::Offset&		offset,
-			  const nucleus::Size&			size,
-			  elle::Region&				region)
+    elle::Status        File::Read(
+                          const gear::Identifier&               identifier,
+                          const nucleus::Offset&                offset,
+                          const nucleus::Size&                  size,
+                          elle::Region&                         region)
     {
-      gear::Actor*	actor;
-      gear::Scope*	scope;
-      gear::File*	context;
+      gear::Actor*      actor;
+      gear::Scope*      scope;
+      gear::File*       context;
 
       enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] wall::File::Read()\n");
+        printf("[etoile] wall::File::Read()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
-	escape("unable to select the actor");
+        escape("unable to select the actor");
 
       // retrieve the scope.
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeRead);
+      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeRead);
 
       // protect the access.
       zone.Lock();
       {
-	// retrieve the context.
-	if (scope->Use(context) == elle::StatusError)
-	  escape("unable to retrieve the context");
+        // retrieve the context.
+        if (scope->Use(context) == elle::StatusError)
+          escape("unable to retrieve the context");
 
-	// apply the read automaton on the context.
-	if (automaton::File::Read(*context,
-				  offset,
-				  size,
-				  region) == elle::StatusError)
-	  escape("unable to read the file");
+        // apply the read automaton on the context.
+        if (automaton::File::Read(*context,
+                                  offset,
+                                  size,
+                                  region) == elle::StatusError)
+          escape("unable to read the file");
       }
       zone.Unlock();
 
@@ -289,44 +289,44 @@ namespace etoile
     ///
     /// this method adjusts the size of a file.
     ///
-    elle::Status	File::Adjust(
-			  const gear::Identifier&		identifier,
-			  const nucleus::Size&			size)
+    elle::Status        File::Adjust(
+                          const gear::Identifier&               identifier,
+                          const nucleus::Size&                  size)
     {
-      gear::Actor*	actor;
-      gear::Scope*	scope;
-      gear::File*	context;
+      gear::Actor*      actor;
+      gear::Scope*      scope;
+      gear::File*       context;
 
       enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] wall::File::Adjust()\n");
+        printf("[etoile] wall::File::Adjust()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
-	escape("unable to select the actor");
+        escape("unable to select the actor");
 
       // retrieve the scope.
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeWrite);
+      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
 
       // protect the access.
       zone.Lock();
       {
-	// retrieve the context.
-	if (scope->Use(context) == elle::StatusError)
-	  escape("unable to retrieve the context");
+        // retrieve the context.
+        if (scope->Use(context) == elle::StatusError)
+          escape("unable to retrieve the context");
 
-	// apply the adjust automaton on the context.
-	if (automaton::File::Adjust(*context,
-				    size) == elle::StatusError)
-	  escape("unable to adjust the file's size");
+        // apply the adjust automaton on the context.
+        if (automaton::File::Adjust(*context,
+                                    size) == elle::StatusError)
+          escape("unable to adjust the file's size");
 
-	// set the actor's state.
-	actor->state = gear::Actor::StateUpdated;
+        // set the actor's state.
+        actor->state = gear::Actor::StateUpdated;
       }
       zone.Unlock();
 
@@ -337,98 +337,98 @@ namespace etoile
     /// this method discards the scope, potentially ignoring the
     /// performed modifications.
     ///
-    elle::Status	File::Discard(
-			  const gear::Identifier&		identifier)
+    elle::Status        File::Discard(
+                          const gear::Identifier&               identifier)
     {
-      gear::Actor*	actor;
-      gear::Scope*	scope;
-      gear::File*	context;
+      gear::Actor*      actor;
+      gear::Scope*      scope;
+      gear::File*       context;
 
       enterx(instance(actor));
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] wall::File::Discard()\n");
+        printf("[etoile] wall::File::Discard()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
-	escape("unable to select the actor");
+        escape("unable to select the actor");
 
       // retrieve the scope.
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeWrite);
+      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
 
       // protect the access.
       zone.Lock();
       {
-	// retrieve the context.
-	if (scope->Use(context) == elle::StatusError)
-	  escape("unable to retrieve the context");
+        // retrieve the context.
+        if (scope->Use(context) == elle::StatusError)
+          escape("unable to retrieve the context");
 
-	// check the permissions before performing the operation in
-	// order not to alter the scope should the operation not be
-	// allowed.
-	if (automaton::Rights::Operate(
-	      *context,
-	      gear::OperationDiscard) == elle::StatusError)
-	  escape("the user does not seem to have the necessary permission for "
-		 "discarding this file");
+        // check the permissions before performing the operation in
+        // order not to alter the scope should the operation not be
+        // allowed.
+        if (automaton::Rights::Operate(
+              *context,
+              gear::OperationDiscard) == elle::StatusError)
+          escape("the user does not seem to have the necessary permission for "
+                 "discarding this file");
 
-	// specify the closing operation performed by the actor.
-	if (actor->Operate(gear::OperationDiscard) == elle::StatusError)
-	  escape("this operation cannot be performed by this actor");
+        // specify the closing operation performed by the actor.
+        if (actor->Operate(gear::OperationDiscard) == elle::StatusError)
+          escape("this operation cannot be performed by this actor");
 
-	// delete the actor.
-	delete actor;
+        // delete the actor.
+        delete actor;
 
-	// waive actor.
-	waive(actor);
+        // waive actor.
+        waive(actor);
 
-	// specify the closing operation performed on the scope.
-	if (scope->Operate(gear::OperationDiscard) == elle::StatusError)
-	  escape("unable to specify the operation being performed "
-		 "on the scope");
+        // specify the closing operation performed on the scope.
+        if (scope->Operate(gear::OperationDiscard) == elle::StatusError)
+          escape("unable to specify the operation being performed "
+                 "on the scope");
 
-	// trigger the shutdown.
-	if (scope->Shutdown() == elle::StatusError)
-	  escape("unable to trigger the shutdown");
+        // trigger the shutdown.
+        if (scope->Shutdown() == elle::StatusError)
+          escape("unable to trigger the shutdown");
       }
       zone.Unlock();
 
       // depending on the context's state.
       switch (context->state)
-	{
-	case gear::Context::StateDiscarded:
-	case gear::Context::StateStored:
-	case gear::Context::StateDestroyed:
-	  {
-	    //
-	    // if the file has been sealed, i.e there is no more actor
-	    // operating on it, record it in the journal.
-	    //
+        {
+        case gear::Context::StateDiscarded:
+        case gear::Context::StateStored:
+        case gear::Context::StateDestroyed:
+          {
+            //
+            // if the file has been sealed, i.e there is no more actor
+            // operating on it, record it in the journal.
+            //
 
-	    // relinquish the scope: at this point we know there is no
-	    // remaining actor.
-	    if (gear::Scope::Relinquish(scope) == elle::StatusError)
-	      escape("unable to relinquish the scope");
+            // relinquish the scope: at this point we know there is no
+            // remaining actor.
+            if (gear::Scope::Relinquish(scope) == elle::StatusError)
+              escape("unable to relinquish the scope");
 
-	    // record the scope in the journal.
-	    if (journal::Journal::Record(scope) == elle::StatusError)
-	      escape("unable to record the scope in the journal");
+            // record the scope in the journal.
+            if (journal::Journal::Record(scope) == elle::StatusError)
+              escape("unable to record the scope in the journal");
 
-	    break;
-	  }
-	default:
-	  {
-	    //
-	    // otherwise, some actors are probably still working on it.
-	    //
+            break;
+          }
+        default:
+          {
+            //
+            // otherwise, some actors are probably still working on it.
+            //
 
-	    break;
-	  }
-	}
+            break;
+          }
+        }
 
       leave();
     }
@@ -437,98 +437,98 @@ namespace etoile
     /// this method closes the scope and places it in the journal for
     /// the modifications to be published in the storage layer.
     ///
-    elle::Status	File::Store(
-			  const gear::Identifier&		identifier)
+    elle::Status        File::Store(
+                          const gear::Identifier&               identifier)
     {
-      gear::Actor*	actor;
-      gear::Scope*	scope;
-      gear::File*	context;
+      gear::Actor*      actor;
+      gear::Scope*      scope;
+      gear::File*       context;
 
       enterx(instance(actor));
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] wall::File::Store()\n");
+        printf("[etoile] wall::File::Store()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
-	escape("unable to select the actor");
+        escape("unable to select the actor");
 
       // retrieve the scope.
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeWrite);
+      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
 
       // protect the access.
       zone.Lock();
       {
-	// retrieve the context.
-	if (scope->Use(context) == elle::StatusError)
-	  escape("unable to retrieve the context");
+        // retrieve the context.
+        if (scope->Use(context) == elle::StatusError)
+          escape("unable to retrieve the context");
 
-	// check the permissions before performing the operation in
-	// order not to alter the scope should the operation not be
-	// allowed.
-	if (automaton::Rights::Operate(
-	      *context,
-	      gear::OperationStore) == elle::StatusError)
-	  escape("the user does not seem to have the necessary permission for "
-		 "storing this file");
+        // check the permissions before performing the operation in
+        // order not to alter the scope should the operation not be
+        // allowed.
+        if (automaton::Rights::Operate(
+              *context,
+              gear::OperationStore) == elle::StatusError)
+          escape("the user does not seem to have the necessary permission for "
+                 "storing this file");
 
-	// specify the closing operation performed by the actor.
-	if (actor->Operate(gear::OperationStore) == elle::StatusError)
-	  escape("this operation cannot be performed by this actor");
+        // specify the closing operation performed by the actor.
+        if (actor->Operate(gear::OperationStore) == elle::StatusError)
+          escape("this operation cannot be performed by this actor");
 
-	// delete the actor.
-	delete actor;
+        // delete the actor.
+        delete actor;
 
-	// waive actor.
-	waive(actor);
+        // waive actor.
+        waive(actor);
 
-	// specify the closing operation performed on the scope.
-	if (scope->Operate(gear::OperationStore) == elle::StatusError)
-	  escape("unable to specify the operation being performed "
-		 "on the scope");
+        // specify the closing operation performed on the scope.
+        if (scope->Operate(gear::OperationStore) == elle::StatusError)
+          escape("unable to specify the operation being performed "
+                 "on the scope");
 
-	// trigger the shutdown.
-	if (scope->Shutdown() == elle::StatusError)
-	  escape("unable to trigger the shutdown");
+        // trigger the shutdown.
+        if (scope->Shutdown() == elle::StatusError)
+          escape("unable to trigger the shutdown");
       }
       zone.Unlock();
 
       // depending on the context's state.
       switch (context->state)
-	{
-	case gear::Context::StateDiscarded:
-	case gear::Context::StateStored:
-	case gear::Context::StateDestroyed:
-	  {
-	    //
-	    // if the file has been sealed, i.e there is no more actor
-	    // operating on it, record it in the journal.
-	    //
+        {
+        case gear::Context::StateDiscarded:
+        case gear::Context::StateStored:
+        case gear::Context::StateDestroyed:
+          {
+            //
+            // if the file has been sealed, i.e there is no more actor
+            // operating on it, record it in the journal.
+            //
 
-	    // relinquish the scope: at this point we know there is no
-	    // remaining actor.
-	    if (gear::Scope::Relinquish(scope) == elle::StatusError)
-	      escape("unable to relinquish the scope");
+            // relinquish the scope: at this point we know there is no
+            // remaining actor.
+            if (gear::Scope::Relinquish(scope) == elle::StatusError)
+              escape("unable to relinquish the scope");
 
-	    // record the scope in the journal.
-	    if (journal::Journal::Record(scope) == elle::StatusError)
-	      escape("unable to record the scope in the journal");
+            // record the scope in the journal.
+            if (journal::Journal::Record(scope) == elle::StatusError)
+              escape("unable to record the scope in the journal");
 
-	    break;
-	  }
-	default:
-	  {
-	    //
-	    // otherwise, some actors are probably still working on it.
-	    //
+            break;
+          }
+        default:
+          {
+            //
+            // otherwise, some actors are probably still working on it.
+            //
 
-	    break;
-	  }
-	}
+            break;
+          }
+        }
 
       leave();
     }
@@ -536,98 +536,98 @@ namespace etoile
     ///
     /// this method destroys a file.
     ///
-    elle::Status	File::Destroy(
-			  const gear::Identifier&		identifier)
+    elle::Status        File::Destroy(
+                          const gear::Identifier&               identifier)
     {
-      gear::Actor*	actor;
-      gear::Scope*	scope;
-      gear::File*	context;
+      gear::Actor*      actor;
+      gear::Scope*      scope;
+      gear::File*       context;
 
       enterx(instance(actor));
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] wall::File::Destroy()\n");
+        printf("[etoile] wall::File::Destroy()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
-	escape("unable to select the actor");
+        escape("unable to select the actor");
 
       // retrieve the scope.
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeWrite);
+      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
 
       // protect the access.
       zone.Lock();
       {
-	// retrieve the context.
-	if (scope->Use(context) == elle::StatusError)
-	  escape("unable to retrieve the context");
+        // retrieve the context.
+        if (scope->Use(context) == elle::StatusError)
+          escape("unable to retrieve the context");
 
-	// check the permissions before performing the operation in
-	// order not to alter the scope should the operation not be
-	// allowed.
-	if (automaton::Rights::Operate(
-	      *context,
-	      gear::OperationDestroy) == elle::StatusError)
-	  escape("the user does not seem to have the necessary permission for "
-		 "destroying this file");
+        // check the permissions before performing the operation in
+        // order not to alter the scope should the operation not be
+        // allowed.
+        if (automaton::Rights::Operate(
+              *context,
+              gear::OperationDestroy) == elle::StatusError)
+          escape("the user does not seem to have the necessary permission for "
+                 "destroying this file");
 
-	// specify the closing operation performed by the actor.
-	if (actor->Operate(gear::OperationDestroy) == elle::StatusError)
-	  escape("this operation cannot be performed by this actor");
+        // specify the closing operation performed by the actor.
+        if (actor->Operate(gear::OperationDestroy) == elle::StatusError)
+          escape("this operation cannot be performed by this actor");
 
-	// delete the actor.
-	delete actor;
+        // delete the actor.
+        delete actor;
 
-	// waive actor.
-	waive(actor);
+        // waive actor.
+        waive(actor);
 
-	// specify the closing operation performed on the scope.
-	if (scope->Operate(gear::OperationDestroy) == elle::StatusError)
-	  escape("unable to specify the operation being performed "
-		 "on the scope");
+        // specify the closing operation performed on the scope.
+        if (scope->Operate(gear::OperationDestroy) == elle::StatusError)
+          escape("unable to specify the operation being performed "
+                 "on the scope");
 
-	// trigger the shutdown.
-	if (scope->Shutdown() == elle::StatusError)
-	  escape("unable to trigger the shutdown");
+        // trigger the shutdown.
+        if (scope->Shutdown() == elle::StatusError)
+          escape("unable to trigger the shutdown");
       }
       zone.Unlock();
 
       // depending on the context's state.
       switch (context->state)
-	{
-	case gear::Context::StateDiscarded:
-	case gear::Context::StateStored:
-	case gear::Context::StateDestroyed:
-	  {
-	    //
-	    // if the file has been sealed, i.e there is no more actor
-	    // operating on it, record it in the journal.
-	    //
+        {
+        case gear::Context::StateDiscarded:
+        case gear::Context::StateStored:
+        case gear::Context::StateDestroyed:
+          {
+            //
+            // if the file has been sealed, i.e there is no more actor
+            // operating on it, record it in the journal.
+            //
 
-	    // relinquish the scope: at this point we know there is no
-	    // remaining actor.
-	    if (gear::Scope::Relinquish(scope) == elle::StatusError)
-	      escape("unable to relinquish the scope");
+            // relinquish the scope: at this point we know there is no
+            // remaining actor.
+            if (gear::Scope::Relinquish(scope) == elle::StatusError)
+              escape("unable to relinquish the scope");
 
-	    // record the scope in the journal.
-	    if (journal::Journal::Record(scope) == elle::StatusError)
-	      escape("unable to record the scope in the journal");
+            // record the scope in the journal.
+            if (journal::Journal::Record(scope) == elle::StatusError)
+              escape("unable to record the scope in the journal");
 
-	    break;
-	  }
-	default:
-	  {
-	    //
-	    // otherwise, some actors are probably still working on it.
-	    //
+            break;
+          }
+        default:
+          {
+            //
+            // otherwise, some actors are probably still working on it.
+            //
 
-	    break;
-	  }
-	}
+            break;
+          }
+        }
 
       leave();
     }
@@ -636,14 +636,14 @@ namespace etoile
     /// this method purges a file i.e removes all the blocks of all
     /// the versions associated with this file.
     ///
-    elle::Status	File::Purge(
-			  const gear::Identifier&)
+    elle::Status        File::Purge(
+                          const gear::Identifier&)
     {
       enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
-	printf("[etoile] wall::File::Purge()\n");
+        printf("[etoile] wall::File::Purge()\n");
 
       // XXX to implement.
 

@@ -37,7 +37,7 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Forge(gear::Object&);
+      static elle::Status       Forge(gear::Object&);
     };
 
   }

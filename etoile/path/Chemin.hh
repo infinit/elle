@@ -44,7 +44,7 @@ namespace etoile
       //
       // constants
       //
-      static const Chemin			Null;
+      static const Chemin                       Null;
 
       //
       // constructors & destructors
@@ -54,12 +54,12 @@ namespace etoile
       //
       // methods
       //
-      elle::Status		Create(const Route&,
-				       const Venue&,
-				       const nucleus::Size =
-				         elle::Type<nucleus::Size>::Maximum);
+      elle::Status              Create(const Route&,
+                                       const Venue&,
+                                       const nucleus::Size =
+                                         elle::Type<nucleus::Size>::Maximum);
 
-      elle::Status		Locate(nucleus::Location&) const;
+      elle::Status              Locate(nucleus::Location&) const;
 
       //
       // interfaces
@@ -67,21 +67,21 @@ namespace etoile
 
       // object
       declare(Chemin);
-      elle::Boolean		operator==(const Chemin&) const;
-      elle::Boolean		operator<(const Chemin&) const;
+      elle::Boolean             operator==(const Chemin&) const;
+      elle::Boolean             operator<(const Chemin&) const;
 
       // dumpable
-      elle::Status		Dump(const elle::Natural32 = 0) const;
+      elle::Status              Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status		Serialize(elle::Archive&) const;
-      elle::Status		Extract(elle::Archive&);
+      elle::Status              Serialize(elle::Archive&) const;
+      elle::Status              Extract(elle::Archive&);
 
       //
       // attributes
       //
-      Route			route;
-      Venue			venue;
+      Route                     route;
+      Venue                     venue;
     };
 
   }

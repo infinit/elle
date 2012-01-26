@@ -37,12 +37,12 @@ namespace etoile
       // static methods
       //
       template <typename T>
-      static elle::Status	Open(T&);
+      static elle::Status       Open(T&);
       template <typename T>
-      static elle::Status	Close(T&);
+      static elle::Status       Close(T&);
 
       template <typename T>
-      static elle::Status	Destroy(T&);
+      static elle::Status       Destroy(T&);
     };
 
   }

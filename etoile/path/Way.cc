@@ -27,7 +27,7 @@ namespace etoile
     ///
     /// this defines a null way.
     ///
-    const Way			Way::Null;
+    const Way                   Way::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -43,7 +43,7 @@ namespace etoile
     ///
     /// copy constructor
     ///
-    Way::Way(const Way&						way):
+    Way::Way(const Way&                                         way):
       Object(way),
 
       path(way.path)
@@ -53,7 +53,7 @@ namespace etoile
     ///
     /// character constructor
     ///
-    Way::Way(const elle::Character&				character):
+    Way::Way(const elle::Character&                             character):
       path(1, character)
     {
     }
@@ -61,7 +61,7 @@ namespace etoile
     ///
     /// string constructor
     ///
-    Way::Way(const elle::String&				string):
+    Way::Way(const elle::String&                                string):
       path(string)
     {
     }
@@ -78,10 +78,10 @@ namespace etoile
 
       // convert the wchar string.
       if (elle::utility::Utf16To8(u16_str,
-				  -1,
-				  &str,
-				  &str_size) == elle::StatusError)
-	fail("failed to convert the path to uft8");
+                                  -1,
+                                  &str,
+                                  &str_size) == elle::StatusError)
+        fail("failed to convert the path to uft8");
 
       // assign the string.
       path.assign(str, str_size);
@@ -95,11 +95,11 @@ namespace etoile
     /// this constructor creates a way but returns the last element of the path
     /// in _name_.
     ///
-    Way::Way(const Way&						way,
-	     Slice&						name):
+    Way::Way(const Way&                                         way,
+             Slice&                                             name):
       path()
     {
-      elle::String::size_type	last_slash;
+      elle::String::size_type   last_slash;
 
       // clear the name, just in case.
       name.clear();
@@ -123,7 +123,7 @@ namespace etoile
     ///
     /// this method returns the length of the way.
     ///
-    elle::Status	Way::Capacity(Length&			length) const
+    elle::Status        Way::Capacity(Length&                   length) const
     {
       enter();
 
@@ -140,17 +140,17 @@ namespace etoile
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	Way::operator==(const Way&		element) const
+    elle::Boolean       Way::operator==(const Way&              element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the attributes..
       if (this->path != element.path)
-	false();
+        false();
 
       true();
     }
@@ -167,9 +167,9 @@ namespace etoile
     ///
     /// this function dumps the object.
     ///
-    elle::Status	Way::Dump(elle::Natural32	margin) const
+    elle::Status        Way::Dump(elle::Natural32       margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
@@ -185,13 +185,13 @@ namespace etoile
     ///
     /// this method serializes the object.
     ///
-    elle::Status	Way::Serialize(elle::Archive&	archive) const
+    elle::Status        Way::Serialize(elle::Archive&   archive) const
     {
       enter();
 
       // serialize the target.
       if (archive.Serialize(this->path) == elle::StatusError)
-	escape("unable to serialize the path");
+        escape("unable to serialize the path");
 
       leave();
     }
@@ -199,13 +199,13 @@ namespace etoile
     ///
     /// this method extracts the object.
     ///
-    elle::Status	Way::Extract(elle::Archive&	archive)
+    elle::Status        Way::Extract(elle::Archive&     archive)
     {
       enter();
 
       // extract the target.
       if (archive.Extract(this->path) == elle::StatusError)
-	escape("unable to extract the path");
+        escape("unable to extract the path");
 
       leave();
     }
