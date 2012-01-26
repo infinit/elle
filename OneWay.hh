@@ -47,13 +47,13 @@ namespace elle
       //
       // constants
       //
-      static const ::EVP_MD*		Algorithm;
+      static const ::EVP_MD*            Algorithm;
 
       //
       // static methods
       //
-      static Status	Hash(const Plain&,
-			     Digest&);
+      static Status     Hash(const Plain&,
+                             Digest&);
 
       //
       // forward methods
@@ -66,115 +66,115 @@ namespace elle
       /// we do not want this especially because the template-based methods
       /// build archives and we are already receiving an archive.
       ///
-      static Status	Hash(const Archive&		archive,
-			     Digest&			digest)
+      static Status     Hash(const Archive&             archive,
+                             Digest&                    digest)
       {
-	return (OneWay::Hash(Plain(archive.contents, archive.size),
-			     digest));
+        return (OneWay::Hash(Plain(archive.contents, archive.size),
+                             digest));
       }
 
       //
       // variadic templates
       //
       template <typename T1>
-      static Status	Hash(const T1&,
-			     Digest&);
+      static Status     Hash(const T1&,
+                             Digest&);
       template <typename T1,
-		typename T2>
-      static Status	Hash(const T1&,
-			     const T2&,
-			     Digest&);
+                typename T2>
+      static Status     Hash(const T1&,
+                             const T2&,
+                             Digest&);
       template <typename T1,
-		typename T2,
-		typename T3>
-      static Status	Hash(const T1&,
-			     const T2&,
-			     const T3&,
-			     Digest&);
+                typename T2,
+                typename T3>
+      static Status     Hash(const T1&,
+                             const T2&,
+                             const T3&,
+                             Digest&);
       template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4>
-      static Status	Hash(const T1&,
-			     const T2&,
-			     const T3&,
-			     const T4&,
-			     Digest&);
+                typename T2,
+                typename T3,
+                typename T4>
+      static Status     Hash(const T1&,
+                             const T2&,
+                             const T3&,
+                             const T4&,
+                             Digest&);
       template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5>
-      static Status	Hash(const T1&,
-			     const T2&,
-			     const T3&,
-			     const T4&,
-			     const T5&,
-			     Digest&);
+                typename T2,
+                typename T3,
+                typename T4,
+                typename T5>
+      static Status     Hash(const T1&,
+                             const T2&,
+                             const T3&,
+                             const T4&,
+                             const T5&,
+                             Digest&);
       template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6>
-      static Status	Hash(const T1&,
-			     const T2&,
-			     const T3&,
-			     const T4&,
-			     const T5&,
-			     const T6&,
-			     Digest&);
+                typename T2,
+                typename T3,
+                typename T4,
+                typename T5,
+                typename T6>
+      static Status     Hash(const T1&,
+                             const T2&,
+                             const T3&,
+                             const T4&,
+                             const T5&,
+                             const T6&,
+                             Digest&);
       template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6,
-		typename T7>
-      static Status	Hash(const T1&,
-			     const T2&,
-			     const T3&,
-			     const T4&,
-			     const T5&,
-			     const T6&,
-			     const T7&,
-			     Digest&);
+                typename T2,
+                typename T3,
+                typename T4,
+                typename T5,
+                typename T6,
+                typename T7>
+      static Status     Hash(const T1&,
+                             const T2&,
+                             const T3&,
+                             const T4&,
+                             const T5&,
+                             const T6&,
+                             const T7&,
+                             Digest&);
       template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6,
-		typename T7,
-		typename T8>
-      static Status	Hash(const T1&,
-			     const T2&,
-			     const T3&,
-			     const T4&,
-			     const T5&,
-			     const T6&,
-			     const T7&,
-			     const T8&,
-			     Digest&);
+                typename T2,
+                typename T3,
+                typename T4,
+                typename T5,
+                typename T6,
+                typename T7,
+                typename T8>
+      static Status     Hash(const T1&,
+                             const T2&,
+                             const T3&,
+                             const T4&,
+                             const T5&,
+                             const T6&,
+                             const T7&,
+                             const T8&,
+                             Digest&);
       template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6,
-		typename T7,
-		typename T8,
-		typename T9>
-      static Status	Hash(const T1&,
-			     const T2&,
-			     const T3&,
-			     const T4&,
-			     const T5&,
-			     const T6&,
-			     const T7&,
-			     const T8&,
-			     const T9&,
-			     Digest&);
+                typename T2,
+                typename T3,
+                typename T4,
+                typename T5,
+                typename T6,
+                typename T7,
+                typename T8,
+                typename T9>
+      static Status     Hash(const T1&,
+                             const T2&,
+                             const T3&,
+                             const T4&,
+                             const T5&,
+                             const T6&,
+                             const T7&,
+                             const T8&,
+                             const T9&,
+                             Digest&);
     };
 
   }

@@ -60,18 +60,18 @@ namespace elle
       //
       // constants
       //
-      static const Natural32		Length;
+      static const Natural32            Length;
 
       //
       // methods
       //
-      Status		Generate();
-      Status		Generate(const Natural32);
+      Status            Generate();
+      Status            Generate(const Natural32);
 
-      Status		Rotate(const PrivateKey&,
-			       Seed&) const;
-      Status		Derive(const PublicKey&,
-			       Seed&) const;
+      Status            Rotate(const PrivateKey&,
+                               Seed&) const;
+      Status            Derive(const PublicKey&,
+                               Seed&) const;
 
       //
       // interfaces
@@ -79,19 +79,19 @@ namespace elle
 
       // object
       declare(Seed);
-      Boolean		operator==(const Seed&) const;
+      Boolean           operator==(const Seed&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      Status            Serialize(Archive&) const;
+      Status            Extract(Archive&);
 
       //
       // attributes
       //
-      Region		region;
+      Region            region;
     };
 
   }

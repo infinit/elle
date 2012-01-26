@@ -31,7 +31,7 @@ namespace elle
     ///
     /// this defines a null digest.
     ///
-    const Digest		Digest::Null;
+    const Digest                Digest::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -51,17 +51,17 @@ namespace elle
     ///
     /// this method check if two digests match.
     ///
-    Boolean		Digest::operator==(const Digest&	element) const
+    Boolean             Digest::operator==(const Digest&        element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the regions.
       if (this->region != element.region)
-	false();
+        false();
 
       true();
     }
@@ -69,7 +69,7 @@ namespace elle
     ///
     /// this method compares the digests.
     ///
-    Boolean		Digest::operator<(const Digest&		element) const
+    Boolean             Digest::operator<(const Digest&         element) const
     {
       return (this->region < element.region);
     }
@@ -86,25 +86,25 @@ namespace elle
     ///
     /// this method dumps the digest.
     ///
-    Status		Digest::Dump(const Natural32		margin) const
+    Status              Digest::Dump(const Natural32            margin) const
     {
-      String		alignment(margin, ' ');
+      String            alignment(margin, ' ');
 
       enter();
 
       // display depending on the value.
       if (*this == Digest::Null)
-	{
-	  std::cout << alignment << "[Digest] " << none << std::endl;
-	}
+        {
+          std::cout << alignment << "[Digest] " << none << std::endl;
+        }
       else
-	{
-	  std::cout << alignment << "[Digest] " << std::endl;
+        {
+          std::cout << alignment << "[Digest] " << std::endl;
 
-	  // dump the region.
-	  if (this->region.Dump(margin + 2) == StatusError)
-	      escape("unable to dump the region");
-	}
+          // dump the region.
+          if (this->region.Dump(margin + 2) == StatusError)
+              escape("unable to dump the region");
+        }
 
       leave();
     }
@@ -116,13 +116,13 @@ namespace elle
     ///
     /// this method serializes a digest object.
     ///
-    Status		Digest::Serialize(Archive&		archive) const
+    Status              Digest::Serialize(Archive&              archive) const
     {
       enter();
 
       // serialize the region.
       if (archive.Serialize(this->region) == StatusError)
-	escape("unable to serialize the region");
+        escape("unable to serialize the region");
 
       leave();
     }
@@ -130,13 +130,13 @@ namespace elle
     ///
     /// this method extracts a digest object.
     ///
-    Status		Digest::Extract(Archive&		archive)
+    Status              Digest::Extract(Archive&                archive)
     {
       enter();
 
       // extract the content.
       if (archive.Extract(this->region) == StatusError)
-	escape("unable to extract the region");
+        escape("unable to extract the region");
 
       leave();
     }

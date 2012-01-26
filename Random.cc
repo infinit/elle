@@ -45,9 +45,9 @@ namespace elle
     ///
     /// this method initializes the random system.
     ///
-    Status		Random::Initialize()
+    Status              Random::Initialize()
     {
-      uint8_t		temporary[256];
+      uint8_t           temporary[256];
 
       enter();
 
@@ -56,40 +56,40 @@ namespace elle
 
 #if defined(INFINIT_UNIX)
       {
-	int		fd = -1;
+        int             fd = -1;
 
-	// get some random data.
-	if ((fd = ::open("/dev/random", O_RDONLY)) == -1)
-	  escape(::strerror(errno));
+        // get some random data.
+        if ((fd = ::open("/dev/random", O_RDONLY)) == -1)
+          escape(::strerror(errno));
 
-	// read random data.
-	if (::read(fd, temporary, sizeof (temporary)) == -1)
-	  {
-	    ::close(fd);
+        // read random data.
+        if (::read(fd, temporary, sizeof (temporary)) == -1)
+          {
+            ::close(fd);
 
-	    escape(::strerror(errno));
-	  }
+            escape(::strerror(errno));
+          }
 
-	// close the file descriptor.
-	::close(fd);
+        // close the file descriptor.
+        ::close(fd);
       }
 #elif defined(INFINIT_WIN32)
       {
-	HCRYPTPROV        h_provider = 0;
+        HCRYPTPROV        h_provider = 0;
 
-	if (!::CryptAcquireContextW(&h_provider, 0, 0, PROV_RSA_FULL,
-				    CRYPT_VERIFYCONTEXT | CRYPT_SILENT))
-	  escape("failed to acquire cryptographic context");
+        if (!::CryptAcquireContextW(&h_provider, 0, 0, PROV_RSA_FULL,
+                                    CRYPT_VERIFYCONTEXT | CRYPT_SILENT))
+          escape("failed to acquire cryptographic context");
 
-	if (!::CryptGenRandom(h_provider, sizeof (temporary), temporary))
-	  {
-	    ::CryptReleaseContext(h_provider, 0);
+        if (!::CryptGenRandom(h_provider, sizeof (temporary), temporary))
+          {
+            ::CryptReleaseContext(h_provider, 0);
 
-	    escape("failed to generate the random seed");
-	  }
+            escape("failed to generate the random seed");
+          }
 
-	if (!::CryptReleaseContext(h_provider, 0))
-	  escape("failed to release cryptographic context");
+        if (!::CryptReleaseContext(h_provider, 0))
+          escape("failed to release cryptographic context");
       }
 #else
 # error "unsupported platform"
@@ -104,7 +104,7 @@ namespace elle
     ///
     /// this method cleans the system.
     ///
-    Status		Random::Clean()
+    Status              Random::Clean()
     {
       enter();
 
@@ -116,21 +116,21 @@ namespace elle
     ///
     /// this method generates a boolean.
     ///
-    Status		Random::Generate(Boolean&		value)
+    Status              Random::Generate(Boolean&               value)
     {
-      elle::Integer32	r;
+      elle::Integer32   r;
 
       enter();
 
       // generate a random integer.
       if (Random::Generate(r) == StatusError)
-	escape("unable to generate a random integer");
+        escape("unable to generate a random integer");
 
       // set the boolean.
       if (r > 0)
-	value = true;
+        value = true;
       else
-	value = false;
+        value = false;
 
       leave();
     }
@@ -138,14 +138,14 @@ namespace elle
     ///
     /// this method generates a character.
     ///
-    Status		Random::Generate(Character&		value)
+    Status              Random::Generate(Character&             value)
     {
       enter();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
-		       sizeof (value)) == 0)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+                       sizeof (value)) == 0)
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       leave();
     }
@@ -153,14 +153,14 @@ namespace elle
     ///
     /// this method generates a real.
     ///
-    Status		Random::Generate(Real&			value)
+    Status              Random::Generate(Real&                  value)
     {
       enter();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
-		       sizeof (value)) == 0)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+                       sizeof (value)) == 0)
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       leave();
     }
@@ -168,14 +168,14 @@ namespace elle
     ///
     /// this method generates an integer.
     ///
-    Status		Random::Generate(Integer8&		value)
+    Status              Random::Generate(Integer8&              value)
     {
       enter();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
-		       sizeof (value)) == 0)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+                       sizeof (value)) == 0)
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       leave();
     }
@@ -183,14 +183,14 @@ namespace elle
     ///
     /// this method generates an integer.
     ///
-    Status		Random::Generate(Integer16&		value)
+    Status              Random::Generate(Integer16&             value)
     {
       enter();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
-		       sizeof (value)) == 0)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+                       sizeof (value)) == 0)
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       leave();
     }
@@ -198,14 +198,14 @@ namespace elle
     ///
     /// this method generates an integer.
     ///
-    Status		Random::Generate(Integer32&		value)
+    Status              Random::Generate(Integer32&             value)
     {
       enter();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
-		       sizeof (value)) == 0)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+                       sizeof (value)) == 0)
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       leave();
     }
@@ -213,14 +213,14 @@ namespace elle
     ///
     /// this method generates an integer.
     ///
-    Status		Random::Generate(Integer64&		value)
+    Status              Random::Generate(Integer64&             value)
     {
       enter();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
-		       sizeof (value)) == 0)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+                       sizeof (value)) == 0)
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       leave();
     }
@@ -228,14 +228,14 @@ namespace elle
     ///
     /// this method generates a natural.
     ///
-    Status		Random::Generate(Natural8&		value)
+    Status              Random::Generate(Natural8&              value)
     {
       enter();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
-		       sizeof (value)) == 0)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+                       sizeof (value)) == 0)
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       leave();
     }
@@ -243,14 +243,14 @@ namespace elle
     ///
     /// this method generates a natural.
     ///
-    Status		Random::Generate(Natural16&		value)
+    Status              Random::Generate(Natural16&             value)
     {
       enter();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
-		       sizeof (value)) == 0)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+                       sizeof (value)) == 0)
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       leave();
     }
@@ -258,14 +258,14 @@ namespace elle
     ///
     /// this method generates a natural.
     ///
-    Status		Random::Generate(Natural32&		value)
+    Status              Random::Generate(Natural32&             value)
     {
       enter();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
-		       sizeof (value)) == 0)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+                       sizeof (value)) == 0)
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       leave();
     }
@@ -273,14 +273,14 @@ namespace elle
     ///
     /// this method generates a natural.
     ///
-    Status		Random::Generate(Natural64&		value)
+    Status              Random::Generate(Natural64&             value)
     {
       enter();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
-		       sizeof (value)) == 0)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+                       sizeof (value)) == 0)
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       leave();
     }
@@ -288,14 +288,14 @@ namespace elle
     ///
     /// this method generates a large.
     ///
-    Status		Random::Generate(Large&			value,
-					 const Natural32	length)
+    Status              Random::Generate(Large&                 value,
+                                         const Natural32        length)
     {
       enter();
 
       // generate a random BN.
       if (::BN_rand(&value, length, -1, 0) == 0)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
       leave();
     }
@@ -303,17 +303,17 @@ namespace elle
     ///
     /// this method generates a string.
     ///
-    Status		Random::Generate(String&		value,
-					 const Natural32	length)
+    Status              Random::Generate(String&                value,
+                                         const Natural32        length)
     {
-      char		buffer[length];
+      char              buffer[length];
 
       enter();
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&buffer),
-		       sizeof (buffer)) == 0)
-	escape(::strerror(errno));
+                       sizeof (buffer)) == 0)
+        escape(::strerror(errno));
 
       // assign the characters.
       value.assign(buffer, length);
@@ -324,19 +324,19 @@ namespace elle
     ///
     /// this method generates a region.
     ///
-    Status		Random::Generate(Region&		value,
-					 const Natural32	size)
+    Status              Random::Generate(Region&                value,
+                                         const Natural32        size)
     {
       enter();
 
       // prepare the region.
       if (value.Prepare(size) == StatusError)
-	escape("unable to prepare the region");
+        escape("unable to prepare the region");
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(value.contents),
-		       size) == 0)
-	escape(::strerror(errno));
+                       size) == 0)
+        escape(::strerror(errno));
 
       // set the region's size.
       value.size = size;

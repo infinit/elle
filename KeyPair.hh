@@ -58,20 +58,20 @@ namespace elle
       //
       // static methods
       //
-      static Status	Initialize();
-      static Status	Clean();
+      static Status     Initialize();
+      static Status     Clean();
 
       //
       // constants
       //
-      struct				Default
+      struct                            Default
       {
-	static const Natural32		Length;
+        static const Natural32          Length;
       };
 
-      static const KeyPair		Null;
+      static const KeyPair              Null;
 
-      static const String		Extension;
+      static const String               Extension;
 
       //
       // constructors & destructors
@@ -81,14 +81,14 @@ namespace elle
       //
       // methods
       //
-      Status		Generate();
-      Status		Generate(const Natural32);
+      Status            Generate();
+      Status            Generate(const Natural32);
 
-      Status		Create(const PublicKey&,
-			       const PrivateKey&);
+      Status            Create(const PublicKey&,
+                               const PrivateKey&);
 
-      Status		Rotate(const Seed&,
-			       KeyPair&) const;
+      Status            Rotate(const Seed&,
+                               KeyPair&) const;
 
       //
       // interfaces
@@ -96,32 +96,32 @@ namespace elle
 
       // object
       declare(KeyPair);
-      Boolean		operator==(const KeyPair&) const;
+      Boolean           operator==(const KeyPair&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      Status            Serialize(Archive&) const;
+      Status            Extract(Archive&);
 
       // fileable
-      Status		Load(const Path&,
-			     const String&);
-      Status		Store(const Path&,
-			      const String&) const;
-      Status		Erase(const Path&) const;
-      Status		Exist(const Path&) const;
+      Status            Load(const Path&,
+                             const String&);
+      Status            Store(const Path&,
+                              const String&) const;
+      Status            Erase(const Path&) const;
+      Status            Exist(const Path&) const;
 
       //
       // attributes
       //
-      PublicKey		K;
-      PrivateKey	k;
+      PublicKey         K;
+      PrivateKey        k;
 
-      struct			Contexts
+      struct                    Contexts
       {
-	static ::EVP_PKEY_CTX*	Generate;
+        static ::EVP_PKEY_CTX*  Generate;
       };
     };
 
