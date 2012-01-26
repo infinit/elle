@@ -38,32 +38,32 @@ namespace facade
       // enumerations
       //
       enum Operation
-	{
-	  OperationGetattr,
-	  OperationOpendir,
-	  OperationCreate,
-	  OperationOpen,
-	  OperationTruncate
-	};
+        {
+          OperationGetattr,
+          OperationOpendir,
+          OperationCreate,
+          OperationOpen,
+          OperationTruncate
+        };
 
       //
       // constructors & destructors
       //
       Handle(const Operation,
-	     const etoile::gear::Identifier&);
+             const etoile::gear::Identifier&);
       Handle(const Operation,
-	     const etoile::gear::Identifier&,
-	     const nucleus::Permissions&);
+             const etoile::gear::Identifier&,
+             const nucleus::Permissions&);
 
       //
       // attributes
       //
-      Operation			operation;
-      etoile::gear::Identifier	identifier;
+      Operation                 operation;
+      etoile::gear::Identifier  identifier;
 
       union
       {
-	nucleus::Permissions	permissions;
+        nucleus::Permissions    permissions;
       };
     };
 

@@ -16,7 +16,7 @@
 //
 
 #ifndef FUSE_USE_VERSION
-# define FUSE_USE_VERSION		26
+# define FUSE_USE_VERSION               26
 #endif
 
 //
@@ -71,23 +71,23 @@ namespace facade
       //
 
       // fuker
-      elle::Status	Setup();
+      elle::Status      Setup();
 
       //
       // callbacks
       //
-      elle::Status	Event(elle::Natural16);
+      elle::Status      Event(elle::Natural16);
 
       //
       // attributes
       //
-      elle::Broker*		broker;
+      elle::Broker*             broker;
 
-      struct ::fuse*		fuse;
-      char*			mountpoint;
-      struct ::fuse_session*	session;
-      struct ::fuse_chan*	channel;
-      size_t			size;
+      struct ::fuse*            fuse;
+      char*                     mountpoint;
+      struct ::fuse_session*    session;
+      struct ::fuse_chan*       channel;
+      size_t                    size;
     };
 
   }

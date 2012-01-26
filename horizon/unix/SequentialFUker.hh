@@ -16,7 +16,7 @@
 //
 
 #ifndef FUSE_USE_VERSION
-# define FUSE_USE_VERSION		26
+# define FUSE_USE_VERSION               26
 #endif
 
 //
@@ -63,26 +63,26 @@ namespace facade
       // enumerations
       //
       enum State
-	{
-	  StateWaiting,
-	  StateProcessing
-	};
+        {
+          StateWaiting,
+          StateProcessing
+        };
 
       //
       // structures
       //
       struct Item
       {
-	char*		buffer;
-	int		res;
+        char*           buffer;
+        int             res;
       };
 
       //
       // types
       //
-      typedef std::list<Item>				Container;
-      typedef typename Container::iterator		Iterator;
-      typedef typename Container::const_iterator	Scoutor;
+      typedef std::list<Item>                           Container;
+      typedef typename Container::iterator              Iterator;
+      typedef typename Container::const_iterator        Scoutor;
 
       //
       // constructors & destructors
@@ -95,26 +95,26 @@ namespace facade
       //
 
       // fuker
-      elle::Status	Setup();
+      elle::Status      Setup();
 
       //
       // callbacks
       //
-      elle::Status	Event(elle::Natural16);
+      elle::Status      Event(elle::Natural16);
 
       //
       // attributes
       //
-      elle::Broker*		broker;
+      elle::Broker*             broker;
 
-      struct ::fuse*		fuse;
-      char*			mountpoint;
-      struct ::fuse_session*	session;
-      struct ::fuse_chan*	channel;
-      size_t			size;
-      Container			container;
+      struct ::fuse*            fuse;
+      char*                     mountpoint;
+      struct ::fuse_session*    session;
+      struct ::fuse_chan*       channel;
+      size_t                    size;
+      Container                 container;
 
-      State			state;
+      State                     state;
     };
 
   }

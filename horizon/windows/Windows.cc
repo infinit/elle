@@ -37,7 +37,7 @@ namespace facade
     ///
     /// this method initializes windows.
     ///
-    elle::Status	Windows::Initialize()
+    elle::Status        Windows::Initialize()
     {
       enter();
 
@@ -49,7 +49,7 @@ namespace facade
     ///
     /// this method sets up the windows implementation.
     ///
-    elle::Status	Windows::Setup()
+    elle::Status        Windows::Setup()
     {
       enter();
 
@@ -61,7 +61,7 @@ namespace facade
     ///
     /// this method cleans windows.
     ///
-    elle::Status	Windows::Clean()
+    elle::Status        Windows::Clean()
     {
       enter();
 

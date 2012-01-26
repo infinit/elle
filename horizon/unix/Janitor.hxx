@@ -32,7 +32,7 @@ namespace facade
     /// onto the given identified context.
     ///
     template <typename T>
-    elle::Void		Janitor::Clear(T&		identifier)
+    elle::Void          Janitor::Clear(T&               identifier)
     {
       // discard the identifier.
       etoile::wall::Object::Discard(identifier);
@@ -45,9 +45,9 @@ namespace facade
     /// this method clears a set of identifiers.
     ///
     template <typename T,
-	      typename... TT>
-    elle::Void		Janitor::Clear(T&		identifier,
-				       TT&...		identifiers)
+              typename... TT>
+    elle::Void          Janitor::Clear(T&               identifier,
+                                       TT&...           identifiers)
     {
       Janitor::Clear(identifier);
       Janitor::Clear(identifiers...);

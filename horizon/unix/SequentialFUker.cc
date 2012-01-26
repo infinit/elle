@@ -49,50 +49,50 @@ namespace facade
       // destroy the FUSE broker.
       //
       {
-	if (this->broker != NULL)
-	  {
-	    // detach the broker.
-	    elle::Program::Detach(*this->broker);
+        if (this->broker != NULL)
+          {
+            // detach the broker.
+            elle::Program::Detach(*this->broker);
 
-	    // deactivate the broker.
-	    this->broker->Deactivate();
+            // deactivate the broker.
+            this->broker->Deactivate();
 
-	    // delete the broker.
-	    delete this->broker;
-	  }
+            // delete the broker.
+            delete this->broker;
+          }
       }
 
       //
       // release the buffers, sessions etc.
       //
       {
-	SequentialFUker::Scoutor	scoutor;
+        SequentialFUker::Scoutor        scoutor;
 
-	// release the buffers.
-	for (scoutor = this->container.begin();
-	     scoutor != this->container.end();
-	     scoutor++)
-	  {
-	    SequentialFUker::Item	item = *scoutor;
+        // release the buffers.
+        for (scoutor = this->container.begin();
+             scoutor != this->container.end();
+             scoutor++)
+          {
+            SequentialFUker::Item       item = *scoutor;
 
-	    ::free(item.buffer);
-	  }
+            ::free(item.buffer);
+          }
 
-	// clear the container.
-	this->container.clear();
+        // clear the container.
+        this->container.clear();
 
-	// release the session.
-	if (this->session != NULL)
-	  ::fuse_session_reset(this->session);
+        // release the session.
+        if (this->session != NULL)
+          ::fuse_session_reset(this->session);
       }
 
       //
       // clean the FUSE event loop.
       //
       {
-	// stop FUSE.
-	if (this->fuse != NULL)
-	  ::fuse_teardown(this->fuse, this->mountpoint);
+        // stop FUSE.
+        if (this->fuse != NULL)
+          ::fuse_teardown(this->fuse, this->mountpoint);
       }
     }
 
@@ -103,7 +103,7 @@ namespace facade
     ///
     /// this method sets up the fuker.
     ///
-    elle::Status	SequentialFUker::Setup()
+    elle::Status        SequentialFUker::Setup()
     {
       //
       // build the arguments.
@@ -115,26 +115,26 @@ namespace facade
       // for example the -d option could be used instead of -f in order
       // to activate the debug mode.
       //
-      elle::String	ofsname("-ofsname='" +
-				hole::Hole::Descriptor.name +
-				"'");
-      const char*		arguments[] =
-	{
-	  "facade",
+      elle::String      ofsname("-ofsname='" +
+                                hole::Hole::Descriptor.name +
+                                "'");
+      const char*               arguments[] =
+        {
+          "facade",
 
-	  "-s",
-	  "-f",
-	  "-o", "subtype=infinit",
+          "-s",
+          "-f",
+          "-o", "subtype=infinit",
 
-	  "-o", "no_remote_lock",
-	  "-o", "large_read",
-	  "-o", "big_writes",
-	  "-o", "auto_cache",
-	  "-o", "direct_io",
+          "-o", "no_remote_lock",
+          "-o", "large_read",
+          "-o", "big_writes",
+          "-o", "auto_cache",
+          "-o", "direct_io",
 
-	  ofsname.c_str(),
-	  FUSE::Mountpoint.c_str()
-	};
+          ofsname.c_str(),
+          FUSE::Mountpoint.c_str()
+        };
 
       enter();
 
@@ -149,56 +149,56 @@ namespace facade
       // into the elle event loop.
       //
       {
-	int		multithreaded;
+        int             multithreaded;
 
-	// setup fuse.
-	if ((this->fuse = ::fuse_setup(
-	                    sizeof (arguments) / sizeof (elle::Character*),
-			    const_cast<char**>(arguments),
-			    &FUSE::Operations,
-			    sizeof (FUSE::Operations),
-			    &this->mountpoint,
-			    &multithreaded,
-			    NULL)) == NULL)
-	  escape("unable to setup FUSE");
+        // setup fuse.
+        if ((this->fuse = ::fuse_setup(
+                            sizeof (arguments) / sizeof (elle::Character*),
+                            const_cast<char**>(arguments),
+                            &FUSE::Operations,
+                            sizeof (FUSE::Operations),
+                            &this->mountpoint,
+                            &multithreaded,
+                            NULL)) == NULL)
+          escape("unable to setup FUSE");
 
-	// retrieve the FUSE session.
-	this->session = this->fuse->se;
+        // retrieve the FUSE session.
+        this->session = this->fuse->se;
 
-	// retrieve the FUSE channel.
-	if ((this->channel =
-	     ::fuse_session_next_chan(this->session, NULL)) == NULL)
-	  escape("unable to retrieve the FUSE channel");
+        // retrieve the FUSE channel.
+        if ((this->channel =
+             ::fuse_session_next_chan(this->session, NULL)) == NULL)
+          escape("unable to retrieve the FUSE channel");
 
-	// retrieve the channel size.
-	this->size = ::fuse_chan_bufsize(this->channel);
+        // retrieve the channel size.
+        this->size = ::fuse_chan_bufsize(this->channel);
       }
 
       //
       // create the FUSE event broker.
       //
       {
-	int		fd;
+        int             fd;
 
-	// retrieve the file descriptor.
-	fd = ::fuse_chan_fd(this->channel);
+        // retrieve the file descriptor.
+        fd = ::fuse_chan_fd(this->channel);
 
-	// allocate the FUSE event broker.
-	this->broker = new elle::Broker(fd);
+        // allocate the FUSE event broker.
+        this->broker = new elle::Broker(fd);
 
-	// subscribe to the timer's signal.
-	if (this->broker->signal.ready.Subscribe(
-	      elle::Callback<>::Infer(&SequentialFUker::Event,
-				      this)) == elle::StatusError)
-	  escape("unable to subscribe to the signal");
+        // subscribe to the timer's signal.
+        if (this->broker->signal.ready.Subscribe(
+              elle::Callback<>::Infer(&SequentialFUker::Event,
+                                      this)) == elle::StatusError)
+          escape("unable to subscribe to the signal");
 
-	// activate the broker.
-	if (this->broker->Activate() == elle::StatusError)
-	  escape("unable to activate the broker");
+        // activate the broker.
+        if (this->broker->Activate() == elle::StatusError)
+          escape("unable to activate the broker");
 
-	// attach the broker to the program's event loop.
-	if (elle::Program::Attach(*this->broker) == elle::StatusError)
-	  escape("unable to attach the broker to the event loop");
+        // attach the broker to the program's event loop.
+        if (elle::Program::Attach(*this->broker) == elle::StatusError)
+          escape("unable to attach the broker to the event loop");
       }
 
       leave();
@@ -212,32 +212,32 @@ namespace facade
     /// this callback is triggered whenever data is available on the
     /// FUSE socket.
     ///
-    elle::Status	SequentialFUker::Event(elle::Natural16)
+    elle::Status        SequentialFUker::Event(elle::Natural16)
     {
-      struct ::fuse_chan*	channel = this->channel;
-      SequentialFUker::Item	item;
+      struct ::fuse_chan*       channel = this->channel;
+      SequentialFUker::Item     item;
 
       enterx(slab(item.buffer, ::free));
 
       // allocate a buffer.
       if ((item.buffer = static_cast<char*>(::malloc(this->size))) == NULL)
-	escape("unable to allocate a FUSE buffer");
+        escape("unable to allocate a FUSE buffer");
 
       // retrieve the upcall from the kernel through the FUSE channel.
       item.res = ::fuse_chan_recv(&channel,
-				  item.buffer,
-				  this->size);
+                                  item.buffer,
+                                  this->size);
 
       // retry later if necessary.
       if (item.res == -EINTR)
-	leave();
+        leave();
 
       // exit if an error occured.
       if (item.res <= 0)
-	{
-	  if (elle::Program::Exit() == elle::StatusError)
-	    escape("unable to exit the program");
-	}
+        {
+          if (elle::Program::Exit() == elle::StatusError)
+            escape("unable to exit the program");
+        }
 
       // record the item.
       this->container.push_back(item);
@@ -248,31 +248,31 @@ namespace facade
       // if the FUker is already processing, return since this
       // FUker processes events in a sequential manner.
       if (this->state == SequentialFUker::StateProcessing)
-	leave();
+        leave();
 
       // set the state.
       this->state = SequentialFUker::StateProcessing;
 
       // as long as the container contains buffers...
       while (this->container.empty() == false)
-	{
-	  SequentialFUker::Item	item;
+        {
+          SequentialFUker::Item item;
 
-	  // retrieve the next item.
-	  item = this->container.front();
+          // retrieve the next item.
+          item = this->container.front();
 
-	  // remove it from the container.
-	  this->container.pop_front();
+          // remove it from the container.
+          this->container.pop_front();
 
-	  // trigger the upcall handler.
-	  ::fuse_session_process(this->session,
-				 item.buffer,
-				 item.res,
-				 channel);
+          // trigger the upcall handler.
+          ::fuse_session_process(this->session,
+                                 item.buffer,
+                                 item.res,
+                                 channel);
 
-	  // release the buffer.
-	  ::free(item.buffer);
-	}
+          // release the buffer.
+          ::free(item.buffer);
+        }
 
       // reset the state.
       this->state = SequentialFUker::StateWaiting;

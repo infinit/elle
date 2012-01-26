@@ -26,8 +26,8 @@ namespace facade
     ///
     /// default constructor.
     ///
-    Handle::Handle(const Operation				operation,
-		   const etoile::gear::Identifier&		identifier):
+    Handle::Handle(const Operation                              operation,
+                   const etoile::gear::Identifier&              identifier):
       operation(operation),
       identifier(identifier)
     {
@@ -36,9 +36,9 @@ namespace facade
     ///
     /// specific constructor.
     ///
-    Handle::Handle(const Operation				operation,
-		   const etoile::gear::Identifier&		identifier,
-		   const nucleus::Permissions&			permissions):
+    Handle::Handle(const Operation                              operation,
+                   const etoile::gear::Identifier&              identifier,
+                   const nucleus::Permissions&                  permissions):
       operation(operation),
       identifier(identifier),
       permissions(permissions)

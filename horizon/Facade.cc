@@ -24,7 +24,7 @@ namespace facade
   ///
   /// this method initializes the facade.
   ///
-  elle::Status		Facade::Initialize()
+  elle::Status          Facade::Initialize()
   {
     enter();
 
@@ -46,7 +46,7 @@ namespace facade
   ///
   /// this method cleans the facade.
   ///
-  elle::Status		Facade::Clean()
+  elle::Status          Facade::Clean()
   {
     enter();
 

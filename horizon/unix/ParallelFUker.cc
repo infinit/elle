@@ -45,7 +45,7 @@ namespace facade
     ///
     /// this method sets up the fuker.
     ///
-    elle::Status	ParallelFUker::Setup()
+    elle::Status        ParallelFUker::Setup()
     {
       enter();
 
@@ -62,7 +62,7 @@ namespace facade
     /// this callback is triggered whenever data is available on the
     /// FUSE socket.
     ///
-    elle::Status	ParallelFUker::Event(const elle::Natural16&)
+    elle::Status        ParallelFUker::Event(const elle::Natural16&)
     {
       enter();
 

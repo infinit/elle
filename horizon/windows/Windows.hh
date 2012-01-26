@@ -43,9 +43,9 @@ namespace facade
       //
       // static methods
       //
-      static elle::Status	Initialize();
-      static elle::Status	Setup();
-      static elle::Status	Clean();
+      static elle::Status       Initialize();
+      static elle::Status       Setup();
+      static elle::Status       Clean();
 
       //
       // static attributes

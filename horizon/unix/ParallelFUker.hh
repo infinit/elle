@@ -16,7 +16,7 @@
 //
 
 #ifndef FUSE_USE_VERSION
-# define FUSE_USE_VERSION		26
+# define FUSE_USE_VERSION               26
 #endif
 
 //
@@ -54,12 +54,12 @@ namespace facade
       //
 
       // fuker
-      elle::Status	Setup();
+      elle::Status      Setup();
 
       //
       // callbacks
       //
-      elle::Status	Event(const elle::Natural16&);
+      elle::Status      Event(const elle::Natural16&);
     };
 
   }

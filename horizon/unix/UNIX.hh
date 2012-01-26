@@ -48,20 +48,20 @@ namespace facade
       //
       // static methods
       //
-      static elle::Status	Initialize();
-      static elle::Status	Setup();
-      static elle::Status	Clean();
+      static elle::Status       Initialize();
+      static elle::Status       Setup();
+      static elle::Status       Clean();
 
       //
       // static attributes
       //
-      struct			Somebody
+      struct                    Somebody
       {
-	static uid_t		UID;
-	static gid_t		GID;
+        static uid_t            UID;
+        static gid_t            GID;
       };
 
-      static lune::Dictionary	Dictionary;
+      static lune::Dictionary   Dictionary;
     };
 
   }

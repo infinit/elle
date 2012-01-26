@@ -16,7 +16,7 @@
 //
 
 #ifndef FUSE_USE_VERSION
-# define FUSE_USE_VERSION		26
+# define FUSE_USE_VERSION               26
 #endif
 
 //
@@ -52,17 +52,17 @@ namespace facade
       //
       // static methods
       //
-      static elle::Status	Initialize(const struct ::fuse_operations&);
-      static elle::Status	Setup(const elle::String&);
-      static elle::Status	Clean();
+      static elle::Status       Initialize(const struct ::fuse_operations&);
+      static elle::Status       Setup(const elle::String&);
+      static elle::Status       Clean();
 
       //
       // static attributes
       //
-      static elle::String		Mountpoint;
-      static FUker*			Fuker;
+      static elle::String               Mountpoint;
+      static FUker*                     Fuker;
 
-      static struct ::fuse_operations	Operations;
+      static struct ::fuse_operations   Operations;
     };
 
   }

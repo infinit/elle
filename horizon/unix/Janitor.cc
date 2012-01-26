@@ -26,7 +26,7 @@ namespace facade
     ///
     /// this method clears no identifier.
     ///
-    elle::Void		Janitor::Clear()
+    elle::Void          Janitor::Clear()
     {
       // nothing to do
     }

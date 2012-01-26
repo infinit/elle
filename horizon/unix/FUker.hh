@@ -47,16 +47,16 @@ namespace facade
       // enumerations
       //
       enum
-	{
-	  TypeSequential,
-	  TypeInterlaced,
-	  TypeParallel
-	};
+        {
+          TypeSequential,
+          TypeInterlaced,
+          TypeParallel
+        };
 
       //
       // methods
       //
-      virtual elle::Status	Setup() = 0;
+      virtual elle::Status      Setup() = 0;
     };
 
   }

@@ -40,14 +40,14 @@ namespace facade
       //
       // static methods
       //
-      static elle::Void		Clear();
+      static elle::Void         Clear();
 
       template <typename T>
-      static elle::Void		Clear(T&);
+      static elle::Void         Clear(T&);
       template <typename T,
-		typename... TT>
-      static elle::Void		Clear(T&,
-				      TT&...);
+                typename... TT>
+      static elle::Void         Clear(T&,
+                                      TT&...);
     };
 
   }
