@@ -23,10 +23,10 @@ namespace lune
   /// default argument.
   ///
   template <typename T>
-  elle::String*			Map<T>::Trash::Name = NULL;
+  elle::String*                 Map<T>::Trash::Name = NULL;
 
   template <typename T>
-  T*				Map<T>::Trash::Value = NULL;
+  T*                            Map<T>::Trash::Value = NULL;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -38,17 +38,17 @@ namespace lune
   template <typename T>
   Map<T>::~Map()
   {
-    Map<T>::Scoutor	scoutor;
+    Map<T>::Scoutor     scoutor;
 
     // release the entries.
     for (scoutor = this->container.begin();
-	 scoutor != this->container.end();
-	 scoutor++)
+         scoutor != this->container.end();
+         scoutor++)
       {
-	Map<T>::Entry*	entry = *scoutor;
+        Map<T>::Entry*  entry = *scoutor;
 
-	// delete the entry.
-	delete entry;
+        // delete the entry.
+        delete entry;
       }
 
     // clear the container.
@@ -63,10 +63,10 @@ namespace lune
   /// this method adds an entry to the map.
   ///
   template <typename T>
-  elle::Status		Map<T>::Add(const elle::String&		name,
-				    const T&			value)
+  elle::Status          Map<T>::Add(const elle::String&         name,
+                                    const T&                    value)
   {
-    Map<T>::Entry*	entry;
+    Map<T>::Entry*      entry;
 
     enter();
 
@@ -91,28 +91,28 @@ namespace lune
   /// this method returns the maped value.
   ///
   template <typename T>
-  elle::Status		Map<T>::Lookup(const elle::String&	name,
-				       T*&			value)
+  elle::Status          Map<T>::Lookup(const elle::String&      name,
+                                       T*&                      value)
   {
-    Map<T>::Scoutor	scoutor;
+    Map<T>::Scoutor     scoutor;
 
     enter();
 
     // go through the entries.
     for (scoutor = this->container.begin();
-	 scoutor != this->container.end();
-	 scoutor++)
+         scoutor != this->container.end();
+         scoutor++)
       {
-	Map<T>::Entry*	entry = *scoutor;
+        Map<T>::Entry*  entry = *scoutor;
 
-	// if the entry is found...
-	if (entry->name == name)
-	  {
-	    // return the value.
-	    value = &entry->value;
+        // if the entry is found...
+        if (entry->name == name)
+          {
+            // return the value.
+            value = &entry->value;
 
-	    true();
-	  }
+            true();
+          }
       }
 
     false();
@@ -122,28 +122,28 @@ namespace lune
   /// this method returns the mapped name.
   ///
   template <typename T>
-  elle::Status		Map<T>::Lookup(const T&			value,
-				       elle::String*&		name)
+  elle::Status          Map<T>::Lookup(const T&                 value,
+                                       elle::String*&           name)
   {
-    Map<T>::Scoutor	scoutor;
+    Map<T>::Scoutor     scoutor;
 
     enter();
 
     // go through the entries.
     for (scoutor = this->container.begin();
-	 scoutor != this->container.end();
-	 scoutor++)
+         scoutor != this->container.end();
+         scoutor++)
       {
-	Map<T>::Entry*	entry = *scoutor;
+        Map<T>::Entry*  entry = *scoutor;
 
-	// if the entry is found...
-	if (entry->value == value)
-	  {
-	    // return the name.
-	    name = &entry->name;
+        // if the entry is found...
+        if (entry->value == value)
+          {
+            // return the name.
+            name = &entry->name;
 
-	    true();
-	  }
+            true();
+          }
       }
 
     false();
@@ -153,30 +153,30 @@ namespace lune
   /// this method removes an entry.
   ///
   template <typename T>
-  elle::Status		Map<T>::Remove(const elle::String&	name)
+  elle::Status          Map<T>::Remove(const elle::String&      name)
   {
-    Map<T>::Iterator	iterator;
+    Map<T>::Iterator    iterator;
 
     enter();
 
     // go through the entries.
     for (iterator = this->container.begin();
-	 iterator != this->container.end();
-	 iterator++)
+         iterator != this->container.end();
+         iterator++)
       {
-	Map<T>::Entry*	entry = *iterator;
+        Map<T>::Entry*  entry = *iterator;
 
-	// if the entry is found...
-	if (entry->name == name)
-	  {
-	    // release the memory.
-	    delete entry;
+        // if the entry is found...
+        if (entry->name == name)
+          {
+            // release the memory.
+            delete entry;
 
-	    // erase the entry.
-	    this->container.erase(iterator);
+            // erase the entry.
+            this->container.erase(iterator);
 
-	    leave();
-	  }
+            leave();
+          }
       }
 
     escape("unable to locate the given name");
@@ -199,10 +199,10 @@ namespace lune
   /// this method dumps the map.
   ///
   template <typename T>
-  elle::Status		Map<T>::Dump(const elle::Natural32	margin) const
+  elle::Status          Map<T>::Dump(const elle::Natural32      margin) const
   {
-    Map<T>::Scoutor	scoutor;
-    elle::String	alignment(margin, ' ');
+    Map<T>::Scoutor     scoutor;
+    elle::String        alignment(margin, ' ');
 
     enter();
 
@@ -210,18 +210,18 @@ namespace lune
 
     // go through the entries.
     for (scoutor = this->container.begin();
-	 scoutor != this->container.end();
-	 scoutor++)
+         scoutor != this->container.end();
+         scoutor++)
       {
-	Map<T>::Entry*	entry = *scoutor;
+        Map<T>::Entry*  entry = *scoutor;
 
-	// dump the name.
-	std::cout << alignment << elle::Dumpable::Shift << "[Name] "
-		  << entry->name << std::endl;
+        // dump the name.
+        std::cout << alignment << elle::Dumpable::Shift << "[Name] "
+                  << entry->name << std::endl;
 
-	// dump the value.
-	if (entry->value.Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the value");
+        // dump the value.
+        if (entry->value.Dump(margin + 2) == elle::StatusError)
+          escape("unable to dump the value");
       }
 
     leave();
@@ -235,29 +235,29 @@ namespace lune
   /// this method serializes a map.
   ///
   template <typename T>
-  elle::Status		Map<T>::Serialize(elle::Archive&	archive) const
+  elle::Status          Map<T>::Serialize(elle::Archive&        archive) const
   {
-    Map<T>::Scoutor	scoutor;
+    Map<T>::Scoutor     scoutor;
 
     enter();
 
     // serialize the number of entries.
     if (archive.Serialize(
-	  static_cast<elle::Natural32>(
-	    this->container.size())) == elle::StatusError)
+          static_cast<elle::Natural32>(
+            this->container.size())) == elle::StatusError)
       escape("unable to serialize the number of entries");
 
     // go through the entries.
     for (scoutor = this->container.begin();
-	 scoutor != this->container.end();
-	 scoutor++)
+         scoutor != this->container.end();
+         scoutor++)
       {
-	Map<T>::Entry*	entry = *scoutor;
+        Map<T>::Entry*  entry = *scoutor;
 
-	// serialize the entry.
-	if (archive.Serialize(entry->name,
-			      entry->value) == elle::StatusError)
-	  escape("unable to serialize the entry");
+        // serialize the entry.
+        if (archive.Serialize(entry->name,
+                              entry->value) == elle::StatusError)
+          escape("unable to serialize the entry");
       }
 
     leave();
@@ -267,10 +267,10 @@ namespace lune
   /// this method extracts a map.
   ///
   template <typename T>
-  elle::Status		Map<T>::Extract(elle::Archive&		archive)
+  elle::Status          Map<T>::Extract(elle::Archive&          archive)
   {
-    elle::Natural32		size;
-    elle::Natural32		i;
+    elle::Natural32             size;
+    elle::Natural32             i;
 
     enter();
 
@@ -281,17 +281,17 @@ namespace lune
     // until all the entries have been extract.
     for (i = 0; i < size; i++)
       {
-	Map<T>::Entry*	entry;
+        Map<T>::Entry*  entry;
 
-	// allocate a new entry.
-	entry = new Map<T>::Entry;
+        // allocate a new entry.
+        entry = new Map<T>::Entry;
 
-	// extract the entry.
-	if (archive.Extract(entry->name, entry->value) == elle::StatusError)
-	  escape("unable to extract the entry");
+        // extract the entry.
+        if (archive.Extract(entry->name, entry->value) == elle::StatusError)
+          escape("unable to extract the entry");
 
-	// add a new entry.
-	this->container.push_back(entry);
+        // add a new entry.
+        this->container.push_back(entry);
       }
 
     leave();

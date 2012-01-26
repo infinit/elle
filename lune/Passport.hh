@@ -41,15 +41,15 @@ namespace lune
     //
     // constants
     //
-    static const elle::String		Extension;
+    static const elle::String           Extension;
 
     //
     // methods
     //
-    elle::Status	Create(const hole::Label&);
+    elle::Status        Create(const hole::Label&);
 
-    elle::Status	Seal(const Authority&);
-    elle::Status	Validate(const Authority&) const;
+    elle::Status        Seal(const Authority&);
+    elle::Status        Validate(const Authority&) const;
 
     //
     // interfaces
@@ -59,23 +59,23 @@ namespace lune
     declare(Passport);
 
     // dumpable
-    elle::Status	Dump(const elle::Natural32 = 0) const;
+    elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // archivable
-    elle::Status	Serialize(elle::Archive&) const;
-    elle::Status	Extract(elle::Archive&);
+    elle::Status        Serialize(elle::Archive&) const;
+    elle::Status        Extract(elle::Archive&);
 
     // fileable
-    elle::Status	Load();
-    elle::Status	Store() const;
-    elle::Status	Erase() const;
-    elle::Status	Exist() const;
+    elle::Status        Load();
+    elle::Status        Store() const;
+    elle::Status        Erase() const;
+    elle::Status        Exist() const;
 
     //
     // attributes
     //
-    hole::Label		label;
-    elle::Signature	signature;
+    hole::Label         label;
+    elle::Signature     signature;
   };
 
 }

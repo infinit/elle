@@ -35,57 +35,57 @@ namespace lune
     //
     // constants
     //
-    static const elle::String			Extension;
+    static const elle::String                   Extension;
 
-    struct					Default
+    struct                                      Default
     {
-      struct					Etoile
+      struct                                    Etoile
       {
-	static const elle::Boolean		Debug;
+        static const elle::Boolean              Debug;
 
-	struct					Gear
-	{
-	  static const elle::Natural32		Containment;
-	};
+        struct                                  Gear
+        {
+          static const elle::Natural32          Containment;
+        };
 
-	struct					Shrub
-	{
-	  static const elle::Boolean		Status;
-	  static const elle::Natural32		Capacity;
-	  static const elle::Natural32		Lifespan;
-	  static const elle::Natural32		Frequency;
-	};
+        struct                                  Shrub
+        {
+          static const elle::Boolean            Status;
+          static const elle::Natural32          Capacity;
+          static const elle::Natural32          Lifespan;
+          static const elle::Natural32          Frequency;
+        };
 
-	struct					History
-	{
-	  static const elle::Boolean		Status;
+        struct                                  History
+        {
+          static const elle::Boolean            Status;
 
-	  struct				Indicator
-	  {
-	    static const elle::Character	Root;
-	    static const elle::Character	Slab;
-	  };
-	};
+          struct                                Indicator
+          {
+            static const elle::Character        Root;
+            static const elle::Character        Slab;
+          };
+        };
       };
 
-      struct					Nucleus
+      struct                                    Nucleus
       {
-	static const elle::Boolean		Debug;
+        static const elle::Boolean              Debug;
       };
 
-      struct					Hole
+      struct                                    Hole
       {
-	static const elle::Boolean		Debug;
+        static const elle::Boolean              Debug;
       };
 
-      struct					Facade
+      struct                                    Facade
       {
-	static const elle::Boolean		Debug;
+        static const elle::Boolean              Debug;
 
 #if defined(INFINIT_UNIX)
-	static const elle::Natural32		FUker;
+        static const elle::Natural32            FUker;
 #elif defined(INFINIT_WIN32)
-	// XXX
+        // XXX
 #else
 # error "unsupported platform"
 #endif
@@ -95,8 +95,8 @@ namespace lune
     //
     // methods
     //
-    elle::Status		Push();
-    elle::Status		Pull();
+    elle::Status                Push();
+    elle::Status                Pull();
 
     //
     // interfaces
@@ -106,68 +106,68 @@ namespace lune
     declare(Configuration);
 
     // dumpable
-    elle::Status		Dump(const elle::Natural32 = 0) const;
+    elle::Status                Dump(const elle::Natural32 = 0) const;
 
     // fileable
-    elle::Status		Load();
-    elle::Status		Store() const;
-    elle::Status		Erase() const;
-    elle::Status		Exist() const;
+    elle::Status                Load();
+    elle::Status                Store() const;
+    elle::Status                Erase() const;
+    elle::Status                Exist() const;
 
     //
     // attributes
     //
     struct
     {
-      elle::Boolean		debug;
+      elle::Boolean             debug;
 
       struct
       {
-	elle::Natural32		containment;
-      }				gear;
+        elle::Natural32         containment;
+      }                         gear;
 
       struct
       {
-	elle::Boolean		status;
-	elle::Natural32		capacity;
-	elle::Natural32		lifespan;
-	elle::Natural32		frequency;
-      }				shrub;
+        elle::Boolean           status;
+        elle::Natural32         capacity;
+        elle::Natural32         lifespan;
+        elle::Natural32         frequency;
+      }                         shrub;
 
       struct
       {
-	elle::Boolean		status;
+        elle::Boolean           status;
 
-	struct
-	{
-	  elle::Character	root;
-	  elle::Character	slab;
-	}			indicator;
-      }				history;
-    }				etoile;
-
-    struct
-    {
-      elle::Boolean		debug;
-    }				nucleus;
+        struct
+        {
+          elle::Character       root;
+          elle::Character       slab;
+        }                       indicator;
+      }                         history;
+    }                           etoile;
 
     struct
     {
-      elle::Boolean		debug;
-    }				hole;
+      elle::Boolean             debug;
+    }                           nucleus;
 
     struct
     {
-      elle::Boolean		debug;
+      elle::Boolean             debug;
+    }                           hole;
+
+    struct
+    {
+      elle::Boolean             debug;
 
 #if defined(INFINIT_UNIX)
-      elle::Natural32		fuker;
+      elle::Natural32           fuker;
 #elif defined(INFINIT_WIN32)
       // XXX
 #else
 # error "unsupported platform"
 #endif
-    }				facade;
+    }                           facade;
   };
 
 }

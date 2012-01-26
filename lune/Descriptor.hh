@@ -42,29 +42,29 @@ namespace lune
     //
     // constants
     //
-    static const elle::String		Extension;
+    static const elle::String           Extension;
 
-    static const elle::Boolean		History;
-    static const elle::Natural32	Extent;
-    static const elle::Real		Contention;
-    static const elle::Real		Balancing;
+    static const elle::Boolean          History;
+    static const elle::Natural32        Extent;
+    static const elle::Real             Contention;
+    static const elle::Real             Balancing;
 
     //
     // methods
     //
-    elle::Status	Create(const elle::String&,
-			       const hole::Model&,
-			       const nucleus::Address&,
-			       const elle::Boolean,
-			       const elle::Natural32,
-			       const elle::Real&,
-			       const elle::Real&);
+    elle::Status        Create(const elle::String&,
+                               const hole::Model&,
+                               const nucleus::Address&,
+                               const elle::Boolean,
+                               const elle::Natural32,
+                               const elle::Real&,
+                               const elle::Real&);
 
-    elle::Status	Seal(const Authority&);
-    elle::Status	Validate(const Authority&) const;
+    elle::Status        Seal(const Authority&);
+    elle::Status        Validate(const Authority&) const;
 
-    elle::Status	Push();
-    elle::Status	Pull();
+    elle::Status        Push();
+    elle::Status        Pull();
 
     //
     // interfaces
@@ -74,25 +74,25 @@ namespace lune
     declare(Descriptor);
 
     // dumpable
-    elle::Status	Dump(const elle::Natural32 = 0) const;
+    elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // fileable
-    elle::Status	Load(const elle::String&);
-    elle::Status	Store(const elle::String&) const;
-    elle::Status	Erase(const elle::String&) const;
-    elle::Status	Exist(const elle::String&) const;
+    elle::Status        Load(const elle::String&);
+    elle::Status        Store(const elle::String&) const;
+    elle::Status        Erase(const elle::String&) const;
+    elle::Status        Exist(const elle::String&) const;
 
     //
     // attributes
     //
-    elle::String	name;
-    hole::Model		model;
-    nucleus::Address	root;
-    elle::Boolean	history;
-    elle::Natural32	extent;
-    elle::Real		contention;
-    elle::Real		balancing;
-    elle::Signature	signature;
+    elle::String        name;
+    hole::Model         model;
+    nucleus::Address    root;
+    elle::Boolean       history;
+    elle::Natural32     extent;
+    elle::Real          contention;
+    elle::Real          balancing;
+    elle::Signature     signature;
   };
 
 }

@@ -25,7 +25,7 @@ namespace lune
   ///
   /// this string defines the phrase files extension.
   ///
-  const elle::String		Phrase::Extension = ".phr";
+  const elle::String            Phrase::Extension = ".phr";
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -34,7 +34,7 @@ namespace lune
   ///
   /// this method creates a phrase.
   ///
-  elle::Status		Phrase::Create(const elle::String&	string)
+  elle::Status          Phrase::Create(const elle::String&      string)
   {
     enter();
 
@@ -51,7 +51,7 @@ namespace lune
   ///
   /// this operator compares two objects.
   ///
-  elle::Boolean		Phrase::operator==(const Phrase&	element) const
+  elle::Boolean         Phrase::operator==(const Phrase&        element) const
   {
     enter();
 
@@ -78,9 +78,9 @@ namespace lune
   ///
   /// this method dumps the object.
   ///
-  elle::Status		Phrase::Dump(const elle::Natural32	margin) const
+  elle::Status          Phrase::Dump(const elle::Natural32      margin) const
   {
-    elle::String	alignment(margin, ' ');
+    elle::String        alignment(margin, ' ');
 
     enter();
 
@@ -96,7 +96,7 @@ namespace lune
   ///
   /// this method serializes the object.
   ///
-  elle::Status		Phrase::Serialize(elle::Archive&	archive) const
+  elle::Status          Phrase::Serialize(elle::Archive&        archive) const
   {
     enter();
 
@@ -110,7 +110,7 @@ namespace lune
   ///
   /// this method extracts the object.
   ///
-  elle::Status		Phrase::Extract(elle::Archive&		archive)
+  elle::Status          Phrase::Extract(elle::Archive&          archive)
   {
     enter();
 
@@ -128,10 +128,10 @@ namespace lune
   ///
   /// this method loads the user's local map.
   ///
-  elle::Status		Phrase::Load(const elle::String&	network)
+  elle::Status          Phrase::Load(const elle::String&        network)
   {
-    elle::Path		path;
-    elle::Region	region;
+    elle::Path          path;
+    elle::Region        region;
 
     enter();
 
@@ -149,9 +149,9 @@ namespace lune
 
     // decode and extract the object.
     if (elle::Hexadecimal::Decode(
-	  elle::String(reinterpret_cast<char*>(region.contents),
-		       region.size),
-	  *this) == elle::StatusError)
+          elle::String(reinterpret_cast<char*>(region.contents),
+                       region.size),
+          *this) == elle::StatusError)
       escape("unable to decode the object");
 
     leave();
@@ -160,11 +160,11 @@ namespace lune
   ///
   /// this method stores the user's local map.
   ///
-  elle::Status		Phrase::Store(const elle::String&	network) const
+  elle::Status          Phrase::Store(const elle::String&       network) const
   {
-    elle::Path		path;
-    elle::Region	region;
-    elle::String	string;
+    elle::Path          path;
+    elle::Region        region;
+    elle::String        string;
 
     enter();
 
@@ -182,7 +182,7 @@ namespace lune
 
     // wrap the string.
     if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
-		    string.length()) == elle::StatusError)
+                    string.length()) == elle::StatusError)
       escape("unable to wrap the string in a region");
 
     // write the file's content.
@@ -195,9 +195,9 @@ namespace lune
   ///
   /// this method erases the phrase.
   ///
-  elle::Status		Phrase::Erase(const elle::String&	network) const
+  elle::Status          Phrase::Erase(const elle::String&       network) const
   {
-    elle::Path		path;
+    elle::Path          path;
 
     enter();
 
@@ -219,9 +219,9 @@ namespace lune
   ///
   /// this method tests the phrase.
   ///
-  elle::Status		Phrase::Exist(const elle::String&	network) const
+  elle::Status          Phrase::Exist(const elle::String&       network) const
   {
-    elle::Path		path;
+    elle::Path          path;
 
     enter();
 

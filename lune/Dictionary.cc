@@ -25,7 +25,7 @@ namespace lune
   ///
   /// this string defines the dictionary files extension.
   ///
-  const elle::String		Dictionary::Extension = ".dic";
+  const elle::String            Dictionary::Extension = ".dic";
 
 //
 // ---------- object ----------------------------------------------------------
@@ -43,9 +43,9 @@ namespace lune
   ///
   /// this method dumps the dictionary.
   ///
-  elle::Status		Dictionary::Dump(const elle::Natural32	margin) const
+  elle::Status          Dictionary::Dump(const elle::Natural32  margin) const
   {
-    elle::String	alignment(margin, ' ');
+    elle::String        alignment(margin, ' ');
 
     enter();
 
@@ -69,7 +69,7 @@ namespace lune
   ///
   /// this method serializes a dictionary.
   ///
-  elle::Status		Dictionary::Serialize(elle::Archive&	archive) const
+  elle::Status          Dictionary::Serialize(elle::Archive&    archive) const
   {
     enter();
 
@@ -83,7 +83,7 @@ namespace lune
   ///
   /// this method extract a public key from the given archive.
   ///
-  elle::Status		Dictionary::Extract(elle::Archive&	archive)
+  elle::Status          Dictionary::Extract(elle::Archive&      archive)
   {
     enter();
 
@@ -101,10 +101,10 @@ namespace lune
   ///
   /// this method loads the current user's local dictionary.
   ///
-  elle::Status		Dictionary::Load()
+  elle::Status          Dictionary::Load()
   {
-    elle::Path		path;
-    elle::Region	region;
+    elle::Path          path;
+    elle::Region        region;
 
     enter();
 
@@ -118,9 +118,9 @@ namespace lune
 
     // decode and extract the object.
     if (elle::Hexadecimal::Decode(
-	  elle::String(reinterpret_cast<char*>(region.contents),
-		       region.size),
-	  *this) == elle::StatusError)
+          elle::String(reinterpret_cast<char*>(region.contents),
+                       region.size),
+          *this) == elle::StatusError)
       escape("unable to decode the object");
 
     leave();
@@ -129,11 +129,11 @@ namespace lune
   ///
   /// this method stores the current user's local dictionary.
   ///
-  elle::Status		Dictionary::Store() const
+  elle::Status          Dictionary::Store() const
   {
-    elle::Path		path;
-    elle::Region	region;
-    elle::String	string;
+    elle::Path          path;
+    elle::Region        region;
+    elle::String        string;
 
     enter();
 
@@ -147,7 +147,7 @@ namespace lune
 
     // wrap the string.
     if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
-		    string.length()) == elle::StatusError)
+                    string.length()) == elle::StatusError)
       escape("unable to wrap the string in a region");
 
     // write the file's content.
@@ -160,9 +160,9 @@ namespace lune
   ///
   /// this method erases the current user's dictionary.
   ///
-  elle::Status		Dictionary::Erase() const
+  elle::Status          Dictionary::Erase() const
   {
-    elle::Path		path;
+    elle::Path          path;
 
     enter();
 
@@ -180,9 +180,9 @@ namespace lune
   ///
   /// this method tests the current user's dictionary.
   ///
-  elle::Status		Dictionary::Exist() const
+  elle::Status          Dictionary::Exist() const
   {
-    elle::Path		path;
+    elle::Path          path;
 
     enter();
 
@@ -200,10 +200,10 @@ namespace lune
   ///
   /// this method loads the user's local dictionary.
   ///
-  elle::Status		Dictionary::Load(const elle::String&	name)
+  elle::Status          Dictionary::Load(const elle::String&    name)
   {
-    elle::Path		path;
-    elle::Region	region;
+    elle::Path          path;
+    elle::Region        region;
 
     enter();
 
@@ -221,9 +221,9 @@ namespace lune
 
     // decode and extract the object.
     if (elle::Hexadecimal::Decode(
-	  elle::String(reinterpret_cast<char*>(region.contents),
-		       region.size),
-	  *this) == elle::StatusError)
+          elle::String(reinterpret_cast<char*>(region.contents),
+                       region.size),
+          *this) == elle::StatusError)
       escape("unable to decode the object");
 
     leave();
@@ -232,11 +232,11 @@ namespace lune
   ///
   /// this method stores the user's local dictionary.
   ///
-  elle::Status		Dictionary::Store(const elle::String&	name) const
+  elle::Status          Dictionary::Store(const elle::String&   name) const
   {
-    elle::Path		path;
-    elle::Region	region;
-    elle::String	string;
+    elle::Path          path;
+    elle::Region        region;
+    elle::String        string;
 
     enter();
 
@@ -254,7 +254,7 @@ namespace lune
 
     // wrap the string.
     if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
-		    string.length()) == elle::StatusError)
+                    string.length()) == elle::StatusError)
       escape("unable to wrap the string in a region");
 
     // write the file's content.
@@ -267,9 +267,9 @@ namespace lune
   ///
   /// this method erases the dictionary.
   ///
-  elle::Status		Dictionary::Erase(const elle::String&	name) const
+  elle::Status          Dictionary::Erase(const elle::String&   name) const
   {
-    elle::Path		path;
+    elle::Path          path;
 
     enter();
 
@@ -291,9 +291,9 @@ namespace lune
   ///
   /// this method tests the dictionary.
   ///
-  elle::Status		Dictionary::Exist(const elle::String&	name) const
+  elle::Status          Dictionary::Exist(const elle::String&   name) const
   {
-    elle::Path		path;
+    elle::Path          path;
 
     enter();
 

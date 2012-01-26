@@ -40,7 +40,7 @@ namespace lune
     //
     // constants
     //
-    static const elle::String		Extension;
+    static const elle::String           Extension;
 
     //
     // interfaces
@@ -50,28 +50,28 @@ namespace lune
     declare(Dictionary);
 
     // dumpable
-    elle::Status	Dump(const elle::Natural32 = 0) const;
+    elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // archivable
-    elle::Status	Serialize(elle::Archive&) const;
-    elle::Status	Extract(elle::Archive&);
+    elle::Status        Serialize(elle::Archive&) const;
+    elle::Status        Extract(elle::Archive&);
 
     // fileable
-    elle::Status	Load();
-    elle::Status	Store() const;
-    elle::Status	Erase() const;
-    elle::Status	Exist() const;
+    elle::Status        Load();
+    elle::Status        Store() const;
+    elle::Status        Erase() const;
+    elle::Status        Exist() const;
 
-    elle::Status	Load(const elle::String&);
-    elle::Status	Store(const elle::String&) const;
-    elle::Status	Erase(const elle::String&) const;
-    elle::Status	Exist(const elle::String&) const;
+    elle::Status        Load(const elle::String&);
+    elle::Status        Store(const elle::String&) const;
+    elle::Status        Erase(const elle::String&) const;
+    elle::Status        Exist(const elle::String&) const;
 
     //
     // attributes
     //
-    Map<elle::PublicKey>	users;
-    Map<nucleus::Address>	groups;
+    Map<elle::PublicKey>        users;
+    Map<nucleus::Address>       groups;
   };
 
 }

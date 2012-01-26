@@ -24,6 +24,6 @@ namespace lune
   ///
   /// this string defines the log files extension.
   ///
-  const elle::String	Log::Extension = ".log";
+  const elle::String    Log::Extension = ".log";
 
 }

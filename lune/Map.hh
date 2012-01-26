@@ -36,10 +36,10 @@ namespace lune
     //
     // constants
     //
-    struct			Trash
+    struct                      Trash
     {
-      static elle::String*	Name;
-      static T*			Value;
+      static elle::String*      Name;
+      static T*                 Value;
     };
 
     //
@@ -50,16 +50,16 @@ namespace lune
       //
       // attributes
       //
-      elle::String	name;
-      T			value;
+      elle::String      name;
+      T                 value;
     };
 
     //
     // types
     //
-    typedef std::list<Entry*>				Container;
-    typedef typename Container::iterator		Iterator;
-    typedef typename Container::const_iterator		Scoutor;
+    typedef std::list<Entry*>                           Container;
+    typedef typename Container::iterator                Iterator;
+    typedef typename Container::const_iterator          Scoutor;
 
     //
     // constructors & destructors
@@ -69,13 +69,13 @@ namespace lune
     //
     // methods
     //
-    elle::Status	Add(const elle::String&,
-			    const T&);
-    elle::Status	Lookup(const elle::String&,
-			       T*& = Trash::Value);
-    elle::Status	Lookup(const T&,
-			       elle::String*& = Trash::Name);
-    elle::Status	Remove(const elle::String&);
+    elle::Status        Add(const elle::String&,
+                            const T&);
+    elle::Status        Lookup(const elle::String&,
+                               T*& = Trash::Value);
+    elle::Status        Lookup(const T&,
+                               elle::String*& = Trash::Name);
+    elle::Status        Remove(const elle::String&);
 
     //
     // interfaces
@@ -85,16 +85,16 @@ namespace lune
     declare(Map);
 
     // dumpable
-    elle::Status	Dump(const elle::Natural32 = 0) const;
+    elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // archivable
-    elle::Status	Serialize(elle::Archive&) const;
-    elle::Status	Extract(elle::Archive&);
+    elle::Status        Serialize(elle::Archive&) const;
+    elle::Status        Extract(elle::Archive&);
 
     //
     // attributes
     //
-    Container		container;
+    Container           container;
   };
 
 }

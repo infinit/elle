@@ -25,19 +25,19 @@ namespace lune
   ///
   /// this string defines the descriptor files extension.
   ///
-  const elle::String		Descriptor::Extension = ".dsc";
+  const elle::String            Descriptor::Extension = ".dsc";
 
   ///
   /// this constant defines whether or not the history functionality
   /// is activated for this network.
   ///
-  const elle::Boolean		Descriptor::History = false;
+  const elle::Boolean           Descriptor::History = false;
 
   ///
   /// this constant defines the size of the blocks stored within this
   /// network.
   ///
-  const elle::Natural32		Descriptor::Extent = 400; // XXX 8192
+  const elle::Natural32         Descriptor::Extent = 400; // XXX 8192
 
   ///
   /// this constant defines how much data must stay in the porcupine
@@ -47,14 +47,14 @@ namespace lune
   /// especially when data is added in a single sequential manner leading
   /// to blocks getting filled and split.
   ///
-  const elle::Real		Descriptor::Contention = 0.5;
+  const elle::Real              Descriptor::Contention = 0.5;
 
   ///
   /// this constant defines the bound which, once reached, implies
   /// that data from a porcupine nodule must be balanced on neighbour nodes,
   /// if possible.
   ///
-  const elle::Real		Descriptor::Balancing = 0.2;
+  const elle::Real              Descriptor::Balancing = 0.2;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -63,13 +63,13 @@ namespace lune
   ///
   /// this method creates a descriptor.
   ///
-  elle::Status		Descriptor::Create(const elle::String&	name,
-					   const hole::Model&	model,
-					   const nucleus::Address& root,
-					   const elle::Boolean	history,
-					   const elle::Natural32 extent,
-					   const elle::Real&	contention,
-					   const elle::Real&	balancing)
+  elle::Status          Descriptor::Create(const elle::String&  name,
+                                           const hole::Model&   model,
+                                           const nucleus::Address& root,
+                                           const elle::Boolean  history,
+                                           const elle::Natural32 extent,
+                                           const elle::Real&    contention,
+                                           const elle::Real&    balancing)
   {
     enter();
 
@@ -88,19 +88,19 @@ namespace lune
   ///
   /// this method seals the descriptor with the authority.
   ///
-  elle::Status		Descriptor::Seal(const Authority&	authority)
+  elle::Status          Descriptor::Seal(const Authority&       authority)
   {
     enter();
 
     // sign the attributesr with the authority.
     if (authority.k->Sign(this->name,
-			  this->model,
-			  this->root,
-			  this->history,
-			  this->extent,
-			  this->contention,
-			  this->balancing,
-			  this->signature) == elle::StatusError)
+                          this->model,
+                          this->root,
+                          this->history,
+                          this->extent,
+                          this->contention,
+                          this->balancing,
+                          this->signature) == elle::StatusError)
       escape("unable to sign the attributes with the authority");
 
     leave();
@@ -109,20 +109,20 @@ namespace lune
   ///
   /// this method verifies the validity of the descriptor.
   ///
-  elle::Status		Descriptor::Validate(const Authority&	authority)
+  elle::Status          Descriptor::Validate(const Authority&   authority)
     const
   {
     enter();
 
     // verify the signature.
     if (authority.K.Verify(this->signature,
-			   this->name,
-			   this->model,
-			   this->root,
-			   this->history,
-			   this->extent,
-			   this->contention,
-			   this->balancing) == elle::StatusError)
+                           this->name,
+                           this->model,
+                           this->root,
+                           this->history,
+                           this->extent,
+                           this->contention,
+                           this->balancing) == elle::StatusError)
       escape("unable to verify the signature");
 
     leave();
@@ -132,7 +132,7 @@ namespace lune
   /// this method synchronises the in-memory descriptor so as to
   /// be stored.
   ///
-  elle::Status		Descriptor::Push()
+  elle::Status          Descriptor::Push()
   {
     enter();
 
@@ -141,43 +141,43 @@ namespace lune
     //
 
     if (elle::Settings::Set(
-	  "general", "name",
-	  this->name) == elle::StatusError)
+          "general", "name",
+          this->name) == elle::StatusError)
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
-	  "general", "model",
-	  this->model) == elle::StatusError)
+          "general", "model",
+          this->model) == elle::StatusError)
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
-	  "general", "root",
-	  this->root) == elle::StatusError)
+          "general", "root",
+          this->root) == elle::StatusError)
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
-	  "general", "history",
-	  this->history) == elle::StatusError)
+          "general", "history",
+          this->history) == elle::StatusError)
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
-	  "general", "extent",
-	  this->extent) == elle::StatusError)
+          "general", "extent",
+          this->extent) == elle::StatusError)
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
-	  "general", "contention",
-	  this->contention) == elle::StatusError)
+          "general", "contention",
+          this->contention) == elle::StatusError)
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
-	  "general", "balancing",
-	  this->balancing) == elle::StatusError)
+          "general", "balancing",
+          this->balancing) == elle::StatusError)
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
-	  "general", "signature",
-	  this->signature) == elle::StatusError)
+          "general", "signature",
+          this->signature) == elle::StatusError)
       escape("unable to update the parameter");
 
     leave();
@@ -187,7 +187,7 @@ namespace lune
   /// this method updates the in-memory parameters according to the
   /// associated settings.
   ///
-  elle::Status		Descriptor::Pull()
+  elle::Status          Descriptor::Pull()
   {
     enter();
 
@@ -196,43 +196,43 @@ namespace lune
     //
 
     if (elle::Settings::Get(
-	  "general", "name",
-	  this->name) == elle::StatusError)
+          "general", "name",
+          this->name) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
-	  "general", "model",
-	  this->model) == elle::StatusError)
+          "general", "model",
+          this->model) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
-	  "general", "root",
-	  this->root) == elle::StatusError)
+          "general", "root",
+          this->root) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
-	  "general", "history",
-	  this->history) == elle::StatusError)
+          "general", "history",
+          this->history) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
-	  "general", "extent",
-	  this->extent) == elle::StatusError)
+          "general", "extent",
+          this->extent) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
-	  "general", "contention",
-	  this->contention) == elle::StatusError)
+          "general", "contention",
+          this->contention) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
-	  "general", "balancing",
-	  this->balancing) == elle::StatusError)
+          "general", "balancing",
+          this->balancing) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
-	  "general", "signature",
-	  this->signature) == elle::StatusError)
+          "general", "signature",
+          this->signature) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     leave();
@@ -257,9 +257,9 @@ namespace lune
   /// note that this method may actually not dump the current values of
   /// the parameters.
   ///
-  elle::Status		Descriptor::Dump(const elle::Natural32	margin) const
+  elle::Status          Descriptor::Dump(const elle::Natural32  margin) const
   {
-    elle::String	alignment(margin, ' ');
+    elle::String        alignment(margin, ' ');
 
     enter();
 
@@ -279,9 +279,9 @@ namespace lune
   ///
   /// this method loads a descriptor.
   ///
-  elle::Status		Descriptor::Load(const elle::String&	name)
+  elle::Status          Descriptor::Load(const elle::String&    name)
   {
-    elle::Path		path;
+    elle::Path          path;
 
     enter();
 
@@ -303,9 +303,9 @@ namespace lune
   ///
   /// this method stores a descriptor.
   ///
-  elle::Status		Descriptor::Store(const elle::String&	name) const
+  elle::Status          Descriptor::Store(const elle::String&   name) const
   {
-    elle::Path		path;
+    elle::Path          path;
 
     enter();
 
@@ -327,9 +327,9 @@ namespace lune
   ///
   /// this method erases the descriptor.
   ///
-  elle::Status		Descriptor::Erase(const elle::String&	name) const
+  elle::Status          Descriptor::Erase(const elle::String&   name) const
   {
-    elle::Path		path;
+    elle::Path          path;
 
     enter();
 
@@ -351,9 +351,9 @@ namespace lune
   ///
   /// this method tests the descriptor.
   ///
-  elle::Status		Descriptor::Exist(const elle::String&	name) const
+  elle::Status          Descriptor::Exist(const elle::String&   name) const
   {
-    elle::Path		path;
+    elle::Path          path;
 
     enter();
 

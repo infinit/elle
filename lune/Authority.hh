@@ -40,16 +40,16 @@ namespace lune
     //
     // constants
     //
-    static const elle::String		Extension;
+    static const elle::String           Extension;
 
     //
     // enumerations
     //
     enum Type
       {
-	TypeUnknown,
-	TypePair,
-	TypePublic
+        TypeUnknown,
+        TypePair,
+        TypePublic
       };
 
     //
@@ -61,11 +61,11 @@ namespace lune
     //
     // methods
     //
-    elle::Status	Create(const elle::KeyPair&);
-    elle::Status	Create(const elle::PublicKey&);
+    elle::Status        Create(const elle::KeyPair&);
+    elle::Status        Create(const elle::PublicKey&);
 
-    elle::Status	Encrypt(const elle::String&);
-    elle::Status	Decrypt(const elle::String&);
+    elle::Status        Encrypt(const elle::String&);
+    elle::Status        Decrypt(const elle::String&);
 
     //
     // interfaces
@@ -75,27 +75,27 @@ namespace lune
     declare(Authority);
 
     // dumpable
-    elle::Status	Dump(const elle::Natural32 = 0) const;
+    elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // archivable
-    elle::Status	Serialize(elle::Archive&) const;
-    elle::Status	Extract(elle::Archive&);
+    elle::Status        Serialize(elle::Archive&) const;
+    elle::Status        Extract(elle::Archive&);
 
     // fileable
-    elle::Status	Load();
-    elle::Status	Store() const;
-    elle::Status	Erase() const;
-    elle::Status	Exist() const;
+    elle::Status        Load();
+    elle::Status        Store() const;
+    elle::Status        Erase() const;
+    elle::Status        Exist() const;
 
     //
     // attributes
     //
-    Type		type;
+    Type                type;
 
-    elle::PublicKey	K;
-    elle::PrivateKey*	k;
+    elle::PublicKey     K;
+    elle::PrivateKey*   k;
 
-    elle::Cipher*	cipher;
+    elle::Cipher*       cipher;
   };
 
 }

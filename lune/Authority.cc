@@ -25,7 +25,7 @@ namespace lune
   ///
   /// this string defines the authority files extension.
   ///
-  const elle::String		Authority::Extension = ".auth";
+  const elle::String            Authority::Extension = ".auth";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -61,7 +61,7 @@ namespace lune
   ///
   /// this method creates an authority based on the given key pair.
   ///
-  elle::Status		Authority::Create(const elle::KeyPair&	pair)
+  elle::Status          Authority::Create(const elle::KeyPair&  pair)
   {
     enter();
 
@@ -80,7 +80,7 @@ namespace lune
   ///
   /// this method creates an authority based on the given public key only.
   ///
-  elle::Status		Authority::Create(const elle::PublicKey&	K)
+  elle::Status          Authority::Create(const elle::PublicKey&        K)
   {
     enter();
 
@@ -96,9 +96,9 @@ namespace lune
   ///
   /// this method encrypts the keys.
   ///
-  elle::Status		Authority::Encrypt(const elle::String&		pass)
+  elle::Status          Authority::Encrypt(const elle::String&          pass)
   {
-    elle::SecretKey	key;
+    elle::SecretKey     key;
 
     enter();
 
@@ -113,28 +113,28 @@ namespace lune
     switch (this->type)
       {
       case Authority::TypePair:
-	{
-	  // encrypt the authority.
-	  if (key.Encrypt(this->K, *this->k,
-			  *this->cipher) == elle::StatusError)
-	    escape("unable to encrypt the authority");
+        {
+          // encrypt the authority.
+          if (key.Encrypt(this->K, *this->k,
+                          *this->cipher) == elle::StatusError)
+            escape("unable to encrypt the authority");
 
-	  break;
-	}
+          break;
+        }
       case Authority::TypePublic:
-	{
-	  // encrypt the authority.
-	  if (key.Encrypt(this->K,
-			  *this->cipher) == elle::StatusError)
-	    escape("unable to encrypt the authority");
+        {
+          // encrypt the authority.
+          if (key.Encrypt(this->K,
+                          *this->cipher) == elle::StatusError)
+            escape("unable to encrypt the authority");
 
-	  break;
-	}
+          break;
+        }
       case Authority::TypeUnknown:
       default:
-	{
-	  escape("unknown type");
-	}
+        {
+          escape("unknown type");
+        }
       }
 
     leave();
@@ -143,9 +143,9 @@ namespace lune
   ///
   /// this method decrypts the keys.
   ///
-  elle::Status		Authority::Decrypt(const elle::String&		pass)
+  elle::Status          Authority::Decrypt(const elle::String&          pass)
   {
-    elle::SecretKey	key;
+    elle::SecretKey     key;
 
     enter();
 
@@ -161,31 +161,31 @@ namespace lune
     switch (this->type)
       {
       case Authority::TypePair:
-	{
-	  // allocate the private key.
-	  this->k = new elle::PrivateKey;
+        {
+          // allocate the private key.
+          this->k = new elle::PrivateKey;
 
-	  // decrypt the authority.
-	  if (key.Decrypt(*this->cipher,
-			  this->K, *this->k) == elle::StatusError)
-	    escape("unable to decrypt the authority");
+          // decrypt the authority.
+          if (key.Decrypt(*this->cipher,
+                          this->K, *this->k) == elle::StatusError)
+            escape("unable to decrypt the authority");
 
-	  break;
-	}
+          break;
+        }
       case Authority::TypePublic:
-	{
-	  // decrypt the authority.
-	  if (key.Decrypt(*this->cipher,
-			  this->K) == elle::StatusError)
-	    escape("unable to decrypt the authority");
+        {
+          // decrypt the authority.
+          if (key.Decrypt(*this->cipher,
+                          this->K) == elle::StatusError)
+            escape("unable to decrypt the authority");
 
-	  break;
-	}
+          break;
+        }
       case Authority::TypeUnknown:
       default:
-	{
-	  escape("unknown type");
-	}
+        {
+          escape("unknown type");
+        }
       }
 
     leave();
@@ -207,10 +207,10 @@ namespace lune
   ///
   /// this method dumps a authority.
   ///
-  elle::Status		Authority::Dump(const elle::Natural32	margin) const
+  elle::Status          Authority::Dump(const elle::Natural32   margin) const
   {
-    elle::String	alignment(margin, ' ');
-    elle::String	unique;
+    elle::String        alignment(margin, ' ');
+    elle::String        unique;
 
     enter();
 
@@ -218,7 +218,7 @@ namespace lune
 
     // dump the type.
     std::cout << alignment << elle::Dumpable::Shift
-	      << "[Type] " << this->type << std::endl;
+              << "[Type] " << this->type << std::endl;
 
     // dump the public key.
     if (this->K.Dump(margin + 2) == elle::StatusError)
@@ -227,16 +227,16 @@ namespace lune
     // if present...
     if (this->k != NULL)
       {
-	// ...dump the private key.
-	if (this->k->Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the private key");
+        // ...dump the private key.
+        if (this->k->Dump(margin + 2) == elle::StatusError)
+          escape("unable to dump the private key");
       }
 
     // dump the cipher.
     if (this->cipher != NULL)
       {
-	if (this->cipher->Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the cipher");
+        if (this->cipher->Dump(margin + 2) == elle::StatusError)
+          escape("unable to dump the cipher");
       }
 
     leave();
@@ -249,7 +249,7 @@ namespace lune
   ///
   /// this method serializes the object.
   ///
-  elle::Status		Authority::Serialize(elle::Archive&	archive) const
+  elle::Status          Authority::Serialize(elle::Archive&     archive) const
   {
     enter();
 
@@ -259,7 +259,7 @@ namespace lune
 
     // serialize the type and cipher.
     if (archive.Serialize(static_cast<elle::Natural8>(this->type),
-			  *this->cipher) == elle::StatusError)
+                          *this->cipher) == elle::StatusError)
       escape("unable to serialize the attributes");
 
     leave();
@@ -268,9 +268,9 @@ namespace lune
   ///
   /// this method extracts the object.
   ///
-  elle::Status		Authority::Extract(elle::Archive&	archive)
+  elle::Status          Authority::Extract(elle::Archive&       archive)
   {
-    elle::Natural8	type;
+    elle::Natural8      type;
 
     enter();
 
@@ -294,10 +294,10 @@ namespace lune
   ///
   /// this method loads the system's authority file.
   ///
-  elle::Status		Authority::Load()
+  elle::Status          Authority::Load()
   {
-    elle::Path		path;
-    elle::Region	region;
+    elle::Path          path;
+    elle::Region        region;
 
     enter();
 
@@ -311,9 +311,9 @@ namespace lune
 
     // decode and extract the object.
     if (elle::Hexadecimal::Decode(
-	  elle::String(reinterpret_cast<char*>(region.contents),
-		       region.size),
-	  *this) == elle::StatusError)
+          elle::String(reinterpret_cast<char*>(region.contents),
+                       region.size),
+          *this) == elle::StatusError)
       escape("unable to decode the object");
 
     leave();
@@ -322,11 +322,11 @@ namespace lune
   ///
   /// this method stores the authority.
   ///
-  elle::Status		Authority::Store() const
+  elle::Status          Authority::Store() const
   {
-    elle::Path		path;
-    elle::Region	region;
-    elle::String	string;
+    elle::Path          path;
+    elle::Region        region;
+    elle::String        string;
 
     enter();
 
@@ -340,7 +340,7 @@ namespace lune
 
     // wrap the string.
     if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
-		    string.length()) == elle::StatusError)
+                    string.length()) == elle::StatusError)
       escape("unable to wrap the string in a region");
 
     // write the file's content.
@@ -353,9 +353,9 @@ namespace lune
   ///
   /// this method erases the authority.
   ///
-  elle::Status		Authority::Erase() const
+  elle::Status          Authority::Erase() const
   {
-    elle::Path		path;
+    elle::Path          path;
 
     enter();
 
@@ -373,9 +373,9 @@ namespace lune
   ///
   /// this method tests the authority.
   ///
-  elle::Status		Authority::Exist() const
+  elle::Status          Authority::Exist() const
   {
-    elle::Path		path;
+    elle::Path          path;
 
     enter();
 

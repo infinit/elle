@@ -25,7 +25,7 @@ namespace lune
   ///
   /// this string defines the identity files extension.
   ///
-  const elle::String		Identity::Extension = ".idy";
+  const elle::String            Identity::Extension = ".idy";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -56,8 +56,8 @@ namespace lune
   ///
   /// this method creates an identity based on the given key pair.
   ///
-  elle::Status		Identity::Create(const elle::String&	name,
-					 const elle::KeyPair&	pair)
+  elle::Status          Identity::Create(const elle::String&    name,
+                                         const elle::KeyPair&   pair)
   {
     enter();
 
@@ -73,9 +73,9 @@ namespace lune
   ///
   /// this method encrypts the key pair.
   ///
-  elle::Status		Identity::Encrypt(const elle::String&	pass)
+  elle::Status          Identity::Encrypt(const elle::String&   pass)
   {
-    elle::SecretKey	key;
+    elle::SecretKey     key;
 
     enter();
 
@@ -88,7 +88,7 @@ namespace lune
 
     // encrypt the authority.
     if (key.Encrypt(this->pair,
-		    *this->cipher) == elle::StatusError)
+                    *this->cipher) == elle::StatusError)
       escape("unable to encrypt the key pair");
 
     leave();
@@ -97,9 +97,9 @@ namespace lune
   ///
   /// this method decrypts the key pair.
   ///
-  elle::Status		Identity::Decrypt(const elle::String&	pass)
+  elle::Status          Identity::Decrypt(const elle::String&   pass)
   {
-    elle::SecretKey	key;
+    elle::SecretKey     key;
 
     enter();
 
@@ -113,7 +113,7 @@ namespace lune
 
     // decrypt the authority.
     if (key.Decrypt(*this->cipher,
-		    this->pair) == elle::StatusError)
+                    this->pair) == elle::StatusError)
       escape("unable to decrypt the key pair");
 
     leave();
@@ -122,7 +122,7 @@ namespace lune
   ///
   /// this method seals the identity with the authority.
   ///
-  elle::Status		Identity::Seal(const Authority&		authority)
+  elle::Status          Identity::Seal(const Authority&         authority)
   {
     enter();
 
@@ -132,7 +132,7 @@ namespace lune
 
     // sign the pair with the authority.
     if (authority.k->Sign(this->name, *this->cipher,
-			  this->signature) == elle::StatusError)
+                          this->signature) == elle::StatusError)
       escape("unable to sign the pair with the authority");
 
     leave();
@@ -141,7 +141,7 @@ namespace lune
   ///
   /// this method verifies the validity of the identity.
   ///
-  elle::Status		Identity::Validate(const Authority&	authority)
+  elle::Status          Identity::Validate(const Authority&     authority)
     const
   {
     enter();
@@ -152,7 +152,7 @@ namespace lune
 
     // verify the signature.
     if (authority.K.Verify(this->signature,
-			   this->name, *this->cipher) == elle::StatusError)
+                           this->name, *this->cipher) == elle::StatusError)
       escape("unable to verify the signature");
 
     leave();
@@ -174,9 +174,9 @@ namespace lune
   ///
   /// this method dumps a identity.
   ///
-  elle::Status		Identity::Dump(const elle::Natural32	margin) const
+  elle::Status          Identity::Dump(const elle::Natural32    margin) const
   {
-    elle::String	alignment(margin, ' ');
+    elle::String        alignment(margin, ' ');
 
     enter();
 
@@ -184,7 +184,7 @@ namespace lune
 
     // dump the name.
     std::cout << alignment << elle::Dumpable::Shift
-	      << "[Name] " << this->name << std::endl;
+              << "[Name] " << this->name << std::endl;
 
     // dump the pair.
     if (this->pair.Dump(margin + 2) == elle::StatusError)
@@ -197,8 +197,8 @@ namespace lune
     // dump the cipher.
     if (this->cipher != NULL)
       {
-	if (this->cipher->Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the cipher");
+        if (this->cipher->Dump(margin + 2) == elle::StatusError)
+          escape("unable to dump the cipher");
       }
 
     leave();
@@ -211,7 +211,7 @@ namespace lune
   ///
   /// this method serializes the object.
   ///
-  elle::Status		Identity::Serialize(elle::Archive&	archive) const
+  elle::Status          Identity::Serialize(elle::Archive&      archive) const
   {
     enter();
 
@@ -221,8 +221,8 @@ namespace lune
 
     // serialize the attributes.
     if (archive.Serialize(this->name,
-			  *this->cipher,
-			  this->signature) == elle::StatusError)
+                          *this->cipher,
+                          this->signature) == elle::StatusError)
       escape("unable to serialize the attributes");
 
     leave();
@@ -231,7 +231,7 @@ namespace lune
   ///
   /// this method extracts the object.
   ///
-  elle::Status		Identity::Extract(elle::Archive&	archive)
+  elle::Status          Identity::Extract(elle::Archive&        archive)
   {
     enter();
 
@@ -240,8 +240,8 @@ namespace lune
 
     // extract the attributes.
     if (archive.Extract(this->name,
-			*this->cipher,
-			this->signature) == elle::StatusError)
+                        *this->cipher,
+                        this->signature) == elle::StatusError)
       escape("unable to extract the attributes");
 
     leave();
@@ -254,10 +254,10 @@ namespace lune
   ///
   /// this method loads the current user's identity file.
   ///
-  elle::Status		Identity::Load()
+  elle::Status          Identity::Load()
   {
-    elle::Path		path;
-    elle::Region	region;
+    elle::Path          path;
+    elle::Region        region;
 
     enter();
 
@@ -271,9 +271,9 @@ namespace lune
 
     // decode and extract the object.
     if (elle::Hexadecimal::Decode(
-	  elle::String(reinterpret_cast<char*>(region.contents),
-		       region.size),
-	  *this) == elle::StatusError)
+          elle::String(reinterpret_cast<char*>(region.contents),
+                       region.size),
+          *this) == elle::StatusError)
       escape("unable to decode the object");
 
     leave();
@@ -282,11 +282,11 @@ namespace lune
   ///
   /// this method stores the current user's identity.
   ///
-  elle::Status		Identity::Store() const
+  elle::Status          Identity::Store() const
   {
-    elle::Path		path;
-    elle::Region	region;
-    elle::String	string;
+    elle::Path          path;
+    elle::Region        region;
+    elle::String        string;
 
     enter();
 
@@ -300,7 +300,7 @@ namespace lune
 
     // wrap the string.
     if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
-		    string.length()) == elle::StatusError)
+                    string.length()) == elle::StatusError)
       escape("unable to wrap the string in a region");
 
     // write the file's content.
@@ -313,9 +313,9 @@ namespace lune
   ///
   /// this method erases the current user's identity.
   ///
-  elle::Status		Identity::Erase() const
+  elle::Status          Identity::Erase() const
   {
-    elle::Path		path;
+    elle::Path          path;
 
     enter();
 
@@ -333,9 +333,9 @@ namespace lune
   ///
   /// this method tests the current user's identity.
   ///
-  elle::Status		Identity::Exist() const
+  elle::Status          Identity::Exist() const
   {
-    elle::Path		path;
+    elle::Path          path;
 
     enter();
 
@@ -353,10 +353,10 @@ namespace lune
   ///
   /// this method loads a user's identity file.
   ///
-  elle::Status		Identity::Load(const elle::String&	name)
+  elle::Status          Identity::Load(const elle::String&      name)
   {
-    elle::Path		path;
-    elle::Region	region;
+    elle::Path          path;
+    elle::Region        region;
 
     enter();
 
@@ -374,9 +374,9 @@ namespace lune
 
     // decode and extract the object.
     if (elle::Hexadecimal::Decode(
-	  elle::String(reinterpret_cast<char*>(region.contents),
-		       region.size),
-	  *this) == elle::StatusError)
+          elle::String(reinterpret_cast<char*>(region.contents),
+                       region.size),
+          *this) == elle::StatusError)
       escape("unable to decode the object");
 
     leave();
@@ -385,11 +385,11 @@ namespace lune
   ///
   /// this method stores a user's identity.
   ///
-  elle::Status		Identity::Store(const elle::String&	name) const
+  elle::Status          Identity::Store(const elle::String&     name) const
   {
-    elle::Path		path;
-    elle::Region	region;
-    elle::String	string;
+    elle::Path          path;
+    elle::Region        region;
+    elle::String        string;
 
     enter();
 
@@ -407,7 +407,7 @@ namespace lune
 
     // wrap the string.
     if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
-		    string.length()) == elle::StatusError)
+                    string.length()) == elle::StatusError)
       escape("unable to wrap the string in a region");
 
     // write the file's content.
@@ -420,9 +420,9 @@ namespace lune
   ///
   /// this method erases a user's identity.
   ///
-  elle::Status		Identity::Erase(const elle::String&	name) const
+  elle::Status          Identity::Erase(const elle::String&     name) const
   {
-    elle::Path		path;
+    elle::Path          path;
 
     enter();
 
@@ -444,9 +444,9 @@ namespace lune
   ///
   /// this method tests the identity.
   ///
-  elle::Status		Identity::Exist(const elle::String&	name) const
+  elle::Status          Identity::Exist(const elle::String&     name) const
   {
-    elle::Path		path;
+    elle::Path          path;
 
     enter();
 

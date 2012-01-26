@@ -41,7 +41,7 @@ namespace lune
     //
     // constants
     //
-    static const elle::String		Extension;
+    static const elle::String           Extension;
 
     //
     // constructors & destructors
@@ -52,14 +52,14 @@ namespace lune
     //
     // methods
     //
-    elle::Status	Create(const elle::String&,
-			       const elle::KeyPair&);
+    elle::Status        Create(const elle::String&,
+                               const elle::KeyPair&);
 
-    elle::Status	Encrypt(const elle::String&);
-    elle::Status	Decrypt(const elle::String&);
+    elle::Status        Encrypt(const elle::String&);
+    elle::Status        Decrypt(const elle::String&);
 
-    elle::Status	Seal(const Authority&);
-    elle::Status	Validate(const Authority&) const;
+    elle::Status        Seal(const Authority&);
+    elle::Status        Validate(const Authority&) const;
 
     //
     // interfaces
@@ -69,31 +69,31 @@ namespace lune
     declare(Identity);
 
     // dumpable
-    elle::Status	Dump(const elle::Natural32 = 0) const;
+    elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // archivable
-    elle::Status	Serialize(elle::Archive&) const;
-    elle::Status	Extract(elle::Archive&);
+    elle::Status        Serialize(elle::Archive&) const;
+    elle::Status        Extract(elle::Archive&);
 
     // fileable
-    elle::Status	Load();
-    elle::Status	Store() const;
-    elle::Status	Erase() const;
-    elle::Status	Exist() const;
+    elle::Status        Load();
+    elle::Status        Store() const;
+    elle::Status        Erase() const;
+    elle::Status        Exist() const;
 
-    elle::Status	Load(const elle::String&);
-    elle::Status	Store(const elle::String&) const;
-    elle::Status	Erase(const elle::String&) const;
-    elle::Status	Exist(const elle::String&) const;
+    elle::Status        Load(const elle::String&);
+    elle::Status        Store(const elle::String&) const;
+    elle::Status        Erase(const elle::String&) const;
+    elle::Status        Exist(const elle::String&) const;
 
     //
     // attributes
     //
-    elle::String	name;
-    elle::KeyPair	pair;
-    elle::Signature	signature;
+    elle::String        name;
+    elle::KeyPair       pair;
+    elle::Signature     signature;
 
-    elle::Cipher*	cipher;
+    elle::Cipher*       cipher;
   };
 
 }

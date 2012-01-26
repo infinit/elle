@@ -34,7 +34,7 @@ namespace lune
     //
     // constants
     //
-    static const elle::String		Extension;
+    static const elle::String           Extension;
   };
 
 }
