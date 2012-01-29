@@ -77,15 +77,13 @@ namespace package
     ///
     /// description of the method.
     ///
-    template <typename T>
-    Status              CodingStandard::Method3(const Natural32 n,
-                                                T&              object)
+    Status              CodingStandard::Method4(const String&   attribute2)
     {
       enter();
 
-      // do something.
-      if (object.Compute(n) == StatusError)
-        escape("unable to do something");
+      // set the attribute: note that *this* is always used to refer
+      // the attributes.
+      this->attribute2 = attribute2;
 
       leave();
     }

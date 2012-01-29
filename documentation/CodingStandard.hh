@@ -86,7 +86,7 @@ namespace package
       Status            Method3(const Natural32,
                                 T&);
     private:
-      Status            Method4();
+      Status            Method4(const String&);
 
       //
       // attributes
