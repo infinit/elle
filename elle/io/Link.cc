@@ -31,7 +31,7 @@
 # include <fcntl.h>
 # include <libgen.h>
 # include <string.h>
-# if defined(INFINIT_WIN32)
+# if defined(INFINIT_WINDOWS)
 #  include <windows.h>
 #  include <QFile>
 # endif
@@ -70,7 +70,7 @@ namespace elle
       if (::symlink(target.string.c_str(), link.string.c_str()))
         escape("symlink failed: %s -> %s: %s", link.string.c_str(),
                target.string.c_str(), ::strerror(errno));
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
       if (!QFile::link(QString::fromStdString(link.string),
                        QString::fromStdString(target.string)))
         escape("symlink failed: %s -> %s", link.string.c_str(),
@@ -116,7 +116,7 @@ namespace elle
       // does the path points to a regular file.
       if (!S_ISLNK(stat.st_mode))
         false();
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
       // does the path points to something.
       if (::stat(path.string.c_str(), &stat) != 0)
         false();

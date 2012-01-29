@@ -87,7 +87,7 @@ namespace elle
       ::signal(SIGQUIT, &Program::Exception);
       ::signal(SIGABRT, &Program::Exception);
       ::signal(SIGTERM, &Program::Exception);
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
       // XXX to implement
 #else
 # error "unsupported platform"
@@ -190,7 +190,7 @@ namespace elle
 
       leave();
     }
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
     // nothing
 #else
 # error "unsupported platform"

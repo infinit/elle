@@ -29,7 +29,7 @@
 # include <QObject>
 # if defined(INFINIT_UNIX)
 #  include <QSocketNotifier>
-# elif defined(INFINIT_WIN32)
+# elif defined(INFINIT_WINDOWS)
 #  include <private/qwineventnotifier_p.h>
 # endif
 #include <elle/idiom/Open.hh>
@@ -64,7 +64,7 @@ namespace elle
       //
 #if defined(INFINIT_UNIX)
       Broker(const Natural16);
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
       Broker(HANDLE);
 #else
 # error "unsupported platform"
@@ -87,7 +87,7 @@ namespace elle
 #if defined(INFINIT_UNIX)
       Natural16                 descriptor;
       ::QSocketNotifier         notifier;
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
       ::QWinEventNotifier       notifier;
 #else
 # error "unsupported platform"
@@ -102,7 +102,7 @@ namespace elle
           Parameters<
 #if defined(INFINIT_UNIX)
             Natural16
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
             HANDLE
 #else
 # error "unsupported platform"

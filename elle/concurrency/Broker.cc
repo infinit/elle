@@ -36,7 +36,7 @@ namespace elle
       notifier(descriptor, ::QSocketNotifier::Read)
     {
     }
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
     ///
     /// default constructor.
     ///
@@ -64,7 +64,7 @@ namespace elle
       if (this->connect(&this->notifier, SIGNAL(activated(int)),
                         this, SLOT(_trigger())) == false)
         escape("unable to connect the signal");
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
       // connect the QT signals.
       if (this->connect(&this->notifier, SIGNAL(activated(HANDLE)),
                         this, SLOT(_trigger())) == false)
@@ -88,7 +88,7 @@ namespace elle
       if (this->disconnect(&this->notifier, SIGNAL(activated(int)),
                            this, SLOT(_trigger())) == false)
         escape("unable to disconnect from the signal");
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
       // disconnect the QT signals.
       if (this->disconnect(&this->notifier, SIGNAL(activated(HANDLE)),
                            this, SLOT(_trigger())) == false)
@@ -116,7 +116,7 @@ namespace elle
       // emit the signal.
       if (this->signal.ready.Emit(this->descriptor) == StatusError)
         escape("unable to emit the signal");
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
       // emit the signal.
       if (this->signal.ready.Emit(this->notifier.handle()) == StatusError)
         escape("unable to emit the signal");

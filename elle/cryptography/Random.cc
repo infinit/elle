@@ -26,7 +26,7 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <fcntl.h>
-# if defined(INFINIT_WIN32)
+# if defined(INFINIT_WINDOWS)
 #  include <process.h>
 #  include <windows.h>
 #  include <wincrypt.h>
@@ -73,7 +73,7 @@ namespace elle
         // close the file descriptor.
         ::close(fd);
       }
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
       {
         HCRYPTPROV        h_provider = 0;
 

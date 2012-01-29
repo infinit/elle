@@ -20,7 +20,7 @@
 #include <elle/system/Platform.hh>
 #if defined(INFINIT_UNIX)
 # include <ucontext.h>
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
 # include <elle/thirdparty/ucontext-win32.hh>
 #endif
 
