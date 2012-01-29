@@ -37,10 +37,8 @@ ADD_LIBRARY(hole
 
 TARGET_LINK_LIBRARIES(hole elle)
 
-ADD_EXECUTABLE(Hole
+ADD_EXECUTABLE(8hole
   _hole.cc
 )
 
-TARGET_LINK_LIBRARIES(Hole infinit nucleus lune hole
-		           ${QT_QTNETWORK_LIBRARIES}
-			   ${QT_QTCORE_LIBRARIES})
+TARGET_LINK_LIBRARIES(Hole infinit nucleus lune hole)
