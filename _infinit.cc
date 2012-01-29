@@ -114,7 +114,7 @@ elle::Status            Main(elle::Natural32                    argc,
     // assign the username.
     Infinit::User.assign(pw->pw_name);
   }
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
   {
     char                username[1024];
     DWORD               length = sizeof (username);
@@ -166,7 +166,7 @@ elle::Status            Main(elle::Natural32                    argc,
   // initialize the facade.
   if (facade::Facade::Initialize() == elle::StatusError)
     escape("unable to initialize the facade");
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
   // XXX todo: windows
 #else
 # error "unsupported platform"
@@ -186,7 +186,7 @@ elle::Status            Main(elle::Natural32                    argc,
   // clean the facade.
   if (facade::Facade::Clean() == elle::StatusError)
     escape("unable to clean the facade");
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
   // XXX todo: windows
 #else
 # error "unsupported platform"
