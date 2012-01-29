@@ -9,7 +9,7 @@
 //
 
 #ifndef ELLE_SYSTEM_PLATFORM_HH
-# define ELLE_SYSTEM_PLATEFORM_HH
+#define ELLE_SYSTEM_PLATEFORM_HH
 
 namespace elle
 {
@@ -23,18 +23,29 @@ namespace elle
 ///
 /// windows-specific
 ///
-# if defined(__WIN32__)
-#  define INFINIT_WIN32
-# endif
+# if defined(_WIN32) || defined(_WIN64)
+#  define INFINIT_WINDOWS
 
 ///
 /// unix-specific
 ///
 /// note that the _unix_ macro is undefined since generating conflicts.
 ///
-# if defined(__unix__)
+# elif defined(__linux) || defined(__unix)
 #  undef unix
 #  define INFINIT_UNIX
+
+///
+/// macos-specific
+///
+# elif defined(__APPLE__) && defined(__MACH__)
+#  define INFINIT_MACOSX
+
+///
+/// unknown platform
+///
+# else
+# error "unknown platform"
 # endif
 
   }

@@ -73,7 +73,7 @@ namespace elle
 #if defined(INFINIT_UNIX)
       if (::mkdir(path.string.c_str(), 0700) != 0)
         escape(::strerror(errno));
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
       if (::mkdir(path.string.c_str()) != 0)
         escape("unable to create %s: %s",
                path.string.c_str(), ::strerror(errno));
@@ -211,7 +211,7 @@ namespace elle
           // stat the entry as entry->d_type is not standard
 #if defined(INFINIT_UNIX)
           if (::lstat(target.string.c_str(), &stat) == -1)
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
           if (::stat(target.string.c_str(), &stat) == -1)
 #else
 # error "unsupported platform"

@@ -31,7 +31,7 @@
 # include <QDateTime>
 # include <ctime>
 
-# if defined(INFINIT_WIN32)
+# if defined(INFINIT_WINDOWS)
 #  include <windows.h>
 # endif
 
@@ -74,7 +74,7 @@ namespace elle
       Status            Get(::QDateTime&) const;
       Status            Set(const ::QDateTime&);
 
-#if defined(INFINIT_WIN32)
+#if defined(INFINIT_WINDOWS)
       Status            Get(::FILETIME&) const;
       Status            Set(const ::FILETIME&);
 #endif

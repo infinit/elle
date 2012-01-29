@@ -31,7 +31,7 @@
 # include <fcntl.h>
 # include <libgen.h>
 
-# if defined(INFINIT_WIN32)
+# if defined(INFINIT_WINDOWS)
 #  include <windows.h>
 # endif
 
@@ -159,7 +159,7 @@ namespace elle
 
       leave();
     }
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
     ///
     /// this method reads the given file's content.
     ///
