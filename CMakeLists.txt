@@ -14,6 +14,16 @@ IF(MSVC)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Wall")
 ENDIF()
 
+#
+# MACOSX FLAGS
+#
+IF(APPLE)
+  INCLUDE_DIRECTORIES(/usr/local/include /opt/local/include /usr/local/include/osxfuse)
+  LINK_DIRECTORIES(/usr/local/lib /opt/local/lib)
+
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+ENDIF()
+
 ADD_SUBDIRECTORY(comet)
 ADD_SUBDIRECTORY(elle)
 ADD_SUBDIRECTORY(nucleus)
@@ -33,14 +43,11 @@ ADD_LIBRARY(infinit
   ${HEADERS}
 )
 
-ADD_EXECUTABLE(Infinit
+ADD_EXECUTABLE(8infinit
   _infinit.cc
 )
 
 TARGET_LINK_LIBRARIES(Infinit infinit etoile nucleus lune agent hole facade)
-
-TARGET_LINK_LIBRARIES(Infinit ${QT_QTNETWORK_LIBRARIES}
-                              ${QT_QTCORE_LIBRARIES})
 
 # XXX
 #ADD_EXECUTABLE(XXX
