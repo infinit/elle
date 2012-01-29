@@ -111,7 +111,9 @@ namespace elle
       fiber->context.uc_link = NULL;
       fiber->context.uc_stack.ss_sp = fiber->frame->stack;
       fiber->context.uc_stack.ss_size = fiber->frame->size;
+#if defined(INFINIT_UNIX) || defined(INFINIT_WINDOWS)
       fiber->context.uc_flags = 0;
+#endif
 
       // create a context for the new fiber, with the Fiber::Launch
       // as entry point.

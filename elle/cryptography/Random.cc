@@ -54,7 +54,7 @@ namespace elle
       // initialise the random generator.
       ::srand(::time(NULL)); 
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
       {
         int             fd = -1;
 

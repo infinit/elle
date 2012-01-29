@@ -27,7 +27,7 @@ namespace elle
 // ---------- constructors & destructors --------------------------------------
 //
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
     ///
     /// default constructor.
     ///
@@ -59,7 +59,7 @@ namespace elle
     {
       enter();
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
       // connect the QT signals.
       if (this->connect(&this->notifier, SIGNAL(activated(int)),
                         this, SLOT(_trigger())) == false)
@@ -83,7 +83,7 @@ namespace elle
     {
       enter();
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
       // disconnect the QT signals.
       if (this->disconnect(&this->notifier, SIGNAL(activated(int)),
                            this, SLOT(_trigger())) == false)
@@ -112,7 +112,7 @@ namespace elle
     {
       enter();
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
       // emit the signal.
       if (this->signal.ready.Emit(this->descriptor) == StatusError)
         escape("unable to emit the signal");
@@ -144,7 +144,7 @@ namespace elle
 
       enter();
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
       //
       // the following part should not be necessary but it turns out
       // that QT triggers this event even though there is nothing to
