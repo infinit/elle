@@ -52,7 +52,7 @@ namespace facade
 
 #if defined(INFINIT_UNIX)
 # include <facade/unix/UNIX.hh>
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
 // XXX todo: windows
 #endif
 

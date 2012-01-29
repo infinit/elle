@@ -36,7 +36,7 @@ namespace facade
     // set up the UNIX implementation.
     if (unix::UNIX::Setup() == elle::StatusError)
       escape("unable to set up the UNIX implementation");
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
     // XXX todo: windows
 #endif
 
@@ -54,7 +54,7 @@ namespace facade
     // clean the UNIX implementation.
     if (unix::UNIX::Clean() == elle::StatusError)
       escape("unable to clean the UNIX implementation");
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
     // XXX todo: windows
 #endif
 
