@@ -82,7 +82,7 @@ namespace lune
       {
         static const elle::Boolean              Debug;
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
         static const elle::Natural32            FUker;
 #elif defined(INFINIT_WINDOWS)
         // XXX
@@ -160,7 +160,7 @@ namespace lune
     {
       elle::Boolean             debug;
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
       elle::Natural32           fuker;
 #elif defined(INFINIT_WINDOWS)
       // XXX
