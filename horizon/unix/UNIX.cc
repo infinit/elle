@@ -135,9 +135,13 @@ namespace facade
         operations.rename = Crux::Rename;
         operations.unlink = Crux::Unlink;
 
+#if defined(INFINIT_UNIX)
         // the following flag being activated prevents the path argument
         // to be passed for functions which take a file descriptor.
         operations.flag_nullpath_ok = 1;
+#elif defined(INFINIT_MACOSX)
+	// nothing to do.
+#endif
 
         if (FUSE::Initialize(operations) == elle::StatusError)
           escape("unable to initialize FUSE");

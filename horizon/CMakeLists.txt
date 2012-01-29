@@ -4,13 +4,15 @@ ADD_LIBRARY(facade
   Facade.cc
 )
 
-IF(${UNIX})
+IF(APPLE)
   ADD_SUBDIRECTORY(unix)
 
   TARGET_LINK_LIBRARIES(facade unix)
-ENDIF()
+ELSEIF(UNIX)
+  ADD_SUBDIRECTORY(unix)
 
-IF(${WIN32})
+  TARGET_LINK_LIBRARIES(facade unix)
+ELSEIF(WIN32)
   ADD_SUBDIRECTORY(windows)
 
   TARGET_LINK_LIBRARIES(facade windows)

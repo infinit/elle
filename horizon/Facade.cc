@@ -28,7 +28,7 @@ namespace facade
   {
     enter();
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
     // initialize the UNIX implementation.
     if (unix::UNIX::Initialize() == elle::StatusError)
       escape("unable to initialize the UNIX implementation");
@@ -38,6 +38,8 @@ namespace facade
       escape("unable to set up the UNIX implementation");
 #elif defined(INFINIT_WINDOWS)
     // XXX todo: windows
+#else
+# error "unsupported platform"
 #endif
 
     leave();
@@ -50,12 +52,14 @@ namespace facade
   {
     enter();
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
     // clean the UNIX implementation.
     if (unix::UNIX::Clean() == elle::StatusError)
       escape("unable to clean the UNIX implementation");
 #elif defined(INFINIT_WINDOWS)
     // XXX todo: windows
+#else
+# error "unsupported platform"
 #endif
 
     leave();

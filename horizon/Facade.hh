@@ -50,10 +50,12 @@ namespace facade
 // ---------- includes --------------------------------------------------------
 //
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
 # include <facade/unix/UNIX.hh>
 #elif defined(INFINIT_WINDOWS)
 // XXX todo: windows
+#else
+# error "unsupported platform"
 #endif
 
 #endif
