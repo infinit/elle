@@ -58,7 +58,7 @@ namespace application
 
 #if defined(INFINIT_UNIX)
 # include <applications/8diary/unix/UNIX.hh>
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
 // XXX todo: windows
 #else
 # error "unsupported platform"

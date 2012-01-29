@@ -260,7 +260,7 @@ namespace application
             if (memoirs.Store(path) == elle::StatusError)
               escape("unable to store the memoirs");
           }
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
           {
             // XXX todo: windows
           }
@@ -347,7 +347,7 @@ namespace application
             if (memoirs.Clean() == elle::StatusError)
               escape("unable to clean the memoirs");
           }
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
           {
             // XXX todo: windows
           }
@@ -391,7 +391,7 @@ namespace application
             if (memoirs.Dump() == elle::StatusError)
               escape("unable to dump the memoirs");
           }
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
           {
             // XXX todo: windows
           }
