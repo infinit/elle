@@ -103,7 +103,7 @@ elle::Status            Main(elle::Natural32                    argc,
     }
 
   // retrieve the user name.
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
   {
     struct ::passwd*    pw;
 
@@ -162,7 +162,7 @@ elle::Status            Main(elle::Natural32                    argc,
   if (etoile::Etoile::Initialize() == elle::StatusError)
     escape("unable to initialize Etoile");
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
   // initialize the facade.
   if (facade::Facade::Initialize() == elle::StatusError)
     escape("unable to initialize the facade");
@@ -182,7 +182,7 @@ elle::Status            Main(elle::Natural32                    argc,
   // waive.
   waive(Infinit::Parser);
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
   // clean the facade.
   if (facade::Facade::Clean() == elle::StatusError)
     escape("unable to clean the facade");
