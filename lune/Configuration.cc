@@ -76,7 +76,7 @@ namespace lune
   const elle::Natural32
   Configuration::Default::Facade::FUker =
     static_cast<elle::Natural32>(facade::unix::FUker::TypeSequential);
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
   // XXX
 #else
 # error "unsupported platform"
@@ -178,7 +178,7 @@ namespace lune
             "facade", "fuker",
             this->facade.fuker) == elle::StatusError)
         escape("unable to update the parameter");
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
       // XXX
 #else
 # error "unsupported platform"
@@ -305,7 +305,7 @@ namespace lune
             this->facade.fuker,
             Configuration::Default::Facade::FUker) == elle::StatusError)
         escape("unable to update the parameter");
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
       // XXX
 #else
 # error "unsupported platform"

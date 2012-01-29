@@ -84,7 +84,7 @@ namespace lune
 
 #if defined(INFINIT_UNIX)
         static const elle::Natural32            FUker;
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
         // XXX
 #else
 # error "unsupported platform"
@@ -162,7 +162,7 @@ namespace lune
 
 #if defined(INFINIT_UNIX)
       elle::Natural32           fuker;
-#elif defined(INFINIT_WIN32)
+#elif defined(INFINIT_WINDOWS)
       // XXX
 #else
 # error "unsupported platform"
