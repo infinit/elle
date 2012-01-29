@@ -48,7 +48,7 @@ namespace elle
 // ---------- static methods --------------------------------------------------
 //
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
     ///
     /// this method reads the given file's content.
     ///

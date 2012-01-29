@@ -19,10 +19,10 @@
 #include <elle/core/Void.hh>
 
 #include <elle/idiom/Close.hh>
-# include <malloc.h>
 # include <cstdarg>
 # include <iostream>
 # include <sstream>
+# include <stdlib.h>
 #include <elle/idiom/Open.hh>
 
 namespace elle

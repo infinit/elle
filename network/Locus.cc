@@ -55,7 +55,7 @@ namespace elle
     ///
     Status              Locus::Create(const String&             string)
     {
-      Natural32         separator;
+      size_t            separator;
 
       enter();
 

@@ -40,6 +40,9 @@
 # elif defined(INFINIT_WINDOWS)
 #  include <elle/thirdparty/ucontext-win32.hh>
 #  undef Yield
+# elif defined(INFINIT_MACOSX)
+#  define _XOPEN_SOURCE
+#  include <ucontext.h>
 # else
 #  error "No makecontext support on this plateform."
 # endif

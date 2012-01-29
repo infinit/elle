@@ -13,15 +13,13 @@ QT4_WRAP_CPP(elle_MOCS
   ${elle_MOCS_WIN32}
 )
 
-IF(${WIN32})
+IF(UNIX)
+  SET(elle_UNIX
+    utility/Unicode-unix.cc)
+ELSEIF(WIN32)
   SET(elle_WIN32
     thirdparty/ucontext-win32.cc
     utility/Unicode-win32.cc)
-ENDIF()
-
-IF(${UNIX})
-  SET(elle_UNIX
-    utility/Unicode-unix.cc)
 ENDIF()
 
 ADD_LIBRARY(elle
@@ -121,18 +119,16 @@ TARGET_LINK_LIBRARIES(elle
   comet
   ${QT_QTNETWORK_LIBRARIES}
   ${QT_QTCORE_LIBRARIES}
-  msgpack
   crypto
   ssl
   readline
-  curl
-  jsoncpp)
+  msgpack
+  jsoncpp
+  curl)
 
-IF(${UNIX})
+IF(UNIX)
   TARGET_LINK_LIBRARIES(elle dl)
-ENDIF()
-
-IF(${WIN32})
+ELSEIF(WIN32)
   TARGET_LINK_LIBRARIES(elle pdcurses)
 ENDIF()
 

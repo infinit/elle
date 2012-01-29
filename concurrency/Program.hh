@@ -68,11 +68,13 @@ namespace elle
       static Void               Exception(int);
       static Status             Exit();
 
-#if defined(INFINIT_WINDOWS)
-      // nothing
-#else
+#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
       static Status             Attach(Broker&);
       static Status             Detach(Broker&);
+#elif defined(INFINIT_WINDOWS)
+      // nothing
+#else
+# error "unsupported platform"
 #endif
 
       //
