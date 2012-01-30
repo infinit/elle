@@ -29,9 +29,13 @@ namespace plasma {
 
     class ReleaseReader
     {
-    private:
+    public:
       struct File
       {
+        enum class Type
+        {
+          Executable = 0,
+        }           type;
         std::string relpath;
         std::string md5sum;
       };
@@ -43,6 +47,9 @@ namespace plasma {
     public:
       ReleaseReader();
       bool Feed(QByteArray const& data);
+
+    private:
+      void _ReadElement(QDomElement const& element);
     };
 
 //

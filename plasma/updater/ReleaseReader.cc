@@ -43,22 +43,27 @@ bool ReleaseReader::Feed(QByteArray const& data)
   QDomNode node = root.firstChild();
   while (!node.isNull())
     {
-      QDomElement element = node.toElement();
-      if (element.tagName() == "executable")
-        {
-          this->_to_download.push(File{
-              element.attribute("path").toStdString(),
-              element.attribute("md5sum").toStdString()
-          });
-          std::cout << "Found "
-                    << this->_to_download.front().relpath << " ("
-                    << this->_to_download.front().md5sum << ")\n";
-        }
-      else
-        {
-          std::cerr << "Unknown tag name '" << element.tagName().toStdString() << "'\n";
-        }
+      this->_ReadElement(node.toElement());
       node = node.nextSibling();
     }
-  return true;
+  return this->_to_download.size() > 0;
+}
+
+void ReleaseReader::_ReadElement(QDomElement const& element)
+{
+  if (element.tagName() == "executable")
+    {
+      File file{
+          File::Type::Executable,
+          element.attribute("path").toStdString(),
+          element.attribute("md5sum").toStdString()
+      };
+      std::cout << "Found " << file.relpath << " (" << file.md5sum << ")\n";
+      this->_to_download.push(file);
+    }
+  else
+    {
+      std::cerr << "Unknown tag name '"
+                << element.tagName().toStdString() << "'\n";
+    }
 }
