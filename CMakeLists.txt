@@ -47,7 +47,7 @@ ADD_EXECUTABLE(8infinit
   _infinit.cc
 )
 
-TARGET_LINK_LIBRARIES(Infinit infinit etoile nucleus lune agent hole facade)
+TARGET_LINK_LIBRARIES(8infinit infinit etoile nucleus lune agent hole facade)
 
 # XXX
 #ADD_EXECUTABLE(XXX
