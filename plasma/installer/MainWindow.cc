@@ -3,14 +3,16 @@
 #include <iostream>
 
 #include <QMessageBox>
-#include <QUrl>
+#include <QDir>
+#include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
-#include <QDir>
+#include <QUrl>
+
+#include "resources.hh"
 
 #include "MainWindow.hh"
 #include "ui_MainWindow.h"
-#include "resources.hh"
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
@@ -78,7 +80,7 @@ void MainWindow::on_launchInstall_clicked()
   this->_http = new QNetworkAccessManager(this);
   this->connect(this->_http, SIGNAL(finished(QNetworkReply*)), SLOT(download_done(QNetworkReply*)));
 
-  this->_reply = this->_http->get(QNetworkRequest(QUrl(INFINIT_UPDATER_URL)));
+  this->_reply = this->_http->get(QNetworkRequest(QUrl(INFINIT_UPDATER_URI)));
   this->connect(this->_reply, SIGNAL(downloadProgress(qint64,qint64)), SLOT(download_progress(qint64, qint64)));
   this->connect(this->_reply, SIGNAL(readyRead()), SLOT(can_read()));
 }

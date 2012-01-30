@@ -3,11 +3,13 @@ file(GLOB installer_srcs *.cc)
 file(GLOB installer_ui *.ui)
 file(GLOB installer_moc_hdrs MainWindow.hh)
 
-SET(QT_USE_QTNETWORK true)
-SET(QT_USE_QTGUI true)
+set(QT_USE_QTNETWORK true)
+set(QT_USE_QTGUI true)
+set(QT_DONT_USE_QTGUI false)
 
-INCLUDE(${QT_USE_FILE})
-ADD_DEFINITIONS(${QT_DEFINITIONS})
+include(${QT_USE_FILE})
+add_definitions(${QT_DEFINITIONS})
+message("link installer with ${QT_LIBRARIES}")
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
