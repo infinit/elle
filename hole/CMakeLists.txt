@@ -41,4 +41,4 @@ ADD_EXECUTABLE(8hole
   _hole.cc
 )
 
-TARGET_LINK_LIBRARIES(Hole infinit nucleus lune hole)
+TARGET_LINK_LIBRARIES(8hole infinit nucleus lune hole)
