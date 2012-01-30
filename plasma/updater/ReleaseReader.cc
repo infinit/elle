@@ -12,6 +12,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <iostream>
+
 #include "ReleaseReader.hh"
 
 using namespace plasma::updater;
@@ -35,4 +37,28 @@ bool ReleaseReader::Feed(QByteArray const& data)
   QDomElement root = this->_document.documentElement();
   if (root.tagName() != "release")
     return false;
+  std::cout << "Release " << root.attribute("major").toStdString()
+            << "."
+            << root.attribute("minor").toStdString() << std::endl;
+  QDomNode node = root.firstChild();
+  while (!node.isNull())
+    {
+      QDomElement element = node.toElement();
+      if (element.tagName() == "executable")
+        {
+          this->_to_download.push(File{
+              element.attribute("path").toStdString(),
+              element.attribute("md5sum").toStdString()
+          });
+          std::cout << "Found "
+                    << this->_to_download.front().relpath << " ("
+                    << this->_to_download.front().md5sum << ")\n";
+        }
+      else
+        {
+          std::cerr << "Unknown tag name '" << element.tagName().toStdString() << "'\n";
+        }
+      node = node.nextSibling();
+    }
+  return true;
 }

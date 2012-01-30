@@ -15,6 +15,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <string>
+#include <queue>
+
 #include <QDomDocument>
 
 namespace plasma {
@@ -27,7 +30,15 @@ namespace plasma {
     class ReleaseReader
     {
     private:
-      QDomDocument _document;
+      struct File
+      {
+        std::string relpath;
+        std::string md5sum;
+      };
+
+    private:
+      std::queue<File>        _to_download;
+      QDomDocument            _document;
 
     public:
       ReleaseReader();

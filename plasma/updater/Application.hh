@@ -16,7 +16,6 @@
 //
 
 #include <string>
-#include <queue>
 
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
@@ -44,14 +43,6 @@ namespace plasma {
       Q_OBJECT
 
     private:
-      struct File
-      {
-        std::string filename;
-        std::string directory;
-      };
-
-    private:
-      std::queue<File>        _to_download;
       QNetworkAccessManager*  _network_access_manager;
       bool                    _has_list;
       ReleaseReader           _release_reader;

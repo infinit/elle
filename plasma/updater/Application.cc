@@ -27,9 +27,9 @@ using namespace plasma::updater;
 
 Application::Application(int ac, char** av) :
   QApplication(ac, av, false),
-  _to_download(),
   _network_access_manager(0),
-  _has_list(false)
+  _has_list(false),
+  _release_reader()
 {}
 
 Application::~Application()
