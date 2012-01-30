@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       plasma/installer
+// project       plasma/updater
 //
 // license       infinit
 //
@@ -23,6 +23,8 @@
 #include <QNetworkReply>
 #include <QUrl>
 #include <QApplication>
+
+#include "ReleaseReader.hh"
 
 namespace plasma {
   namespace updater {
@@ -52,6 +54,7 @@ namespace plasma {
       std::queue<File>        _to_download;
       QNetworkAccessManager*  _network_access_manager;
       bool                    _has_list;
+      ReleaseReader           _release_reader;
 
     public:
       Application(int ac, char** av);

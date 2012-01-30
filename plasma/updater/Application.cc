@@ -1,3 +1,16 @@
+//
+// ---------- header ----------------------------------------------------------
+//
+// project       plasma/updater
+//
+// license       infinit
+//
+// author        Raphael Londeix   [Mon 30 Jan 2012 12:41:48 PM CET]
+//
+
+//
+// ---------- includes --------------------------------------------------------
+//
 
 #include <cassert>
 #include <iostream>
@@ -7,6 +20,10 @@
 #include "Application.hh"
 
 using namespace plasma::updater;
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
 
 Application::Application(int ac, char** av) :
   QApplication(ac, av, false),
@@ -20,6 +37,10 @@ Application::~Application()
   delete this->_network_access_manager;
   this->_network_access_manager = 0;
 }
+
+//
+// ---------- methods ---------------------------------------------------------
+//
 
 int Application::Exec()
 {
@@ -73,6 +94,8 @@ bool Application::_ProcessResource(QNetworkReply& reply)
 bool Application::_ProcessResourceList(QNetworkReply& reply)
 {
   assert(!this->_has_list);
+  if (!this->_release_reader.Feed(reply.readAll()))
+    return false;
   this->_has_list = true;
   return true;
 }
