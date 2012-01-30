@@ -57,6 +57,7 @@ namespace plasma {
     private:
       bool _ProcessResource(QNetworkReply& reply);
       bool _ProcessResourceList(QNetworkReply& reply);
+      void _DownloadNextResource();
     };
 
   }

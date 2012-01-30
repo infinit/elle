@@ -46,7 +46,7 @@ bool ReleaseReader::Feed(QByteArray const& data)
       this->_ReadElement(node.toElement());
       node = node.nextSibling();
     }
-  return this->_to_download.size() > 0;
+  return this->files.size() > 0;
 }
 
 void ReleaseReader::_ReadElement(QDomElement const& element)
@@ -59,7 +59,7 @@ void ReleaseReader::_ReadElement(QDomElement const& element)
           element.attribute("md5sum").toStdString()
       };
       std::cout << "Found " << file.relpath << " (" << file.md5sum << ")\n";
-      this->_to_download.push(file);
+      this->files.push(file);
     }
   else
     {

@@ -27,27 +27,41 @@ namespace plasma {
 // ---------- classes ---------------------------------------------------------
 //
 
+    ///
+    /// Convert a XML release description file into a simple queue of File
+    ///
     class ReleaseReader
     {
     public:
+      ///
+      /// Represent a file entry
+      ///
       struct File
       {
+      public:
         enum class Type
         {
           Executable = 0,
-        }           type;
+        };
+
+      public:
+        Type        type;
         std::string relpath;
         std::string md5sum;
       };
 
+    public:
+      /// This attribute is filled with the Feed() method
+      std::queue<File>        files;
     private:
-      std::queue<File>        _to_download;
       QDomDocument            _document;
 
     public:
       ReleaseReader();
+      /// Feed the reader with the raw XML data
+      /// No check, nor states, are saved accross multiple calls
+      /// This method grows the file attribute
       bool Feed(QByteArray const& data);
-
     private:
       void _ReadElement(QDomElement const& element);
     };
