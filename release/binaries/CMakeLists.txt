@@ -1,8 +1,8 @@
 
 add_custom_command(
   OUTPUT  8infinit
-  COMMAND cp ../../Infinit 8infinit && strip -s 8infinit
-  DEPENDS Infinit
+  COMMAND cp ../../8infinit 8infinit && strip -s 8infinit
+  DEPENDS 8infinit
 )
 
 add_custom_command(
