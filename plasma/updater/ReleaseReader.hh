@@ -16,7 +16,7 @@
 //
 
 #include <string>
-#include <queue>
+#include <vector>
 
 #include <QDomDocument>
 
@@ -52,7 +52,7 @@ namespace plasma {
 
     public:
       /// This attribute is filled with the Feed() method
-      std::queue<File>        files;
+      std::vector<File>        files;
     private:
       QDomDocument            _document;
 

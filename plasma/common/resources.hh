@@ -38,12 +38,12 @@
   (INFINIT_BASE_URL "/" INFINIT_UPDATER_FILENAME)
 
 # define INFINIT_RELEASE_URI \
-  (INFINIT_BASE_URL "/" "last_release.xml")
+  (INFINIT_BASE_URL "/" "release.xml")
 
 # ifdef INFINIT_WINDOWS
 #  define INFINIT_HOME_DIRECTORY "Infinit"
 # else
-#  define INFINIT_HOME_DIRECTORY ".infinit"
+#  define INFINIT_HOME_DIRECTORY ".config/infinit"
 # endif
 
 #endif // RESOURCES_HPP

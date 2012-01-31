@@ -59,7 +59,7 @@ void ReleaseReader::_ReadElement(QDomElement const& element)
           element.attribute("md5sum").toStdString()
       };
       std::cout << "Found " << file.relpath << " (" << file.md5sum << ")\n";
-      this->files.push(file);
+      this->files.push_back(file);
     }
   else
     {
