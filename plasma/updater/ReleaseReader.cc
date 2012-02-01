@@ -53,7 +53,7 @@ void ReleaseReader::_ReadElement(QDomElement const& element)
 {
   if (element.tagName() == "executable")
     {
-      File file{
+      File file = {
           File::Type::Executable,
           element.attribute("path").toStdString(),
           element.attribute("md5sum").toStdString()

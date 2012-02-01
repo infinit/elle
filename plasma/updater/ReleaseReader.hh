@@ -39,7 +39,7 @@ namespace plasma {
       struct File
       {
       public:
-        enum class Type
+        enum Type
         {
           Executable = 0,
         };
