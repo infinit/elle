@@ -1,10 +1,10 @@
 
-SET(QT_USE_QTNETWORK true)
+set(QT_USE_QTNETWORK true)
 set(QT_DONT_USE_QTGUI false)
 set(QT_USE_QTXML true)
 
-INCLUDE(${QT_USE_FILE})
-ADD_DEFINITIONS(${QT_DEFINITIONS})
+include(${QT_USE_FILE})
+add_definitions(${QT_DEFINITIONS})
 
 file(GLOB updater_srcs *.cc)
 file(GLOB updater_moc_hdrs Application.hh)

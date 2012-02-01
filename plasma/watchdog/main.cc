@@ -1,5 +1,8 @@
 
+#include "Application.hh"
+
 int     main(int ac, char* av[])
 {
-  return 0;
+  plasma::watchdog::Application app(ac, av);
+  return app.Exec();
 }
