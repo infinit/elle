@@ -12,14 +12,14 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/unix/InterlacedFUker.hh>
-#include <facade/unix/FUSE.hh>
+#include <facade/linux/SequentialFUker.hh>
+#include <facade/linux/FUSE.hh>
 
 #include <hole/Hole.hh>
 
 namespace facade
 {
-  namespace unix
+  namespace linux
   {
 
 //
@@ -29,20 +29,21 @@ namespace facade
     ///
     /// default constructor.
     ///
-    InterlacedFUker::InterlacedFUker():
+    SequentialFUker::SequentialFUker():
       broker(NULL),
       fuse(NULL),
       mountpoint(NULL),
       session(NULL),
       channel(NULL),
-      size(0)
+      size(0),
+      state(SequentialFUker::StateWaiting)
     {
     }
 
     ///
     /// destructor.
     ///
-    InterlacedFUker::~InterlacedFUker()
+    SequentialFUker::~SequentialFUker()
     {
       //
       // destroy the FUSE broker.
@@ -65,6 +66,21 @@ namespace facade
       // release the buffers, sessions etc.
       //
       {
+        SequentialFUker::Scoutor        scoutor;
+
+        // release the buffers.
+        for (scoutor = this->container.begin();
+             scoutor != this->container.end();
+             scoutor++)
+          {
+            SequentialFUker::Item       item = *scoutor;
+
+            ::free(item.buffer);
+          }
+
+        // clear the container.
+        this->container.clear();
+
         // release the session.
         if (this->session != NULL)
           ::fuse_session_reset(this->session);
@@ -87,7 +103,7 @@ namespace facade
     ///
     /// this method sets up the fuker.
     ///
-    elle::Status        InterlacedFUker::Setup()
+    elle::Status        SequentialFUker::Setup()
     {
       //
       // build the arguments.
@@ -107,8 +123,9 @@ namespace facade
           "facade",
 
           "-s",
+
           "-f",
-          "-osubtype=infinit",
+          "-o", "subtype=infinit",
 
           "-o", "no_remote_lock",
           "-o", "large_read",
@@ -137,13 +154,13 @@ namespace facade
 
         // setup fuse.
         if ((this->fuse = ::fuse_setup(
-               (sizeof (arguments) / sizeof (elle::Character*)),
-               const_cast<char**>(arguments),
-               &FUSE::Operations,
-               sizeof (FUSE::Operations),
-               &this->mountpoint,
-               &multithreaded,
-               NULL)) == NULL)
+                            sizeof (arguments) / sizeof (elle::Character*),
+                            const_cast<char**>(arguments),
+                            &FUSE::Operations,
+                            sizeof (FUSE::Operations),
+                            &this->mountpoint,
+                            &multithreaded,
+                            NULL)) == NULL)
           escape("unable to setup FUSE");
 
         // retrieve the FUSE session.
@@ -168,12 +185,11 @@ namespace facade
         fd = ::fuse_chan_fd(this->channel);
 
         // allocate the FUSE event broker.
-        this->broker =
-          new elle::Broker(fd);
+        this->broker = new elle::Broker(fd);
 
-        // subscribe to the broker's signal.
+        // subscribe to the timer's signal.
         if (this->broker->signal.ready.Subscribe(
-              elle::Callback<>::Infer(&InterlacedFUker::Event,
+              elle::Callback<>::Infer(&SequentialFUker::Event,
                                       this)) == elle::StatusError)
           escape("unable to subscribe to the signal");
 
@@ -197,45 +213,70 @@ namespace facade
     /// this callback is triggered whenever data is available on the
     /// FUSE socket.
     ///
-    elle::Status        InterlacedFUker::Event(elle::Natural16)
+    elle::Status        SequentialFUker::Event(elle::Natural16)
     {
       struct ::fuse_chan*       channel = this->channel;
-      char*                     buffer;
-      int                       res;
+      SequentialFUker::Item     item;
 
-      enterx(slab(buffer, ::free));
+      enterx(slab(item.buffer, ::free));
 
       // allocate a buffer.
-      if ((buffer = static_cast<char*>(::malloc(this->size))) == NULL)
+      if ((item.buffer = static_cast<char*>(::malloc(this->size))) == NULL)
         escape("unable to allocate a FUSE buffer");
 
       // retrieve the upcall from the kernel through the FUSE channel.
-      res = ::fuse_chan_recv(&channel,
-                             buffer,
-                             this->size);
+      item.res = ::fuse_chan_recv(&channel,
+                                  item.buffer,
+                                  this->size);
 
       // retry later if necessary.
-      if (res == -EINTR)
+      if (item.res == -EINTR)
         leave();
 
       // exit if an error occured.
-      if (res <= 0)
+      if (item.res <= 0)
         {
           if (elle::Program::Exit() == elle::StatusError)
             escape("unable to exit the program");
         }
 
-      // trigger the upcall handler.
-      ::fuse_session_process(this->session,
-                             buffer,
-                             res,
-                             channel);
-
-      // release the buffer.
-      ::free(buffer);
+      // record the item.
+      this->container.push_back(item);
 
       // waive the tracking.
-      waive(buffer);
+      waive(item.buffer);
+
+      // if the FUker is already processing, return since this
+      // FUker processes events in a sequential manner.
+      if (this->state == SequentialFUker::StateProcessing)
+        leave();
+
+      // set the state.
+      this->state = SequentialFUker::StateProcessing;
+
+      // as long as the container contains buffers...
+      while (this->container.empty() == false)
+        {
+          SequentialFUker::Item item;
+
+          // retrieve the next item.
+          item = this->container.front();
+
+          // remove it from the container.
+          this->container.pop_front();
+
+          // trigger the upcall handler.
+          ::fuse_session_process(this->session,
+                                 item.buffer,
+                                 item.res,
+                                 channel);
+
+          // release the buffer.
+          ::free(item.buffer);
+        }
+
+      // reset the state.
+      this->state = SequentialFUker::StateWaiting;
 
       leave();
     }

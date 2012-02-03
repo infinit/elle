@@ -8,8 +8,8 @@
 // author        julien quintard   [tue sep 27 15:59:12 2011]
 //
 
-#ifndef FACADE_UNIX_HANDLE_HH
-#define FACADE_UNIX_HANDLE_HH
+#ifndef FACADE_MACOSX_HANDLE_HH
+#define FACADE_MACOSX_HANDLE_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,7 +20,7 @@
 
 namespace facade
 {
-  namespace unix
+  namespace macosx
   {
 
 //

@@ -12,12 +12,12 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/unix/ParallelFUker.hh>
-#include <facade/unix/FUSE.hh>
+#include <facade/linux/ParallelFUker.hh>
+#include <facade/linux/FUSE.hh>
 
 namespace facade
 {
-  namespace unix
+  namespace linux
   {
 
 //

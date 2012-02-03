@@ -8,8 +8,8 @@
 // author        julien quintard   [wed sep  7 12:43:43 2011]
 //
 
-#ifndef FACADE_UNIX_JANITOR_HXX
-#define FACADE_UNIX_JANITOR_HXX
+#ifndef FACADE_MACOSX_JANITOR_HXX
+#define FACADE_MACOSX_JANITOR_HXX
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,7 +20,7 @@
 
 namespace facade
 {
-  namespace unix
+  namespace macosx
   {
 
 //

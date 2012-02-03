@@ -8,8 +8,8 @@
 // author        julien quintard   [tue jul 26 15:28:37 2011]
 //
 
-#ifndef FACADE_UNIX_FUKER_HH
-#define FACADE_UNIX_FUKER_HH
+#ifndef FACADE_MACOSX_FUKER_HH
+#define FACADE_MACOSX_FUKER_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -19,7 +19,7 @@
 
 namespace facade
 {
-  namespace unix
+  namespace macosx
   {
 
 //

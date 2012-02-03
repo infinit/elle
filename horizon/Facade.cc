@@ -28,16 +28,36 @@ namespace facade
   {
     enter();
 
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
-    // initialize the UNIX implementation.
-    if (unix::UNIX::Initialize() == elle::StatusError)
-      escape("unable to initialize the UNIX implementation");
+#if defined(INFINIT_LINUX)
+    {
+      // initialize the Linux implementation.
+      if (linux::Linux::Initialize() == elle::StatusError)
+        escape("unable to initialize the Linux implementation");
 
-    // set up the UNIX implementation.
-    if (unix::UNIX::Setup() == elle::StatusError)
-      escape("unable to set up the UNIX implementation");
+      // set up the Linux implementation.
+      if (linux::Linux::Setup() == elle::StatusError)
+        escape("unable to set up the Linux implementation");
+    }
+#elif defined(INFINIT_MACOSX)
+    {
+      // initialize the MacOS X implementation.
+      if (macosx::MacOSX::Initialize() == elle::StatusError)
+        escape("unable to initialize the MacOS X implementation");
+
+      // set up the MacOS X implementation.
+      if (macosx::MacOSX::Setup() == elle::StatusError)
+        escape("unable to set up the MacOS X implementation");
+    }
 #elif defined(INFINIT_WINDOWS)
-    // XXX todo: windows
+    {
+      // initialize the Windows implementation.
+      if (windows::Windows::Initialize() == elle::StatusError)
+        escape("unable to initialize the Windows implementation");
+
+      // set up the Windows implementation.
+      if (windows::Windows::Setup() == elle::StatusError)
+        escape("unable to set up the Windows implementation");
+    }
 #else
 # error "unsupported platform"
 #endif
@@ -52,12 +72,24 @@ namespace facade
   {
     enter();
 
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
-    // clean the UNIX implementation.
-    if (unix::UNIX::Clean() == elle::StatusError)
-      escape("unable to clean the UNIX implementation");
+#if defined(INFINIT_Linux)
+    {
+      // clean the Linux implementation.
+      if (linux::Linux::Clean() == elle::StatusError)
+        escape("unable to clean the Linux implementation");
+    }
+#elif defined(INFINIT_MACOSX)
+    {
+      // clean the MacOS X implementation.
+      if (macosx::MacOSX::Clean() == elle::StatusError)
+        escape("unable to clean the MacOS X implementation");
+    }
 #elif defined(INFINIT_WINDOWS)
-    // XXX todo: windows
+    {
+      // clean the Windows implementation.
+      if (windows::Windows::Clean() == elle::StatusError)
+        escape("unable to clean the Windows implementation");
+    }
 #else
 # error "unsupported platform"
 #endif

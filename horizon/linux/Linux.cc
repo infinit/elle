@@ -12,8 +12,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/unix/UNIX.hh>
-#include <facade/unix/Crux.hh>
+#include <facade/linux/Linux.hh>
+#include <facade/linux/Crux.hh>
 #include <facade/Facade.hh>
 
 #include <elle/Elle.hh>
@@ -22,7 +22,7 @@
 
 namespace facade
 {
-  namespace unix
+  namespace linux
   {
 
 //
@@ -34,27 +34,27 @@ namespace facade
     /// is used whenever the system cannot map the Infinit user on a local
     /// user.
     ///
-    uid_t                               UNIX::Somebody::UID;
+    uid_t                               Linux::Somebody::UID;
 
     ///
     /// this variable contains the GID of the 'somebody' group.
     ///
-    gid_t                               UNIX::Somebody::GID;
+    gid_t                               Linux::Somebody::GID;
 
     ///
     /// this varaible contains the mappings between local user/group
     /// identities and Infinit identities.
     ///
-    lune::Dictionary                    UNIX::Dictionary;
+    lune::Dictionary                    Linux::Dictionary;
 
 //
 // ---------- methods ---------------------------------------------------------
 //
 
     ///
-    /// this method initializes UNIX.
+    /// this method initializes Linux.
     ///
-    elle::Status        UNIX::Initialize()
+    elle::Status        Linux::Initialize()
     {
       enter();
 
@@ -71,8 +71,8 @@ namespace facade
           escape("it seems that the user 'somebody' does not exist");
 
         // set the uid and gid.
-        UNIX::Somebody::UID = passwd->pw_uid;
-        UNIX::Somebody::GID = passwd->pw_gid;
+        Linux::Somebody::UID = passwd->pw_uid;
+        Linux::Somebody::GID = passwd->pw_gid;
       }
 
       //
@@ -81,10 +81,10 @@ namespace facade
       //
       {
         // if the dictionary exist.
-        if (UNIX::Dictionary.Exist() == elle::StatusTrue)
+        if (Linux::Dictionary.Exist() == elle::StatusTrue)
           {
             // load the dictionary file.
-            if (UNIX::Dictionary.Load() == elle::StatusError)
+            if (Linux::Dictionary.Load() == elle::StatusError)
               escape("unable to load the dictionary");
           }
       }
@@ -135,14 +135,11 @@ namespace facade
         operations.rename = Crux::Rename;
         operations.unlink = Crux::Unlink;
 
-#if defined(INFINIT_UNIX)
         // the following flag being activated prevents the path argument
         // to be passed for functions which take a file descriptor.
         operations.flag_nullpath_ok = 1;
-#elif defined(INFINIT_MACOSX)
-	// nothing to do.
-#endif
 
+        // initialize FUSE.
         if (FUSE::Initialize(operations) == elle::StatusError)
           escape("unable to initialize FUSE");
       }
@@ -151,9 +148,9 @@ namespace facade
     }
 
     ///
-    /// this method sets up the UNIX implementation.
+    /// this method sets up the Linux implementation.
     ///
-    elle::Status        UNIX::Setup()
+    elle::Status        Linux::Setup()
     {
       enter();
 
@@ -165,9 +162,9 @@ namespace facade
     }
 
     ///
-    /// this method cleans UNIX.
+    /// this method cleans Linux.
     ///
-    elle::Status        UNIX::Clean()
+    elle::Status        Linux::Clean()
     {
       enter();
 

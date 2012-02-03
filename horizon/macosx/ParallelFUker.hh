@@ -8,8 +8,8 @@
 // author        julien quintard   [tue jul 26 15:33:15 2011]
 //
 
-#ifndef FACADE_UNIX_PARALLELFUKER_HH
-#define FACADE_UNIX_PARALLELFUKER_HH
+#ifndef FACADE_MACOSX_PARALLELFUKER_HH
+#define FACADE_MACOSX_PARALLELFUKER_HH
 
 //
 // ---------- macros ----------------------------------------------------------
@@ -25,11 +25,11 @@
 
 #include <elle/Elle.hh>
 
-#include <facade/unix/FUker.hh>
+#include <facade/macosx/FUker.hh>
 
 namespace facade
 {
-  namespace unix
+  namespace macosx
   {
 
 //

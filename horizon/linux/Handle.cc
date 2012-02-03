@@ -12,11 +12,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/unix/Handle.hh>
+#include <facade/linux/Handle.hh>
 
 namespace facade
 {
-  namespace unix
+  namespace linux
   {
 
 //

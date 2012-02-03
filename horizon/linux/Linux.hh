@@ -8,8 +8,8 @@
 // author        julien quintard   [tue may 31 10:32:37 2011]
 //
 
-#ifndef FACADE_UNIX_UNIX_HH
-#define FACADE_UNIX_UNIX_HH
+#ifndef FACADE_LINUX_LINUX_HH
+#define FACADE_LINUX_LINUX_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -28,10 +28,10 @@
 namespace facade
 {
   ///
-  /// this namespace contains all the elements related to the UNIX facade i.e
+  /// this namespace contains all the elements related to the Linux facade i.e
   /// interface between the kernel and Infinit.
   ///
-  namespace unix
+  namespace linux
   {
 
 //
@@ -40,9 +40,9 @@ namespace facade
 
     ///
     /// this class contains the general-purpose information related to the
-    /// UNIX facade.
+    /// Linux facade.
     ///
-    class UNIX
+    class Linux
     {
     public:
       //
@@ -71,11 +71,11 @@ namespace facade
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/unix/Crux.hh>
-#include <facade/unix/FUSE.hh>
-#include <facade/unix/FUker.hh>
-#include <facade/unix/InterlacedFUker.hh>
-#include <facade/unix/ParallelFUker.hh>
-#include <facade/unix/SequentialFUker.hh>
+#include <facade/linux/Crux.hh>
+#include <facade/linux/FUSE.hh>
+#include <facade/linux/FUker.hh>
+#include <facade/linux/InterlacedFUker.hh>
+#include <facade/linux/ParallelFUker.hh>
+#include <facade/linux/SequentialFUker.hh>
 
 #endif

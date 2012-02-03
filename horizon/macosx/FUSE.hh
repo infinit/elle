@@ -8,8 +8,8 @@
 // author        julien quintard   [fri jul 31 22:11:24 2009]
 //
 
-#ifndef FACADE_UNIX_FUSE_HH
-#define FACADE_UNIX_FUSE_HH
+#ifndef FACADE_MACOSX_FUSE_HH
+#define FACADE_MACOSX_FUSE_HH
 
 //
 // ---------- macros ----------------------------------------------------------
@@ -28,7 +28,7 @@
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 
-#include <facade/unix/FUker.hh>
+#include <facade/macosx/FUker.hh>
 
 #include <elle/idiom/Close.hh>
 # include <fuse/fuse.h>
@@ -36,7 +36,7 @@
 
 namespace facade
 {
-  namespace unix
+  namespace macosx
   {
 
 //

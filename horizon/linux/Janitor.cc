@@ -12,11 +12,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/unix/Janitor.hh>
+#include <facade/linux/Janitor.hh>
 
 namespace facade
 {
-  namespace unix
+  namespace linux
   {
 
 //

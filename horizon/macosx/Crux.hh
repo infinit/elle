@@ -8,8 +8,8 @@
 // author        julien quintard   [wed jun  1 09:19:13 2011]
 //
 
-#ifndef FACADE_UNIX_CRUX_HH
-#define FACADE_UNIX_CRUX_HH
+#ifndef FACADE_MACOSX_CRUX_HH
+#define FACADE_MACOSX_CRUX_HH
 
 //
 // ---------- macros ----------------------------------------------------------
@@ -36,7 +36,7 @@
 
 namespace facade
 {
-  namespace unix
+  namespace macosx
   {
 
 //

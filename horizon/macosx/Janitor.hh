@@ -8,8 +8,8 @@
 // author        julien quintard   [wed sep  7 12:37:56 2011]
 //
 
-#ifndef FACADE_UNIX_JANITOR_HH
-#define FACADE_UNIX_JANOTIR_HH
+#ifndef FACADE_MACOSX_JANITOR_HH
+#define FACADE_MACOSX_JANOTIR_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,7 +20,7 @@
 
 namespace facade
 {
-  namespace unix
+  namespace macosx
   {
 
 //
@@ -57,6 +57,6 @@ namespace facade
 // ---------- templates -------------------------------------------------------
 //
 
-#include <facade/unix/Janitor.hxx>
+#include <facade/macosx/Janitor.hxx>
 
 #endif

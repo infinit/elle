@@ -12,17 +12,17 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/unix/FUSE.hh>
-#include <facade/unix/Crux.hh>
-#include <facade/unix/InterlacedFUker.hh>
-#include <facade/unix/ParallelFUker.hh>
-#include <facade/unix/SequentialFUker.hh>
+#include <facade/linux/FUSE.hh>
+#include <facade/linux/Crux.hh>
+#include <facade/linux/InterlacedFUker.hh>
+#include <facade/linux/ParallelFUker.hh>
+#include <facade/linux/SequentialFUker.hh>
 
 #include <Infinit.hh>
 
 namespace facade
 {
-  namespace unix
+  namespace linux
   {
 
 //

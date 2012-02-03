@@ -8,8 +8,8 @@
 // author        julien quintard   [tue jul 26 15:33:15 2011]
 //
 
-#ifndef FACADE_UNIX_INTERLACEDFUKER_HH
-#define FACADE_UNIX_INTERLACEDFUKER_HH
+#ifndef FACADE_LINUX_INTERLACEDFUKER_HH
+#define FACADE_LINUX_INTERLACEDFUKER_HH
 
 //
 // ---------- macros ----------------------------------------------------------
@@ -25,7 +25,7 @@
 
 #include <elle/Elle.hh>
 
-#include <facade/unix/FUker.hh>
+#include <facade/linux/FUker.hh>
 
 #include <elle/idiom/Close.hh>
 # include <list>
@@ -35,7 +35,7 @@
 
 namespace facade
 {
-  namespace unix
+  namespace linux
   {
 
 //

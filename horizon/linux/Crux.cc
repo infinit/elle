@@ -12,17 +12,17 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/unix/Crux.hh>
-#include <facade/unix/UNIX.hh>
-#include <facade/unix/Janitor.hh>
-#include <facade/unix/Handle.hh>
+#include <facade/linux/Crux.hh>
+#include <facade/linux/Linux.hh>
+#include <facade/linux/Janitor.hh>
+#include <facade/linux/Handle.hh>
 
 #include <agent/Agent.hh>
 #include <etoile/Etoile.hh>
 
 namespace facade
 {
-  namespace unix
+  namespace linux
   {
 
 //
@@ -156,7 +156,7 @@ namespace facade
       // found, the 'somebody' user is used instead, indicating that the
       // file belongs to someone, with the given permissions, but cannot
       // be mapped to a local user name.
-      if (UNIX::Dictionary.users.Lookup(abstract.keys.owner,
+      if (Linux::Dictionary.users.Lookup(abstract.keys.owner,
                                         name) == elle::StatusTrue)
         {
           //
@@ -173,7 +173,7 @@ namespace facade
           else
             {
               // if an error occured, set the user to 'somebody'.
-              stat->st_uid = UNIX::Somebody::UID;
+              stat->st_uid = Linux::Somebody::UID;
             }
         }
       else
@@ -183,12 +183,12 @@ namespace facade
           // system that this object belongs to the 'somebody' user.
           //
 
-          stat->st_uid = UNIX::Somebody::UID;
+          stat->st_uid = Linux::Somebody::UID;
         }
 
       // since Infinit does not have the concept of current group, the
       // group of this object is set to 'somebody'.
-      stat->st_gid = UNIX::Somebody::GID;
+      stat->st_gid = Linux::Somebody::GID;
 
       // set the size.
       stat->st_size = static_cast<off_t>(abstract.size);
@@ -893,7 +893,7 @@ namespace facade
       // completely feasible, it has been decided not to do so because it
       // would incur too much cost.
       //
-      // indeed, on most UNIX systems, the umask is set to 022 or is somewhat
+      // indeed, on most Linux systems, the umask is set to 022 or is somewhat
       // equivalent, granting permissions, by default, to the default group
       // and the others.
       //
