@@ -2,7 +2,6 @@
 - renommer les apps sans 8
 - revoir les projets dans redmine
 - enlever attribut epth -> tester si leak
-- commenter epth
 - ajouter locking a epth
 - ajouter implem pthread
 
