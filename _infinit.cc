@@ -20,7 +20,7 @@
 #include <agent/Agent.hh>
 #include <etoile/Etoile.hh>
 #include <hole/Hole.hh>
-#include <facade/Facade.hh>
+#include <horizon/Horizon.hh>
 
 //
 // ---------- functions -------------------------------------------------------
@@ -162,9 +162,9 @@ elle::Status            Main(elle::Natural32                    argc,
   if (etoile::Etoile::Initialize() == elle::StatusError)
     escape("unable to initialize Etoile");
 
-  // initialize the facade.
-  if (facade::Facade::Initialize() == elle::StatusError)
-    escape("unable to initialize the facade");
+  // initialize the horizon.
+  if (horizon::Horizon::Initialize() == elle::StatusError)
+    escape("unable to initialize the horizon");
 
   // launch the program.
   if (elle::Program::Launch() == elle::StatusError)
@@ -176,9 +176,9 @@ elle::Status            Main(elle::Natural32                    argc,
   // waive.
   waive(Infinit::Parser);
 
-  // clean the facade.
-  if (facade::Facade::Clean() == elle::StatusError)
-    escape("unable to clean the facade");
+  // clean the horizon.
+  if (horizon::Horizon::Clean() == elle::StatusError)
+    escape("unable to clean the horizon");
 
   // clean the Etoile library.
   if (etoile::Etoile::Clean() == elle::StatusError)

@@ -57,7 +57,7 @@ add_subdirectory(nucleus)
 add_subdirectory(etoile)
 add_subdirectory(agent)
 add_subdirectory(lune)
-add_subdirectory(facade)
+add_subdirectory(horizon)
 
 add_subdirectory(hole)
 add_subdirectory(applications)
@@ -75,7 +75,7 @@ ADD_EXECUTABLE(8infinit
   _infinit.cc
 )
 
-TARGET_LINK_LIBRARIES(8infinit infinit etoile nucleus lune agent hole facade)
+TARGET_LINK_LIBRARIES(8infinit infinit etoile nucleus lune agent hole horizon)
 
 add_subdirectory(release)
 

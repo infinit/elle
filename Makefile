@@ -35,7 +35,7 @@ COMPONENTS	:=		elle					\
 				nucleus					\
 				etoile					\
 				agent					\
-				facade					\
+				horizon					\
 				applications				\
 				lune					\
 				hole					\
