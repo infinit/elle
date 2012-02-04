@@ -159,7 +159,7 @@ namespace etoile
 
 // general
 message(etoile::portal::TagAuthenticate,
-        parameters(lune::Phrase&));
+        parameters(elle::String&));
 message(etoile::portal::TagAuthenticated,
         parameters());
 message(etoile::portal::TagIdentifier,
