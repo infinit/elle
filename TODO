@@ -1,7 +1,16 @@
-- revoir les projets dans redmine
+- serialization
+ - renommer package en serialization
+ - utiliser boost::serialization
+ - pour cela il ne faudra plus acceder a contents et size
 
-- ajouter locking a epth
-- ajouter implem pthread
+- epth
+ - ajouter locking
+ - ajouter implem pthread
+
+- event loop/timer/fibers/socket
+ - boost::asio
+ - boost::timer
+ - boost::socket
 
 #
 # ---------- bugs -------------------------------------------------------------
