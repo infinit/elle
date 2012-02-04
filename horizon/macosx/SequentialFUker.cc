@@ -229,13 +229,9 @@ namespace facade
                                   item.buffer,
                                   this->size);
 
-      printf("HERE\n");
-
       // retry later if necessary.
       if (item.res == -EINTR)
         leave();
-
-      printf("HERE\n");
 
       // exit if an error occured.
       if (item.res <= 0)
@@ -244,27 +240,19 @@ namespace facade
             escape("unable to exit the program");
         }
 
-      printf("HERE\n");
-
       // record the item.
       this->container.push_back(item);
 
       // waive the tracking.
       waive(item.buffer);
 
-      printf("HERE\n");
-
       // if the FUker is already processing, return since this
       // FUker processes events in a sequential manner.
       if (this->state == SequentialFUker::StateProcessing)
         leave();
 
-      printf("HERE\n");
-
       // set the state.
       this->state = SequentialFUker::StateProcessing;
-
-      printf("HERE LOOP\n");
 
       // as long as the container contains buffers...
       while (this->container.empty() == false)
