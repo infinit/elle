@@ -72,7 +72,7 @@ namespace horizon
   {
     enter();
 
-#if defined(INFINIT_Linux)
+#if defined(INFINIT_LINUX)
     {
       // clean the Linux implementation.
       if (linux::Linux::Clean() == elle::StatusError)
