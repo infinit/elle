@@ -21,12 +21,12 @@
 
 # ifdef INFINIT_WINDOWS
 #  define _INFINIT_PLATFORM "windows" _INFINIT_ARCH
-# elif defined(INFINIT_UNIX)
+# elif defined(INFINIT_LINUX)
 #  define _INFINIT_PLATFORM "linux" _INFINIT_ARCH
 # elif defined(INFINIT_MACOSX)
 #  define _INFINIT_PLATFORM "macosx" _INFINIT_ARCH
 # else
-#  error "Unkwown platform !"
+#  error "unsupported platform"
 # endif
 
 # define INFINIT_UPDATER_FILENAME "updater" _INFINIT_FILENAME_SUFFIX
