@@ -8,7 +8,20 @@ FIND_PACKAGE(OpenSSL REQUIRED)
 INCLUDE_DIRECTORIES(. ${QT_INCLUDES} ${OPENSSL_INCLUDE_DIR})
 
 #
+# configurations
+#
+IF(APPLE)
+  SET(INFINIT_MACOSX true)
+ELSEIF(WIN32)
+  SET(INFINIT_WINDOWS true)
+ELSEIF(UNIX)
+  SET(INFINIT_LINUX true)
+ENDIF()
+
+#
 # MSVC CXXFLAGS
+#
+# XXX is is still relevant?
 #
 IF(MSVC)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Wall")
@@ -17,12 +30,12 @@ ENDIF(MSVC)
 #
 # MACOSX FLAGS
 #
-IF(APPLE)
+IF(INFINIT_MACOSX)
   INCLUDE_DIRECTORIES(/usr/local/include /opt/local/include /usr/local/include/osxfuse)
   LINK_DIRECTORIES(/usr/local/lib /opt/local/lib)
 
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
-ENDIF()
+ENDIF(INFINIT_MACOSX)
 
 ADD_SUBDIRECTORY(comet)
 ADD_SUBDIRECTORY(elle)
@@ -56,6 +69,4 @@ TARGET_LINK_LIBRARIES(8infinit infinit etoile nucleus lune agent hole facade)
 #  XXX/Nest.cc
 #)
 
-#TARGET_LINK_LIBRARIES(XXX infinit elle nucleus lune infinit
-#                              ${QT_QTNETWORK_LIBRARIES}
-#                              ${QT_QTCORE_LIBRARIES})
+#TARGET_LINK_LIBRARIES(XXX infinit elle nucleus lune infinit)

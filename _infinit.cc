@@ -103,7 +103,7 @@ elle::Status            Main(elle::Natural32                    argc,
     }
 
   // retrieve the user name.
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
   {
     struct ::passwd*    pw;
 
@@ -162,15 +162,9 @@ elle::Status            Main(elle::Natural32                    argc,
   if (etoile::Etoile::Initialize() == elle::StatusError)
     escape("unable to initialize Etoile");
 
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
   // initialize the facade.
   if (facade::Facade::Initialize() == elle::StatusError)
     escape("unable to initialize the facade");
-#elif defined(INFINIT_WINDOWS)
-  // XXX todo: windows
-#else
-# error "unsupported platform"
-#endif
 
   // launch the program.
   if (elle::Program::Launch() == elle::StatusError)
@@ -182,15 +176,9 @@ elle::Status            Main(elle::Natural32                    argc,
   // waive.
   waive(Infinit::Parser);
 
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
   // clean the facade.
   if (facade::Facade::Clean() == elle::StatusError)
     escape("unable to clean the facade");
-#elif defined(INFINIT_WINDOWS)
-  // XXX todo: windows
-#else
-# error "unsupported platform"
-#endif
 
   // clean the Etoile library.
   if (etoile::Etoile::Clean() == elle::StatusError)

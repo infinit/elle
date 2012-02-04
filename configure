@@ -21,6 +21,7 @@ QTCREATOR=0
 LINUX32=OFF
 LINUX64=OFF
 WIN32=OFF
+MACOSX64=OFF
 
 function usage()
 {
@@ -35,6 +36,7 @@ function usage()
   --prefix=<path>       set the install prefix
   --linux32             enable linux 32bit build
   --linux64             enable linux 64bit build
+  --macosx64            enable macosx 64bit build
   --win32               enable windows 32bit build
 "
     exit 0
@@ -80,6 +82,9 @@ do
             ;;
         --linux64)
             LINUX64=ON
+            ;;
+        --macosx64)
+            MACOSX64=ON
             ;;
         --win32)
             WIN32=ON
@@ -155,6 +160,13 @@ function gen_build_dir()
 
 MACHINE=$(uname -m)
 
+if [[ $LINUX32 = ON ]] ; then
+    BUILDDIRS="$BUILDDIRS build/linux32"
+    (CC="${DISTCC}gcc" CXX="${DISTCC}g++" \
+        CFLAGS="${CFLAGS} -m32" CXXFLAGS="${CXXFLAGS} -m32" \
+        BUILDDIR=build/linux32 gen_build_dir)
+fi
+
 if [[ $LINUX64 = ON ]] ; then
     BUILDDIRS="$BUILDDIRS build/linux64"
     (CC="${DISTCC}gcc" CXX="${DISTCC}g++" \
@@ -162,11 +174,11 @@ if [[ $LINUX64 = ON ]] ; then
         BUILDDIR=build/linux64 gen_build_dir)
 fi
 
-if [[ $LINUX32 = ON ]] ; then
-    BUILDDIRS="$BUILDDIRS build/linux32"
+if [[ $MACOSX64 = ON ]] ; then
+    BUILDDIRS="$BUILDDIRS build/macosx64"
     (CC="${DISTCC}gcc" CXX="${DISTCC}g++" \
-        CFLAGS="${CFLAGS} -m32" CXXFLAGS="${CXXFLAGS} -m32" \
-        BUILDDIR=build/linux32 gen_build_dir)
+        CFLAGS="${CFLAGS} -m64" CXXFLAGS="${CXXFLAGS} -m64" \
+        BUILDDIR=build/macosx64 gen_build_dir)
 fi
 
 if [[ $WIN32 = ON ]] ; then

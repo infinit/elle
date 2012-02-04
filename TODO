@@ -1,10 +1,10 @@
-- CHANGER UNIX en LINUX
-- ADD MACOS to configure
 - applications -> sattelites
 - facade -> horizon
 - faire package Infinit FreeBSD
 - renommer les apps sans 8
 - revoir les projets dans redmine
+- enlever attribut epth -> tester si leak
+- ajouter implem pthread
 
 #
 # ---------- bugs -------------------------------------------------------------
