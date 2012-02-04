@@ -34,12 +34,16 @@ namespace lune
   ///
   /// this method creates a phrase.
   ///
-  elle::Status          Phrase::Create(const elle::String&      string)
+  elle::Status          Phrase::Create(const elle::String&      pass,
+                                       const elle::String&      portal)
   {
     enter();
 
-    // assign the string.
-    this->string = string;
+    // assign the pass.
+    this->pass = pass;
+
+    // assigne the portal line.
+    this->portal = portal;
 
     leave();
   }
@@ -59,8 +63,9 @@ namespace lune
     if (this == &element)
       true();
 
-    // compare the strings.
-    if (this->string != element.string)
+    // compare the attributes.
+    if ((this->pass != element.pass) ||
+        (this->portal != element.portal))
       false();
 
     true();
@@ -84,7 +89,12 @@ namespace lune
 
     enter();
 
-    std::cout << alignment << "[Phrase] " << this->string << std::endl;
+    std::cout << alignment << "[Phrase]" << std::endl;
+
+    std::cout << alignment << elle::Dumpable::Shift
+              << "[Pass] " << this->pass << std::endl;
+    std::cout << alignment << elle::Dumpable::Shift
+              << "[Portal] " << this->portal << std::endl;
 
     leave();
   }
@@ -101,7 +111,8 @@ namespace lune
     enter();
 
     // serialize the attributes.
-    if (archive.Serialize(this->string) == elle::StatusError)
+    if (archive.Serialize(this->pass,
+                          this->portal) == elle::StatusError)
       escape("unable to serialize the attributes");
 
     leave();
@@ -115,7 +126,8 @@ namespace lune
     enter();
 
     // extract the attributes.
-    if (archive.Extract(this->string) == elle::StatusError)
+    if (archive.Extract(this->pass,
+                        this->portal) == elle::StatusError)
       escape("unable to extract the attributes");
 
     leave();

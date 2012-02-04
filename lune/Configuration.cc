@@ -72,10 +72,14 @@ namespace lune
   const elle::Boolean
   Configuration::Default::Facade::Debug = false;
 
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX)
   const elle::Natural32
   Configuration::Default::Facade::FUker =
-    static_cast<elle::Natural32>(facade::unix::FUker::TypeSequential);
+    static_cast<elle::Natural32>(facade::linux::FUker::TypeSequential);
+#elif defined(INFINIT_MACOSX)
+  const elle::Natural32
+  Configuration::Default::Facade::FUker =
+    static_cast<elle::Natural32>(facade::macosx::FUker::TypeSequential);
 #elif defined(INFINIT_WINDOWS)
   // XXX
 #else
@@ -173,7 +177,7 @@ namespace lune
             this->facade.debug) == elle::StatusError)
         escape("unable to update the parameter");
 
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       if (elle::Settings::Set(
             "facade", "fuker",
             this->facade.fuker) == elle::StatusError)
@@ -299,7 +303,7 @@ namespace lune
           elle::StatusError)
         escape("unable to retrieve the parameter");
 
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       if (elle::Settings::Get(
             "facade", "fuker",
             this->facade.fuker,

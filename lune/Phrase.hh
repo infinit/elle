@@ -33,6 +33,9 @@ namespace lune
   /// a network so that a single user can launch Infini twice or more, even
   /// with a different identity, without overwritting the phrase.
   ///
+  /// the portal attribute represents the name of the local socket to
+  /// connect to in order to issue requests to Infinit.
+  ///
   class Phrase:
     public elle::Object,
     public virtual elle::Fileable<elle::FormatCustom>
@@ -46,7 +49,8 @@ namespace lune
     //
     // methods
     //
-    elle::Status        Create(const elle::String&);
+    elle::Status        Create(const elle::String&,
+                               const elle::String&);
 
     //
     // interfaces
@@ -72,7 +76,8 @@ namespace lune
     //
     // attributes
     //
-    elle::String        string;
+    elle::String        pass;
+    elle::String        portal;
   };
 
 }
