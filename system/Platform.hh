@@ -26,7 +26,7 @@ namespace elle
 /// note that the _unix_ macro is undefined since generating conflicts.
 ///
 #if defined(__linux) || defined(__unix)
-# undef unix
+# undef linux
 # define INFINIT_LINUX
 
 ///
