@@ -1,15 +1,15 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
 // author        julien quintard   [tue jul 26 15:33:15 2011]
 //
 
-#ifndef FACADE_MACOSX_SEQUENTIALFUKER_HH
-#define FACADE_MACOSX_SEQUENTIALFUKER_HH
+#ifndef HORIZON_MACOSX_SEQUENTIALFUKER_HH
+#define HORIZON_MACOSX_SEQUENTIALFUKER_HH
 
 //
 // ---------- macros ----------------------------------------------------------
@@ -25,7 +25,7 @@
 
 #include <elle/Elle.hh>
 
-#include <facade/macosx/FUker.hh>
+#include <horizon/macosx/FUker.hh>
 
 #include <elle/idiom/Close.hh>
 # include <list>
@@ -33,7 +33,7 @@
 # include <fuse/fuse_lowlevel.h>
 #include <elle/idiom/Open.hh>
 
-namespace facade
+namespace horizon
 {
   namespace macosx
   {

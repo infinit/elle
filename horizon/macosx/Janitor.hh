@@ -1,15 +1,15 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
 // author        julien quintard   [wed sep  7 12:37:56 2011]
 //
 
-#ifndef FACADE_MACOSX_JANITOR_HH
-#define FACADE_MACOSX_JANOTIR_HH
+#ifndef HORIZON_MACOSX_JANITOR_HH
+#define HORIZON_MACOSX_JANOTIR_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -18,7 +18,7 @@
 #include <elle/Elle.hh>
 #include <etoile/Etoile.hh>
 
-namespace facade
+namespace horizon
 {
   namespace macosx
   {
@@ -57,6 +57,6 @@ namespace facade
 // ---------- templates -------------------------------------------------------
 //
 
-#include <facade/macosx/Janitor.hxx>
+#include <horizon/macosx/Janitor.hxx>
 
 #endif

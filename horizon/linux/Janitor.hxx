@@ -1,15 +1,15 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
 // author        julien quintard   [wed sep  7 12:43:43 2011]
 //
 
-#ifndef FACADE_LINUX_JANITOR_HXX
-#define FACADE_LINUX_JANITOR_HXX
+#ifndef HORIZON_LINUX_JANITOR_HXX
+#define HORIZON_LINUX_JANITOR_HXX
 
 //
 // ---------- includes --------------------------------------------------------
@@ -18,7 +18,7 @@
 #include <elle/Elle.hh>
 #include <etoile/Etoile.hh>
 
-namespace facade
+namespace horizon
 {
   namespace linux
   {

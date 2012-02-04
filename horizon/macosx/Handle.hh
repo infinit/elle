@@ -1,15 +1,15 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
 // author        julien quintard   [tue sep 27 15:59:12 2011]
 //
 
-#ifndef FACADE_MACOSX_HANDLE_HH
-#define FACADE_MACOSX_HANDLE_HH
+#ifndef HORIZON_MACOSX_HANDLE_HH
+#define HORIZON_MACOSX_HANDLE_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -18,7 +18,7 @@
 #include <elle/Elle.hh>
 #include <etoile/Etoile.hh>
 
-namespace facade
+namespace horizon
 {
   namespace macosx
   {

@@ -1,19 +1,19 @@
-PROJECT(Facade CXX)
+PROJECT(Horizon CXX)
 
-ADD_LIBRARY(facade
-  Facade.cc
+ADD_LIBRARY(horizon
+  Horizon.cc
 )
 
 IF(INFINIT_LINUX)
   ADD_SUBDIRECTORY(linux)
 
-  TARGET_LINK_LIBRARIES(facade linux)
+  TARGET_LINK_LIBRARIES(horizon linux)
 ELSEIF(INFINIT_MACOSX)
   ADD_SUBDIRECTORY(macosx)
 
-  TARGET_LINK_LIBRARIES(facade macosx)
+  TARGET_LINK_LIBRARIES(horizon macosx)
 ELSEIF(INFINIT_WINDOWS)
   ADD_SUBDIRECTORY(windows)
 
-  TARGET_LINK_LIBRARIES(facade windows)
+  TARGET_LINK_LIBRARIES(horizon windows)
 ENDIF()

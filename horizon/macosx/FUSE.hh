@@ -1,15 +1,15 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
 // author        julien quintard   [fri jul 31 22:11:24 2009]
 //
 
-#ifndef FACADE_MACOSX_FUSE_HH
-#define FACADE_MACOSX_FUSE_HH
+#ifndef HORIZON_MACOSX_FUSE_HH
+#define HORIZON_MACOSX_FUSE_HH
 
 //
 // ---------- macros ----------------------------------------------------------
@@ -28,13 +28,13 @@
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 
-#include <facade/macosx/FUker.hh>
+#include <horizon/macosx/FUker.hh>
 
 #include <elle/idiom/Close.hh>
 # include <fuse/fuse.h>
 #include <elle/idiom/Open.hh>
 
-namespace facade
+namespace horizon
 {
   namespace macosx
   {
@@ -76,7 +76,7 @@ namespace facade
 /// this structure is theoretically kept internally within the FUSE source
 /// code.
 ///
-/// unfortunately, since facade is using FUSE's low-level functions, this
+/// unfortunately, since horizon is using FUSE's low-level functions, this
 /// structure is needed to access the session (->se) field.
 ///
 /// therefore this definition gives us just enough information in order

@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
@@ -12,15 +12,15 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/macosx/FUSE.hh>
-#include <facade/macosx/Crux.hh>
-#include <facade/macosx/InterlacedFUker.hh>
-#include <facade/macosx/ParallelFUker.hh>
-#include <facade/macosx/SequentialFUker.hh>
+#include <horizon/macosx/FUSE.hh>
+#include <horizon/macosx/Crux.hh>
+#include <horizon/macosx/InterlacedFUker.hh>
+#include <horizon/macosx/ParallelFUker.hh>
+#include <horizon/macosx/SequentialFUker.hh>
 
 #include <Infinit.hh>
 
-namespace facade
+namespace horizon
 {
   namespace macosx
   {
@@ -65,7 +65,7 @@ namespace facade
       //
       {
         // according to the configuration...
-        switch (Infinit::Configuration.facade.fuker)
+        switch (Infinit::Configuration.horizon.fuker)
           {
           case FUker::TypeSequential:
             {
@@ -91,7 +91,7 @@ namespace facade
           default:
             {
               escape("unknown fuker '%u'",
-                     Infinit::Configuration.facade.fuker);
+                     Infinit::Configuration.horizon.fuker);
             }
           }
       }

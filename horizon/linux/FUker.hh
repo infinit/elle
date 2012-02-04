@@ -1,15 +1,15 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
 // author        julien quintard   [tue jul 26 15:28:37 2011]
 //
 
-#ifndef FACADE_LINUX_FUKER_HH
-#define FACADE_LINUX_FUKER_HH
+#ifndef HORIZON_LINUX_FUKER_HH
+#define HORIZON_LINUX_FUKER_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -17,7 +17,7 @@
 
 #include <elle/Elle.hh>
 
-namespace facade
+namespace horizon
 {
   namespace linux
   {

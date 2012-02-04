@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
@@ -12,9 +12,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/linux/Janitor.hh>
+#include <horizon/linux/Janitor.hh>
 
-namespace facade
+namespace horizon
 {
   namespace linux
   {

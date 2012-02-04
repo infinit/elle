@@ -1,15 +1,15 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
 // author        julien quintard   [tue may 31 10:32:37 2011]
 //
 
-#ifndef FACADE_WINDOWS_WINDOWS_HH
-#define FACADE_WINDOWS_WINDOWS_HH
+#ifndef HORIZON_WINDOWS_WINDOWS_HH
+#define HORIZON_WINDOWS_WINDOWS_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,10 +20,10 @@
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 
-namespace facade
+namespace horizon
 {
   ///
-  /// this namespace contains all the elements related to the windows facade
+  /// this namespace contains all the elements related to the windows horizon
   /// i.e interface between the kernel and Infinit.
   ///
   namespace windows
@@ -35,7 +35,7 @@ namespace facade
 
     ///
     /// this class contains the general-purpose information related to the
-    /// windows facade.
+    /// windows horizon.
     ///
     class Windows
     {

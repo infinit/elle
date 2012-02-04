@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
@@ -12,9 +12,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/macosx/Janitor.hh>
+#include <horizon/macosx/Janitor.hh>
 
-namespace facade
+namespace horizon
 {
   namespace macosx
   {

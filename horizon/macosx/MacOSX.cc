@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
@@ -12,15 +12,15 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/macosx/MacOSX.hh>
-#include <facade/macosx/Crux.hh>
-#include <facade/Facade.hh>
+#include <horizon/macosx/MacOSX.hh>
+#include <horizon/macosx/Crux.hh>
+#include <horizon/Horizon.hh>
 
 #include <elle/Elle.hh>
 #include <agent/Agent.hh>
 #include <Infinit.hh>
 
-namespace facade
+namespace horizon
 {
   namespace macosx
   {

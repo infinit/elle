@@ -1,15 +1,15 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
 // author        julien quintard   [wed jun  1 09:19:13 2011]
 //
 
-#ifndef FACADE_LINUX_CRUX_HH
-#define FACADE_LINUX_CRUX_HH
+#ifndef HORIZON_LINUX_CRUX_HH
+#define HORIZON_LINUX_CRUX_HH
 
 //
 // ---------- macros ----------------------------------------------------------
@@ -34,7 +34,7 @@
 # endif
 #include <elle/idiom/Open.hh>
 
-namespace facade
+namespace horizon
 {
   namespace linux
   {

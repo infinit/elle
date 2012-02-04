@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
@@ -12,12 +12,12 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/macosx/InterlacedFUker.hh>
-#include <facade/macosx/FUSE.hh>
+#include <horizon/macosx/InterlacedFUker.hh>
+#include <horizon/macosx/FUSE.hh>
 
 #include <hole/Hole.hh>
 
-namespace facade
+namespace horizon
 {
   namespace macosx
   {
@@ -104,7 +104,7 @@ namespace facade
                                 "'");
       const char*               arguments[] =
         {
-          "facade",
+          "horizon",
 
           "-s",
           "-f",

@@ -1,15 +1,15 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
 // author        julien quintard   [tue may 31 10:32:37 2011]
 //
 
-#ifndef FACADE_LINUX_LINUX_HH
-#define FACADE_LINUX_LINUX_HH
+#ifndef HORIZON_LINUX_LINUX_HH
+#define HORIZON_LINUX_LINUX_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -25,10 +25,10 @@
 # include <pwd.h>
 #include <elle/idiom/Open.hh>
 
-namespace facade
+namespace horizon
 {
   ///
-  /// this namespace contains all the elements related to the Linux facade i.e
+  /// this namespace contains all the elements related to the Linux horizon i.e
   /// interface between the kernel and Infinit.
   ///
   namespace linux
@@ -40,7 +40,7 @@ namespace facade
 
     ///
     /// this class contains the general-purpose information related to the
-    /// Linux facade.
+    /// Linux horizon.
     ///
     class Linux
     {
@@ -71,11 +71,11 @@ namespace facade
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/linux/Crux.hh>
-#include <facade/linux/FUSE.hh>
-#include <facade/linux/FUker.hh>
-#include <facade/linux/InterlacedFUker.hh>
-#include <facade/linux/ParallelFUker.hh>
-#include <facade/linux/SequentialFUker.hh>
+#include <horizon/linux/Crux.hh>
+#include <horizon/linux/FUSE.hh>
+#include <horizon/linux/FUker.hh>
+#include <horizon/linux/InterlacedFUker.hh>
+#include <horizon/linux/ParallelFUker.hh>
+#include <horizon/linux/SequentialFUker.hh>
 
 #endif

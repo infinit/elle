@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
@@ -12,9 +12,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/Facade.hh>
+#include <horizon/Horizon.hh>
 
-namespace facade
+namespace horizon
 {
 
 //
@@ -22,9 +22,9 @@ namespace facade
 //
 
   ///
-  /// this method initializes the facade.
+  /// this method initializes the horizon.
   ///
-  elle::Status          Facade::Initialize()
+  elle::Status          Horizon::Initialize()
   {
     enter();
 
@@ -66,9 +66,9 @@ namespace facade
   }
 
   ///
-  /// this method cleans the facade.
+  /// this method cleans the horizon.
   ///
-  elle::Status          Facade::Clean()
+  elle::Status          Horizon::Clean()
   {
     enter();
 

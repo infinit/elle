@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
@@ -12,10 +12,10 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/macosx/ParallelFUker.hh>
-#include <facade/macosx/FUSE.hh>
+#include <horizon/macosx/ParallelFUker.hh>
+#include <horizon/macosx/FUSE.hh>
 
-namespace facade
+namespace horizon
 {
   namespace macosx
   {

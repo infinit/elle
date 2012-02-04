@@ -1,15 +1,15 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
 // author        julien quintard   [tue may 31 10:32:37 2011]
 //
 
-#ifndef FACADE_MACOSX_MACOSX_HH
-#define FACADE_MACOSX_MACOSX_HH
+#ifndef HORIZON_MACOSX_MACOSX_HH
+#define HORIZON_MACOSX_MACOSX_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -25,10 +25,10 @@
 # include <pwd.h>
 #include <elle/idiom/Open.hh>
 
-namespace facade
+namespace horizon
 {
   ///
-  /// this namespace contains all the elements related to the MacOS X facade
+  /// this namespace contains all the elements related to the MacOS X horizon
   /// i.e interface between the kernel and Infinit.
   ///
   namespace macosx
@@ -40,7 +40,7 @@ namespace facade
 
     ///
     /// this class contains the general-purpose information related to the
-    /// MacOS X facade.
+    /// MacOS X horizon.
     ///
     class MacOSX
     {
@@ -71,11 +71,11 @@ namespace facade
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/macosx/Crux.hh>
-#include <facade/macosx/FUSE.hh>
-#include <facade/macosx/FUker.hh>
-#include <facade/macosx/InterlacedFUker.hh>
-#include <facade/macosx/ParallelFUker.hh>
-#include <facade/macosx/SequentialFUker.hh>
+#include <horizon/macosx/Crux.hh>
+#include <horizon/macosx/FUSE.hh>
+#include <horizon/macosx/FUker.hh>
+#include <horizon/macosx/InterlacedFUker.hh>
+#include <horizon/macosx/ParallelFUker.hh>
+#include <horizon/macosx/SequentialFUker.hh>
 
 #endif

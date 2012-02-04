@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
@@ -12,14 +12,14 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/windows/Windows.hh>
-#include <facade/Facade.hh>
+#include <horizon/windows/Windows.hh>
+#include <horizon/Horizon.hh>
 
 #include <elle/Elle.hh>
 #include <agent/Agent.hh>
 #include <Infinit.hh>
 
-namespace facade
+namespace horizon
 {
   namespace windows
   {

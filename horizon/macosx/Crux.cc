@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
@@ -12,15 +12,15 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/macosx/Crux.hh>
-#include <facade/macosx/MacOSX.hh>
-#include <facade/macosx/Janitor.hh>
-#include <facade/macosx/Handle.hh>
+#include <horizon/macosx/Crux.hh>
+#include <horizon/macosx/MacOSX.hh>
+#include <horizon/macosx/Janitor.hh>
+#include <horizon/macosx/Handle.hh>
 
 #include <agent/Agent.hh>
 #include <etoile/Etoile.hh>
 
-namespace facade
+namespace horizon
 {
   namespace macosx
   {
@@ -72,8 +72,8 @@ namespace facade
       int                       result;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, %p)\n",
                __FUNCTION__,
                path, stat);
 
@@ -114,8 +114,8 @@ namespace facade
               -EPERM);
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, %p)\n",
                __FUNCTION__,
                path, stat);
 
@@ -135,8 +135,8 @@ namespace facade
       elle::String*                     name;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, %p)\n",
                __FUNCTION__,
                path, stat);
 
@@ -289,8 +289,8 @@ namespace facade
         }
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, %p)\n",
                __FUNCTION__,
                path, stat);
 
@@ -304,8 +304,8 @@ namespace facade
                                       const struct timespec[2])
     {
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, ...)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, ...)\n",
                __FUNCTION__,
                path);
 
@@ -314,8 +314,8 @@ namespace facade
       //
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, ...)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, ...)\n",
                __FUNCTION__,
                path);
 
@@ -333,8 +333,8 @@ namespace facade
       etoile::path::Chemin      chemin;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, %p)\n",
                __FUNCTION__,
                path, info);
 
@@ -356,8 +356,8 @@ namespace facade
                                               identifier));
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, %p)\n",
                __FUNCTION__,
                path, info);
 
@@ -378,8 +378,8 @@ namespace facade
       nucleus::Record*  record;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, %p, %p, %qu, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, %p, %p, %qu, %p)\n",
                __FUNCTION__,
                path, buffer, filler,
                static_cast<elle::Natural64>(offset), info);
@@ -445,8 +445,8 @@ namespace facade
               if (filler(buffer, entry->name.c_str(), NULL, next) == 1)
                 {
                   // debug.
-                  if (Infinit::Configuration.facade.debug == true)
-                    printf("[facade] /%s(%s, %p, %p, %qu, %p)\n",
+                  if (Infinit::Configuration.horizon.debug == true)
+                    printf("[horizon] /%s(%s, %p, %p, %qu, %p)\n",
                            __FUNCTION__,
                            path, buffer, filler,
                            static_cast<elle::Natural64>(offset), info);
@@ -466,8 +466,8 @@ namespace facade
         }
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, %p, %p, %qu, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, %p, %p, %qu, %p)\n",
                __FUNCTION__,
                path, buffer, filler,
                static_cast<elle::Natural64>(offset), info);
@@ -482,8 +482,8 @@ namespace facade
                                          struct ::fuse_file_info* info)
     {
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, %p)\n",
                __FUNCTION__,
                path, info);
 
@@ -501,8 +501,8 @@ namespace facade
       info->fh = 0;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, %p)\n",
                __FUNCTION__,
                path, info);
 
@@ -524,8 +524,8 @@ namespace facade
       nucleus::Record*          record;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, 0%o)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, 0%o)\n",
                __FUNCTION__,
                path, mode);
 
@@ -598,8 +598,8 @@ namespace facade
               -EPERM);
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, 0%o)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, 0%o)\n",
                __FUNCTION__,
                path, mode);
 
@@ -622,8 +622,8 @@ namespace facade
       nucleus::Subject                  subject;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s)\n",
                __FUNCTION__,
                path);
 
@@ -707,8 +707,8 @@ namespace facade
               -EPERM);
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s)\n",
                __FUNCTION__,
                path);
 
@@ -729,8 +729,8 @@ namespace facade
       nucleus::Record*                  record;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, 0%o)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, 0%o)\n",
                __FUNCTION__,
                path, mask);
 
@@ -841,8 +841,8 @@ namespace facade
               -EPERM);
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, 0%o)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, 0%o)\n",
                __FUNCTION__,
                path, mask);
 
@@ -880,8 +880,8 @@ namespace facade
       nucleus::Subject                  subject;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, 0%o)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, 0%o)\n",
                __FUNCTION__,
                path, mode);
 
@@ -986,8 +986,8 @@ namespace facade
               -EPERM);
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, 0%o)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, 0%o)\n",
                __FUNCTION__,
                path, mode);
 
@@ -1002,16 +1002,16 @@ namespace facade
                                     gid_t                       gid)
     {
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, %u, %u)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, %u, %u)\n",
                __FUNCTION__,
                path, uid, gid);
 
       // XXX to implement.
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, %u, %u)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, %u, %u)\n",
                __FUNCTION__,
                path, uid, gid);
 
@@ -1037,8 +1037,8 @@ namespace facade
       nucleus::Subject                  subject;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, %s, %p, %u, 0x%x)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, %s, %p, %u, 0x%x)\n",
                __FUNCTION__,
                path, name, value, size, flags);
 
@@ -1087,8 +1087,8 @@ namespace facade
               -EPERM);
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, %s, %p, %u, 0x%x)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, %s, %p, %u, 0x%x)\n",
                __FUNCTION__,
                path, name, value, size, flags);
 
@@ -1109,8 +1109,8 @@ namespace facade
       nucleus::Trait*           trait;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, %s, %p, %u)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, %s, %p, %u)\n",
                __FUNCTION__,
                path, name, value, size);
 
@@ -1143,8 +1143,8 @@ namespace facade
               -ENOATTR);
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, %s, %p, %u)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, %s, %p, %u)\n",
                __FUNCTION__,
                path, name, value, size);
 
@@ -1179,8 +1179,8 @@ namespace facade
       size_t                                    offset;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, %p, %u)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, %p, %u)\n",
                __FUNCTION__,
                path, list, size);
 
@@ -1207,8 +1207,8 @@ namespace facade
               -EPERM);
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, %p, %u)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, %p, %u)\n",
                __FUNCTION__,
                path, list, size);
 
@@ -1262,8 +1262,8 @@ namespace facade
       nucleus::Subject                  subject;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, %s)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, %s)\n",
                __FUNCTION__,
                path, name);
 
@@ -1311,8 +1311,8 @@ namespace facade
               -EPERM);
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, %s)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, %s)\n",
                __FUNCTION__,
                path, name);
 
@@ -1335,8 +1335,8 @@ namespace facade
       nucleus::Record*          record;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, %s)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, %s)\n",
                __FUNCTION__,
                target, source);
 
@@ -1400,8 +1400,8 @@ namespace facade
               -EPERM);
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, %s)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, %s)\n",
                __FUNCTION__,
                target, source);
 
@@ -1422,8 +1422,8 @@ namespace facade
       nucleus::Record*          record;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, %p, %qu)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, %p, %qu)\n",
                __FUNCTION__,
                path, buffer, static_cast<elle::Natural64>(size));
 
@@ -1472,8 +1472,8 @@ namespace facade
                 size);
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, %p, %qu)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, %p, %qu)\n",
                __FUNCTION__,
                path, buffer, static_cast<elle::Natural64>(size));
 
@@ -1496,8 +1496,8 @@ namespace facade
       nucleus::Record*          record;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, 0%o, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, 0%o, %p)\n",
                __FUNCTION__,
                path, mode, info);
 
@@ -1610,8 +1610,8 @@ namespace facade
                                               permissions));
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, 0%o, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, 0%o, %p)\n",
                __FUNCTION__,
                path, mode, info);
 
@@ -1629,8 +1629,8 @@ namespace facade
       etoile::gear::Identifier  identifier;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, %p)\n",
                __FUNCTION__,
                path, info);
 
@@ -1650,8 +1650,8 @@ namespace facade
                                               identifier));
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, %p)\n",
                __FUNCTION__,
                path, info);
 
@@ -1672,8 +1672,8 @@ namespace facade
       nucleus::Record*  record;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, %p, %qu, %qu, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, %p, %qu, %qu, %p)\n",
                __FUNCTION__,
                path, buffer, static_cast<elle::Natural64>(size),
                static_cast<elle::Natural64>(offset), info);
@@ -1709,8 +1709,8 @@ namespace facade
               -EPERM);
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, %p, %qu, %qu, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, %p, %qu, %qu, %p)\n",
                __FUNCTION__,
                path, buffer, static_cast<elle::Natural64>(size),
                static_cast<elle::Natural64>(offset), info);
@@ -1732,8 +1732,8 @@ namespace facade
       nucleus::Record*  record;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, %p, %qu, %qu, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, %p, %qu, %qu, %p)\n",
                __FUNCTION__,
                path, buffer, static_cast<elle::Natural64>(size),
                static_cast<elle::Natural64>(offset), info);
@@ -1767,8 +1767,8 @@ namespace facade
       ::memcpy(buffer, region.contents, region.size);
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, %p, %qu, %qu, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, %p, %qu, %qu, %p)\n",
                __FUNCTION__,
                path, buffer, static_cast<elle::Natural64>(size),
                static_cast<elle::Natural64>(offset), info);
@@ -1789,8 +1789,8 @@ namespace facade
       int                       result;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, %qu)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, %qu)\n",
                __FUNCTION__,
                path, static_cast<elle::Natural64>(size));
 
@@ -1823,8 +1823,8 @@ namespace facade
               -EPERM);
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, %qu)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, %qu)\n",
                __FUNCTION__,
                path, static_cast<elle::Natural64>(size));
 
@@ -1842,8 +1842,8 @@ namespace facade
       nucleus::Record*  record;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, %qu, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, %qu, %p)\n",
                __FUNCTION__,
                path, static_cast<elle::Natural64>(size), info);
 
@@ -1872,8 +1872,8 @@ namespace facade
               -EPERM);
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, %qu, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, %qu, %p)\n",
                __FUNCTION__,
                path, static_cast<elle::Natural64>(size), info);
 
@@ -1890,8 +1890,8 @@ namespace facade
       Handle*           handle;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, %p)\n",
                __FUNCTION__,
                path, info);
 
@@ -1946,8 +1946,8 @@ namespace facade
       info->fh = 0;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, %p)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, %p)\n",
                __FUNCTION__,
                path, info);
 
@@ -1967,8 +1967,8 @@ namespace facade
       etoile::gear::Identifier  object;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s, %s)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s, %s)\n",
                __FUNCTION__,
                source, target);
 
@@ -2215,8 +2215,8 @@ namespace facade
         }
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s, %s)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s, %s)\n",
                __FUNCTION__,
                source, target);
 
@@ -2239,8 +2239,8 @@ namespace facade
       nucleus::Subject                  subject;
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] %s(%s)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] %s(%s)\n",
                __FUNCTION__,
                path);
 
@@ -2377,8 +2377,8 @@ namespace facade
               -EPERM);
 
       // debug.
-      if (Infinit::Configuration.facade.debug == true)
-        printf("[facade] /%s(%s)\n",
+      if (Infinit::Configuration.horizon.debug == true)
+        printf("[horizon] /%s(%s)\n",
                __FUNCTION__,
                path);
 

@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
@@ -12,15 +12,15 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/linux/Linux.hh>
-#include <facade/linux/Crux.hh>
-#include <facade/Facade.hh>
+#include <horizon/linux/Linux.hh>
+#include <horizon/linux/Crux.hh>
+#include <horizon/Horizon.hh>
 
 #include <elle/Elle.hh>
 #include <agent/Agent.hh>
 #include <Infinit.hh>
 
-namespace facade
+namespace horizon
 {
   namespace linux
   {

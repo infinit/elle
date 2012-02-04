@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
@@ -12,10 +12,10 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/linux/ParallelFUker.hh>
-#include <facade/linux/FUSE.hh>
+#include <horizon/linux/ParallelFUker.hh>
+#include <horizon/linux/FUSE.hh>
 
-namespace facade
+namespace horizon
 {
   namespace linux
   {

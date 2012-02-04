@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
@@ -12,12 +12,12 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/linux/InterlacedFUker.hh>
-#include <facade/linux/FUSE.hh>
+#include <horizon/linux/InterlacedFUker.hh>
+#include <horizon/linux/FUSE.hh>
 
 #include <hole/Hole.hh>
 
-namespace facade
+namespace horizon
 {
   namespace linux
   {
@@ -104,7 +104,7 @@ namespace facade
                                 "'");
       const char*               arguments[] =
         {
-          "facade",
+          "horizon",
 
           "-s",
           "-f",

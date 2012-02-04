@@ -1,15 +1,15 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       facade
+// project       horizon
 //
 // license       infinit
 //
 // author        julien quintard   [thu dec 22 16:09:39 2011]
 //
 
-#ifndef FACADE_FACADE_HH
-#define FACADE_FACADE_HH
+#ifndef HORIZON_HORIZON_HH
+#define HORIZON_HORIZON_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -23,7 +23,7 @@
 /// this namespace contains several implementations related to the
 /// operating system as the system call interface changes.
 ///
-namespace facade
+namespace horizon
 {
 
 //
@@ -32,9 +32,9 @@ namespace facade
 
   ///
   /// this class contains general-purpose methods for initializing and
-  /// cleaning the facade component.
+  /// cleaning the horizon component.
   ///
-  class Facade
+  class Horizon
   {
   public:
     //
@@ -51,11 +51,11 @@ namespace facade
 //
 
 #if defined(INFINIT_LINUX)
-# include <facade/linux/Linux.hh>
+# include <horizon/linux/Linux.hh>
 #elif defined(INFINIT_MACOSX)
-# include <facade/macosx/MacOSX.hh>
+# include <horizon/macosx/MacOSX.hh>
 #elif defined(INFINIT_WINDOWS)
-# include <facade/windows/Windows.hh>
+# include <horizon/windows/Windows.hh>
 #else
 # error "unsupported platform"
 #endif
