@@ -18,7 +18,7 @@
 #include <stdlib.h>
 
 #include <elle/system/Platform.hh>
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
 # include <ucontext.h>
 #elif defined(INFINIT_WINDOWS)
 # include <elle/thirdparty/ucontext-win32.hh>

@@ -20,8 +20,8 @@
  *      59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
  */
 
-#ifndef UCONTEXT_WIN32_HH
-#define UCONTEXT_WIN32_HH
+#ifndef ELLE_THIRDPARTY_EPTH_WINDOWS_HH
+#define ELLE_THIRDPARTY_EPTH_WINDOWS_HH
 
 #include <windows.h>
 
@@ -46,5 +46,19 @@ int getcontext(ucontext_t *ucp);
 int setcontext(const ucontext_t *ucp);
 int makecontext(ucontext_t *, void (*)(), int, ...);
 int swapcontext(ucontext_t *, const ucontext_t *);
+
+#undef Yield
+
+//
+// types
+//
+typedef ::ucontext_t            pth_t;
+
+//
+// prototypes
+//
+
+// XXX
+pth_init
 
 #endif

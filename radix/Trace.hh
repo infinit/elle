@@ -11,7 +11,7 @@
 #ifndef ELLE_RADIX_TRACE_HH
 #define ELLE_RADIX_TRACE_HH
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_LINUX)
 //
 // ---------- includes --------------------------------------------------------
 //
