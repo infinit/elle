@@ -27,7 +27,7 @@
 
 #include <elle/idiom/Close.hh>
 # include <QObject>
-# if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+# if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
 #  include <QSocketNotifier>
 # elif defined(INFINIT_WINDOWS)
 #  include <private/qwineventnotifier_p.h>
@@ -62,7 +62,7 @@ namespace elle
       //
       // constructors & destructors
       //
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       Broker(const Natural16);
 #elif defined(INFINIT_WINDOWS)
       Broker(HANDLE);
@@ -84,7 +84,7 @@ namespace elle
       //
       // attributes
       //
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       Natural16                 descriptor;
       ::QSocketNotifier         notifier;
 #elif defined(INFINIT_WINDOWS)
@@ -100,7 +100,7 @@ namespace elle
       {
         Signal<
           Parameters<
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
             Natural16
 #elif defined(INFINIT_WINDOWS)
             HANDLE

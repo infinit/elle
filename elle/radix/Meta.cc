@@ -68,7 +68,7 @@ namespace elle
       // if the debug has been activated.
       if (Meta::Debug::Status == true)
         {
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_LINUX)
           // initialize the traces.
           if (Trace::Initialize() == StatusError)
             escape("unable to initialize the trace system");
@@ -100,7 +100,7 @@ namespace elle
           if (Meta::Show() == StatusError)
             escape("unable to show the meta");
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_LINUX)
           // clean the traces.
           if (Trace::Clean() == StatusError)
             escape("unable to clean the trace system");
@@ -150,7 +150,7 @@ namespace elle
       // if traces exist, dump them.
       if (Meta::Debug::Status == true)
         {
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_LINUX)
           // show the traces.
           if (Trace::Show(margin + 2) == elle::StatusError)
             escape("unable to show the traces");
@@ -192,7 +192,7 @@ namespace elle
       if ((Meta::Debug::Status == true) &&
           (Meta::Debug::State == true))
         {
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_LINUX)
           // store the trace.
           if (Trace::Store(address) == StatusError)
             {
@@ -236,7 +236,7 @@ namespace elle
       if ((Meta::Debug::Status == true) &&
           (Meta::Debug::State == true))
         {
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_LINUX)
           // store the trace.
           if (Trace::Store(address) == StatusError)
             {
@@ -272,7 +272,7 @@ namespace elle
       if ((Meta::Debug::Status == true) &&
           (Meta::Debug::State == true))
         {
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_LINUX)
           // erase the trace.
           if (Trace::Erase(address) == StatusError)
             {

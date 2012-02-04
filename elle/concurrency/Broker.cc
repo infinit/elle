@@ -27,7 +27,7 @@ namespace elle
 // ---------- constructors & destructors --------------------------------------
 //
 
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
     ///
     /// default constructor.
     ///
@@ -59,7 +59,7 @@ namespace elle
     {
       enter();
 
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // connect the QT signals.
       if (this->connect(&this->notifier, SIGNAL(activated(int)),
                         this, SLOT(_trigger())) == false)
@@ -83,7 +83,7 @@ namespace elle
     {
       enter();
 
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // disconnect the QT signals.
       if (this->disconnect(&this->notifier, SIGNAL(activated(int)),
                            this, SLOT(_trigger())) == false)
@@ -112,7 +112,7 @@ namespace elle
     {
       enter();
 
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // emit the signal.
       if (this->signal.ready.Emit(this->descriptor) == StatusError)
         escape("unable to emit the signal");
@@ -144,7 +144,7 @@ namespace elle
 
       enter();
 
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       //
       // the following part should not be necessary but it turns out
       // that QT triggers this event even though there is nothing to
@@ -153,6 +153,16 @@ namespace elle
       // \todo XXX check in future versions to be sure that this bug
       //           diseppear: launching Infinit and trying CTRL^C does
       //           not work without this code.
+      //           note that this does not even work on MacOS X in
+      //           which select succeeds but the FUker later blocks,
+      //           probably because there is not enough data to
+      //           complete a FUSE header.
+      //           this platform-specific code should be moved to
+      //           the appropriate FUkers, especially if the number
+      //           of such cases (in which the function returns because
+      //           of insufficient data to be processed) are low so
+      //           that the creation of fibers does not impact the
+      //           performance.
       {
         struct timeval  timeout = { 0, 0 };
         ::fd_set        set;
@@ -161,7 +171,7 @@ namespace elle
 
         FD_SET(this->descriptor, &set);
 
-        if (::select(FD_SETSIZE, &set, NULL, NULL, &timeout) == 0)
+        if (::select(FD_SETSIZE, &set, NULL, NULL, &timeout) == -1)
           return;
       }
 #endif

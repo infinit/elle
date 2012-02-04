@@ -18,7 +18,12 @@
 #include <stdlib.h>
 
 #include <elle/system/Platform.hh>
-#if defined(INFINIT_UNIX)
+
+#if defined(INFINIT_MACOSX)
+# define _XOPEN_SOURCE
+#endif
+
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
 # include <ucontext.h>
 #elif defined(INFINIT_WINDOWS)
 # include <elle/thirdparty/ucontext-win32.hh>
@@ -29,26 +34,37 @@ ucontext_t auc,buc,mainuc;
 
 void a()
 {
-  log_here;
+  printf("a() start\n");
+
   swapcontext(&auc, &buc);         /* switch to main thread */
-  log_here;
+
+  printf("a() checkpoint 1\n");
+
   swapcontext(&auc, &buc);         /* switch to main thread */
-  log_here;
+
+  printf("a() checkpoint 2\n");
+
   swapcontext(&auc, &mainuc);         /* switch to main thread */
+
+  printf("a() end\n");
 }
 
 void b()
 {
-  log_here;
+  printf("b() start\n");
+
   swapcontext(&buc, &auc);         /* switch to main thread */
-  log_here;
+
+  printf("b() checkpoint\n");
+
   swapcontext(&buc, &auc);         /* switch to main thread */
-  log_here;
+
+  printf("b() start\n");
 }
 
 int main(void)
 {
-    printf("start\n");                  /* main thread starts */
+    printf("main() start\n");                  /* main thread starts */
 
     /* Set up context for thread A (Unix code, see manpages) */
     getcontext(&auc);

@@ -34,18 +34,8 @@
 #include <elle/concurrency/Timer.hh>
 
 #include <elle/idiom/Close.hh>
+# include <elle/thirdparty/epth.hh>
 # include <list>
-# if defined(INFINIT_UNIX)
-#  include <ucontext.h>
-# elif defined(INFINIT_WINDOWS)
-#  include <elle/thirdparty/ucontext-win32.hh>
-#  undef Yield
-# elif defined(INFINIT_MACOSX)
-#  define _XOPEN_SOURCE
-#  include <ucontext.h>
-# else
-#  error "No makecontext support on this plateform."
-# endif
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -129,8 +119,8 @@ namespace elle
       // structures
       //
 
-      // fibers
-      struct F
+      // waiting
+      struct W
       {
         typedef std::list<Fiber*>                       Container;
         typedef Container::iterator                     Iterator;
@@ -159,7 +149,7 @@ namespace elle
       //
       // static attributes
       //
-      static F::Container       Fibers;
+      static W::Container       Waiting;
 
       static Fiber*             Program;
       static Fiber*             Current;
@@ -216,9 +206,9 @@ namespace elle
       static Status     Remove(Fiber*);
 
       static Status     Locate(const Event&,
-                               F::Iterator&);
+                               W::Iterator&);
       static Status     Locate(const Resource*,
-                               F::Iterator&);
+                               W::Iterator&);
 
       static Status     Show(const Natural32 = 0);
 
@@ -227,11 +217,6 @@ namespace elle
       //
       Fiber();
       ~Fiber();
-
-      //
-      // methods
-      //
-      Status            Create(const Natural32 = Size);
 
       //
       // callbacks
@@ -251,7 +236,8 @@ namespace elle
       Fiber*            link;
 
       Frame*            frame;
-      ::ucontext_t      context;
+
+      t_epth            context;
 
       State             state;
 
