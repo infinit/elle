@@ -1,11 +1,25 @@
 PROJECT(Infinit C CXX)
 
+set(INFINIT_VERSION_MAJOR "0")
+set(INFINIT_VERSION_MINOR "1")
+set(INFINIT_VERSION "${INFINIT_VERSION_MAJOR}.${INFINIT_VERSION_MINOR}")
+
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-FIND_PACKAGE(Qt4 4.8.0 REQUIRED QtCore QtNetwork)
-FIND_PACKAGE(OpenSSL REQUIRED)
+find_package(Qt4 4.8.0 REQUIRED QtCore QtNetwork)
+set(QT_DONT_USE_QTGUI true)
+include(${QT_USE_FILE})
+include_directories(${QT_INCLUDES})
 
-INCLUDE_DIRECTORIES(. ${QT_INCLUDES} ${OPENSSL_INCLUDE_DIR})
+find_package(OpenSSL REQUIRED)
+
+include_directories(. ${OPENSSL_INCLUDE_DIR})
+
+message("INFINIT_VERSION: ${INFINIT_VERSION}")
+message("UNIX: ${UNIX}")
+message("WIN32: ${WIN32}")
+message("CMAKE_SYSTEM: ${CMAKE_SYSTEM}")
+message("CMAKE_HOST_SYSTEM: ${CMAKE_HOST_SYSTEM}")
 
 #
 # configurations
@@ -37,21 +51,22 @@ IF(INFINIT_MACOSX)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 ENDIF(INFINIT_MACOSX)
 
-ADD_SUBDIRECTORY(comet)
-ADD_SUBDIRECTORY(elle)
-ADD_SUBDIRECTORY(nucleus)
-ADD_SUBDIRECTORY(etoile)
-ADD_SUBDIRECTORY(agent)
-ADD_SUBDIRECTORY(lune)
-ADD_SUBDIRECTORY(facade)
+add_subdirectory(comet)
+add_subdirectory(elle)
+add_subdirectory(nucleus)
+add_subdirectory(etoile)
+add_subdirectory(agent)
+add_subdirectory(lune)
+add_subdirectory(facade)
 
-ADD_SUBDIRECTORY(hole)
-ADD_SUBDIRECTORY(applications)
+add_subdirectory(hole)
+add_subdirectory(applications)
+add_subdirectory(plasma)
 
 # just to make files appears on qtcreator
-FILE(GLOB_RECURSE HEADERS *.hh *.hxx)
+file(GLOB_RECURSE HEADERS *.hh *.hxx)
 
-ADD_LIBRARY(infinit
+add_library(infinit
   Infinit.cc
   ${HEADERS}
 )
@@ -61,6 +76,8 @@ ADD_EXECUTABLE(8infinit
 )
 
 TARGET_LINK_LIBRARIES(8infinit infinit etoile nucleus lune agent hole facade)
+
+add_subdirectory(release)
 
 # XXX
 #ADD_EXECUTABLE(XXX
