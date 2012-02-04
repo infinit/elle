@@ -18,7 +18,11 @@
 #include <applications/8diary/unix/Record.hh>
 #include <applications/8diary/unix/Replay.hh>
 
-#include <facade/unix/UNIX.hh>
+#if defined(INFINIT_LINUX)
+# include <horizon/linux/Linux.hh>
+#elif defined(INFINIT_MACOSX)
+# include <horizon/macosx/MacOSX.hh>
+#endif
 
 namespace application
 {
@@ -103,8 +107,13 @@ namespace application
       if (Replay::Initialize(this) == elle::StatusError)
         escape("unable to initialize the replay");
 
+#if defined(INFINIT_LINUX)
       // set the attributes.
-      this->fuse = facade::unix::FUSE::Operations;
+      this->fuse = horizon::linux::FUSE::Operations;
+#elif defined(INFINIT_MACOSX)
+      // set the attributes.
+      this->fuse = horizon::macosx::FUSE::Operations;
+#endif
 
       leave();
     }

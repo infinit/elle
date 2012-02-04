@@ -16,6 +16,6 @@ IF(${UNIX})
   )
 ENDIF()
 
-TARGET_LINK_LIBRARIES(8diary infinit elle nucleus lune etoile facade
+TARGET_LINK_LIBRARIES(8diary infinit elle nucleus lune etoile horizon
 		             ${QT_QTNETWORK_LIBRARIES}
 			     ${QT_QTCORE_LIBRARIES})

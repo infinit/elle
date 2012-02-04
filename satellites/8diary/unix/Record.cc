@@ -15,7 +15,11 @@
 #include <applications/8diary/unix/Record.hh>
 #include <applications/8diary/unix/Upcall.hh>
 
-#include <facade/unix/FUSE.hh>
+#if defined(INFINIT_LINUX)
+# include <horizon/linux/FUSE.hh>
+#elif defined(INFINIT_MACOSX)
+# include <horizon/macosx/FUSE.hh>
+#endif
 
 namespace application
 {
@@ -955,14 +959,29 @@ namespace application
         Record::Operations.flag_nullpath_ok = 0;
       }
 
-      // initialize FUSE.
-      if (facade::unix::FUSE::Initialize(Record::Operations) ==
-          elle::StatusError)
-        escape("unable to initialize FUSE");
+#if defined(INFINIT_LINUX)
+      {
+        // initialize FUSE.
+        if (horizon::linux::FUSE::Initialize(Record::Operations) ==
+            elle::StatusError)
+          escape("unable to initialize FUSE");
 
-      // set up FUSE.
-      if (facade::unix::FUSE::Setup(mountpoint) == elle::StatusError)
-        escape("unable to set up FUSE");
+        // set up FUSE.
+        if (horizon::linux::FUSE::Setup(mountpoint) == elle::StatusError)
+          escape("unable to set up FUSE");
+      }
+#elif defined(INFINIT_MACOSX)
+      {
+        // initialize FUSE.
+        if (horizon::macosx::FUSE::Initialize(Record::Operations) ==
+            elle::StatusError)
+          escape("unable to initialize FUSE");
+
+        // set up FUSE.
+        if (horizon::macosx::FUSE::Setup(mountpoint) == elle::StatusError)
+          escape("unable to set up FUSE");
+      }
+#endif
 
       leave();
     }
@@ -974,9 +993,15 @@ namespace application
     {
       enter();
 
+#if defined(INFINIT_LINUX)
       // clean FUSE.
-      if (facade::unix::FUSE::Clean() == elle::StatusError)
+      if (horizon::linux::FUSE::Clean() == elle::StatusError)
         escape("unable to clean FUSE");
+#elif defined(INFINIT_MACOSX)
+      // clean FUSE.
+      if (horizon::macosx::FUSE::Clean() == elle::StatusError)
+        escape("unable to clean FUSE");
+#endif
 
       // reset the memoirs pointer.
       Record::Reference = NULL;

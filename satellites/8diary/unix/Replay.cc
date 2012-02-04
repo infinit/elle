@@ -15,7 +15,11 @@
 #include <applications/8diary/unix/Replay.hh>
 #include <applications/8diary/unix/Live.hh>
 
-#include <facade/unix/UNIX.hh>
+#if defined(INFINIT_LINUX)
+# include <horizon/linux/Linux.hh>
+#elif defined(INFINIT_MACOSX)
+# include <horizon/macosx/MacOSX.hh>
+#endif
 
 namespace application
 {
@@ -1182,12 +1186,25 @@ namespace application
               elle::Parameters<>
               >(elle::Callback<>::Infer(&Replay::Process)));
 
-      // initialize the facade's UNIX complete implementation.
-      //
-      // note that the UNIX is not set up i.e not mounted as this is
-      // not required to replay a diary.
-      if (facade::unix::UNIX::Initialize() == elle::StatusError)
-        escape("unable to initialize the facade");
+#if defined(INFINIT_LINUX)
+      {
+        // initialize the horizon's Linux complete implementation.
+        //
+        // note that the Linux is not set up i.e not mounted as this is
+        // not required to replay a diary.
+        if (horizon::linux::Linux::Initialize() == elle::StatusError)
+          escape("unable to initialize the horizon");
+      }
+#elif defined(INFINIT_MACOSX)
+      {
+        // initialize the horizon's MacOS X complete implementation.
+        //
+        // note that the MacOS X is not set up i.e not mounted as this is
+        // not required to replay a diary.
+        if (horizon::macosx::macosx::Initialize() == elle::StatusError)
+          escape("unable to initialize the horizon");
+      }
+#endif
 
       leave();
     }
@@ -1484,9 +1501,15 @@ namespace application
     {
       enter();
 
-      // clean the facade.
-      if (facade::unix::UNIX::Clean() == elle::StatusError)
-        escape("unable to clean the facade");
+#if defined(INFINIT_LINUX)
+      // clean the horizon.
+      if (horizon::linux::Linux::Clean() == elle::StatusError)
+        escape("unable to clean the horizon");
+#elif defined(INFINIT_MACOSX)
+      // clean the horizon.
+      if (horizon::macosx::MacOSX::Clean() == elle::StatusError)
+        escape("unable to clean the horizon");
+#endif
 
       // delete the entrance.
       if (Replay::Entrance != NULL)
