@@ -52,11 +52,6 @@ elle::radix::Status     epth_initialize(const elle::core::Natural32     size,
     escape("unable to initialize the Pth library");
 
   if (::pth_attr_set(epth_attribute,
-                     ::PTH_ATTR_JOINABLE,
-                     FALSE) == -1)
-    escape("unable to set the Pth non-JOINABLE attribute");
-
-  if (::pth_attr_set(epth_attribute,
                      ::PTH_ATTR_STACK_SIZE,
                      size) == -1)
     escape("unable to set the Pth stack size");

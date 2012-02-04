@@ -11,6 +11,18 @@
 #ifndef ELLE_THIRDPARTY_EPTH_HH
 #define ELLE_THIRDPARTY_EPTH_HH
 
+///
+/// epth stands for extended Pth, Pth being a portable cooperative thread.
+///
+/// since Infinit relies on cooperative thread, aka fibers, the Pth library
+/// has been used, especially for handling UNIX operating systems such
+/// as Linux, *BSD or even MacOS X.
+///
+/// however, since Windows is not included in the scope of Pth, a wrapper,
+/// i.e epth, has been developed so as to called specific native functions
+/// when it comes to Windows platforms.
+///
+
 //
 // ---------- includes --------------------------------------------------------
 //
