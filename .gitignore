@@ -1,7 +1,6 @@
 CMakeLists.txt.shared
 CMakeLists.txt.user
 agent
-applications
 build*
 comet
 config.hh
@@ -9,8 +8,9 @@ config.mk
 elle
 etoile
 hole
+horizon
 lune
 nucleus
-horizon
 oracle
 plasma
+satellites

@@ -58,9 +58,8 @@ add_subdirectory(etoile)
 add_subdirectory(agent)
 add_subdirectory(lune)
 add_subdirectory(horizon)
-
 add_subdirectory(hole)
-add_subdirectory(applications)
+add_subdirectory(satellites)
 add_subdirectory(plasma)
 
 # just to make files appears on qtcreator

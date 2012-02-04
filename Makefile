@@ -30,17 +30,17 @@ BROWSER         :=              firefox
 
 CONFIGURE	:=		./configure
 
-COMPONENTS	:=		elle					\
+COMPONENTS	:=		agent					\
 				comet					\
-				nucleus					\
+				elle					\
 				etoile					\
-				agent					\
-				horizon					\
-				applications				\
-				lune					\
 				hole					\
+				horizon					\
+				lune					\
+				nucleus					\
 				oracle					\
-				plasma					
+				plasma					\
+				satellites				
 
 #
 # ---------- includes ---------------------------------------------------------
