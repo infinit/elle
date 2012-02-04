@@ -78,7 +78,7 @@ namespace lune
         static const elle::Boolean              Debug;
       };
 
-      struct                                    Facade
+      struct                                    Horizon
       {
         static const elle::Boolean              Debug;
 
@@ -167,7 +167,7 @@ namespace lune
 #else
 # error "unsupported platform"
 #endif
-    }                           facade;
+    }                           horizon;
   };
 
 }
