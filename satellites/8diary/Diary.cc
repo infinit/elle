@@ -240,7 +240,7 @@ namespace application
                                      mirror) == elle::StatusError)
             escape("unable to retrieve the mirror value");
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
           {
             unix::Memoirs       memoirs;
 
@@ -327,7 +327,7 @@ namespace application
           if (agent::Agent::Initialize() == elle::StatusError)
             escape("unable to initialize Agent");
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
           {
             unix::Memoirs       memoirs;
 
@@ -379,7 +379,7 @@ namespace application
           if (path.Create(string) == elle::StatusError)
             escape("unable to create the path");
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
           {
             unix::Memoirs       memoirs;
 

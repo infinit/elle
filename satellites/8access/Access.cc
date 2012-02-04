@@ -85,17 +85,9 @@ namespace application
   ///
   elle::Status          Access::Connect()
   {
-    elle::String        line;
     lune::Phrase        phrase;
 
     enter();
-
-    // build the line.
-    line =
-      "etoile-" +
-      Infinit::User +
-      ":" +
-      Infinit::Network;
 
     //
     // load the phrase.
@@ -128,7 +120,7 @@ namespace application
 
       // connect the socket.
       if (Access::Socket.Connect(
-            line,
+            phrase.portal,
             elle::Socket::ModeSynchronous) == elle::StatusError)
         escape("unable to connect to the lane");
     }
@@ -139,7 +131,7 @@ namespace application
     {
       // send the user's network-specific phrase.
       if (Access::Socket.Call(
-            elle::Inputs<etoile::portal::TagAuthenticate>(phrase),
+            elle::Inputs<etoile::portal::TagAuthenticate>(phrase.pass),
             elle::Outputs<etoile::portal::TagAuthenticated>()) ==
           elle::StatusError)
         escape("unable to authenticate to Etoile");

@@ -56,7 +56,7 @@ namespace application
 
 #include <applications/8diary/Memoirs.hh>
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
 # include <applications/8diary/unix/UNIX.hh>
 #elif defined(INFINIT_WINDOWS)
 // XXX todo: windows
