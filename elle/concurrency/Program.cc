@@ -132,9 +132,6 @@ namespace elle
     ///
     Void                Program::Exception(int                  signal)
     {
-      // XXX
-      printf("XXX EXCEPTION\n");
-
       // stop the program depending on the signal.
       switch (signal)
         {
