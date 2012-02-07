@@ -1,9 +1,0 @@
-PROJECT(8user CXX)
-
-ADD_EXECUTABLE(8user
-  User.cc
-)
-
-TARGET_LINK_LIBRARIES(8user infinit elle lune nucleus
-		            ${QT_QTNETWORK_LIBRARIES}
-			    ${QT_QTCORE_LIBRARIES})
