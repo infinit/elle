@@ -72,7 +72,7 @@ namespace etoile
       // static callbacks
       //
       static elle::Status       Connection(elle::LocalSocket*);
-      static elle::Status       Authenticate(const lune::Phrase&);
+      static elle::Status       Authenticate(const elle::String&);
       static elle::Status       Prolog();
       static elle::Status       Epilog();
 

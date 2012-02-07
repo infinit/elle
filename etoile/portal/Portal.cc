@@ -50,17 +50,10 @@ namespace etoile
     {
       ;
 
-      // build the line depending on both the user and network names.
-      Portal::Line =
-        "etoile-" +
-        Infinit::User +
-        ":" +
-        Infinit::Network;
-
-      /// XXX \todo le faire proprement en quittant, tout nettoyer, notamment
-      ///     en catchant les signaux (UNIX/QT) et via unlink.
-      elle::String      path = "/tmp/" + Portal::Line;
-      ::unlink(path.c_str());
+      // build an arbitrary line for applications to connect to
+      // the portal and issue requests.
+      if (elle::Random::Generate(Portal::Line, 64) == elle::StatusError)
+        escape("unable to generate a random portal line");
 
       // register the messages.
       {
@@ -521,10 +514,7 @@ namespace etoile
     {
       ;
 
-      /// XXX \todo le faire proprement en quittant, tout nettoyer, notamment
-      ///     en catchant les signaux (UNIX/QT) et via unlink.
-      elle::String      path = "/tmp/" + Portal::Line;
-      ::unlink(path.c_str());
+      // nothing to do.
 
       return elle::StatusOk;
     }
@@ -671,7 +661,7 @@ namespace etoile
     /// instance's. if the phrase is valid, the application is authorised
     /// to trigger operation on behalf of the current user.
     ///
-    elle::Status        Portal::Authenticate(const lune::Phrase& phrase)
+    elle::Status        Portal::Authenticate(const elle::String&        pass)
     {
       elle::Session*    session;
       Application*      application;
@@ -693,8 +683,8 @@ namespace etoile
         escape("unable to retrieve the application");
 
       // check that the given phrase is the same as etoile's.
-      if (Etoile::Phrase != phrase)
-        escape("the given phrase is invalid");
+      if (Etoile::Phrase.pass != pass)
+        escape("the given pass is invalid");
 
       // set the application as being authenticated.
       application->state = Application::StateAuthenticated;

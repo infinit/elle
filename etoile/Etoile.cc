@@ -78,7 +78,8 @@ namespace etoile
         escape("unable to generate a random string");
 
       // create the phrase.
-      if (Etoile::Phrase.Create(string) == elle::StatusError)
+      if (Etoile::Phrase.Create(string,
+                                portal::Portal::Line) == elle::StatusError)
         escape("unable to create the phrase");
 
       // store the phrase.
