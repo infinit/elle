@@ -170,16 +170,7 @@ elle::Status            Main(elle::Natural32                    argc,
 
   // delete the parser.
   delete Infinit::Parser;
-
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
-  // clean the facade.
-  if (facade::Facade::Clean() == elle::StatusError)
-    escape("unable to clean the facade");
-#elif defined(INFINIT_WINDOWS)
-  // XXX todo: windows
-#else
-# error "unsupported platform"
-#endif
+  Infinit::Parser = nullptr;
 
   // clean the horizon.
   if (horizon::Horizon::Clean() == elle::StatusError)
