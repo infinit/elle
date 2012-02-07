@@ -56,8 +56,6 @@ namespace horizon
     ///
     elle::Status        Linux::Initialize()
     {
-      enter();
-
       //
       // initialize the 'somebody' entity.
       //
@@ -143,8 +141,7 @@ namespace horizon
         if (FUSE::Initialize(operations) == elle::StatusError)
           escape("unable to initialize FUSE");
       }
-
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -152,13 +149,11 @@ namespace horizon
     ///
     elle::Status        Linux::Setup()
     {
-      enter();
-
       // set up FUSE.
       if (FUSE::Setup(Infinit::Mountpoint) == elle::StatusError)
         escape("unable to set up FUSE");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -166,13 +161,11 @@ namespace horizon
     ///
     elle::Status        Linux::Clean()
     {
-      enter();
-
       // clean FUSE.
       if (FUSE::Clean() == elle::StatusError)
         escape("unable to clean FUSE");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -47,11 +47,9 @@ namespace horizon
     ///
     elle::Status        ParallelFUker::Setup()
     {
-      enter();
-
       // XXX to implement.
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -64,11 +62,9 @@ namespace horizon
     ///
     elle::Status        ParallelFUker::Event(const elle::Natural16&)
     {
-      enter();
-
       // XXX to implement.
 
-      leave();
+      return elle::StatusOk;
     }
 
   }
