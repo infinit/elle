@@ -22,21 +22,34 @@ message("CMAKE_SYSTEM: ${CMAKE_SYSTEM}")
 message("CMAKE_HOST_SYSTEM: ${CMAKE_HOST_SYSTEM}")
 
 #
+# configurations
+#
+IF(APPLE)
+  SET(INFINIT_MACOSX true)
+ELSEIF(WIN32)
+  SET(INFINIT_WINDOWS true)
+ELSEIF(UNIX)
+  SET(INFINIT_LINUX true)
+ENDIF()
+
+#
 # MSVC CXXFLAGS
 #
-if(MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Wall")
-endif()
+# XXX is is still relevant?
+#
+IF(MSVC)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Wall")
+ENDIF(MSVC)
 
 #
 # MACOSX FLAGS
 #
-if(APPLE)
-  include_directories(/usr/local/include /opt/local/include /usr/local/include/osxfuse)
-  link_directories(/usr/local/lib /opt/local/lib)
+IF(INFINIT_MACOSX)
+  INCLUDE_DIRECTORIES(/usr/local/include /opt/local/include /usr/local/include/osxfuse)
+  LINK_DIRECTORIES(/usr/local/lib /opt/local/lib)
 
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
-endif()
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+ENDIF(INFINIT_MACOSX)
 
 add_subdirectory(comet)
 add_subdirectory(elle)
@@ -44,10 +57,9 @@ add_subdirectory(nucleus)
 add_subdirectory(etoile)
 add_subdirectory(agent)
 add_subdirectory(lune)
-add_subdirectory(facade)
-
+add_subdirectory(horizon)
 add_subdirectory(hole)
-add_subdirectory(applications)
+add_subdirectory(satellites)
 add_subdirectory(plasma)
 
 # just to make files appears on qtcreator
@@ -62,6 +74,15 @@ ADD_EXECUTABLE(8infinit
   _infinit.cc
 )
 
-TARGET_LINK_LIBRARIES(8infinit infinit etoile nucleus lune agent hole facade)
+TARGET_LINK_LIBRARIES(8infinit infinit etoile nucleus lune agent hole horizon)
 
 add_subdirectory(release)
+
+# XXX
+#ADD_EXECUTABLE(XXX
+#  XXX/Porcupine.cc
+#  XXX/XXX.cc
+#  XXX/Nest.cc
+#)
+
+#TARGET_LINK_LIBRARIES(XXX infinit elle nucleus lune infinit)
