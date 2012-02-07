@@ -52,7 +52,7 @@ namespace elle
 
       waive(element);
 
-      leave();
+      return elle::StatusOk;
     }
 
     Status              Referee::Pop(Archive::Type&             type,
@@ -61,7 +61,7 @@ namespace elle
     {
       Element*          element;
 
-      enter();
+      ;
 
       if (Referee::List.empty() == true)
         escape("the referee does not contain any element any more");
@@ -76,14 +76,14 @@ namespace elle
 
       delete element;
 
-      leave();
+      return elle::StatusOk;
     }
 
     Status              Referee::Flush()
     {
       Element*          element;
 
-      enter();
+      ;
 
       while (Referee::List.empty() == false)
         {
@@ -96,7 +96,7 @@ namespace elle
           delete element;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

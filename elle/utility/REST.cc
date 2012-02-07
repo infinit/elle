@@ -42,7 +42,7 @@ namespace elle
     {
       HTTP::Content     content;
 
-      enter();
+      ;
 
       // request the HTTP GET method.
       if (HTTP::Get(uri,
@@ -53,7 +53,7 @@ namespace elle
       if (JSON::Decode(content, response) == StatusError)
         escape("unable to decode the response");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -67,7 +67,7 @@ namespace elle
       HTTP::Content     content;
       String            string;
 
-      enter();
+      ;
 
       // encode the request into a string.
       if (JSON::Encode(request, string) == StatusError)
@@ -83,7 +83,7 @@ namespace elle
       if (JSON::Decode(content, response) == StatusError)
         escape("unable to decode the response");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -97,7 +97,7 @@ namespace elle
       HTTP::Content     content;
       String            string;
 
-      enter();
+      ;
 
       // encode the request into a string.
       if (JSON::Encode(request, string) == StatusError)
@@ -113,7 +113,7 @@ namespace elle
       if (JSON::Decode(content, response) == StatusError)
         escape("unable to decode the response");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -125,7 +125,7 @@ namespace elle
     {
       HTTP::Content     content;
 
-      enter();
+      ;
 
       // request the HTTP DELETE method.
       if (HTTP::Delete(uri,
@@ -136,7 +136,7 @@ namespace elle
       if (JSON::Decode(content, response) == StatusError)
         escape("unable to decode the response");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

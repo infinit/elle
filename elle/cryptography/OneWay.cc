@@ -42,9 +42,6 @@ namespace elle
       ::EVP_MD_CTX      context;
       unsigned int      size;
 
-      wrap(context);
-      enterx(local(context, ::EVP_MD_CTX_cleanup));
-
       // allocate the digest's contents.
       if (digest.region.Prepare(EVP_MD_size(OneWay::Algorithm)) == StatusError)
         escape("unable to allocate memory for the digest");
@@ -52,25 +49,20 @@ namespace elle
       // initialise the context.
       ::EVP_MD_CTX_init(&context);
 
-      // activate the tracking of the context.
-      track(context);
-
       // initialise the digest.
-      if (::EVP_DigestInit_ex(&context, OneWay::Algorithm, NULL) <= 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
-
+      if (::EVP_DigestInit_ex(&context, OneWay::Algorithm, NULL) <= 0 ||
       // update the digest with the given data.
-      if (::EVP_DigestUpdate(&context,
+          ::EVP_DigestUpdate(&context,
                              plain.contents,
-                             plain.size) <= 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
-
+                             plain.size) <= 0 ||
       // finalise the digest.
-      if (::EVP_DigestFinal_ex(
-            &context,
-            reinterpret_cast<unsigned char*>(digest.region.contents),
-            static_cast<unsigned int*>(&size)) <= 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+          ::EVP_DigestFinal_ex(&context,
+                               reinterpret_cast<unsigned char*>(digest.region.contents),
+                               static_cast<unsigned int*>(&size)) <= 0)
+        {
+          (void) ::EVP_MD_CTX_cleanup(&context); // no matter if we can cleanup the context
+          escape(::ERR_error_string(ERR_get_error(), NULL));
+        }
 
       // set the size.
       digest.region.size = size;
@@ -79,10 +71,7 @@ namespace elle
       if (::EVP_MD_CTX_cleanup(&context) <= 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      // stop tracking.
-      untrack(context);
-
-      leave();
+      return elle::StatusOk;
     }
 
   }

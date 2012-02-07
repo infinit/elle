@@ -59,8 +59,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
-
       std::cout << alignment << "[Zone]" << std::endl;
 
       // dump the mutex.
@@ -71,7 +69,7 @@ namespace elle
       if (this->section.Dump(margin + 2) == StatusError)
         escape("unable to dump the section");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -92,8 +90,6 @@ namespace elle
     ///
     Void                Mutex::Lock()
     {
-      enter();
-
       // has the lock been acquired, wait for it to get released.
       while (this->locked == true)
         {
@@ -103,15 +99,13 @@ namespace elle
           //
 
           // wait for the mutex.
-          if (Fiber::Wait(this) == StatusError)
+          if (Fiber::Wait(*this) == StatusError)
             yield(_(), "an error occured while waiting on the resource");
         }
 
       // first, set the mutex as being locked so that another writer
       // does not acquire it.
       this->locked = true;
-
-      release();
     }
 
     ///
@@ -119,17 +113,13 @@ namespace elle
     ///
     Void                Mutex::Unlock()
     {
-      enter();
-
       // reset the lock as being available;
       this->locked = false;
 
       // and finally, awaken the fibers potentially blocked on the
       // mutex.
-      if (Fiber::Awaken(this) == StatusError)
+      if (Fiber::Awaken(*this) == StatusError)
         yield(_(), "unable to awaken the fibers");
-
-      release();
     }
 
     ///
@@ -138,13 +128,11 @@ namespace elle
     ///
     Status              Mutex::Try()
     {
-      enter();
-
       // has the lock been acquired, return false.
       if (this->locked == true)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -159,15 +147,13 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
-
       std::cout << alignment << "[Mutex]" << std::endl;
 
       // dump the locked boolean.
       std::cout << alignment << Dumpable::Shift
                 << "[Locked] " << this->locked << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

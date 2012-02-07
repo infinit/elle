@@ -26,14 +26,102 @@
 #include <sstream>
 
 #include <elle/idiom/Close.hh>
+
+# include <boost/noncopyable.hpp>
+# include <QDir>
+
 # include <sys/stat.h>
 # include <unistd.h>
 # include <fcntl.h>
 # include <libgen.h>
 # include <sys/types.h>
 # include <dirent.h>
-# include <QDir>
 #include <elle/idiom/Open.hh>
+
+namespace // usefull classes
+{
+
+  ///
+  /// This class abstracts low level calls to
+  /// iterate through directories
+  ///
+  class _Directory : private boost::noncopyable
+  {
+  public:
+    class iterator
+    {
+    private:
+      ::DIR*            _dir;
+      struct ::dirent*  _entry;
+      elle::String      _current;
+
+    public:
+      iterator(::DIR* dir) :
+        _dir(dir), _entry(nullptr), _current()
+      {
+        if (dir != nullptr)
+        {
+          this->_entry = ::readdir(this->_dir);
+          if (this->_entry != nullptr)
+            this->_current.assign(this->_entry->d_name);
+        }
+      }
+      iterator(iterator const& other) :
+        _dir(other._dir), _entry(other._entry), _current(other._current)
+      {}
+
+      iterator& operator ++()
+      {
+        if (this->_entry == nullptr)
+          throw std::range_error("No more entry in this directory");
+        this->_entry = ::readdir(this->_dir);
+        if (this->_entry != nullptr)
+          this->_current.assign(this->_entry->d_name);
+        return *this;
+      }
+
+      bool operator ==(iterator const& other) const
+      { return this->_entry == other._entry; }
+
+      bool operator !=(iterator const& other) const
+      { return this->_entry != other._entry; }
+
+      elle::String const& operator*() const
+      {
+        if (this->_entry == nullptr)
+          throw std::runtime_error("Access to an invalid directory iterator");
+        return this->_current;
+      }
+
+      elle::String const* operator ->() const
+      {
+        if (this->_entry == nullptr)
+          throw std::runtime_error("Access to an invalid directory iterator");
+        return &this->_current;
+      }
+
+    private:
+      iterator& operator=(iterator const&); // yes, I'm lazy
+    };
+
+  private:
+    ::DIR* _dir;
+
+  public:
+    _Directory(elle::io::Path const& path) :
+      _dir(::opendir(path.string.c_str()))
+    {}
+    ~_Directory()
+    {
+      if (_dir != nullptr)
+        ::closedir(this->_dir);
+    }
+    operator bool() const { return this->_dir != nullptr; }
+    iterator begin() { return iterator(this->_dir); }
+    iterator end() { return iterator(nullptr); }
+  };
+
+} // !ns anonymous
 
 namespace elle
 {
@@ -51,15 +139,15 @@ namespace elle
     ///
     Status              Directory::Create(const Path&           path)
     {
-      enter();
+      ;
 
       if (!QDir().mkpath(QString::fromStdString(path.string)))
         escape("failed to mkpath: %s", path.string.c_str());
 
-      leave();
+      return elle::StatusOk;
 
 #if 0
-      enter();
+      ;
 
       // does the directory already exist.
       if (Directory::Exist(path) == StatusTrue)
@@ -81,7 +169,7 @@ namespace elle
 # error "unsupported platform"
 #endif
 
-      leave();
+      return elle::StatusOk;
 #endif
     }
 
@@ -90,7 +178,7 @@ namespace elle
     ///
     Status              Directory::Remove(const Path&           path)
     {
-      enter();
+      ;
 
       // does the directory exist.
       if (Directory::Exist(path) == StatusFalse)
@@ -99,7 +187,7 @@ namespace elle
       // remove the directory.
       ::rmdir(path.string.c_str());
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -109,17 +197,17 @@ namespace elle
     {
       struct ::stat             stat;
 
-      enter();
+      ;
 
       // does the path points to something.
       if (::stat(path.string.c_str(), &stat) != 0)
-        false();
+        return elle::StatusFalse;
 
       // does the path points to a directory.
       if (!S_ISDIR(stat.st_mode))
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -130,12 +218,12 @@ namespace elle
     {
       String            directory(::dirname(const_cast<char*>(path.string.c_str())));
 
-      enter();
+      ;
 
       if (!QDir().mkpath(QString::fromStdString(directory)))
         escape("failed to mkpath: %s", directory.c_str());
 
-      leave();
+      return elle::StatusOk;
 
 #if 0
       String            target(::strdup(path.string.c_str()));
@@ -145,7 +233,7 @@ namespace elle
       String            item;
       Path              chemin;
 
-      enter();
+      ;
 
       // go through the components of the path.
       while (std::getline(stream, item, System::Path::Separator))
@@ -169,43 +257,40 @@ namespace elle
             }
         }
 
-      leave();
+      return elle::StatusOk;
 #endif
     }
+
 
     ///
     /// this method recursively removes everything in the given directory.
     ///
     Status              Directory::Clear(const Path&            path)
     {
-      ::DIR*            directory;
-      struct ::dirent*  entry;
-
-      enterx(slab(directory, ::closedir));
-
       // is the path pointing to a valid directory.
       if (Directory::Exist(path) == StatusFalse)
         escape("the path does not reference a directory");
 
+      _Directory directory(path);
+
       // open the directory.
-      if ((directory = ::opendir(path.string.c_str())) == NULL)
+      if (!directory)
         escape("unable to open the directory");
 
-      // go through the entries.
-      while ((entry = ::readdir(directory)) != NULL)
+      auto it = directory.begin();
+      auto end = directory.end();
+      for (; it != end; ++it)
         {
           Path          target;
           struct ::stat stat;
 
           // ignore the . and ..
-          if ((::strcmp(entry->d_name, ".") == 0) ||
-              (::strcmp(entry->d_name, "..") == 0))
+          if (*it == "." || *it == "..")
             continue;
 
           // create the target path.
-          if (target.Create(path.string +
-                            System::Path::Separator +
-                            String(entry->d_name)) == StatusError)
+          String path_str(path.string + System::Path::Separator + *it);
+          if (target.Create(path_str) == StatusError)
             escape("unable to create the target path");
 
           // stat the entry as entry->d_type is not standard
@@ -250,13 +335,7 @@ namespace elle
             escape("unhandled file system object type");
         }
 
-      // close the directory.
-      ::closedir(directory);
-
-      // waive.
-      waive(directory);
-
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -265,34 +344,23 @@ namespace elle
     Status              Directory::List(const Path&             path,
                                         Set&                    set)
     {
-      ::DIR*            directory;
-      struct ::dirent*  entry;
-
-      enterx(slab(directory, ::closedir));
+      _Directory directory(path);
 
       // open the directory.
-      if ((directory = ::opendir(path.string.c_str())) == NULL)
+      if(!directory)
         escape("unable to open the directory");
 
       // go through the entries.
-      while ((entry = ::readdir(directory)) != NULL)
+      auto it = directory.begin(),
+           end = directory.end();
+      for (; it != end; ++it)
         {
           // ignore the '.' and '..' entries.
-          if ((String(entry->d_name) == ".") ||
-              (String(entry->d_name) == ".."))
-            continue;
-
-          // add the entry to the set.
-          set.push_back(String(entry->d_name));
+          if (*it != "." && *it != "..")
+            set.push_back(*it);
         }
 
-      // close the directory.
-      ::closedir(directory);
-
-      // waive.
-      waive(directory);
-
-      leave();
+      return elle::StatusOk;
     }
 
   }

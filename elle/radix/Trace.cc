@@ -77,12 +77,12 @@ namespace elle
     ///
     Status              Trace::Generate()
     {
-      enter();
+      ;
 
       // retrieve the frame addresses.
       this->size = ::backtrace(this->frames, Trace::Capacity);
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -98,7 +98,7 @@ namespace elle
       char**            symbols;
       Natural32         i;
 
-      enter();
+      ;
 
       std::cout << alignment << "[Trace]" << std::endl;
 
@@ -205,7 +205,7 @@ namespace elle
       // release the symbols array.
       ::free(symbols);
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -219,7 +219,7 @@ namespace elle
     {
       Path              path;
 
-      enter();
+      ;
 
       // create the location.
       ::sprintf(Trace::Location, "/tmp/XXXXXX");
@@ -248,7 +248,7 @@ namespace elle
             escape("unable to create the directory");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -258,7 +258,7 @@ namespace elle
     {
       Path              path;
 
-      enter();
+      ;
 
       // create the path.
       if (path.Create(Trace::Location) == StatusError)
@@ -276,7 +276,7 @@ namespace elle
             escape("unable to remove the directory");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -296,7 +296,7 @@ namespace elle
                              1];
       int               fd;
 
-      enter();
+      ;
 
       // generate the trace.
       if (trace.Generate() == StatusError)
@@ -339,7 +339,7 @@ namespace elle
       // close the file.
       ::close(fd);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -353,7 +353,7 @@ namespace elle
                              1];
       struct ::stat     stat;
 
-      enter();
+      ;
 
       // build the path.
       ::sprintf(path,
@@ -379,7 +379,7 @@ namespace elle
       // unlink the file.
       ::unlink(path);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -392,7 +392,7 @@ namespace elle
       ::DIR*            dp;
       struct ::dirent*  entry;
 
-      enter();
+      ;
 
       std::cout << alignment << "[Traces]" << std::endl;
 
@@ -468,7 +468,7 @@ namespace elle
       // close the directory.
       ::closedir(dp);
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

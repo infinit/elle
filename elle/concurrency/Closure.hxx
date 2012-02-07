@@ -71,7 +71,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Closure]" << std::endl;
 
@@ -83,7 +83,7 @@ namespace elle
       if (this->arguments.Dump(margin + 2) == StatusError)
         escape("unable to dump the arguments");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -154,7 +154,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Closure]" << std::endl;
 
@@ -166,7 +166,7 @@ namespace elle
       if (this->arguments.Dump(margin + 2) == StatusError)
         escape("unable to dump the arguments");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //

@@ -49,7 +49,7 @@ namespace elle
     {
       uint8_t           temporary[256];
 
-      enter();
+      ;
 
       // initialise the random generator.
       ::srand(::time(NULL)); 
@@ -98,7 +98,7 @@ namespace elle
       // seed the random generator.
       ::RAND_seed(temporary, sizeof (temporary));
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -106,11 +106,11 @@ namespace elle
     ///
     Status              Random::Clean()
     {
-      enter();
+      ;
 
       // nothing to do.
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -120,7 +120,7 @@ namespace elle
     {
       elle::Integer32   r;
 
-      enter();
+      ;
 
       // generate a random integer.
       if (Random::Generate(r) == StatusError)
@@ -132,7 +132,7 @@ namespace elle
       else
         value = false;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -140,14 +140,14 @@ namespace elle
     ///
     Status              Random::Generate(Character&             value)
     {
-      enter();
+      ;
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -155,14 +155,14 @@ namespace elle
     ///
     Status              Random::Generate(Real&                  value)
     {
-      enter();
+      ;
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -170,14 +170,14 @@ namespace elle
     ///
     Status              Random::Generate(Integer8&              value)
     {
-      enter();
+      ;
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -185,14 +185,14 @@ namespace elle
     ///
     Status              Random::Generate(Integer16&             value)
     {
-      enter();
+      ;
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -200,14 +200,14 @@ namespace elle
     ///
     Status              Random::Generate(Integer32&             value)
     {
-      enter();
+      ;
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -215,14 +215,14 @@ namespace elle
     ///
     Status              Random::Generate(Integer64&             value)
     {
-      enter();
+      ;
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -230,14 +230,14 @@ namespace elle
     ///
     Status              Random::Generate(Natural8&              value)
     {
-      enter();
+      ;
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -245,14 +245,14 @@ namespace elle
     ///
     Status              Random::Generate(Natural16&             value)
     {
-      enter();
+      ;
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -260,14 +260,14 @@ namespace elle
     ///
     Status              Random::Generate(Natural32&             value)
     {
-      enter();
+      ;
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -275,14 +275,14 @@ namespace elle
     ///
     Status              Random::Generate(Natural64&             value)
     {
-      enter();
+      ;
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -291,13 +291,13 @@ namespace elle
     Status              Random::Generate(Large&                 value,
                                          const Natural32        length)
     {
-      enter();
+      ;
 
       // generate a random BN.
       if (::BN_rand(&value, length, -1, 0) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -308,7 +308,7 @@ namespace elle
     {
       char              buffer[length];
 
-      enter();
+      ;
 
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&buffer),
@@ -318,7 +318,7 @@ namespace elle
       // assign the characters.
       value.assign(buffer, length);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -327,7 +327,7 @@ namespace elle
     Status              Random::Generate(Region&                value,
                                          const Natural32        size)
     {
-      enter();
+      ;
 
       // prepare the region.
       if (value.Prepare(size) == StatusError)
@@ -341,7 +341,7 @@ namespace elle
       // set the region's size.
       value.size = size;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

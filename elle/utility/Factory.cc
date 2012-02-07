@@ -43,7 +43,7 @@ namespace elle
     {
       Factory::Scoutor  scoutor;
 
-      enter();
+      ;
 
       // go through the container.
       for (scoutor = this->container.begin();
@@ -57,7 +57,7 @@ namespace elle
       // clear the container.
       this->container.clear();
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -72,7 +72,7 @@ namespace elle
       String            alignment(margin, ' ');
       Factory::Scoutor  scoutor;
 
-      enter();
+      ;
 
       std::cout << alignment << "[Factory]" << std::endl;
 
@@ -85,7 +85,7 @@ namespace elle
                     << scoutor->first << std::endl;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

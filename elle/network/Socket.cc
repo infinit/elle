@@ -53,7 +53,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Socket] " << std::hex << this << std::endl;
 
@@ -61,7 +61,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Type] " << std::dec << this->type << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -71,15 +71,13 @@ namespace elle
     ///
     /// this method takes a parcel and dispatches it.
     ///
-    Status              Socket::Ship(Parcel*                    parcel)
+    Status              Socket::Ship(std::shared_ptr<Parcel>& parcel)
     {
-      enter();
-
       // otherwise, trigger the network dispatching mechanism.
       if (Network::Dispatch(parcel) == StatusError)
         log("an error occured while dispatching a message");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

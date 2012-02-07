@@ -29,7 +29,7 @@ namespace elle
     {
       Footprint         footprint;
 
-      enter();
+      ;
 
       // create the footprint i.e archive in order to set it in
       // serialization mode.
@@ -44,7 +44,7 @@ namespace elle
       // return the footprint's size.
       size = footprint.size;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -71,7 +71,7 @@ namespace elle
           new (this) T(*object);
         }
 
-      // return StatusOk in order to avoid including Report, Status and Maid.
+      // return elle::StatusOk in order to avoid including Report, Status and Maid.
       return (StatusOk);
     }
 

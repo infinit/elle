@@ -79,16 +79,12 @@ namespace elle
     Section< Parameters<L...>,
              Parameters<U...> >::~Section()
     {
-      enter();
-
       // if the section has been locked...
       if (this->state == Section::StateLocked)
         {
           // release the lock by triggering the unlock closure.
           this->unlock.Call();
         }
-
-      release();
     }
 
 //
@@ -103,8 +99,6 @@ namespace elle
     Void                Section< Parameters<L...>,
                                  Parameters<U...> >::Enter()
     {
-      enter();
-
       // check the object's state.
       if (this->state != Section::StateUnlocked)
         yield(_(), "unable to lock an already locked section");
@@ -114,8 +108,6 @@ namespace elle
 
       // set the object as locked.
       this->state = Section::StateLocked;
-
-      release();
     }
 
     ///
@@ -127,8 +119,6 @@ namespace elle
     Void                Section< Parameters<L...>,
                                  Parameters<U...> >::Leave()
     {
-      enter();
-
       // check the object's state.
       if (this->state != Section::StateLocked)
         yield(_(), "unable to unlock an unlocked section");
@@ -138,8 +128,6 @@ namespace elle
 
       // set the object as unlocked.
       this->state = Section::StateUnlocked;
-
-      release();
     }
 
 //
@@ -157,8 +145,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
-
       std::cout << alignment << "[Section]" << std::endl;
 
       // dump the state.
@@ -173,7 +159,7 @@ namespace elle
       if (this->unlock.Dump(margin + 2) == StatusError)
         escape("unable to dump the closure");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

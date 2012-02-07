@@ -19,21 +19,21 @@ using namespace elle;
 
 Status fiber2()
 {
-  enter();
+  ;
   log_here;
-  leave();
+  return elle::StatusOk;
 }
 
 Status fiber1()
 {
-  enter();
+  ;
   log_here;
   Closure< Status,
            Parameters<> >       closure(Callback<>::Infer(&fiber2));
 
   Fiber::Spawn(closure);
   log_here;
-  leave();
+  return elle::StatusOk;
 }
 
 ucontext_t auc,buc,mainuc;

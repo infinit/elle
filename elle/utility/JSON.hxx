@@ -38,13 +38,11 @@ namespace elle
       mode(ModeAllocated),
       value(new ::Json::Value)
     {
-      enter();
+      ;
 
       // set a default value.
       if (this->Set(element) == elle::StatusError)
         yield(_(), "unable to set a default value");
-
-      release();
     }
 
 //
@@ -62,7 +60,7 @@ namespace elle
     {
       Unique            unique;
 
-      enter();
+      ;
 
       // retrieve a string.
       if (this->Get(unique) == StatusError)
@@ -72,7 +70,7 @@ namespace elle
       if (uniquable.Restore(unique) == StatusError)
         escape("unable to restore the uniquable");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <Format F>
@@ -80,7 +78,7 @@ namespace elle
     {
       Unique            unique;
 
-      enter();
+      ;
 
       // save the uniquable.
       if (uniquable.Save(unique) == StatusError)
@@ -90,7 +88,7 @@ namespace elle
       if (this->Set(unique) == StatusError)
         escape("unable to set the unique representation");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -107,13 +105,13 @@ namespace elle
     template <typename X>
     Status              JSON::Document::Get(X&                  target) const
     {
-      enter();
+      ;
 
       // retrieve the target value for the root node.
       if (this->root.Get(target) == StatusError)
         escape("unable to retrieve the target value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -123,7 +121,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->root.Get(id1, node) == StatusError)
@@ -134,7 +132,7 @@ namespace elle
       if (node.Get(target) == StatusError)
         escape("unable to retrieve the target value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -147,7 +145,7 @@ namespace elle
       Node              base;
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1,
@@ -164,7 +162,7 @@ namespace elle
       if (node.Get(target) == StatusError)
         escape("unable to retrieve the target value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -179,7 +177,7 @@ namespace elle
       Node              base;
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2,
@@ -196,7 +194,7 @@ namespace elle
       if (node.Get(target) == StatusError)
         escape("unable to retrieve the target value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -213,7 +211,7 @@ namespace elle
       Node              base;
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3,
@@ -230,7 +228,7 @@ namespace elle
       if (node.Get(target) == StatusError)
         escape("unable to retrieve the target value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -249,7 +247,7 @@ namespace elle
       Node              base;
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4,
@@ -266,7 +264,7 @@ namespace elle
       if (node.Get(target) == StatusError)
         escape("unable to retrieve the target value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -287,7 +285,7 @@ namespace elle
       Node              base;
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5,
@@ -304,7 +302,7 @@ namespace elle
       if (node.Get(target) == StatusError)
         escape("unable to retrieve the target value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -327,7 +325,7 @@ namespace elle
       Node              base;
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6,
@@ -344,7 +342,7 @@ namespace elle
       if (node.Get(target) == StatusError)
         escape("unable to retrieve the target value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -369,7 +367,7 @@ namespace elle
       Node              base;
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6, id7,
@@ -386,7 +384,7 @@ namespace elle
       if (node.Get(target) == StatusError)
         escape("unable to retrieve the target value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -413,7 +411,7 @@ namespace elle
       Node              base;
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6, id7, id8,
@@ -430,19 +428,19 @@ namespace elle
       if (node.Get(target) == StatusError)
         escape("unable to retrieve the target value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename X>
     Status              JSON::Document::Set(const X&            target)
     {
-      enter();
+      ;
 
       // set the target value for the root node.
       if (this->root.Set(target) == StatusError)
         escape("unable to set the target value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -452,7 +450,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // dig the way to the target.
       if (this->Dig(id1,
@@ -463,7 +461,7 @@ namespace elle
       if (node.Set(target) == StatusError)
         escape("unable to set the target value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -475,7 +473,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2,
@@ -486,7 +484,7 @@ namespace elle
       if (node.Set(target) == StatusError)
         escape("unable to set the target value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -500,7 +498,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3,
@@ -511,7 +509,7 @@ namespace elle
       if (node.Set(target) == StatusError)
         escape("unable to set the target value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -527,7 +525,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4,
@@ -538,7 +536,7 @@ namespace elle
       if (node.Set(target) == StatusError)
         escape("unable to set the target value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -556,7 +554,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4, id5,
@@ -567,7 +565,7 @@ namespace elle
       if (node.Set(target) == StatusError)
         escape("unable to set the target value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -587,7 +585,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4, id5, id6,
@@ -598,7 +596,7 @@ namespace elle
       if (node.Set(target) == StatusError)
         escape("unable to set the target value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -620,7 +618,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4, id5, id6, id7,
@@ -631,7 +629,7 @@ namespace elle
       if (node.Set(target) == StatusError)
         escape("unable to set the target value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -655,7 +653,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4, id5, id6, id7, id8,
@@ -666,7 +664,7 @@ namespace elle
       if (node.Set(target) == StatusError)
         escape("unable to set the target value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -692,7 +690,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4, id5, id6, id7, id8, id9,
@@ -703,14 +701,14 @@ namespace elle
       if (node.Set(target) == StatusError)
         escape("unable to set the target value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1>
     Status              JSON::Document::Dig(const T1&           id1,
                                             Node&               node)
     {
-      enter();
+      ;
 
       // if the identifier does not exist...
       if (this->root.Exist(id1) == StatusFalse)
@@ -724,7 +722,7 @@ namespace elle
       if (this->root.Get(id1, node) == StatusError)
         escape("unable to retrieve the target node");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -735,7 +733,7 @@ namespace elle
     {
       Node              base;
 
-      enter();
+      ;
 
       // dig the root identifiers.
       if (this->Dig(id1,
@@ -754,7 +752,7 @@ namespace elle
       if (base.Get(id2, node) == StatusError)
         escape("unable to retrieve the target node");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -767,7 +765,7 @@ namespace elle
     {
       Node              base;
 
-      enter();
+      ;
 
       // dig the root identifiers.
       if (this->Dig(id1, id2,
@@ -786,7 +784,7 @@ namespace elle
       if (base.Get(id3, node) == StatusError)
         escape("unable to retrieve the target node");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -801,7 +799,7 @@ namespace elle
     {
       Node              base;
 
-      enter();
+      ;
 
       // dig the root identifiers.
       if (this->Dig(id1, id2, id3,
@@ -820,7 +818,7 @@ namespace elle
       if (base.Get(id4, node) == StatusError)
         escape("unable to retrieve the target node");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -837,7 +835,7 @@ namespace elle
     {
       Node              base;
 
-      enter();
+      ;
 
       // dig the root identifiers.
       if (this->Dig(id1, id2, id3, id4,
@@ -856,7 +854,7 @@ namespace elle
       if (base.Get(id5, node) == StatusError)
         escape("unable to retrieve the target node");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -875,7 +873,7 @@ namespace elle
     {
       Node              base;
 
-      enter();
+      ;
 
       // dig the root identifiers.
       if (this->Dig(id1, id2, id3, id4, id5,
@@ -894,7 +892,7 @@ namespace elle
       if (base.Get(id6, node) == StatusError)
         escape("unable to retrieve the target node");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -915,7 +913,7 @@ namespace elle
     {
       Node              base;
 
-      enter();
+      ;
 
       // dig the root identifiers.
       if (this->Dig(id1, id2, id3, id4, id5, id6,
@@ -934,7 +932,7 @@ namespace elle
       if (base.Get(id7, node) == StatusError)
         escape("unable to retrieve the target node");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -957,7 +955,7 @@ namespace elle
     {
       Node              base;
 
-      enter();
+      ;
 
       // dig the root identifiers.
       if (this->Dig(id1, id2, id3, id4, id5, id6, id7,
@@ -976,7 +974,7 @@ namespace elle
       if (base.Get(id8, node) == StatusError)
         escape("unable to retrieve the target node");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1001,7 +999,7 @@ namespace elle
     {
       Node              base;
 
-      enter();
+      ;
 
       // dig the root identifiers.
       if (this->Dig(id1, id2, id3, id4, id5, id6, id7, id8,
@@ -1020,7 +1018,7 @@ namespace elle
       if (base.Get(id9, node) == StatusError)
         escape("unable to retrieve the target node");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1>
@@ -1029,7 +1027,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // dig the way to the target.
       if (this->Dig(id1,
@@ -1040,7 +1038,7 @@ namespace elle
       if (node.Append(bulk) == StatusError)
         escape("unable to append the node");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1051,7 +1049,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2,
@@ -1062,7 +1060,7 @@ namespace elle
       if (node.Append(bulk) == StatusError)
         escape("unable to append the node");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1075,7 +1073,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3,
@@ -1086,7 +1084,7 @@ namespace elle
       if (node.Append(bulk) == StatusError)
         escape("unable to append the node");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1101,7 +1099,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4,
@@ -1112,7 +1110,7 @@ namespace elle
       if (node.Append(bulk) == StatusError)
         escape("unable to append the node");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1129,7 +1127,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4, id5,
@@ -1140,7 +1138,7 @@ namespace elle
       if (node.Append(bulk) == StatusError)
         escape("unable to append the node");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1159,7 +1157,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4, id5, id6,
@@ -1170,7 +1168,7 @@ namespace elle
       if (node.Append(bulk) == StatusError)
         escape("unable to append the node");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1191,7 +1189,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4, id5, id6, id7,
@@ -1202,7 +1200,7 @@ namespace elle
       if (node.Append(bulk) == StatusError)
         escape("unable to append the node");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1225,7 +1223,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4, id5, id6, id7, id8,
@@ -1236,7 +1234,7 @@ namespace elle
       if (node.Append(bulk) == StatusError)
         escape("unable to append the node");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1261,7 +1259,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4, id5, id6, id7, id8, id9,
@@ -1272,7 +1270,7 @@ namespace elle
       if (node.Append(bulk) == StatusError)
         escape("unable to append the node");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1>
@@ -1280,13 +1278,13 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // erase the identified member from the root node.
       if (this->root.Erase(id1) == StatusError)
         escape("unable to erase the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1296,7 +1294,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1,
@@ -1307,7 +1305,7 @@ namespace elle
       if (node.Erase(id2) == StatusError)
         escape("unable to erase the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1319,7 +1317,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2,
@@ -1330,7 +1328,7 @@ namespace elle
       if (node.Erase(id3) == StatusError)
         escape("unable to erase the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1344,7 +1342,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3,
@@ -1355,7 +1353,7 @@ namespace elle
       if (node.Erase(id4) == StatusError)
         escape("unable to erase the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1371,7 +1369,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4,
@@ -1382,7 +1380,7 @@ namespace elle
       if (node.Erase(id5) == StatusError)
         escape("unable to erase the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1400,7 +1398,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5,
@@ -1411,7 +1409,7 @@ namespace elle
       if (node.Erase(id6) == StatusError)
         escape("unable to erase the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1431,7 +1429,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6,
@@ -1442,7 +1440,7 @@ namespace elle
       if (node.Erase(id7) == StatusError)
         escape("unable to erase the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1464,7 +1462,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6, id7,
@@ -1475,7 +1473,7 @@ namespace elle
       if (node.Erase(id8) == StatusError)
         escape("unable to erase the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1499,7 +1497,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6, id7, id8,
@@ -1510,7 +1508,7 @@ namespace elle
       if (node.Erase(id9) == StatusError)
         escape("unable to erase the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1>
@@ -1518,13 +1516,13 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // clear the identified member from the root node.
       if (this->root.Clear(id1) == StatusError)
         escape("unable to clear the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1534,7 +1532,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1,
@@ -1545,7 +1543,7 @@ namespace elle
       if (node.Clear(id2) == StatusError)
         escape("unable to clear the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1557,7 +1555,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2,
@@ -1568,7 +1566,7 @@ namespace elle
       if (node.Clear(id3) == StatusError)
         escape("unable to clear the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1582,7 +1580,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3,
@@ -1593,7 +1591,7 @@ namespace elle
       if (node.Clear(id4) == StatusError)
         escape("unable to clear the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1609,7 +1607,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4,
@@ -1620,7 +1618,7 @@ namespace elle
       if (node.Clear(id5) == StatusError)
         escape("unable to clear the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1638,7 +1636,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5,
@@ -1649,7 +1647,7 @@ namespace elle
       if (node.Clear(id6) == StatusError)
         escape("unable to clear the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1669,7 +1667,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6,
@@ -1680,7 +1678,7 @@ namespace elle
       if (node.Clear(id7) == StatusError)
         escape("unable to clear the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1702,7 +1700,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6, id7,
@@ -1713,7 +1711,7 @@ namespace elle
       if (node.Clear(id8) == StatusError)
         escape("unable to clear the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1737,7 +1735,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6, id7, id8,
@@ -1748,7 +1746,7 @@ namespace elle
       if (node.Clear(id9) == StatusError)
         escape("unable to clear the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1>
@@ -1757,13 +1755,13 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // size the identified member from the root node.
       if (this->root.Size(id1) == StatusError)
         escape("unable to size the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1774,7 +1772,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1,
@@ -1785,7 +1783,7 @@ namespace elle
       if (node.Size(id2) == StatusError)
         escape("unable to size the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1798,7 +1796,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2,
@@ -1809,7 +1807,7 @@ namespace elle
       if (node.Size(id3) == StatusError)
         escape("unable to size the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1824,7 +1822,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3,
@@ -1835,7 +1833,7 @@ namespace elle
       if (node.Size(id4) == StatusError)
         escape("unable to size the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1852,7 +1850,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4,
@@ -1863,7 +1861,7 @@ namespace elle
       if (node.Size(id5) == StatusError)
         escape("unable to size the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1882,7 +1880,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5,
@@ -1893,7 +1891,7 @@ namespace elle
       if (node.Size(id6) == StatusError)
         escape("unable to size the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1914,7 +1912,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6,
@@ -1925,7 +1923,7 @@ namespace elle
       if (node.Size(id7) == StatusError)
         escape("unable to size the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1948,7 +1946,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6, id7,
@@ -1959,7 +1957,7 @@ namespace elle
       if (node.Size(id8) == StatusError)
         escape("unable to size the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -1984,7 +1982,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6, id7, id8,
@@ -1995,7 +1993,7 @@ namespace elle
       if (node.Size(id9) == StatusError)
         escape("unable to size the member");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

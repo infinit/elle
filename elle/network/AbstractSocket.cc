@@ -89,7 +89,7 @@ namespace elle
       String                    alignment(margin, ' ');
       AbstractSocket::Scoutor   scoutor;
 
-      enter();
+      ;
 
       std::cout << alignment << "[AbstractSocket]" << std::endl;
 
@@ -135,7 +135,7 @@ namespace elle
             escape("unable to dump the timer");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

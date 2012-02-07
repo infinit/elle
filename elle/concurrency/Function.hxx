@@ -108,7 +108,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Function]" << std::endl;
 
@@ -120,7 +120,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift << "[Handler] "
                 << std::hex << this->handler << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //

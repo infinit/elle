@@ -66,7 +66,7 @@ namespace elle
       ///
       Status            Save(Unique&) const
       {
-        enter();
+        ;
 
         escape("this method should never have been called");
       }
@@ -77,7 +77,7 @@ namespace elle
       ///
       Status            Restore(const Unique&)
       {
-        enter();
+        ;
 
         escape("this method should never have been called");
       }

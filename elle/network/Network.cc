@@ -37,7 +37,7 @@ namespace elle
     ///
     Status              Network::Initialize()
     {
-      enter();
+      ;
 
       // initialize the local server.
       if (LocalServer::Initialize() == StatusError)
@@ -51,7 +51,7 @@ namespace elle
       if (Session::Initialize() == StatusError)
         escape("unable to initialize the session");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -59,7 +59,7 @@ namespace elle
     ///
     Status              Network::Clean()
     {
-      enter();
+      ;
 
       // clean the session.
       if (Session::Clean() == StatusError)
@@ -92,7 +92,7 @@ namespace elle
         Network::Procedures.clear();
       }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -101,27 +101,15 @@ namespace elle
     /// note that the input variables are not tracked for automatic
     /// deletion because the caller should already been tracking them.
     ///
-    Status              Network::Dispatch(Parcel*               p)
+    Status              Network::Dispatch(std::shared_ptr<Parcel>& parcel)
     {
-      Parcel*           parcel;
-
-      enterx(instance(parcel));
-
-      // retrieve the argument and takes over the tracking.
-      parcel = p;
-
       //
       // first, try to  wake up a waiting slot.
       //
       {
         // try to wake up a slot.
         if (Fiber::Awaken(parcel->header->event, parcel) == StatusTrue)
-          {
-            // since the awakening has been successful, stop tracking parcel.
-            waive(parcel);
-
-            leave();
-          }
+            return elle::StatusOk;
       }
 
       //
@@ -130,9 +118,9 @@ namespace elle
       {
         Network::Scoutor        scoutor;
 
+        auto it = Network::Procedures.find(parcel->header->tag);
         // retrieve the procedure's functionoid associated to the header's tag.
-        if ((scoutor = Network::Procedures.find(parcel->header->tag)) ==
-            Network::Procedures.end())
+        if (it == Network::Procedures.end())
           {
             // test if the message received is an error, if so, log it.
             if (parcel->header->tag == TagError)
@@ -151,7 +139,7 @@ namespace elle
                     "procedure");
               }
 
-            leave();
+            return elle::StatusOk;
           }
 
         // assign the new session.
@@ -159,21 +147,15 @@ namespace elle
           escape("unable to assign the session");
 
         // call the functionoid.
-        if (scoutor->second->Call(*parcel->data) == StatusError)
+        if (it->second->Call(*parcel->data) == StatusError)
           escape("an error occured while processing the event");
 
         // clear the session.
         if (Session::Clear() == StatusError)
           escape("unable to flush the session");
-
-        // delete the parcel.
-        delete parcel;
-
-        // stop tracking the parcel since it has just been deleted.
-        waive(parcel);
       }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -184,7 +166,7 @@ namespace elle
       String            alignment(margin, ' ');
       Network::Scoutor  scoutor;
 
-      enter();
+      ;
 
       std::cout << alignment << "[Network]" << std::endl;
 
@@ -198,7 +180,7 @@ namespace elle
             escape("unable to dump the functionoid");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

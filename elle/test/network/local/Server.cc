@@ -28,12 +28,12 @@ namespace elle
     ///
     Status              Server::Setup(const String&             line)
     {
-      enter();
+      ;
 
       // set the line.
       this->line = line;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -41,7 +41,7 @@ namespace elle
     ///
     Status              Server::Run()
     {
-      enter();
+      ;
 
       std::cout << "[line] " << line << std::endl;
 
@@ -51,7 +51,7 @@ namespace elle
                                                 this)) == StatusError)
         escape("unable to listen for local connections");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -66,7 +66,7 @@ namespace elle
       String            challenge("CHALLENGE");
       String            response;
 
-      enter();
+      ;
 
       // push the socket in the container in order not to lose the object.
       this->sockets.push_front(socket);
@@ -80,7 +80,7 @@ namespace elle
 
       std::cout << "[response] " << response << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

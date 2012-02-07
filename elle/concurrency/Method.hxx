@@ -78,7 +78,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       // dump the quantum.
       std::cout << alignment << Dumpable::Shift << "[Quantum] "
@@ -92,7 +92,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift << "[Handler] "
                 << std::hex << this->handler << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -199,7 +199,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Method]" << std::endl;
 
@@ -207,7 +207,7 @@ namespace elle
       if (this->shell->Dump(margin) == StatusError)
         escape("unable to dump the shell");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //

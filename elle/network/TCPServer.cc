@@ -74,8 +74,6 @@ namespace elle
     ///
     Status              TCPServerPorter::Create(const Locus&    locus)
     {
-      enter();
-
       // set the locus.
       this->locus = locus;
 
@@ -92,7 +90,7 @@ namespace elle
                         this, SLOT(_accept())) == false)
         escape("unable to connect the signal");
 
-      leave();
+      return elle::StatusOk;
     }
 
     //
@@ -104,11 +102,7 @@ namespace elle
     ///
     Status              TCPServer::Initialize()
     {
-      enter();
-
-      // nothing to do.
-
-      leave();
+      return StatusOk;
     }
 
     ///
@@ -118,7 +112,7 @@ namespace elle
     {
       TCPServer::Scoutor        scoutor;
 
-      enter();
+      ;
 
       // go through the porters.
       for (scoutor = TCPServer::Porters.begin();
@@ -134,7 +128,7 @@ namespace elle
       // clear the container.
       TCPServer::Porters.clear();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -154,34 +148,32 @@ namespace elle
                                               Parameters<TCPSocket*>
                                               >&                callback)
     {
-      std::pair<TCPServer::Iterator, Boolean>   result;
-      TCPServerPorter*                          porter;
-
-      enterx(instance(porter));
+      typedef std::unique_ptr<TCPServerPorter> ServerPtr;
 
       // check if this locus is not already listened on.
       if (TCPServer::Locate(locus) == StatusTrue)
         escape("this locus seems to have already been registered");
 
       // allocate a new porter.
-      porter = new TCPServerPorter(callback);
+      auto porter = ServerPtr(new TCPServerPorter(callback));
 
       // create the porter.
       if (porter->Create(locus) == StatusError)
         escape("unable to create the porter");
 
       // insert the porter in the container.
-      result = TCPServer::Porters.insert(
-                 std::pair<const Locus, TCPServerPorter*>(locus, porter));
+      auto result = TCPServer::Porters.insert(
+          std::pair<const Locus, TCPServerPorter*>(locus, porter.get())
+      );
 
       // check if the insertion was successful.
       if (result.second == false)
         escape("unable to insert the porter in the container");
 
       // stop tracking porter.
-      waive(porter);
+      porter.release();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -193,7 +185,7 @@ namespace elle
       TCPServer::Iterator       iterator;
       TCPServerPorter*          porter;
 
-      enter();
+      ;
 
       // locate the porter.
       if (TCPServer::Locate(locus, &iterator) == StatusFalse)
@@ -201,14 +193,14 @@ namespace elle
 
       // retrieve the porter.
       porter = iterator->second;
-      
+
       // delete the porter.
       delete porter;
 
       // remove the entry from the container.
       TCPServer::Porters.erase(iterator);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -219,8 +211,6 @@ namespace elle
     {
       TCPServer::Iterator       iterator;
 
-      enter();
-
       // locate the porter.
       if (TCPServer::Locate(locus, &iterator) == StatusFalse)
         escape("unable to locate the given porter");
@@ -228,7 +218,7 @@ namespace elle
       // retrieve the porter.
       porter = iterator->second;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -240,18 +230,16 @@ namespace elle
     {
       TCPServer::Iterator       i;
 
-      enter();
-
       // try to locate the porter.
       if ((i = TCPServer::Porters.find(locus)) != TCPServer::Porters.end())
         {
           if (iterator != NULL)
             *iterator = i;
 
-          true();
+          return elle::StatusTrue;
         }
 
-      false();
+      return elle::StatusFalse;
     }
 
 //
@@ -269,8 +257,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
-
       std::cout << alignment << "[Porter]" << std::endl;
 
       // dump the locus.
@@ -285,7 +271,7 @@ namespace elle
       if (this->callback.Dump(margin + 2) == StatusError)
         escape("unable to dump the callback");
 
-      leave();
+      return elle::StatusOk;
     }
 
     //
@@ -299,8 +285,6 @@ namespace elle
     {
       String                    alignment(margin, ' ');
       TCPServer::Scoutor        scoutor;
-
-      enter();
 
       std::cout << alignment << "[TCPServer]" << std::endl;
 
@@ -316,7 +300,7 @@ namespace elle
             escape("unable to dump the porter");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -329,29 +313,26 @@ namespace elle
     Status              TCPServerPorter::Accept()
     {
       ::QTcpSocket*     connection;
-      TCPSocket*        socket;
-
-      enterx(instance(socket));
 
       // retrieve the connection from the server.
       if ((connection = this->server->nextPendingConnection()) == NULL)
         escape(this->server->errorString().toStdString().c_str());
 
       // allocate a new socket to this server.
-      socket = new TCPSocket;
+      auto socket = std::unique_ptr<TCPSocket>(new TCPSocket);
 
       // create a socket with the specific connection.
       if (socket->Create(connection) == StatusError)
         escape("unable to create the socket");
 
       // call the callback.
-      if (this->callback.Call(socket) == StatusError)
+      if (this->callback.Call(socket.get()) == StatusError)
         escape("an error occured in the callback");
 
-      // stop tracking socket as it has been handed to the callback.
-      waive(socket);
+      // socket associated with the callback
+      socket.release();
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -370,13 +351,11 @@ namespace elle
         >               closure(Callback<>::Infer(
                                   &TCPServerPorter::Accept, this));
 
-      enter();
+      ;
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
         yield(_(), "unable to spawn a fiber");
-
-      release();
     }
 
  }

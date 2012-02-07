@@ -49,17 +49,17 @@ namespace elle
     ///
     Boolean             Piece::operator==(const Piece&          element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the internal.
       if ((this->name != element.name) || (this->value != element.value))
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -78,7 +78,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Piece] "
                 << this->name
@@ -86,7 +86,7 @@ namespace elle
                 << this->value
                 << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

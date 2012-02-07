@@ -96,12 +96,10 @@
   _template_                                                            \
   _type_&       _type_::operator=(const _type_&         object)         \
   {                                                                     \
-    enter();                                                            \
+    /*enter();*/                                                            \
                                                                         \
     if (this == &object)                                                \
       return (*this);                                                   \
-                                                                        \
-    if (this->Recycle(&object) == elle::radix::StatusError)             \
       yield(*this, "unable to recycle the object");                     \
                                                                         \
     return (*this);                                                     \
@@ -129,11 +127,10 @@
   elle::radix::Status   _type_::Imprint(elle::core::Natural32& size)    \
     const                                                               \
   {                                                                     \
-    enter();                                                            \
                                                                         \
     size = sizeof (_type_);                                             \
                                                                         \
-    leave();                                                            \
+    return elle::StatusOk;                                              \
   }                                                                     \
                                                                         \
   _template_                                                            \
@@ -142,11 +139,9 @@
                             object)                                     \
     const                                                               \
   {                                                                     \
-    enter();                                                            \
-                                                                        \
     object = new _type_(*this);                                         \
                                                                         \
-    leave();                                                            \
+    return elle::StatusOk;                                              \
   }
 
 //
@@ -238,6 +233,8 @@
         _report_->Record(_r_);                                          \
     } while (false)
 
+
+/*
 ///
 /// this macro-function is used for successfully returning from
 /// a normal method or function.
@@ -282,7 +279,7 @@
                                                                         \
       return (elle::radix::StatusFalse);                                \
     } while (false)
-
+*/
 ///
 /// this macro-function indicates that an error occured
 /// and returns StatusError.
@@ -292,8 +289,7 @@
     {                                                                   \
       report(_format_, ##__VA_ARGS__);                                  \
                                                                         \
-      release();                                                        \
-                                                                        \
+      /*release();*/                                                       \
       return (elle::radix::StatusError);                                \
     } while (false)
 
@@ -306,7 +302,7 @@
     {                                                                   \
       log(_format_, ##__VA_ARGS__);                                     \
                                                                         \
-      release();                                                        \
+      /*release();*/                                                        \
                                                                         \
       return (elle::radix::StatusFalse);                                \
     } while (false)                                                     \
@@ -325,7 +321,7 @@
     {                                                                   \
       log(_format_, ##__VA_ARGS__);                                     \
                                                                         \
-      release();                                                        \
+      /*release();*/                                                        \
                                                                         \
       return _return_;                                                  \
     } while (false)
@@ -431,6 +427,7 @@
 /// this macro function allocates memory within the current scope through
 /// the use of alloca() before creating a Garrison of Guards.
 ///
+/*
 #define enter()                                                         \
   elle::standalone::Maid::Garrison* _maid_ = NULL                       \
 
@@ -502,21 +499,25 @@
                   elle::core::Void*,                                    \
                   elle::core::Void (*)(elle::core::Void*)>))),          \
     _pointer_, _function_)
+*/
 
 ///
 /// this macro-function releases the guarded objects cf Maid.
 ///
-#define release()                                                       \
-  do                                                                    \
-    {                                                                   \
-      if (_maid_ != NULL)                                               \
-        {                                                               \
-          delete _maid_;                                                \
-                                                                        \
-          _maid_ = NULL;                                                \
-        }                                                               \
-    } while (false)
+/*
+//#define release()                                                       \
+//  do                                                                    \
+//    {                                                                   \
+//      if (_maid_ != NULL)                                               \
+//        {                                                               \
+//          delete _maid_;                                                \
+//                                                                        \
+//          _maid_ = NULL;                                                \
+//        }                                                               \
+//    } while (false)
+*/
 
+//
 //
 // ---------- message ---------------------------------------------------------
 //
@@ -597,3 +598,4 @@
       };                                                                \
     }                                                                   \
   }
+

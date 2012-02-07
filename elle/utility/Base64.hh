@@ -87,7 +87,7 @@ namespace elle
       {
         Region          region;
 
-        enter();
+        ;
 
         // decode the string.
         if (Base64::Decode(string, region) == StatusError)
@@ -102,7 +102,7 @@ namespace elle
         if (region.Detach() == StatusError)
           escape("unable to detach the region's data");
 
-        leave();
+        return elle::StatusOk;
       }
 
       //

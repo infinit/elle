@@ -38,7 +38,7 @@ namespace elle
     {
       elle::String::size_type   index;
 
-      enter();
+      ;
 
       // first, copy the input in the output.
       output.assign(input);
@@ -53,7 +53,7 @@ namespace elle
       else
         output.erase();
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -129,13 +129,13 @@ namespace elle
     ///
     Status              Settings::Section::Exist(const String&  name)
     {
-      enter();
+      ;
 
       // locate the assignment.
       if (this->Locate(name) != StatusTrue)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -145,8 +145,6 @@ namespace elle
                                                const String&    value)
     {
       Settings::Assignment*     assignment;
-
-      enterx(instance(assignment));
 
       // check if another assignment with that name already exists.
       if (this->Locate(name) == StatusTrue)
@@ -158,10 +156,7 @@ namespace elle
       // add the assignment to the container.
       this->assignments.push_back(assignment);
 
-      // waive.
-      waive(assignment);
-
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -174,7 +169,7 @@ namespace elle
       Settings::Section::Iterator       iterator;
       Settings::Assignment*             assignment;
 
-      enter();
+      ;
 
       // try to locate the assignment.
       if (this->Locate(name, &iterator) != StatusTrue)
@@ -186,7 +181,7 @@ namespace elle
       // return the value.
       value = assignment->value;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -198,7 +193,7 @@ namespace elle
       Settings::Section::Iterator       iterator;
       Settings::Assignment*             assignment;
 
-      enter();
+      ;
 
       // retrieve the assignment.
       if (this->Locate(name, &iterator) != StatusTrue)
@@ -210,7 +205,7 @@ namespace elle
       // update the assignment.
       assignment->value = value;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -221,7 +216,7 @@ namespace elle
       Settings::Section::Iterator       iterator;
       Settings::Assignment*             assignment;
 
-      enter();
+      ;
 
       // try to locate the assignment.
       if (this->Locate(name, &iterator) != StatusTrue)
@@ -236,7 +231,7 @@ namespace elle
       // delete the assignment.
       delete assignment;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -248,7 +243,7 @@ namespace elle
     {
       Settings::Section::Iterator       i;
 
-      enter();
+      ;
 
       // look for the named assignment.
       for (i = this->assignments.begin();
@@ -264,11 +259,11 @@ namespace elle
               if (iterator != NULL)
                 *iterator = i;
 
-              true();
+              return elle::StatusTrue;
             }
         }
 
-      false();
+      return elle::StatusFalse;
     }
 
     ///
@@ -277,8 +272,6 @@ namespace elle
     Status              Settings::Add(const String&             identifier)
     {
       Settings::Section*        section;
-
-      enterx(instance(section));
 
       // check if another section with that identifier already exists.
       if (this->Locate(identifier) == StatusTrue)
@@ -290,10 +283,7 @@ namespace elle
       // add the section to the container.
       this->sections.push_back(section);
 
-      // waive.
-      waive(section);
-
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -304,8 +294,6 @@ namespace elle
     {
       Settings::Iterator        iterator;
 
-      enter();
-
       // try to locate the section.
       if (this->Locate(identifier, &iterator) != StatusTrue)
         escape("unable to locate the section");
@@ -313,7 +301,7 @@ namespace elle
       // retrieve the section.
       section = *iterator;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -324,7 +312,7 @@ namespace elle
       Settings::Iterator        iterator;
       Settings::Section*        section;
 
-      enter();
+      ;
 
       // try to locate the section.
       if (this->Locate(identifier, &iterator) != StatusTrue)
@@ -339,7 +327,7 @@ namespace elle
       // delete the section.
       delete section;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -350,7 +338,7 @@ namespace elle
     {
       Settings::Iterator        i;
 
-      enter();
+      ;
 
       // look for the identifierd section.
       for (i = this->sections.begin();
@@ -366,11 +354,11 @@ namespace elle
               if (iterator != NULL)
                 *iterator = i;
 
-              true();
+              return elle::StatusTrue;
             }
         }
 
-      false();
+      return elle::StatusFalse;
     }
 
     ///
@@ -382,11 +370,11 @@ namespace elle
     {
       Settings::Section*        section;
 
-      enter();
+      ;
 
       // check if the section exists.
       if (this->Locate(identifier) != StatusTrue)
-        false();
+        return elle::StatusFalse;
 
       // retrieve the section.
       if (this->Lookup(identifier, section) == StatusError)
@@ -394,9 +382,9 @@ namespace elle
 
       // check if the section exists.
       if (section->Locate(name) != StatusTrue)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -408,7 +396,7 @@ namespace elle
     {
       Settings::Section*        section;
 
-      enter();
+      ;
 
       // check if the section exists.
       if (this->Locate(identifier) != StatusTrue)
@@ -436,7 +424,7 @@ namespace elle
             escape("unable to update the assignment");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -448,7 +436,7 @@ namespace elle
     {
       Settings::Section*        section;
 
-      enter();
+      ;
 
       // retrieve the section.
       if (this->Lookup(identifier, section) == StatusError)
@@ -458,7 +446,7 @@ namespace elle
       if (section->Lookup(name, value) == StatusError)
         escape("unable to locate the assignment");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -482,7 +470,7 @@ namespace elle
       String            alignment(margin, ' ');
       Settings::Scoutor i;
 
-      enter();
+      ;
 
       std::cout << alignment << "[Settings]" << std::endl;
 
@@ -512,7 +500,7 @@ namespace elle
             }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -529,7 +517,7 @@ namespace elle
       String                    line;
       Settings::Section*        section;
 
-      enter();
+      ;
 
       // read the content.
       if (File::Read(path, region) == StatusError)
@@ -603,7 +591,7 @@ namespace elle
             escape("unable to add the setting to the section");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -616,7 +604,7 @@ namespace elle
       String                    string;
       Settings::Scoutor         i;
 
-      enter();
+      ;
 
       // go through the sections.
       for (i = this->sections.begin();
@@ -654,7 +642,7 @@ namespace elle
       if (File::Write(path, region) == StatusError)
         escape("unable to write the file");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -662,13 +650,13 @@ namespace elle
     ///
     Status              Settings::Erase(const Path&             path) const
     {
-      enter();
+      ;
 
       // erase the file.
       if (File::Erase(path) == StatusError)
         escape("unable to erase the file");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///

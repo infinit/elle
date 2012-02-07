@@ -146,7 +146,7 @@ namespace elle
       {
         Clear           clear;
 
-        enter();
+        ;
 
         // decrypt the code.
         if (this->Decrypt(code, clear) == StatusError)
@@ -161,7 +161,7 @@ namespace elle
         if (clear.Detach() == StatusError)
           escape("unable to detach the clear's data");
 
-        leave();
+        return elle::StatusOk;
       }
 
       Status            Sign(const Archive&             archive,

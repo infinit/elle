@@ -87,7 +87,7 @@ namespace elle
     ///
     Status              PrivateKey::Create(const ::EVP_PKEY*    key)
     {
-      enter();
+      ;
 
       if (this->Create(::BN_dup(key->pkey.rsa->n),
                        ::BN_dup(key->pkey.rsa->e),
@@ -99,7 +99,7 @@ namespace elle
                        ::BN_dup(key->pkey.rsa->iqmp)) == StatusError)
         escape("unable to create the private key");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -117,8 +117,6 @@ namespace elle
     {
       ::RSA*            rsa;
 
-      enterx(slab(rsa, ::RSA_free));
-
       //
       // key
       //
@@ -129,7 +127,11 @@ namespace elle
 
       // create the RSA structure.
       if ((rsa = ::RSA_new()) == NULL)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        {
+          ::RSA_free(rsa);
+          escape(::ERR_error_string(ERR_get_error(), NULL));
+        }
+
 
       // assign the big numbers relevant to the private key.
       rsa->n = n;
@@ -143,18 +145,17 @@ namespace elle
 
       // set the rsa structure into the private key.
       if (::EVP_PKEY_assign_RSA(this->key, rsa) <= 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
-
-      // waive the tracking since the variable has been used.
-      waive(rsa);
+        {
+          ::RSA_free(rsa);
+          escape(::ERR_error_string(ERR_get_error(), NULL));
+        }
 
       //
       // contexts
       //
 
       // create, initialize and configure the decrypt context.
-      if ((this->contexts.decrypt = ::EVP_PKEY_CTX_new(this->key, NULL)) ==
-          NULL)
+      if ((this->contexts.decrypt = ::EVP_PKEY_CTX_new(this->key, NULL)) == NULL)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
       if (::EVP_PKEY_decrypt_init(this->contexts.decrypt) <= 0)
@@ -200,7 +201,7 @@ namespace elle
                               NULL) <= 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -220,8 +221,6 @@ namespace elle
       Archive           archive;
       Code              key;
       Cipher            data;
-
-      enter();
 
       // (i)
       {
@@ -287,7 +286,7 @@ namespace elle
           escape("unable to decrypt the data with the secret key");
       }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -300,7 +299,7 @@ namespace elle
       Digest            digest;
       size_t            size;
 
-      enter();
+      ;
 
       // compute the plain's digest.
       if (OneWay::Hash(plain, digest) == StatusError)
@@ -331,7 +330,7 @@ namespace elle
       // set the code size.
       signature.region.size = size;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -357,7 +356,7 @@ namespace elle
       Code              key;
       Cipher            data;
 
-      enter();
+      ;
 
       // (i)
       {
@@ -436,7 +435,7 @@ namespace elle
           escape("unable to duplicate the archive's content");
       }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -446,45 +445,41 @@ namespace elle
     Status              PrivateKey::Derive(const Seed&          seed,
                                            PublicKey&           K) const
     {
-      ::EVP_PKEY*       key;
-      ::RSA*            rsa;
-
-      enterx(slab(key, ::EVP_PKEY_free),
-             slab(rsa, ::RSA_free));
+      struct OnExit
+        {
+          ::EVP_PKEY*       key;
+          ::RSA*            rsa;
+          OnExit() : key(nullptr), rsa(nullptr) {}
+          ~OnExit() { ::EVP_PKEY_free(this->key); ::RSA_free(this->rsa); }
+        } scope;
 
       // create an EVP key.
-      if ((key = ::EVP_PKEY_new()) == NULL)
+      if ((scope.key = ::EVP_PKEY_new()) == NULL)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // create a new RSA key.
-      if ((rsa = ::RSA_new()) == NULL)
+      if ((scope.rsa = ::RSA_new()) == NULL)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // derive the RSA key.
-      if (comet::RSA_derive(rsa,
+      if (comet::RSA_derive(scope.rsa,
                             this->key->pkey.rsa->n,
                             seed.region.contents,
                             seed.region.size) <= 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // assign the RSA key to the EVP's.
-      if (::EVP_PKEY_assign_RSA(key, rsa) <= 0)
+      if (::EVP_PKEY_assign_RSA(scope.key, scope.rsa) <= 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // stop tracking.
-      waive(rsa);
+      scope.rsa = nullptr;
 
       // create the rotated public key according to the EVP structure.
       if (K.Create(key) == StatusError)
         escape("unable to create the public key");
 
-      // release the EVP key.
-      ::EVP_PKEY_free(key);
-
-      // stop tracking.
-      waive(key);
-
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -496,18 +491,18 @@ namespace elle
     ///
     Boolean             PrivateKey::operator==(const PrivateKey& element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // if one of the key is null....
       if ((this->key == NULL) || (element.key == NULL))
         {
           // compare the addresses.
           if (this->key != element.key)
-            false();
+            return elle::StatusFalse;
         }
       else
         {
@@ -520,10 +515,10 @@ namespace elle
                         element.key->pkey.rsa->p) != 0) ||
               (::BN_cmp(this->key->pkey.rsa->q,
                         element.key->pkey.rsa->q) != 0))
-            false();
+            return elle::StatusFalse;
         }
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -542,7 +537,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       // display depending on the value.
       if (*this == PrivateKey::Null)
@@ -567,7 +562,7 @@ namespace elle
                     << *this->key->pkey.rsa->q << std::endl;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -579,7 +574,7 @@ namespace elle
     ///
     Status              PrivateKey::Serialize(Archive&          archive) const
     {
-      enter();
+      ;
 
       // serialize the internal numbers.
       if (archive.Serialize(*this->key->pkey.rsa->n,
@@ -592,7 +587,7 @@ namespace elle
                             *this->key->pkey.rsa->iqmp) == StatusError)
         escape("unable to serialize the internal numbers");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -600,80 +595,70 @@ namespace elle
     ///
     Status              PrivateKey::Extract(Archive&            archive)
     {
-      Large             n;
-      Large             e;
-      Large             d;
-      Large             p;
-      Large             q;
-      Large             dmp1;
-      Large             dmq1;
-      Large             iqmp;
+      struct OnExit
+        {
+          bool              track;
+          Large             n;
+          Large             e;
+          Large             d;
+          Large             p;
+          Large             q;
+          Large             dmp1;
+          Large             dmq1;
+          Large             iqmp;
+          OnExit() : track(false) {}
+          ~OnExit()
+          {
+            if (!this->track)
+              return;
+            // XXX BN_free or BN_clear_free ??
+            ::BN_free(&this->n);
+            ::BN_free(&this->e);
+            ::BN_free(&this->d);
+            ::BN_free(&this->p);
+            ::BN_free(&this->q);
+            ::BN_free(&this->dmp1);
+            ::BN_free(&this->dmq1);
+            ::BN_free(&this->iqmp);
+          }
+        } scope;
 
-      wrap(n);
-      wrap(e);
-      wrap(d);
-      wrap(p);
-      wrap(q);
-      wrap(dmp1);
-      wrap(dmq1);
-      wrap(iqmp);
-      enterx(local(n, ::BN_free),
-             local(e, ::BN_free),
-             local(d, ::BN_free),
-             local(p, ::BN_free),
-             local(q, ::BN_free),
-             local(dmp1, ::BN_free),
-             local(dmq1, ::BN_free),
-             local(iqmp, ::BN_free));
 
       // extract the numbers.
-      if (archive.Extract(n, e, d, p, q, dmp1, dmq1, iqmp) == StatusError)
+      if (archive.Extract(scope.n, scope.e, scope.d, scope.p, scope.q,
+                          scope.dmp1, scope.dmq1, scope.iqmp) == StatusError)
         escape("unable to extract the internal numbers");
 
       // track the local variables' deallocation.
-      track(n);
-      track(e);
-      track(d);
-      track(p);
-      track(q);
-      track(dmp1);
-      track(dmq1);
-      track(iqmp);
+      scope.track = true;
 
       // create the EVP_PKEY object from the extract numbers.
-      if (this->Create(::BN_dup(&n),
-                       ::BN_dup(&e),
-                       ::BN_dup(&d),
-                       ::BN_dup(&p),
-                       ::BN_dup(&q),
-                       ::BN_dup(&dmp1),
-                       ::BN_dup(&dmq1),
-                       ::BN_dup(&iqmp)) == StatusError)
+      if (this->Create(::BN_dup(&scope.n),
+                       ::BN_dup(&scope.e),
+                       ::BN_dup(&scope.d),
+                       ::BN_dup(&scope.p),
+                       ::BN_dup(&scope.q),
+                       ::BN_dup(&scope.dmp1),
+                       ::BN_dup(&scope.dmq1),
+                       ::BN_dup(&scope.iqmp)) == StatusError)
         escape("unable to create the private key from the archive");
 
       // release the internal used memory.
-      ::BN_clear_free(&n);
-      ::BN_clear_free(&e);
-      ::BN_clear_free(&d);
-      ::BN_clear_free(&p);
-      ::BN_clear_free(&q);
-      ::BN_clear_free(&dmp1);
-      ::BN_clear_free(&dmq1);
-      ::BN_clear_free(&iqmp);
+      ::BN_clear_free(&scope.n);
+      ::BN_clear_free(&scope.e);
+      ::BN_clear_free(&scope.d);
+      ::BN_clear_free(&scope.p);
+      ::BN_clear_free(&scope.q);
+      ::BN_clear_free(&scope.dmp1);
+      ::BN_clear_free(&scope.dmq1);
+      ::BN_clear_free(&scope.iqmp);
 
       // stop tracking, though we could also let the maid clean those
       // local variables but we prefer keep the original source code
       // for readibility purposes.
-      untrack(n);
-      untrack(e);
-      untrack(d);
-      untrack(p);
-      untrack(q);
-      untrack(dmp1);
-      untrack(dmq1);
-      untrack(iqmp);
+      scope.track = false;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

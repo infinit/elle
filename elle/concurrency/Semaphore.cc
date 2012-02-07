@@ -62,8 +62,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
-
       std::cout << alignment << "[Zone]" << std::endl;
 
       // dump the semaphore.
@@ -74,7 +72,7 @@ namespace elle
       if (this->section.Dump(margin + 2) == StatusError)
         escape("unable to dump the section");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -97,8 +95,6 @@ namespace elle
     ///
     Void                Semaphore::Acquire(const Natural32      n)
     {
-      enter();
-
       // are there enough resources to be acquired...
       while (this->available < n)
         {
@@ -108,15 +104,13 @@ namespace elle
           //
 
           // wait for the semaphore.
-          if (Fiber::Wait(this) == StatusError)
+          if (Fiber::Wait(*this) == StatusError)
             yield(_(), "an error occured while waiting on the resource");
         }
 
       // increase/decrease the number of acquired/available resources.
       this->acquired += n;
       this->available -= n;
-
-      release();
     }
 
     ///
@@ -124,18 +118,14 @@ namespace elle
     ///
     Void                Semaphore::Release(const Natural32      n)
     {
-      enter();
-
       // decrease/increase the number of acquired/available resources.
       this->acquired -= n;
       this->available += n;
 
       // and finally, awaken the fibers potentially blocked on the
       // semaphore.
-      if (Fiber::Awaken(this) == StatusError)
+      if (Fiber::Awaken(*this) == StatusError)
         yield(_(), "unable to awaken the fibers");
-
-      release();
     }
 
     ///
@@ -144,13 +134,11 @@ namespace elle
     ///
     Status              Semaphore::Try(const Natural32          n)
     {
-      enter();
-
       // are there enough resources to be acquired...
       if (this->available < n)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -165,8 +153,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
-
       std::cout << alignment << "[Semaphore]" << std::endl;
 
       // dump the number of acquired resources.
@@ -177,7 +163,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Available] " << std::dec << this->available << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

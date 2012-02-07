@@ -30,7 +30,7 @@ namespace elle
                                           const Locus&          locus,
                                           const String&         name)
     {
-      enter();
+      ;
 
       // assign the attributes.
       this->node = node;
@@ -51,7 +51,7 @@ namespace elle
       if (this->timer.Start(Neighbour::Timeout) == StatusError)
         escape("unable to start the timer");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -59,12 +59,12 @@ namespace elle
     ///
     Status              Neighbour::Update(const String&         name)
     {
-      enter();
+      ;
 
       // update the name.
       this->name = name;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -72,13 +72,13 @@ namespace elle
     ///
     Status              Neighbour::Refresh()
     {
-      enter();
+      ;
 
       // re-set the timer.
       if (this->timer.Restart(Neighbour::Timeout) == StatusError)
         escape("unable to restart the timer");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -90,14 +90,14 @@ namespace elle
     ///
     Status              Neighbour::Serialize(Archive&           archive) const
     {
-      enter();
+      ;
 
       // serialize the locus and name.
       if (archive.Serialize(this->locus,
                             this->name) == StatusError)
         escape("unable to serialize the neighbour attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -105,14 +105,14 @@ namespace elle
     ///
     Status              Neighbour::Extract(Archive&             archive)
     {
-      enter();
+      ;
 
       // extract the locus and name.
       if (archive.Extract(this->locus,
                           this->name) == StatusError)
         escape("unable to extract the neighbour attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -126,7 +126,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Neighbour]" << std::endl;
 
@@ -138,7 +138,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Name] " << this->name << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -150,13 +150,13 @@ namespace elle
     ///
     Status              Neighbour::Discard()
     {
-      enter();
+      ;
 
       // discard the current neighbour as it has not been refreshed in time.
       if (this->node->table.Remove(this->locus) == StatusError)
         escape("unable to remove the current neighbour");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

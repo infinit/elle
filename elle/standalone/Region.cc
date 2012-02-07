@@ -131,7 +131,7 @@ namespace elle
     Status              Region::Wrap(const Byte*                contents,
                                      Natural64                  size)
     {
-      enter();
+      ;
 
       // check if the operation is valid.
       if (this->type != Region::TypeUnknown)
@@ -144,7 +144,7 @@ namespace elle
       this->contents = const_cast<Byte*>(contents);
       this->size = size;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -153,7 +153,7 @@ namespace elle
     Status              Region::Acquire(Byte*                   contents,
                                         Natural64               size)
     {
-      enter();
+      ;
 
       // check if the operation is valid.
       if (this->type != Region::TypeUnknown)
@@ -167,7 +167,7 @@ namespace elle
       this->size = size;
       this->capacity = size;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -176,7 +176,7 @@ namespace elle
     ///
     Status              Region::Prepare(const Natural64         capacity)
     {
-      enter();
+      ;
 
       // check the type.
       if (this->type == Region::TypeChunk)
@@ -195,7 +195,7 @@ namespace elle
       this->size = 0;
       this->capacity = capacity;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -204,7 +204,7 @@ namespace elle
     Status              Region::Duplicate(const Byte*           contents,
                                           Natural64             size)
     {
-      enter();
+      ;
 
       // check the type.
       if (this->type == Region::TypeChunk)
@@ -225,7 +225,7 @@ namespace elle
       this->size = size;
       this->capacity = size;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -241,7 +241,7 @@ namespace elle
     ///
     Status              Region::Adjust(const Natural64          size)
     {
-      enter();
+      ;
 
       // check the type.
       if (this->type == Region::TypeChunk)
@@ -262,7 +262,7 @@ namespace elle
         {
           // if there is enough space, just leave.
           if (size <= this->capacity)
-            leave();
+            return elle::StatusOk;
 
           // otherwise, enlarge the buffer's capacity.
           this->capacity = size;
@@ -280,7 +280,7 @@ namespace elle
 #endif
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -289,7 +289,7 @@ namespace elle
     Status              Region::Append(const Byte*              contents,
                                        const Natural64          size)
     {
-      enter();
+      ;
 
       // check the type.
       if (this->type == Region::TypeChunk)
@@ -303,7 +303,7 @@ namespace elle
       if (this->Write(this->size, contents, size) == StatusError)
         escape("unable to append the data");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -314,7 +314,7 @@ namespace elle
                                      Byte*                      contents,
                                      const Natural64            size) const
     {
-      enter();
+      ;
 
       // check that the copy stays in the bounds.
       if ((offset + size) > this->size)
@@ -323,7 +323,7 @@ namespace elle
       // copy the data.
       ::memcpy(contents, this->contents + offset, size);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -334,7 +334,7 @@ namespace elle
                                       const Byte*               contents,
                                       const Natural64           size)
     {
-      enter();
+      ;
 
       // check that the copy stays in the bounds.
       if ((offset + size) > this->capacity)
@@ -347,7 +347,7 @@ namespace elle
       if ((offset + size) > this->size)
         this->size = offset + size;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -356,7 +356,7 @@ namespace elle
     ///
     Status              Region::Detach()
     {
-      enter();
+      ;
 
       // check the type.
       if (this->type != Region::TypeBuffer)
@@ -365,7 +365,7 @@ namespace elle
       // activate the option.
       this->options = Region::OptionDetach;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -385,7 +385,7 @@ namespace elle
       Natural32         i;
       Natural32         j;
 
-      enter();
+      ;
 
       std::cout << alignment
                 << "[Region] "
@@ -429,7 +429,7 @@ namespace elle
           std::cout << std::endl;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -441,12 +441,12 @@ namespace elle
     ///
     Status              Region::Imprint(Natural32&              size) const
     {
-      enter();
+      ;
 
       // return the size.
       size = sizeof (Region);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -454,12 +454,12 @@ namespace elle
     ///
     Status              Region::Clone(Region*&                  object) const
     {
-      enter();
+      ;
 
       // allocate the object.
       object = new Region(*this);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -467,21 +467,21 @@ namespace elle
     ///
     Boolean             Region::operator==(const Region&        element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // check the size.
       if (this->size != element.size)
-        false();
+        return elle::StatusFalse;
 
       // check the content.
       if (::memcmp(this->contents, element.contents, element.size) == 0)
-        true();
+        return elle::StatusTrue;
 
-      false();
+      return elle::StatusFalse;
     }
 
     ///
@@ -489,21 +489,21 @@ namespace elle
     ///
     Boolean             Region::operator<(const Region&         element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // check the size.
       if (this->size != element.size)
-        false();
+        return elle::StatusFalse;
 
       // check the content.
       if (::memcmp(this->contents, element.contents, element.size) < 0)
-        true();
+        return elle::StatusTrue;
 
-      false();
+      return elle::StatusFalse;
     }
 
     ///
@@ -519,7 +519,7 @@ namespace elle
     ///
     Region&             Region::operator=(const Region&         element)
     {
-      enter();
+      ;
 
       // test if the regions are identical.
       if (this == &element)

@@ -64,7 +64,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Routine]" << std::endl;
 
@@ -72,7 +72,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Scheme] " << this->scheme << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

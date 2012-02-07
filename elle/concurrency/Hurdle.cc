@@ -62,7 +62,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Zone]" << std::endl;
 
@@ -74,7 +74,7 @@ namespace elle
       if (this->section.Dump(margin + 2) == StatusError)
         escape("unable to dump the section");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -98,8 +98,6 @@ namespace elle
     ///
     Void                Hurdle::Lock(const Mode                 mode)
     {
-      enter();
-
       // has the lock been acquired, wait for it to get released.
       while (this->locked == true)
         {
@@ -109,7 +107,7 @@ namespace elle
           //
 
           // wait for the hurdle.
-          if (Fiber::Wait(this) == StatusError)
+          if (Fiber::Wait(*this) == StatusError)
             yield(_(), "an error occured while waiting on the resource");
         }
 
@@ -142,7 +140,7 @@ namespace elle
                 //
 
                 // wait for the hurdle.
-                if (Fiber::Wait(this) == StatusError)
+                if (Fiber::Wait(*this) == StatusError)
                   yield(_(), "an error occured while waiting on the resource");
               }
 
@@ -160,8 +158,6 @@ namespace elle
                   mode);
           }
         }
-
-      release();
     }
 
     ///
@@ -169,8 +165,6 @@ namespace elle
     ///
     Void                Hurdle::Unlock(const Mode               mode)
     {
-      enter();
-
       // then, depending on the mode.
       switch (mode)
         {
@@ -197,10 +191,8 @@ namespace elle
 
       // and finally, awaken the fibers potentially blocked on the
       // hurdle.
-      if (Fiber::Awaken(this) == StatusError)
+      if (Fiber::Awaken(*this) == StatusError)
         yield(_(), "unable to awaken the fibers");
-
-      release();
     }
 
     ///
@@ -209,11 +201,9 @@ namespace elle
     ///
     Status              Hurdle::Try(const Mode                  mode)
     {
-      enter();
-
       // has the lock been acquired, return false.
       if (this->locked == true)
-        false();
+        return elle::StatusFalse;
 
       // then, depending on the mode.
       switch (mode)
@@ -231,7 +221,7 @@ namespace elle
           {
             // check the number of readers and return false if some remain.
             if (this->readers != 0)
-              false();
+              return elle::StatusFalse;
 
             //
             // otherwise, return true.
@@ -246,7 +236,7 @@ namespace elle
           }
         }
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -261,8 +251,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
-
       std::cout << alignment << "[Hurdle]" << std::endl;
 
       // dump the locked boolean.
@@ -273,7 +261,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Readers] " << std::dec << this->readers << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }
