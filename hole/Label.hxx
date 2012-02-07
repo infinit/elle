@@ -25,7 +25,7 @@ namespace hole
   template <typename T>
   elle::Status          Label::Create(const T&                  parameter)
   {
-    enter();
+    ;
 
     // release the previous digest.
     if (this->digest != NULL)
@@ -39,7 +39,7 @@ namespace hole
                            *this->digest) == elle::StatusError)
       escape("unable to hash the given parameter(s)");
 
-    leave();
+    return elle::StatusOk;
   }
 
 }

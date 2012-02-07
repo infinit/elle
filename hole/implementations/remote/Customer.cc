@@ -71,7 +71,7 @@ namespace hole
       ///
       elle::Status      Customer::Create(elle::TCPSocket*       socket)
       {
-        enter();
+        ;
 
         // register the client.
         this->socket = socket;
@@ -105,7 +105,7 @@ namespace hole
         if (this->timer->Start(Customer::Timeout) == elle::StatusError)
           escape("unable to start the timer");
 
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -118,7 +118,7 @@ namespace hole
       ///
       elle::Status      Customer::Disconnected()
       {
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -131,7 +131,7 @@ namespace hole
         if (this->signal.dead.Emit(this) == elle::StatusError)
           escape("unable to emit the signal");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -140,7 +140,7 @@ namespace hole
       ///
       elle::Status      Customer::Error(const elle::String&     error)
       {
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -152,7 +152,7 @@ namespace hole
         // disconnect the socket, though that may be unecessary.
         this->socket->Disconnect();
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -162,7 +162,7 @@ namespace hole
       ///
       elle::Status      Customer::Abort()
       {
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -182,7 +182,7 @@ namespace hole
               escape("unable to emit the signal");
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -196,7 +196,7 @@ namespace hole
       {
         elle::String    alignment(margin, ' ');
 
-        enter();
+        ;
 
         std::cout << alignment << "[Customer]" << std::endl;
 
@@ -228,7 +228,7 @@ namespace hole
                       << "[Timer] " << elle::none << std::endl;
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
     }

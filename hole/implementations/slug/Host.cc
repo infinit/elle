@@ -72,7 +72,7 @@ namespace hole
       ///
       elle::Status      Host::Create(const elle::Locus&         locus)
       {
-        enter();
+        ;
 
         // set the locus.
         this->locus = locus;
@@ -101,7 +101,7 @@ namespace hole
         if (this->timer->Start(Host::Timeout) == elle::StatusError)
           escape("unable to start the timer");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -109,7 +109,7 @@ namespace hole
       ///
       elle::Status      Host::Create(elle::TCPSocket*           socket)
       {
-        enter();
+        ;
 
         // set the socket.
         this->socket = socket;
@@ -129,7 +129,7 @@ namespace hole
                                       this)) == elle::StatusError)
           escape("unable to subscribe the signal");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -137,7 +137,7 @@ namespace hole
       ///
       elle::Status      Host::Connect()
       {
-        enter();
+        ;
 
         // subscribe to the signal.
         if (this->socket->signal.connected.Subscribe(
@@ -161,7 +161,7 @@ namespace hole
         if (this->socket->Connect(this->locus) == elle::StatusError)
           escape("unable to connect to the peer");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -169,13 +169,13 @@ namespace hole
       ///
       elle::Status      Host::Disconnect()
       {
-        enter();
+        ;
 
         // disconnect the socket.
         if (this->socket->Disconnect() == elle::StatusError)
           escape("unable to disconnect the socket");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -183,7 +183,7 @@ namespace hole
       ///
       elle::Status      Host::Authenticated()
       {
-        enter();
+        ;
 
         // delete the timer.
         delete this->timer;
@@ -194,7 +194,7 @@ namespace hole
         // set the state.
         this->state = Host::StateAuthenticated;
 
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -206,7 +206,7 @@ namespace hole
       ///
       elle::Status      Host::Abort()
       {
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -229,7 +229,7 @@ namespace hole
             this->state = Host::StateDead;
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -237,7 +237,7 @@ namespace hole
       ///
       elle::Status      Host::Connected()
       {
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -246,7 +246,7 @@ namespace hole
         // set the state.
         this->state = Host::StateConnected;
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -254,7 +254,7 @@ namespace hole
       ///
       elle::Status      Host::Disconnected()
       {
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -280,7 +280,7 @@ namespace hole
         // set the state.
         this->state = Host::StateDead;
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -288,7 +288,7 @@ namespace hole
       ///
       elle::Status      Host::Error(const elle::String&)
       {
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -298,7 +298,7 @@ namespace hole
         // nothing to do.
         //
 
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -312,7 +312,7 @@ namespace hole
       {
         elle::String    alignment(margin, ' ');
 
-        enter();
+        ;
 
         // display the name.
         std::cout << alignment << "[Host] "
@@ -350,7 +350,7 @@ namespace hole
                       << "[Timer] " << elle::none << std::endl;
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
     }

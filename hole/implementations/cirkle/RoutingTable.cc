@@ -46,7 +46,7 @@ namespace hole
       {
         std::pair<RoutingTable::Iterator, elle::Boolean>        result;
 
-        enter();
+        ;
 
         // insert the neighbour in the container.
         result = this->container.insert(std::pair<const Label,
@@ -57,7 +57,7 @@ namespace hole
         if (result.second == false)
           escape("unable to insert the neighbour in the container");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -65,13 +65,13 @@ namespace hole
       ///
       elle::Status      RoutingTable::Exist(const Label&        label)
       {
-        enter();
+        ;
 
         // try to locate the label.
         if (this->Locate(label) == elle::StatusTrue)
-          true();
+          return elle::StatusTrue;
 
-        false();
+        return elle::StatusFalse;
       }
 
       ///
@@ -82,7 +82,7 @@ namespace hole
       {
         RoutingTable::Iterator  iterator;
 
-        enter();
+        ;
 
         // try to locate the label.
         if (this->Locate(label, &iterator) == elle::StatusFalse)
@@ -91,7 +91,7 @@ namespace hole
         // return the associated neighbour.
         neighbour = iterator->second;
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -104,7 +104,7 @@ namespace hole
       {
         RoutingTable::Iterator  iterator;
 
-        enter();
+        ;
 
         // try to locate the label.
         if (this->Locate(label, &iterator) == elle::StatusFalse)
@@ -113,7 +113,7 @@ namespace hole
         // erase the iterator.
         this->container.erase(iterator);
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -124,7 +124,7 @@ namespace hole
       {
         RoutingTable::Iterator  i;
 
-        enter();
+        ;
 
         // try to locate the neighbour.
         if ((i = this->container.find(label)) != this->container.end())
@@ -132,10 +132,10 @@ namespace hole
             if (iterator != NULL)
               *iterator = i;
 
-            true();
+            return elle::StatusTrue;
           }
 
-        false();
+        return elle::StatusFalse;
       }
 
 //
@@ -150,7 +150,7 @@ namespace hole
         elle::String            alignment(margin, ' ');
         RoutingTable::Scoutor   scoutor;
 
-        enter();
+        ;
 
         // display the name.
         std::cout << alignment << "[RoutingTable]" << std::endl;
@@ -176,7 +176,7 @@ namespace hole
                       << std::hex << scoutor->second << std::endl;
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
     }

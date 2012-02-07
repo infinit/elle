@@ -45,7 +45,7 @@ namespace hole
       {
         Neighbourhood::Scoutor  scoutor;
 
-        enter();
+        ;
 
         // go through the entries.
         for (scoutor = neighbourhood.container.begin();
@@ -58,7 +58,7 @@ namespace hole
             this->container.push_back(host->locus);
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -83,7 +83,7 @@ namespace hole
         Cluster::Scoutor        scoutor;
         elle::Natural32         size;
 
-        enter();
+        ;
 
         // retrieve the size of the container.
         size = this->container.size();
@@ -104,7 +104,7 @@ namespace hole
               escape("unable to serialize the locus");
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -115,7 +115,7 @@ namespace hole
         elle::Natural32 size;
         elle::Natural32 i;
 
-        enter();
+        ;
 
         // extract the number of entries.
         if (archive.Extract(size) == elle::StatusError)
@@ -134,7 +134,7 @@ namespace hole
             this->container.push_back(locus);
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -149,7 +149,7 @@ namespace hole
         elle::String            alignment(margin, ' ');
         Cluster::Scoutor        scoutor;
 
-        enter();
+        ;
 
         // display the name.
         std::cout << alignment << "[Cluster]" << std::endl;
@@ -166,7 +166,7 @@ namespace hole
               escape("unable to dump the locus");
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
     }

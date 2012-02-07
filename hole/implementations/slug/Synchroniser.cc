@@ -32,7 +32,7 @@ namespace hole
       ///
       elle::Status      Synchroniser::Start()
       {
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -53,7 +53,7 @@ namespace hole
         if (this->timer.Start() == elle::StatusError)
           escape("unable to start the timer");
 
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -65,7 +65,7 @@ namespace hole
       ///
       elle::Status      Synchroniser::Run()
       {
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -90,7 +90,7 @@ namespace hole
         if (this->signal.synchronised.Emit() == elle::StatusError)
           escape("unable to emit the signal");
 
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -104,7 +104,7 @@ namespace hole
       {
         elle::String    alignment(margin, ' ');
 
-        enter();
+        ;
 
         std::cout << alignment << "[Synchroniser]" << std::endl;
 
@@ -112,7 +112,7 @@ namespace hole
         if (this->timer.Dump(margin + 2) == elle::StatusError)
           escape("unable to dump the timer");
 
-        leave();
+        return elle::StatusOk;
       }
 
     }

@@ -77,7 +77,7 @@ namespace hole
         elle::String    string;
         elle::Locus     locus;
 
-        enter();
+        ;
 
         // retrieve the server's locus.
         if (Hole::Descriptor.Get("remote", "server",
@@ -91,30 +91,20 @@ namespace hole
 
         // try to connect to the server's host.
         {
-          Client*               client;
-
-          enterx(instance(client));
-
           // allocate a client.
-          client = new Client(locus);
+          auto client = std::unique_ptr<Client>(new Client(locus));
 
           // launch the client.
           if (client->Launch() == elle::StatusOk)
             {
               // set the client as the host.
-              this->client = client;
+              this->client = client.release();
 
               // set the role.
               this->role = Machine::RoleClient;
 
-              // waive.
-              waive(client);
-
-              leave();
+              return elle::StatusOk;
             }
-
-          // delete the client.
-          delete client;
         }
 
         // purge the error messages.
@@ -122,30 +112,20 @@ namespace hole
 
         // if the client did not succeed, create a server a wait for a client.
         {
-          Server*               server;
-
-          enterx(instance(server));
-
           // allocate a server.
-          server = new Server(locus);
+          auto server = std::unique_ptr<Server>(new Server(locus));
 
           // launch the server.
           if (server->Launch() == elle::StatusOk)
             {
               // set the server as the host.
-              this->server = server;
+              this->server = server.release();
 
               // set the role.
               this->role = Machine::RoleServer;
 
-              // waive.
-              waive(server);
-
-              leave();
+              return elle::StatusOk;
             }
-
-          // delete the server.
-          delete server;
         }
 
         escape("unable to create a client or a server");
@@ -161,8 +141,6 @@ namespace hole
       elle::Status      Machine::Dump(const elle::Natural32     margin) const
       {
         elle::String    alignment(margin, ' ');
-
-        enter();
 
         std::cout << alignment << "[Machine]" << std::endl;
 
@@ -197,7 +175,7 @@ namespace hole
             }
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
     }

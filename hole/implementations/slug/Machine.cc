@@ -81,7 +81,6 @@ namespace hole
       {
         elle::Locus     locus;
 
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -156,16 +155,12 @@ namespace hole
           // for every locus in the list.
           while (std::getline(stream, element, ' '))
             {
-              Host*             host;
-
               // build the host locus.
               if (locus.Create(element) == elle::StatusError)
                 escape("unable to create the host locus");
 
-              enterx(instance(host));
-
               // allocate the host.
-              host = new Host;
+              auto host = std::unique_ptr<Host>(new Host);
 
               // create the host.
               if (host->Create(locus) == elle::StatusError)
@@ -182,14 +177,10 @@ namespace hole
                 escape("unable to connect the host");
 
               // add the host to the guestlist.
-              if (this->guestlist.Add(host->socket, host) == elle::StatusError)
+              if (this->guestlist.Add(host->socket, host.get()) == elle::StatusError)
                 escape("unable to add the host to the guestlist");
-
-              // waive.
-              waive(host);
-
-              // release.
-              release();
+              else
+                host.release();
             }
         }
 
@@ -240,7 +231,7 @@ namespace hole
             escape("unable to listen for TCP connections");
         }
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -252,7 +243,6 @@ namespace hole
         nucleus::Derivable<nucleus::Block>      derivable(address.component,
                                                           block);
 
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -320,7 +310,7 @@ namespace hole
             }
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -332,7 +322,6 @@ namespace hole
         nucleus::Derivable<nucleus::Block>      derivable(address.component,
                                                           block);
 
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -416,13 +405,13 @@ namespace hole
                   {
                     nucleus::MutableBlock*      current;
 
-                    enterx(instance(current));
-
                     // build a block according to the component.
                     if (nucleus::Nucleus::Factory.Build(address.component,
                                                         current) ==
                         elle::StatusError)
                       escape("unable to build the block");
+
+                    std::unique_ptr<nucleus::MutableBlock> guard(current);
 
                     // load the latest version.
                     if (current->Load(Hole::Implementation->network,
@@ -435,15 +424,6 @@ namespace hole
                     if (!(block.version > current->version))
                       escape("the block to store does not seem to derive "
                              "the current version");
-
-                    // delete the current instance.
-                    delete current;
-
-                    // waive.
-                    waive(current);
-
-                    // release.
-                    release();
                   }
 
                 // store the block.
@@ -486,7 +466,7 @@ namespace hole
             }
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -497,7 +477,6 @@ namespace hole
       {
         nucleus::Derivable<nucleus::Block>      derivable(block);
 
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -587,7 +566,7 @@ namespace hole
             }
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -599,7 +578,6 @@ namespace hole
       {
         nucleus::Derivable<nucleus::Block>      derivable(block);
 
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -771,7 +749,7 @@ namespace hole
             }
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -779,7 +757,6 @@ namespace hole
       ///
       elle::Status      Machine::Kill(const nucleus::Address&   address)
       {
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -871,7 +848,7 @@ namespace hole
             }
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -883,7 +860,6 @@ namespace hole
       ///
       elle::Status      Machine::Alone()
       {
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -907,7 +883,7 @@ namespace hole
             this->state = Machine::StateAttached;
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -915,7 +891,6 @@ namespace hole
       ///
       elle::Status      Machine::Connection(elle::TCPSocket*    socket)
       {
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -926,12 +901,8 @@ namespace hole
           {
           case Machine::StateAttached:
             {
-              Host*             host;
-
-              enterx(instance(host));
-
               // allocate the host.
-              host = new Host;
+              auto host = std::unique_ptr<Host>(new Host);
 
               // create the host.
               if (host->Create(socket) == elle::StatusError)
@@ -945,8 +916,10 @@ namespace hole
 
               // add the host to the guestlist for now until it
               // gets authenticated.
-              if (this->guestlist.Add(host->socket, host) == elle::StatusError)
+              if (this->guestlist.Add(host->socket, host.get()) == elle::StatusError)
                 escape("unable to add the host to the neigbourhood");
+              else
+                host.release();
 
               // also authenticate to this host.
               if (host->socket->Send(
@@ -954,12 +927,6 @@ namespace hole
                       Hole::Passport,
                       this->port)) == elle::StatusError)
                 escape("unable to send a message");
-
-              // waive.
-              waive(host);
-
-              // release.
-              release();
 
               break;
             }
@@ -970,14 +937,14 @@ namespace hole
               // incoming connection right away.
               //
 
-              // delete the socket.
+              // delete the socket. XXX ARGHLLL use unique_ptr !
               delete socket;
 
               break;
             }
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -989,7 +956,6 @@ namespace hole
         Host*           host;
         elle::Session*  session;
 
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -1049,7 +1015,7 @@ namespace hole
               escape("unable to send a message");
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -1059,7 +1025,6 @@ namespace hole
       {
         elle::Session*  session;
 
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -1074,13 +1039,13 @@ namespace hole
         this->state = Machine::StateAttached;
 
         // stop the timer, if present.
-        if (this->timer != NULL)
+        if (this->timer != nullptr)
           {
             // first, delete the timer.
-            delete timer;
+            delete this->timer;
 
             // reset the pointer.
-            this->timer = NULL;
+            this->timer = nullptr;
           }
 
         //
@@ -1096,16 +1061,13 @@ namespace hole
                scoutor++)
             {
               elle::Locus       locus = *scoutor;
-              Host*             host;
-
-              enterx(instance(host));
 
               // check if this locus is already registered.
               if (this->neighbourhood.Exist(locus) == elle::StatusTrue)
                 continue;
 
               // allocate the host.
-              host = new Host;
+              auto host = std::unique_ptr<Host>(new Host);
 
               // create the host.
               if (host->Create(locus) == elle::StatusError)
@@ -1122,14 +1084,10 @@ namespace hole
                 escape("unable to connect the host");
 
               // add the host to the guestlist.
-              if (this->guestlist.Add(host->socket, host) == elle::StatusError)
+              if (this->guestlist.Add(host->socket, host.get()) == elle::StatusError)
                 escape("unable to add the host to the guestlist");
-
-              // waive.
-              waive(host);
-
-              // release.
-              release();
+              else
+                host.release();
             }
         }
 
@@ -1151,7 +1109,7 @@ namespace hole
             escape("unable to start the synchroniser");
         }
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -1159,7 +1117,6 @@ namespace hole
       ///
       elle::Status      Machine::Sweep(Host*                    host)
       {
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -1198,7 +1155,7 @@ namespace hole
         // delete the host.
         bury(host);
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -1206,7 +1163,6 @@ namespace hole
       ///
       elle::Status      Machine::Synchronised()
       {
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -1218,7 +1174,7 @@ namespace hole
         // reset its pointer.
         this->synchroniser = NULL;
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -1233,7 +1189,6 @@ namespace hole
         elle::Session*  session;
         nucleus::Block* object;
 
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -1359,13 +1314,13 @@ namespace hole
                   {
                     nucleus::MutableBlock*      current;
 
-                    enterx(instance(current));
-
                     // build a block according to the component.
                     if (nucleus::Nucleus::Factory.Build(address.component,
                                                         current) ==
                         elle::StatusError)
                       escape("unable to build the block");
+
+                    std::unique_ptr<nucleus::MutableBlock> guard(current);
 
                     // load the latest version.
                     if (current->Load(Hole::Implementation->network,
@@ -1378,15 +1333,6 @@ namespace hole
                     if (!(mb->version > current->version))
                       escape("the block to store does not seem to derive "
                              "the current version");
-
-                    // delete the current instance.
-                    delete current;
-
-                    // waive.
-                    waive(current);
-
-                    // release.
-                    release();
                   }
 
                 // store the block.
@@ -1405,7 +1351,7 @@ namespace hole
 
         // XXX do not even bother returning TagOk
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -1417,8 +1363,6 @@ namespace hole
         Host*           host;
         elle::Session*  session;
         nucleus::Block* block;
-
-        enterx(instance(block));
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -1442,6 +1386,8 @@ namespace hole
         if (nucleus::Nucleus::Factory.Build(address.component,
                                             block) == elle::StatusError)
           escape("unable to build the block");
+
+        std::unique_ptr<nucleus::Block> guard(block);
 
         // forward the request depending on the nature of the block which
         // the addres indicates.
@@ -1559,13 +1505,7 @@ namespace hole
               elle::Inputs<TagBlock>(derivable)) == elle::StatusError)
           escape("unable to return the block");
 
-        // delete the block.
-        delete block;
-
-        // waive.
-        waive(block);
-
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -1576,7 +1516,6 @@ namespace hole
         Host*           host;
         elle::Session*  session;
 
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -1637,7 +1576,7 @@ namespace hole
 
         // XXX do not even bother returning TagOk
 
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -1650,8 +1589,6 @@ namespace hole
       elle::Status      Machine::Dump(const elle::Natural32     margin) const
       {
         elle::String    alignment(margin, ' ');
-
-        enter();
 
         std::cout << alignment << "[Machine]" << std::endl;
 
@@ -1695,7 +1632,7 @@ namespace hole
                       << "[Synchroniser] " << elle::none << std::endl;
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
     }

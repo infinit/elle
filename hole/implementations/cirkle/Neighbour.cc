@@ -70,7 +70,7 @@ namespace hole
       ///
       elle::Status      Neighbour::Create(const elle::Locus&    locus)
       {
-        enter();
+        ;
 
         // set the locus.
         this->locus = locus;
@@ -94,7 +94,7 @@ namespace hole
         if (this->timer->Start(Neighbour::Timeout) == elle::StatusError)
           escape("unable to start the timer");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -107,7 +107,7 @@ namespace hole
           elle::Parameters<>
           >             monitor(&Neighbour::Monitor, this);
 
-        enter();
+        ;
 
         // set the gate.
         this->gate = gate;
@@ -118,7 +118,7 @@ namespace hole
 
         // XXX add timer for timeout
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -131,7 +131,7 @@ namespace hole
           elle::Parameters<>
           >                             monitor(&Neighbour::Monitor, this);
 
-        enter();
+        ;
 
         // allocate a gate.
         this->gate = new elle::Gate;
@@ -148,7 +148,7 @@ namespace hole
         if (this->gate->Connect(this->locus) == elle::StatusError)
           escape("unable to connect to the peer");
 
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -160,7 +160,7 @@ namespace hole
       ///
       elle::Status      Neighbour::Discard()
       {
-        enter();
+        ;
 
         // if the neighbour has been authenticated...
         if (this->state == Neighbour::StateAuthenticated)
@@ -183,7 +183,7 @@ namespace hole
             delete this; // XXX rely on signals instead
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -191,7 +191,7 @@ namespace hole
       ///
       elle::Status      Neighbour::Monitor()
       {
-        enter();
+        ;
 
         // depending on the state of the socket.
         switch (this->gate->state)
@@ -236,7 +236,7 @@ namespace hole
             }
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -250,7 +250,7 @@ namespace hole
       {
         elle::String    alignment(margin, ' ');
 
-        enter();
+        ;
 
         // display the name.
         std::cout << alignment << "[Neighbour] "
@@ -284,7 +284,7 @@ namespace hole
                       << "[Gate] " << elle::none << std::endl;
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
     }

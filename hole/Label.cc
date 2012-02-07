@@ -74,25 +74,25 @@ namespace hole
   ///
   elle::Boolean         Label::operator==(const Label&  element) const
   {
-    enter();
+    ;
 
     // check the label as this may actually be the same object.
     if (this == &element)
-      true();
+      return elle::StatusTrue;
 
     // if both are NULL or equal return true, false otherwise
     if ((this->digest == NULL) || (element.digest == NULL))
       {
         if (this->digest != element.digest)
-          false();
+          return elle::StatusFalse;
       }
     else
       {
         if (*this->digest != *element.digest)
-          false();
+          return elle::StatusFalse;
       }
 
-    true();
+    return elle::StatusTrue;
   }
 
   ///
@@ -100,25 +100,25 @@ namespace hole
   ///
   elle::Boolean         Label::operator<(const Label&   element) const
   {
-    enter();
+    ;
 
     // check the address as this may actually be the same object.
     if (this == &element)
-      false();
+      return elle::StatusFalse;
 
     // test for a null digest.
     if ((this->digest == NULL) && (element.digest == NULL))
-      false();
+      return elle::StatusFalse;
     else if (this->digest == NULL)
-      true();
+      return elle::StatusTrue;
     else if (element.digest == NULL)
-      false();
+      return elle::StatusFalse;
 
     // compare the digests.
     if (*this->digest < *element.digest)
-      true();
+      return elle::StatusTrue;
 
-    false();
+    return elle::StatusFalse;
   }
 
   ///
@@ -137,7 +137,7 @@ namespace hole
   {
     elle::String        alignment(margin, ' ');
 
-    enter();
+    ;
 
     // display the name.
     std::cout << alignment << "[Label]" << std::endl;
@@ -155,7 +155,7 @@ namespace hole
           escape("unable to dump the digest");
       }
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -167,7 +167,7 @@ namespace hole
   ///
   elle::Status          Label::Serialize(elle::Archive& archive) const
   {
-    enter();
+    ;
 
     if (this->digest != NULL)
       {
@@ -182,7 +182,7 @@ namespace hole
           escape("unable to serialize 'none'");
       }
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -192,7 +192,7 @@ namespace hole
   {
     elle::Archive::Type type;
 
-    enter();
+    ;
 
     // fetch the next element's type.
     if (archive.Fetch(type) == elle::StatusError)
@@ -214,7 +214,7 @@ namespace hole
           escape("unable to extract the digest");
       }
 
-    leave();
+    return elle::StatusOk;
   }
 
 }

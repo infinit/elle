@@ -44,7 +44,7 @@ namespace hole
       ///
       elle::Status      Implementation::Join()
       {
-        enter();
+        ;
 
         // allocate the machine.
         Remote::Computer = new Machine;
@@ -53,7 +53,7 @@ namespace hole
         if (Remote::Computer->Launch() == elle::StatusError)
           escape("unable to launch the computer");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -61,12 +61,12 @@ namespace hole
       ///
       elle::Status      Implementation::Leave()
       {
-        enter();
+        ;
 
         // delete the machine.
         delete Remote::Computer;
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -76,7 +76,7 @@ namespace hole
                           const nucleus::Address&               address,
                           const nucleus::ImmutableBlock&         block)
       {
-        enter();
+        ;
 
         // check if the machine is a client.
         if (Remote::Computer->role != Machine::RoleClient)
@@ -86,7 +86,7 @@ namespace hole
         if (Remote::Computer->client->Put(address, block) == elle::StatusError)
           escape("unable to put the block");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -96,7 +96,7 @@ namespace hole
                           const nucleus::Address&               address,
                           const nucleus::MutableBlock&          block)
       {
-        enter();
+        ;
 
         // check if the machine is a client.
         if (Remote::Computer->role != Machine::RoleClient)
@@ -106,7 +106,7 @@ namespace hole
         if (Remote::Computer->client->Put(address, block) == elle::StatusError)
           escape("unable to put the block");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -116,7 +116,7 @@ namespace hole
                           const nucleus::Address&               address,
                           nucleus::ImmutableBlock&              block)
       {
-        enter();
+        ;
 
         // check if the machine is a client.
         if (Remote::Computer->role != Machine::RoleClient)
@@ -126,7 +126,7 @@ namespace hole
         if (Remote::Computer->client->Get(address, block) == elle::StatusError)
           escape("unable to get the block");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -137,7 +137,7 @@ namespace hole
                           const nucleus::Version&               version,
                           nucleus::MutableBlock&                block)
       {
-        enter();
+        ;
 
         // check if the machine is a client.
         if (Remote::Computer->role != Machine::RoleClient)
@@ -149,7 +149,7 @@ namespace hole
                                           block) == elle::StatusError)
           escape("unable to get the block");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -158,7 +158,7 @@ namespace hole
       elle::Status      Implementation::Kill(
                           const nucleus::Address&               address)
       {
-        enter();
+        ;
 
         // check if the machine is a client.
         if (Remote::Computer->role != Machine::RoleClient)
@@ -168,7 +168,7 @@ namespace hole
         if (Remote::Computer->client->Kill(address) == elle::StatusError)
           escape("unable to kill the block");
 
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -183,7 +183,7 @@ namespace hole
       {
         elle::String    alignment(margin, ' ');
 
-        enter();
+        ;
 
         std::cout << alignment << "[Implementation] Remote" << std::endl;
 
@@ -195,7 +195,7 @@ namespace hole
         if (Remote::Computer->Dump(margin + 2) == elle::StatusError)
           escape("unable to dump the machine");
 
-        leave();
+        return elle::StatusOk;
       }
 
     }

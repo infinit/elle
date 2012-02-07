@@ -34,7 +34,7 @@ namespace hole
       elle::Status      Machine::Put(const nucleus::Address&    address,
                                      const nucleus::ImmutableBlock& block)
       {
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -50,7 +50,7 @@ namespace hole
                         address) == elle::StatusError)
           escape("unable to store the block");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -59,7 +59,7 @@ namespace hole
       elle::Status      Machine::Put(const nucleus::Address&    address,
                                      const nucleus::MutableBlock& block)
       {
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -125,32 +125,25 @@ namespace hole
           {
             nucleus::MutableBlock*      current;
 
-            enterx(instance(current));
-
             // build a block according to the component.
             if (nucleus::Nucleus::Factory.Build(address.component,
                                                 current) == elle::StatusError)
               escape("unable to build the block");
 
-            // load the latest version.
-            if (current->Load(Hole::Implementation->network,
-                              address,
-                              nucleus::Version::Last) == elle::StatusError)
-              escape("unable to load the current version");
+            {
+              std::unique_ptr<nucleus::MutableBlock> guard(current);
 
-            // does the given block derive the current version.
-            if (!(block.version > current->version))
-              escape("the block to store does not seem to derive the current "
-                     "version");
+              // load the latest version.
+              if (current->Load(Hole::Implementation->network,
+                                address,
+                                nucleus::Version::Last) == elle::StatusError)
+                escape("unable to load the current version");
 
-            // delete the current instance.
-            delete current;
-
-            // waive.
-            waive(current);
-
-            // release.
-            release();
+              // does the given block derive the current version.
+              if (!(block.version > current->version))
+                escape("the block to store does not seem to derive the current "
+                       "version");
+            }
           }
 
         // store the block.
@@ -158,7 +151,7 @@ namespace hole
                         address) == elle::StatusError)
           escape("unable to store the block");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -167,7 +160,7 @@ namespace hole
       elle::Status      Machine::Get(const nucleus::Address&    address,
                                      nucleus::ImmutableBlock&   block)
       {
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -187,7 +180,7 @@ namespace hole
         if (block.Validate(address) == elle::StatusError)
           escape("the block seems to be invalid");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -197,7 +190,7 @@ namespace hole
                                      const nucleus::Version&    version,
                                      nucleus::MutableBlock&     block)
       {
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -266,7 +259,7 @@ namespace hole
             }
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -276,7 +269,7 @@ namespace hole
       {
         nucleus::Block  block;
 
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -316,7 +309,7 @@ namespace hole
             }
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -330,11 +323,11 @@ namespace hole
       {
         elle::String    alignment(margin, ' ');
 
-        enter();
+        ;
 
         std::cout << alignment << "[Machine]" << std::endl;
 
-        leave();
+        return elle::StatusOk;
       }
 
     }

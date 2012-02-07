@@ -57,7 +57,7 @@ namespace hole
       {
         std::pair<Guestlist::Iterator, elle::Boolean>   result;
 
-        enter();
+        ;
 
         // insert the host in the container.
         result = this->container.insert(Guestlist::Value(socket, host));
@@ -66,7 +66,7 @@ namespace hole
         if (result.second == false)
           escape("unable to insert the host in the container");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -76,13 +76,13 @@ namespace hole
       {
         Guestlist::Scoutor      scoutor;
 
-        enter();
+        ;
 
         // try to locate the socket.
         if (this->Locate(socket, scoutor) == elle::StatusTrue)
-          true();
+          return elle::StatusTrue;
 
-        false();
+        return elle::StatusFalse;
       }
 
       ///
@@ -94,7 +94,7 @@ namespace hole
       {
         Guestlist::Scoutor      scoutor;
 
-        enter();
+        ;
 
         // try to locate the socket.
         if (this->Locate(socket, scoutor) == elle::StatusFalse)
@@ -103,7 +103,7 @@ namespace hole
         // return the associated host.
         host = scoutor->second;
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -113,7 +113,7 @@ namespace hole
       {
         Guestlist::Iterator     iterator;
 
-        enter();
+        ;
 
         // try to locate the socket.
         if (this->Locate(socket, iterator) == elle::StatusFalse)
@@ -122,7 +122,7 @@ namespace hole
         // erase the iterator.
         this->container.erase(iterator);
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -133,7 +133,7 @@ namespace hole
       {
         Guestlist::Scoutor      s;
 
-        enter();
+        ;
 
         // try to locate the host.
         if ((s = this->container.find(socket)) != this->container.end())
@@ -141,10 +141,10 @@ namespace hole
             // return the scoutor.
             scoutor = s;
 
-            true();
+            return elle::StatusTrue;
           }
 
-        false();
+        return elle::StatusFalse;
       }
 
       ///
@@ -155,7 +155,7 @@ namespace hole
       {
         Guestlist::Iterator     i;
 
-        enter();
+        ;
 
         // try to locate the host.
         if ((i = this->container.find(socket)) != this->container.end())
@@ -163,10 +163,10 @@ namespace hole
             // return the iterator.
             iterator = i;
 
-            true();
+            return elle::StatusTrue;
           }
 
-        false();
+        return elle::StatusFalse;
       }
 
 //
@@ -181,7 +181,7 @@ namespace hole
         elle::String            alignment(margin, ' ');
         Guestlist::Scoutor      scoutor;
 
-        enter();
+        ;
 
         // display the name.
         std::cout << alignment << "[Guestlist]" << std::endl;
@@ -204,7 +204,7 @@ namespace hole
               escape("unable to dump the host");
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
     }

@@ -54,7 +54,7 @@ namespace hole
   {
     nucleus::Network    network;
 
-    enter();
+    ;
 
     // disable the meta logging.
     if (elle::Meta::Disable() == elle::StatusError)
@@ -152,7 +152,7 @@ namespace hole
     if (Hole::Implementation->Join() == elle::StatusError)
       escape("unable to join the network");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -163,7 +163,7 @@ namespace hole
   ///
   elle::Status          Hole::Clean()
   {
-    enter();
+    ;
 
     // leave the network
     if (Hole::Implementation->Leave() == elle::StatusError)
@@ -172,7 +172,7 @@ namespace hole
     // delete the implementation.
     delete Hole::Implementation;
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -180,12 +180,12 @@ namespace hole
   ///
   elle::Status          Hole::Origin(nucleus::Address&          address)
   {
-    enter();
+    ;
 
     // return the address.
     address = Hole::Descriptor.root;
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -194,7 +194,7 @@ namespace hole
   elle::Status          Hole::Push(const nucleus::Address&      address,
                                    const nucleus::Block&        block)
   {
-    enter();
+    ;
 
     // XXX check the block's footprint which should not exceed Extent
 
@@ -237,7 +237,7 @@ namespace hole
         }
       }
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -247,7 +247,7 @@ namespace hole
                                    const nucleus::Version&      version,
                                    nucleus::Block&              block)
   {
-    enter();
+    ;
 
     // forward the request depending on the nature of the block which
     // the addres indicates.
@@ -289,7 +289,7 @@ namespace hole
         }
       }
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -297,13 +297,13 @@ namespace hole
   ///
   elle::Status          Hole::Wipe(const nucleus::Address&      address)
   {
-    enter();
+    ;
 
     // forward the kill request to the implementation.
     if (Hole::Implementation->Kill(address) == elle::StatusError)
       escape("unable to erase the block");
 
-    leave();
+    return elle::StatusOk;
   }
 
 }

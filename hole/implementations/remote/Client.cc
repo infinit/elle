@@ -59,7 +59,7 @@ namespace hole
       ///
       elle::Status      Client::Launch()
       {
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -131,7 +131,7 @@ namespace hole
             escape("unable to send the challenge");
         }
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -143,8 +143,6 @@ namespace hole
         nucleus::Derivable<nucleus::Block>      derivable(address.component,
                                                           block);
 
-        enter();
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Client::Put[Immutable]()\n");
@@ -155,12 +153,11 @@ namespace hole
 
         // transfer to the remote.
         if (this->socket->Call(
-              elle::Inputs<TagPush>(address,
-                                    derivable),
+              elle::Inputs<TagPush>(address, derivable),
               elle::Outputs<elle::TagOk>()) == elle::StatusError)
           escape("unable to transfer the request");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -172,7 +169,7 @@ namespace hole
         nucleus::Derivable<nucleus::Block>      derivable(address.component,
                                                           block);
 
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -189,7 +186,7 @@ namespace hole
               elle::Outputs<elle::TagOk>()) == elle::StatusError)
           escape("unable to transfer the request");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -200,7 +197,7 @@ namespace hole
       {
         nucleus::Derivable<nucleus::Block>      derivable(block);
 
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -217,7 +214,7 @@ namespace hole
               elle::Outputs<TagBlock>(derivable)) == elle::StatusError)
           escape("unable to transfer the request");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -229,7 +226,7 @@ namespace hole
       {
         nucleus::Derivable<nucleus::Block>      derivable(block);
 
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -246,7 +243,7 @@ namespace hole
               elle::Outputs<TagBlock>(derivable)) == elle::StatusError)
           escape("unable to transfer the request");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -254,7 +251,7 @@ namespace hole
       ///
       elle::Status      Client::Kill(const nucleus::Address&    address)
       {
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -270,7 +267,7 @@ namespace hole
               elle::Outputs<elle::TagOk>()) == elle::StatusError)
           escape("unable to transfer the request");
 
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -283,7 +280,7 @@ namespace hole
       ///
       elle::Status      Client::Connected()
       {
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -292,7 +289,7 @@ namespace hole
         // set the client as connected.
         this->state = Client::StateConnected;
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -301,7 +298,7 @@ namespace hole
       ///
       elle::Status      Client::Disconnected()
       {
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -322,7 +319,7 @@ namespace hole
               escape("unable to exit the program");
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -330,7 +327,7 @@ namespace hole
       ///
       elle::Status      Client::Error(const elle::String&)
       {
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -339,7 +336,7 @@ namespace hole
         // disconnect the socket, though that may be unecessary.
         this->socket->Disconnect();
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -348,7 +345,7 @@ namespace hole
       ///
       elle::Status      Client::Authenticated()
       {
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -358,7 +355,7 @@ namespace hole
         // accordingly.
         this->state = Client::StateAuthenticated;
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -368,7 +365,7 @@ namespace hole
       ///
       elle::Status      Client::Exception(const elle::Report&   report)
       {
-        enter();
+        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -380,7 +377,7 @@ namespace hole
         // log the error.
         log("an error occured on the server side");
 
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -394,7 +391,7 @@ namespace hole
       {
         elle::String    alignment(margin, ' ');
 
-        enter();
+        ;
 
         std::cout << alignment << "[Client]" << std::endl;
 
@@ -414,7 +411,7 @@ namespace hole
                       << "[TCPSocket] " << elle::none << std::endl;
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
     }

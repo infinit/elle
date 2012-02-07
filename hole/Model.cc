@@ -57,7 +57,7 @@ namespace hole
     elle::String        string(name);
     elle::Natural32     i;
 
-    enter();
+    ;
 
     // transform the given name in lowercase.
     std::transform(string.begin(), string.end(),
@@ -72,7 +72,7 @@ namespace hole
             // set the model type.
             type = Model::Descriptors[i].type;
 
-            leave();
+            return elle::StatusOk;
           }
       }
 
@@ -87,7 +87,7 @@ namespace hole
   {
     elle::Natural32     i;
 
-    enter();
+    ;
 
     // go through the descriptors.
     for (i = 0; i < Model::Types; i++)
@@ -98,7 +98,7 @@ namespace hole
             // set the model name.
             name = Model::Descriptors[i].name;
 
-            leave();
+            return elle::StatusOk;
           }
       }
 
@@ -134,12 +134,12 @@ namespace hole
   ///
   elle::Status          Model::Create(const Type                type)
   {
-    enter();
+    ;
 
     // set the type.
     this->type = type;
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -147,13 +147,13 @@ namespace hole
   ///
   elle::Status          Model::Create(const elle::String&       name)
   {
-    enter();
+    ;
 
     // convert the name into a type.
     if (Model::Convert(name, this->type) == elle::StatusError)
       escape("unable to convert the model name into a valid type");
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -165,17 +165,17 @@ namespace hole
     ///
     elle::Boolean       Model::operator==(const Model&  element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // check the attributes.
       if (this->type != element.type)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -194,12 +194,12 @@ namespace hole
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       // display the name.
       std::cout << alignment << "[Model] " << this->type << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -211,14 +211,14 @@ namespace hole
     ///
     elle::Status        Model::Serialize(elle::Archive& archive) const
     {
-      enter();
+      ;
 
       // serialize the internal digest.
       if (archive.Serialize(static_cast<elle::Natural8>(this->type)) ==
           elle::StatusError)
         escape("unable to serialize the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -226,14 +226,14 @@ namespace hole
     ///
     elle::Status        Model::Extract(elle::Archive&           archive)
     {
-      enter();
+      ;
 
       // extract the internal digest.
       if (archive.Extract(reinterpret_cast<elle::Natural8&>(this->type)) ==
           elle::StatusError)
         escape("unable to extract the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
 }

@@ -57,7 +57,7 @@ namespace hole
       {
         std::pair<Neighbourhood::Iterator, elle::Boolean>       result;
 
-        enter();
+        ;
 
         // insert the neighbour in the container.
         result = this->container.insert(std::pair<const elle::Locus,
@@ -68,7 +68,7 @@ namespace hole
         if (result.second == false)
           escape("unable to insert the neighbour in the container");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -76,13 +76,13 @@ namespace hole
       ///
       elle::Status      Neighbourhood::Exist(const elle::Locus& locus)
       {
-        enter();
+        ;
 
         // try to locate the locus.
         if (this->Locate(locus) == elle::StatusTrue)
-          true();
+          return elle::StatusTrue;
 
-        false();
+        return elle::StatusFalse;
       }
 
       ///
@@ -93,7 +93,7 @@ namespace hole
       {
         Neighbourhood::Iterator iterator;
 
-        enter();
+        ;
 
         // try to locate the locus.
         if (this->Locate(locus, &iterator) == elle::StatusFalse)
@@ -102,7 +102,7 @@ namespace hole
         // return the associated neighbour.
         neighbour = iterator->second;
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -112,7 +112,7 @@ namespace hole
       {
         Neighbourhood::Iterator iterator;
 
-        enter();
+        ;
 
         // try to locate the locus.
         if (this->Locate(locus, &iterator) == elle::StatusFalse)
@@ -121,7 +121,7 @@ namespace hole
         // erase the iterator.
         this->container.erase(iterator);
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -132,7 +132,7 @@ namespace hole
       {
         Neighbourhood::Iterator i;
 
-        enter();
+        ;
 
         // try to locate the neighbour.
         if ((i = this->container.find(locus)) != this->container.end())
@@ -140,10 +140,10 @@ namespace hole
             if (iterator != NULL)
               *iterator = i;
 
-            true();
+            return elle::StatusTrue;
           }
 
-        false();
+        return elle::StatusFalse;
       }
 
 //
@@ -158,7 +158,7 @@ namespace hole
         elle::String            alignment(margin, ' ');
         Neighbourhood::Scoutor  scoutor;
 
-        enter();
+        ;
 
         // display the name.
         std::cout << alignment << "[Neighbourhood]" << std::endl;
@@ -173,7 +173,7 @@ namespace hole
               escape("unable to dump the neighbour");
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
     }

@@ -75,7 +75,6 @@ namespace hole
       ///
       elle::Status      Server::Launch()
       {
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -134,7 +133,7 @@ namespace hole
             escape("unable to listen for TCP connections");
         }
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -145,7 +144,6 @@ namespace hole
       {
         std::pair<Server::Iterator, elle::Boolean>      result;
 
-        enter();
 
         // check if this customer already exists.
         if (this->Locate(socket) == elle::StatusTrue)
@@ -159,7 +157,7 @@ namespace hole
         if (result.second == false)
           escape("unable to insert the customer in the container");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -169,7 +167,6 @@ namespace hole
       {
         Server::Iterator        iterator;
 
-        enter();
 
         // locate the customer.
         if (this->Locate(socket, &iterator) == elle::StatusFalse)
@@ -178,7 +175,7 @@ namespace hole
         // remove the entry from the container.
         this->container.erase(iterator);
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -189,7 +186,6 @@ namespace hole
       {
         Server::Iterator        iterator;
 
-        enter();
 
         // locate the customer.
         if (this->Locate(socket, &iterator) == elle::StatusFalse)
@@ -198,7 +194,7 @@ namespace hole
         // retrieve the customer.
         customer = iterator->second;
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -209,7 +205,6 @@ namespace hole
       {
         Server::Iterator        i;
 
-        enter();
 
         // try to locate the customer.
         if ((i = this->container.find(socket)) != this->container.end())
@@ -217,10 +212,10 @@ namespace hole
             if (iterator != NULL)
               *iterator = i;
 
-            true();
+            return elle::StatusTrue;
           }
 
-        false();
+        return elle::StatusFalse;
       }
 
       ///
@@ -229,7 +224,6 @@ namespace hole
       elle::Status      Server::Put(const nucleus::Address&     address,
                                     const nucleus::ImmutableBlock& block)
       {
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -245,7 +239,7 @@ namespace hole
                         address) == elle::StatusError)
           escape("unable to store the block");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -254,7 +248,6 @@ namespace hole
       elle::Status      Server::Put(const nucleus::Address&     address,
                                     const nucleus::MutableBlock& block)
       {
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -308,8 +301,7 @@ namespace hole
             }
           case nucleus::ComponentUnknown:
             {
-              escape("unknown component '%u'",
-                     address.component);
+              escape("unknown component '%u'", address.component);
             }
           }
 
@@ -338,12 +330,6 @@ namespace hole
 
             // delete the current instance.
             delete current;
-
-            // waive.
-            waive(current);
-
-            // release.
-            release();
           }
 
         // store the block.
@@ -351,7 +337,7 @@ namespace hole
                         address) == elle::StatusError)
           escape("unable to store the block");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -360,7 +346,6 @@ namespace hole
       elle::Status      Server::Get(const nucleus::Address&     address,
                                     nucleus::ImmutableBlock&    block)
       {
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -380,7 +365,7 @@ namespace hole
         if (block.Validate(address) == elle::StatusError)
           escape("the block seems to be invalid");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -390,7 +375,6 @@ namespace hole
                                     const nucleus::Version&     version,
                                     nucleus::MutableBlock&      block)
       {
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -459,7 +443,7 @@ namespace hole
             }
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -469,7 +453,6 @@ namespace hole
       {
         nucleus::Block  block;
 
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -509,7 +492,7 @@ namespace hole
             }
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -521,16 +504,12 @@ namespace hole
       ///
       elle::Status      Server::Connection(elle::TCPSocket*     socket)
       {
-        Customer*       customer;
-
-        enterx(instance(customer));
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Server::Connection()\n");
 
         // allocate a customer.
-        customer = new Customer;
+        auto customer = std::unique_ptr<Customer>(new Customer);
 
         // create the customer.
         if (customer->Create(socket) == elle::StatusError)
@@ -541,18 +520,19 @@ namespace hole
 
         // subscribe to the signal.
         if (customer->signal.dead.Subscribe(
-              elle::Callback<>::Infer(&Server::Sweep,
-                                      this)) == elle::StatusError)
+              elle::Callback<>::Infer(
+                &Server::Sweep, this
+              )
+            ) == elle::StatusError)
           escape("unable to subscribe to the signal");
 
         // add the customer.
-        if (this->Add(customer->socket, customer) == elle::StatusError)
+        if (this->Add(customer->socket, customer.get()) == elle::StatusError)
           escape("unable to add the customer");
+        else
+          customer.release();
 
-        // waive.
-        waive(customer);
-
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -564,7 +544,6 @@ namespace hole
         Customer*       customer;
         elle::Session*  session;
 
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -604,7 +583,7 @@ namespace hole
               escape("unable to reply to the client");
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -612,7 +591,6 @@ namespace hole
       ///
       elle::Status      Server::Sweep(Customer*                 customer)
       {
-        enter();
 
         // remove the customer.
         if (this->Remove(customer->socket) == elle::StatusError)
@@ -621,7 +599,7 @@ namespace hole
         // bury it.
         bury(customer);
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -636,7 +614,6 @@ namespace hole
         elle::Session*  session;
         nucleus::Block* object;
 
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -702,7 +679,7 @@ namespace hole
               elle::Inputs<elle::TagOk>()) == elle::StatusError)
           escape("unable to acknowledge");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -714,8 +691,6 @@ namespace hole
         Customer*       customer;
         elle::Session*  session;
         nucleus::Block* block;
-
-        enterx(instance(block));
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -738,6 +713,8 @@ namespace hole
         if (nucleus::Nucleus::Factory.Build(address.component,
                                             block) == elle::StatusError)
           escape("unable to build the block");
+
+        std::unique_ptr<nucleus::Block> guard(block);
 
         // forward the request depending on the nature of the block which
         // the addres indicates.
@@ -778,21 +755,14 @@ namespace hole
             }
           }
 
-        nucleus::Derivable<nucleus::Block>      derivable(address.component,
-                                                          *block);
+        nucleus::Derivable<nucleus::Block> derivable(address.component, *block);
 
         // return the block.
         if (customer->socket->Reply(
               elle::Inputs<TagBlock>(derivable)) == elle::StatusError)
           escape("unable to return the block");
 
-        // delete the block.
-        delete block;
-
-        // waive.
-        waive(block);
-
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -802,8 +772,6 @@ namespace hole
       {
         Customer*       customer;
         elle::Session*  session;
-
-        enter();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -831,7 +799,7 @@ namespace hole
               elle::Inputs<elle::TagOk>()) == elle::StatusError)
           escape("unable to acknowledge");
 
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -845,8 +813,6 @@ namespace hole
       {
         elle::String    alignment(margin, ' ');
         Server::Scoutor scoutor;
-
-        enter();
 
         std::cout << alignment << "[Server]" << std::endl;
 
@@ -869,7 +835,7 @@ namespace hole
               escape("unable to dump the customer");
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
     }

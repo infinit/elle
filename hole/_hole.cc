@@ -31,7 +31,7 @@ namespace hole
   elle::Status          Main(elle::Natural32                    argc,
                              elle::Character*                   argv[])
   {
-    enterx(instance(Infinit::Parser));
+    // XXX Infinit::Parser is not deleted in case of error
 
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
@@ -93,7 +93,7 @@ namespace hole
         Infinit::Parser->Usage();
 
         // quit.
-        leave();
+        return elle::StatusOk;
       }
 
     // retrieve the network name.
@@ -116,9 +116,7 @@ namespace hole
 
     // delete the parser.
     delete Infinit::Parser;
-
-    // waive.
-    waive(Infinit::Parser);
+    Infinit::Parser = nullptr;
 
     // clean Hole.
     if (hole::Hole::Clean() == elle::StatusError)
@@ -140,7 +138,7 @@ namespace hole
     if (elle::Elle::Clean() == elle::StatusError)
       escape("unable to clean Elle");
 
-    leave();
+    return elle::StatusOk;
   }
 
 }

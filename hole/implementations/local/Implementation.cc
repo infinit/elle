@@ -44,12 +44,12 @@ namespace hole
       ///
       elle::Status      Implementation::Join()
       {
-        enter();
+        ;
 
         // allocate the machine.
         Local::Computer = new Machine;
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -57,12 +57,12 @@ namespace hole
       ///
       elle::Status      Implementation::Leave()
       {
-        enter();
+        ;
 
         // delete the machine.
         delete Local::Computer;
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -72,13 +72,13 @@ namespace hole
                           const nucleus::Address&               address,
                           const nucleus::ImmutableBlock&         block)
       {
-        enter();
+        ;
 
         // forward the request to the machine.
         if (Local::Computer->Put(address, block) == elle::StatusError)
           escape("unable to put the block");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -88,13 +88,13 @@ namespace hole
                           const nucleus::Address&               address,
                           const nucleus::MutableBlock&          block)
       {
-        enter();
+        ;
 
         // forward the request to the machine.
         if (Local::Computer->Put(address, block) == elle::StatusError)
           escape("unable to put the block");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -104,13 +104,13 @@ namespace hole
                           const nucleus::Address&               address,
                           nucleus::ImmutableBlock&              block)
       {
-        enter();
+        ;
 
         // forward the request to the machine.
         if (Local::Computer->Get(address, block) == elle::StatusError)
           escape("unable to get the block");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -121,7 +121,7 @@ namespace hole
                           const nucleus::Version&               version,
                           nucleus::MutableBlock&                block)
       {
-        enter();
+        ;
 
         // forward the request to the machine.
         if (Local::Computer->Get(address,
@@ -129,7 +129,7 @@ namespace hole
                                  block) == elle::StatusError)
           escape("unable to get the block");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -138,13 +138,13 @@ namespace hole
       elle::Status      Implementation::Kill(
                           const nucleus::Address&               address)
       {
-        enter();
+        ;
 
         // forward the request to the machine.
         if (Local::Computer->Kill(address) == elle::StatusError)
           escape("unable to kill the block");
 
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -159,7 +159,7 @@ namespace hole
       {
         elle::String    alignment(margin, ' ');
 
-        enter();
+        ;
 
         std::cout << alignment << "[Implementation] Local" << std::endl;
 
@@ -171,7 +171,7 @@ namespace hole
         if (Local::Computer->Dump(margin + 2) == elle::StatusError)
           escape("unable to dump the machine");
 
-        leave();
+        return elle::StatusOk;
       }
 
     }
