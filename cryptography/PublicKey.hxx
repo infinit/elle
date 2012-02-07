@@ -343,7 +343,7 @@ namespace elle
     //
 
     ///
-    /// this method decrypts a code and returns a pretty newly author 
+    /// this method decrypts a code and returns a pretty newly author
     /// object.
     ///
     template <typename T,

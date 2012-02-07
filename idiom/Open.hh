@@ -100,6 +100,7 @@
                                                                         \
     if (this == &object)                                                \
       return (*this);                                                   \
+    if (this->Recycle(&object) == elle::radix::StatusError)             \
       yield(*this, "unable to recycle the object");                     \
                                                                         \
     return (*this);                                                     \
