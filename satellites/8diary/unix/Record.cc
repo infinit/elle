@@ -901,7 +901,7 @@ namespace application
     elle::Status        Record::Initialize(Memoirs*             memoirs,
                                            const elle::String&  mountpoint)
     {
-      enter();
+      ;
 
       // set the memoirs pointer.
       Record::Reference = memoirs;
@@ -964,7 +964,7 @@ namespace application
       if (facade::unix::FUSE::Setup(mountpoint) == elle::StatusError)
         escape("unable to set up FUSE");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -972,7 +972,7 @@ namespace application
     ///
     elle::Status        Record::Clean()
     {
-      enter();
+      ;
 
       // clean FUSE.
       if (facade::unix::FUSE::Clean() == elle::StatusError)
@@ -981,7 +981,7 @@ namespace application
       // reset the memoirs pointer.
       Record::Reference = NULL;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

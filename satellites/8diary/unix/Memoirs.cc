@@ -58,7 +58,7 @@ namespace application
     elle::Status        Memoirs::Initialize(const elle::String& mountpoint,
                                             const elle::String& mirror)
     {
-      enter();
+      ;
 
       // set up the crux.
       if (Crux::Setup(mirror) == elle::StatusError)
@@ -78,7 +78,7 @@ namespace application
       // set the attributes.
       this->fuse = Crux::Operations;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -90,7 +90,7 @@ namespace application
     elle::Status        Memoirs::Initialize(const elle::Natural32 from,
                                             const elle::Natural32 to)
     {
-      enter();
+      ;
 
       // set the mode.
       this->mode = Memoirs::ModeReplay;
@@ -106,7 +106,7 @@ namespace application
       // set the attributes.
       this->fuse = facade::unix::FUSE::Operations;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -114,7 +114,7 @@ namespace application
     ///
     elle::Status        Memoirs::Clean()
     {
-      enter();
+      ;
 
       // depending on the mode.
       switch (this->mode)
@@ -141,7 +141,7 @@ namespace application
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -149,7 +149,7 @@ namespace application
     ///
     elle::Status        Memoirs::Write(const Upcall&            upcall)
     {
-      enter();
+      ;
 
       // check the memoirs mode.
       if (this->mode != Memoirs::ModeRecord)
@@ -159,7 +159,7 @@ namespace application
       if (this->archive.Serialize(upcall) == elle::StatusError)
         escape("unable to serialize the upcall");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -167,7 +167,7 @@ namespace application
     ///
     elle::Status        Memoirs::Read(Upcall&                   upcall)
     {
-      enter();
+      ;
 
       // check the memoirs mode.
       if (this->mode != Memoirs::ModeReplay)
@@ -177,7 +177,7 @@ namespace application
       if (this->archive.Extract(upcall) == elle::StatusError)
         escape("unable to extract the upcall");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -185,13 +185,13 @@ namespace application
     ///
     elle::Status        Memoirs::End() const
     {
-      enter();
+      ;
 
       // have we reached the end of the archive.
       if (this->archive.offset == this->archive.size)
-        true();
+        return elle::StatusTrue;
 
-      false();
+      return elle::StatusFalse;
     }
 
 //
@@ -205,7 +205,7 @@ namespace application
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       // display the name.
       std::cout << alignment << "[Memoirs]" << std::endl;
@@ -225,7 +225,7 @@ namespace application
                 << ", "
                 << this->offsets.to << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -43,7 +43,7 @@ namespace application
     lune::Identity      identity;
     lune::Dictionary    dictionary;
 
-    enter();
+    ;
 
     // check the argument.
     if (name.empty() == true)
@@ -107,7 +107,7 @@ namespace application
     if (dictionary.Store(name) == elle::StatusError)
       escape("unable to store the dictionary");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -115,7 +115,7 @@ namespace application
   ///
   elle::Status          User::Destroy(const elle::String&       name)
   {
-    enter();
+    ;
 
     //
     // remove the identity.
@@ -174,7 +174,7 @@ namespace application
         escape("unable to erase the directory");
     }
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -188,7 +188,7 @@ namespace application
     elle::PublicKey     K;
     elle::Unique        unique;
 
-    enter();
+    ;
 
     // check the argument.
     if (name.empty() == true)
@@ -230,7 +230,7 @@ namespace application
     // display the unique.
     std::cout << "[Unique] " << unique << std::endl;
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -244,8 +244,6 @@ namespace application
                              elle::Character*                   argv[])
   {
     User::Operation     operation;
-
-    enterx(instance(Infinit::Parser));
 
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
@@ -333,7 +331,7 @@ namespace application
         Infinit::Parser->Usage();
 
         // quit.
-        leave();
+        return elle::StatusOk;
       }
 
     // check the mutually exclusive options.
@@ -425,9 +423,7 @@ namespace application
 
     // delete the parser.
     delete Infinit::Parser;
-
-    // waive.
-    waive(Infinit::Parser);
+    Infinit::Parser = nullptr;
 
     // clean Infinit.
     if (Infinit::Clean() == elle::StatusError)
@@ -445,7 +441,7 @@ namespace application
     if (elle::Elle::Clean() == elle::StatusError)
       escape("unable to clean Elle");
 
-    leave();
+    return elle::StatusOk;
   }
 
 }

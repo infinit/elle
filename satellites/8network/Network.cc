@@ -45,7 +45,7 @@ namespace application
     nucleus::Network    network;
     nucleus::Address    address;
 
-    enter();
+    ;
 
     //
     // test the arguments.
@@ -179,7 +179,7 @@ namespace application
         escape("unable to store the block");
     }
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -187,7 +187,7 @@ namespace application
   ///
   elle::Status          Network::Destroy(const elle::String&    name)
   {
-    enter();
+    ;
 
     //
     // remove the descriptor.
@@ -282,7 +282,7 @@ namespace application
         escape("unable to remove the directory");
     }
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -292,7 +292,7 @@ namespace application
   {
     lune::Descriptor    descriptor;
 
-    enter();
+    ;
 
     //
     // test the arguments.
@@ -329,7 +329,7 @@ namespace application
         escape("unable to dump the descriptor");
     }
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -344,7 +344,7 @@ namespace application
   {
     Network::Operation  operation;
 
-    enterx(instance(Infinit::Parser));
+    // XXX Infinit::Parser is not deleted in case of errors
 
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
@@ -450,7 +450,7 @@ namespace application
         Infinit::Parser->Usage();
 
         // quit.
-        leave();
+        return elle::StatusOk;
       }
 
     // check the mutually exclusive options.
@@ -558,9 +558,7 @@ namespace application
 
     // delete the parser.
     delete Infinit::Parser;
-
-    // waive.
-    waive(Infinit::Parser);
+    Infinit::Parser = nullptr;
 
     // clean Infinit.
     if (Infinit::Clean() == elle::StatusError)
@@ -578,7 +576,7 @@ namespace application
     if (elle::Elle::Clean() == elle::StatusError)
       escape("unable to clean Elle");
 
-    leave();
+    return elle::StatusOk;
   }
 
 }

@@ -47,7 +47,7 @@ namespace application
     elle::KeyPair       pair;
     lune::Authority     authority;
 
-    enter();
+    ;
 
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for the authority keypair: ";
@@ -74,7 +74,7 @@ namespace application
     if (authority.Store() == elle::StatusError)
       escape("unable to store the authority");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -86,13 +86,13 @@ namespace application
     elle::KeyPair       pair;
     lune::Authority     authority;
 
-    enter();
+    ;
 
     // erase the authority file.
     if (authority.Erase() == elle::StatusError)
       escape("unable to erase the authority");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -105,7 +105,7 @@ namespace application
     lune::Authority     authority;
     elle::Unique        unique;
 
-    enter();
+    ;
 
     // check if the authority exists.
     if (authority.Exist() == elle::StatusFalse)
@@ -140,7 +140,7 @@ namespace application
     // infinit software sources.
     std::cout << "[Unique] " << unique << std::endl;
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -155,7 +155,7 @@ namespace application
   {
     Authority::Operation        operation;
 
-    enterx(instance(Infinit::Parser));
+    // XXX Infinit::Parser is not deleted in case of errors
 
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
@@ -238,7 +238,7 @@ namespace application
         Infinit::Parser->Usage();
 
         // quit.
-        leave();
+        return elle::StatusOk;
       }
 
     // check the mutually exclusive options.
@@ -312,9 +312,8 @@ namespace application
 
     // delete the parser.
     delete Infinit::Parser;
+    Infinit::Parser = nullptr;
 
-    // waive.
-    waive(Infinit::Parser);
 
     // clean the Etoile.
     if (etoile::Etoile::Clean() == elle::StatusError)
@@ -336,7 +335,7 @@ namespace application
     if (elle::Elle::Clean() == elle::StatusError)
       escape("unable to clean Elle");
 
-    leave();
+    return elle::StatusOk;
   }
 
 }

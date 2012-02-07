@@ -59,14 +59,14 @@ namespace application
   {
     elle::Natural32     i;
 
-    enter();
+    ;
 
     std::cout << "Commands:" << std::endl;
 
     for (i = 0; Commands[i].name; i++)
       std::cout << "  " << Commands[i].name << std::endl;
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -74,12 +74,12 @@ namespace application
   ///
   elle::Status          Shell::Quit(const elle::String&)
   {
-    enter();
+    ;
 
     // exit.
     ::exit(0);
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -93,7 +93,7 @@ namespace application
 
     // XXX XXX -> ameliorer Parser
 
-    enter();
+    ;
 
     // ignore the command.
     iss >> command;
@@ -104,7 +104,7 @@ namespace application
     // XXX
     std::cout << address << std::endl;
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -119,7 +119,7 @@ namespace application
   {
     elle::Character*    line;
 
-    enterx(instance(Infinit::Parser));
+    // XXX Infinit::Parser is not deleted in case of errors
 
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
@@ -190,7 +190,7 @@ namespace application
         Infinit::Parser->Usage();
 
         // quit.
-        leave();
+        return elle::StatusOk;
       }
 
     // retrieve the user name.
@@ -246,9 +246,7 @@ namespace application
 
     // delete the parser.
     delete Infinit::Parser;
-
-    // waive.
-    waive(Infinit::Parser);
+    Infinit::Parser = nullptr;
 
     // clean Hole.
     if (hole::Hole::Clean() == elle::StatusError)
@@ -278,7 +276,7 @@ namespace application
     if (elle::Elle::Clean() == elle::StatusError)
       escape("unable to clean Elle");
 
-    leave();
+    return elle::StatusOk;
   }
 
 }

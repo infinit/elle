@@ -39,7 +39,7 @@ namespace application
   {
     lune::Dictionary    dictionary;
 
-    enter();
+    ;
 
     //
     // check the arguments.
@@ -112,7 +112,7 @@ namespace application
         escape("unable to store the dictionary");
     }
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -123,7 +123,7 @@ namespace application
   {
     lune::Dictionary    dictionary;
 
-    enter();
+    ;
 
     //
     // check the arguments.
@@ -184,7 +184,7 @@ namespace application
         escape("unable to store the dictionary");
     }
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -194,7 +194,7 @@ namespace application
   {
     lune::Dictionary    dictionary;
 
-    enter();
+    ;
 
     //
     // check the arguments.
@@ -264,7 +264,7 @@ namespace application
         }
       }
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -275,7 +275,7 @@ namespace application
   {
     lune::Dictionary    dictionary;
 
-    enter();
+    ;
 
     //
     // check the arguments.
@@ -349,7 +349,7 @@ namespace application
         }
       }
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -364,7 +364,7 @@ namespace application
   {
     Dictionary::Operation       operation;
 
-    enterx(instance(Infinit::Parser));
+    // XXX Infinit::Parser is not deleted in case of errors
 
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
@@ -492,7 +492,7 @@ namespace application
         Infinit::Parser->Usage();
 
         // quit.
-        leave();
+        return elle::StatusOk;
       }
 
     // check the mutually exclusive options.
@@ -654,9 +654,7 @@ namespace application
 
     // delete the parser.
     delete Infinit::Parser;
-
-    // waive.
-    waive(Infinit::Parser);
+    Infinit::Parser = nullptr;
 
     // clean the Etoile.
     if (etoile::Etoile::Clean() == elle::StatusError)
@@ -678,7 +676,7 @@ namespace application
     if (elle::Elle::Clean() == elle::StatusError)
       escape("unable to clean Elle");
 
-    leave();
+    return elle::StatusOk;
   }
 
 }

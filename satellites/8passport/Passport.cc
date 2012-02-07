@@ -38,7 +38,7 @@ namespace application
     lune::Authority     authority;
     lune::Passport      passport;
 
-    enter();
+    ;
 
     //
     // test the arguments.
@@ -102,7 +102,7 @@ namespace application
         escape("unable to store the passport");
     }
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -112,7 +112,7 @@ namespace application
   {
     lune::Passport      passport;
 
-    enter();
+    ;
 
     // does the passport exist.
     if (passport.Exist() == elle::StatusTrue)
@@ -122,7 +122,7 @@ namespace application
           escape("unable to erase the passport");
       }
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -132,7 +132,7 @@ namespace application
   {
     lune::Passport      passport;
 
-    enter();
+    ;
 
     //
     // test the arguments.
@@ -165,7 +165,7 @@ namespace application
         escape("unable to dump the passport");
     }
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -180,7 +180,7 @@ namespace application
   {
     Passport::Operation operation;
 
-    enterx(instance(Infinit::Parser));
+    // XXX Infinit::Parser is not deleted in case of errors
 
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
@@ -263,7 +263,7 @@ namespace application
         Infinit::Parser->Usage();
 
         // quit.
-        leave();
+        return elle::StatusOk;
       }
 
     // check the mutually exclusive options.
@@ -337,9 +337,7 @@ namespace application
 
     // delete the parser.
     delete Infinit::Parser;
-
-    // waive.
-    waive(Infinit::Parser);
+    Infinit::Parser = nullptr;
 
     // clean the Etoile.
     if (etoile::Etoile::Clean() == elle::StatusError)
@@ -361,7 +359,7 @@ namespace application
     if (elle::Elle::Clean() == elle::StatusError)
       escape("unable to clean Elle");
 
-    leave();
+    return elle::StatusOk;
   }
 
 }

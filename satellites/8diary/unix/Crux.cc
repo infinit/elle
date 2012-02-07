@@ -428,7 +428,7 @@ namespace application
     ///
     elle::Status        Crux::Setup(const elle::String&         mirror)
     {
-      enter();
+      ;
 
       // set the mirror path.
       if (mirror.empty() == false)
@@ -482,7 +482,7 @@ namespace application
         Crux::Operations.flag_nullpath_ok = 1;
       }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -63,7 +63,7 @@ namespace application
       }                 outputs;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -101,7 +101,7 @@ namespace application
         escape("invalid size");
       */
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Fgetattr(Upcall&                upcall)
@@ -120,7 +120,7 @@ namespace application
       elle::Natural64   identifier;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -174,7 +174,7 @@ namespace application
         escape("invalid size");
       */
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Utimens(Upcall&                 upcall)
@@ -186,7 +186,7 @@ namespace application
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -202,7 +202,7 @@ namespace application
         escape("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Opendir(Upcall&                 upcall)
@@ -219,7 +219,7 @@ namespace application
       elle::Natural64   identifier;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -249,7 +249,7 @@ namespace application
       if (Live::Add(identifier, fi->fh) == elle::StatusError)
         escape("unable to add the file information");
 
-      leave();
+      return elle::StatusOk;
     }
 
     // XXX
@@ -295,7 +295,7 @@ namespace application
       elle::Natural64   identifier;
       int               res;
 
-      enter();
+      ;
 
       // XXX to improve with buf
 
@@ -329,7 +329,7 @@ namespace application
       if (upcall.outputs.Extract(outputs.fi) == elle::StatusError)
         escape("unable to extract the region");
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Releasedir(Upcall&              upcall)
@@ -346,7 +346,7 @@ namespace application
       elle::Natural64   identifier;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -376,7 +376,7 @@ namespace application
       if (Live::Remove(identifier) == elle::StatusError)
         escape("unable to remove the file information");
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Mkdir(Upcall&                   upcall)
@@ -388,7 +388,7 @@ namespace application
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -404,7 +404,7 @@ namespace application
         escape("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Rmdir(Upcall&                   upcall)
@@ -415,7 +415,7 @@ namespace application
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -427,7 +427,7 @@ namespace application
         escape("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Access(Upcall&                  upcall)
@@ -439,7 +439,7 @@ namespace application
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -455,7 +455,7 @@ namespace application
         escape("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Chmod(Upcall&                   upcall)
@@ -467,7 +467,7 @@ namespace application
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -483,7 +483,7 @@ namespace application
         escape("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Chown(Upcall&                   upcall)
@@ -496,7 +496,7 @@ namespace application
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -516,7 +516,7 @@ namespace application
         escape("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Setxattr(Upcall&                upcall)
@@ -531,7 +531,7 @@ namespace application
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -559,7 +559,7 @@ namespace application
         escape("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Getxattr(Upcall&                upcall)
@@ -577,7 +577,7 @@ namespace application
       }                 outputs;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -610,7 +610,7 @@ namespace application
         escape("invalid value: got(%s) expected(%s)",
                elle::String(value, res).c_str(), outputs.value.c_str());
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Listxattr(Upcall&               upcall)
@@ -627,7 +627,7 @@ namespace application
       }                 outputs;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -656,7 +656,7 @@ namespace application
         escape("invalid value: got(%s) expected(%s)",
                elle::String(list, res).c_str(), outputs.list.c_str());
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Removexattr(Upcall&             upcall)
@@ -668,7 +668,7 @@ namespace application
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -684,7 +684,7 @@ namespace application
         escape("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Symlink(Upcall&                 upcall)
@@ -696,7 +696,7 @@ namespace application
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.to) == elle::StatusError)
         escape("unable to extract the string");
@@ -712,7 +712,7 @@ namespace application
         escape("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Readlink(Upcall&                upcall)
@@ -729,7 +729,7 @@ namespace application
       }                 outputs;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -758,7 +758,7 @@ namespace application
         escape("invalid value: got(%s) expected(%s)",
                elle::String(buf).c_str(), outputs.buf.c_str());
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Create(Upcall&                  upcall)
@@ -776,7 +776,7 @@ namespace application
       elle::Natural64   identifier;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -810,7 +810,7 @@ namespace application
       if (Live::Add(identifier, fi->fh) == elle::StatusError)
         escape("unable to add the file information");
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Open(Upcall&                    upcall)
@@ -827,7 +827,7 @@ namespace application
       elle::Natural64   identifier;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -857,7 +857,7 @@ namespace application
       if (Live::Add(identifier, fi->fh) == elle::StatusError)
         escape("unable to add the file information");
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Write(Upcall&                   upcall)
@@ -877,7 +877,7 @@ namespace application
       elle::Natural64   identifier;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -916,7 +916,7 @@ namespace application
         escape("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Read(Upcall&                    upcall)
@@ -936,7 +936,7 @@ namespace application
       elle::Natural64   identifier;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -978,7 +978,7 @@ namespace application
       if (inputs.buf != outputs.buf)
         escape("invalid buffer");
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Truncate(Upcall&                upcall)
@@ -990,7 +990,7 @@ namespace application
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -1006,7 +1006,7 @@ namespace application
         escape("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Ftruncate(Upcall&               upcall)
@@ -1024,7 +1024,7 @@ namespace application
       elle::Natural64   identifier;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -1055,7 +1055,7 @@ namespace application
         escape("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Release(Upcall&                 upcall)
@@ -1072,7 +1072,7 @@ namespace application
       elle::Natural64   identifier;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -1104,7 +1104,7 @@ namespace application
       if (Live::Remove(identifier) == elle::StatusError)
         escape("unable to remove the file information");
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Rename(Upcall&                  upcall)
@@ -1116,7 +1116,7 @@ namespace application
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.from) == elle::StatusError)
         escape("unable to extract the string");
@@ -1132,7 +1132,7 @@ namespace application
         escape("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Unlink(Upcall&                  upcall)
@@ -1143,7 +1143,7 @@ namespace application
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
         escape("unable to extract the string");
@@ -1155,7 +1155,7 @@ namespace application
         escape("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -1163,7 +1163,7 @@ namespace application
     ///
     elle::Status        Replay::Initialize(Memoirs*             memoirs)
     {
-      enter();
+      ;
 
       // set the memoirs pointer.
       Replay::Reference = memoirs;
@@ -1189,7 +1189,7 @@ namespace application
       if (facade::unix::UNIX::Initialize() == elle::StatusError)
         escape("unable to initialize the facade");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -1199,7 +1199,7 @@ namespace application
     {
       elle::Natural32   i;
 
-      enter();
+      ;
 
       // first, go through the upcalls that must be ignored.
       for (i = 0;
@@ -1461,7 +1461,7 @@ namespace application
       // exit the program.
       elle::Program::Exit();
 
-      leave();
+      return elle::StatusOk;
 
     _error:
       // log the errors.
@@ -1474,7 +1474,7 @@ namespace application
       // exit the program.
       elle::Program::Exit();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -1482,7 +1482,7 @@ namespace application
     ///
     elle::Status        Replay::Clean()
     {
-      enter();
+      ;
 
       // clean the facade.
       if (facade::unix::UNIX::Clean() == elle::StatusError)
@@ -1499,7 +1499,7 @@ namespace application
       if (Live::Clean() == elle::StatusError)
         escape("unable to clean the live system");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }
