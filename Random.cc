@@ -54,7 +54,7 @@ namespace elle
       // initialise the random generator.
       ::srand(::time(NULL)); 
 
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       {
         int             fd = -1;
 
@@ -306,17 +306,19 @@ namespace elle
     Status              Random::Generate(String&                value,
                                          const Natural32        length)
     {
-      char              buffer[length];
+      static String     alphabet =
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "0123456789@#$%^&*)_+=-\';:|.,<>?`~";
+      Natural32         i;
 
       ;
 
-      // generate a random integer.
-      if (::RAND_bytes(reinterpret_cast<unsigned char*>(&buffer),
-                       sizeof (buffer)) == 0)
-        escape(::strerror(errno));
+      // resize the string.
+      value.resize(length);
 
-      // assign the characters.
-      value.assign(buffer, length);
+      // generate characters.
+      for (i = 0; i < length; i++)
+        value[i] = alphabet[::rand() % alphabet.length()];
 
       return elle::StatusOk;
     }
