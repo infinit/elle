@@ -92,7 +92,7 @@ namespace lune
   ///
   elle::Status          Configuration::Push()
   {
-    enter();
+    ;
 
     //
     // etoile
@@ -185,7 +185,7 @@ namespace lune
 #endif
     }
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -194,7 +194,7 @@ namespace lune
   ///
   elle::Status          Configuration::Pull()
   {
-    enter();
+    ;
 
     //
     // etoile
@@ -312,7 +312,7 @@ namespace lune
 #endif
     }
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -338,7 +338,7 @@ namespace lune
   {
     elle::String        alignment(margin, ' ');
 
-    enter();
+    ;
 
     std::cout << alignment << "[Configuration]" << std::endl;
 
@@ -346,7 +346,7 @@ namespace lune
     if (elle::Settings::Dump(margin + 2) == elle::StatusError)
       escape("unable to dump the settings");
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -360,7 +360,7 @@ namespace lune
   {
     elle::Path          path;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Configuration) == elle::StatusError)
@@ -370,7 +370,7 @@ namespace lune
     if (elle::Settings::Load(path) == elle::StatusError)
       escape("unable to load the settings");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -380,7 +380,7 @@ namespace lune
   {
     elle::Path          path;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Configuration) == elle::StatusError)
@@ -390,7 +390,7 @@ namespace lune
     if (elle::Settings::Store(path) == elle::StatusError)
       escape("unable to store the settings");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -400,7 +400,7 @@ namespace lune
   {
     elle::Path          path;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Configuration) == elle::StatusError)
@@ -410,7 +410,7 @@ namespace lune
     if (elle::File::Erase(path) == elle::StatusError)
       escape("unable to erase the file");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -420,7 +420,7 @@ namespace lune
   {
     elle::Path          path;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Configuration) == elle::StatusError)
@@ -428,9 +428,9 @@ namespace lune
 
     // test the file.
     if (elle::File::Exist(path) == elle::StatusFalse)
-      false();
+      return elle::StatusFalse;
 
-    true();
+    return elle::StatusTrue;
   }
 
 }

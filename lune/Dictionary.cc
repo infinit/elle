@@ -47,7 +47,7 @@ namespace lune
   {
     elle::String        alignment(margin, ' ');
 
-    enter();
+    ;
 
     std::cout << alignment << "[Dictionary]" << std::endl;
 
@@ -59,7 +59,7 @@ namespace lune
     if (this->groups.Dump(margin + 2) == elle::StatusError)
       escape("unable to dump the groups map");
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -71,13 +71,13 @@ namespace lune
   ///
   elle::Status          Dictionary::Serialize(elle::Archive&    archive) const
   {
-    enter();
+    ;
 
     // serialize the maps.
     if (archive.Serialize(this->users, this->groups) == elle::StatusError)
       escape("unable to serialize the maps");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -85,13 +85,13 @@ namespace lune
   ///
   elle::Status          Dictionary::Extract(elle::Archive&      archive)
   {
-    enter();
+    ;
 
     // extract the maps.
     if (archive.Extract(this->users, this->groups) == elle::StatusError)
       escape("unable to extract the maps");
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -106,7 +106,7 @@ namespace lune
     elle::Path          path;
     elle::Region        region;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Dictionary) == elle::StatusError)
@@ -123,7 +123,7 @@ namespace lune
           *this) == elle::StatusError)
       escape("unable to decode the object");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -135,7 +135,7 @@ namespace lune
     elle::Region        region;
     elle::String        string;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Dictionary) == elle::StatusError)
@@ -154,7 +154,7 @@ namespace lune
     if (elle::File::Write(path, region) == elle::StatusError)
       escape("unable to write the file's content");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -164,7 +164,7 @@ namespace lune
   {
     elle::Path          path;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Dictionary) == elle::StatusError)
@@ -174,7 +174,7 @@ namespace lune
     if (elle::File::Erase(path) == elle::StatusError)
       escape("unable to erase the file");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -184,7 +184,7 @@ namespace lune
   {
     elle::Path          path;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Dictionary) == elle::StatusError)
@@ -192,9 +192,9 @@ namespace lune
 
     // test the file.
     if (elle::File::Exist(path) == elle::StatusFalse)
-      false();
+      return elle::StatusFalse;
 
-    true();
+    return elle::StatusTrue;
   }
 
   ///
@@ -205,7 +205,7 @@ namespace lune
     elle::Path          path;
     elle::Region        region;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::User::Dictionary) == elle::StatusError)
@@ -226,7 +226,7 @@ namespace lune
           *this) == elle::StatusError)
       escape("unable to decode the object");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -238,7 +238,7 @@ namespace lune
     elle::Region        region;
     elle::String        string;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::User::Dictionary) == elle::StatusError)
@@ -261,7 +261,7 @@ namespace lune
     if (elle::File::Write(path, region) == elle::StatusError)
       escape("unable to write the file's content");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -271,7 +271,7 @@ namespace lune
   {
     elle::Path          path;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::User::Dictionary) == elle::StatusError)
@@ -285,7 +285,7 @@ namespace lune
     if (elle::File::Erase(path) == elle::StatusError)
       escape("unable to erase the file");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -295,7 +295,7 @@ namespace lune
   {
     elle::Path          path;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::User::Dictionary) == elle::StatusError)
@@ -307,9 +307,9 @@ namespace lune
 
     // test the file.
     if (elle::File::Exist(path) == elle::StatusFalse)
-      false();
+      return elle::StatusFalse;
 
-    true();
+    return elle::StatusTrue;
   }
 
 }

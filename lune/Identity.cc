@@ -59,7 +59,7 @@ namespace lune
   elle::Status          Identity::Create(const elle::String&    name,
                                          const elle::KeyPair&   pair)
   {
-    enter();
+    ;
 
     // set the name.
     this->name = name;
@@ -67,7 +67,7 @@ namespace lune
     // set the key pair.
     this->pair = pair;
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -77,7 +77,7 @@ namespace lune
   {
     elle::SecretKey     key;
 
-    enter();
+    ;
 
     // create a secret key with this pass.
     if (key.Create(pass) == elle::StatusError)
@@ -91,7 +91,7 @@ namespace lune
                     *this->cipher) == elle::StatusError)
       escape("unable to encrypt the key pair");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -101,7 +101,7 @@ namespace lune
   {
     elle::SecretKey     key;
 
-    enter();
+    ;
 
     // check the cipher.
     if (this->cipher == NULL)
@@ -116,7 +116,7 @@ namespace lune
                     this->pair) == elle::StatusError)
       escape("unable to decrypt the key pair");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -124,7 +124,7 @@ namespace lune
   ///
   elle::Status          Identity::Seal(const Authority&         authority)
   {
-    enter();
+    ;
 
     // check the cipher.
     if (this->cipher == NULL)
@@ -135,7 +135,7 @@ namespace lune
                           this->signature) == elle::StatusError)
       escape("unable to sign the pair with the authority");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -144,7 +144,7 @@ namespace lune
   elle::Status          Identity::Validate(const Authority&     authority)
     const
   {
-    enter();
+    ;
 
     // check the cipher.
     if (this->cipher == NULL)
@@ -155,7 +155,7 @@ namespace lune
                            this->name, *this->cipher) == elle::StatusError)
       escape("unable to verify the signature");
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -178,7 +178,7 @@ namespace lune
   {
     elle::String        alignment(margin, ' ');
 
-    enter();
+    ;
 
     std::cout << alignment << "[Identity]" << std::endl;
 
@@ -201,7 +201,7 @@ namespace lune
           escape("unable to dump the cipher");
       }
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -213,7 +213,7 @@ namespace lune
   ///
   elle::Status          Identity::Serialize(elle::Archive&      archive) const
   {
-    enter();
+    ;
 
     // check the cipher.
     if (this->cipher == NULL)
@@ -225,7 +225,7 @@ namespace lune
                           this->signature) == elle::StatusError)
       escape("unable to serialize the attributes");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -233,7 +233,7 @@ namespace lune
   ///
   elle::Status          Identity::Extract(elle::Archive&        archive)
   {
-    enter();
+    ;
 
     // allocate the cipher.
     this->cipher = new elle::Cipher;
@@ -244,7 +244,7 @@ namespace lune
                         this->signature) == elle::StatusError)
       escape("unable to extract the attributes");
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -259,7 +259,7 @@ namespace lune
     elle::Path          path;
     elle::Region        region;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Identity) == elle::StatusError)
@@ -276,7 +276,7 @@ namespace lune
           *this) == elle::StatusError)
       escape("unable to decode the object");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -288,7 +288,7 @@ namespace lune
     elle::Region        region;
     elle::String        string;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Identity) == elle::StatusError)
@@ -307,7 +307,7 @@ namespace lune
     if (elle::File::Write(path, region) == elle::StatusError)
       escape("unable to write the file's content");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -317,7 +317,7 @@ namespace lune
   {
     elle::Path          path;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Identity) == elle::StatusError)
@@ -327,7 +327,7 @@ namespace lune
     if (elle::File::Erase(path) == elle::StatusError)
       escape("unable to erase the file");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -337,7 +337,7 @@ namespace lune
   {
     elle::Path          path;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Identity) == elle::StatusError)
@@ -345,9 +345,9 @@ namespace lune
 
     // test the file.
     if (elle::File::Exist(path) == elle::StatusFalse)
-      false();
+      return elle::StatusFalse;
 
-    true();
+    return elle::StatusTrue;
   }
 
   ///
@@ -358,7 +358,7 @@ namespace lune
     elle::Path          path;
     elle::Region        region;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::User::Identity) == elle::StatusError)
@@ -379,7 +379,7 @@ namespace lune
           *this) == elle::StatusError)
       escape("unable to decode the object");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -391,7 +391,7 @@ namespace lune
     elle::Region        region;
     elle::String        string;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::User::Identity) == elle::StatusError)
@@ -414,7 +414,7 @@ namespace lune
     if (elle::File::Write(path, region) == elle::StatusError)
       escape("unable to write the file's content");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -424,7 +424,7 @@ namespace lune
   {
     elle::Path          path;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::User::Identity) == elle::StatusError)
@@ -438,7 +438,7 @@ namespace lune
     if (elle::File::Erase(path) == elle::StatusError)
       escape("unable to erase the file");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -448,7 +448,7 @@ namespace lune
   {
     elle::Path          path;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::User::Identity) == elle::StatusError)
@@ -460,9 +460,9 @@ namespace lune
 
     // test the file.
     if (elle::File::Exist(path) == elle::StatusFalse)
-      false();
+      return elle::StatusFalse;
 
-    true();
+    return elle::StatusTrue;
   }
 
 }

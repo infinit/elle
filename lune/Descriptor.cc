@@ -71,7 +71,7 @@ namespace lune
                                            const elle::Real&    contention,
                                            const elle::Real&    balancing)
   {
-    enter();
+    ;
 
     // set the attributes.
     this->name = name;
@@ -82,7 +82,7 @@ namespace lune
     this->contention = contention;
     this->balancing = balancing;
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -90,7 +90,7 @@ namespace lune
   ///
   elle::Status          Descriptor::Seal(const Authority&       authority)
   {
-    enter();
+    ;
 
     // sign the attributesr with the authority.
     if (authority.k->Sign(this->name,
@@ -103,7 +103,7 @@ namespace lune
                           this->signature) == elle::StatusError)
       escape("unable to sign the attributes with the authority");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -112,7 +112,7 @@ namespace lune
   elle::Status          Descriptor::Validate(const Authority&   authority)
     const
   {
-    enter();
+    ;
 
     // verify the signature.
     if (authority.K.Verify(this->signature,
@@ -125,7 +125,7 @@ namespace lune
                            this->balancing) == elle::StatusError)
       escape("unable to verify the signature");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -134,7 +134,7 @@ namespace lune
   ///
   elle::Status          Descriptor::Push()
   {
-    enter();
+    ;
 
     //
     // update the settings with the parameters.
@@ -180,7 +180,7 @@ namespace lune
           this->signature) == elle::StatusError)
       escape("unable to update the parameter");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -189,7 +189,7 @@ namespace lune
   ///
   elle::Status          Descriptor::Pull()
   {
-    enter();
+    ;
 
     //
     // retrieve the parameters from the settings.
@@ -235,7 +235,7 @@ namespace lune
           this->signature) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -261,7 +261,7 @@ namespace lune
   {
     elle::String        alignment(margin, ' ');
 
-    enter();
+    ;
 
     std::cout << alignment << "[Descriptor]" << std::endl;
 
@@ -269,7 +269,7 @@ namespace lune
     if (elle::Settings::Dump(margin + 2) == elle::StatusError)
       escape("unable to dump the settings");
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -283,7 +283,7 @@ namespace lune
   {
     elle::Path          path;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Network::Descriptor) == elle::StatusError)
@@ -297,7 +297,7 @@ namespace lune
     if (elle::Settings::Load(path) == elle::StatusError)
       escape("unable to load the settings");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -307,7 +307,7 @@ namespace lune
   {
     elle::Path          path;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Network::Descriptor) == elle::StatusError)
@@ -321,7 +321,7 @@ namespace lune
     if (elle::Settings::Store(path) == elle::StatusError)
       escape("unable to store the settings");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -331,7 +331,7 @@ namespace lune
   {
     elle::Path          path;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Network::Descriptor) == elle::StatusError)
@@ -345,7 +345,7 @@ namespace lune
     if (elle::File::Erase(path) == elle::StatusError)
       escape("unable to erase the file");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -355,7 +355,7 @@ namespace lune
   {
     elle::Path          path;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Network::Descriptor) == elle::StatusError)
@@ -367,9 +367,9 @@ namespace lune
 
     // test the file.
     if (elle::File::Exist(path) == elle::StatusFalse)
-      false();
+      return elle::StatusFalse;
 
-    true();
+    return elle::StatusTrue;
   }
 
 }

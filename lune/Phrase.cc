@@ -36,12 +36,12 @@ namespace lune
   ///
   elle::Status          Phrase::Create(const elle::String&      string)
   {
-    enter();
+    ;
 
     // assign the string.
     this->string = string;
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -53,17 +53,17 @@ namespace lune
   ///
   elle::Boolean         Phrase::operator==(const Phrase&        element) const
   {
-    enter();
+    ;
 
     // check the address as this may actually be the same object.
     if (this == &element)
-      true();
+      return elle::StatusTrue;
 
     // compare the strings.
     if (this->string != element.string)
-      false();
+      return elle::StatusFalse;
 
-    true();
+    return elle::StatusTrue;
   }
 
   ///
@@ -82,11 +82,11 @@ namespace lune
   {
     elle::String        alignment(margin, ' ');
 
-    enter();
+    ;
 
     std::cout << alignment << "[Phrase] " << this->string << std::endl;
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -98,13 +98,13 @@ namespace lune
   ///
   elle::Status          Phrase::Serialize(elle::Archive&        archive) const
   {
-    enter();
+    ;
 
     // serialize the attributes.
     if (archive.Serialize(this->string) == elle::StatusError)
       escape("unable to serialize the attributes");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -112,13 +112,13 @@ namespace lune
   ///
   elle::Status          Phrase::Extract(elle::Archive&          archive)
   {
-    enter();
+    ;
 
     // extract the attributes.
     if (archive.Extract(this->string) == elle::StatusError)
       escape("unable to extract the attributes");
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -133,7 +133,7 @@ namespace lune
     elle::Path          path;
     elle::Region        region;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Network::Phrase) == elle::StatusError)
@@ -154,7 +154,7 @@ namespace lune
           *this) == elle::StatusError)
       escape("unable to decode the object");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -166,7 +166,7 @@ namespace lune
     elle::Region        region;
     elle::String        string;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Network::Phrase) == elle::StatusError)
@@ -189,7 +189,7 @@ namespace lune
     if (elle::File::Write(path, region) == elle::StatusError)
       escape("unable to write the file's content");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -199,7 +199,7 @@ namespace lune
   {
     elle::Path          path;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Network::Phrase) == elle::StatusError)
@@ -213,7 +213,7 @@ namespace lune
     if (elle::File::Erase(path) == elle::StatusError)
       escape("unable to erase the file");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -223,7 +223,7 @@ namespace lune
   {
     elle::Path          path;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Network::Phrase) == elle::StatusError)
@@ -235,9 +235,9 @@ namespace lune
 
     // test the file.
     if (elle::File::Exist(path) == elle::StatusFalse)
-      false();
+      return elle::StatusFalse;
 
-    true();
+    return elle::StatusTrue;
   }
 
 }
