@@ -34,12 +34,16 @@ namespace lune
   ///
   /// this method creates a phrase.
   ///
-  elle::Status          Phrase::Create(const elle::String&      string)
+  elle::Status          Phrase::Create(const elle::String&      pass,
+                                       const elle::String&      portal)
   {
     ;
 
-    // assign the string.
-    this->string = string;
+    // assign the pass.
+    this->pass = pass;
+
+    // assigne the portal line.
+    this->portal = portal;
 
     return elle::StatusOk;
   }
@@ -53,14 +57,13 @@ namespace lune
   ///
   elle::Boolean         Phrase::operator==(const Phrase&        element) const
   {
-    ;
-
     // check the address as this may actually be the same object.
     if (this == &element)
       return elle::StatusTrue;
 
-    // compare the strings.
-    if (this->string != element.string)
+    // compare the attributes.
+    if ((this->pass != element.pass) ||
+        (this->portal != element.portal))
       return elle::StatusFalse;
 
     return elle::StatusTrue;
@@ -82,9 +85,12 @@ namespace lune
   {
     elle::String        alignment(margin, ' ');
 
-    ;
+    std::cout << alignment << "[Phrase]" << std::endl;
 
-    std::cout << alignment << "[Phrase] " << this->string << std::endl;
+    std::cout << alignment << elle::Dumpable::Shift
+              << "[Pass] " << this->pass << std::endl;
+    std::cout << alignment << elle::Dumpable::Shift
+              << "[Portal] " << this->portal << std::endl;
 
     return elle::StatusOk;
   }
@@ -98,10 +104,9 @@ namespace lune
   ///
   elle::Status          Phrase::Serialize(elle::Archive&        archive) const
   {
-    ;
-
     // serialize the attributes.
-    if (archive.Serialize(this->string) == elle::StatusError)
+    if (archive.Serialize(this->pass,
+                          this->portal) == elle::StatusError)
       escape("unable to serialize the attributes");
 
     return elle::StatusOk;
@@ -112,10 +117,9 @@ namespace lune
   ///
   elle::Status          Phrase::Extract(elle::Archive&          archive)
   {
-    ;
-
     // extract the attributes.
-    if (archive.Extract(this->string) == elle::StatusError)
+    if (archive.Extract(this->pass,
+                        this->portal) == elle::StatusError)
       escape("unable to extract the attributes");
 
     return elle::StatusOk;
@@ -132,8 +136,6 @@ namespace lune
   {
     elle::Path          path;
     elle::Region        region;
-
-    ;
 
     // create the path.
     if (path.Create(Lune::Network::Phrase) == elle::StatusError)
@@ -166,8 +168,6 @@ namespace lune
     elle::Region        region;
     elle::String        string;
 
-    ;
-
     // create the path.
     if (path.Create(Lune::Network::Phrase) == elle::StatusError)
       escape("unable to create the path");
@@ -199,8 +199,6 @@ namespace lune
   {
     elle::Path          path;
 
-    ;
-
     // create the path.
     if (path.Create(Lune::Network::Phrase) == elle::StatusError)
       escape("unable to create the path");
@@ -222,8 +220,6 @@ namespace lune
   elle::Status          Phrase::Exist(const elle::String&       network) const
   {
     elle::Path          path;
-
-    ;
 
     // create the path.
     if (path.Create(Lune::Network::Phrase) == elle::StatusError)

@@ -15,7 +15,7 @@
 #include <lune/Configuration.hh>
 
 #include <lune/Lune.hh>
-#include <facade/Facade.hh>
+#include <horizon/Horizon.hh>
 
 namespace lune
 {
@@ -67,15 +67,19 @@ namespace lune
   Configuration::Default::Hole::Debug = false;
 
   ///
-  /// facade-specific configuration values.
+  /// horizon-specific configuration values.
   ///
   const elle::Boolean
-  Configuration::Default::Facade::Debug = false;
+  Configuration::Default::Horizon::Debug = false;
 
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX)
   const elle::Natural32
-  Configuration::Default::Facade::FUker =
-    static_cast<elle::Natural32>(facade::unix::FUker::TypeSequential);
+  Configuration::Default::Horizon::FUker =
+    static_cast<elle::Natural32>(horizon::linux::FUker::TypeSequential);
+#elif defined(INFINIT_MACOSX)
+  const elle::Natural32
+  Configuration::Default::Horizon::FUker =
+    static_cast<elle::Natural32>(horizon::macosx::FUker::TypeSequential);
 #elif defined(INFINIT_WINDOWS)
   // XXX
 #else
@@ -165,18 +169,18 @@ namespace lune
     }
 
     //
-    // facade
+    // horizon
     //
     {
       if (elle::Settings::Set(
-            "facade", "debug",
-            this->facade.debug) == elle::StatusError)
+            "horizon", "debug",
+            this->horizon.debug) == elle::StatusError)
         escape("unable to update the parameter");
 
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       if (elle::Settings::Set(
-            "facade", "fuker",
-            this->facade.fuker) == elle::StatusError)
+            "horizon", "fuker",
+            this->horizon.fuker) == elle::StatusError)
         escape("unable to update the parameter");
 #elif defined(INFINIT_WINDOWS)
       // XXX
@@ -289,21 +293,21 @@ namespace lune
     }
 
     //
-    // facade
+    // horizon
     //
     {
       if (elle::Settings::Get(
-            "facade", "debug",
-            this->facade.debug,
-            Configuration::Default::Facade::Debug) ==
+            "horizon", "debug",
+            this->horizon.debug,
+            Configuration::Default::Horizon::Debug) ==
           elle::StatusError)
         escape("unable to retrieve the parameter");
 
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       if (elle::Settings::Get(
-            "facade", "fuker",
-            this->facade.fuker,
-            Configuration::Default::Facade::FUker) == elle::StatusError)
+            "horizon", "fuker",
+            this->horizon.fuker,
+            Configuration::Default::Horizon::FUker) == elle::StatusError)
         escape("unable to update the parameter");
 #elif defined(INFINIT_WINDOWS)
       // XXX
