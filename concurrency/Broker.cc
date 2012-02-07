@@ -142,13 +142,7 @@ namespace elle
                Parameters<> >   closure(Callback<>::Infer(&Broker::Trigger,
                                                           this));
 
-<<<<<<< HEAD
 #if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
-=======
-      enter();
-
-#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
->>>>>>> d261c92ccfe6fe027aca1abd7bdb4b854f43de22
       //
       // the following part should not be necessary but it turns out
       // that QT triggers this event even though there is nothing to

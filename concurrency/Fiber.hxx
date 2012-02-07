@@ -215,7 +215,7 @@ namespace elle
       Boolean                   awaken;
 
       // check if there are blocked fibers.
-      if (Fiber::Fibers.empty() == true)
+      if (Fiber::Waiting.empty() == true)
         return elle::StatusFalse;
 
       // set the boolean to false meaning that no fiber has been woken up.
@@ -256,11 +256,11 @@ namespace elle
     template <typename DataType>
     Status Fiber::Awaken(const Resource& resource, std::shared_ptr<DataType> data)
     {
-      Fiber::F::Iterator iterator;
+      Fiber::W::Iterator iterator;
       Boolean            awaken;
 
       // check if there are blocked fibers.
-      if (Fiber::Fibers.empty() == true)
+      if (Fiber::Waiting.empty() == true)
         return elle::StatusFalse;
 
       // set the boolean to false meaning that no fiber has been woken up.

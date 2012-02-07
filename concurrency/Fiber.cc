@@ -299,7 +299,7 @@ namespace elle
         escape("don't call Fiber::Schedule() if Fiber::IsScheduling is true.");
 
       // if there is not fibers, return.
-      if (Fiber::Fibers.empty() == true)
+      if (Fiber::Waiting.empty() == true)
         return elle::StatusOk;
 
       // We are now scheduling
