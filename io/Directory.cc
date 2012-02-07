@@ -158,7 +158,7 @@ namespace elle
         escape("unable to dig the chain of directories");
 
       // create the directory.
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       if (::mkdir(path.string.c_str(), 0700) != 0)
         escape(::strerror(errno));
 #elif defined(INFINIT_WINDOWS)
@@ -294,7 +294,7 @@ namespace elle
             escape("unable to create the target path");
 
           // stat the entry as entry->d_type is not standard
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
           if (::lstat(target.string.c_str(), &stat) == -1)
 #elif defined(INFINIT_WINDOWS)
           if (::stat(target.string.c_str(), &stat) == -1)
@@ -323,7 +323,7 @@ namespace elle
               if (File::Erase(target) == StatusError)
                 escape("unable to remove the file");
             }
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
           else if (S_ISLNK(stat.st_mode))
             {
               // remove the link.

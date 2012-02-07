@@ -81,7 +81,7 @@ namespace elle
       // allocate the QT program.
       program->core = new ::QCoreApplication(n, NULL);
 
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // set the signal handlers.
       ::signal(SIGINT, &Program::Exception);
       ::signal(SIGQUIT, &Program::Exception);
@@ -135,7 +135,7 @@ namespace elle
       // stop the program depending on the signal.
       switch (signal)
         {
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
         case SIGQUIT:
 #elif defined(INFINIT_WINDOWS)
 	// nothing
@@ -154,7 +154,7 @@ namespace elle
         }
     }
 
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
     ///
     /// this method attaches a broker to the program's event loop.
     ///

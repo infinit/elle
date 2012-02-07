@@ -35,23 +35,36 @@ namespace elle
     template <typename... T>
     Void                Fiber::Launch(Closure<Status, T...>*    closure)
     {
+      //
       // trigger the closure and, should there are errors, display them.
+      //
+
       if (closure->Call() == StatusError)
         yield(_(), "an error occured in the fiber");
 
-      // set the fiber state.
+      //
+      // set the fiber state i.e completed.
+      //
+
       Fiber::Current->state = Fiber::StateCompleted;
 
-      // remove the parent fiber from the container since it is going
-      // to be scheduled as soon as this function returns.
+      //
+      // finally, prepare to schedule the parent fiber by
+      // removing the parent from the waiting list and set
+      // its state as awken.
+
       if (Fiber::Remove(Fiber::Current->link) == StatusError)
         yield(_(), "unable to remove the fiber");
 
-      // set the state of the parent's fiber as awaken.
       Fiber::Current->link->state = Fiber::StateAwaken;
 
-      // swap to the link as we don't rely on uc_link
-      ::swapcontext(&Fiber::Current->context, &Fiber::Program->context);
+      //
+      // finally, switch back to the main thread.
+      //
+
+      if (::epth_switch(Fiber::Current->context,
+                        Fiber::Program->context) == StatusError)
+        yield(_(), "unable to switch back to the program thread");
     }
 
     ///
@@ -60,74 +73,88 @@ namespace elle
     template <typename... T>
     Status              Fiber::Spawn(Closure<Status, T...>&     closure)
     {
-      // if we are already in a fiber, don't create another one.
+      //
+      // if we are already in a fiber, don't create another one: simply
+      // trigger the closure.
+      //
+
       if (Fiber::Current != Fiber::Program)
         {
           if (closure.Call() == StatusError)
-            log("an error occured in the fiber");
+            escape("an error occured in the fiber");
+
           return elle::StatusOk;
         }
 
-      // declare a launch function pointer in order to bypass the type
-      // checking system through casts.
-      Void              (*launch)(Closure<Status, T...>*) = &Fiber::Launch;
-      Fiber*            fiber;
+      //
+      // set the current fiber as suspended and waiting for a child
+      // fiber.
+      //
 
-      // set the current fiber as suspended.
       Fiber::Current->state = Fiber::StateSuspended;
-
-      // the current fiber is waiting for its child fiber to complete.
       Fiber::Current->type = Fiber::TypeFiber;
 
-      // save the environment.
+      //
+      // save the current fiber's environment i.e report, session etc.
+      //
+
       if (Fiber::Trigger(PhaseSave) == StatusError)
         escape("unable to save the environment");
 
-      // add the current fiber to the container.
+      //
+      // add the current fiber to the waiting list.
+      //
+
       if (Fiber::Add(Fiber::Current) == StatusError)
         escape("unable to add the fiber to the container");
 
-      // allocate a new fiber.
+      //
+      // declare a launch function pointer in order to bypass the type
+      // checking system through casts.
+      //
+
+      Void              (*launch)(Closure<Status, T...>*) = &Fiber::Launch;
+      Fiber*            fiber;
+
+      //
+      // allocate a new fiber and initialize it.
+      //
+
       if (Fiber::New(fiber) == StatusError)
         escape("unable to allocate a new fiber");
 
-      // set the parent fiber.
       fiber->link = Fiber::Current;
-
-      // get the context in order to create a new one.
-      if (::getcontext(&fiber->context) == -1)
-        escape("unable to get the context");
-
-      // modify the context manually so that, once completed, the
-      // execution comes back to the parent fiber i.e the current fiber.
-      fiber->context.uc_link = NULL;
-      fiber->context.uc_stack.ss_sp = fiber->frame->stack;
-      fiber->context.uc_stack.ss_size = fiber->frame->size;
-#if defined(INFINIT_UNIX) || defined(INFINIT_WINDOWS)
-      fiber->context.uc_flags = 0;
-#endif
-
-      // create a context for the new fiber, with the Fiber::Launch
-      // as entry point.
-      ::makecontext(&fiber->context,
-                    reinterpret_cast<void (*)()>(launch),
-                    1,
-                    &closure);
-
-      // set the fiber state.
       fiber->state = Fiber::StateActive;
 
+      //
+      // spawn the actual thread.
+      //
+
+      if (::epth_spawn(reinterpret_cast<void* (*)(void*)>(launch),
+                       &closure,
+                       fiber->context) == StatusError)
+        escape("unable to spawn the thread");
+
+      //
       // set the new fiber as the current one.
+      //
+
       Fiber::Current = fiber;
 
-      // initialize the environment.
+      //
+      // initialize the new fiber's environment.
+      //
+
       if (Fiber::Trigger(PhaseInitialize) == StatusError)
         escape("unable to initialize the environment");
 
-      // set the new context.
-      if (::swapcontext(&Fiber::Program->context,
-                        &Fiber::Current->context) == -1)
-        escape("unable to set the context");
+      //
+      // finally, switch on the new thread.
+      //
+
+      if (::epth_switch(Fiber::Program->context,
+                        Fiber::Current->context) == StatusError)
+        escape("unable to switch to the new thread");
 
       // XXX Why not return the _CheckCurrentFiber() value ??
       Fiber::_CheckCurrentFiber();
@@ -150,6 +177,7 @@ namespace elle
       // retrieve the data.
       // XXX Meta -> User type : Y U NO DYNAMIC_CAST ?
       data = std::static_pointer_cast<T>(Fiber::Current->data);
+      // XXX Reset fiber data ?
 
       return elle::StatusOk;
     }
@@ -171,7 +199,7 @@ namespace elle
 
       // retrieve the data.
       // XXX Meta -> User type : Y U NO DYNAMIC_CAST ?
-      data = Fiber::Current->data;
+      data = std::static_pointer_cast<T>(Fiber::Current->data);
       // XXX Reset fiber data ?
 
       return elle::StatusOk;
@@ -183,7 +211,7 @@ namespace elle
     template <typename DataType>
     Status Fiber::Awaken(const Event& event, std::shared_ptr<DataType> data)
     {
-      Fiber::F::Iterator        iterator;
+      Fiber::W::Iterator        iterator;
       Boolean                   awaken;
 
       // check if there are blocked fibers.
