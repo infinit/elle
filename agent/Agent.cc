@@ -50,7 +50,7 @@ namespace agent
     elle::String        prompt;
     elle::String        pass;
 
-    enter();
+    ;
 
     // disable the meta logging.
     if (elle::Meta::Disable() == elle::StatusError)
@@ -99,7 +99,7 @@ namespace agent
     if (elle::Meta::Enable() == elle::StatusError)
       escape("unable to enable the meta logging");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -110,11 +110,11 @@ namespace agent
   ///
   elle::Status          Agent::Clean()
   {
-    enter();
+    ;
 
     // nothing to do.
 
-    leave();
+    return elle::StatusOk;
   }
 
 }
