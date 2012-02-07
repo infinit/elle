@@ -72,7 +72,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Inlet] " << this << std::endl;
 
@@ -92,7 +92,7 @@ namespace nucleus
       if (this->_footprint.Dump(margin + 4) == elle::StatusError)
         escape("unable to dump the footprint");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -106,14 +106,14 @@ namespace nucleus
               typename T>
     elle::Status        Inlet<V, T>::Serialize(elle::Archive&   archive) const
     {
-      enter();
+      ;
 
       // serialize the attributes.
       if (archive.Serialize(this->key,
                             this->value) == elle::StatusError)
         escape("unable to serialize the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -123,14 +123,14 @@ namespace nucleus
               typename T>
     elle::Status        Inlet<V, T>::Extract(elle::Archive&     archive)
     {
-      enter();
+      ;
 
       // extracts the attributes.
       if (archive.Extract(this->key,
                           this->value) == elle::StatusError)
         escape("unable to extract the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

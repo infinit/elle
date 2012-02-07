@@ -28,7 +28,7 @@ namespace nucleus
     ///
     elle::Status        Nest::Register(Block*                   block)
     {
-      enter();
+      ;
 
       // XXX here we register the block with an in-memory placement and no
       //     address
@@ -38,7 +38,7 @@ namespace nucleus
       //     address are catched by the nest in order to return the newly
       //     modified version.
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

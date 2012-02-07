@@ -18,7 +18,7 @@
 
 int main(int argc, char** argv)
 {
-  enter();
+  ;
 
   // allocate a new parser.
   Infinit::Parser = new elle::Parser(argc, argv);
@@ -109,14 +109,12 @@ int main(int argc, char** argv)
   expose();
 
   delete Infinit::Parser;
- 
+
   hole::Hole::Clean();
   Infinit::Clean();
   lune::Lune::Clean();
   nucleus::Nucleus::Clean();
   elle::Elle::Clean();
-
-  release();
 
   return 0;
 }

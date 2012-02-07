@@ -32,8 +32,6 @@
 elle::Status            Main(elle::Natural32                    argc,
                              elle::Character*                   argv[])
 {
-  enterx(instance(Infinit::Parser));
-
   // initialize the Elle library.
   if (elle::Elle::Initialize() == elle::StatusError)
     escape("unable to initialize Elle");
@@ -99,7 +97,7 @@ elle::Status            Main(elle::Natural32                    argc,
       Infinit::Parser->Usage();
 
       // quit.
-      leave();
+      return elle::StatusOk;
     }
 
   // retrieve the user name.
@@ -179,9 +177,6 @@ elle::Status            Main(elle::Natural32                    argc,
   // delete the parser.
   delete Infinit::Parser;
 
-  // waive.
-  waive(Infinit::Parser);
-
 #if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
   // clean the facade.
   if (facade::Facade::Clean() == elle::StatusError)
@@ -220,7 +215,7 @@ elle::Status            Main(elle::Natural32                    argc,
   if (elle::Elle::Clean() == elle::StatusError)
     escape("unable to clean Elle");
 
-  leave();
+  return elle::StatusOk;
 }
 
 //

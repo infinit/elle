@@ -49,11 +49,11 @@ namespace package
     ///
     Status              CodingStandard::Method1()
     {
-      enter();
+      ;
 
       // nothing to do.
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -79,13 +79,13 @@ namespace package
     ///
     Status              CodingStandard::Method4(const String&   attribute2)
     {
-      enter();
+      ;
 
       // set the attribute: note that *this* is always used to refer
       // the attributes.
       this->attribute2 = attribute2;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

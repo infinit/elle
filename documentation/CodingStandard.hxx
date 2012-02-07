@@ -39,13 +39,13 @@ namespace package
     Status              CodingStandard::Method3(const Natural32 n,
                                                 T&              object)
     {
-      enter();
+      ;
 
       // do something.
       if (object.Compute(n) == StatusError)
         escape("unable to do something");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }
