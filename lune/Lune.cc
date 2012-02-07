@@ -171,8 +171,6 @@ namespace lune
       elle::System::Path::Separator +
       "infinit";
 
-    ;
-
     //
     // create the paths.
     //
@@ -438,8 +436,6 @@ namespace lune
   ///
   elle::Status          Lune::Clean()
   {
-    ;
-
     // nothing to do.
 
     return elle::StatusOk;

@@ -59,13 +59,15 @@ namespace lune
   elle::Status          Identity::Create(const elle::String&    name,
                                          const elle::KeyPair&   pair)
   {
-    ;
-
     // set the name.
     this->name = name;
 
+    assert(pair.k.key() != nullptr);
+    assert(pair.K.key() != nullptr);
     // set the key pair.
     this->pair = pair;
+    assert(this->pair.k.key() != nullptr);
+    assert(this->pair.K.key() != nullptr);
 
     return elle::StatusOk;
   }
@@ -76,8 +78,6 @@ namespace lune
   elle::Status          Identity::Encrypt(const elle::String&   pass)
   {
     elle::SecretKey     key;
-
-    ;
 
     // create a secret key with this pass.
     if (key.Create(pass) == elle::StatusError)
@@ -100,8 +100,6 @@ namespace lune
   elle::Status          Identity::Decrypt(const elle::String&   pass)
   {
     elle::SecretKey     key;
-
-    ;
 
     // check the cipher.
     if (this->cipher == NULL)
@@ -144,8 +142,6 @@ namespace lune
   elle::Status          Identity::Validate(const Authority&     authority)
     const
   {
-    ;
-
     // check the cipher.
     if (this->cipher == NULL)
       escape("unable to verify an unencrypted identity");
@@ -177,8 +173,6 @@ namespace lune
   elle::Status          Identity::Dump(const elle::Natural32    margin) const
   {
     elle::String        alignment(margin, ' ');
-
-    ;
 
     std::cout << alignment << "[Identity]" << std::endl;
 
@@ -213,8 +207,6 @@ namespace lune
   ///
   elle::Status          Identity::Serialize(elle::Archive&      archive) const
   {
-    ;
-
     // check the cipher.
     if (this->cipher == NULL)
       escape("unable to serialize an unencrypted identity");
@@ -233,8 +225,6 @@ namespace lune
   ///
   elle::Status          Identity::Extract(elle::Archive&        archive)
   {
-    ;
-
     // allocate the cipher.
     this->cipher = new elle::Cipher;
 
@@ -258,8 +248,6 @@ namespace lune
   {
     elle::Path          path;
     elle::Region        region;
-
-    ;
 
     // create the path.
     if (path.Create(Lune::Identity) == elle::StatusError)
@@ -288,8 +276,6 @@ namespace lune
     elle::Region        region;
     elle::String        string;
 
-    ;
-
     // create the path.
     if (path.Create(Lune::Identity) == elle::StatusError)
       escape("unable to create the path");
@@ -317,8 +303,6 @@ namespace lune
   {
     elle::Path          path;
 
-    ;
-
     // create the path.
     if (path.Create(Lune::Identity) == elle::StatusError)
       escape("unable to create the path");
@@ -336,8 +320,6 @@ namespace lune
   elle::Status          Identity::Exist() const
   {
     elle::Path          path;
-
-    ;
 
     // create the path.
     if (path.Create(Lune::Identity) == elle::StatusError)
@@ -357,8 +339,6 @@ namespace lune
   {
     elle::Path          path;
     elle::Region        region;
-
-    ;
 
     // create the path.
     if (path.Create(Lune::User::Identity) == elle::StatusError)
@@ -391,8 +371,6 @@ namespace lune
     elle::Region        region;
     elle::String        string;
 
-    ;
-
     // create the path.
     if (path.Create(Lune::User::Identity) == elle::StatusError)
       escape("unable to create the path");
@@ -424,8 +402,6 @@ namespace lune
   {
     elle::Path          path;
 
-    ;
-
     // create the path.
     if (path.Create(Lune::User::Identity) == elle::StatusError)
       escape("unable to create the path");
@@ -447,8 +423,6 @@ namespace lune
   elle::Status          Identity::Exist(const elle::String&     name) const
   {
     elle::Path          path;
-
-    ;
 
     // create the path.
     if (path.Create(Lune::User::Identity) == elle::StatusError)
