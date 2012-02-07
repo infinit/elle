@@ -46,7 +46,7 @@ namespace nucleus
       elle::String      string(name);
       elle::Natural32   i;
 
-      enter();
+      ;
 
       // transform the given name in lowercase.
       std::transform(string.begin(), string.end(),
@@ -61,7 +61,7 @@ namespace nucleus
               // set the type.
               type = Subject::Descriptors[i].type;
 
-              leave();
+              return elle::StatusOk;
             }
         }
 
@@ -76,7 +76,7 @@ namespace nucleus
     {
       elle::Natural32   i;
 
-      enter();
+      ;
 
       // go through the descriptors.
       for (i = 0; i < Subject::Types; i++)
@@ -87,7 +87,7 @@ namespace nucleus
               // set the name.
               name = Subject::Descriptors[i].name;
 
-              leave();
+              return elle::StatusOk;
             }
         }
 
@@ -174,7 +174,7 @@ namespace nucleus
     ///
     elle::Status        Subject::Create(const elle::PublicKey&  K)
     {
-      enter();
+      ;
 
       // set the type.
       this->type = Subject::TypeUser;
@@ -182,7 +182,7 @@ namespace nucleus
       // allocate and copy the key.
       this->user = new elle::PublicKey(K);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -190,7 +190,7 @@ namespace nucleus
     ///
     elle::Status        Subject::Create(const proton::Address&  descriptor)
     {
-      enter();
+      ;
 
       // set the type.
       this->type = Subject::TypeGroup;
@@ -198,7 +198,7 @@ namespace nucleus
       // allocate the address.
       this->group = new proton::Address(descriptor);
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -210,15 +210,15 @@ namespace nucleus
     ///
     elle::Boolean       Subject::operator==(const Subject&      element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the type.
       if (this->type != element.type)
-        false();
+        return elle::StatusFalse;
 
       // compare the identifier.
       switch (this->type)
@@ -237,7 +237,7 @@ namespace nucleus
           }
         }
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -256,7 +256,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Subject]" << std::endl;
 
@@ -295,7 +295,7 @@ namespace nucleus
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -307,7 +307,7 @@ namespace nucleus
     ///
     elle::Status        Subject::Serialize(elle::Archive&       archive) const
     {
-      enter();
+      ;
 
       // serialize the type.
       if (archive.Serialize(static_cast<elle::Natural8>(this->type)) ==
@@ -339,7 +339,7 @@ namespace nucleus
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -347,7 +347,7 @@ namespace nucleus
     ///
     elle::Status        Subject::Extract(elle::Archive&         archive)
     {
-      enter();
+      ;
 
       // extract the type.
       if (archive.Extract(reinterpret_cast<elle::Natural8&>(this->type)) ==
@@ -385,7 +385,7 @@ namespace nucleus
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -31,13 +31,13 @@ namespace nucleus
     elle::Status        Stamp::Create(const Location&           master,
                                       const Location&           slave)
     {
-      enter();
+      ;
 
       // set the attributes.
       this->master = master;
       this->slave = slave;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -45,14 +45,14 @@ namespace nucleus
     ///
     elle::Status        Stamp::Seal(const elle::PrivateKey&     k)
     {
-      enter();
+      ;
 
       // sign the attributes.
       if (k.Sign(this->master, this->slave,
                  this->signature) == elle::StatusError)
         escape("unable to sign the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -61,7 +61,7 @@ namespace nucleus
     ///
     elle::Status        Stamp::Validate()
     {
-      enter();
+      ;
 
       // sign the attributes.
       if (Infinit::Authority.K.Verify(
@@ -69,7 +69,7 @@ namespace nucleus
             this->master, this->slave) == elle::StatusError)
         escape("this stamp seems not to have been issued by the oracle");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -81,19 +81,19 @@ namespace nucleus
     ///
     elle::Boolean       Stamp::operator==(const Stamp&          element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the attributes.
       if ((this->master != element.master) ||
           (this->slave != element.slave) ||
           (this->signature != element.signature))
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -112,7 +112,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Stamp]" << std::endl;
 
@@ -136,7 +136,7 @@ namespace nucleus
       if (this->signature.Dump(margin + 2) == elle::StatusError)
         escape("unable to dump the signature");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -148,7 +148,7 @@ namespace nucleus
     ///
     elle::Status        Stamp::Serialize(elle::Archive&         archive) const
     {
-      enter();
+      ;
 
       // serialize the attributes.
       if (archive.Serialize(this->master,
@@ -156,7 +156,7 @@ namespace nucleus
                             this->signature) == elle::StatusError)
         escape("unable to serialize the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -164,7 +164,7 @@ namespace nucleus
     ///
     elle::Status        Stamp::Extract(elle::Archive&           archive)
     {
-      enter();
+      ;
 
       // extract the attributes.
       if (archive.Extract(this->master,
@@ -172,7 +172,7 @@ namespace nucleus
                           this->signature) == elle::StatusError)
         escape("unable to extract the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

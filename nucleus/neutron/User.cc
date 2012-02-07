@@ -28,13 +28,13 @@ namespace nucleus
     ///
     elle::Status        User::Create(const elle::PublicKey&     K)
     {
-      enter();
+      ;
 
       // create the underlying public key block.
       if (PublicKeyBlock::Create(K) == elle::StatusError)
         escape("unable to create the underlying public key block");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //

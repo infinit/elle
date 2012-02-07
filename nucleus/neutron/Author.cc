@@ -56,12 +56,12 @@ namespace nucleus
     ///
     elle::Status        Author::Create()
     {
-      enter();
+      ;
 
       // set the role.
       this->role = RoleOwner;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -71,7 +71,7 @@ namespace nucleus
     ///
     elle::Status        Author::Create(const Index&             index)
     {
-      enter();
+      ;
 
       // set the role.
       this->role = RoleLord;
@@ -79,7 +79,7 @@ namespace nucleus
       // set the index.
       this->lord.index = index;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -91,15 +91,15 @@ namespace nucleus
     ///
     elle::Boolean       Author::operator==(const Author&        element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the role.
       if (this->role != element.role)
-        false();
+        return elle::StatusFalse;
 
       // depending on the role.
       switch (this->role)
@@ -120,7 +120,7 @@ namespace nucleus
 
             // compare the indexes.
             if (this->lord.index != element.lord.index)
-              false();
+              return elle::StatusFalse;
 
             break;
           }
@@ -140,7 +140,7 @@ namespace nucleus
           }
         }
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -159,7 +159,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Author]" << std::endl;
 
@@ -204,7 +204,7 @@ namespace nucleus
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -216,7 +216,7 @@ namespace nucleus
     ///
     elle::Status        Author::Serialize(elle::Archive&        archive) const
     {
-      enter();
+      ;
 
       // serialize the role.
       if (archive.Serialize(this->role) == elle::StatusError)
@@ -258,7 +258,7 @@ namespace nucleus
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -266,7 +266,7 @@ namespace nucleus
     ///
     elle::Status        Author::Extract(elle::Archive&          archive)
     {
-      enter();
+      ;
 
       // extract the role.
       if (archive.Extract(this->role) == elle::StatusError)
@@ -308,7 +308,7 @@ namespace nucleus
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

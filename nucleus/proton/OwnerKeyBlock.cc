@@ -51,7 +51,7 @@ namespace nucleus
     {
       elle::KeyPair     pair;
 
-      enter();
+      ;
 
       // retrieve the current time.
       if (this->stamp.Current() == elle::StatusError)
@@ -78,7 +78,7 @@ namespace nucleus
       if (this->owner._subject.Create(this->owner.K) == elle::StatusError)
         escape("unable to create the owner subject");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -87,7 +87,7 @@ namespace nucleus
     elle::Status        OwnerKeyBlock::Bind(Address&            address)
       const
     {
-      enter();
+      ;
 
       // compute the address.
       if (address.Create(this->family, this->component,
@@ -97,7 +97,7 @@ namespace nucleus
                          this->K) == elle::StatusError)
         escape("unable to compute the OKB's address");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -108,7 +108,7 @@ namespace nucleus
     {
       Address           self;
 
-      enter();
+      ;
 
       //
       // make sure the address has not be tampered and correspond to the
@@ -132,7 +132,7 @@ namespace nucleus
                          this->owner.K) == elle::StatusError)
         escape("unable to verify the owner's signature");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -156,7 +156,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[OwnerKeyBlock]" << std::endl;
 
@@ -196,7 +196,7 @@ namespace nucleus
       if (this->owner._subject.Dump(margin + 6) == elle::StatusError)
         escape("unable to dump the subject");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -208,7 +208,7 @@ namespace nucleus
     ///
     elle::Status        OwnerKeyBlock::Serialize(elle::Archive& archive) const
     {
-      enter();
+      ;
 
       // serialize the parent class.
       if (MutableBlock::Serialize(archive) == elle::StatusError)
@@ -221,7 +221,7 @@ namespace nucleus
                             this->owner.signature) == elle::StatusError)
         escape("unable to serialize the owner part");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -229,7 +229,7 @@ namespace nucleus
     ///
     elle::Status        OwnerKeyBlock::Extract(elle::Archive&   archive)
     {
-      enter();
+      ;
 
       // extract the parent class.
       if (MutableBlock::Extract(archive) == elle::StatusError)
@@ -250,7 +250,7 @@ namespace nucleus
       if (this->owner._subject.Create(this->owner.K) == elle::StatusError)
         escape("unable to create the owner subject");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

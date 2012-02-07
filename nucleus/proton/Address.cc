@@ -49,7 +49,7 @@ namespace nucleus
     ///
     elle::Status        Address::Initialize()
     {
-      enter();
+      ;
 
       // create the any address with default meaningless values.
       if (Address::Any.Create(
@@ -59,7 +59,7 @@ namespace nucleus
           elle::StatusError)
         escape("unable to create the any address");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -67,11 +67,11 @@ namespace nucleus
     ///
     elle::Status        Address::Clean()
     {
-      enter();
+      ;
 
       // nothing to do.
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -128,25 +128,25 @@ namespace nucleus
     ///
     elle::Boolean       Address::operator==(const Address&      element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // if both are NULL or equal return true, false otherwise
       if ((this->digest == NULL) || (element.digest == NULL))
         {
           if (this->digest != element.digest)
-            false();
+            return elle::StatusFalse;
         }
       else
         {
           if (*this->digest != *element.digest)
-            false();
+            return elle::StatusFalse;
         }
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -154,25 +154,25 @@ namespace nucleus
     ///
     elle::Boolean       Address::operator<(const Address&       element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        false();
+        return elle::StatusFalse;
 
       // test for a null digest.
       if ((this->digest == NULL) && (element.digest == NULL))
-        false();
+        return elle::StatusFalse;
       else if (this->digest == NULL)
-        true();
+        return elle::StatusTrue;
       else if (element.digest == NULL)
-        false();
+        return elle::StatusFalse;
 
       // compare the digests.
       if (*this->digest < *element.digest)
-        true();
+        return elle::StatusTrue;
 
-      false();
+      return elle::StatusFalse;
     }
 
     ///
@@ -191,7 +191,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       // check the value.
       if (*this == Address::Null)
@@ -229,7 +229,7 @@ namespace nucleus
             }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -241,7 +241,7 @@ namespace nucleus
     ///
     elle::Status        Address::Serialize(elle::Archive&       archive) const
     {
-      enter();
+      ;
 
       if (this->digest != NULL)
         {
@@ -258,7 +258,7 @@ namespace nucleus
             escape("unable to serialize 'none'");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -268,7 +268,7 @@ namespace nucleus
     {
       elle::Archive::Type       type;
 
-      enter();
+      ;
 
       // fetch the next element's type.
       if (archive.Fetch(type) == elle::StatusError)
@@ -293,7 +293,7 @@ namespace nucleus
             escape("unable to extract the digest");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

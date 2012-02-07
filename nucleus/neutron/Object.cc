@@ -60,7 +60,7 @@ namespace nucleus
     elle::Status        Object::Create(const Genre              genre,
                                        const elle::PublicKey&   owner)
     {
-      enter();
+      ;
 
       // (i)
       {
@@ -98,7 +98,7 @@ namespace nucleus
           escape("unable to set the initial data");
       }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -111,7 +111,7 @@ namespace nucleus
                                        const Token&             token)
 
     {
-      enter();
+      ;
 
       // set the author.
       this->author = author;
@@ -149,7 +149,7 @@ namespace nucleus
       // mark the block as dirty.
       this->_state = proton::StateDirty;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -158,7 +158,7 @@ namespace nucleus
     elle::Status        Object::Administrate(const Attributes&  attributes,
                                              const Permissions& permissions)
     {
-      enter();
+      ;
 
       // set the last management time.
       if (this->meta.stamp.Current() == elle::StatusError)
@@ -185,7 +185,7 @@ namespace nucleus
       // set the the block as dirty.
       this->_state = proton::StateDirty;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -194,7 +194,7 @@ namespace nucleus
     elle::Status        Object::Seal(const elle::PrivateKey&    k,
                                      const Access&              access)
     {
-      enter();
+      ;
 
       // re-sign the data if required.
       if (this->data._state == proton::StateDirty)
@@ -290,7 +290,7 @@ namespace nucleus
       // set the block as consistent.
       this->_state = proton::StateConsistent;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -302,7 +302,7 @@ namespace nucleus
     ///
     elle::Status        Object::Validate(const proton::Address&) const
     {
-      enter();
+      ;
 
       escape("this method should never have been called");
     }
@@ -322,7 +322,7 @@ namespace nucleus
     {
       elle::PublicKey   author;
 
-      enter();
+      ;
 
       // (i)
       {
@@ -474,7 +474,7 @@ namespace nucleus
           escape("invalid version number");
       }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -497,7 +497,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Object]" << std::endl;
 
@@ -576,7 +576,7 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
                 << "[_State] " << std::dec << this->data._state << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -588,7 +588,7 @@ namespace nucleus
     ///
     elle::Status        Object::Serialize(elle::Archive&        archive) const
     {
-      enter();
+      ;
 
       // call the parent class.
       if (proton::ImprintBlock::Serialize(archive) == elle::StatusError)
@@ -617,7 +617,7 @@ namespace nucleus
                             this->data.signature) == elle::StatusError)
         escape("unable to serialize the data part");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -625,7 +625,7 @@ namespace nucleus
     ///
     elle::Status        Object::Extract(elle::Archive&          archive)
     {
-      enter();
+      ;
 
       // call the parent class.
       if (proton::ImprintBlock::Extract(archive) == elle::StatusError)
@@ -665,7 +665,7 @@ namespace nucleus
             this->meta.owner.token) == elle::StatusError)
         escape("unable to create the owner access record");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -49,12 +49,12 @@ namespace nucleus
     ///
     elle::Status        PublicKeyBlock::Create(const elle::PublicKey& K)
     {
-      enter();
+      ;
 
       // copy the public key.
       this->K = K;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -63,7 +63,7 @@ namespace nucleus
     elle::Status        PublicKeyBlock::Bind(Address&           address)
       const
     {
-      enter();
+      ;
 
       // compute the address.
       if (address.Create(this->family, this->component,
@@ -73,7 +73,7 @@ namespace nucleus
                          this->K) == elle::StatusError)
         escape("unable to compute the PKB's address");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -84,7 +84,7 @@ namespace nucleus
     {
       Address           self;
 
-      enter();
+      ;
 
       //
       // make sure the address has not be tampered and correspond to the
@@ -108,7 +108,7 @@ namespace nucleus
       // to the recorded public key and identifies the block requested.
       //
 
-      true();
+      return elle::StatusTrue;
     }
 
 //
@@ -132,7 +132,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[PublicKeyBlock]" << std::endl;
 
@@ -146,7 +146,7 @@ namespace nucleus
       if (this->K.Dump(margin + 4) == elle::StatusError)
         escape("unable to dump the public key");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -158,7 +158,7 @@ namespace nucleus
     ///
     elle::Status        PublicKeyBlock::Serialize(elle::Archive& archive) const
     {
-      enter();
+      ;
 
       // serialize the parent class.
       if (MutableBlock::Serialize(archive) == elle::StatusError)
@@ -168,7 +168,7 @@ namespace nucleus
       if (archive.Serialize(this->K) == elle::StatusError)
         escape("unable to serialize the public key");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -176,7 +176,7 @@ namespace nucleus
     ///
     elle::Status        PublicKeyBlock::Extract(elle::Archive&  archive)
     {
-      enter();
+      ;
 
       // extract the parent class.
       if (MutableBlock::Extract(archive) == elle::StatusError)
@@ -190,7 +190,7 @@ namespace nucleus
       if (archive.Extract(this->K) == elle::StatusError)
         escape("unable to extract the public key");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

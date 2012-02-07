@@ -46,8 +46,6 @@ namespace nucleus
     {
       Range<T>::Scoutor         scoutor;
 
-      enter();
-
       // go through the container.
       for (scoutor = element.container.begin();
            scoutor != element.container.end();
@@ -79,8 +77,6 @@ namespace nucleus
           if (this->Add(item) == elle::StatusError)
             fail("unable to add the item to the container");
         }
-
-      release();
     }
 
     ///
@@ -115,8 +111,6 @@ namespace nucleus
     template <typename T>
     elle::Status        Range<T>::Add(T*                        item)
     {
-      enter();
-
       // check if another item exists with this symbol.
       if (this->Exist(item->Symbol()) == true)
         escape("an item with this symbol already exist");
@@ -124,7 +118,7 @@ namespace nucleus
       // add the item to the container.
       this->container.push_back(item);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -135,13 +129,11 @@ namespace nucleus
     {
       Range<T>::Scoutor scoutor;
 
-      enter();
-
       // try to locate the entry.
       if (this->Locate(symbol, scoutor) != elle::StatusTrue)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -155,19 +147,17 @@ namespace nucleus
     {
       Range<T>::Scoutor scoutor;
 
-      enter();
-
       // initialize the pointer to null.
       item = NULL;
 
       // try to locate the item.
       if (this->Locate(symbol, scoutor) == false)
-        false();
+        return elle::StatusFalse;
 
       // return the item.
       item = *scoutor;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -177,8 +167,6 @@ namespace nucleus
     elle::Status        Range<T>::Remove(const Range<T>::S&     symbol)
     {
       Range<T>::Iterator        iterator;
-
-      enter();
 
       // locate the item.
       if (this->Locate(symbol, iterator) == false)
@@ -190,7 +178,7 @@ namespace nucleus
       // erase the item from the container.
       this->container.erase(iterator);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -199,12 +187,10 @@ namespace nucleus
     template <typename T>
     elle::Status        Range<T>::Capacity(Size&                size) const
     {
-      enter();
-
       // return the size.
       size = this->container.size();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -215,8 +201,6 @@ namespace nucleus
                                          Range<T>::Scoutor&     scoutor) const
     {
       Range<T>::Scoutor s;
-
-      enter();
 
       // go through the container.
       for (s = this->container.begin();
@@ -231,11 +215,11 @@ namespace nucleus
               // return the scoutor.
               scoutor = s;
 
-              true();
+              return elle::StatusTrue;
             }
         }
 
-      false();
+      return elle::StatusFalse;
     }
 
     ///
@@ -248,8 +232,6 @@ namespace nucleus
                                          Range<T>::Iterator&    iterator)
     {
       Range<T>::Iterator        i;
-
-      enter();
 
       // go through the container.
       for (i = this->container.begin();
@@ -264,11 +246,11 @@ namespace nucleus
               // return the iterator.
               iterator = i;
 
-              true();
+              return elle::StatusTrue;
             }
         }
 
-      false();
+      return elle::StatusFalse;
     }
 
     ///
@@ -279,12 +261,10 @@ namespace nucleus
     template <typename T>
     elle::Status        Range<T>::Detach()
     {
-      enter();
-
       // activate the option.
       this->options = Range<T>::OptionDetach;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -300,15 +280,13 @@ namespace nucleus
       Range<T>::Scoutor s;
       Range<T>::Scoutor t;
 
-      enter();
-
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the sizes.
       if (this->container.size() != element.container.size())
-        false();
+        return elle::StatusFalse;
 
       // go through the elements.
       for (s = this->container.begin(), t = element.container.begin();
@@ -317,10 +295,10 @@ namespace nucleus
         {
           // compare the entries.
           if (*s != *t)
-            false();
+            return elle::StatusFalse;
         }
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -341,8 +319,6 @@ namespace nucleus
       elle::String      alignment(margin, ' ');
       Range<T>::Scoutor scoutor;
 
-      enter();
-
       std::cout << alignment << "[Range] "
                 << std::dec << this->container.size() << std::endl;
 
@@ -362,7 +338,7 @@ namespace nucleus
             escape("unable to dump the item");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -377,8 +353,6 @@ namespace nucleus
     {
       Range<T>::Scoutor scoutor;
       Size              size;
-
-      enter();
 
       // retrieve the number of items.
       size = this->container.size();
@@ -399,7 +373,7 @@ namespace nucleus
             escape("unable to serialize the item");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -411,8 +385,6 @@ namespace nucleus
       Size              size;
       Index             i;
 
-      enter();
-
       // extract the number of items.
       if (archive.Extract(size) == elle::StatusError)
         escape("unable to extract the number of items");
@@ -420,27 +392,21 @@ namespace nucleus
       // extract every item.
       for (i = 0; i < size; i++)
         {
-          T*            item;
-
-          enterx(instance(item));
-
           // allocate a new item.
-          item = new T;
+          auto item = new T;
 
           // extract the item.
           if (archive.Extract(*item) == elle::StatusError)
-            escape("unable to extract the item");
+            {
+              delete item;
+              escape("unable to extract the item");
+            }
 
           // add the item to the container.
           this->container.push_back(item);
-
-          // stop tracking the item.
-          waive(item);
-
-          release();
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

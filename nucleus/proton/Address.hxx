@@ -32,7 +32,7 @@ namespace nucleus
                                         const T&                parameter,
                                         const TT&...            parameters)
     {
-      enter();
+      ;
 
       // set the family.
       this->family = family;
@@ -55,7 +55,7 @@ namespace nucleus
                              *this->digest) == elle::StatusError)
         escape("unable to hash the given parameter(s)");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

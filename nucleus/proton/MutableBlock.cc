@@ -69,7 +69,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[MutableBlock]" << std::endl;
 
@@ -81,7 +81,7 @@ namespace nucleus
       if (this->version.Dump(margin + 2) == elle::StatusError)
         escape("unable to dump the version");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -93,7 +93,7 @@ namespace nucleus
     ///
     elle::Status        MutableBlock::Serialize(elle::Archive&  archive) const
     {
-      enter();
+      ;
 
       // serialize the parent class.
       if (Block::Serialize(archive) == elle::StatusError)
@@ -103,7 +103,7 @@ namespace nucleus
       if (archive.Serialize(this->version) == elle::StatusError)
         escape("unable to serialize the attributess");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -111,7 +111,7 @@ namespace nucleus
     ///
     elle::Status        MutableBlock::Extract(elle::Archive&    archive)
     {
-      enter();
+      ;
 
       // extract the parent class.
       if (Block::Extract(archive) == elle::StatusError)
@@ -121,7 +121,7 @@ namespace nucleus
       if (archive.Extract(this->version) == elle::StatusError)
         escape("unable to extract the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -138,7 +138,7 @@ namespace nucleus
       elle::Path        path;
       elle::String      unique;
 
-      enter();
+      ;
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
@@ -238,7 +238,7 @@ namespace nucleus
             escape("unable to extract the archive");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -251,7 +251,7 @@ namespace nucleus
       elle::Path        file;
       elle::String      unique;
 
-      enter();
+      ;
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
@@ -390,7 +390,7 @@ namespace nucleus
             escape("unable to store the history");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -402,7 +402,7 @@ namespace nucleus
       elle::Unique      unique;
       elle::Path        path;
 
-      enter();
+      ;
 
       // turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
@@ -508,7 +508,7 @@ namespace nucleus
             escape("unable to erase the history");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -522,7 +522,7 @@ namespace nucleus
       elle::Path                path;
       elle::String              unique;
 
-      enter();
+      ;
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
@@ -551,7 +551,7 @@ namespace nucleus
 
           // test the file.
           if (elle::File::Exist(path) == elle::StatusTrue)
-            true();
+            return elle::StatusTrue;
         }
       else
         {
@@ -598,10 +598,10 @@ namespace nucleus
 
           // test the file.
           if (elle::File::Exist(path) == elle::StatusTrue)
-            true();
+            return elle::StatusTrue;
         }
 
-      false();
+      return elle::StatusFalse;
     }
 
   }

@@ -75,12 +75,12 @@ namespace nucleus
     ///
     elle::Status        Version::Create(const Type              number)
     {
-      enter();
+      ;
 
       // assign the number.
       this->number = number;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -92,17 +92,17 @@ namespace nucleus
     ///
     elle::Boolean       Version::operator==(const Version&      element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the numbers.
       if (this->number != element.number)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -110,17 +110,17 @@ namespace nucleus
     ///
     elle::Boolean       Version::operator<(const Version&       element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the numbers.
       if (this->number >= element.number)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -128,17 +128,17 @@ namespace nucleus
     ///
     elle::Boolean       Version::operator>(const Version&       element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the numbers.
       if (this->number <= element.number)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -176,11 +176,11 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Version] " << this->number << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -192,13 +192,13 @@ namespace nucleus
     ///
     elle::Status        Version::Serialize(elle::Archive&       archive) const
     {
-      enter();
+      ;
 
       // serialize the attributes.
       if (archive.Serialize(this->number) == elle::StatusError)
         escape("unable to serialize the version's attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -206,13 +206,13 @@ namespace nucleus
     ///
     elle::Status        Version::Extract(elle::Archive&         archive)
     {
-      enter();
+      ;
 
       // extracts the attributes.
       if (archive.Extract(this->number) == elle::StatusError)
         escape("unable to extract the version's attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

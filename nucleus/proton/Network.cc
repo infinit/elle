@@ -48,12 +48,12 @@ namespace nucleus
     ///
     elle::Status        Network::Create(const elle::String&     name)
     {
-      enter();
+      ;
 
       // assign the name.
       this->name = name;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -65,17 +65,17 @@ namespace nucleus
     ///
     elle::Boolean       Network::operator==(const Network&      element) const
     {
-      enter();
+      ;
 
       // check the network as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the names.
       if (this->name != element.name)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -83,17 +83,17 @@ namespace nucleus
     ///
     elle::Boolean       Network::operator<(const Network&       element) const
     {
-      enter();
+      ;
 
       // check the network as this may actually be the same object.
       if (this == &element)
-        false();
+        return elle::StatusFalse;
 
       // compare the names.
       if (this->name < element.name)
-        false();
+        return elle::StatusFalse;
 
-      false();
+      return elle::StatusFalse;
     }
 
     ///
@@ -112,13 +112,13 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       // display the network's name.
       std::cout << alignment << "[Network] "
                 << this->name << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -130,13 +130,13 @@ namespace nucleus
     ///
     elle::Status        Network::Serialize(elle::Archive&       archive) const
     {
-      enter();
+      ;
 
       // serialize the internal.
       if (archive.Serialize(this->name) == elle::StatusError)
         escape("unable to serialize the name");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -144,13 +144,13 @@ namespace nucleus
     ///
     elle::Status        Network::Extract(elle::Archive&         archive)
     {
-      enter();
+      ;
 
       // extract the internal.
       if (archive.Extract(this->name) == elle::StatusError)
         escape("unable to extract the name");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -62,7 +62,7 @@ namespace nucleus
                                        const Permissions&       permissions,
                                        const elle::SecretKey&   key)
     {
-      enter();
+      ;
 
       // set the subject.
       this->subject = subject;
@@ -104,7 +104,7 @@ namespace nucleus
           this->token = Token::Null;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -114,7 +114,7 @@ namespace nucleus
                                        const Permissions&       permissions,
                                        const Token&             token)
     {
-      enter();
+      ;
 
       // set the subject.
       this->subject = subject;
@@ -125,7 +125,7 @@ namespace nucleus
       // set the token.
       this->token = token;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -137,19 +137,19 @@ namespace nucleus
     ///
     elle::Boolean       Record::operator==(const Record&        element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the attributes.
       if ((this->subject != element.subject) ||
           (this->permissions != element.permissions) ||
           (this->token != element.token))
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -168,7 +168,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Record]" << std::endl;
 
@@ -185,7 +185,7 @@ namespace nucleus
       if (this->token.Dump(margin + 2) == elle::StatusError)
         escape("unable to dump the token");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -197,7 +197,7 @@ namespace nucleus
     ///
     elle::Status        Record::Serialize(elle::Archive&        archive) const
     {
-      enter();
+      ;
 
       // serialize the attributes.
       if (archive.Serialize(this->subject,
@@ -205,7 +205,7 @@ namespace nucleus
                             this->token) == elle::StatusError)
         escape("unable to serialize the record");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -213,7 +213,7 @@ namespace nucleus
     ///
     elle::Status        Record::Extract(elle::Archive&          archive)
     {
-      enter();
+      ;
 
       // extract the attributes.
       if (archive.Extract(this->subject,
@@ -221,7 +221,7 @@ namespace nucleus
                           this->token) == elle::StatusError)
         escape("unable to extract the record");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //

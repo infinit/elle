@@ -39,7 +39,7 @@ namespace nucleus
   ///
   elle::Status          Nucleus::Initialize()
   {
-    enter();
+    ;
 
     //
     // register the nucleus products.
@@ -71,7 +71,7 @@ namespace nucleus
     if (proton::Proton::Initialize() == elle::StatusError)
       escape("unable to initialize the proton");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -79,7 +79,7 @@ namespace nucleus
   ///
   elle::Status          Nucleus::Clean()
   {
-    enter();
+    ;
 
     // initialize the proton.
     if (proton::Proton::Initialize() == elle::StatusError)
@@ -89,7 +89,7 @@ namespace nucleus
     if (Nucleus::Factory.Clear() == elle::StatusError)
       escape("unable to clear the factory");
 
-    leave();
+    return elle::StatusOk;
   }
 
 }

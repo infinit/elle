@@ -35,7 +35,7 @@ namespace nucleus
     {
       Record*           record;
 
-      enter();
+      ;
 
       // retrieve the record.
       if (this->Lookup(subject, record) == elle::StatusError)
@@ -50,7 +50,7 @@ namespace nucleus
       // set the block as dirty.
       this->_state = proton::StateDirty;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

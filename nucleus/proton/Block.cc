@@ -62,7 +62,7 @@ namespace nucleus
     ///
     elle::Status        Block::Bind(Address&) const
     {
-      enter();
+      ;
 
       escape("this method should never have been called");
     }
@@ -73,7 +73,7 @@ namespace nucleus
     ///
     elle::Status        Block::Validate(const Address&) const
     {
-      enter();
+      ;
 
       escape("this method should never have been called");
     }
@@ -98,7 +98,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Block]" << std::endl;
 
@@ -118,7 +118,7 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift << "[_State] "
                 << this->_state << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -130,7 +130,7 @@ namespace nucleus
     ///
     elle::Status        Block::Serialize(elle::Archive& archive) const
     {
-      enter();
+      ;
 
       // serialize the attributes.
       if (archive.Serialize(
@@ -139,7 +139,7 @@ namespace nucleus
             static_cast<elle::Natural8>(this->component)) == elle::StatusError)
         escape("unable to serialize the block's attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -147,7 +147,7 @@ namespace nucleus
     ///
     elle::Status        Block::Extract(elle::Archive&           archive)
     {
-      enter();
+      ;
 
       // extracts the attributes.
       if (archive.Extract(
@@ -157,7 +157,7 @@ namespace nucleus
           elle::StatusError)
         escape("unable to extract the block's attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -170,7 +170,7 @@ namespace nucleus
     elle::Status        Block::Erase(const Network&,
                                      const Address&) const
     {
-      enter();
+      ;
 
       escape("this method should never have been called");
     }

@@ -58,7 +58,7 @@ namespace nucleus
     ///
     elle::Status        ImprintBlock::Create(const elle::PublicKey& owner)
     {
-      enter();
+      ;
 
       // retrieve the current time.
       if (this->stamp.Current() == elle::StatusError)
@@ -77,7 +77,7 @@ namespace nucleus
       if (this->owner._subject.Create(this->owner.K) == elle::StatusError)
         escape("unable to create the owner subject");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -86,7 +86,7 @@ namespace nucleus
     elle::Status        ImprintBlock::Bind(Address&             address)
       const
     {
-      enter();
+      ;
 
       // compute the address.
       if (address.Create(this->family, this->component,
@@ -97,7 +97,7 @@ namespace nucleus
           elle::StatusError)
         escape("unable to compute the imprint address");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -108,7 +108,7 @@ namespace nucleus
     {
       Address           self;
 
-      enter();
+      ;
 
       //
       // make sure the address has not be tampered and correspond to the
@@ -128,7 +128,7 @@ namespace nucleus
       if (address != self)
         escape("the address does not correspond to the block's public key");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -143,7 +143,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[ImprintBlock]" << std::endl;
 
@@ -174,7 +174,7 @@ namespace nucleus
       if (this->owner._subject.Dump(margin + 4) == elle::StatusError)
         escape("unable to dump the subject");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -186,7 +186,7 @@ namespace nucleus
     ///
     elle::Status        ImprintBlock::Serialize(elle::Archive& archive) const
     {
-      enter();
+      ;
 
       // serialize the parent class.
       if (MutableBlock::Serialize(archive) == elle::StatusError)
@@ -198,7 +198,7 @@ namespace nucleus
                             this->owner.K) == elle::StatusError)
         escape("unable to serialize the block's content");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -206,7 +206,7 @@ namespace nucleus
     ///
     elle::Status        ImprintBlock::Extract(elle::Archive&    archive)
     {
-      enter();
+      ;
 
       // extract the parent class.
       if (MutableBlock::Extract(archive) == elle::StatusError)
@@ -226,7 +226,7 @@ namespace nucleus
       if (this->owner._subject.Create(this->owner.K) == elle::StatusError)
         escape("unable to create the owner subject");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

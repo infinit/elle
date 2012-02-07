@@ -67,7 +67,7 @@ namespace nucleus
       elle::Region      region;
       elle::Archive     archive;
 
-      enter();
+      ;
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
@@ -101,7 +101,7 @@ namespace nucleus
       if (archive.Extract(*this) == elle::StatusError)
         escape("unable to extract the archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -115,7 +115,7 @@ namespace nucleus
       elle::Region      region;
       elle::Archive     archive;
 
-      enter();
+      ;
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
@@ -154,7 +154,7 @@ namespace nucleus
       if (elle::File::Write(path, region) == elle::StatusError)
         escape("unable to write the file's content");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -166,7 +166,7 @@ namespace nucleus
       elle::Path        path;
       elle::String      unique;
 
-      enter();
+      ;
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
@@ -196,7 +196,7 @@ namespace nucleus
             escape("unable to erase the file");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -208,7 +208,7 @@ namespace nucleus
       elle::Path        path;
       elle::String      unique;
 
-      enter();
+      ;
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
@@ -232,9 +232,9 @@ namespace nucleus
 
       // test the file.
       if (elle::File::Exist(path) == elle::StatusTrue)
-        true();
+        return elle::StatusTrue;
 
-      false();
+      return elle::StatusFalse;
     }
 
   }

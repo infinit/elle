@@ -49,13 +49,13 @@ namespace nucleus
     elle::Status        Location::Create(const Address&         address,
                                          const Version&         version)
     {
-      enter();
+      ;
 
       // set the attributes.
       this->address = address;
       this->version = version;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -67,18 +67,18 @@ namespace nucleus
     ///
     elle::Boolean       Location::operator==(const Location&    element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the attributes.
       if ((this->address != element.address) ||
           (this->version != element.version))
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -97,7 +97,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Location]" << std::endl;
 
@@ -109,7 +109,7 @@ namespace nucleus
       if (this->version.Dump(margin + 2) == elle::StatusError)
         escape("unable to dump the version");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -121,14 +121,14 @@ namespace nucleus
     ///
     elle::Status        Location::Serialize(elle::Archive&      archive) const
     {
-      enter();
+      ;
 
       // serialize the attributes.
       if (archive.Serialize(this->address,
                             this->version) == elle::StatusError)
         escape("unable to serialize the location's attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -136,14 +136,14 @@ namespace nucleus
     ///
     elle::Status        Location::Extract(elle::Archive&        archive)
     {
-      enter();
+      ;
 
       // extracts the attributes.
       if (archive.Extract(this->address,
                           this->version) == elle::StatusError)
         escape("unable to extract the location's attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

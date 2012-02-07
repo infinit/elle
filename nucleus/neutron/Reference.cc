@@ -40,7 +40,7 @@ namespace nucleus
     ///
     elle::Status        Reference::Bind(const elle::String&     target)
     {
-      enter();
+      ;
 
       // set the target.
       this->target = target;
@@ -48,7 +48,7 @@ namespace nucleus
       // set the reference as dirty.
       this->_state = proton::StateDirty;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -56,12 +56,12 @@ namespace nucleus
     ///
     elle::Status        Reference::Resolve(elle::String&        target) const
     {
-      enter();
+      ;
 
       // retrieve the target.
       target = this->target;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -69,12 +69,12 @@ namespace nucleus
     ///
     elle::Status        Reference::Capacity(Size&               size) const
     {
-      enter();
+      ;
 
       // retrieve the length.
       size = static_cast<Size>(this->target.length());
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -97,7 +97,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Reference] " << std::endl;
 
@@ -109,7 +109,7 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift << "[Target] "
                 << this->target << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -121,13 +121,13 @@ namespace nucleus
     ///
     elle::Status        Reference::Serialize(elle::Archive&     archive) const
     {
-      enter();
+      ;
 
       // serialize the target.
       if (archive.Serialize(this->target) == elle::StatusError)
         escape("unable to serialize the target");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -135,13 +135,13 @@ namespace nucleus
     ///
     elle::Status        Reference::Extract(elle::Archive&       archive)
     {
-      enter();
+      ;
 
       // extract the target.
       if (archive.Extract(this->target) == elle::StatusError)
         escape("unable to extract the target");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -39,12 +39,12 @@ namespace nucleus
     ///
     elle::Status        History::Register(const Version&        version)
     {
-      enter();
+      ;
 
       // store the version in the history's vector.
       this->container.push_back(version);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -54,7 +54,7 @@ namespace nucleus
     elle::Status        History::Select(const Version::Type     index,
                                         Version&                version) const
     {
-      enter();
+      ;
 
       // check if the index is out of bound.
       if (index >= this->container.size())
@@ -63,7 +63,7 @@ namespace nucleus
       // return the version.
       version = this->container[index];
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -71,12 +71,12 @@ namespace nucleus
     ///
     elle::Status        History::Size(Version::Type&            size) const
     {
-      enter();
+      ;
 
       // return the size.
       size = this->container.size();
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -91,15 +91,15 @@ namespace nucleus
       Version::Type     size;
       Version::Type     i;
 
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // check the containers' size.
       if (this->container.size() != element.container.size())
-        false();
+        return elle::StatusFalse;
 
       // retrieve the size.
       size = this->container.size();
@@ -109,10 +109,10 @@ namespace nucleus
         {
           // compare the containers.
           if (this->container[i] != element.container[i])
-            false();
+            return elle::StatusFalse;
         }
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -132,7 +132,7 @@ namespace nucleus
       elle::String      alignment(margin, ' ');
       Version::Type     i;
 
-      enter();
+      ;
 
       // display the name.
       std::cout << alignment << "[History]" << std::endl;
@@ -158,7 +158,7 @@ namespace nucleus
             escape("unable to dump the version");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -173,7 +173,7 @@ namespace nucleus
       Version::Type     size;
       Version::Type     i;
 
-      enter();
+      ;
 
       // retrieve the size.
       size = this->container.size();
@@ -190,7 +190,7 @@ namespace nucleus
             escape("unable to serialize the version");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -201,7 +201,7 @@ namespace nucleus
       Version::Type     size;
       Version::Type     i;
 
-      enter();
+      ;
 
       // extract the size.
       if (archive.Extract(size) == elle::StatusError)
@@ -221,7 +221,7 @@ namespace nucleus
             escape("unable to register the version");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -239,7 +239,7 @@ namespace nucleus
       elle::Region      region;
       elle::Archive     archive;
 
-      enter();
+      ;
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
@@ -268,7 +268,7 @@ namespace nucleus
       if (archive.Extract(*this) == elle::StatusError)
         escape("unable to extract the archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -282,7 +282,7 @@ namespace nucleus
       elle::Region      region;
       elle::Archive     archive;
 
-      enter();
+      ;
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
@@ -316,7 +316,7 @@ namespace nucleus
       if (elle::File::Write(path, region) == elle::StatusError)
         escape("unable to write the file's content");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -328,7 +328,7 @@ namespace nucleus
       elle::Path        path;
       elle::String      unique;
 
-      enter();
+      ;
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
@@ -353,7 +353,7 @@ namespace nucleus
             escape("unable to erase the file");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -365,7 +365,7 @@ namespace nucleus
       elle::Path        path;
       elle::String      unique;
 
-      enter();
+      ;
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
@@ -384,9 +384,9 @@ namespace nucleus
 
       // test the file.
       if (elle::File::Exist(path) == elle::StatusTrue)
-        true();
+        return elle::StatusTrue;
 
-      false();
+      return elle::StatusFalse;
     }
 
   }

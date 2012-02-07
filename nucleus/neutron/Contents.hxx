@@ -101,7 +101,7 @@ namespace nucleus
     {
       elle::Archive     archive;
 
-      enter();
+      ;
 
       // if there is no block, this operation cannot be performed.
       if (this->content == NULL)
@@ -126,7 +126,7 @@ namespace nucleus
       if (key.Encrypt(archive, *cipher) == elle::StatusError)
         escape("unable to encrypt the archived block");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -139,7 +139,7 @@ namespace nucleus
       elle::Archive     archive;
       elle::Clear       clear;
 
-      enter();
+      ;
 
       // if there is no cipher, this operation cannot be performed.
       if (this->cipher == NULL)
@@ -168,7 +168,7 @@ namespace nucleus
       if (archive.Extract(*this->content) == elle::StatusError)
         escape("unable to extract the block");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -190,12 +190,12 @@ namespace nucleus
     template <typename T>
     elle::Status        Contents<T>::Create()
     {
-      enter();
+      ;
 
       // allocate the block.
       this->content = new T;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -206,7 +206,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Contents]" << std::endl;
 
@@ -244,7 +244,7 @@ namespace nucleus
                     << "[Cipher] " << elle::none << std::endl;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -259,7 +259,7 @@ namespace nucleus
     template <typename T>
     elle::Status        Contents<T>::Serialize(elle::Archive&   archive) const
     {
-      enter();
+      ;
 
       // check if the block's ciphered version is ready.
       if (this->cipher == NULL)
@@ -273,7 +273,7 @@ namespace nucleus
       if (archive.Serialize(*this->cipher) == elle::StatusError)
         escape("unable to serialize the cipher");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -283,7 +283,7 @@ namespace nucleus
     template <typename T>
     elle::Status        Contents<T>::Extract(elle::Archive&     archive)
     {
-      enter();
+      ;
 
       // call the parent class.
       if (proton::ContentHashBlock::Extract(archive) == elle::StatusError)
@@ -300,7 +300,7 @@ namespace nucleus
       if (archive.Extract(*this->cipher) == elle::StatusError)
         escape("unable to serialize the cipher");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -41,7 +41,7 @@ namespace nucleus
     elle::Status        Data::Write(const Offset&               offset,
                                     const elle::Region&         region)
     {
-      enter();
+      ;
 
       // expand if necessary.
       if ((offset + region.size) > this->region.capacity)
@@ -60,7 +60,7 @@ namespace nucleus
       // set the data as dirty.
       this->_state = proton::StateDirty;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -72,13 +72,13 @@ namespace nucleus
     {
       Size              length;
 
-      enter();
+      ;
 
       // check the operation's validity: note that since such out-of-bound
       // calls are frequent, no warning or error is raised. instead, no data
       // is simply returned.
       if (offset > this->region.size)
-        leave();
+        return elle::StatusOk;
 
       // set size to the maximum between the request size and the available
       // size.
@@ -99,7 +99,7 @@ namespace nucleus
                             region.size) == elle::StatusError)
         escape("unable to read the data");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -108,7 +108,7 @@ namespace nucleus
     ///
     elle::Status        Data::Adjust(const Size&                size)
     {
-      enter();
+      ;
 
       // first, make sure the region's capacity is large enough.
       if (this->region.Adjust(size) == elle::StatusError)
@@ -120,7 +120,7 @@ namespace nucleus
       // set the data as dirty.
       this->_state = proton::StateDirty;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -128,12 +128,12 @@ namespace nucleus
     ///
     elle::Status        Data::Capacity(Size&                    size) const
     {
-      enter();
+      ;
 
       // set the size.
       size = this->region.size;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -156,7 +156,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Data]" << std::endl;
 
@@ -168,7 +168,7 @@ namespace nucleus
       if (this->region.Dump(margin + 2) == elle::StatusError)
         escape("unable to dump the region");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -180,13 +180,13 @@ namespace nucleus
     ///
     elle::Status        Data::Serialize(elle::Archive&          archive) const
     {
-      enter();
+      ;
 
       // serialize the internal region.
       if (archive.Serialize(this->region) == elle::StatusError)
         escape("unable to serialize the internal region");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -194,13 +194,13 @@ namespace nucleus
     ///
     elle::Status        Data::Extract(elle::Archive&            archive)
     {
-      enter();
+      ;
 
       // extract the region.
       if (archive.Extract(this->region) == elle::StatusError)
         escape("unable to extract the region");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -51,7 +51,7 @@ namespace nucleus
     ///
     elle::Status        Access::Add(Record*                     record)
     {
-      enter();
+      ;
 
       // add the record in the range.
       if (this->range.Add(record) == elle::StatusError)
@@ -60,7 +60,7 @@ namespace nucleus
       // set the block as dirty.
       this->_state = proton::StateDirty;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -68,13 +68,13 @@ namespace nucleus
     ///
     elle::Status        Access::Exist(const Subject&            subject) const
     {
-      enter();
+      ;
 
       // test.
       if (this->range.Exist(subject) == false)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -83,13 +83,13 @@ namespace nucleus
     elle::Status        Access::Lookup(const Subject&           subject,
                                        Record*&                 record) const
     {
-      enter();
+      ;
 
       // look in the range.
       if (this->range.Lookup(subject, record) == elle::StatusError)
         escape("unable to retrieve the record");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -100,7 +100,7 @@ namespace nucleus
     {
       Range<Record>::Scoutor    scoutor;
 
-      enter();
+      ;
 
       // go through the range.
       for (scoutor = this->range.container.begin(), index = 0;
@@ -111,7 +111,7 @@ namespace nucleus
 
           // if found, stop.
           if (record->subject == subject)
-            leave();
+            return elle::StatusOk;
         }
 
       escape("unable to locate the given subject");
@@ -126,7 +126,7 @@ namespace nucleus
       Range<Record>::Scoutor    scoutor;
       Index                     i;
 
-      enter();
+      ;
 
       // set the record to null.
       record = NULL;
@@ -142,7 +142,7 @@ namespace nucleus
               // return the record.
               record = *scoutor;
 
-              leave();
+              return elle::StatusOk;
             }
         }
 
@@ -160,7 +160,7 @@ namespace nucleus
       Range<Record>::Scoutor    scoutor;
       Index                     i;
 
-      enter();
+      ;
 
       // first detach the data from the range.
       if (range.Detach() == elle::StatusError)
@@ -182,7 +182,7 @@ namespace nucleus
             }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -193,7 +193,7 @@ namespace nucleus
     {
       Range<Record>::Iterator   iterator;
 
-      enter();
+      ;
 
       // go through the range.
       for (iterator = this->range.container.begin();
@@ -248,7 +248,7 @@ namespace nucleus
           this->_state = proton::StateDirty;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -258,7 +258,7 @@ namespace nucleus
     {
       Range<Record>::Iterator   iterator;
 
-      enter();
+      ;
 
       // go through the range.
       for (iterator = this->range.container.begin();
@@ -278,7 +278,7 @@ namespace nucleus
           this->_state = proton::StateDirty;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -286,7 +286,7 @@ namespace nucleus
     ///
     elle::Status        Access::Remove(const Subject&           subject)
     {
-      enter();
+      ;
 
       // remove the record from the range.
       if (this->range.Remove(subject) == elle::StatusError)
@@ -295,7 +295,7 @@ namespace nucleus
       // set the block as dirty.
       this->_state = proton::StateDirty;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -303,13 +303,13 @@ namespace nucleus
     ///
     elle::Status        Access::Capacity(Size&                  size) const
     {
-      enter();
+      ;
 
       // look at the size of the range.
       if (this->range.Capacity(size) == elle::StatusError)
         escape("unable to retrieve the range size");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -323,7 +323,7 @@ namespace nucleus
       elle::Archive             archive;
       Range<Record>::Scoutor    scoutor;
 
-      enter();
+      ;
 
       // create the archive.
       if (archive.Create() == elle::StatusError)
@@ -346,7 +346,7 @@ namespace nucleus
       if (elle::OneWay::Hash(archive, digest) == elle::StatusError)
         escape("unable to hash the set of archived tuples");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -358,17 +358,17 @@ namespace nucleus
     ///
     elle::Boolean       Access::operator==(const Access&        element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the ranges.
       if (this->range != element.range)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -387,7 +387,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Access]" << std::endl;
 
@@ -395,7 +395,7 @@ namespace nucleus
       if (this->range.Dump(margin + 2) == elle::StatusError)
         escape("unable to dump the range");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -407,7 +407,7 @@ namespace nucleus
     ///
     elle::Status        Access::Serialize(elle::Archive&        archive) const
     {
-      enter();
+      ;
 
       // call the parent class.
       if (proton::ContentHashBlock::Serialize(archive) == elle::StatusError)
@@ -417,7 +417,7 @@ namespace nucleus
       if (archive.Serialize(this->range) == elle::StatusError)
         escape("unable to serialize the range");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -425,7 +425,7 @@ namespace nucleus
     ///
     elle::Status        Access::Extract(elle::Archive&          archive)
     {
-      enter();
+      ;
 
       // call the parent class.
       if (proton::ContentHashBlock::Extract(archive) == elle::StatusError)
@@ -439,7 +439,7 @@ namespace nucleus
       if (archive.Extract(this->range) == elle::StatusError)
         escape("unable to extract the range");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

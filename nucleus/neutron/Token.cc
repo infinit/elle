@@ -76,7 +76,7 @@ namespace nucleus
     elle::Status        Token::Update(const elle::SecretKey&    key,
                                       const elle::PublicKey&    K)
     {
-      enter();
+      ;
 
       // delete the previous code.
       if (this->code != NULL)
@@ -97,7 +97,7 @@ namespace nucleus
             escape("unable to encrypt the key");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -106,7 +106,7 @@ namespace nucleus
     elle::Status        Token::Extract(const elle::PrivateKey&  k,
                                        elle::SecretKey&         key) const
     {
-      enter();
+      ;
 
       // check the code.
       if (this->code == NULL)
@@ -116,7 +116,7 @@ namespace nucleus
       if (k.Decrypt(*this->code, key) == elle::StatusError)
         escape("unable to decrypt the token's content");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -128,25 +128,25 @@ namespace nucleus
     ///
     elle::Boolean       Token::operator==(const Token&          element) const
     {
-      enter();
+      ;
 
       // check if the objects are the same.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the code.
       if ((this->code == NULL) || (element.code == NULL))
         {
           if (this->code != element.code)
-            false();
+            return elle::StatusFalse;
         }
       else
         {
           if (*this->code != *element.code)
-            false();
+            return elle::StatusFalse;
         }
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -165,7 +165,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Token] " << std::endl;
 
@@ -181,7 +181,7 @@ namespace nucleus
                     << "[Code] " << elle::none << std::endl;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -193,7 +193,7 @@ namespace nucleus
     ///
     elle::Status        Token::Serialize(elle::Archive&         archive) const
     {
-      enter();
+      ;
 
       // serialize the code.
       if (this->code != NULL)
@@ -208,7 +208,7 @@ namespace nucleus
             escape("unable to serialize 'none'");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -218,7 +218,7 @@ namespace nucleus
     {
       elle::Archive::Type       type;
 
-      enter();
+      ;
 
       // fetch the next element's type.
       if (archive.Fetch(type) == elle::StatusError)
@@ -240,7 +240,7 @@ namespace nucleus
             escape("unable to extract the code");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

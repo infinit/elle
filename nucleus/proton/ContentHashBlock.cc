@@ -52,14 +52,14 @@ namespace nucleus
     elle::Status        ContentHashBlock::Bind(Address&         address)
       const
     {
-      enter();
+      ;
 
       // compute the address.
       if (address.Create(this->family, this->component,
                          *this) == elle::StatusError)
         escape("unable to compute the CHB's address");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -71,7 +71,7 @@ namespace nucleus
     {
       Address           self;
 
-      enter();
+      ;
 
       // compute the address of this object.
       //
@@ -95,7 +95,7 @@ namespace nucleus
       if (address != self)
         escape("the recorded address does not correspond to this block");
 
-      true();
+      return elle::StatusTrue;
     }
 
 //
@@ -119,7 +119,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[ContentHashBlock]" << std::endl;
 
@@ -127,7 +127,7 @@ namespace nucleus
       if (ImmutableBlock::Dump(margin + 2) == elle::StatusError)
         escape("unable to dump the underlying block");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -140,13 +140,13 @@ namespace nucleus
     elle::Status        ContentHashBlock::Serialize(elle::Archive& archive)
       const
     {
-      enter();
+      ;
 
       // serialize the parent class.
       if (ImmutableBlock::Serialize(archive) == elle::StatusError)
         escape("unable to serialize the underlying block");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -154,7 +154,7 @@ namespace nucleus
     ///
     elle::Status        ContentHashBlock::Extract(elle::Archive& archive)
     {
-      enter();
+      ;
 
       // extract the parent class.
       if (ImmutableBlock::Extract(archive) == elle::StatusError)
@@ -164,7 +164,7 @@ namespace nucleus
       if (this->family != FamilyContentHashBlock)
         escape("invalid family");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

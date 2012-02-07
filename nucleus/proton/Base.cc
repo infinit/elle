@@ -30,13 +30,13 @@ namespace nucleus
     elle::Status        Base::Create(const Version&             version,
                                      const elle::Digest&        digest)
     {
-      enter();
+      ;
 
       // set the attributes.
       this->version = version;
       this->digest = digest;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -44,7 +44,7 @@ namespace nucleus
     ///
     elle::Status        Base::Create(const MutableBlock&        block)
     {
-      enter();
+      ;
 
       // set the version.
       this->version = block.version;
@@ -53,7 +53,7 @@ namespace nucleus
       if (elle::OneWay::Hash(block, this->digest) == elle::StatusError)
         escape("unable to hash the mutable block");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -64,11 +64,11 @@ namespace nucleus
     {
       elle::Digest      digest;
 
-      enter();
+      ;
 
       // check the versions.
       if (this->version != block.version)
-        false();
+        return elle::StatusFalse;
 
       // compute the block's digest.
       if (elle::OneWay::Hash(block, digest) == elle::StatusError)
@@ -76,9 +76,9 @@ namespace nucleus
 
       // compare the digests.
       if (this->digest != digest)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
 //
@@ -90,18 +90,18 @@ namespace nucleus
     ///
     elle::Boolean       Base::operator==(const Base&            element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the attributes.
       if ((this->version != element.version) ||
           (this->digest != element.digest))
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -120,7 +120,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Base]" << std::endl;
 
@@ -132,7 +132,7 @@ namespace nucleus
       if (this->digest.Dump(margin + 2) == elle::StatusError)
         escape("unable to dump the digest");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -144,14 +144,14 @@ namespace nucleus
     ///
     elle::Status        Base::Serialize(elle::Archive&          archive) const
     {
-      enter();
+      ;
 
       // serialize the attributes.
       if (archive.Serialize(this->version,
                             this->digest) == elle::StatusError)
         escape("unable to serialize the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -159,14 +159,14 @@ namespace nucleus
     ///
     elle::Status        Base::Extract(elle::Archive&            archive)
     {
-      enter();
+      ;
 
       // extract the attributes.
       if (archive.Extract(this->version,
                           this->digest) == elle::StatusError)
         escape("unable to extract the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }
