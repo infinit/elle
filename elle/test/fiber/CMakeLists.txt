@@ -4,10 +4,9 @@ TARGET_LINK_LIBRARIES(test-fiber elle
 				 ${QT_QTNETWORK_LIBRARIES}
 				 ${QT_QTCORE_LIBRARIES})
 
-# XXX[a degager de la]
-IF(${WIN32})
+IF(WIN32)
   SET(SRCS_WIN32 ../../thirdparty/ucontext-win32.cc)
-ENDIF(${WIN32})
+ENDIF(WIN32)
 ADD_EXECUTABLE(makecontext-test EXCLUDE_FROM_ALL makecontext.cc ${SRCS_WIN32})
 ADD_EXECUTABLE(uc_link-test EXCLUDE_FROM_ALL uc_link.cc ${SRCS_WIN32})
 

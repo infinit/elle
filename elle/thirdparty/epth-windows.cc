@@ -20,8 +20,53 @@
  *      59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
  */
 
+#include <elle/third-party/ucontext-windows.hh>
+
 #include <stdio.h>
-#include "ucontext-win32.hh"
+
+XXX switch
+              /* XXX
+              // set the context of the suspended fiber.
+              if (::swapcontext(&Fiber::Program->context,
+                                &Fiber::Current->context) == -1)
+                  escape("unable to swapcontext");
+              */
+              // XXX
+
+XXX exit
+      // swap to the link as we don't rely on uc_link
+      //::swapcontext(&Fiber::Current->context, &Fiber::Program->context);
+
+XXX spawn
+      /* XXX
+      // get the context in order to create a new one.
+      if (::getcontext(&fiber->context) == -1)
+        escape("unable to get the context");
+
+      // modify the context manually so that, once completed, the
+      // execution comes back to the parent fiber i.e the current fiber.
+      fiber->context.uc_link = NULL;
+      fiber->context.uc_stack.ss_sp = fiber->frame->stack;
+      fiber->context.uc_stack.ss_size = fiber->frame->size;
+#if defined(INFINIT_LINUX) || defined(INFINIT_WINDOWS)
+      fiber->context.uc_flags = 0;
+#endif
+
+      // create a context for the new fiber, with the Fiber::Launch
+      // as entry point.
+      ::makecontext(&fiber->context,
+                    reinterpret_cast<void (*)()>(launch),
+                    1,
+                    &closure);
+      */
+
+XXX dans spawn egalement.
+      // allocate the frame.
+      this->frame = new Frame;
+
+      // create the frame.
+      if (this->frame->Create(size) == StatusError)
+        escape("unable to create the frame");
 
 int getcontext(ucontext_t *ucp)
 {

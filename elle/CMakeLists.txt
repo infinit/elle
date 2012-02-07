@@ -9,16 +9,19 @@ QT4_WRAP_CPP(elle_MOCS
 
   concurrency/Timer.hh
   concurrency/Broker.hh
-
-  ${elle_MOCS_WIN32}
 )
 
-IF(UNIX)
-  SET(elle_UNIX
+IF(INFINIT_LINUX)
+  SET(elle_PLATFORM
+    thirdparty/epth-linux.cc
     utility/Unicode-unix.cc)
-ELSEIF(WIN32)
-  SET(elle_WIN32
-    thirdparty/ucontext-win32.cc
+ELSEIF(INFINIT_MACOSX)
+  SET(elle_PLATFORM
+    thirdparty/epth-macosx.cc
+    utility/Unicode-unix.cc)
+ELSEIF(INFINIT_WINDOWS)
+  SET(elle_PLATFORM
+    thirdparty/epth-windows.cc
     utility/Unicode-win32.cc)
 ENDIF()
 
@@ -111,8 +114,7 @@ ADD_LIBRARY(elle
   Elle.cc
 
   ${elle_MOCS}
-  ${elle_WIN32}
-  ${elle_UNIX}
+  ${elle_PLATFORM}
 )
 
 TARGET_LINK_LIBRARIES(elle
@@ -121,14 +123,17 @@ TARGET_LINK_LIBRARIES(elle
   ${QT_QTCORE_LIBRARIES}
   crypto
   ssl
+  pth
   readline
   msgpack
   jsoncpp
   curl)
 
-IF(UNIX)
+IF(INFINIT_LINUX)
   TARGET_LINK_LIBRARIES(elle dl)
-ELSEIF(WIN32)
+ELSEIF(INFINIT_MACOSX)
+  TARGET_LINK_LIBRARIES(elle dl)
+ELSEIF(INFINIT_WINDOWS)
   TARGET_LINK_LIBRARIES(elle pdcurses)
 ENDIF()
 

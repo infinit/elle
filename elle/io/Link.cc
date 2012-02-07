@@ -66,7 +66,7 @@ namespace elle
         escape("the target does not seem to exist");
 
       // create the link.
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       if (::symlink(target.string.c_str(), link.string.c_str()))
         escape("symlink failed: %s -> %s: %s", link.string.c_str(),
                target.string.c_str(), ::strerror(errno));
@@ -108,7 +108,7 @@ namespace elle
 
       ;
 
-#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // does the path points to something.
       if (::lstat(path.string.c_str(), &stat) != 0)
         return elle::StatusFalse;

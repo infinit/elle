@@ -21,32 +21,32 @@ namespace elle
 //
 
 ///
-/// windows-specific
-///
-# if defined(_WIN32) || defined(_WIN64)
-#  define INFINIT_WINDOWS
-
-///
 /// unix-specific
 ///
 /// note that the _unix_ macro is undefined since generating conflicts.
 ///
-# elif defined(__linux) || defined(__unix)
-#  undef unix
-#  define INFINIT_UNIX
+#if defined(__linux) || defined(__unix)
+# undef linux
+# define INFINIT_LINUX
 
 ///
 /// macos-specific
 ///
-# elif defined(__APPLE__) && defined(__MACH__)
-#  define INFINIT_MACOSX
+#elif defined(__APPLE__) && defined(__MACH__)
+# define INFINIT_MACOSX
+
+///
+/// windows-specific
+///
+#elif defined(_WIN32) || defined(_WIN64)
+# define INFINIT_WINDOWS
 
 ///
 /// unknown platform
 ///
-# else
+#else
 # error "unknown platform"
-# endif
+#endif
 
   }
 }

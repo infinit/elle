@@ -8,7 +8,7 @@
 // author        julien quintard   [mon apr 26 21:25:23 2010]
 //
 
-#if defined(INFINIT_UNIX)
+#if defined(INFINIT_LINUX)
 //
 // ---------- includes --------------------------------------------------------
 //
