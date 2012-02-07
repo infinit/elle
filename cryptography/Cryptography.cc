@@ -37,7 +37,7 @@ namespace elle
     ///
     Status              Cryptography::Initialize()
     {
-      enter();
+      ;
 
       // load the crypto error strings.
       ::ERR_load_crypto_strings();
@@ -53,7 +53,7 @@ namespace elle
       if (KeyPair::Initialize() == StatusError)
         escape("unable to initialize the key pair generation context");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -61,7 +61,7 @@ namespace elle
     ///
     Status              Cryptography::Clean()
     {
-      enter();
+      ;
 
       // clean the key pair generation context.
       if (KeyPair::Clean() == StatusError)
@@ -86,7 +86,7 @@ namespace elle
       // release the extra data.
       ::CRYPTO_cleanup_all_ex_data();
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

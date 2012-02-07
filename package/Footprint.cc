@@ -71,7 +71,7 @@ namespace elle
     ///
     Status              Footprint::Compute()
     {
-      enter();
+      ;
 
       // check that an archivable has been assigned to the footprint.
       if (this->archivable == NULL)
@@ -124,7 +124,7 @@ namespace elle
       // set the state as consistent.
       this->state = Footprint::StateConsistent;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -139,12 +139,12 @@ namespace elle
       String            alignment(margin, ' ');
       Archive           archive;
 
-      enter();
+      ;
 
       std::cout << alignment << "[Footprint] "
                 << std::dec << this->size << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -156,12 +156,12 @@ namespace elle
     ///
     Status              Footprint::Imprint(Natural32&           size) const
     {
-      enter();
+      ;
 
       // return the size.
       size = sizeof (Footprint);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -169,12 +169,12 @@ namespace elle
     ///
     Status              Footprint::Clone(Footprint*&            object) const
     {
-      enter();
+      ;
 
       // allocate the object.
       object = new Footprint(*this);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -182,7 +182,7 @@ namespace elle
     ///
     Footprint&          Footprint::operator=(const Footprint&   element)
     {
-      enter();
+      ;
 
       // test if the footprints are identical.
       if (this == &element)
@@ -200,17 +200,17 @@ namespace elle
     ///
     Boolean             Footprint::operator==(const Footprint&  element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the attribute.
       if (this->size != element.size)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -230,12 +230,12 @@ namespace elle
     ///
     Status              Footprint::Store(const Null&)
     {
-      enter();
+      ;
 
       // add the footprint.
       this->size += Footprint::Meta + 0;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -243,12 +243,12 @@ namespace elle
     ///
     Status              Footprint::Store(const Boolean&)
     {
-      enter();
+      ;
 
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Natural8);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -256,12 +256,12 @@ namespace elle
     ///
     Status              Footprint::Store(const Character&)
     {
-      enter();
+      ;
 
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Natural8);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -269,12 +269,12 @@ namespace elle
     ///
     Status              Footprint::Store(const Real&)
     {
-      enter();
+      ;
 
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Natural64);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -282,12 +282,12 @@ namespace elle
     ///
     Status              Footprint::Store(const Integer8&)
     {
-      enter();
+      ;
 
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Integer8);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -295,12 +295,12 @@ namespace elle
     ///
     Status              Footprint::Store(const Integer16&)
     {
-      enter();
+      ;
 
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Integer16);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -308,12 +308,12 @@ namespace elle
     ///
     Status              Footprint::Store(const Integer32&)
     {
-      enter();
+      ;
 
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Integer32);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -321,12 +321,12 @@ namespace elle
     ///
     Status              Footprint::Store(const Integer64&)
     {
-      enter();
+      ;
 
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Integer64);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -334,12 +334,12 @@ namespace elle
     ///
     Status              Footprint::Store(const Natural8&)
     {
-      enter();
+      ;
 
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Natural8);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -347,12 +347,12 @@ namespace elle
     ///
     Status              Footprint::Store(const Natural16&)
     {
-      enter();
+      ;
 
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Natural16);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -360,12 +360,12 @@ namespace elle
     ///
     Status              Footprint::Store(const Natural32&)
     {
-      enter();
+      ;
 
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Natural32);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -373,12 +373,12 @@ namespace elle
     ///
     Status              Footprint::Store(const Natural64&)
     {
-      enter();
+      ;
 
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Natural64);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -386,12 +386,12 @@ namespace elle
     ///
     Status              Footprint::Store(const Large&           element)
     {
-      enter();
+      ;
 
       // add the footprint.
       this->size += Footprint::Meta + BN_num_bytes(&element);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -399,12 +399,12 @@ namespace elle
     ///
     Status              Footprint::Store(const String&          element)
     {
-      enter();
+      ;
 
       // add the footprint.
       this->size += Footprint::Meta + element.length();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -412,12 +412,12 @@ namespace elle
     ///
     Status              Footprint::Store(const Region&          element)
     {
-      enter();
+      ;
 
       // add the footprint.
       this->size += Footprint::Meta + element.size;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -425,12 +425,12 @@ namespace elle
     ///
     Status              Footprint::Store(const Archive&         element)
     {
-      enter();
+      ;
 
       // add the footprint.
       this->size += Footprint::Meta + element.size;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -438,7 +438,7 @@ namespace elle
     ///
     Status              Footprint::Load(Null&)
     {
-      enter();
+      ;
 
       escape("unable to load from a footprint");
     }
@@ -448,7 +448,7 @@ namespace elle
     ///
     Status              Footprint::Load(Boolean&)
     {
-      enter();
+      ;
 
       escape("unable to load from a footprint");
     }
@@ -458,7 +458,7 @@ namespace elle
     ///
     Status              Footprint::Load(Character&)
     {
-      enter();
+      ;
 
       escape("unable to load from a footprint");
     }
@@ -468,7 +468,7 @@ namespace elle
     ///
     Status              Footprint::Load(Real&)
     {
-      enter();
+      ;
 
       escape("unable to load from a footprint");
     }
@@ -478,7 +478,7 @@ namespace elle
     ///
     Status              Footprint::Load(Integer8&)
     {
-      enter();
+      ;
 
       escape("unable to load from a footprint");
     }
@@ -488,7 +488,7 @@ namespace elle
     ///
     Status              Footprint::Load(Integer16&)
     {
-      enter();
+      ;
 
       escape("unable to load from a footprint");
     }
@@ -498,7 +498,7 @@ namespace elle
     ///
     Status              Footprint::Load(Integer32&)
     {
-      enter();
+      ;
 
       escape("unable to load from a footprint");
     }
@@ -508,7 +508,7 @@ namespace elle
     ///
     Status              Footprint::Load(Integer64&)
     {
-      enter();
+      ;
 
       escape("unable to load from a footprint");
     }
@@ -518,7 +518,7 @@ namespace elle
     ///
     Status              Footprint::Load(Natural8&)
     {
-      enter();
+      ;
 
       escape("unable to load from a footprint");
     }
@@ -528,7 +528,7 @@ namespace elle
     ///
     Status              Footprint::Load(Natural16&)
     {
-      enter();
+      ;
 
       escape("unable to load from a footprint");
     }
@@ -538,7 +538,7 @@ namespace elle
     ///
     Status              Footprint::Load(Natural32&)
     {
-      enter();
+      ;
 
       escape("unable to load from a footprint");
     }
@@ -548,7 +548,7 @@ namespace elle
     ///
     Status              Footprint::Load(Natural64&)
     {
-      enter();
+      ;
 
       escape("unable to load from a footprint");
     }
@@ -558,7 +558,7 @@ namespace elle
     ///
     Status              Footprint::Load(Large&)
     {
-      enter();
+      ;
 
       escape("unable to load from a footprint");
     }
@@ -568,7 +568,7 @@ namespace elle
     ///
     Status              Footprint::Load(String&)
     {
-      enter();
+      ;
 
       escape("unable to load from a footprint");
     }
@@ -578,7 +578,7 @@ namespace elle
     ///
     Status              Footprint::Load(Region&)
     {
-      enter();
+      ;
 
       escape("unable to load from a footprint");
     }
@@ -588,7 +588,7 @@ namespace elle
     ///
     Status              Footprint::Load(Archive&)
     {
-      enter();
+      ;
 
       escape("unable to load from a footprint");
     }

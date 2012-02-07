@@ -56,8 +56,6 @@ namespace elle
     ///
     Status              UDPSocket::Create()
     {
-      enter();
-
       // allocate a new UDP socket.
       this->socket = new ::QUdpSocket;
 
@@ -85,7 +83,7 @@ namespace elle
             SLOT(_error(const QAbstractSocket::SocketError))) == false)
         escape("unable to connect to signal");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -93,8 +91,6 @@ namespace elle
     ///
     Status              UDPSocket::Create(const Port            port)
     {
-      enter();
-
       // set the port.
       this->port = port;
 
@@ -122,7 +118,7 @@ namespace elle
             SLOT(_error(const QAbstractSocket::SocketError))) == false)
         escape("unable to connect to signal");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -132,8 +128,6 @@ namespace elle
     Status              UDPSocket::Write(const Locus&           locus,
                                          const Packet&          packet)
     {
-      enter();
-
       // push the datagram into the socket.
       if (this->socket->writeDatagram(
             reinterpret_cast<const char*>(packet.contents),
@@ -142,7 +136,7 @@ namespace elle
             locus.port) != static_cast<qint64>(packet.size))
         escape(this->socket->errorString().toStdString().c_str());
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -165,14 +159,12 @@ namespace elle
     {
       Natural32         size;
 
-      enter();
-
       // retrieve the size of the pending packet.
       size = this->socket->pendingDatagramSize();
 
       // check if there is data to be read.
       if (size == 0)
-        leave();
+        return elle::StatusOk;
 
       // set the locus as being an IP locus.
       if (locus.host.Create(Host::TypeIP) == StatusError)
@@ -193,7 +185,7 @@ namespace elle
       // set the raw's size.
       raw.size = size;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -207,15 +199,13 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
-
       std::cout << alignment << "[UDPSocket]" << std::endl;
 
       // dump the socket.
       if (Socket::Dump(margin + 2) == StatusError)
         escape("unable to dump the socket");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -231,8 +221,6 @@ namespace elle
       Natural32         offset;
       Raw               raw;
 
-      enter();
-
       // read from the socket.
       if (this->Read(locus, raw) == StatusError)
         escape("unable to read from the socket");
@@ -244,9 +232,6 @@ namespace elle
         {
           Packet        packet;
           Region        frame;
-          Parcel*       parcel;
-
-          enterx(instance(parcel));
 
           // create the frame based on the previously extracted raw.
           if (frame.Wrap(raw.contents + offset,
@@ -258,7 +243,7 @@ namespace elle
             escape("unable to prepare the packet");
 
           // allocate the parcel.
-          parcel = new Parcel;
+          auto parcel = std::shared_ptr<Parcel>(new Parcel);
 
           // extract the header.
           if (parcel->header->Extract(packet) == StatusError)
@@ -267,12 +252,6 @@ namespace elle
           // if there is not enough data in the raw to complete the parcel...
           if ((packet.size - packet.offset) < parcel->header->size)
             {
-              // since the parcel will not be built, delete the instance.
-              delete parcel;
-
-              // waive tracking.
-              waive(parcel);
-
               // exit the loop since there is not enough data anyway.
               break;
             }
@@ -294,15 +273,9 @@ namespace elle
           // trigger the network shipment mechanism.
           if (Socket::Ship(parcel) == StatusError)
             log("an error occured while shipping the parcel");
-
-          // stop tracking the parcel.
-          waive(parcel);
-
-          // release the resources.
-          release();
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -322,13 +295,9 @@ namespace elle
                                                     >::Emit,
                                                   &this->signal.ready));
 
-      enter();
-
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
         yield(_(), "unable to spawn a fiber");
-
-      release();
     }
 
     ///
@@ -355,13 +324,9 @@ namespace elle
                                                   &this->signal.error),
                                 cause);
 
-      enter();
-
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
         yield(_(), "unable to spawn a fiber");
-
-      release();
     }
 
   }

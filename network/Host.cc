@@ -50,7 +50,7 @@ namespace elle
       ::QList< ::QHostAddress >         ql =
         ::QNetworkInterface::allAddresses();
 
-      enter();
+      ;
 
       // go through all the host's addresses.
       for (auto scoutor = ql.begin();
@@ -80,7 +80,7 @@ namespace elle
           container.push_back(host);
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -104,7 +104,7 @@ namespace elle
     ///
     Status              Host::Create(const Type         type)
     {
-      enter();
+      ;
 
       // set the type.
       this->type = type;
@@ -131,7 +131,7 @@ namespace elle
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -139,7 +139,7 @@ namespace elle
     ///
     Status              Host::Create(const String&              string)
     {
-      enter();
+      ;
 
       // set the type.
       this->type = Host::TypeIP;
@@ -148,7 +148,7 @@ namespace elle
       if (this->location.setAddress(string.c_str()) == false)
         escape("unable to set the location");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -160,18 +160,18 @@ namespace elle
     ///
     Boolean             Host::operator==(const Host&            element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the internal values.
       if ((this->type != element.type) ||
           (this->location != element.location))
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -179,17 +179,17 @@ namespace elle
     ///
     Boolean             Host::operator<(const Host&             element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        false();
+        return elle::StatusFalse;
 
       // compare the type
       if (this->type < element.type)
-        true();
+        return elle::StatusTrue;
       else if (this->type > element.type)
-        false();
+        return elle::StatusFalse;
       else
         {
           ::QString     first;
@@ -201,12 +201,12 @@ namespace elle
 
           // compare the string.
           if (first < second)
-            true();
+            return elle::StatusTrue;
           else if (first > second)
-            false();
+            return elle::StatusFalse;
         }
 
-      false();
+      return elle::StatusFalse;
     }
 
     ///
@@ -233,14 +233,14 @@ namespace elle
     {
       String            host(this->location.toString().toStdString());
 
-      enter();
+      ;
 
       // serialize the host and port.
       if (archive.Serialize(static_cast<Natural8>(this->type),
                             host) == StatusError)
         escape("unable to serialize the host");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -251,7 +251,7 @@ namespace elle
       Natural8          type;
       String            host;
 
-      enter();
+      ;
 
       // extract the host.
       if (archive.Extract(type, host) == StatusError)
@@ -263,7 +263,7 @@ namespace elle
       // set the location.
       this->location.setAddress(host.c_str());
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -277,7 +277,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Host]" << std::endl;
 
@@ -287,7 +287,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift << "[Location] "
                 << this->location.toString().toStdString() << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

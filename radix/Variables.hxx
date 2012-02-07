@@ -124,13 +124,13 @@ namespace elle
       {
         String          alignment(margin, ' ');
 
-        enter();
+        ;
 
         std::cout << alignment
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        leave();
+        return elle::StatusOk;
       }
     };
 
@@ -243,13 +243,13 @@ namespace elle
       {
         String          alignment(margin, ' ');
 
-        enter();
+        ;
 
         std::cout << alignment
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        leave();
+        return elle::StatusOk;
       }
     };
 
@@ -387,13 +387,13 @@ namespace elle
       {
         String          alignment(margin, ' ');
 
-        enter();
+        ;
 
         std::cout << alignment
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        leave();
+        return elle::StatusOk;
       }
     };
 
@@ -558,13 +558,13 @@ namespace elle
       {
         String          alignment(margin, ' ');
 
-        enter();
+        ;
 
         std::cout << alignment
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        leave();
+        return elle::StatusOk;
       }
     };
 
@@ -761,13 +761,13 @@ namespace elle
       {
         String          alignment(margin, ' ');
 
-        enter();
+        ;
 
         std::cout << alignment
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        leave();
+        return elle::StatusOk;
       }
     };
 
@@ -1000,13 +1000,13 @@ namespace elle
       {
         String          alignment(margin, ' ');
 
-        enter();
+        ;
 
         std::cout << alignment
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        leave();
+        return elle::StatusOk;
       }
     };
 
@@ -1283,13 +1283,13 @@ namespace elle
       {
         String          alignment(margin, ' ');
 
-        enter();
+        ;
 
         std::cout << alignment
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        leave();
+        return elle::StatusOk;
       }
     };
 
@@ -1612,13 +1612,13 @@ namespace elle
       {
         String          alignment(margin, ' ');
 
-        enter();
+        ;
 
         std::cout << alignment
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        leave();
+        return elle::StatusOk;
       }
     };
 
@@ -1991,13 +1991,13 @@ namespace elle
       {
         String          alignment(margin, ' ');
 
-        enter();
+        ;
 
         std::cout << alignment
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        leave();
+        return elle::StatusOk;
       }
     };
 
@@ -2424,13 +2424,13 @@ namespace elle
       {
         String          alignment(margin, ' ');
 
-        enter();
+        ;
 
         std::cout << alignment
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        leave();
+        return elle::StatusOk;
       }
     };
 

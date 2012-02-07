@@ -45,8 +45,6 @@ namespace elle
       Data              data;
       Header            header;
 
-      enter();
-
       // create an data for the inputs.
       if (data.Create() == StatusError)
         escape("unable to create the data");
@@ -73,7 +71,7 @@ namespace elle
       if (this->Write(packet) == StatusError)
         escape("unable to write the packet");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -83,9 +81,7 @@ namespace elle
     Status              LocalSocket::Receive(const Event&       event,
                                              O                  outputs)
     {
-      Parcel*           parcel;
-
-      enterx(instance(parcel));
+      std::shared_ptr<Parcel> parcel;
 
       // block the current fiber until the given event is received.
       if (Fiber::Wait(event, parcel) == StatusError)
@@ -119,28 +115,17 @@ namespace elle
               // able to treat it.
               if (Socket::Ship(parcel) == StatusError)
                 log("an error occured while shipping the parcel");
-
-              // stop tracking the parcel since Ship() will have taken
-              // care of it.
-              waive(parcel);
             }
 
           // in any case, return an error from the Receive() method.
-          escape("received a packet with an unexpected tag '%u'",
-                 tag);
+          escape("received a packet with an unexpected tag '%u'", tag);
         }
 
       // extract the arguments.
       if (outputs.Extract(*parcel->data) == StatusError)
         escape("unable to extract the arguments");
 
-      // delete the parcel.
-      delete parcel;
-
-      // stop tracking the parcel since it has just been deleted.
-      waive(parcel);
-
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -153,7 +138,7 @@ namespace elle
     {
       Event             event;
 
-      enter();
+      ;
 
       // generate an event to link the request with the response.
       if (event.Generate() == StatusError)
@@ -167,7 +152,7 @@ namespace elle
       if (this->Receive(event, outputs) == StatusError)
         escape("unable to receive the outputs");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -178,7 +163,7 @@ namespace elle
     Status              LocalSocket::Reply(const I              inputs,
                                            Session*             session)
     {
-      enter();
+      ;
 
       // retrieve the current session, if necessary.
       if (session == NULL)
@@ -192,7 +177,7 @@ namespace elle
       if (this->Send(inputs, session->event) == StatusError)
         escape("unable to send the reply");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

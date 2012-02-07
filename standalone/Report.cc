@@ -49,7 +49,7 @@ namespace elle
     ///
     Status              Report::Initialize()
     {
-      enter();
+      ;
 
       // allocate the report for the initial thread/fiber.
       Report::Current = new Report;
@@ -58,7 +58,7 @@ namespace elle
       if (Fiber::Register(Callback<>::Infer(&Report::Govern)) == StatusError)
         escape("unable to register the govern callback");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -66,7 +66,7 @@ namespace elle
     ///
     Status              Report::Clean()
     {
-      enter();
+      ;
 
       // delete the report.
       delete Report::Current;
@@ -74,7 +74,7 @@ namespace elle
       // reset the pointer.
       Report::Current = NULL;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -84,15 +84,15 @@ namespace elle
     ///
     Status              Report::Instance(Report*&               report)
     {
-      enter();
+      ;
 
       // verify the report's presence.
       if (Report::Current == NULL)
-        false();
+        return elle::StatusFalse;
 
       report = Report::Current;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -102,7 +102,7 @@ namespace elle
     Status              Report::Govern(const Phase              phase,
                                        Fiber*                   fiber)
     {
-      enter();
+      ;
 
       // perform an operation depending on the phase.
       switch (phase)
@@ -147,7 +147,7 @@ namespace elle
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -273,7 +273,7 @@ namespace elle
       Report::Scoutor   scoutor;
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Report]" << std::endl;
 
@@ -294,7 +294,7 @@ namespace elle
                     << std::endl;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -308,7 +308,7 @@ namespace elle
     {
       Report::Scoutor   scoutor;
 
-      enter();
+      ;
 
       // serialize the number of messages.
       if (archive.Serialize(
@@ -329,7 +329,7 @@ namespace elle
             escape("unable to serialize the entry");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -340,7 +340,7 @@ namespace elle
       Natural32         size;
       Natural32         i;
 
-      enter();
+      ;
 
       // extract the number of messages.
       if (archive.Extract(size) == StatusError)
@@ -364,7 +364,7 @@ namespace elle
           this->container.push_front(entry);
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -376,12 +376,12 @@ namespace elle
     ///
     Status              Report::Imprint(Natural32&              size) const
     {
-      enter();
+      ;
 
       // return the size.
       size = sizeof (Report);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -389,12 +389,12 @@ namespace elle
     ///
     Status              Report::Clone(Report*&                  object) const
     {
-      enter();
+      ;
 
       // allocate the object.
       object = new Report(*this);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -402,7 +402,7 @@ namespace elle
     ///
     Boolean             Report::operator==(const Report&) const
     {
-      enter();
+      ;
 
       flee("this method should never have been called");
     }
@@ -412,7 +412,7 @@ namespace elle
     ///
     Boolean             Report::operator<(const Report&) const
     {
-      enter();
+      ;
 
       flee("this method should never have been called");
     }
@@ -422,7 +422,7 @@ namespace elle
     ///
     Boolean             Report::operator>(const Report&) const
     {
-      enter();
+      ;
 
       flee("this method should never have been called");
     }
@@ -432,7 +432,7 @@ namespace elle
     ///
     Report&             Report::operator=(const Report&         element)
     {
-      enter();
+      ;
 
       // test if the reports are identical.
       if (this == &element)
@@ -460,7 +460,7 @@ namespace elle
     ///
     Boolean             Report::operator<=(const Report&) const
     {
-      enter();
+      ;
 
       flee("this method should never have been called");
     }
@@ -470,7 +470,7 @@ namespace elle
     ///
     Boolean             Report::operator>=(const Report&) const
     {
-      enter();
+      ;
 
       flee("this method should never have been called");
     }

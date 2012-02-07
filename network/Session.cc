@@ -42,13 +42,13 @@ namespace elle
     ///
     Status              Session::Initialize()
     {
-      enter();
+      ;
 
       // register the govern callback to the fiber system.
       if (Fiber::Register(Callback<>::Infer(&Session::Govern)) == StatusError)
         escape("unable to register the govern callback");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -56,11 +56,11 @@ namespace elle
     ///
     Status              Session::Clean()
     {
-      enter();
+      ;
 
       // nothing to do.
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -68,12 +68,12 @@ namespace elle
     ///
     Status              Session::Instance(Session*&             session)
     {
-      enter();
+      ;
 
       // return the current session.
       session = Session::Current;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -81,12 +81,12 @@ namespace elle
     ///
     Status              Session::Assign(Session*                session)
     {
-      enter();
+      ;
 
       // set the current session.
       Session::Current = session;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -95,12 +95,12 @@ namespace elle
     ///
     Status              Session::Clear()
     {
-      enter();
+      ;
 
       // clear the locuser.
       Session::Current = NULL;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -110,7 +110,7 @@ namespace elle
     Status              Session::Govern(const Phase             phase,
                                         Fiber*                  fiber)
     {
-      enter();
+      ;
 
       // perform an operation depending on the phase.
       switch (phase)
@@ -157,7 +157,7 @@ namespace elle
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -183,14 +183,14 @@ namespace elle
                                         const Locus&            locus,
                                         const Event&            event)
     {
-      enter();
+      ;
 
       // set the attributes.
       this->socket = socket;
       this->locus = locus;
       this->event = event;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -204,7 +204,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Session] " << std::hex << this << std::endl;
 
@@ -223,7 +223,7 @@ namespace elle
       if (this->event.Dump(margin + 2) == StatusError)
         escape("unable to dump the event");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -37,8 +37,6 @@ namespace std
   {
     std::ostringstream  stream;
 
-    enter();
-
     // display the string depending on its length.
     if (string.length() < limit)
       {
@@ -52,9 +50,6 @@ namespace std
                << "..."
                << string.substr(string.length() - (limit / 2));
       }
-
-    // release.
-    release();
 
     return (stream.str());
   }
@@ -73,14 +68,9 @@ namespace std
   {
     elle::io::Unique    unique;
 
-    enter();
-
     // generate the unique identifier.
     if (uniquable.Save(unique) == elle::radix::StatusError)
       yield(unique, "unable to save the object");
-
-    // release.
-    release();
 
     // display a chopped uniquable.
     return (std::chop(unique, limit));

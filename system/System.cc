@@ -53,7 +53,7 @@ namespace elle
     ///
     Status              System::Initialize()
     {
-      enter();
+      ;
 
       //
       // set the static definitions.
@@ -94,7 +94,7 @@ namespace elle
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -102,11 +102,11 @@ namespace elle
     ///
     Status              System::Clean()
     {
-      enter();
+      ;
 
       // nothing to do
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

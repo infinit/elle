@@ -59,7 +59,7 @@ namespace elle
       int               fd;
       Natural32         roffset = 0;
 
-      enter();
+      ;
 
       // does the file exist.
       if (File::Exist(path) == StatusFalse)
@@ -107,7 +107,7 @@ namespace elle
       // close the file.
       ::close(fd);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -119,7 +119,7 @@ namespace elle
       int               fd;
       Natural32         woffset = 0;
 
-      enter();
+      ;
 
       // dig the directory which will hold the target file.
       if (File::Dig(path) == StatusError)
@@ -157,7 +157,7 @@ namespace elle
       // close the file.
       ::close(fd);
 
-      leave();
+      return elle::StatusOk;
     }
 #elif defined(INFINIT_WINDOWS)
     ///
@@ -170,7 +170,7 @@ namespace elle
       HANDLE            fd;
       DWORD             roffset = 0;
 
-      enter();
+      ;
 
       // does the file exist.
       if (File::Exist(path) == StatusFalse)
@@ -221,7 +221,7 @@ namespace elle
       // close the file.
       ::CloseHandle(fd);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -233,7 +233,7 @@ namespace elle
       HANDLE            fd;
       DWORD             woffset = 0;
 
-      enter();
+      ;
 
       // dig the directory which will hold the target file.
       if (File::Dig(path) == StatusError)
@@ -273,7 +273,7 @@ namespace elle
       // close the file.
       ::CloseHandle(fd);
 
-      leave();
+      return elle::StatusOk;
     }
 #else
 # error "unsupported platform"
@@ -284,7 +284,7 @@ namespace elle
     ///
     Status              File::Erase(const Path&                 path)
     {
-      enter();
+      ;
 
       // does the file exist.
       if (File::Exist(path) == StatusFalse)
@@ -293,7 +293,7 @@ namespace elle
       // unlink the file.
       ::unlink(path.string.c_str());
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -303,17 +303,17 @@ namespace elle
     {
       struct ::stat             stat;
 
-      enter();
+      ;
 
       // does the path points to something.
       if (::stat(path.string.c_str(), &stat) != 0)
-        false();
+        return elle::StatusFalse;
 
       // does the path points to a regular file.
       if (!S_ISREG(stat.st_mode))
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -329,7 +329,7 @@ namespace elle
       String            item;
       Path              chemin;
 
-      enter();
+      ;
 
       // free the temporary string used for directory
       free(tmp_str);
@@ -356,7 +356,7 @@ namespace elle
             }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

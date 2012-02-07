@@ -31,7 +31,7 @@ namespace elle
       String                    alignment(margin, ' ');
       Environment::Scoutor      scoutor;
 
-      enter();
+      ;
 
       std::cout << alignment << "[Environment] "
                 << this->container.size() << std::endl;
@@ -45,7 +45,7 @@ namespace elle
                     << " :: " << scoutor->second << std::endl;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

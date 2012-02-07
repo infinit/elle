@@ -93,7 +93,7 @@ namespace elle
       Status            status;
       Session*          session;
 
-      enter();
+      ;
 
       // retrieve the session.
       if (Session::Instance(session) == StatusError)
@@ -170,7 +170,7 @@ namespace elle
           // to the sender.
           report->Flush();
 
-          leave();
+          return elle::StatusOk;
         }
 
       // reply according to the output tag.
@@ -207,7 +207,7 @@ namespace elle
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -236,7 +236,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Procedure]" << std::endl;
 
@@ -261,7 +261,7 @@ namespace elle
       if (this->epilog.Dump(margin + 2) == StatusError)
         escape("unable to dump the callback");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

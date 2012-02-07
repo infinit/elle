@@ -49,7 +49,7 @@ namespace elle
     {
       Archive           archive;
 
-      enter();
+      ;
 
       // create an archive.
       if (archive.Create() == StatusError)
@@ -63,7 +63,7 @@ namespace elle
       if (Base64::Encode(archive, string) == StatusError)
         escape("unable to encode object's archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -74,7 +74,7 @@ namespace elle
     {
       Archive           archive;
 
-      enter();
+      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -85,7 +85,7 @@ namespace elle
       if (Base64::Encode(archive, string) == StatusError)
         escape("unable to encode object's archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -98,7 +98,7 @@ namespace elle
     {
       Archive           archive;
 
-      enter();
+      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -109,7 +109,7 @@ namespace elle
       if (Base64::Encode(archive, string) == StatusError)
         escape("unable to encode object's archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -124,7 +124,7 @@ namespace elle
     {
       Archive           archive;
 
-      enter();
+      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -135,7 +135,7 @@ namespace elle
       if (Base64::Encode(archive, string) == StatusError)
         escape("unable to encode object's archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -152,7 +152,7 @@ namespace elle
     {
       Archive           archive;
 
-      enter();
+      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -163,7 +163,7 @@ namespace elle
       if (Base64::Encode(archive, string) == StatusError)
         escape("unable to encode object's archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -182,7 +182,7 @@ namespace elle
     {
       Archive           archive;
 
-      enter();
+      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -194,7 +194,7 @@ namespace elle
       if (Base64::Encode(archive, string) == StatusError)
         escape("unable to encode object's archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -215,7 +215,7 @@ namespace elle
     {
       Archive           archive;
 
-      enter();
+      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -227,7 +227,7 @@ namespace elle
       if (Base64::Encode(archive, string) == StatusError)
         escape("unable to encode object's archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -250,7 +250,7 @@ namespace elle
     {
       Archive           archive;
 
-      enter();
+      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -262,7 +262,7 @@ namespace elle
       if (Base64::Encode(archive, string) == StatusError)
         escape("unable to encode object's archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -287,7 +287,7 @@ namespace elle
     {
       Archive           archive;
 
-      enter();
+      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -299,7 +299,7 @@ namespace elle
       if (Base64::Encode(archive, string) == StatusError)
         escape("unable to encode object's archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
     //
@@ -319,7 +319,7 @@ namespace elle
       Archive           archive;
       Region            region;
 
-      enter();
+      ;
 
       // decode the string.
       if (Base64::Decode(string, region) == StatusError)
@@ -337,7 +337,7 @@ namespace elle
       if (archive.Extract(parameter, parameters...) == StatusError)
         escape("unable to extract the object");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -81,7 +81,7 @@ namespace elle
       //
       // static methods
       //
-      static Status     Ship(Parcel*);
+      static Status     Ship(std::shared_ptr<Parcel>&);
 
       //
       // constructors & destructors

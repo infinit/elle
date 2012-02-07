@@ -51,14 +51,14 @@ namespace elle
     ///
     Boolean             Duration::operator==(const Duration&    element) const
     {
-      enter();
+      ;
 
       // compare the attributes.
       if ((this->unit != element.unit) ||
           (this->value != element.value))
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -77,7 +77,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
  
-      enter();
+      ;
 
       std::cout << alignment << "[Duration]" << std::endl;
 
@@ -88,7 +88,7 @@ namespace elle
                 << std::nouppercase << std::dec 
                 << this->value << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -100,14 +100,14 @@ namespace elle
     ///
     Status              Duration::Serialize(Archive&            archive) const
     {
-      enter();
+      ;
 
       // serialize the internal attributes.
       if (archive.Serialize(static_cast<Natural8>(this->unit),
                             this->value) == StatusError)
         escape("unable to serialize the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -115,14 +115,14 @@ namespace elle
     ///
     Status              Duration::Extract(Archive&              archive)
     {
-      enter();
+      ;
 
       // extract the internal attributes.
       if (archive.Extract(reinterpret_cast<Natural8&>(this->unit),
                           this->value) == StatusError)
         escape("unable to extract the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

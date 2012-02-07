@@ -62,7 +62,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Option] " << this->name << std::endl;
 
@@ -98,7 +98,7 @@ namespace elle
                     << "[Value] " << none << std::endl;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -151,12 +151,12 @@ namespace elle
     ///
     Status              Parser::Description(const String&       description)
     {
-      enter();
+      ;
 
       // set the description.
       this->description = description;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -170,8 +170,6 @@ namespace elle
     {
       Parser::Option*   option;
 
-      enterx(instance(option));
-
       // create a new option.
       option = new Parser::Option(name,
                                   character,
@@ -182,10 +180,7 @@ namespace elle
       // add the option to the vector of options.
       this->options.push_back(option);
 
-      // waive.
-      waive(option);
-
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -193,12 +188,12 @@ namespace elle
     ///
     Status              Parser::Example(const String&           example)
     {
-      enter();
+      ;
 
       // add the example.
       this->examples.push_back(example);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -210,7 +205,7 @@ namespace elle
     {
       Natural32         i;
 
-      enter();
+      ;
 
       // go through the options.
       for (i = 0; i < this->options.size(); i++)
@@ -221,11 +216,11 @@ namespace elle
               // set the pointer.
               option = this->options[i];
 
-              true();
+              return elle::StatusTrue;
             }
         }
 
-      false();
+      return elle::StatusFalse;
     }
 
     ///
@@ -237,7 +232,7 @@ namespace elle
     {
       Natural32         i;
 
-      enter();
+      ;
 
       // go through the options.
       for (i = 0; i < this->options.size(); i++)
@@ -248,11 +243,11 @@ namespace elle
               // set the pointer.
               option = this->options[i];
 
-              true();
+              return elle::StatusTrue;
             }
         }
 
-      false();
+      return elle::StatusFalse;
     }
 
     ///
@@ -266,7 +261,7 @@ namespace elle
     {
       Character         character;
 
-      enter();
+      ;
 
       // check if the shorts and longs structure has been generated, if
       // not do it.
@@ -429,7 +424,7 @@ namespace elle
             }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -440,7 +435,7 @@ namespace elle
     {
       Parser::Option*   option;
 
-      enter();
+      ;
 
       // locate the option.
       if (this->Locate(name, option) == StatusFalse)
@@ -448,9 +443,9 @@ namespace elle
 
       // return true if the option has been activated.
       if (option->state == Parser::StateActivated)
-        true();
+        return elle::StatusTrue;
 
-      false();
+      return elle::StatusFalse;
     }
 
     ///
@@ -461,7 +456,7 @@ namespace elle
     {
       Parser::Option*   option;
 
-      enter();
+      ;
 
       // locate the option.
       if (this->Locate(name, option) == StatusFalse)
@@ -473,9 +468,9 @@ namespace elle
 
       // return true if an argument has been provided.
       if (option->value != NULL)
-        true();
+        return elle::StatusTrue;
 
-      false();
+      return elle::StatusFalse;
     }
 
     ///
@@ -596,7 +591,7 @@ namespace elle
       String            alignment(margin, ' ');
       Natural32         i;
 
-      enter();
+      ;
 
       std::cout << alignment << "[Parser]" << std::endl;
 
@@ -642,7 +637,7 @@ namespace elle
                     << this->examples[i] << std::endl;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

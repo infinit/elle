@@ -35,6 +35,7 @@
 
 #include <elle/idiom/Close.hh>
 # include <list>
+# include <memory>
 # if defined(INFINIT_UNIX)
 #  include <ucontext.h>
 # elif defined(INFINIT_WINDOWS)
@@ -184,18 +185,20 @@ namespace elle
       static Void       Launch(Closure<Status, T...>*);
 
       template <typename T = Meta>
-      static Status     Wait(const Event&,
-                             T*& = reinterpret_cast<T*&>(Trash));
-      template <typename T = Meta>
-      static Status     Awaken(const Event&,
-                               T* = static_cast<T*>(NULL));
+      static Status     Wait(const Event&, std::shared_ptr<T>&);
+      static Status     Wait(const Event&);
 
       template <typename T = Meta>
-      static Status     Wait(const Resource*,
-                             T*& = reinterpret_cast<T*&>(Trash));
-      template <typename T = Meta>
-      static Status     Awaken(const Resource*,
-                               T* = static_cast<T*>(NULL));
+      static Status     Wait(const Resource&, std::shared_ptr<T>&);
+      static Status     Wait(const Resource&);
+
+      template <typename DataType = Meta>
+      static Status     Awaken(const Event& event,
+                               std::shared_ptr<DataType> data = nullptr);
+
+      template <typename DataType = Meta>
+      static Status     Awaken(const Resource& resource,
+                               std::shared_ptr<DataType> data = nullptr);
 
       static Status     Sleep(const Natural32);
       static Status     Yield();
@@ -248,28 +251,24 @@ namespace elle
       //
       // attributes
       //
-      Fiber*            link;
-
-      Frame*            frame;
-      ::ucontext_t      context;
-
-      State             state;
-
-      Type              type;
+      Fiber*                  link;
+      Frame*                  frame;
+      ::ucontext_t            context;
+      State                   state;
+      Type                    type;
       union
       {
-        Event*          event;
-        const Resource* resource;
+        Event*                event;
+        const Resource*       resource;
       };
-
-      Environment*      environment;
-
-      Meta*             data;
-
-      Timer*            timer;
+      Environment*            environment;
+      std::shared_ptr<Meta>   data;
+      Timer*                  timer;
 
     private:
-      static Status     CheckCurrentFiber();
+      static Status     _CheckCurrentFiber();
+      static Status     _PrepareWait();
+      static Status     _DoWait();
     };
   }
 }

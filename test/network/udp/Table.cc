@@ -28,7 +28,7 @@ namespace elle
     ///
     Status              Table::Create(Node*                     node)
     {
-      enter();
+      ;
 
       // set the node.
       this->node = node;
@@ -46,7 +46,7 @@ namespace elle
       if (this->timer.Start(Node::Rate) == StatusError)
         escape("unable to start the timer");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -57,7 +57,7 @@ namespace elle
     {
       Table::Iterator   iterator;
 
-      enter();
+      ;
 
       // try to locate a previous entry.
       if (this->Locate(locus, iterator) == StatusOk)
@@ -84,11 +84,9 @@ namespace elle
 
           // stop tracking.
           waive(neighbour);
-
-          release();
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -98,7 +96,7 @@ namespace elle
     {
       Table::Iterator   iterator;
 
-      enter();
+      ;
 
       // locate the neighbour.
       if (this->Locate(locus, iterator) != StatusOk)
@@ -108,7 +106,7 @@ namespace elle
       if ((*iterator)->Refresh() == StatusError)
         escape("unable to refresh the node");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -118,7 +116,7 @@ namespace elle
     {
       Table::Iterator   iterator;
 
-      enter();
+      ;
 
       // try to locate a previous entry.
       if (this->Locate(locus, iterator) == StatusError)
@@ -130,7 +128,7 @@ namespace elle
       // remove the element from the list.
       this->container.erase(iterator);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -139,7 +137,7 @@ namespace elle
     Status              Table::Locate(const Locus&              locus,
                                       Table::Iterator&          iterator)
     {
-      enter();
+      ;
 
       // iterator over the container.
       for (iterator = this->container.begin();
@@ -148,7 +146,7 @@ namespace elle
         {
           // if the locus is found, return.
           if ((*iterator)->locus == locus)
-            leave();
+            return elle::StatusOk;
         }
 
       escape("unable to locate the given neighbour");
@@ -161,7 +159,7 @@ namespace elle
     {
       Table::Scoutor    scoutor;
 
-      enter();
+      ;
 
       // explore the received table.
       for (scoutor = table.container.begin();
@@ -174,7 +172,7 @@ namespace elle
             escape("unable to update the table");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -188,13 +186,13 @@ namespace elle
     {
       Table::Scoutor    scoutor;
 
-      enter();
+      ;
 
       // serialize the number of neighbours.
       if (archive.Serialize(static_cast<Natural32>(this->container.size())) ==
           StatusError)
         escape("unable to serialize the neighbour");
-      
+
       // serialize the table by going through it.
       for (scoutor = this->container.begin();
            scoutor != this->container.end();
@@ -205,7 +203,7 @@ namespace elle
             escape("unable to serialize the neighbour");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -216,7 +214,7 @@ namespace elle
       Natural32         n;
       Natural32         i;
 
-      enter();
+      ;
 
       // extract the number of elements.
       if (archive.Extract(n) == StatusError)
@@ -238,7 +236,7 @@ namespace elle
           this->container.push_back(neighbour);
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -253,7 +251,7 @@ namespace elle
       String            alignment(margin, ' ');
       Table::Scoutor    scoutor;
 
-      enter();
+      ;
 
       std::cout << alignment << "[Table]" << std::endl;
 
@@ -266,7 +264,7 @@ namespace elle
             escape("unable to dump the neighbour");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -280,7 +278,7 @@ namespace elle
     {
       Table::Scoutor    scoutor;
 
-      enter();
+      ;
 
       //
       // first, dump the table.
@@ -303,7 +301,7 @@ namespace elle
               escape("unable to send a probe");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

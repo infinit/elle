@@ -50,13 +50,13 @@ namespace elle
     ///
     Status              Server::Setup(const String&             line)
     {
-      enter();
+      ;
 
       // set the locus.
       if (this->locus.Create(line) == StatusError)
         escape("unable to create the locus");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -64,7 +64,7 @@ namespace elle
     ///
     Status              Server::Run()
     {
-      enter();
+      ;
 
       std::cout << "[bridge]" << std::endl;
       locus.Dump();
@@ -75,7 +75,7 @@ namespace elle
                                               this)) == StatusError)
         escape("unable to listen for TCP connections");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -90,7 +90,7 @@ namespace elle
       String            challenge("CHALLENGE");
       String            response;
 
-      enter();
+      ;
 
       // if there is already a client, exit.
       if (this->socket != NULL)
@@ -108,7 +108,7 @@ namespace elle
 
       std::cout << "[response] " << response << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

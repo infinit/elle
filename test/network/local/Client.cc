@@ -28,12 +28,12 @@ namespace elle
     ///
     Status              Client::Setup(const String&             line)
     {
-      enter();
+      ;
 
       // set the line.
       this->line = line;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -41,7 +41,7 @@ namespace elle
     ///
     Status              Client::Run()
     {
-      enter();
+      ;
 
       std::cout << "[line] " << this->line << std::endl;
 
@@ -60,7 +60,7 @@ namespace elle
                                StreamSocket::ModeSynchronous) == StatusError)
         escape("unable to connect to the line");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -74,7 +74,7 @@ namespace elle
     {
       String            response("RESPONSE");
 
-      enter();
+      ;
 
       // simply display the text.
       std::cout << "[Challenge] " << text << std::endl;
@@ -84,7 +84,7 @@ namespace elle
             Inputs<TagResponse>(response)) == StatusError)
         escape("unable to return the response");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

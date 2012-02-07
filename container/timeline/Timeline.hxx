@@ -15,9 +15,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <cassert>
+#include <memory>
+
 #include <elle/core/String.hh>
 
-#include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
 namespace elle
@@ -47,18 +49,12 @@ namespace elle
       template <typename T>
       Timeline<T>::~Timeline()
       {
-        typename Timeline<T>::Scoutor   scoutor;
+        auto it= this->container.begin();
+        auto end = this->container.end();
 
-        // go through the container.
-        for (scoutor = this->container.begin();
-             scoutor != this->container.end();
-             scoutor++)
-          {
-            // delete the bucket.
-            delete scoutor->second;
-          }
+        for (; it != end; ++it)
+          delete it->second;
 
-        // clear the container.
         this->container.clear();
       }
 
@@ -70,75 +66,59 @@ namespace elle
       /// this method insert an object in the timeline container.
       ///
       template <typename T>
-      Status            Timeline<T>::Insert(const Time&         timestamp,
-                                            T&                  object)
+      Status Timeline<T>::Insert(const Time& timestamp, T const& object)
       {
-        typename Timeline<T>::Iterator  iterator;
-        Bucket<T>*                      bucket;
+        Bucket<T>* bucket = 0;
 
-        enter();
-
+        auto it = this->container.find(timestamp);
         // try to look up an bucket for the given timestamp.
-        if ((iterator =
-               this->container.find(timestamp)) == this->container.end())
+        if (it == this->container.end())
           {
-            std::pair<typename Timeline<T>::Iterator, Boolean>  result;
-            Bucket<T>*                                          b;
-
-            enterx(instance(b));
-
-            // allocate an bucket.
-            b = new Bucket<T>;
+            auto bucket_ptr = std::unique_ptr<Bucket<T>>(new Bucket<T>);
 
             // record the bucket with its timestamp.
-            result =
-              this->container.insert(
-                typename Timeline<T>::Value(timestamp, b));
+            auto result = this->container.insert(
+                typename Container::value_type(timestamp, bucket_ptr.get())
+            );
 
             // check the result.
             if (result.second == false)
               escape("unable to insert the object");
-
-            // set the bucket since _b_ is going to be reset to NULL.
-            bucket = b;
-
-            // waive.
-            waive(b);
-
-            release();
+            else // the bucket was successfuly stored
+              bucket = bucket_ptr.release();
           }
         else
           {
-            // retrieve the bucket.
-            bucket = iterator->second;
+            bucket = it->second;
           }
+
+        assert(bucket != 0);
 
         // add the object to the bucket.
         if (bucket->Add(object) == StatusError)
           escape("unable to add the object to the bucket");
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
       /// this method deletes an object from the timeline.
       ///
       template <typename T>
-      Status            Timeline<T>::Delete(const Time&         timestamp,
-                                            T&                  object)
+      Status            Timeline<T>::Delete(const Time& timestamp,
+                                            T const& object)
       {
-        typename Timeline<T>::Iterator  iterator;
         Bucket<T>*                      bucket;
 
-        enter();
+        auto it = this->container.find(timestamp);
 
         // try to look up the bucket in the container.
-        if ((iterator =
-               this->container.find(timestamp)) == this->container.end())
+        if (it == this->container.end())
           escape("unable to locate the given timestamp");
 
         // retrieve the bucket.
-        bucket = iterator->second;
+        bucket = it->second;
+        assert(bucket != nullptr);
 
         // remove the object from the bucket.
         if (bucket->Remove(object) == StatusError)
@@ -147,14 +127,10 @@ namespace elle
         // check if the bucket is empty.
         if (bucket->container.empty() == true)
           {
-            // delete the bucket.
+            this->container.erase(it);
             delete bucket;
-
-            // remove the bucket from the container.
-            this->container.erase(iterator);
           }
-
-        leave();
+        return elle::StatusOk;
       }
 
       ///
@@ -163,12 +139,8 @@ namespace elle
       template <typename T>
       Status            Timeline<T>::Clear()
       {
-        enter();
-
-        // clear the container.
         this->container.clear();
-
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -179,31 +151,26 @@ namespace elle
       /// this method dumps the timeline container.
       ///
       template <typename T>
-      Status            Timeline<T>::Dump(const Natural32       margin) const
+      Status            Timeline<T>::Dump(const Natural32 margin) const
       {
-        String                          alignment(margin, ' ');
-        typename Timeline<T>::Scoutor   scoutor;
-
-        enter();
+        String alignment(margin, ' ');
 
         std::cout << alignment << "[Timeline] "
                   << std::dec << this->container.size() << std::endl;
 
-        // go through the container.
-        for (scoutor = this->container.begin();
-             scoutor != this->container.end();
-             scoutor++)
+        auto it = this->container.begin();
+        auto end = this->container.end();
+        for (; it != end; ++it)
           {
             // dump the timestamp.
-            if (scoutor->first.Dump(margin + 2) == StatusError)
+            if (it->first.Dump(margin + 2) == StatusError)
               escape("unable to dump the timestamp");
 
             // dump the bucket.
-            if (scoutor->second->Dump(margin + 2) == StatusError)
+            if (it->second->Dump(margin + 2) == StatusError)
               escape("unable to dump the bucket");
           }
-
-        leave();
+        return elle::StatusOk;
       }
 
     }

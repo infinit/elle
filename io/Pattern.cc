@@ -33,12 +33,12 @@ namespace elle
     ///
     Status              Pattern::Create(const String&           string)
     {
-      enter();
+      ;
 
       // assign the string.
       this->string = string;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -50,17 +50,17 @@ namespace elle
     ///
     Boolean             Pattern::operator==(const Pattern&      element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the internal.
       if (this->string != element.string)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -79,12 +79,12 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Pattern] "
                 << this->string << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

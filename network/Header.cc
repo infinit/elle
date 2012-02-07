@@ -53,14 +53,14 @@ namespace elle
                                        const Tag                tag,
                                        const Natural32          size)
     {
-      enter();
+      ;
 
       // set the attributes.
       this->event = event;
       this->tag = tag;
       this->size = size;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -83,7 +83,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Header] " << std::endl;
 
@@ -99,7 +99,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Size] " << this->size << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -111,7 +111,7 @@ namespace elle
     ///
     Status              Header::Serialize(Archive&              archive) const
     {
-      enter();
+      ;
 
       // serialize the attributes.
       if (archive.Serialize(Header::Name,
@@ -120,7 +120,7 @@ namespace elle
                             this->size) == StatusError)
         escape("unable to serialize the header attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -130,7 +130,7 @@ namespace elle
     {
       String            name;
 
-      enter();
+      ;
 
       // extract the attributes.
       if (archive.Extract(name,
@@ -143,7 +143,7 @@ namespace elle
       if (Header::Name != name)
         escape("incorrect name event");
 
-      leave();
+      return elle::StatusOk;
 
     }
 

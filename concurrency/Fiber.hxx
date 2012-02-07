@@ -35,8 +35,6 @@ namespace elle
     template <typename... T>
     Void                Fiber::Launch(Closure<Status, T...>*    closure)
     {
-      enter();
-
       // trigger the closure and, should there are errors, display them.
       if (closure->Call() == StatusError)
         yield(_(), "an error occured in the fiber");
@@ -54,10 +52,6 @@ namespace elle
 
       // swap to the link as we don't rely on uc_link
       ::swapcontext(&Fiber::Current->context, &Fiber::Program->context);
-
-      // release the resources.
-      release();
-      fail("this code should never be reached");
     }
 
     ///
@@ -66,14 +60,12 @@ namespace elle
     template <typename... T>
     Status              Fiber::Spawn(Closure<Status, T...>&     closure)
     {
-      enter();
-
       // if we are already in a fiber, don't create another one.
       if (Fiber::Current != Fiber::Program)
         {
           if (closure.Call() == StatusError)
             log("an error occured in the fiber");
-          leave();
+          return elle::StatusOk;
         }
 
       // declare a launch function pointer in order to bypass the type
@@ -137,59 +129,29 @@ namespace elle
                         &Fiber::Current->context) == -1)
         escape("unable to set the context");
 
-      Fiber::CheckCurrentFiber();
+      // XXX Why not return the _CheckCurrentFiber() value ??
+      Fiber::_CheckCurrentFiber();
 
-      leave();
+      return elle::StatusOk;
     }
+
 
     ///
     /// this method takes the current fiber and sets the event it is
     /// expected to continue.
     ///
+
     template <typename T>
-    Status              Fiber::Wait(const Event&                event,
-                                    T*&                         data)
+    Status Fiber::Wait(const Event& event, std::shared_ptr<T>& data)
     {
-      enter();
-
-      // check if the current fiber is the program.
-      if (Fiber::Current == Fiber::Program)
-        escape("unable to wait while in the program fiber");
-
-      // set the fiber has been suspended.
-      Fiber::Current->state = Fiber::StateSuspended;
-
-      // set the type.
-      Fiber::Current->type = Fiber::TypeEvent;
-
-      // set the event.
-      Fiber::Current->event = new Event(event);
-
-      // save the environment.
-      if (Fiber::Trigger(PhaseSave) == StatusError)
-        escape("unable to save the environment");
-
-      // add the current fiber to the container.
-      if (Fiber::Add(Fiber::Current) == StatusError)
-        escape("unable to add the fiber to the container");
-
-      // set the state of the program's fiber as awaken as we
-      // are about to come back to it.
-      Fiber::Program->state = Fiber::StateAwaken;
-
-      // switch to the program's context and save the current one
-      // in order to carry on at this point when woken up.
-      if (::swapcontext(&Fiber::Current->context,
-                        &Fiber::Program->context) == -1)
-        escape("unable to swap to the program context");
+      if (Fiber::Wait(event) == StatusError)
+        return StatusError;
 
       // retrieve the data.
-      data = static_cast<T*>(Fiber::Current->data);
+      // XXX Meta -> User type : Y U NO DYNAMIC_CAST ?
+      data = std::static_pointer_cast<T>(Fiber::Current->data);
 
-      // reset the data.
-      Fiber::Current->data = NULL;
-
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -200,64 +162,33 @@ namespace elle
     /// memory i.e memory addresses. since memory addresses are unique,
     /// this simple scheme prevents conflicts.
     ///
+
     template <typename T>
-    Status              Fiber::Wait(const Resource*             resource,
-                                    T*&                         data)
+    Status Fiber::Wait(Resource const& resource, std::shared_ptr<T>& data)
     {
-      enter();
-
-      // check if the current fiber is the program.
-      if (Fiber::Current == Fiber::Program)
-        escape("unable to wait while in the program fiber");
-
-      // set the fiber has been suspended.
-      Fiber::Current->state = Fiber::StateSuspended;
-
-      // set the type.
-      Fiber::Current->type = Fiber::TypeResource;
-
-      // set the resource.
-      Fiber::Current->resource = resource;
-
-      // save the environment.
-      if (Fiber::Trigger(PhaseSave) == StatusError)
-        escape("unable to save the environment");
-
-      // add the current fiber to the container.
-      if (Fiber::Add(Fiber::Current) == StatusError)
-        escape("unable to add the fiber to the container");
-
-      // set the state of the program's fiber as awaken as we
-      // are about to come back to it.
-      Fiber::Program->state = Fiber::StateAwaken;
-
-      // switch to the program's context and save the current one
-      // in order to carry on at this point when woken up.
-      if (::swapcontext(&Fiber::Current->context,
-                        &Fiber::Program->context) == -1)
-        escape("unable to swap to the program context");
+      if (Fiber::Wait(resource) == StatusError)
+        return StatusError;
 
       // retrieve the data.
-      data = static_cast<T*>(Fiber::Current->data);
+      // XXX Meta -> User type : Y U NO DYNAMIC_CAST ?
+      data = Fiber::Current->data;
+      // XXX Reset fiber data ?
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
     /// this method wakes up the fiber waiting for the given event.
     ///
-    template <typename T>
-    Status              Fiber::Awaken(const Event&              event,
-                                      T*                        data)
+    template <typename DataType>
+    Status Fiber::Awaken(const Event& event, std::shared_ptr<DataType> data)
     {
       Fiber::F::Iterator        iterator;
       Boolean                   awaken;
 
-      enter();
-
       // check if there are blocked fibers.
       if (Fiber::Fibers.empty() == true)
-        false();
+        return elle::StatusFalse;
 
       // set the boolean to false meaning that no fiber has been woken up.
       awaken = false;
@@ -271,7 +202,7 @@ namespace elle
           awaken = true;
 
           // set the data.
-          fiber->data = static_cast<Meta*>(data);
+          fiber->data = data;
 
           // set the state as awaken.
           fiber->state = Fiber::StateAwaken;
@@ -286,32 +217,29 @@ namespace elle
 
       // return true if at least one fiber has been awaken.
       if (awaken == true)
-        true();
+        return elle::StatusTrue;
 
-      false();
+      return elle::StatusFalse;
     }
 
     ///
     /// this method wakes up the fibers waiting for the given resource.
     ///
-    template <typename T>
-    Status              Fiber::Awaken(const Resource*           resource,
-                                      T*                        data)
+    template <typename DataType>
+    Status Fiber::Awaken(const Resource& resource, std::shared_ptr<DataType> data)
     {
-      Fiber::F::Iterator        iterator;
-      Boolean                   awaken;
-
-      enter();
+      Fiber::F::Iterator iterator;
+      Boolean            awaken;
 
       // check if there are blocked fibers.
       if (Fiber::Fibers.empty() == true)
-        false();
+        return elle::StatusFalse;
 
       // set the boolean to false meaning that no fiber has been woken up.
       awaken = false;
 
       // locate, awaken and remove fibers as long as found.
-      while (Fiber::Locate(resource, iterator) == true)
+      while (Fiber::Locate(&resource, iterator) == true)
         {
           Fiber*        fiber = *iterator;
 
@@ -319,7 +247,7 @@ namespace elle
           awaken = true;
 
           // set the data.
-          fiber->data = static_cast<Meta*>(data);
+          fiber->data = data;
 
           // set the state as awaken.
           fiber->state = Fiber::StateAwaken;
@@ -333,9 +261,9 @@ namespace elle
 
       // return true if at least one fiber has been awaken.
       if (awaken == true)
-        true();
+        return elle::StatusTrue;
 
-      false();
+      return elle::StatusFalse;
     }
 
   }

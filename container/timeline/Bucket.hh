@@ -62,8 +62,8 @@ namespace elle
         //
         // methods
         //
-        Status          Add(T&);
-        Status          Remove(T&);
+        Status          Add(T const&);
+        Status          Remove(T const&);
 
         //
         // interfaces

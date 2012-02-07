@@ -58,8 +58,6 @@ namespace elle
     ///
     Status              Timer::Create(const Mode                mode)
     {
-      enter();
-
       // set the mode attribute.
       this->mode = mode;
 
@@ -75,7 +73,7 @@ namespace elle
                         this, SLOT(_timeout())) == false)
         escape("unable to connect the timeout signal");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -83,12 +81,10 @@ namespace elle
     ///
     Status              Timer::Start(const Natural32            duration)
     {
-      enter();
-
       // start the timer.
       this->timer->start(duration);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -96,12 +92,10 @@ namespace elle
     ///
     Status              Timer::Stop()
     {
-      enter();
-
       // stop the timer.
       this->timer->stop();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -109,12 +103,10 @@ namespace elle
     ///
     Status              Timer::Restart(const Natural32          duration)
     {
-      enter();
-
       // restart the timer.
       this->timer->start(duration);
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -127,13 +119,11 @@ namespace elle
     ///
     Status              Timer::Timeout()
     {
-      enter();
-
       // emit the signal.
       if (this->signal.timeout.Emit() == StatusError)
         escape("unable to emit the signal");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -146,8 +136,6 @@ namespace elle
     Status              Timer::Dump(const Natural32             margin) const
     {
       String            alignment(margin, ' ');
-
-      enter();
 
       std::cout << alignment << "[Timer]" << std::endl;
 
@@ -163,7 +151,7 @@ namespace elle
       if (this->signal.timeout.Dump(margin + 2) == StatusError)
         escape("unable to dump the signal");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -179,13 +167,9 @@ namespace elle
                Parameters<> >   closure(Callback<>::Infer(&Timer::Timeout,
                                                           this));
 
-      enter();
-
       // trigger the callback in a new fiber.
       if (Fiber::Spawn(closure) == StatusError)
         yield(_(), "unable to spawn a fiber");
-
-      release();
     }
 
   }

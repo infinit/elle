@@ -35,8 +35,6 @@ namespace elle
         const Closure< R, Parameters<T...> >&                   closure):
       closure(closure)
     {
-      enter();
-
       // create the timer.
       if (this->timer.Create(Timer::ModeSingle) == StatusError)
         yield(_(), "unable to create the timer");
@@ -49,8 +47,6 @@ namespace elle
       // start the timer.
       if (this->timer.Start() == StatusError)
         yield(_(), "unable to start the timer");
-
-      release();
     }
 
 //
@@ -67,8 +63,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
-
       std::cout << alignment << "[Entrance]" << std::endl;
 
       // dump the closure.
@@ -79,7 +73,7 @@ namespace elle
       if (this->timer.Dump(margin + 2) == StatusError)
         escape("unable to dump the timer");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -95,13 +89,11 @@ namespace elle
     Status
     Entrance< R, Parameters<T...> >::Timeout()
     {
-      enter();
-
       // trigger the closure.
       if (this->closure.Call() == StatusError)
         escape("an error occured in the closure");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -37,7 +37,7 @@ namespace elle
   ///
   Status                Elle::Initialize()
   {
-    enter();
+    ;
 
     // initialize the system module.
     if (System::Initialize() == StatusError)
@@ -63,7 +63,7 @@ namespace elle
     if (Network::Initialize() == StatusError)
       escape("unable to initialize the network module");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -71,7 +71,7 @@ namespace elle
   ///
   Status                Elle::Clean()
   {
-    enter();
+    ;
 
     // clean the network module.
     if (Network::Clean() == StatusError)
@@ -97,7 +97,7 @@ namespace elle
     if (System::Clean() == StatusError)
       escape("unable to clean the system module");
 
-    leave();
+    return elle::StatusOk;
   }
 
 }

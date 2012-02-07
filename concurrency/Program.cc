@@ -43,12 +43,12 @@ namespace elle
     ///
     Status              Program::Initialize()
     {
-      enter();
+      ;
 
       // allocate a new program.
       program = new Program;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -56,13 +56,13 @@ namespace elle
     ///
     Status              Program::Clean()
     {
-      enter();
+      ;
 
       // delete the program.
       if (program != NULL)
         delete program;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -72,7 +72,7 @@ namespace elle
     {
       int               n;
 
-      enter();
+      ;
 
       // set the number of arguments as zero since we do not want
       // QCoreApplication to bother parsing arguments.
@@ -93,7 +93,7 @@ namespace elle
 # error "unsupported platform"
 #endif
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -101,12 +101,12 @@ namespace elle
     ///
     Status              Program::Exit()
     {
-      enter();
+      ;
 
       // exit the core application.
       program->core->exit();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -114,7 +114,7 @@ namespace elle
     ///
     Status              Program::Launch()
     {
-      enter();
+      ;
 
       // check the program.
       if ((program == NULL) || (program->core == NULL))
@@ -124,7 +124,7 @@ namespace elle
       // process the events.
       program->core->exec();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -162,7 +162,7 @@ namespace elle
     {
       ::QAbstractEventDispatcher*       dispatcher;
 
-      enter();
+      ;
 
 #include <elle/idiom/Close.hh>
       // retrieve the event dispatcher instance.
@@ -172,7 +172,7 @@ namespace elle
       // register the socket notifier.
       dispatcher->registerSocketNotifier(&broker.notifier);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -182,7 +182,7 @@ namespace elle
     {
       ::QAbstractEventDispatcher*       dispatcher;
 
-      enter();
+      ;
 
 #include <elle/idiom/Close.hh>
       // retrieve the event dispatcher instance.
@@ -192,7 +192,7 @@ namespace elle
       // unregister the socket notifier.
       dispatcher->unregisterSocketNotifier(&broker.notifier);
 
-      leave();
+      return elle::StatusOk;
     }
 #elif defined(INFINIT_WINDOWS)
     // nothing

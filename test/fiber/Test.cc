@@ -41,7 +41,7 @@ namespace elle
     ///
     Status              Fiber4()
     {
-      enter();
+      ;
 
       printf("[Fiber4] Start\n");
 
@@ -63,7 +63,7 @@ namespace elle
 
       printf("[Fiber4] End\n");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -76,7 +76,7 @@ namespace elle
       Closure< Status,
                Parameters<> >   closure(Callback<>::Infer(&Fiber4));
 
-      enter();
+      ;
 
       printf("[Fiber3] Start\n");
 
@@ -102,7 +102,7 @@ namespace elle
       if (Program::Exit() == StatusError)
         escape("unable to exit from the program");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -112,7 +112,7 @@ namespace elle
     ///
     Status              Fiber2()
     {
-      enter();
+      ;
 
       printf("[Fiber2] Start\n");
 
@@ -134,7 +134,7 @@ namespace elle
 
       printf("[Fiber2] End\n");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -144,7 +144,7 @@ namespace elle
     ///
     Status              Fiber1()
     {
-      enter();
+      ;
 
       printf("[Fiber1] Start\n");
 
@@ -166,7 +166,7 @@ namespace elle
 
       printf("[Fiber1] End\n");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -175,7 +175,7 @@ namespace elle
     Status              Main(const Natural32,
                              const Character*[])
     {
-      enter();
+      ;
 
       // initialize the library.
       if (Elle::Initialize() == StatusError)
@@ -232,7 +232,7 @@ namespace elle
       if (Elle::Clean() == StatusError)
         escape("unable to clean the library");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

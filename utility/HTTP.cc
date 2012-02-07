@@ -68,7 +68,7 @@ namespace elle
       ::CURL*           curl;
       long              r;
 
-      enter();
+      ;
 
       // initialize curl.
       if ((curl = ::curl_easy_init()) == NULL)
@@ -118,7 +118,7 @@ namespace elle
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      leave();
+      return elle::StatusOk;
 
     _error:
       // clean up the session.
@@ -143,7 +143,7 @@ namespace elle
       ::CURL*           curl;
       long              r;
 
-      enter();
+      ;
 
       // initialize curl.
       if ((curl = ::curl_easy_init()) == NULL)
@@ -234,7 +234,7 @@ namespace elle
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      leave();
+      return elle::StatusOk;
 
     _error:
       // clean up the session.
@@ -259,7 +259,7 @@ namespace elle
       ::CURL*           curl;
       long              r;
 
-      enter();
+      ;
 
       // initialize curl.
       if ((curl = ::curl_easy_init()) == NULL)
@@ -368,7 +368,7 @@ namespace elle
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      leave();
+      return elle::StatusOk;
 
     _error:
       // clean up the session.
@@ -388,7 +388,7 @@ namespace elle
       ::CURL*           curl;
       long              r;
 
-      enter();
+      ;
 
       // initialize curl.
       if ((curl = ::curl_easy_init()) == NULL)
@@ -449,7 +449,7 @@ namespace elle
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      leave();
+      return elle::StatusOk;
 
     _error:
       // clean up the session.

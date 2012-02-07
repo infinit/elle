@@ -31,7 +31,7 @@ namespace elle
     ///
     Status              Object::Imprint(Natural32&) const
     {
-      enter();
+      ;
 
       escape("this method should never have been called");
     }
@@ -42,7 +42,7 @@ namespace elle
     ///
     Status              Object::Clone(Object*&) const
     {
-      enter();
+      ;
 
       escape("this method should never have been called");
     }
@@ -56,7 +56,7 @@ namespace elle
     ///
     Boolean             Object::operator==(const Object&) const
     {
-      enter();
+      ;
 
       flee("this method should never have been called");
     }
@@ -66,7 +66,7 @@ namespace elle
     ///
     Boolean             Object::operator<(const Object&) const
     {
-      enter();
+      ;
 
       flee("this method should never have been called");
     }
@@ -76,7 +76,7 @@ namespace elle
     ///
     Boolean             Object::operator>(const Object&) const
     {
-      enter();
+      ;
 
       flee("this method should never have been called");
     }
@@ -86,7 +86,7 @@ namespace elle
     ///
     Object              Object::operator+(const Object&)
     {
-      enter();
+      ;
 
       yield(*this, "this method should never have been called");
     }
@@ -99,7 +99,7 @@ namespace elle
     ///
     Object&             Object::operator=(const Object&)
     {
-      enter();
+      ;
 
       yield(*this, "this method should never have been called");
     }
@@ -111,7 +111,7 @@ namespace elle
     ///
     Boolean             Object::operator!=(const Object&) const
     {
-      enter();
+      ;
 
       flee("this method should never have been called");
     }
@@ -121,7 +121,7 @@ namespace elle
     ///
     Boolean             Object::operator<=(const Object&) const
     {
-      enter();
+      ;
 
       flee("this method should never have been called");
     }
@@ -131,7 +131,7 @@ namespace elle
     ///
     Boolean             Object::operator>=(const Object&) const
     {
-      enter();
+      ;
 
       flee("this method should never have been called");
     }
