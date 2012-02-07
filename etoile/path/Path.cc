@@ -39,13 +39,13 @@ namespace etoile
     ///
     elle::Status        Path::Initialize()
     {
-      enter();
+      ;
 
       // initialize the route.
       if (Route::Initialize() == elle::StatusError)
         escape("unable to initialize the route");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -53,13 +53,13 @@ namespace etoile
     ///
     elle::Status        Path::Clean()
     {
-      enter();
+      ;
 
       // clean the route.
       if (Route::Clean() == elle::StatusError)
         escape("unable to clean the route");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -80,7 +80,7 @@ namespace etoile
       nucleus::Version  version;
       Route::Scoutor    scoutor;
 
-      enter();
+      ;
 
       // first ask the shrub i.e path cache to resolve as much as it can.
       if (shrub::Shrub::Resolve(route, venue) == elle::StatusError)
@@ -88,7 +88,7 @@ namespace etoile
 
       // if complete, return the address i.e without updating the cache.
       if (route.elements.size() == venue.elements.size())
-        leave();
+        return elle::StatusOk;
 
       // if the cache did not resolve anything.
       if (venue == Venue::Null)
@@ -190,7 +190,7 @@ namespace etoile
       if (shrub::Shrub::Update(route, venue) == elle::StatusError)
         escape("unable to update the shrub");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -209,7 +209,7 @@ namespace etoile
       size_t                    start;
       nucleus::Version::Type    n;
 
-      enter();
+      ;
 
       // if the history mechanism is not supported by the network or
       // has not been activated through the user's configuration, return.
@@ -278,7 +278,7 @@ namespace etoile
             }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -33,11 +33,11 @@ namespace etoile
     ///
     elle::Status        Author::Forge(gear::Object&             context)
     {
-      enter();
+      ;
 
       // if an author exists, return.
       if (context.author != nucleus::Author::Null)
-        leave();
+        return elle::StatusOk;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
@@ -82,7 +82,7 @@ namespace etoile
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

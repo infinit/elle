@@ -54,11 +54,10 @@ namespace etoile
     ///
     elle::Status        Scope::Initialize()
     {
-      enter();
 
       // nothing to do.
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -66,7 +65,6 @@ namespace etoile
     ///
     elle::Status        Scope::Clean()
     {
-      enter();
 
       //
       // release the onymous scopes.
@@ -110,7 +108,7 @@ namespace etoile
         Scope::Scopes::Anonymous.clear();
       }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -121,7 +119,6 @@ namespace etoile
     {
       std::pair<Scope::S::O::Iterator, elle::Boolean>   result;
 
-      enter();
 
       // depending on the scope i.e its chemin.
       if (scope->chemin == path::Chemin::Null)
@@ -140,7 +137,7 @@ namespace etoile
             escape("unable to insert the scope in the container");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -153,32 +150,24 @@ namespace etoile
     {
       Scope::S::O::Scoutor      scoutor;
 
-      enter();
 
       // find the entry.
       if ((scoutor = Scope::Scopes::Onymous.find(chemin)) ==
           Scope::Scopes::Onymous.end())
         {
-          Scope*                s;
-
-          enterx(instance(s));
-
           // allocate a new scope.
-          s = new Scope(chemin);
+          auto s = std::unique_ptr<Scope>(new Scope(chemin));
 
           // create the scope.
           if (s->Create() == elle::StatusError)
             escape("unable to create the scope");
 
           // inclose the scope.
-          if (Scope::Inclose(s) == elle::StatusError)
+          if (Scope::Inclose(s.get()) == elle::StatusError)
             escape("unable to inclose the scope");
 
           // return the scope.
-          scope = s;
-
-          // waive.
-          waive(s);
+          scope = s.release();
         }
       else
         {
@@ -186,7 +175,7 @@ namespace etoile
           scope = scoutor->second;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -195,28 +184,21 @@ namespace etoile
     ///
     elle::Status        Scope::Supply(Scope*&                   scope)
     {
-      Scope*            s;
-
-      enterx(instance(s));
-
       // allocate a new scope.
-      s = new Scope;
+      auto s = std::unique_ptr<Scope>(new Scope);
 
       // create the scope.
       if (s->Create() == elle::StatusError)
         escape("unable to create the scope");
 
       // inclose the scope.
-      if (Scope::Inclose(s) == elle::StatusError)
+      if (Scope::Inclose(s.get()) == elle::StatusError)
         escape("unable to inclose the scope");
 
       // return the scope.
-      scope = s;
+      scope = s.release();
 
-      // waive.
-      waive(s);
-
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -227,7 +209,6 @@ namespace etoile
     ///
     elle::Status        Scope::Relinquish(Scope*                scope)
     {
-      enter();
 
       // depending on the scope type.
       if (scope->chemin == path::Chemin::Null)
@@ -254,7 +235,7 @@ namespace etoile
           Scope::Scopes::Onymous.erase(iterator);
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -263,7 +244,6 @@ namespace etoile
     ///
     elle::Status        Scope::Annihilate(Scope*                scope)
     {
-      enter();
 
       // if no actor operates on it anymore.
       if (scope->actors.empty() == true)
@@ -276,7 +256,7 @@ namespace etoile
           delete scope;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -286,7 +266,6 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
 
       std::cout << alignment << "[Scope]" << std::endl;
 
@@ -330,7 +309,7 @@ namespace etoile
           }
       }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -400,7 +379,6 @@ namespace etoile
     ///
     elle::Status        Scope::Create()
     {
-      enter();
 
       // create the supervisor timer.
       if (this->timer.Create(
@@ -419,7 +397,7 @@ namespace etoile
           elle::StatusError)
         escape("unable to start the timer");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -427,7 +405,6 @@ namespace etoile
     ///
     elle::Status        Scope::Attach(Actor*                    actor)
     {
-      enter();
 
       // try to locate an existing actor.
       if (this->Locate(actor) == true)
@@ -436,7 +413,7 @@ namespace etoile
       // add the actor to the container.
       this->actors.push_back(actor);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -447,7 +424,6 @@ namespace etoile
     {
       Scope::A::Iterator        i;
 
-      enter();
 
       // go through the set of actors.
       for (i = this->actors.begin();
@@ -461,11 +437,11 @@ namespace etoile
               if (iterator != NULL)
                 *iterator = i;
 
-              true();
+              return elle::StatusTrue;
             }
         }
 
-      false();
+      return elle::StatusFalse;
     }
 
     ///
@@ -475,7 +451,6 @@ namespace etoile
     {
       Scope::A::Iterator        iterator;
 
-      enter();
 
       // try to locate an existing actor.
       if (this->Locate(actor, &iterator) == false)
@@ -484,7 +459,7 @@ namespace etoile
       // remove the actor.
       this->actors.erase(iterator);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -497,7 +472,6 @@ namespace etoile
     ///
     elle::Status        Scope::Operate(const Operation          operation)
     {
-      enter();
 
       // update the context's closing operation according to its given
       // value and the given operation.
@@ -690,7 +664,7 @@ namespace etoile
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -703,7 +677,6 @@ namespace etoile
     ///
     elle::Status        Scope::Shutdown()
     {
-      enter();
 
       // if actors remain, do nothing.
       //
@@ -918,7 +891,7 @@ namespace etoile
             }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -935,7 +908,6 @@ namespace etoile
     {
       elle::Hurdle::Zone        zone(this->hurdle, elle::ModeWrite);
 
-      enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -954,12 +926,9 @@ namespace etoile
             T&
             >
           >             callback;
-        T*              context;
-
-        enterx(instance(context));
 
         // allocate a context.
-        context = new T;
+        auto context = std::unique_ptr<T>(new T);
 
         // locate the context based on the current scope's chemin.
         if (this->chemin.Locate(context->location) == elle::StatusError)
@@ -983,30 +952,18 @@ namespace etoile
             delete this->context;
 
             // set the new context.
-            this->context = context;
+            this->context = context.release();
           }
-        else
-          {
-            //
-            // otherwise, the loaded object is of the same version as the
-            // current one.
-            //
-            // in this case, nothing is done.
-            //
-
-            // delete the retrieved context.
-            delete context;
-          }
-
-        // waive.
-        waive(context);
-
-        // release.
-        release();
+        //
+        // otherwise, the loaded object is of the same version as the
+        // current one.
+        //
+        // in this case, nothing is done.
+        //
       }
       zone.Unlock();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -1025,39 +982,52 @@ namespace etoile
     {
       elle::Hurdle::Zone        zone(this->hurdle, elle::ModeWrite);
 
-      enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] gear::Scope::Disclose()\n");
 
-      // protect the access to the current scope.
+      // protect the access to the current scope. XXX RAII ?
       zone.Lock();
       {
-        Scope*          scope;
-        T*              context;
-        Actor*          actor;
+        Scope*          scope = nullptr;
+        T*              context = nullptr;
+        Actor*          actor = nullptr;
 
-        enterx(instance(actor),
-               slab(scope, gear::Scope::Annihilate));
+        struct OnExit
+        {
+          Actor*&   actor;
+          Scope*&   scope;
+          bool      track;
+
+          OnExit(Actor*& actor, Scope*& scope) :
+            actor(actor), scope(scope), track(true)
+          {}
+          ~OnExit()
+          {
+            if (!this->track)
+              return;
+            delete this->actor;
+            if (this->scope != nullptr)
+              gear::Scope::Annihilate(this->scope);
+          }
+        } guard(actor, scope);
 
         //
         // create a scope, very much as for wall::*::Create(), except
         // that it works even for objects which cannot, obviously, be created.
         //
-        {
-          // supply a scope i.e request a new anonymous scope.
-          if (gear::Scope::Supply(scope) == elle::StatusError)
-            escape("unable to supply a scope");
+        // supply a scope i.e request a new anonymous scope.
+        if (gear::Scope::Supply(scope) == elle::StatusError)
+          escape("unable to supply a scope");
 
-          // retrieve the context.
-          if (scope->Use(context) == elle::StatusError)
-            escape("unable to retrieve the context");
+        // retrieve the context.
+        if (scope->Use(context) == elle::StatusError)
+          escape("unable to retrieve the context");
 
-          // allocate an actor on the new scope, making the scope valid
-          // for triggering automata.
-          actor = new gear::Actor(scope);
-        }
+        // allocate an actor on the new scope, making the scope valid
+        // for triggering automata.
+        actor = new gear::Actor(scope);
 
         //
         // swap the contexts.
@@ -1074,11 +1044,8 @@ namespace etoile
         if (T::W::Store(actor->identifier) == elle::StatusError)
           escape("unable to store the object");
 
-        // waive the actor.
-        waive(actor);
-
-        // waive the scope.
-        waive(scope);
+        // waive the actor and the scope
+        guard.track = false;
 
         //
         // at this point, a scope has been created, to which the modified
@@ -1097,13 +1064,10 @@ namespace etoile
         // the one stored above.
         if (T::A::Load(*context) == elle::StatusError)
           escape("unable to load the object");
-
-        // release.
-        release();
       }
       zone.Unlock();
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -1128,24 +1092,22 @@ namespace etoile
     ///
     elle::Status        Scope::Supervisor()
     {
-      enter();
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] gear::Scope::Supervisor()\n");
 
-      leave();
+      return elle::StatusOk;
 
       // if the scope is already being taking care of, ignore this
       // supervision.
       if (this->state != Scope::StateNone)
-        leave();
+        return elle::StatusOk;
 
       // if this scope is anonymous, i.e has been created, there is no
       // need to refresh it nor too disclose its modifications since nobody
       // can load it but the actor having created it.
       if (this->chemin == path::Chemin::Null)
-        leave();
+        return elle::StatusOk;
 
       // depending on the context's state.
       switch (this->context->state)
@@ -1316,7 +1278,7 @@ namespace etoile
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -1330,8 +1292,6 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
       Scope::A::Scoutor scoutor;
-
-      enter();
 
       std::cout << alignment << "[Scope] " << std::hex << this << std::endl;
 
@@ -1376,7 +1336,7 @@ namespace etoile
             escape("unable to dump the actor");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

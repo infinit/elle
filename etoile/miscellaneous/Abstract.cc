@@ -48,7 +48,7 @@ namespace etoile
     ///
     elle::Status        Abstract::Create(const nucleus::Object& object)
     {
-      enter();
+      ;
 
       // set the genre.
       this->genre = object.meta.genre;
@@ -88,7 +88,7 @@ namespace etoile
       this->versions.meta = object.meta.version;
       this->versions.data = object.data.version;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -101,11 +101,11 @@ namespace etoile
     elle::Boolean       Abstract::operator==(const Abstract&    element)
       const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the attributes.
       if ((this->genre != element.genre) ||
@@ -117,9 +117,9 @@ namespace etoile
           (this->permissions.owner != element.permissions.owner) ||
           (this->versions.meta != element.versions.meta) ||
           (this->versions.data != element.versions.data))
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -138,7 +138,7 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Abstract]" << std::endl;
 
@@ -229,7 +229,7 @@ namespace etoile
                   << "[Data] " << std::dec << this->versions.data << std::endl;
       }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -241,7 +241,7 @@ namespace etoile
     ///
     elle::Status        Abstract::Serialize(elle::Archive&      archive) const
     {
-      enter();
+      ;
 
       // serialize the attributes.
       if (archive.Serialize(this->genre,
@@ -255,7 +255,7 @@ namespace etoile
                             this->versions.data) == elle::StatusError)
         escape("unable to serialize the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -263,7 +263,7 @@ namespace etoile
     ///
     elle::Status        Abstract::Extract(elle::Archive&        archive)
     {
-      enter();
+      ;
 
       // extract the attributes.
       if (archive.Extract(this->genre,
@@ -277,7 +277,7 @@ namespace etoile
                           this->versions.data) == elle::StatusError)
         escape("unable to extract the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

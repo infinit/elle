@@ -35,7 +35,7 @@ namespace etoile
     template <typename T>
     elle::Status        Scope::Use(T*&                          context)
     {
-      enter();
+      ;
 
       // first, if the scope's context is null, allocate one.
       if (this->context == NULL)
@@ -49,7 +49,7 @@ namespace etoile
         escape("invalid context nature: scope's(%u) target(%u)",
                this->context->nature, T::N);
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

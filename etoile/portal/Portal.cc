@@ -48,7 +48,7 @@ namespace etoile
     ///
     elle::Status        Portal::Initialize()
     {
-      enter();
+      ;
 
       // build the line depending on both the user and network names.
       Portal::Line =
@@ -511,7 +511,7 @@ namespace etoile
               &Portal::Connection)) == elle::StatusError)
         escape("unable to listen for local connections");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -519,14 +519,14 @@ namespace etoile
     ///
     elle::Status        Portal::Clean()
     {
-      enter();
+      ;
 
       /// XXX \todo le faire proprement en quittant, tout nettoyer, notamment
       ///     en catchant les signaux (UNIX/QT) et via unlink.
       elle::String      path = "/tmp/" + Portal::Line;
       ::unlink(path.c_str());
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -537,7 +537,7 @@ namespace etoile
     {
       std::pair<Portal::Iterator, elle::Boolean>        result;
 
-      enter();
+      ;
 
       // check if this application has already been registered.
       if (Portal::Applications.find(application->socket) !=
@@ -553,7 +553,7 @@ namespace etoile
       if (result.second == false)
         escape("unable to insert the application in the container");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -564,7 +564,7 @@ namespace etoile
     {
       Portal::Iterator  iterator;
 
-      enter();
+      ;
 
       // locate the entry.
       if ((iterator =
@@ -574,7 +574,7 @@ namespace etoile
       // return the application.
       application = iterator->second;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -584,7 +584,7 @@ namespace etoile
     {
       Portal::Iterator  iterator;
 
-      enter();
+      ;
 
       // locate the entry.
       if ((iterator =
@@ -594,7 +594,7 @@ namespace etoile
       // erase the entry.
       Portal::Applications.erase(iterator);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -605,7 +605,7 @@ namespace etoile
       elle::String      alignment(margin, ' ');
       Portal::Scoutor   scoutor;
 
-      enter();
+      ;
 
       std::cout << alignment << "[Portal]" << std::endl;
 
@@ -629,7 +629,7 @@ namespace etoile
             escape("unable to dump the application");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -642,30 +642,25 @@ namespace etoile
     ///
     elle::Status        Portal::Connection(elle::LocalSocket*   socket)
     {
-      Application*      application;
-
-      enterx(instance(application));
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         std::cout << "[etoile] portal::Portal::Connection()"
                   << std::endl;
 
       // allocate a new guest application.
-      application = new Application;
+      auto application = std::unique_ptr<Application>(new Application);
 
       // create the application.
       if (application->Create(socket) == elle::StatusError)
         escape("unable to create the application");
 
       // record the application.
-      if (Portal::Add(application) == elle::StatusError)
+      if (Portal::Add(application.get()) == elle::StatusError)
         escape("unable to add the new application");
+      else
+        application.release();
 
-      // stop tracking the application.
-      waive(application);
-
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -681,7 +676,7 @@ namespace etoile
       elle::Session*    session;
       Application*      application;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -709,7 +704,7 @@ namespace etoile
             elle::Inputs<TagAuthenticated>()) == elle::StatusError)
         escape("unable to reply to the application");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -724,7 +719,7 @@ namespace etoile
       elle::Session*    session;
       Application*      application;
 
-      enter();
+      ;
 
       // retrieve the network session.
       if (elle::Session::Instance(session) == elle::StatusError)
@@ -742,7 +737,7 @@ namespace etoile
       // set the application as processing.
       application->processing = Application::ProcessingOn;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -761,7 +756,7 @@ namespace etoile
       elle::Session*    session;
       Application*      application;
 
-      enter();
+      ;
 
       // retrieve the network session.
       if (elle::Session::Instance(session) == elle::StatusError)
@@ -786,7 +781,7 @@ namespace etoile
           bury(application);
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

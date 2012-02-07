@@ -40,7 +40,7 @@ namespace etoile
     {
       gear::Transcript::Scoutor         scoutor;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -98,7 +98,7 @@ namespace etoile
       // it in order to avoid problems.
       bury(scope);
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

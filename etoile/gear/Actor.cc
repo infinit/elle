@@ -37,11 +37,7 @@ namespace etoile
     ///
     elle::Status        Actor::Initialize()
     {
-      enter();
-
-      // nothing to do.
-
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -51,7 +47,6 @@ namespace etoile
     {
       Actor::Scoutor    scoutor;
 
-      enter();
 
       // go through the container.
       for (scoutor = Actor::Actors.begin();
@@ -68,7 +63,7 @@ namespace etoile
       // clear the container.
       Actor::Actors.clear();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -79,7 +74,6 @@ namespace etoile
     {
       std::pair<Actor::Iterator, elle::Boolean> result;
 
-      enter();
 
       // check if this identifier has already been recorded.
       if (Actor::Actors.find(identifier) != Actor::Actors.end())
@@ -93,7 +87,7 @@ namespace etoile
       if (result.second == false)
         escape("unable to insert the actor in the container");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -104,7 +98,6 @@ namespace etoile
     {
       Actor::Scoutor    scoutor;
 
-      enter();
 
       // find the entry.
       if ((scoutor = Actor::Actors.find(identifier)) == Actor::Actors.end())
@@ -113,7 +106,7 @@ namespace etoile
       // return the actor.
       actor = scoutor->second;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -123,7 +116,6 @@ namespace etoile
     {
       Actor::Iterator   iterator;
 
-      enter();
 
       // find the entry.
       if ((iterator = Actor::Actors.find(identifier)) == Actor::Actors.end())
@@ -132,7 +124,7 @@ namespace etoile
       // erase the entry.
       Actor::Actors.erase(iterator);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -143,7 +135,6 @@ namespace etoile
       elle::String      alignment(margin, ' ');
       Actor::Scoutor    scoutor;
 
-      enter();
 
       std::cout << alignment << "[Actor]" << std::endl;
 
@@ -162,7 +153,7 @@ namespace etoile
 
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -176,8 +167,6 @@ namespace etoile
       scope(scope),
       state(Actor::StateClean)
     {
-      enter();
-
       // generate an identifier.
       if (this->identifier.Generate() == elle::StatusError)
         yield(_(), "unable to generate the identifier");
@@ -189,8 +178,6 @@ namespace etoile
       // add the actor to the scope's set.
       if (scope->Attach(this) == elle::StatusError)
         yield(_(), "unable to attach the actor to the scope");
-
-      release();
     }
 
     ///
@@ -198,8 +185,6 @@ namespace etoile
     ///
     Actor::~Actor()
     {
-      enter();
-
       // remove the actor from the scope's set.
       if (this->scope->Detach(this) == elle::StatusError)
         yield(_(), "unable to detach the actor from the scope");
@@ -207,8 +192,6 @@ namespace etoile
       // unregister the actor.
       if (Actor::Remove(this->identifier) == elle::StatusError)
         yield(_(), "unable to unregister the actor");
-
-      release();
     }
 
 //
@@ -230,8 +213,6 @@ namespace etoile
     ///
     elle::Status        Actor::Operate(const Operation          operation)
     {
-      enter();
-
       // process the operation.
       switch (operation)
         {
@@ -306,7 +287,7 @@ namespace etoile
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -319,8 +300,6 @@ namespace etoile
     elle::Status        Actor::Dump(const elle::Natural32       margin) const
     {
       elle::String      alignment(margin, ' ');
-
-      enter();
 
       std::cout << alignment << "[Actor]" << std::endl;
 
@@ -336,7 +315,7 @@ namespace etoile
       std::cout << alignment << elle::Dumpable::Shift
                 << "[State] " << std::dec << this->state << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

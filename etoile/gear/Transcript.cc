@@ -43,20 +43,10 @@ namespace etoile
     elle::Status        Transcript::Push(const nucleus::Address& address,
                                          const nucleus::Block*  block)
     {
-      Action*           action;
-
-      enterx(instance(action));
-
-      // allocate an action.
-      action = new Action(address, block);
-
       // add the action to the transcript's container.
-      this->container.push_back(action);
+      this->container.push_back(new Action(address, block));
 
-      // waive.
-      waive(action);
-
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -65,20 +55,10 @@ namespace etoile
     ///
     elle::Status        Transcript::Wipe(const nucleus::Address& address)
     {
-      Action*           action;
-
-      enterx(instance(action));
-
-      // allocate an action.
-      action = new Action(address);
-
       // add the action to the transcript's container.
-      this->container.push_back(action);
+      this->container.push_back(new Action(address));
 
-      // waive.
-      waive(action);
-
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -88,8 +68,6 @@ namespace etoile
     elle::Status        Transcript::Clear(const Action::Type    type)
     {
       Transcript::Iterator      iterator;
-
-      enter();
 
       // for every action.
       for (iterator = this->container.begin();
@@ -117,7 +95,7 @@ namespace etoile
           iterator = this->container.begin();
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -127,8 +105,6 @@ namespace etoile
     elle::Status        Transcript::Flush()
     {
       Transcript::Iterator      iterator;
-
-      enter();
 
       // for every action.
       for (iterator = this->container.begin();
@@ -144,7 +120,7 @@ namespace etoile
       // clear the container.
       this->container.clear();
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -158,8 +134,6 @@ namespace etoile
     {
       elle::String              alignment(margin, ' ');
       Transcript::Scoutor       scoutor;
-
-      enter();
 
       std::cout << alignment << "[Transcript]" << std::endl;
 
@@ -175,7 +149,7 @@ namespace etoile
             escape("unable to dump the action");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

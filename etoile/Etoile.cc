@@ -44,7 +44,7 @@ namespace etoile
   ///
   elle::Status          Etoile::Initialize()
   {
-    enter();
+    ;
 
     // initialize the path.
     if (path::Path::Initialize() == elle::StatusError)
@@ -86,7 +86,7 @@ namespace etoile
         escape("unable to store the phrase");
     }
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -94,7 +94,7 @@ namespace etoile
   ///
   elle::Status          Etoile::Clean()
   {
-    enter();
+    ;
 
     // clean the portal.
     if (portal::Portal::Clean() == elle::StatusError)
@@ -116,7 +116,7 @@ namespace etoile
     if (path::Path::Clean() == elle::StatusError)
       escape("unable to clean the path");
 
-    leave();
+    return elle::StatusOk;
   }
 
 }

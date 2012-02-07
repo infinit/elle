@@ -44,7 +44,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -78,7 +78,7 @@ namespace etoile
       }
       zone.Unlock();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -98,7 +98,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -129,7 +129,7 @@ namespace etoile
       }
       zone.Unlock();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -147,7 +147,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -177,7 +177,7 @@ namespace etoile
       }
       zone.Unlock();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -191,7 +191,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -224,7 +224,7 @@ namespace etoile
       }
       zone.Unlock();
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

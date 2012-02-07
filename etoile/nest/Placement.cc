@@ -60,12 +60,12 @@ namespace etoile
     ///
     elle::Status        Placement::Generate()
     {
-      enter();
+      ;
 
       // increments the counter.
       this->value = Placement::Counter++;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -78,17 +78,17 @@ namespace etoile
     elle::Boolean       Placement::operator==(const Placement& element)
       const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the placement.
       if (this->value != element.value)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -113,13 +113,13 @@ namespace etoile
     ///
     elle::Status        Placement::Serialize(elle::Archive&     archive) const
     {
-      enter();
+      ;
 
       // serialize the attributes.
       if (archive.Serialize(this->value) == elle::StatusError)
         escape("unable to serialize the placement attributes");
 
-      leave();
+      return elle::StatusOk;
     };
 
     ///
@@ -127,13 +127,13 @@ namespace etoile
     ///
     elle::Status        Placement::Extract(elle::Archive&       archive)
     {
-      enter();
+      ;
 
       // extract the attributes.
       if (archive.Extract(this->value) == elle::StatusError)
         escape("unable to extract the placement attributes");
 
-      leave();
+      return elle::StatusOk;
     };
 
 //
@@ -147,12 +147,12 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Placement] "
                 << std::dec << this->value << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

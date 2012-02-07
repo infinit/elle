@@ -48,12 +48,12 @@ namespace etoile
     ///
     elle::Status        Venue::Record(const nucleus::Location&  location)
     {
-      enter();
+      ;
 
       // store the location in the container.
       this->elements.push_back(location);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -64,7 +64,7 @@ namespace etoile
     {
       nucleus::Location location;
 
-      enter();
+      ;
 
       // create the location.
       if (location.Create(address, version) == elle::StatusError)
@@ -74,7 +74,7 @@ namespace etoile
       if (this->Record(location) == elle::StatusError)
         escape("unable to record the location");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -82,12 +82,12 @@ namespace etoile
     ///
     elle::Status        Venue::Clear()
     {
-      enter();
+      ;
 
       // clear the container.
       this->elements.clear();
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -102,24 +102,24 @@ namespace etoile
       Venue::Scoutor    s;
       Venue::Scoutor    t;
 
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the size.
       if (this->elements.size() != element.elements.size())
-        false();
+        return elle::StatusFalse;
 
       // for every element.
       for (s = this->elements.begin(), t = element.elements.begin();
            s != this->elements.end();
            s++, t++)
         if (*s != *t)
-          false();
+          return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -139,7 +139,7 @@ namespace etoile
       elle::String      alignment(margin, ' ');
       Venue::Scoutor    scoutor;
 
-      enter();
+      ;
 
       std::cout << alignment << "[Venue] " << std::dec
                 << this->elements.size() << std::endl;
@@ -154,7 +154,7 @@ namespace etoile
             escape("unable to dump the address");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -169,7 +169,7 @@ namespace etoile
       Venue::Scoutor    scoutor;
       elle::Natural32   size;
 
-      enter();
+      ;
 
       // retrieve the container size.
       size = this->elements.size();
@@ -188,7 +188,7 @@ namespace etoile
             escape("unable to serialize the location");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -199,7 +199,7 @@ namespace etoile
       elle::Natural32   size;
       elle::Natural32   i;
 
-      enter();
+      ;
 
       // extract the size.
       if (archive.Extract(size) == elle::StatusError)
@@ -218,7 +218,7 @@ namespace etoile
           this->elements.push_back(location);
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

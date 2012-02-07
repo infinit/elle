@@ -73,7 +73,7 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Object]" << std::endl;
 
@@ -130,7 +130,7 @@ namespace etoile
       if (this->author.Dump(margin + 2) == elle::StatusError)
         escape("unable to dump the author");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -142,7 +142,7 @@ namespace etoile
     ///
     elle::Status        Object::Serialize(elle::Archive&        archive) const
     {
-      enter();
+      ;
 
       // serialize the attributes.
       if (archive.Serialize(this->location,
@@ -172,7 +172,7 @@ namespace etoile
             this->author) == elle::StatusError)
         escape("unable to serialize the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -182,7 +182,7 @@ namespace etoile
     {
       elle::Archive::Type       type;
 
-      enter();
+      ;
 
       // extract the attributes.
       if (archive.Extract(this->location,
@@ -219,7 +219,7 @@ namespace etoile
             this->author) == elle::StatusError)
         escape("unable to extract the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

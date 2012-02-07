@@ -43,7 +43,7 @@ namespace etoile
       path::Route       route;
       path::Venue       venue;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -61,7 +61,7 @@ namespace etoile
       if (chemin.Create(route, venue) == elle::StatusError)
         escape("unable to create the chemin");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -78,7 +78,7 @@ namespace etoile
                           const path::Way&                      absolute,
                           path::Way&                            relative)
     {
-      enter();
+      ;
 
       // verify that the given way lies in the mountpoint.
       if (absolute.path.find(Infinit::Mountpoint) == elle::String::npos)
@@ -91,7 +91,7 @@ namespace etoile
       if (relative.path.empty() == true)
         relative.path = elle::System::Path::Root;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

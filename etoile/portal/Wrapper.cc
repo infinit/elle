@@ -40,7 +40,7 @@ namespace etoile
     {
       nucleus::Record*  r;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -58,7 +58,7 @@ namespace etoile
       else
         record = nucleus::Record::Null;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -73,7 +73,7 @@ namespace etoile
     {
       nucleus::Range<nucleus::Record>   r;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -89,7 +89,7 @@ namespace etoile
       // copy the range, duplicating every record in it.
       range = r;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -107,7 +107,7 @@ namespace etoile
     {
       nucleus::Trait*   t;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -125,7 +125,7 @@ namespace etoile
       else
         trait = nucleus::Trait::Null;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -138,7 +138,7 @@ namespace etoile
     {
       nucleus::Range<nucleus::Trait>    r;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -152,7 +152,7 @@ namespace etoile
       // copy the range, duplicating every trait in it.
       range = r;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -170,7 +170,7 @@ namespace etoile
     {
       nucleus::Entry*   e;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -188,7 +188,7 @@ namespace etoile
       else
         entry = nucleus::Entry::Null;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -203,7 +203,7 @@ namespace etoile
     {
       nucleus::Range<nucleus::Entry>    r;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -219,7 +219,7 @@ namespace etoile
       // copy the range, duplicating every entry in it.
       range = r;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -59,7 +59,7 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Directory]" << std::endl;
 
@@ -79,7 +79,7 @@ namespace etoile
                     << "[Contents] " << elle::none << std::endl;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -91,7 +91,7 @@ namespace etoile
     ///
     elle::Status        Directory::Serialize(elle::Archive&     archive) const
     {
-      enter();
+      ;
 
       // serialize the contents.
       if (this->contents == NULL)
@@ -107,7 +107,7 @@ namespace etoile
             escape("unable to serialize 'none'");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -117,7 +117,7 @@ namespace etoile
     {
       elle::Archive::Type       type;
 
-      enter();
+      ;
 
       // fetch the next element's type.
       if (archive.Fetch(type) == elle::StatusError)
@@ -140,7 +140,7 @@ namespace etoile
             escape("unable to extract the contents");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

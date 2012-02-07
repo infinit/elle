@@ -28,7 +28,7 @@ namespace etoile
     ///
     elle::Status        Gear::Initialize()
     {
-      enter();
+      ;
 
       // initialize the actor system.
       if (Actor::Initialize() == elle::StatusError)
@@ -38,7 +38,7 @@ namespace etoile
       if (Scope::Initialize() == elle::StatusError)
         escape("unable to initialize the scope");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -46,7 +46,7 @@ namespace etoile
     ///
     elle::Status        Gear::Clean()
     {
-      enter();
+      ;
 
       // clean the actor system.
       if (Actor::Clean() == elle::StatusError)
@@ -56,7 +56,7 @@ namespace etoile
       if (Scope::Clean() == elle::StatusError)
         escape("unable to clean the scope");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

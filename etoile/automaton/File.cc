@@ -36,7 +36,7 @@ namespace etoile
     {
       nucleus::Address  address;
 
-      enter();
+      ;
 
       // create the file.
       if (context.object.Create(
@@ -55,7 +55,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateCreated;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -66,11 +66,11 @@ namespace etoile
                           gear::File&                           context)
                                         
     {
-      enter();
+      ;
 
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
-        leave();
+        return elle::StatusOk;
 
       // load the object.
       if (Object::Load(context) == elle::StatusError)
@@ -83,7 +83,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateLoaded;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -96,7 +96,7 @@ namespace etoile
     {
       nucleus::Size     size;
 
-      enter();
+      ;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
@@ -139,7 +139,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -151,7 +151,7 @@ namespace etoile
                           const nucleus::Size&                  size,
                           elle::Region&                         region)
     {
-      enter();
+      ;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
@@ -179,7 +179,7 @@ namespace etoile
                                           region) == elle::StatusError)
         escape("unable to read the file");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -191,7 +191,7 @@ namespace etoile
     {
       nucleus::Size     size;
 
-      enter();
+      ;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
@@ -233,7 +233,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -243,12 +243,12 @@ namespace etoile
     elle::Status        File::Discard(
                           gear::File&                           context)
     {
-      enter();
+      ;
 
       // set the context's state.
       context.state = gear::Context::StateDiscarded;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -258,7 +258,7 @@ namespace etoile
     elle::Status        File::Destroy(
                           gear::File&                           context)
     {
-      enter();
+      ;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
@@ -284,7 +284,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateDestroyed;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -294,7 +294,7 @@ namespace etoile
     elle::Status        File::Store(
                           gear::File&                           context)
     {
-      enter();
+      ;
 
       // close the contents.
       if (Contents::Close(context) == elle::StatusError)
@@ -307,7 +307,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateStored;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -36,7 +36,7 @@ namespace etoile
     {
       nucleus::Address  address;
 
-      enter();
+      ;
 
       // create the directory.
       if (context.object.Create(
@@ -55,7 +55,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateCreated;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -65,11 +65,11 @@ namespace etoile
     elle::Status        Directory::Load(
                           gear::Directory&                      context)
     {
-      enter();
+      ;
 
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
-        leave();
+        return elle::StatusOk;
 
       // load the object.
       if (Object::Load(context) == elle::StatusError)
@@ -82,7 +82,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateLoaded;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -93,10 +93,7 @@ namespace etoile
                           const path::Slice&                    name,
                           const nucleus::Address&               address)
     {
-      nucleus::Entry*   entry;
       nucleus::Size     size;
-
-      enterx(instance(entry));
 
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
@@ -113,7 +110,7 @@ namespace etoile
         escape("unable to open the contents");
 
       // allocate a new directory entry.
-      entry = new nucleus::Entry(name, address);
+      std::unique_ptr<nucleus::Entry> entry(new nucleus::Entry(name, address));
 
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
@@ -122,11 +119,11 @@ namespace etoile
                "directory");
 
       // add the entry in the directory.
-      if (context.contents->content->Add(entry) == elle::StatusError)
+      if (context.contents->content->Add(entry.get()) == elle::StatusError)
         escape("unable to add the entry in the directory");
 
       // stop tracking since the entry has been properly added to the catalog.
-      waive(entry);
+      entry.release();
 
       // retrieve the new contents's size.
       if (context.contents->content->Capacity(size) == elle::StatusError)
@@ -144,7 +141,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -156,8 +153,6 @@ namespace etoile
                           const path::Slice&                    name,
                           nucleus::Entry*&                      entry)
     {
-      enter();
-
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
         escape("unable to determine the rights");
@@ -183,7 +178,7 @@ namespace etoile
                                             entry) == elle::StatusError)
         escape("unable to find the entry in the directory");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -197,7 +192,7 @@ namespace etoile
                           const nucleus::Size&                  size,
                           nucleus::Range<nucleus::Entry>&       range)
     {
-      enter();
+      ;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
@@ -225,7 +220,7 @@ namespace etoile
                                              range) == elle::StatusError)
         escape("unable to consult the directory");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -238,7 +233,7 @@ namespace etoile
     {
       nucleus::Size     size;
 
-      enter();
+      ;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
@@ -281,7 +276,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -293,7 +288,7 @@ namespace etoile
     {
       nucleus::Size     size;
 
-      enter();
+      ;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
@@ -335,7 +330,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -345,12 +340,12 @@ namespace etoile
     elle::Status        Directory::Discard(
                           gear::Directory&                      context)
     {
-      enter();
+      ;
 
       // set the context's state.
       context.state = gear::Context::StateDiscarded;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -360,7 +355,7 @@ namespace etoile
     elle::Status        Directory::Destroy(
                           gear::Directory&                      context)
     {
-      enter();
+      ;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
@@ -386,7 +381,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateDestroyed;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -396,7 +391,7 @@ namespace etoile
     elle::Status        Directory::Store(
                           gear::Directory&                      context)
     {
-      enter();
+      ;
 
       // close the contents.
       if (Contents::Close(context) == elle::StatusError)
@@ -409,7 +404,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateStored;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

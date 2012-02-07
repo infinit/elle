@@ -35,11 +35,11 @@ namespace etoile
     elle::Status        Object::Load(
                           gear::Object&                         context)
     {
-      enter();
+      ;
 
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
-        leave();
+        return elle::StatusOk;
 
       // retrieve the object block.
       if (depot::Depot::Pull(context.location.address,
@@ -54,7 +54,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateLoaded;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -65,13 +65,13 @@ namespace etoile
                           gear::Object&                         context,
                           miscellaneous::Abstract&              abstract)
     {
-      enter();
+      ;
 
       // generate the abstract based on the object.
       if (abstract.Create(context.object) == elle::StatusError)
         escape("unable to generate the abstract");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -81,12 +81,12 @@ namespace etoile
     elle::Status        Object::Discard(
                           gear::Object&                         context)
     {
-      enter();
+      ;
 
       // set the context's state.
       context.state = gear::Context::StateDiscarded;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -111,7 +111,7 @@ namespace etoile
     elle::Status        Object::Destroy(
                           gear::Object&                         context)
     {
-      enter();
+      ;
 
       // open the access.
       if (Access::Open(context) == elle::StatusError)
@@ -129,7 +129,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateDestroyed;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -139,7 +139,7 @@ namespace etoile
     elle::Status        Object::Store(
                           gear::Object&                         context)
     {
-      enter();
+      ;
 
       // close the access.
       if (Access::Close(context) == elle::StatusError)
@@ -180,7 +180,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateStored;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

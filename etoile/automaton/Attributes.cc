@@ -32,7 +32,6 @@ namespace etoile
                           const elle::String&                   name,
                           const elle::String&                   value)
     {
-      enter();
 
       // determine the rights over the object.
       if (Rights::Determine(context) == elle::StatusError)
@@ -56,21 +55,15 @@ namespace etoile
         {
           nucleus::Trait*       trait;
 
-          // otherwise, create a new track.
-          enterx(instance(trait));
-
           // allocate a new trait.
           trait = new nucleus::Trait(name, value);
 
           // add the trait to the attributes.
           if (context.object.meta.attributes.Add(trait) == elle::StatusError)
-            escape("unable to add the trait");
-
-          // waive.
-          waive(trait);
-
-          // release the resources.
-          release();
+            {
+              delete trait;
+              escape("unable to add the trait");
+            }
         }
 
       // administrate the object.
@@ -82,7 +75,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -94,14 +87,13 @@ namespace etoile
                           const elle::String&                   name,
                           nucleus::Trait*&                      trait)
     {
-      enter();
 
       // lookup in the attributes object.
       if (context.object.meta.attributes.Lookup(name,
                                                 trait) == elle::StatusError)
         escape("unable to lookup in the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -111,7 +103,6 @@ namespace etoile
                           gear::Object&                         context,
                           nucleus::Range<nucleus::Trait>&       range)
     {
-      enter();
 
       // consult the attributes.
       if (context.object.meta.attributes.Consult(
@@ -120,7 +111,7 @@ namespace etoile
             range) == elle::StatusError)
         escape("unable to fetch the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -130,8 +121,6 @@ namespace etoile
                           gear::Object&                         context,
                           const elle::String&                   name)
     {
-      enter();
-
       // determine the rights over the object.
       if (Rights::Determine(context) == elle::StatusError)
         escape("unable to determine the rights");
@@ -154,7 +143,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

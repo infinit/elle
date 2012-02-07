@@ -50,7 +50,7 @@ namespace etoile
                                        const Venue&             venue,
                                        const nucleus::Size      size)
     {
-      enter();
+      ;
 
       // clear the route because the chemin may have been used for
       // something else before.
@@ -95,7 +95,7 @@ namespace etoile
           }
       }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -103,7 +103,7 @@ namespace etoile
     ///
     elle::Status        Chemin::Locate(nucleus::Location&       location) const
     {
-      enter();
+      ;
 
       // check the size of the venue.
       if (this->venue.elements.size() == 0)
@@ -115,7 +115,7 @@ namespace etoile
       location.version =
         this->venue.elements[this->venue.elements.size() - 1].version;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -127,18 +127,18 @@ namespace etoile
     ///
     elle::Boolean       Chemin::operator==(const Chemin&        element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the attributes..
       if ((this->route != element.route) ||
           (this->venue != element.venue))
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -146,17 +146,17 @@ namespace etoile
     ///
     elle::Boolean       Chemin::operator<(const Chemin&         element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        false();
+        return elle::StatusFalse;
 
       // compare the route only.
       if (this->route < element.route)
-        true();
+        return elle::StatusTrue;
 
-      false();
+      return elle::StatusFalse;
     }
 
     ///
@@ -175,7 +175,7 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Chemin]" << std::endl;
 
@@ -187,7 +187,7 @@ namespace etoile
       if (this->venue.Dump(margin + 2) == elle::StatusError)
         escape("unable to dump the venue");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -199,14 +199,14 @@ namespace etoile
     ///
     elle::Status        Chemin::Serialize(elle::Archive&        archive) const
     {
-      enter();
+      ;
 
       // serialize the attributes.
       if (archive.Serialize(this->route,
                             this->venue) == elle::StatusError)
         escape("unable to serialize the attribtues");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -214,14 +214,14 @@ namespace etoile
     ///
     elle::Status        Chemin::Extract(elle::Archive&  archive)
     {
-      enter();
+      ;
 
       // extract the attributes.
       if (archive.Extract(this->route,
                           this->venue) == elle::StatusError)
         escape("unable to extract the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

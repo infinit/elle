@@ -19,6 +19,7 @@
 #include <etoile/gear/Scope.hh>
 #include <etoile/gear/File.hh>
 #include <etoile/gear/Gear.hh>
+#include <etoile/gear/ScopeGuard.hh>
 
 #include <etoile/automaton/File.hh>
 #include <etoile/automaton/Rights.hh>
@@ -47,10 +48,6 @@ namespace etoile
     {
       gear::Scope*      scope;
       gear::File*       context;
-      gear::Actor*      actor;
-
-      enterx(instance(actor),
-             slab(scope, gear::Scope::Annihilate));
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -59,6 +56,8 @@ namespace etoile
       // acquire the scope.
       if (gear::Scope::Supply(scope) == elle::StatusError)
         escape("unable to supply the scope");
+
+      gear::ScopeGuard guard(scope);
 
       // declare a critical section.
       elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
@@ -71,7 +70,8 @@ namespace etoile
           escape("unable to retrieve the context");
 
         // allocate an actor.
-        actor = new gear::Actor(scope);
+        auto actor = new gear::Actor(scope);
+        guard.actor(actor);
 
         // return the identifier.
         identifier = actor->identifier;
@@ -83,15 +83,12 @@ namespace etoile
         // set the actor's state.
         actor->state = gear::Actor::StateUpdated;
 
-        // waive the actor.
-        waive(actor);
-
         // waive the scope.
-        waive(scope);
+        guard.release();
       }
       zone.Unlock();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -104,10 +101,6 @@ namespace etoile
     {
       gear::Scope*      scope;
       gear::File*       context;
-      gear::Actor*      actor;
-
-      enterx(instance(actor),
-             slab(scope, gear::Scope::Annihilate));
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -116,6 +109,8 @@ namespace etoile
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::StatusError)
         escape("unable to acquire the scope");
+
+      gear::ScopeGuard guard(scope);
 
       // declare a critical section.
       elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
@@ -128,10 +123,10 @@ namespace etoile
           escape("unable to retrieve the context");
 
         // allocate an actor.
-        actor = new gear::Actor(scope);
+        guard.actor(new gear::Actor(scope));
 
         // return the identifier.
-        identifier = actor->identifier;
+        identifier = guard.actor()->identifier;
 
         // locate the object based on the chemin.
         if (chemin.Locate(context->location) == elle::StatusError)
@@ -141,15 +136,12 @@ namespace etoile
         if (automaton::File::Load(*context) == elle::StatusError)
           escape("unable to load the file");
 
-        // waive the actor.
-        waive(actor);
-
-        // waive the scope.
-        waive(scope);
+        // waive the actor and the scope.
+        guard.release();
       }
       zone.Unlock();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -161,15 +153,13 @@ namespace etoile
     elle::Status        File::Lock(
                           const gear::Identifier&)
     {
-      enter();
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] wall::File::Lock()\n");
 
       // XXX to implement.
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -178,15 +168,13 @@ namespace etoile
     elle::Status        File::Release(
                           const gear::Identifier&)
     {
-      enter();
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] wall::File::Release()\n");
 
       // XXX to implement.
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -200,8 +188,6 @@ namespace etoile
       gear::Actor*      actor;
       gear::Scope*      scope;
       gear::File*       context;
-
-      enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -235,7 +221,7 @@ namespace etoile
       }
       zone.Unlock();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -250,8 +236,6 @@ namespace etoile
       gear::Actor*      actor;
       gear::Scope*      scope;
       gear::File*       context;
-
-      enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -283,7 +267,7 @@ namespace etoile
       }
       zone.Unlock();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -296,8 +280,6 @@ namespace etoile
       gear::Actor*      actor;
       gear::Scope*      scope;
       gear::File*       context;
-
-      enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -330,7 +312,7 @@ namespace etoile
       }
       zone.Unlock();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -344,8 +326,6 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      enterx(instance(actor));
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] wall::File::Discard()\n");
@@ -353,6 +333,8 @@ namespace etoile
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
         escape("unable to select the actor");
+
+      gear::ScopeGuard guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
@@ -381,10 +363,7 @@ namespace etoile
           escape("this operation cannot be performed by this actor");
 
         // delete the actor.
-        delete actor;
-
-        // waive actor.
-        waive(actor);
+        guard.actor(nullptr);
 
         // specify the closing operation performed on the scope.
         if (scope->Operate(gear::OperationDiscard) == elle::StatusError)
@@ -430,7 +409,7 @@ namespace etoile
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -444,8 +423,6 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      enterx(instance(actor));
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] wall::File::Store()\n");
@@ -453,6 +430,8 @@ namespace etoile
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
         escape("unable to select the actor");
+
+      gear::ScopeGuard guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
@@ -481,10 +460,7 @@ namespace etoile
           escape("this operation cannot be performed by this actor");
 
         // delete the actor.
-        delete actor;
-
-        // waive actor.
-        waive(actor);
+        guard.actor(nullptr);
 
         // specify the closing operation performed on the scope.
         if (scope->Operate(gear::OperationStore) == elle::StatusError)
@@ -530,7 +506,7 @@ namespace etoile
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -543,8 +519,6 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      enterx(instance(actor));
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] wall::File::Destroy()\n");
@@ -552,6 +526,8 @@ namespace etoile
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
         escape("unable to select the actor");
+
+      gear::ScopeGuard guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
@@ -580,10 +556,7 @@ namespace etoile
           escape("this operation cannot be performed by this actor");
 
         // delete the actor.
-        delete actor;
-
-        // waive actor.
-        waive(actor);
+        guard.actor(nullptr);
 
         // specify the closing operation performed on the scope.
         if (scope->Operate(gear::OperationDestroy) == elle::StatusError)
@@ -629,7 +602,7 @@ namespace etoile
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -639,15 +612,13 @@ namespace etoile
     elle::Status        File::Purge(
                           const gear::Identifier&)
     {
-      enter();
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] wall::File::Purge()\n");
 
       // XXX to implement.
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -54,7 +54,7 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Action]" << std::endl;
 
@@ -91,7 +91,7 @@ namespace etoile
           }
         }
       
-      leave();
+      return elle::StatusOk;
     }
 
   }

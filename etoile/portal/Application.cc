@@ -70,7 +70,7 @@ namespace etoile
     ///
     elle::Status        Application::Create(elle::LocalSocket*  socket)
     {
-      enter();
+      ;
 
       // set the socket.
       this->socket = socket;
@@ -107,7 +107,7 @@ namespace etoile
       if (this->timer->Start(Application::Timeout) == elle::StatusError)
         escape("unable to start the timer");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -120,7 +120,7 @@ namespace etoile
     ///
     elle::Status        Application::Disconnected()
     {
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -141,7 +141,7 @@ namespace etoile
           bury(this);
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -150,7 +150,7 @@ namespace etoile
     ///
     elle::Status        Application::Error(const elle::String&)
     {
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -161,7 +161,7 @@ namespace etoile
       // check the return status.
       this->socket->Disconnect();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -171,7 +171,7 @@ namespace etoile
     ///
     elle::Status        Application::Abort()
     {
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -192,7 +192,7 @@ namespace etoile
             escape("unable to disconnect the socket");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -206,7 +206,7 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Application]" << std::endl;
 
@@ -247,7 +247,7 @@ namespace etoile
                     << "[LocalSocket] " << elle::none << std::endl;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

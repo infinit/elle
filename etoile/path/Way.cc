@@ -125,12 +125,12 @@ namespace etoile
     ///
     elle::Status        Way::Capacity(Length&                   length) const
     {
-      enter();
+      ;
 
       // return the length.
       length = static_cast<Length>(this->path.length());
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -142,17 +142,17 @@ namespace etoile
     ///
     elle::Boolean       Way::operator==(const Way&              element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the attributes..
       if (this->path != element.path)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -171,11 +171,11 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Way] " << this->path << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -187,13 +187,13 @@ namespace etoile
     ///
     elle::Status        Way::Serialize(elle::Archive&   archive) const
     {
-      enter();
+      ;
 
       // serialize the target.
       if (archive.Serialize(this->path) == elle::StatusError)
         escape("unable to serialize the path");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -201,13 +201,13 @@ namespace etoile
     ///
     elle::Status        Way::Extract(elle::Archive&     archive)
     {
-      enter();
+      ;
 
       // extract the target.
       if (archive.Extract(this->path) == elle::StatusError)
         escape("unable to extract the path");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

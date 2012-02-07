@@ -30,11 +30,11 @@ namespace etoile
     ///
     elle::Status        Depot::Initialize()
     {
-      enter();
+      ;
 
       // nothing to do.
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -42,11 +42,11 @@ namespace etoile
     ///
     elle::Status        Depot::Clean()
     {
-      enter();
+      ;
 
       // nothing to do.
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -54,13 +54,13 @@ namespace etoile
     ///
     elle::Status        Depot::Origin(nucleus::Address&         address)
     {
-      enter();
+      ;
 
       // call the Hole.
       if (hole::Hole::Origin(address) == elle::StatusError)
         escape("unable to retrieve the origin");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -69,13 +69,13 @@ namespace etoile
     elle::Status        Depot::Push(const nucleus::Address&     address,
                                     const nucleus::Block&       block)
     {
-      enter();
+      ;
 
       // call the Hole.
       if (hole::Hole::Push(address, block) == elle::StatusError)
         escape("unable to store the block");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -85,13 +85,13 @@ namespace etoile
                                     const nucleus::Version&     version,
                                     nucleus::Block&             block)
     {
-      enter();
+      ;
 
       // call the Hole.
       if (hole::Hole::Pull(address, version, block) == elle::StatusError)
         escape("unable to retrieve the block");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -99,13 +99,13 @@ namespace etoile
     ///
     elle::Status        Depot::Wipe(const nucleus::Address&     address)
     {
-      enter();
+      ;
 
       // call the Hole.
       if (hole::Hole::Wipe(address) == elle::StatusError)
         escape("unable to remove the block");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

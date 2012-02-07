@@ -17,6 +17,7 @@
 #include <etoile/gear/Identifier.hh>
 #include <etoile/gear/Nature.hh>
 #include <etoile/gear/Scope.hh>
+#include <etoile/gear/ScopeGuard.hh>
 #include <etoile/gear/Link.hh>
 #include <etoile/gear/Gear.hh>
 
@@ -47,10 +48,6 @@ namespace etoile
     {
       gear::Scope*      scope;
       gear::Link*       context;
-      gear::Actor*      actor;
-
-      enterx(instance(actor),
-             slab(scope, gear::Scope::Annihilate));
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -59,6 +56,8 @@ namespace etoile
       // acquire the scope.
       if (gear::Scope::Supply(scope) == elle::StatusError)
         escape("unable to supply the scope");
+
+      gear::ScopeGuard guard(scope);
 
       // declare a critical section.
       elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
@@ -71,27 +70,24 @@ namespace etoile
           escape("unable to retrieve the context");
 
         // allocate an actor.
-        actor = new gear::Actor(scope);
+        guard.actor(new gear::Actor(scope));
 
         // return the identifier.
-        identifier = actor->identifier;
+        identifier = guard.actor()->identifier;
 
         // apply the create automaton on the context.
         if (automaton::Link::Create(*context) == elle::StatusError)
           escape("unable to create the link");
 
         // set the actor's state.
-        actor->state = gear::Actor::StateUpdated;
+        guard.actor()->state = gear::Actor::StateUpdated;
 
-        // waive the actor.
-        waive(actor);
-
-        // waive the scope.
-        waive(scope);
+        // waive the actor and the scope.
+        guard.release();
       }
       zone.Unlock();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -104,10 +100,6 @@ namespace etoile
     {
       gear::Scope*      scope;
       gear::Link*       context;
-      gear::Actor*      actor;
-
-      enterx(slab(scope, gear::Scope::Annihilate),
-             instance(actor));
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -116,6 +108,8 @@ namespace etoile
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::StatusError)
         escape("unable to acquire the scope");
+
+      gear::ScopeGuard guard(scope);
 
       // declare a critical section.
       elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
@@ -128,10 +122,10 @@ namespace etoile
           escape("unable to retrieve the context");
 
         // allocate an actor.
-        actor = new gear::Actor(scope);
+        guard.actor(new gear::Actor(scope));
 
         // return the identifier.
-        identifier = actor->identifier;
+        identifier = guard.actor()->identifier;
 
         // locate the object based on the chemin.
         if (chemin.Locate(context->location) == elle::StatusError)
@@ -141,15 +135,12 @@ namespace etoile
         if (automaton::Link::Load(*context) == elle::StatusError)
           escape("unable to load the link");
 
-        // waive the actor.
-        waive(actor);
-
-        // waive the scope.
-        waive(scope);
+        // waive the actor and the scope
+        guard.release();
       }
       zone.Unlock();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -161,15 +152,13 @@ namespace etoile
     elle::Status        Link::Lock(
                           const gear::Identifier&)
     {
-      enter();
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] wall::Link::Lock()\n");
 
       // XXX to implement.
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -178,15 +167,13 @@ namespace etoile
     elle::Status        Link::Release(
                           const gear::Identifier&)
     {
-      enter();
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] wall::Link::Release()\n");
 
       // XXX to implement.
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -199,8 +186,6 @@ namespace etoile
       gear::Actor*      actor;
       gear::Scope*      scope;
       gear::Link*       context;
-
-      enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -233,7 +218,7 @@ namespace etoile
       }
       zone.Unlock();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -246,8 +231,6 @@ namespace etoile
       gear::Actor*      actor;
       gear::Scope*      scope;
       gear::Link*       context;
-
-      enter();
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -277,7 +260,7 @@ namespace etoile
       }
       zone.Unlock();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -291,8 +274,6 @@ namespace etoile
       gear::Scope*      scope;
       gear::Link*       context;
 
-      enterx(instance(actor));
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] wall::Link::Discard()\n");
@@ -300,6 +281,8 @@ namespace etoile
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
         escape("unable to select the actor");
+
+      gear::ScopeGuard guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
@@ -328,10 +311,7 @@ namespace etoile
           escape("this operation cannot be performed by this actor");
 
         // delete the actor.
-        delete actor;
-
-        // waive actor.
-        waive(actor);
+        guard.actor(nullptr);
 
         // specify the closing operation performed on the scope.
         if (scope->Operate(gear::OperationDiscard) == elle::StatusError)
@@ -377,7 +357,7 @@ namespace etoile
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -391,8 +371,6 @@ namespace etoile
       gear::Scope*      scope;
       gear::Link*       context;
 
-      enterx(instance(actor));
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] wall::Link::Store()\n");
@@ -400,6 +378,8 @@ namespace etoile
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
         escape("unable to select the actor");
+
+      gear::ScopeGuard guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
@@ -428,10 +408,7 @@ namespace etoile
           escape("this operation cannot be performed by this actor");
 
         // delete the actor.
-        delete actor;
-
-        // waive actor.
-        waive(actor);
+        guard.actor(nullptr);
 
         // specify the closing operation performed on the scope.
         if (scope->Operate(gear::OperationStore) == elle::StatusError)
@@ -477,7 +454,7 @@ namespace etoile
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -490,8 +467,6 @@ namespace etoile
       gear::Scope*      scope;
       gear::Link*       context;
 
-      enterx(instance(actor));
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] wall::Link::Destroy()\n");
@@ -499,6 +474,8 @@ namespace etoile
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
         escape("unable to select the actor");
+
+      gear::ScopeGuard guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
@@ -527,10 +504,7 @@ namespace etoile
           escape("this operation cannot be performed by this actor");
 
         // delete the actor.
-        delete actor;
-
-        // waive actor.
-        waive(actor);
+        guard.actor(nullptr);
 
         // specify the closing operation performed on the scope.
         if (scope->Operate(gear::OperationDestroy) == elle::StatusError)
@@ -576,7 +550,7 @@ namespace etoile
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -586,15 +560,13 @@ namespace etoile
     elle::Status        Link::Purge(
                           const gear::Identifier&)
     {
-      enter();
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] wall::Link::Purge()\n");
 
       // XXX to implement.
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -44,7 +44,7 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       // display the name.
       std::cout << alignment << "[Context] " << std::endl;
@@ -65,7 +65,7 @@ namespace etoile
       if (this->transcript.Dump(margin + 2) == elle::StatusError)
         escape("unable to dump the transcript");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -77,7 +77,7 @@ namespace etoile
     ///
     elle::Status        Context::Serialize(elle::Archive&       archive) const
     {
-      enter();
+      ;
 
       // serialize the attributes.
       if (archive.Serialize(
@@ -85,7 +85,7 @@ namespace etoile
             static_cast<elle::Natural8>(this->state)) == elle::StatusError)
         escape("unable to serialize the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -93,7 +93,7 @@ namespace etoile
     ///
     elle::Status        Context::Extract(elle::Archive&         archive)
     {
-      enter();
+      ;
 
       // extract the attributes.
       if (archive.Extract(
@@ -102,7 +102,7 @@ namespace etoile
           elle::StatusError)
         escape("unable to extract the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

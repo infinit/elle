@@ -36,7 +36,7 @@ namespace etoile
     {
       nucleus::Address  address;
 
-      enter();
+      ;
 
       // create the link.
       if (context.object.Create(
@@ -55,7 +55,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateCreated;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -65,11 +65,11 @@ namespace etoile
     elle::Status        Link::Load(
                           gear::Link&                           context)
     {
-      enter();
+      ;
 
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
-        leave();
+        return elle::StatusOk;
 
       // load the object.
       if (Object::Load(context) == elle::StatusError)
@@ -82,7 +82,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateLoaded;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -94,7 +94,7 @@ namespace etoile
     {
       nucleus::Size     size;
 
-      enter();
+      ;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
@@ -136,7 +136,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -146,7 +146,7 @@ namespace etoile
                           gear::Link&                           context,
                           path::Way&                            way)
     {
-      enter();
+      ;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
@@ -172,7 +172,7 @@ namespace etoile
       if (context.contents->content->Resolve(way.path) == elle::StatusError)
         escape("unable to resolve the link");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -182,12 +182,12 @@ namespace etoile
     elle::Status        Link::Discard(
                           gear::Link&                           context)
     {
-      enter();
+      ;
 
       // set the context's state.
       context.state = gear::Context::StateDiscarded;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -197,7 +197,7 @@ namespace etoile
     elle::Status        Link::Destroy(
                           gear::Link&                           context)
     {
-      enter();
+      ;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
@@ -223,7 +223,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateDestroyed;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -233,7 +233,7 @@ namespace etoile
     elle::Status        Link::Store(
                           gear::Link&                           context)
     {
-      enter();
+      ;
 
       // close the contents.
       if (Contents::Close(context) == elle::StatusError)
@@ -246,7 +246,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateStored;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

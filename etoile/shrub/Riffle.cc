@@ -46,7 +46,6 @@ namespace etoile
                                        const nucleus::Location& location,
                                        Riffle*                  parent)
     {
-      enter();
 
       // set the attributes.
       this->slab = slab;
@@ -57,7 +56,7 @@ namespace etoile
       if (this->timestamp.Current() == elle::StatusError)
         escape("unable to retrieve the current time");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -68,19 +67,18 @@ namespace etoile
     {
       Riffle::Scoutor   scoutor;
 
-      enter();
 
       // initialize the pointer.
       riffle = NULL;
 
       // look up the element in the current riffle ... stop if not present.
       if ((scoutor = this->children.find(slab)) == this->children.end())
-        leave();
+        return elle::StatusOk;
 
       // return the resolved riffle.
       riffle = scoutor->second;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -89,27 +87,20 @@ namespace etoile
     elle::Status        Riffle::Update(const path::Slab&        slab,
                                        const nucleus::Location& location)
     {
-      std::pair<Riffle::Iterator, elle::Boolean>        result;
-      Riffle::Scoutor                                   scoutor;
-
-      enter();
+      auto it = this->children.find(slab);
 
       // try to look up the element in the current riffle.
-      if ((scoutor = this->children.find(slab)) == this->children.end())
+      if (it == this->children.end())
         {
-          Riffle*       riffle;
-
-          enterx(instance(riffle));
-
           // check that available slots remain i.e it is possible that
           // the whole shrub's capacity is not large enough to hold
           // all the the route's slabs.
           if (Shrub::Queue.container.size() >=
               Infinit::Configuration.etoile.shrub.capacity)
-            leave();
+            return elle::StatusOk;
 
           // allocate a new riffle.
-          riffle = new Riffle;
+          std::unique_ptr<Riffle> riffle(new Riffle);
 
           // create the riffle.
           if (riffle->Create(slab, location, this) == elle::StatusError)
@@ -117,29 +108,26 @@ namespace etoile
 
           // add the riffle to the queue.
           if (Shrub::Queue.Insert(riffle->timestamp,
-                                  riffle) == elle::StatusError)
+                                  riffle.get()) == elle::StatusError)
             escape("unable to add the riffle");
 
           // insert it.
-          result =
-            this->children.insert(Riffle::Value(riffle->slab, riffle));
+          auto result = this->children.insert(
+              Riffle::Value(riffle->slab, riffle.get())
+          );
+
+          // XXX if riffle is in the Shrub::Queue but previous insert failed ...
 
           // check the result.
           if (result.second == false)
             escape("unable to insert the new riffle");
-
-          // stop tracking.
-          waive(riffle);
-
-          // release the resources.
-          release();
+          else
+            riffle.release();
         }
       else
         {
-          Riffle*       riffle;
-
-          // retrive the pointer.
-          riffle = scoutor->second;
+          // retrieve the pointer.
+          Riffle* riffle = it->second;
 
           // if found, update it with the new address.
           riffle->location = location;
@@ -159,7 +147,7 @@ namespace etoile
             escape("unable to add the riffle");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -170,7 +158,6 @@ namespace etoile
       Riffle::Iterator  iterator;
       Riffle*           riffle;
 
-      enter();
 
       // try to look up the element in the current riffle.
       if ((iterator = this->children.find(slab)) == this->children.end())
@@ -194,7 +181,7 @@ namespace etoile
       // remove the entry from the container.
       this->children.erase(iterator);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -203,8 +190,6 @@ namespace etoile
     elle::Status        Riffle::Flush()
     {
       Riffle::Scoutor   scoutor;
-
-      enter();
 
       // go through the children.
       for (scoutor = this->children.begin();
@@ -229,7 +214,7 @@ namespace etoile
       // clear the container.
       this->children.clear();
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -243,8 +228,6 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
       Riffle::Scoutor   scoutor;
-
-      enter();
 
       std::cout << alignment << "[Riffle] "
                 << std::hex << this << std::endl;
@@ -275,7 +258,7 @@ namespace etoile
             escape("unable to dump the sub-riffle");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

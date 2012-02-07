@@ -38,11 +38,11 @@ namespace etoile
     elle::Status        Contents::Open(
                           T&                                    context)
     {
-      enter();
+      ;
 
       // if the contents is already opened, return.
       if (context.contents != NULL)
-        leave();
+        return elle::StatusOk;
 
       // otherwise create a new contents according to the context's type.
       context.contents = new nucleus::Contents<typename T::C>;
@@ -77,7 +77,7 @@ namespace etoile
             escape("unable to create the contents");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -87,7 +87,7 @@ namespace etoile
     elle::Status        Contents::Destroy(
                           T&                                    context)
     {
-      enter();
+      ;
 
       // if a block is referenced by the object, mark it as needing removal.
       if (context.object.data.contents != nucleus::Address::Null)
@@ -98,7 +98,7 @@ namespace etoile
             escape("unable to mark the content block for removal");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -114,7 +114,7 @@ namespace etoile
       elle::SecretKey   key;
       nucleus::Size     size;
 
-      enter();
+      ;
 
       //
       // first, check if the block has been modified i.e exists and is dirty.
@@ -124,11 +124,11 @@ namespace etoile
         // is nothing to do.
         if (!((context.contents != NULL) &&
               (context.contents->content != NULL)))
-          leave();
+          return elle::StatusOk;
 
         // if the contents has not changed, do nothing.
         if (context.contents->content->_state == nucleus::StateClean)
-          leave();
+          return elle::StatusOk;
       }
 
       // retrieve the contents's size.
@@ -257,7 +257,7 @@ namespace etoile
             escape("unable to upgrade the accesses");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

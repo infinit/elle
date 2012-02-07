@@ -60,11 +60,11 @@ namespace etoile
     ///
     elle::Boolean       Handle::operator==(const Handle&        element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // depending on the states.
       if ((this->state == Handle::StateLoaded) &&
@@ -76,7 +76,7 @@ namespace etoile
 
           // compare the placements.
           if (this->placement != element.placement)
-            false();
+            return elle::StatusFalse;
         }
       else if ((this->state == Handle::StateUnloaded) &&
                (element.state == Handle::StateUnloaded))
@@ -91,15 +91,15 @@ namespace etoile
       if ((this->digest == NULL) || (element.digest == NULL))
         {
           if (this->digest != element.digest)
-            false();
+            return elle::StatusFalse;
         }
       else
         {
           if (*this->digest != *element.digest)
-            false();
+            return elle::StatusFalse;
         }
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -107,25 +107,25 @@ namespace etoile
     ///
     elle::Boolean       Address::operator<(const Address&       element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        false();
+        return elle::StatusFalse;
 
       // test for a null digest.
       if ((this->digest == NULL) && (element.digest == NULL))
-        false();
+        return elle::StatusFalse;
       else if (this->digest == NULL)
-        true();
+        return elle::StatusTrue;
       else if (element.digest == NULL)
-        false();
+        return elle::StatusFalse;
 
       // compare the digests.
       if (*this->digest < *element.digest)
-        true();
+        return elle::StatusTrue;
 
-      false();
+      return elle::StatusFalse;
     }
 
     ///

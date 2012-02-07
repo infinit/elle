@@ -7,7 +7,7 @@
 //
 // author        julien quintard   [mon jun 20 14:59:09 2011]
 //
- 
+
 //
 // ---------- includes --------------------------------------------------------
 //
@@ -38,11 +38,10 @@ namespace etoile
     elle::Status        Access::Open(
                           gear::Object&                         context)
     {
-      enter();
 
       // check if the access has already been opened.
       if (context.access != NULL)
-        leave();
+        return elle::StatusOk;
 
       // allocate an access block.
       context.access = new nucleus::Access;
@@ -61,7 +60,7 @@ namespace etoile
           // otherwise the block is left empty.
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -73,7 +72,6 @@ namespace etoile
                           const nucleus::Subject&               subject,
                           const nucleus::Permissions&           permissions)
     {
-      enter();
 
       // determine the rights over the object.
       if (Rights::Determine(context) == elle::StatusError)
@@ -102,7 +100,6 @@ namespace etoile
           //
           // otherwise, the subject is a lord being a user or a group.
           //
-          nucleus::Record*      record;
 
           // open the access block.
           if (Access::Open(context) == elle::StatusError)
@@ -146,10 +143,8 @@ namespace etoile
             }
           else
             {
-              enterx(instance(record));
-
               // allocate a new record.
-              record = new nucleus::Record;
+              std::unique_ptr<nucleus::Record> record{new nucleus::Record};
 
               // create the new record.
               if (record->Update(subject,
@@ -158,14 +153,11 @@ namespace etoile
                 escape("unable to create the new record");
 
               // add the record to the access object.
-              if (context.access->Add(record) == elle::StatusError)
+              if (context.access->Add(record.get()) == elle::StatusError)
                 escape("unable to add the new record");
 
               // stop tracking record.
-              waive(record);
-
-              // release.
-              release();
+              record.release();
             }
 
           // in any case, the object must be marked as administered i.e dirty
@@ -195,7 +187,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -207,7 +199,6 @@ namespace etoile
                           const nucleus::Subject&               subject,
                           nucleus::Record*&                     record)
     {
-      enter();
 
       // try to make the best of this call.
       if (agent::Agent::Subject == subject)
@@ -261,7 +252,7 @@ namespace etoile
             }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -273,7 +264,6 @@ namespace etoile
                           const nucleus::Size&                  size,
                           nucleus::Range<nucleus::Record>&      range)
     {
-      enter();
 
       // open the access.
       if (Access::Open(context) == elle::StatusError)
@@ -283,19 +273,17 @@ namespace etoile
       // a record for him.
       if (index == 0)
         {
-          nucleus::Record*      record;
-
-          enterx(instance(record));
-
           // create the record.
-          record = new nucleus::Record(context.object.meta.owner._record);
+          auto record = std::unique_ptr<nucleus::Record>(
+              new nucleus::Record(context.object.meta.owner._record)
+          );
 
           // add the record to the range.
-          if (range.Add(record) == elle::StatusError)
+          if (range.Add(record.get()) == elle::StatusError)
             escape("unable to add the owner record");
 
           // waive.
-          waive(record);
+          record.release();
 
           // consult the access object by taking care of consulting one
           // record less.
@@ -315,7 +303,7 @@ namespace etoile
             escape("unable to consult the access object");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -325,7 +313,6 @@ namespace etoile
                           gear::Object&                         context,
                           const nucleus::Subject&               subject)
     {
-      enter();
 
       // determine the rights over the object.
       if (Rights::Determine(context) == elle::StatusError)
@@ -391,7 +378,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -409,7 +396,6 @@ namespace etoile
     {
       nucleus::Token    token;
 
-      enter();
 
       // open the access.
       if (Access::Open(context) == elle::StatusError)
@@ -457,7 +443,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -472,7 +458,6 @@ namespace etoile
     elle::Status        Access::Downgrade(
                           gear::Object&                         context)
     {
-      enter();
 
       // open the access.
       if (Access::Open(context) == elle::StatusError)
@@ -507,7 +492,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -517,7 +502,6 @@ namespace etoile
     elle::Status        Access::Destroy(
                           gear::Object&                         context)
     {
-      enter();
 
       // if the block is present.
       if (context.object.meta.access != nucleus::Address::Null)
@@ -528,7 +512,7 @@ namespace etoile
             escape("unable to mark the access block for removal");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -544,7 +528,6 @@ namespace etoile
     {
       nucleus::Size     size;
 
-      enter();
 
       //
       // first, check if the block has been modified i.e exists and is dirty.
@@ -552,11 +535,11 @@ namespace etoile
       {
         // if there is no loaded access, then there is nothing to do.
         if (context.access == NULL)
-          leave();
+          return elle::StatusOk;
 
         // if the access has not changed, do nothing.
         if (context.access->_state == nucleus::StateClean)
-          leave();
+          return elle::StatusOk;
       }
 
       // retrieve the access's size.
@@ -648,7 +631,7 @@ namespace etoile
             escape("unable to record the object for storing");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -670,8 +653,6 @@ namespace etoile
     elle::Status        Access::Audit(gear::Object&             context,
                                       const nucleus::Subject&   subject)
     {
-      enter();
-
       // depending on the current author's role.
       switch (context.object.author.role)
         {
@@ -739,7 +720,7 @@ namespace etoile
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -753,8 +734,6 @@ namespace etoile
     elle::Status        Access::Regulate(gear::Object&          context)
     {
       nucleus::Author   author;
-
-      enter();
 
       // build a new author, representing the object's owner.
       if (author.Create() == elle::StatusError)
@@ -770,7 +749,7 @@ namespace etoile
             context.object.meta.owner.token) == elle::StatusError)
         escape("unable to update the object");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

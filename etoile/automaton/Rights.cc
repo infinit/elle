@@ -36,11 +36,11 @@ namespace etoile
     elle::Status        Rights::Determine(
                           gear::Object&                         context)
     {
-      enter();
+      ;
 
       // if the rights have already been determined, return.
       if (context.rights.role != nucleus::RoleUnknown)
-        leave();
+        return elle::StatusOk;
 
       // determine the rights according to the subject.
       if (agent::Agent::Subject == context.object.owner._subject)
@@ -130,7 +130,7 @@ namespace etoile
             }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -140,7 +140,7 @@ namespace etoile
     elle::Status        Rights::Recompute(
                           gear::Object&                         context)
     {
-      enter();
+      ;
 
       // reset the role in order to make sure the Determine() method
       // will carry one.
@@ -150,7 +150,7 @@ namespace etoile
       if (Rights::Determine(context) == elle::StatusError)
         escape("unable to determine the rights");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -163,7 +163,7 @@ namespace etoile
                           gear::Object&                         context,
                           const nucleus::Permissions&           permissions)
     {
-      enter();
+      ;
 
       // update the permission.
       context.rights.permissions = permissions;
@@ -171,7 +171,7 @@ namespace etoile
       // also update the record which also include the user's permission.
       context.rights.record.permissions = permissions;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -182,7 +182,7 @@ namespace etoile
                           gear::Object&                         context,
                           const gear::Operation&                operation)
     {
-      enter();
+      ;
 
       // depending on the operation.
       switch (operation)
@@ -235,7 +235,7 @@ namespace etoile
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }
