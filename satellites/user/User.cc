@@ -43,8 +43,6 @@ namespace satellite
     lune::Identity      identity;
     lune::Dictionary    dictionary;
 
-    ;
-
     // check the argument.
     if (name.empty() == true)
       escape("unable to create a user without a user name");
@@ -115,8 +113,6 @@ namespace satellite
   ///
   elle::Status          User::Destroy(const elle::String&       name)
   {
-    ;
-
     //
     // remove the identity.
     //
@@ -187,8 +183,6 @@ namespace satellite
     lune::Identity      identity;
     elle::PublicKey     K;
     elle::Unique        unique;
-
-    ;
 
     // check the argument.
     if (name.empty() == true)
