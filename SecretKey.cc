@@ -144,14 +144,13 @@ namespace elle
                            iv) != sizeof (key))
         escape("the generated key's size does not match the one expected");
 
-      struct OnExit
-        {
-          ::EVP_CIPHER_CTX  context;
-          ~OnExit() { ::EVP_CIPHER_CTX_cleanup(&this->context); }
-        } scope;
+      struct Scope
+      {
+        ::EVP_CIPHER_CTX  context;
 
-      // initialise the context.
-      ::EVP_CIPHER_CTX_init(&scope.context);
+        Scope() { ::EVP_CIPHER_CTX_init(&this->context); }
+        ~Scope() { ::EVP_CIPHER_CTX_cleanup(&this->context); }
+      } scope;
 
       // initialise the ciphering process.
       if (::EVP_EncryptInit_ex(&scope.context,
@@ -242,14 +241,13 @@ namespace elle
                            iv) != sizeof (key))
         escape("the generated key's size does not match the one expected");
 
-      struct OnExit
-        {
-          ::EVP_CIPHER_CTX  context;
-          ~OnExit() { ::EVP_CIPHER_CTX_cleanup(&this->context); }
-        } scope;
+      struct Scope
+      {
+        ::EVP_CIPHER_CTX  context;
+        Scope() { ::EVP_CIPHER_CTX_init(&this->context); }
+        ~Scope() { ::EVP_CIPHER_CTX_cleanup(&this->context); }
+      } scope;
 
-      // initialise the context.
-      ::EVP_CIPHER_CTX_init(&scope.context);
 
       // initialise the ciphering process.
       if (::EVP_DecryptInit_ex(&scope.context,

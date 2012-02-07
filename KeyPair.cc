@@ -134,13 +134,13 @@ namespace elle
     ///
     Status              KeyPair::Generate(const Natural32       length)
     {
-      ::EVP_PKEY* key = nullptr;
-      struct OnExit
+      struct Scope
       {
-        ::EVP_PKEY*& _key;
-        OnExit(::EVP_PKEY*& key) : _key(key) {}
-        ~OnExit() { ::EVP_PKEY_free(this->_key); }
-      } scope_guard(key);
+        ::EVP_PKEY* key;
+
+        Scope() : key(nullptr) {}
+        ~Scope() { ::EVP_PKEY_free(this->key); }
+      } scope;
 
       // set the key length.
       if (::EVP_PKEY_CTX_set_rsa_keygen_bits(KeyPair::Contexts::Generate,
@@ -148,16 +148,22 @@ namespace elle
         escape("unable to set the RSA key length");
 
       // generate the EVP key.
-      if (::EVP_PKEY_keygen(KeyPair::Contexts::Generate, &key) <= 0)
+      if (::EVP_PKEY_keygen(KeyPair::Contexts::Generate, &scope.key) <= 0)
         escape("unable to generate the key");
 
+      assert(scope.key != nullptr);
+
       // create the actual public key according to the EVP structure.
-      if (this->K.Create(key) == StatusError)
+      if (this->K.Create(scope.key) == StatusError)
         escape("unable to create the public key");
 
+      assert(this->K.key() != nullptr);
+
       // create the actual private key according to the EVP structure.
-      if (this->k.Create(key) == StatusError)
+      if (this->k.Create(scope.key) == StatusError)
         escape("unable to create the private key");
+
+      assert(this->k.key() != nullptr);
 
       return elle::StatusOk;
     }
@@ -168,11 +174,12 @@ namespace elle
     Status              KeyPair::Create(const PublicKey&        K,
                                         const PrivateKey&       k)
     {
-      ;
-
       // assign the attributes.
       this->K = K;
       this->k = k;
+
+      assert(this->K.key() != nullptr);
+      assert(this->k.key() != nullptr);
 
       return elle::StatusOk;
     }
@@ -187,44 +194,43 @@ namespace elle
     Status              KeyPair::Rotate(const Seed&             seed,
                                         KeyPair&                kp) const
     {
-      ::EVP_PKEY*       key = nullptr;
-      ::RSA*            rsa = nullptr;
-      struct OnExit
+      struct Scope
       {
-        ::EVP_PKEY*&  _key;
-        ::RSA*&       _rsa;
-        OnExit(::EVP_PKEY*& key, ::RSA*& rsa) : _key(key), _rsa(rsa) {}
-        ~OnExit() { ::EVP_PKEY_free(this->_key); ::RSA_free(this->_rsa); }
-      } scope_guard(key, rsa);
+        ::EVP_PKEY*  key;
+        ::RSA*       rsa;
+
+        Scope() : key(nullptr), rsa(nullptr) {}
+        ~Scope() { ::EVP_PKEY_free(this->key); ::RSA_free(this->rsa); }
+      } scope;
 
       // create an EVP key.
-      if ((key = ::EVP_PKEY_new()) == NULL)
+      if ((scope.key = ::EVP_PKEY_new()) == NULL)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // create a new RSA key.
-      if ((rsa = ::RSA_new()) == NULL)
+      if ((scope.rsa = ::RSA_new()) == NULL)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // rotate the RSA key.
-      if (comet::RSA_rotate(rsa,
-                            ::BN_num_bits(this->K.key->pkey.rsa->n),
+      if (comet::RSA_rotate(scope.rsa,
+                            ::BN_num_bits(this->K.key()->pkey.rsa->n),
                             seed.region.contents,
                             seed.region.size) <= 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // assign the RSA key to the EVP's.
-      if (::EVP_PKEY_assign_RSA(key, rsa) <= 0)
+      if (::EVP_PKEY_assign_RSA(scope.key, scope.rsa) <= 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // stop tracking.
-      rsa = nullptr;
+      scope.rsa = nullptr;
 
       // create the rotated public key according to the EVP structure.
-      if (kp.K.Create(key) == StatusError)
+      if (kp.K.Create(scope.key) == StatusError)
         escape("unable to create the public key");
 
       // create the rotated private key according to the EVP structure.
-      if (kp.k.Create(key) == StatusError)
+      if (kp.k.Create(scope.key) == StatusError)
         escape("unable to create the private key");
 
       return elle::StatusOk;
@@ -239,8 +245,6 @@ namespace elle
     ///
     Boolean             KeyPair::operator==(const KeyPair&      element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -268,8 +272,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[KeyPair]" << std::endl;
 
       // dump the public key.
@@ -292,7 +294,8 @@ namespace elle
     ///
     Status              KeyPair::Serialize(Archive&             archive) const
     {
-      ;
+      assert(this->K.key() != nullptr);
+      assert(this->k.key() != nullptr);
 
       // serialize the internal keys.
       if (archive.Serialize(this->K, this->k) == StatusError)
@@ -306,8 +309,6 @@ namespace elle
     ///
     Status              KeyPair::Extract(Archive&               archive)
     {
-      ;
-
       // extract the internal keys.
       if (archive.Extract(this->K, this->k) == StatusError)
         escape("unable to extract the internal keys");
@@ -328,8 +329,6 @@ namespace elle
       Region            region;
       Cipher            cipher;
       SecretKey         key;
-
-      ;
 
       // read the file.
       if (File::Read(path, region) == StatusError)
@@ -364,8 +363,6 @@ namespace elle
       SecretKey         key;
       Region            region;
 
-      ;
-
       // create a secret key with this pass.
       if (key.Create(pass) == StatusError)
         escape("unable to create the secret key");
@@ -395,8 +392,6 @@ namespace elle
     ///
     Status              KeyPair::Erase(const Path&              path) const
     {
-      ;
-
       // erase the file.
       if (File::Erase(path) == StatusError)
         escape("unable to erase the file");
