@@ -47,7 +47,7 @@ namespace elle
     {
       Archive           archive;
 
-      enter();
+      ;
 
       // create an archive.
       if (archive.Create() == StatusError)
@@ -61,7 +61,7 @@ namespace elle
       if (OneWay::Hash(archive, digest) == StatusError)
         escape("unable to hash the object's archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -72,7 +72,7 @@ namespace elle
     {
       Archive           archive;
 
-      enter();
+      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -83,7 +83,7 @@ namespace elle
       if (OneWay::Hash(archive, digest) == StatusError)
         escape("unable to hash the item's archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -96,7 +96,7 @@ namespace elle
     {
       Archive           archive;
 
-      enter();
+      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -107,7 +107,7 @@ namespace elle
       if (OneWay::Hash(archive, digest) == StatusError)
         escape("unable to hash the item's archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -122,7 +122,7 @@ namespace elle
     {
       Archive           archive;
 
-      enter();
+      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -133,7 +133,7 @@ namespace elle
       if (OneWay::Hash(archive, digest) == StatusError)
         escape("unable to hash the item's archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -150,7 +150,7 @@ namespace elle
     {
       Archive           archive;
 
-      enter();
+      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -161,7 +161,7 @@ namespace elle
       if (OneWay::Hash(archive, digest) == StatusError)
         escape("unable to hash the item's archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -180,7 +180,7 @@ namespace elle
     {
       Archive           archive;
 
-      enter();
+      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -191,7 +191,7 @@ namespace elle
       if (OneWay::Hash(archive, digest) == StatusError)
         escape("unable to hash the item's archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -212,7 +212,7 @@ namespace elle
     {
       Archive           archive;
 
-      enter();
+      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -223,7 +223,7 @@ namespace elle
       if (OneWay::Hash(archive, digest) == StatusError)
         escape("unable to hash the item's archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -246,7 +246,7 @@ namespace elle
     {
       Archive           archive;
 
-      enter();
+      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -257,7 +257,7 @@ namespace elle
       if (OneWay::Hash(archive, digest) == StatusError)
         escape("unable to hash the item's archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
     template <typename T1,
@@ -282,7 +282,7 @@ namespace elle
     {
       Archive           archive;
 
-      enter();
+      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -293,7 +293,7 @@ namespace elle
       if (OneWay::Hash(archive, digest) == StatusError)
         escape("unable to hash the item's archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

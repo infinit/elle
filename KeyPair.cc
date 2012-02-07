@@ -87,7 +87,7 @@ namespace elle
     ///
     Status              KeyPair::Initialize()
     {
-      enter();
+      ;
 
       // create the context for the RSA algorithm.
       if ((KeyPair::Contexts::Generate = ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA,
@@ -98,7 +98,7 @@ namespace elle
       if (::EVP_PKEY_keygen_init(KeyPair::Contexts::Generate) <= 0)
         escape("unable to initialise the generation context");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -106,12 +106,12 @@ namespace elle
     ///
     Status              KeyPair::Clean()
     {
-      enter();
+      ;
 
       // release the generation context.
       ::EVP_PKEY_CTX_free(KeyPair::Contexts::Generate);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -119,12 +119,12 @@ namespace elle
     ///
     Status              KeyPair::Generate()
     {
-      enter();
+      ;
 
       if (this->Generate(KeyPair::Default::Length) == StatusError)
         escape("unable to generate the key pair");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -134,9 +134,13 @@ namespace elle
     ///
     Status              KeyPair::Generate(const Natural32       length)
     {
-      ::EVP_PKEY*       key;
-
-      enterx(slab(key, ::EVP_PKEY_free));
+      ::EVP_PKEY* key = nullptr;
+      struct OnExit
+      {
+        ::EVP_PKEY*& _key;
+        OnExit(::EVP_PKEY*& key) : _key(key) {}
+        ~OnExit() { ::EVP_PKEY_free(this->_key); }
+      } scope_guard(key);
 
       // set the key length.
       if (::EVP_PKEY_CTX_set_rsa_keygen_bits(KeyPair::Contexts::Generate,
@@ -155,13 +159,7 @@ namespace elle
       if (this->k.Create(key) == StatusError)
         escape("unable to create the private key");
 
-      // release the memory.
-      ::EVP_PKEY_free(key);
-
-      // stop tracking.
-      waive(key);
-
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -170,13 +168,13 @@ namespace elle
     Status              KeyPair::Create(const PublicKey&        K,
                                         const PrivateKey&       k)
     {
-      enter();
+      ;
 
       // assign the attributes.
       this->K = K;
       this->k = k;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -189,11 +187,15 @@ namespace elle
     Status              KeyPair::Rotate(const Seed&             seed,
                                         KeyPair&                kp) const
     {
-      ::EVP_PKEY*       key;
-      ::RSA*            rsa;
-
-      enterx(slab(key, ::EVP_PKEY_free),
-            slab(rsa, ::RSA_free));
+      ::EVP_PKEY*       key = nullptr;
+      ::RSA*            rsa = nullptr;
+      struct OnExit
+      {
+        ::EVP_PKEY*&  _key;
+        ::RSA*&       _rsa;
+        OnExit(::EVP_PKEY*& key, ::RSA*& rsa) : _key(key), _rsa(rsa) {}
+        ~OnExit() { ::EVP_PKEY_free(this->_key); ::RSA_free(this->_rsa); }
+      } scope_guard(key, rsa);
 
       // create an EVP key.
       if ((key = ::EVP_PKEY_new()) == NULL)
@@ -215,7 +217,7 @@ namespace elle
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // stop tracking.
-      waive(rsa);
+      rsa = nullptr;
 
       // create the rotated public key according to the EVP structure.
       if (kp.K.Create(key) == StatusError)
@@ -225,13 +227,7 @@ namespace elle
       if (kp.k.Create(key) == StatusError)
         escape("unable to create the private key");
 
-      // release the EVP key.
-      ::EVP_PKEY_free(key);
-
-      // stop tracking.
-      waive(key);
-
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -243,17 +239,17 @@ namespace elle
     ///
     Boolean             KeyPair::operator==(const KeyPair&      element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the internal keys.
       if ((this->K != element.K) || (this->k != element.k))
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -272,7 +268,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[KeyPair]" << std::endl;
 
@@ -284,7 +280,7 @@ namespace elle
       if (this->k.Dump(margin + 2) == StatusError)
         escape("unable to dump the public key");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -296,13 +292,13 @@ namespace elle
     ///
     Status              KeyPair::Serialize(Archive&             archive) const
     {
-      enter();
+      ;
 
       // serialize the internal keys.
       if (archive.Serialize(this->K, this->k) == StatusError)
         escape("unable to serialize the internal keys");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -310,13 +306,13 @@ namespace elle
     ///
     Status              KeyPair::Extract(Archive&               archive)
     {
-      enter();
+      ;
 
       // extract the internal keys.
       if (archive.Extract(this->K, this->k) == StatusError)
         escape("unable to extract the internal keys");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -333,7 +329,7 @@ namespace elle
       Cipher            cipher;
       SecretKey         key;
 
-      enter();
+      ;
 
       // read the file.
       if (File::Read(path, region) == StatusError)
@@ -353,7 +349,7 @@ namespace elle
       if (key.Decrypt(cipher, *this) == StatusError)
         escape("unable to decrypt the keypair");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -368,7 +364,7 @@ namespace elle
       SecretKey         key;
       Region            region;
 
-      enter();
+      ;
 
       // create a secret key with this pass.
       if (key.Create(pass) == StatusError)
@@ -391,7 +387,7 @@ namespace elle
       if (File::Write(path, region) == StatusError)
         escape("unable to write the file");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -399,13 +395,13 @@ namespace elle
     ///
     Status              KeyPair::Erase(const Path&              path) const
     {
-      enter();
+      ;
 
       // erase the file.
       if (File::Erase(path) == StatusError)
         escape("unable to erase the file");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///

@@ -48,7 +48,7 @@ namespace elle
     {
       Natural32         size;
 
-      enter();
+      ;
 
       // compute the size in bytes.
       size = length / 8;
@@ -57,7 +57,7 @@ namespace elle
       if (Random::Generate(this->region, size) == StatusError)
         escape("unable to generate the region");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -71,7 +71,7 @@ namespace elle
     {
       Code              code;
 
-      enter();
+      ;
 
       // encrypt the seed object with the given private key.
       if (k.Encrypt(*this, code) == StatusError)
@@ -86,7 +86,7 @@ namespace elle
                               code.region.size) == StatusError)
         escape("unable to acquire the region");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -98,7 +98,7 @@ namespace elle
       Code              code;
       Region            chunk;
 
-      enter();
+      ;
 
       // wrap the seed's region.
       if (chunk.Wrap(this->region.contents,
@@ -113,7 +113,7 @@ namespace elle
       if (K.Decrypt(code, seed) == StatusError)
         escape("unable to 'decrypt' the seed");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -125,17 +125,17 @@ namespace elle
     ///
     Boolean             Seed::operator==(const Seed&            element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the internal region.
       if (this->region != element.region)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -154,7 +154,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Seed]" << std::endl;
 
@@ -162,7 +162,7 @@ namespace elle
       if (this->region.Dump(margin + 2) == StatusError)
         escape("unable to dump the region");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -174,13 +174,13 @@ namespace elle
     ///
     Status              Seed::Serialize(Archive&                archive) const
     {
-      enter();
+      ;
 
       // serialize the internal region.
       if (archive.Serialize(this->region) == StatusError)
         escape("unable to serialize the internal region");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -188,13 +188,13 @@ namespace elle
     ///
     Status              Seed::Extract(Archive&                  archive)
     {
-      enter();
+      ;
 
       // extract the region.
       if (archive.Extract(this->region) == StatusError)
         escape("unable to extract the internal region");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

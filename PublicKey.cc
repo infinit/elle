@@ -86,14 +86,14 @@ namespace elle
     ///
     Status              PublicKey::Create(const ::EVP_PKEY*     key)
     {
-      enter();
+      ;
 
       // call the creation method.
       if (this->Create(::BN_dup(key->pkey.rsa->n),
                        ::BN_dup(key->pkey.rsa->e)) == StatusError)
         escape("unable to create the public key");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -105,8 +105,6 @@ namespace elle
     {
       ::RSA*            rsa;
 
-      enterx(slab(rsa, ::RSA_free));
-
       //
       // key
       //
@@ -117,7 +115,10 @@ namespace elle
 
       // create the RSA structure.
       if ((rsa = ::RSA_new()) == NULL)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        {
+          ::RSA_free(rsa);
+          escape(::ERR_error_string(ERR_get_error(), NULL));
+        }
 
       // assign the big numbers relevant to the public key.
       rsa->n = n;
@@ -125,11 +126,10 @@ namespace elle
 
       // set the rsa structure into the public key.
       if (::EVP_PKEY_assign_RSA(this->key, rsa) <= 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
-
-      // stop keeping track of this variable as it has been
-      // merged with another one.
-      waive(rsa);
+        {
+          ::RSA_free(rsa);
+          escape(::ERR_error_string(ERR_get_error(), NULL));
+        }
 
       //
       // contexts
@@ -184,7 +184,7 @@ namespace elle
                               NULL) <= 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -210,7 +210,7 @@ namespace elle
       Code              key;
       Cipher            data;
 
-      enter();
+      ;
 
       // (i)
       {
@@ -286,7 +286,7 @@ namespace elle
           escape("unable to duplicate the archive's content");
       }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -302,7 +302,7 @@ namespace elle
     {
       Digest            digest;
 
-      enter();
+      ;
 
       // compute the plain's digest.
       if (OneWay::Hash(plain, digest) == StatusError)
@@ -317,7 +317,7 @@ namespace elle
             digest.region.size) <= 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -346,7 +346,7 @@ namespace elle
       Code              key;
       Cipher            data;
 
-      enter();
+      ;
 
       // (i)
       {
@@ -416,7 +416,7 @@ namespace elle
           escape("unable to decrypt the data with the secret key");
       }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -428,18 +428,18 @@ namespace elle
     ///
     Boolean             PublicKey::operator==(const PublicKey&  element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // if one of the key is null....
       if ((this->key == NULL) || (element.key == NULL))
         {
           // compare the addresses.
           if (this->key != element.key)
-            false();
+            return elle::StatusFalse;
         }
       else
         {
@@ -448,10 +448,10 @@ namespace elle
                         element.key->pkey.rsa->n) != 0) ||
               (::BN_cmp(this->key->pkey.rsa->e,
                         element.key->pkey.rsa->e) != 0))
-            false();
+            return elle::StatusFalse;
         }
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -470,7 +470,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       // display depending on the value.
       if (*this == PublicKey::Null)
@@ -489,7 +489,7 @@ namespace elle
                     << *this->key->pkey.rsa->e << std::endl;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -501,14 +501,14 @@ namespace elle
     ///
     Status              PublicKey::Serialize(Archive&           archive) const
     {
-      enter();
+      ;
 
       // serialize the internal numbers.
       if (archive.Serialize(*this->key->pkey.rsa->n,
                             *this->key->pkey.rsa->e) == StatusError)
         escape("unable to serialize the internal numbers");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -516,37 +516,43 @@ namespace elle
     ///
     Status              PublicKey::Extract(Archive&             archive)
     {
-      Large             n;
-      Large             e;
+      struct OnExit
+        {
+          bool              track;
+          Large             n;
+          Large             e;
+          OnExit() : track(false) {}
+          ~OnExit()
+          {
+            if (!this->track)
+              return;
+            ::BN_free(&this->n); //XXX BN_free or BN_clear_free ?
+            ::BN_free(&this->e);
+          }
+        } scope;
 
-      wrap(n);
-      wrap(e);
-      enterx(local(n, ::BN_free),
-             local(e, ::BN_free));
 
       // extract the numbers.
-      if (archive.Extract(n, e) == StatusError)
+      if (archive.Extract(scope.n, scope.e) == StatusError)
         escape("unable to extract the internal numbers");
 
       // track the local variables.
-      track(n);
-      track(e);
+      scope.track = true;
 
       // create the EVP_PKEY object from the extract numbers.
-      if (this->Create(::BN_dup(&n),
-                       ::BN_dup(&e)) == StatusError)
+      if (this->Create(::BN_dup(&scope.n),
+                       ::BN_dup(&scope.e)) == StatusError)
         escape("unable to create the public key from the archive");
 
       // release the internal used memory.
-      ::BN_clear_free(&n);
-      ::BN_clear_free(&e);
+      ::BN_clear_free(&scope.n);
+      ::BN_clear_free(&scope.e);
 
       // stop tracking since those variables are going to be naturally
       // released soon.
-      untrack(n);
-      untrack(e);
+      scope.track = false;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }
