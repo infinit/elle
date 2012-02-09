@@ -13,6 +13,7 @@
 //
 
 #include <package/module/CodingStandard.hh>
+
 #include <infinit-dependency-1.hh>
 #include <infinit-dependency-2.hh>
 
@@ -21,74 +22,208 @@
 # include <library-dependency.h>
 #include <idiom/Open.hh>
 
-namespace package
-{
-  namespace module
-  {
+/*
+ * the 'using namespace' is used to reduce the indentation
+ * in source files.
+ */
+using namespace package::module;
 
 //
 // ---------- definitions -----------------------------------------------------
 //
 
-    ///
-    /// this variable is a constant.
-    ///
-    const Natural32             CodingStandard::Constant1;
+///
+/// this variable is a constant.
+///
+const Natural32             CodingStandard::Constant1;
 
-    ///
-    /// this variable is a static attribute.
-    ///
-    Natural32                   CodingStandard::Attribute1;
+///
+/// this variable is a static attribute.
+///
+Natural32                   CodingStandard::Attribute1;
 
 //
 // ---------- static methods --------------------------------------------------
 //
 
-    ///
-    /// description of the method.
-    ///
-    Status              CodingStandard::Method1()
+///
+/// this description explains what the method does.
+///
+Status              CodingStandard::Method1()
+{
+  /*
+   * one must align the variable declarations so as to easily and quickly
+   * identify the type and name.
+   */
+  std::list<Natural32>      list;
+
+  /*
+   * one must rely on the C++11 features such as auto in order to recude
+   * the code size though it may sometimes not be clear what type is
+   * being used.
+   *
+   * the developer should therefore use auto when its use is unambiguous.
+   */
+  auto                      iterator = list.begin();
+  auto                      end = list.end();
+
+  /*
+   * every block of logically related operations must be commented so
+   * as to explain what is being done.
+   */
+  //
+  // comment describing the following operations.
+  //
+
+  /*
+   * note that the identation is always composed of two characters
+   * even for the brackets following a for (...) or if (...)
+   */
+  for (; iterator != end; ++iterator)
     {
-      enter();
-
-      // nothing to do.
-
-      leave();
+      [...]
     }
+
+  return (StatusOk);
+}
 
 //
 // ---------- constructors & destructors --------------------------------------
 //
 
-    ///
-    /// description of the constructor.
-    ///
-    CodingStandard::CodingStandard():
-      attribute1(1),
-      attribute2(2),
-      attribute3(3)
-    {
-    }
+///
+/// description of the constructor.
+///
+CodingStandard::CodingStandard():
+  /*
+   * every attribute is initialized on its own line.
+   */
+  _attribute1(1.1),
+  _attribute2(2)
+{
+}
+
+//
+// ---------- getters & setters -----------------------------------------------
+//
+
+///
+/// return the attribute.
+///
+Real                CodingStandard::attribute1()
+{
+  /*
+   * the return statement must be used with parentheses since it is
+   * a keyword very much as if (...), sizeof (...), for (...) etc.
+   *
+   * however, this rule is relatively flexible as most
+   * 'return StatusOk' are performed without parentheses.
+   */
+  return (this->_attribute1);
+}
+
+///
+/// set the attribute.
+///
+Void                CodingStandard::attribute1(const Real&  attribute1)
+{
+  /*
+   * one must understand two rules when accessing attributes.
+   *
+   * firstly, attributes are named with a prefixed underscore in order
+   * to more easily detect wrong modifications in names; for instance
+   * one renaming the argument attribute1 in somethingelse1 would
+   * note see any error (assuming no underscore prefix is used for
+   * attributes) because naming 'attribute1' without 'this->' would
+   * still be valid. by prefixing attributes, an error would be
+   * generated.
+   *
+   * secondly, 'this->' must be used *at all times* in order to
+   * make it clear that the attribute is accessed while limiting
+   * further naming problems.
+   */
+  this->_attribute1 = attribute1;
+}
 
 //
 // ---------- methods ---------------------------------------------------------
 //
 
-    ///
-    /// description of the method.
-    ///
-    Status              CodingStandard::Method4(const String&   attribute2)
-    {
-      enter();
+///
+/// description of the method.
+///
+/*
+ * one must align the method arguments so as to easily detect the
+ * type and name of the arguments.
+ */
+Status              CodingStandard::Method(SomeOtherClass&          soc,
+                                           const Natural32          index)
+{
+  /*
+   * note that C++ casts such as static_cast, dynamic_cast and
+   * reinterpret_cast must be used instead of old-style C casts.
+   *
+   * note that sometimes, it is more readable to put every argument
+   * of a method call on its own line rather than having an
+   * extremely long call.
+   */
+  soc.ComputeSomething(index,
+                       static_cast<Natural64>(this->_attribute2));
 
-      // set the attribute: note that *this* is always used to refer
-      // the attributes.
-      this->attribute2 = attribute2;
-
-      leave();
-    }
-
-  }
+  return (StatusOk);
 }
 
-#endif
+///
+/// description of the method.
+///
+/*
+ * every method which needs to return information cannot do it through
+ * the return value, with the exception of getters of course.
+ *
+ * therefore, an output argument is used for that purpose. note that
+ * such output arguments always follow input arguments which are
+ * set as 'const' since immutable, as shown in this 'Method4'.
+ */
+Status              CodingStandard::Method4(const String&           input1,
+                                            const Natural32         input2,
+                                            Real                    output3)
+{
+  /*
+   * one must declare one local variable per line and never use
+   * delcarations such as:
+   *
+   *   auto         iterator = list.begin(),
+   *                  end = list.end();
+   *
+   * where it is difficult to know if two variables are being declared
+   * or a single one with a complicated initialization expression.
+   */
+  Natural32         length;
+  Natural32         i;
+
+  //
+  // do something.
+  //
+
+  if (string.empty() == true)
+    /*
+     * errors must be returned through the escape() macro-function
+     * until another way is used in order to avoid using macro-functions:
+     *
+     *   return Error("this string is empty and should not");
+     *
+     * note that exceptions are never thrown!
+     */
+    escape("the string is empty and should not");
+
+  if (input2 > 42)
+    {
+      outpu3 = 0.1;
+    }
+  else
+    {
+      output3 = 0.2;
+    }
+
+  return (StatusOk);
+}

@@ -12,6 +12,8 @@
  - boost::timer
  - boost::socket
 
+- bouger le .conf et .log dans network/
+
 #
 # ---------- bugs -------------------------------------------------------------
 #

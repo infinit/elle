@@ -7,13 +7,13 @@ add_custom_command(
 
 add_custom_command(
   OUTPUT  8dictionary
-  COMMAND cp ../../applications/8dictionary/8dictionary 8dictionary && strip -s 8dictionary
+  COMMAND cp ../../satellites/dictionary/8dictionary 8dictionary && strip -s 8dictionary
   DEPENDS 8dictionary
 )
 
 add_custom_command(
   OUTPUT  8access
-  COMMAND cp ../../applications/8access/8access 8access && strip -s 8access
+  COMMAND cp ../../satellites/access/8access 8access && strip -s 8access
   DEPENDS 8access
 )
 
