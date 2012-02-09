@@ -11,12 +11,12 @@
 #ifndef ELLE_RADIX_TRACE_HH
 #define ELLE_RADIX_TRACE_HH
 
+#include <elle/system/Platform.hh>
+
 #if defined(INFINIT_LINUX)
 //
 // ---------- includes --------------------------------------------------------
 //
-
-#include <elle/system/Platform.hh>
 
 #include <elle/core/Character.hh>
 #include <elle/core/Void.hh>
