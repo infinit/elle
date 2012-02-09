@@ -69,51 +69,30 @@ namespace elle
                                             >                   object,
                                           Stream&               stream)
     {
-      Selectionoid<
-        C<
-          Status,
-          Parameters<T...>
-          >
-        >*                      selectionoid;
-      std::pair<
-        Signal<
-          Parameters<T...>
-          >::Iterator,
-        Boolean
-        >                       result;
-
-      enterx(instance(selectionoid));
+      typedef Selectionoid<C<Status, Parameters<T...>>> OID;
+      typedef Signal<Parameters<T...>>::Stream Stream;
+      typedef Signal< Parameters<T...>>::Functionoid Functionoid;
+      typedef std::pair<Stream const , Functionoid*> ValueType;
 
       // increment the counter and set the stream.
       stream = ++this->counter;
 
       // create a new selectionoid.
-      selectionoid =
-        new Selectionoid<
-          C<
-            Status,
-            Parameters<T...>
-            >
-          >(object);
+      auto selectionoid = new OID(object);
 
       // insert the selectionoid in the container.
-      result = this->container.insert(
-                 std::pair<const Signal<
-                             Parameters<T...>
-                             >::Stream,
-                           Signal<
-                             Parameters<T...>
-                             >::Functionoid*>(this->counter,
-                                              selectionoid));
+      auto result = this->container.insert(
+          ValueType(this->counter, selectionoid)
+      );
 
       // check if the insertion was successful.
       if (result.second == false)
-        escape("unable to insert the selectoinoid in the container");
+        {
+          delete selectionoid;
+          escape("unable to insert the selectoinoid in the container");
+        }
 
-      // waive the selectionoid tracking.
-      waive(selectionoid);
-
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -125,8 +104,6 @@ namespace elle
     {
       Signal< Parameters<T...> >::Functionoid*  functionoid;
       Signal< Parameters<T...> >::Iterator      iterator;
-
-      enter();
 
       // locate the functionoid.
       if ((iterator = this->container.find(stream)) != this->container.end())
@@ -141,7 +118,7 @@ namespace elle
       // remove the functionoid from the container.
       this->container.erase(iterator);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -153,7 +130,7 @@ namespace elle
     {
       Signal< Parameters<T...> >::Scoutor       scoutor;
 
-      enter();
+      ;
 
       // go through the container.
       for (scoutor = this->container.begin();
@@ -171,7 +148,7 @@ namespace elle
             }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -183,7 +160,7 @@ namespace elle
     {
       Signal< Parameters<T...> >::Scoutor       scoutor;
 
-      enter();
+      ;
 
       // go through the container.
       for (scoutor = this->container.begin();
@@ -200,7 +177,7 @@ namespace elle
       // clear the container.
       this->container.clear();
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -240,13 +217,13 @@ namespace elle
     Signal< Parameters<T...> >::
      Selectionoid<Y>::Dump(const Natural32                      margin) const
     {
-      enter();
+      ;
 
       // dump the object.
       if (this->object.Dump(margin) == StatusError)
         escape("unable to dump the object");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

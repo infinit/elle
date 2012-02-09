@@ -50,12 +50,10 @@ namespace elle
     ///
     Status              Time::Current()
     {
-      enter();
-
       // gets the number of nanoseconds since Epoch UTC
       this->nanoseconds = ::QDateTime::currentMSecsSinceEpoch() * 1000000;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -63,12 +61,10 @@ namespace elle
     ///
     Status              Time::Get(::time_t&                     time) const
     {
-      enter();
-
       // set the time i.e in seconds.
       time = this->nanoseconds / 1000000000;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -76,11 +72,9 @@ namespace elle
     ///
     Status              Time::Set(const ::time_t&               time)
     {
-      enter();
-
       this->nanoseconds = time * 1000000000;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -88,12 +82,10 @@ namespace elle
     ///
     Status              Time::Get(::QDateTime&                  dt) const
     {
-      enter();
-
       // set the date/time.
       dt.setMSecsSinceEpoch(this->nanoseconds / 1000000);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -101,12 +93,10 @@ namespace elle
     ///
     Status              Time::Set(const ::QDateTime&            dt)
     {
-      enter();
-
       // set the attributes.
       this->nanoseconds = dt.toMSecsSinceEpoch() * 1000000;
 
-      leave();
+      return elle::StatusOk;
     }
 
 #if defined(INFINIT_WINDOWS)
@@ -115,8 +105,6 @@ namespace elle
     ///
     Status              Time::Get(::FILETIME&                   ft) const
     {
-      enter();
-
       ULARGE_INTEGER    value;
 
       // quad part is in 100ns, since 1601-01-01 ... fuck ms
@@ -127,7 +115,7 @@ namespace elle
       ft.dwLowDateTime  = value.LowPart;
       ft.dwHighDateTime = value.HighPart;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -135,8 +123,6 @@ namespace elle
     ///
     Status              Time::Set(const ::FILETIME&             ft)
     {
-      enter();
-
       ULARGE_INTEGER    value;
 
       value.LowPart = ft.dwLowDateTime;
@@ -144,7 +130,7 @@ namespace elle
 
       this->nanoseconds = value.QuadPart * 100;
 
-      leave();
+      return elle::StatusOk;
     }
 #endif
 
@@ -157,12 +143,10 @@ namespace elle
     ///
     Boolean             Time::operator==(const Time&            element) const
     {
-      enter();
-
       if (this->nanoseconds != element.nanoseconds)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -170,12 +154,10 @@ namespace elle
     ///
     Boolean             Time::operator<(const Time&             element) const
     {
-      enter();
-
       if (this->nanoseconds < element.nanoseconds)
-        true();
+        return elle::StatusTrue;
 
-      false();
+      return elle::StatusFalse;
     }
 
     ///
@@ -183,12 +165,10 @@ namespace elle
     ///
     Boolean             Time::operator>(const Time&             element) const
     {
-      enter();
-
       if (this->nanoseconds > element.nanoseconds)
-        true();
+        return elle::StatusTrue;
 
-      false();
+      return elle::StatusFalse;
     }
 
     ///
@@ -221,8 +201,6 @@ namespace elle
     Time                Time::operator+(const Duration&         duration)
     {
       Time              result(*this);
-
-      enter();
 
       // depending on the unit.
       switch (duration.unit)
@@ -271,9 +249,6 @@ namespace elle
         }
 
     _return:
-      // release.
-      release();
-
       return (result);
     }
 
@@ -283,8 +258,6 @@ namespace elle
     Time                Time::operator-(const Duration&         duration)
     {
       Time              result(*this);
-
-      enter();
 
       // depending on the unit.
       switch (duration.unit)
@@ -334,9 +307,6 @@ namespace elle
 
     _return:
 
-      // release.
-      release();
-
       return (result);
     }
 
@@ -358,8 +328,6 @@ namespace elle
       ::tm*             tm;
       ::time_t          time;
 
-      enter();
-
       // convert the nanoseconds in a time_t.
       time = this->nanoseconds / 1000000000;
 
@@ -375,7 +343,7 @@ namespace elle
                 << "." << (this->nanoseconds % 1000)
                 << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -387,13 +355,11 @@ namespace elle
     ///
     Status              Time::Serialize(Archive&                archive) const
     {
-      enter();
-
       // serialize the internal attributes.
       if (archive.Serialize(this->nanoseconds) == StatusError)
         escape("unable to serialize the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -401,13 +367,11 @@ namespace elle
     ///
     Status              Time::Extract(Archive&                  archive)
     {
-      enter();
-
       // extract the internal attributes.
       if (archive.Extract(this->nanoseconds) == StatusError)
         escape("unable to extract the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

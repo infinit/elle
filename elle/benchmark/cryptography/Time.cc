@@ -28,11 +28,11 @@ namespace elle
     ///
     Status              Time::Start()
     {
-      enter();
+      ;
 
       ::gettimeofday(&this->start, NULL);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -40,11 +40,11 @@ namespace elle
     ///
     Status              Time::Stop()
     {
-      enter();
+      ;
 
       ::gettimeofday(&this->stop, NULL);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -54,7 +54,7 @@ namespace elle
     {
       Natural32         useconds;
 
-      enter();
+      ;
 
       useconds =
         ((this->stop.tv_sec * 1000000.0) + this->stop.tv_usec) -
@@ -66,7 +66,7 @@ namespace elle
 
       std::cout << mseconds << " ms";
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

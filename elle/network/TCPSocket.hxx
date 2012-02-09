@@ -45,7 +45,7 @@ namespace elle
       Data              data;
       Header            header;
 
-      enter();
+      ;
 
       // create an data for the inputs.
       if (data.Create() == StatusError)
@@ -73,7 +73,7 @@ namespace elle
       if (this->Write(packet) == StatusError)
         escape("unable to write the socket");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -83,13 +83,13 @@ namespace elle
     Status              TCPSocket::Receive(const Event&         event,
                                            O                    outputs)
     {
-      Parcel*           parcel;
-
-      enterx(instance(parcel));
+      std::shared_ptr<Parcel> parcel;
 
       // block the current fiber until the given event is received.
       if (Fiber::Wait(event, parcel) == StatusError)
         escape("an error occured while waiting for a specific event");
+
+      assert(parcel.get() != nullptr && "The event should have filled the parcel");
 
       // check the tag.
       if (parcel->header->tag != outputs.tag)
@@ -119,10 +119,6 @@ namespace elle
               // able to treat it.
               if (Socket::Ship(parcel) == StatusError)
                 log("an error occured while shipping the parcel");
-
-              // stop tracking the parcel since Ship() will have taken
-              // care of it.
-              waive(parcel);
             }
 
           // in any case, return an error from the Receive() method.
@@ -134,13 +130,7 @@ namespace elle
       if (outputs.Extract(*parcel->data) == StatusError)
         escape("unable to extract the arguments");
 
-      // delete the parcel.
-      delete parcel;
-
-      // stop tracking the parcel since it has just been deleted.
-      waive(parcel);
-
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -152,8 +142,6 @@ namespace elle
                                         O                       outputs)
     {
       Event             event;
-
-      enter();
 
       // generate an event to link the request with the response.
       if (event.Generate() == StatusError)
@@ -167,7 +155,7 @@ namespace elle
       if (this->Receive(event, outputs) == StatusError)
         escape("unable to receive the outputs");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -178,7 +166,7 @@ namespace elle
     Status              TCPSocket::Reply(const I                inputs,
                                          Session*               session)
     {
-      enter();
+      ;
 
       // retrieve the current session, if necessary.
       if (session == NULL)
@@ -192,7 +180,7 @@ namespace elle
       if (this->Send(inputs, session->event) == StatusError)
         escape("unable to send the reply");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

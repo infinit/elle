@@ -42,24 +42,20 @@ namespace elle
       //
       Status            Save(Unique&                            unique) const
       {
-        enter();
-
         // encode the object in hexadecimal.
         if (Hexadecimal::Encode(*this, unique) == StatusError)
           escape("unable to encode the object in hexadecimal");
 
-        leave();
+        return elle::StatusOk;
       }
 
       Status            Restore(const Unique&                   unique)
       {
-        enter();
-
         // decode the unique and reconstitute the object.
         if (Hexadecimal::Decode(unique, *this) == StatusError)
           escape("unable to decode the hexadecimal unique");
 
-        leave();
+        return elle::StatusOk;
       }
     };
 
@@ -80,24 +76,20 @@ namespace elle
       //
       Status            Save(Unique&                            unique) const
       {
-        enter();
-
         // encode the object in base64.
         if (Base64::Encode(*this, unique) == StatusError)
           escape("unable to encode the object in base64");
 
-        leave();
+        return elle::StatusOk;
       }
 
       Status            Restore(const Unique&                   unique)
       {
-        enter();
-
         // decode the unique and reconstitute the object.
         if (Base64::Decode(unique, *this) == StatusError)
           escape("unable to decode the base64 unique");
 
-        leave();
+        return elle::StatusOk;
       }
     };
 
@@ -118,15 +110,11 @@ namespace elle
       //
       virtual Status    Save(Unique&) const
       {
-        enter();
-
         escape("this method should never have been called");
       }
 
       virtual Status    Restore(const Unique&)
       {
-        enter();
-
         escape("this method should never have been called");
       }
     };
@@ -151,17 +139,12 @@ namespace std
   {
     elle::io::Unique                    unique;
 
-    enter();
-
     // generate the unique identifier.
     if (object.Save(unique) == elle::radix::StatusError)
       yield(stream, "unable to save the object");
 
     // display the unique in its entirety.
     stream << unique;
-
-    // release.
-    release();
 
     return (stream);
   }

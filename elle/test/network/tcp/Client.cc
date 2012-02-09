@@ -28,13 +28,13 @@ namespace elle
     ///
     Status              Client::Setup(const String&             line)
     {
-      enter();
+      ;
 
       // create the locus.
       if (this->locus.Create(line) == StatusError)
         escape("unable to create the locus");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -42,7 +42,7 @@ namespace elle
     ///
     Status              Client::Run()
     {
-      enter();
+      ;
 
       std::cout << "[locus]" << std::endl;
       this->locus.Dump();
@@ -61,7 +61,7 @@ namespace elle
       if (this->socket.Connect(this->locus) == StatusError)
         escape("unable to connect to the bridge");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -75,7 +75,7 @@ namespace elle
     {
       String            response("RESPONSE");
 
-      enter();
+      ;
 
       // simply display the text.
       std::cout << "[Challenge] " << text << std::endl;
@@ -85,7 +85,7 @@ namespace elle
             Inputs<TagResponse>(response)) == StatusError)
         escape("unable to return the response");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

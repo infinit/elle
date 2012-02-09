@@ -34,13 +34,13 @@ namespace elle
     Status              Environment::Store(const String&        name,
                                            T*                   value)
     {
-      enter();
+      ;
 
       // push the (name, value) tuple.
       this->container.push_back(
         Environment::Value(name, static_cast<Meta*>(value)));
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -52,7 +52,7 @@ namespace elle
     {
       Environment::Iterator     iterator;
 
-      enter();
+      ;
 
       // go through the elements.
       for (iterator = this->container.begin();
@@ -68,7 +68,7 @@ namespace elle
               // remove the item
               this->container.erase(iterator);
 
-              leave();
+              return elle::StatusOk;
             }
         }
 

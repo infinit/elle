@@ -135,12 +135,10 @@ namespace elle
     Status              Variable::Convert(const T&              input,
                                           T&                    output)
     {
-      enter();
-
       // copy.
       output = input;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -153,8 +151,6 @@ namespace elle
     {
       String            string;
 
-      enter();
-
       // convert the input into a string-based format.
       if (Variable::Convert(input, string) == StatusError)
         escape("unable to convert the input into a string");
@@ -163,7 +159,7 @@ namespace elle
       if (Variable::Convert(string, output) == StatusError)
         escape("unable to convert the string into the output");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -317,7 +317,7 @@ namespace elle
       if (Elle::Clean() == StatusError)
         escape("unable to clean the Elle library");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

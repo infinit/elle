@@ -29,7 +29,7 @@ namespace elle
       Server            server;
       Client            client;
 
-      enter();
+      ;
 
       // check the arguments.
       if (argc != 3)
@@ -80,7 +80,7 @@ namespace elle
       if (Elle::Clean() == StatusError)
         escape("unable to clean the Elle library");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -71,8 +71,6 @@ namespace elle
     ///
     Status              TCPSocket::Create()
     {
-      enter();
-
       // allocate a new socket.
       this->socket = new ::QTcpSocket;
 
@@ -101,7 +99,7 @@ namespace elle
             SLOT(_error(const QAbstractSocket::SocketError))) == false)
         escape("unable to connect to signal");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -109,8 +107,6 @@ namespace elle
     ///
     Status              TCPSocket::Create(::QTcpSocket*         socket)
     {
-      enter();
-
       // set the socket.
       this->socket = socket;
 
@@ -142,7 +138,7 @@ namespace elle
       // set the socket as being connected.
       this->state = AbstractSocket::StateConnected;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -152,8 +148,6 @@ namespace elle
                           const Locus&                          locus,
                           const Socket::Mode                    mode)
     {
-      enter();
-
       // update the state.
       this->state = AbstractSocket::StateConnecting;
 
@@ -193,7 +187,7 @@ namespace elle
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -201,12 +195,9 @@ namespace elle
     ///
     Status              TCPSocket::Disconnect()
     {
-      enter();
-
       // disconnect the socket from the server.
       this->socket->disconnectFromHost();
-
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -214,8 +205,6 @@ namespace elle
     ///
     Status              TCPSocket::Write(const Packet&          packet)
     {
-      enter();
-
       // check that the socket is connected.
       if (this->state != AbstractSocket::StateConnected)
         escape("the socket does not seem to have been connected");
@@ -235,7 +224,7 @@ namespace elle
       // flush to start sending data immediately.
       this->socket->flush();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -243,8 +232,6 @@ namespace elle
     ///
     Status              TCPSocket::Read()
     {
-      enter();
-
       // check that the socket is connected.
       if (this->state != AbstractSocket::StateConnected)
         escape("the socket does not seem to have been connected");
@@ -260,7 +247,7 @@ namespace elle
 
         // check if there is data to be read.
         if (size == 0)
-          leave();
+          return elle::StatusOk;
 
         // adjust the buffer.
         if (this->buffer == NULL)
@@ -290,7 +277,7 @@ namespace elle
         this->buffer->size = this->buffer->size + size;
       }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -299,8 +286,6 @@ namespace elle
     ///
     Status              TCPSocket::Fetch()
     {
-      enter();
-
       //
       // try to extract a serie of packet from the received raw.
       //
@@ -308,9 +293,6 @@ namespace elle
         {
           Packet        packet;
           Region        frame;
-          Parcel*       parcel;
-
-          enterx(instance(parcel));
 
           // create the frame based on the previously extracted raw.
           if (frame.Wrap(this->buffer->contents + this->offset,
@@ -322,7 +304,7 @@ namespace elle
             escape("unable to prepare the packet");
 
           // allocate the parcel.
-          parcel = new Parcel;
+          auto parcel = std::unique_ptr<Parcel>(new Parcel);
 
           // extract the header.
           if (parcel->header->Extract(packet) == StatusError)
@@ -345,12 +327,6 @@ namespace elle
               if ((this->buffer->size - this->offset) >
                   AbstractSocket::Capacity)
                 goto _disconnect;
-
-              // since the parcel will not be built, delete the instance.
-              delete parcel;
-
-              // waive tracking.
-              waive(parcel);
 
               // exit the loop since there is not enough data anyway.
               break;
@@ -378,19 +354,14 @@ namespace elle
                     parcel->header->event) == StatusError)
                 escape("unable to create the session");
 
-              // add the parcel to the container.
-              this->queue.push_back(parcel);
-
-              // stop tracking the parcel.
-              waive(parcel);
+              // add the parcel to the container, and stop tracking it
+              this->queue.push_back(parcel.release());
 
               // move to the next frame by setting the offset at the end of
               // the extracted frame.
               this->offset = this->offset + packet.offset;
             }
 
-          // release objects.
-          release();
         }
 
       //
@@ -428,7 +399,7 @@ namespace elle
           }
       }
 
-      leave();
+      return elle::StatusOk;
 
     _disconnect:
       // purge the errors message.
@@ -437,7 +408,7 @@ namespace elle
       // disconnect the socket.
       this->Disconnect();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -447,8 +418,6 @@ namespace elle
     {
       Host              host;
       Port              port;
-
-      enter();
 
       // check that the socket is connected.
       if (this->state != AbstractSocket::StateConnected)
@@ -466,7 +435,7 @@ namespace elle
       if (locus.Create(host, port) == StatusError)
         escape("unable to create the locus");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -480,8 +449,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
       Locus             locus;
-
-      enter();
 
       std::cout << alignment << "[TCPSocket]" << std::endl;
 
@@ -497,7 +464,7 @@ namespace elle
       if (locus.Dump(margin + 2) == StatusError)
         escape("unable to dump the locus");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -509,8 +476,6 @@ namespace elle
     ///
     Status              TCPSocket::Dispatch()
     {
-      enter();
-
       // first read from the socket.
       if (this->Read() == StatusError)
         escape("unable to read from the socket");
@@ -522,12 +487,8 @@ namespace elle
       // process the queued parcels.
       while (this->queue.empty() == false)
         {
-          Parcel*       parcel;
-
-          enterx(instance(parcel));
-
           // finally, take the oldest parcel and return it.
-          parcel = this->queue.front();
+          auto parcel = std::shared_ptr<Parcel>(this->queue.front());
 
           // remove this packet.
           this->queue.pop_front();
@@ -535,15 +496,9 @@ namespace elle
           // trigger the network shipment mechanism.
           if (Socket::Ship(parcel) == StatusError)
             log("an error occured while shipping the parcel");
-
-          // stop tracking the parcel since Ship() will have taken
-          // care of it.
-          waive(parcel);
-
-          release();
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -552,8 +507,6 @@ namespace elle
     ///
     Status              TCPSocket::Abort()
     {
-      enter();
-
       // delete the timer.
       delete this->timer;
 
@@ -567,8 +520,7 @@ namespace elle
           if (this->Disconnect() == StatusError)
             escape("unable to disconnect the socket");
         }
-
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -588,16 +540,12 @@ namespace elle
                                                     >::Emit,
                                                   &this->signal.connected));
 
-      enter();
-
       // set the state.
       this->state = AbstractSocket::StateConnected;
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
         yield(_(), "unable to spawn a fiber");
-
-      release();
     }
 
     ///
@@ -613,16 +561,12 @@ namespace elle
                                                     >::Emit,
                                                   &this->signal.disconnected));
 
-      enter();
-
       // set the state.
       this->state = AbstractSocket::StateDisconnected;
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
         yield(_(), "unable to spawn a fiber");
-
-      release();
     }
 
     ///
@@ -638,13 +582,9 @@ namespace elle
                                                     >::Emit,
                                                   &this->signal.ready));
 
-      enter();
-
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
         yield(_(), "unable to spawn a fiber");
-
-      release();
     }
 
     ///
@@ -671,13 +611,9 @@ namespace elle
                                                   &this->signal.error),
                                 cause);
 
-      enter();
-
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
         yield(_(), "unable to spawn a fiber");
-
-      release();
     }
 
   }

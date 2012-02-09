@@ -31,13 +31,13 @@ namespace elle
     ///
     Status              Radix::Initialize()
     {
-      enter();
+      ;
 
       // initialize the meta class.
       if (Meta::Initialize() == StatusError)
         escape("unable to initialize the meta class");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -45,13 +45,13 @@ namespace elle
     ///
     Status              Radix::Clean()
     {
-      enter();
+      ;
 
       // clean the meta class.
       if (Meta::Clean() == StatusError)
         escape("unable to clean the meta class");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

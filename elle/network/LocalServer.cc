@@ -71,8 +71,6 @@ namespace elle
     ///
     Status              LocalServerPorter::Create(const String& name)
     {
-      enter();
-
       // set the name.
       this->name = name;
 
@@ -88,7 +86,7 @@ namespace elle
                         this, SLOT(_accept())) == false)
         escape("unable to connect the signal");
 
-      leave();
+      return elle::StatusOk;
     }
 
     //
@@ -100,11 +98,9 @@ namespace elle
     ///
     Status              LocalServer::Initialize()
     {
-      enter();
-
       // nothing to do.
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -113,8 +109,6 @@ namespace elle
     Status              LocalServer::Clean()
     {
       LocalServer::Scoutor      scoutor;
-
-      enter();
 
       // go through the porters.
       for (scoutor = LocalServer::Porters.begin();
@@ -127,7 +121,7 @@ namespace elle
           delete porter;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -147,34 +141,32 @@ namespace elle
                                                 Parameters<LocalSocket*>
                                                 >&              callback)
     {
-      std::pair<LocalServer::Iterator, Boolean> result;
-      LocalServerPorter*                        porter;
-
-      enterx(instance(porter));
+      typedef std::unique_ptr<LocalServerPorter> ServerPtr;
 
       // check if this name is not already listened on.
       if (LocalServer::Locate(name) == StatusTrue)
         escape("this name seems to have already been registered");
 
       // allocate a new porter.
-      porter = new LocalServerPorter(callback);
+      auto porter = ServerPtr(new LocalServerPorter(callback));
 
       // create the porter.
       if (porter->Create(name) == StatusError)
         escape("unable to create the porter");
 
       // insert the porter in the container.
-      result = LocalServer::Porters.insert(
-                 std::pair<const String, LocalServerPorter*>(name, porter));
+      auto result = LocalServer::Porters.insert(
+          std::pair<const String, LocalServerPorter*>(name, porter.get())
+      );
 
       // check if the insertion was successful.
       if (result.second == false)
         escape("unable to insert the porter in the container");
 
       // stop tracking porter.
-      waive(porter);
+      porter.release();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -186,22 +178,20 @@ namespace elle
       LocalServer::Iterator     iterator;
       LocalServerPorter*        porter;
 
-      enter();
-
       // locate the porter.
       if (LocalServer::Locate(name, &iterator) == StatusFalse)
         escape("unable to locate the given porter");
 
       // retrieve the porter.
       porter = iterator->second;
-      
+
       // delete the porter.
       delete porter;
 
       // remove the entry from the container.
       LocalServer::Porters.erase(iterator);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -212,8 +202,6 @@ namespace elle
     {
       LocalServer::Iterator     iterator;
 
-      enter();
-
       // locate the porter.
       if (LocalServer::Locate(name, &iterator) == StatusFalse)
         escape("unable to locate the given porter");
@@ -221,7 +209,7 @@ namespace elle
       // retrieve the porter.
       porter = iterator->second;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -233,18 +221,16 @@ namespace elle
     {
       LocalServer::Iterator     i;
 
-      enter();
-
       // try to locate the porter.
       if ((i = LocalServer::Porters.find(name)) != LocalServer::Porters.end())
         {
           if (iterator != NULL)
             *iterator = i;
 
-          true();
+          return elle::StatusTrue;
         }
 
-      false();
+      return elle::StatusFalse;
     }
 
 //
@@ -262,8 +248,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
-
       std::cout << alignment << "[Porter]" << std::endl;
 
       // dump the server address.
@@ -278,7 +262,7 @@ namespace elle
       if (this->callback.Dump(margin + 2) == StatusError)
         escape("unable to dump the callback");
 
-      leave();
+      return elle::StatusOk;
     }
 
     //
@@ -292,8 +276,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
       LocalServer::Scoutor      scoutor;
-
-      enter();
 
       std::cout << alignment << "[LocalServer]" << std::endl;
 
@@ -309,7 +291,7 @@ namespace elle
             escape("unable to dump the porter");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -322,29 +304,26 @@ namespace elle
     Status              LocalServerPorter::Accept()
     {
       ::QLocalSocket*   connection;
-      LocalSocket*      socket;
-
-      enterx(instance(socket));
 
       // retrieve the connection from the server.
       if ((connection = this->server->nextPendingConnection()) == NULL)
         escape(this->server->errorString().toStdString().c_str());
 
       // allocate a new socket to this server.
-      socket = new LocalSocket;
+      auto socket = std::unique_ptr<LocalSocket>(new LocalSocket);
 
       // create a socket with the specific connection.
       if (socket->Create(connection) == StatusError)
         escape("unable to create the socket");
 
       // call the callback.
-      if (this->callback.Call(socket) == StatusError)
+      if (this->callback.Call(socket.get()) == StatusError)
         escape("an error occured in the callback");
 
       // stop tracking socket as it has been handed to the callback.
-      waive(socket);
+      socket.release();
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -363,13 +342,9 @@ namespace elle
         >               closure(Callback<>::Infer(
                                   &LocalServerPorter::Accept, this));
 
-      enter();
-
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
         yield(_(), "unable to spawn a fiber");
-
-      release();
     }
 
  }

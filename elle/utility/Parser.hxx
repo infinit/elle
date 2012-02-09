@@ -76,7 +76,7 @@ namespace elle
     {
       Parser::Option*   option;
 
-      enter();
+      ;
 
       // locate the option.
       if (parser.Locate(name, option) == StatusFalse)
@@ -98,7 +98,7 @@ namespace elle
         escape("unable to convert the argument '%s' for the option '%s'",
                option->value->c_str(), name.c_str());
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -117,7 +117,7 @@ namespace elle
     {
       Parser::Option*   option;
 
-      enter();
+      ;
 
       // locate the option.
       if ((parser.Locate(name, option) == StatusTrue) &&
@@ -134,7 +134,7 @@ namespace elle
           value = D;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -152,7 +152,7 @@ namespace elle
     {
       Parser::Option*   option;
 
-      enter();
+      ;
 
       // locate the option.
       if (parser.Locate(name, option) == StatusFalse)
@@ -174,7 +174,7 @@ namespace elle
         escape("unable to restore the object '%s' for the option '%s'",
                option->value->c_str(), name.c_str());
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -195,7 +195,7 @@ namespace elle
     {
       Parser::Option*   option;
 
-      enter();
+      ;
 
       // locate the option.
       if ((parser.Locate(name, option) == StatusTrue) &&
@@ -221,7 +221,7 @@ namespace elle
                    unique.c_str(), name.c_str());
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //

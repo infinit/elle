@@ -100,15 +100,23 @@ namespace elle
       //
       // attributes
       //
-      ::EVP_PKEY*       key;
+    private:
+      ::EVP_PKEY*       _key;
 
       struct
       {
         ::EVP_PKEY_CTX* encrypt;
         ::EVP_PKEY_CTX* verify;
         ::EVP_PKEY_CTX* decrypt;
-      }                 contexts;
+      }                 _contexts;
 
+    public:
+      //
+      // properties
+      //
+      ::EVP_PKEY const* key() const { return this->_key; }
+
+    public:
       ///
       /// this methods are required because the compiler, given an Archive
       /// object will call a template-based method instead of the Plain one.
@@ -136,7 +144,7 @@ namespace elle
       {
         Clear           clear;
 
-        enter();
+        ;
 
         // decrypt the code.
         if (this->Decrypt(code, clear) == StatusError)
@@ -151,7 +159,7 @@ namespace elle
         if (clear.Detach() == StatusError)
           escape("unable to detach the clear's data");
 
-        leave();
+        return elle::StatusOk;
       }
 
       //

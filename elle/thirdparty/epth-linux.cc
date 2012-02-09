@@ -33,8 +33,6 @@ static ::pth_attr_t    epth_attribute;
 elle::radix::Status     epth_initialize(const elle::core::Natural32     size,
                                         t_epth&                         program)
 {
-  enter();
-
   //
   // initialize the Pth library.
   //
@@ -71,8 +69,6 @@ elle::radix::Status     epth_initialize(const elle::core::Natural32     size,
 ///
 elle::radix::Status     epth_clean()
 {
-  enter();
-
   //
   // destroy the pth attribute.
   //
@@ -99,8 +95,6 @@ elle::radix::Status     epth_spawn(void*                (*function)(void*),
                                    void*                argument,
                                    t_epth&              context)
 {
-  enter();
-
   //
   // spawn the new thread and set the fiber's context.
   //
@@ -123,8 +117,6 @@ elle::radix::Status     epth_spawn(void*                (*function)(void*),
 elle::radix::Status     epth_switch(const t_epth&,
                                     const t_epth&               to)
 {
-  enter();
-
   //
   // yield execution to the next thread (in Epth's terms).
   //
@@ -142,8 +134,6 @@ elle::radix::Status     epth_switch(const t_epth&,
 ///
 elle::radix::Status     epth_abort(const t_epth&                id)
 {
-  enter();
-
   //
   // abort the thread.
   //

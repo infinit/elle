@@ -74,7 +74,7 @@ namespace elle
     ///
     Status              SecretKey::Create(const String&         password)
     {
-      enter();
+      ;
 
       // assign the password to the internal key object.
       if (this->region.Duplicate(
@@ -82,7 +82,7 @@ namespace elle
             password.length()) == StatusError)
         escape("unable to assign the given password to the key");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -102,7 +102,7 @@ namespace elle
     {
       Natural32         size;
 
-      enter();
+      ;
 
       // convert the length in a byte-specific size.
       size = length / 8;
@@ -115,7 +115,7 @@ namespace elle
       if (Random::Generate(this->region, size) == StatusError)
         escape("unable to generate the region");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -129,10 +129,6 @@ namespace elle
       unsigned char     salt[PKCS5_SALT_LEN];
       Natural32         capacity;
       int               size;
-      ::EVP_CIPHER_CTX  context;
-
-      wrap(context);
-      enterx(local(context, ::EVP_CIPHER_CTX_cleanup));
 
       // generate a salt.
       ::RAND_pseudo_bytes(salt, sizeof (salt));
@@ -148,14 +144,16 @@ namespace elle
                            iv) != sizeof (key))
         escape("the generated key's size does not match the one expected");
 
-      // initialise the context.
-      ::EVP_CIPHER_CTX_init(&context);
+      struct Scope
+      {
+        ::EVP_CIPHER_CTX  context;
 
-      // track the context.
-      track(context);
+        Scope() { ::EVP_CIPHER_CTX_init(&this->context); }
+        ~Scope() { ::EVP_CIPHER_CTX_cleanup(&this->context); }
+      } scope;
 
       // initialise the ciphering process.
-      if (::EVP_EncryptInit_ex(&context,
+      if (::EVP_EncryptInit_ex(&scope.context,
                                SecretKey::Algorithms::Cipher,
                                NULL,
                                key,
@@ -163,7 +161,7 @@ namespace elle
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // retreive the cipher-specific block size.
-      capacity = ::EVP_CIPHER_CTX_block_size(&context);
+      capacity = ::EVP_CIPHER_CTX_block_size(&scope.context);
 
       // allocate the cipher.
       if (cipher.region.Prepare(sizeof (SecretKey::Magic) -
@@ -187,7 +185,7 @@ namespace elle
       cipher.region.size = sizeof (SecretKey::Magic) - 1 + sizeof (salt);
 
       // cipher the plain text.
-      if (::EVP_EncryptUpdate(&context,
+      if (::EVP_EncryptUpdate(&scope.context,
                               cipher.region.contents + cipher.region.size,
                               &size,
                               plain.contents,
@@ -198,7 +196,7 @@ namespace elle
       cipher.region.size += size;
 
       // finialise the ciphering process.
-      if (::EVP_EncryptFinal_ex(&context,
+      if (::EVP_EncryptFinal_ex(&scope.context,
                                 cipher.region.contents + cipher.region.size,
                                 &size) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
@@ -206,13 +204,7 @@ namespace elle
       // update the cipher size.
       cipher.region.size += size;
 
-      // clean the context structure.
-      ::EVP_CIPHER_CTX_cleanup(&context);
-
-      // stop tracking the context as it will be released naturally.
-      untrack(context);
-
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -226,10 +218,6 @@ namespace elle
       unsigned char     salt[PKCS5_SALT_LEN];
       Natural32         capacity;
       int               size;
-      ::EVP_CIPHER_CTX  context;
-
-      wrap(context);
-      enterx(local(context, ::EVP_CIPHER_CTX_cleanup));
 
       // check whether the cipher was produced with a salt.
       if (::memcmp(SecretKey::Magic,
@@ -253,15 +241,16 @@ namespace elle
                            iv) != sizeof (key))
         escape("the generated key's size does not match the one expected");
 
-      // initialise the context.
-      ::EVP_CIPHER_CTX_init(&context);
+      struct Scope
+      {
+        ::EVP_CIPHER_CTX  context;
+        Scope() { ::EVP_CIPHER_CTX_init(&this->context); }
+        ~Scope() { ::EVP_CIPHER_CTX_cleanup(&this->context); }
+      } scope;
 
-      // track the context since it has been initialised and therefore
-      // should be released properly should an error occur.
-      track(context);
 
       // initialise the ciphering process.
-      if (::EVP_DecryptInit_ex(&context,
+      if (::EVP_DecryptInit_ex(&scope.context,
                                SecretKey::Algorithms::Cipher,
                                NULL,
                                key,
@@ -269,7 +258,7 @@ namespace elle
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // retreive the cipher-specific block size.
-      capacity = ::EVP_CIPHER_CTX_block_size(&context);
+      capacity = ::EVP_CIPHER_CTX_block_size(&scope.context);
 
       // allocate the clear.
       if (clear.Prepare(cipher.region.size -
@@ -278,7 +267,7 @@ namespace elle
         escape("unable to reserve memory for the clear text");
 
       // cipher the cipher text.
-      if (::EVP_DecryptUpdate(&context,
+      if (::EVP_DecryptUpdate(&scope.context,
                               clear.contents,
                               &size,
                               cipher.region.contents +
@@ -293,7 +282,7 @@ namespace elle
       clear.size += size;
 
       // finalise the ciphering process.
-      if (::EVP_DecryptFinal_ex(&context,
+      if (::EVP_DecryptFinal_ex(&scope.context,
                                 clear.contents + size,
                                 &size) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
@@ -301,13 +290,7 @@ namespace elle
       // update the clear size.
       clear.size += size;
 
-      // clean the context structure.
-      ::EVP_CIPHER_CTX_cleanup(&context);
-
-      // stop tracking the context.
-      untrack(context);
-
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -319,17 +302,17 @@ namespace elle
     ///
     Boolean             SecretKey::operator==(const SecretKey&  element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the internal region.
       if (this->region != element.region)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -348,7 +331,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       // display the key depending on its value.
       if (*this == SecretKey::Null)
@@ -364,7 +347,7 @@ namespace elle
             escape("unable to dump the secret key");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -376,13 +359,13 @@ namespace elle
     ///
     Status              SecretKey::Serialize(Archive&           archive) const
     {
-      enter();
+      ;
 
       // serialize the internal key.
       if (archive.Serialize(this->region) == StatusError)
         escape("unable to serialize the internal key");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -390,13 +373,13 @@ namespace elle
     ///
     Status              SecretKey::Extract(Archive&             archive)
     {
-      enter();
+      ;
 
       // extract the key.
       if (archive.Extract(this->region) == StatusError)
         escape("unable to extract the internal key");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

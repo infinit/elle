@@ -63,7 +63,7 @@ namespace elle
     ///
     Status              Meta::Initialize()
     {
-      enter();
+      ;
 
       // if the debug has been activated.
       if (Meta::Debug::Status == true)
@@ -79,7 +79,7 @@ namespace elle
             escape("unable to enable the meta logging");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -87,7 +87,7 @@ namespace elle
     ///
     Status              Meta::Clean()
     {
-      enter();
+      ;
 
       // if traces exist, dump them.
       if (Meta::Debug::Status == true)
@@ -107,7 +107,7 @@ namespace elle
 #endif
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -115,12 +115,12 @@ namespace elle
     ///
     Status              Meta::Enable()
     {
-      enter();
+      ;
 
       // set the state.
       Meta::Debug::State = true;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -128,12 +128,12 @@ namespace elle
     ///
     Status              Meta::Disable()
     {
-      enter();
+      ;
 
       // set the state.
       Meta::Debug::State = false;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -143,7 +143,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Meta]" << std::endl;
 
@@ -157,7 +157,7 @@ namespace elle
 #endif
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //

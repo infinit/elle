@@ -28,7 +28,7 @@ namespace elle
     {
       Node              node;
 
-      enter();
+      ;
 
       // check the arguments.
       if (argc != 4)
@@ -67,7 +67,7 @@ namespace elle
       if (Elle::Clean() == StatusError)
         escape("unable to clean the Elle library");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

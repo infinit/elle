@@ -32,7 +32,7 @@ namespace elle
     {
       Natural32         i;
 
-      enter();
+      ;
 
       for (i = 0; i < n; i++)
         {
@@ -292,8 +292,6 @@ namespace elle
 
                 waive(buffer);
 
-                release();
-
                 break;
               }
             case Archive::TypeString:
@@ -356,7 +354,7 @@ namespace elle
             }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     Status              Pack::Verify(Archive&                   archive)
@@ -366,7 +364,7 @@ namespace elle
       void*             data;
       Natural32         size;
 
-      enter();
+      ;
 
       while (archive.offset != archive.size)
         {
@@ -570,8 +568,6 @@ namespace elle
 
                 waive(buffer);
 
-                release();
-
                 break;
               }
             case Archive::TypeString:
@@ -631,7 +627,7 @@ namespace elle
       if (Referee::List.empty() == false)
         escape("some elements remain in the referee's list");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }
