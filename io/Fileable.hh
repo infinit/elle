@@ -53,7 +53,7 @@ namespace elle
       ///
       Status            Load(const Path&)
       {
-        enter();
+        ;
 
         escape("this method should never have been called");
       }
@@ -63,7 +63,7 @@ namespace elle
       ///
       Status            Store(const Path&) const
       {
-        enter();
+        ;
 
         escape("this method should never have been called");
       }
@@ -73,7 +73,7 @@ namespace elle
       ///
       Status            Erase(const Path&) const
       {
-        enter();
+        ;
 
         escape("this method should never have been called");
       }
@@ -83,7 +83,7 @@ namespace elle
       ///
       Status            Exist(const Path&) const
       {
-        enter();
+        ;
 
         escape("this method should never have been called");
       }

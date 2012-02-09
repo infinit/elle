@@ -42,7 +42,7 @@ namespace elle
                                        const String&            prompt,
                                        const Console::Option    option)
     {
-      enter();
+      ;
 
       // retrieve the input depending on the option.
       switch (option)
@@ -64,7 +64,7 @@ namespace elle
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

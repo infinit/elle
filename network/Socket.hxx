@@ -38,7 +38,7 @@ namespace elle
                                      const Event&               event,
                                      const Locus&               locus)
     {
-      enter();
+      ;
 
       switch (this->type)
         {
@@ -72,7 +72,7 @@ namespace elle
     Status              Socket::Receive(const Event&            event,
                                         O                       outputs)
     {
-      enter();
+      ;
 
       switch (this->type)
         {
@@ -96,7 +96,7 @@ namespace elle
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -109,7 +109,7 @@ namespace elle
                                      O                          outputs,
                                      const Locus&               locus)
     {
-      enter();
+      ;
 
       switch (this->type)
         {
@@ -133,7 +133,7 @@ namespace elle
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -143,7 +143,7 @@ namespace elle
     Status              Socket::Reply(const I                   inputs,
                                       Session*                  session)
     {
-      enter();
+      ;
 
       switch (this->type)
         {
@@ -167,7 +167,7 @@ namespace elle
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

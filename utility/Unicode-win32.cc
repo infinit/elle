@@ -26,7 +26,7 @@ namespace elle
                     wchar_t **   output,
                     ssize_t *    output_size)
     {
-      enter();
+      ;
 
       *output_size = MultiByteToWideChar(CP_UTF8, // CodePage
                                          0,       // dwFlags
@@ -53,7 +53,7 @@ namespace elle
       if (nchars != *output_size)
         escape("failed to convert string");
 
-      leave();
+      return elle::StatusOk;
     }
 
     Status Utf16To8(const wchar_t * input,
@@ -61,7 +61,7 @@ namespace elle
                     char **         output,
                     ssize_t *       output_size)
     {
-      enter();
+      ;
 
       *output_size = WideCharToMultiByte(CP_UTF8,    // CodePage
                                          0,          // dwFlags
@@ -92,7 +92,7 @@ namespace elle
       if (nchars != *output_size)
         escape("failed to convert string");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -82,7 +82,7 @@ namespace elle
         // since included in the region.
         waive(buffer);
 
-        leave();
+        return elle::StatusOk;
       }
     };
 

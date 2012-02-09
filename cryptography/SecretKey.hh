@@ -132,7 +132,7 @@ namespace elle
       {
         Clear           clear;
 
-        enter();
+        ;
 
         // decrypt the cipher into the clear.
         if (this->Decrypt(cipher, clear) == StatusError)
@@ -146,7 +146,7 @@ namespace elle
         if (clear.Detach() == StatusError)
           escape("unable to detach the region");
 
-        leave();
+        return elle::StatusOk;
       }
 
       //

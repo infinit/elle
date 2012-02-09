@@ -57,7 +57,7 @@ namespace elle
     ///
     Status              Broker::Activate()
     {
-      enter();
+      ;
 
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // connect the QT signals.
@@ -73,7 +73,7 @@ namespace elle
 # error "unsupported platform"
 #endif
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -81,7 +81,7 @@ namespace elle
     ///
     Status              Broker::Deactivate()
     {
-      enter();
+      ;
 
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // disconnect the QT signals.
@@ -97,7 +97,7 @@ namespace elle
 # error "unsupported platform"
 #endif
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -110,7 +110,7 @@ namespace elle
     ///
     Status              Broker::Trigger()
     {
-      enter();
+      ;
 
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // emit the signal.
@@ -124,7 +124,7 @@ namespace elle
 # error "unsupported platform"
 #endif
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -142,9 +142,7 @@ namespace elle
                Parameters<> >   closure(Callback<>::Infer(&Broker::Trigger,
                                                           this));
 
-      enter();
-
-#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_UNIX) || defined(INFINIT_MACOSX)
       //
       // the following part should not be necessary but it turns out
       // that QT triggers this event even though there is nothing to
@@ -179,8 +177,6 @@ namespace elle
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
         yield(_(), "unable to spawn a fiber");
-
-      release();
     }
 
   }

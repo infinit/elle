@@ -109,8 +109,6 @@ namespace elle
                                            >&                   callback):
       Routine(callback)
     {
-      enter();
-
       // copy the content depending on the scheme.
       switch (this->scheme)
         {
@@ -135,8 +133,6 @@ namespace elle
             break;
           }
         }
-
-      release();
     }
 
     ///
@@ -183,8 +179,6 @@ namespace elle
     Callback< R, Parameters<T...> >::Call(T...                  arguments)
       const
     {
-      enter();
-
       // call depending on the scheme.
       switch (this->scheme)
         {
@@ -210,7 +204,7 @@ namespace elle
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -223,8 +217,6 @@ namespace elle
     Callback< R, Parameters<T...> >::Trigger(T...               arguments)
       const
     {
-      enter();
-
       // call depending on the scheme.
       switch (this->scheme)
         {
@@ -247,8 +239,6 @@ namespace elle
             break;
           }
         }
-
-      release();
     }
 
 //
@@ -275,8 +265,6 @@ namespace elle
     Callback< R, Parameters<T...> >::Dump(const Natural32       margin) const
     {
       String            alignment(margin, ' ');
-
-      enter();
 
       std::cout << alignment << "[Callback]" << std::endl;
 
@@ -309,7 +297,7 @@ namespace elle
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //

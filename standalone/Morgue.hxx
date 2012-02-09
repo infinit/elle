@@ -41,7 +41,7 @@ namespace elle
     template <typename T>
     Status              Morgue::Register(T*                     instance)
     {
-      enter();
+      ;
 
       // if the timer has not been allocated, set it up.
       if (this->timer == NULL)
@@ -66,7 +66,7 @@ namespace elle
       // add the instance to the container.
       this->container.push_back(static_cast<Meta*>(instance));
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

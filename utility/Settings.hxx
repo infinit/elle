@@ -73,7 +73,7 @@ namespace elle
     {
       String    string;
 
-      enter();
+      ;
 
       // transform the value into a string-based format.
       if (Variable::Convert(value, string) == StatusFalse)
@@ -85,7 +85,7 @@ namespace elle
         escape("unable to write the value '%s' for '%s' to the section '%s'",
                string.c_str(), name.c_str(), identifier.c_str());
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -99,7 +99,7 @@ namespace elle
     {
       String    string;
 
-      enter();
+      ;
 
       // if the item does not exist, return the default value.
       if (settings.Find(identifier, name) == StatusFalse)
@@ -116,7 +116,7 @@ namespace elle
         escape("unable to convert the value '%s' for '%s' to the section '%s'",
                string.c_str(), name.c_str(), identifier.c_str());
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -131,7 +131,7 @@ namespace elle
     {
       String    string;
 
-      enter();
+      ;
 
       // if the item does not exist, return the default value.
       if (settings.Find(identifier, name) == StatusFalse)
@@ -139,7 +139,7 @@ namespace elle
           // set the value with the default.
           value = D;
 
-          leave();
+          return elle::StatusOk;
         }
 
       // otherwise, read the item from the settings.
@@ -152,7 +152,7 @@ namespace elle
         escape("unable to convert the value '%s' for '%s' to the section '%s'",
                string.c_str(), name.c_str(), identifier.c_str());
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -171,7 +171,7 @@ namespace elle
     {
       Unique    unique;
 
-      enter();
+      ;
 
       // save the object in a unique representation.
       if (object.Save(unique) == StatusError)
@@ -183,7 +183,7 @@ namespace elle
         escape("unable to write the value '%s' for '%s' to the section '%s'",
                unique.c_str(), name.c_str(), identifier.c_str());
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -199,7 +199,7 @@ namespace elle
     {
       Unique    unique;
 
-      enter();
+      ;
 
       // if the item does not exist, return the default value.
       if (settings.Find(identifier, name) == StatusFalse)
@@ -217,7 +217,7 @@ namespace elle
                "section '%s'",
                unique.c_str(), name.c_str(), identifier.c_str());
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -234,7 +234,7 @@ namespace elle
     {
       Unique    unique;
 
-      enter();
+      ;
 
       // if the item does not exist, return the default value.
       if (settings.Find(identifier, name) == StatusFalse)
@@ -251,7 +251,7 @@ namespace elle
                    "section '%s'",
                    name.c_str(), identifier.c_str());
 
-          leave();
+          return elle::StatusOk;
         }
 
       // otherwise, read the item from the settings.
@@ -265,7 +265,7 @@ namespace elle
                "section '%s'",
                unique.c_str(), name.c_str(), identifier.c_str());
 
-      leave();
+      return elle::StatusOk;
     }
 
 //

@@ -37,7 +37,7 @@ namespace elle
     Status              AbstractSocket::Send(const I            inputs,
                                              const Event&       event)
     {
-      enter();
+      ;
 
       switch (this->type)
         {
@@ -70,7 +70,7 @@ namespace elle
     Status              AbstractSocket::Receive(const Event&    event,
                                                 O               outputs)
     {
-      enter();
+      ;
 
       switch (this->type)
         {
@@ -93,7 +93,7 @@ namespace elle
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -105,7 +105,7 @@ namespace elle
     Status              AbstractSocket::Call(const I            inputs,
                                              O                  outputs)
     {
-      enter();
+      ;
 
       switch (this->type)
         {
@@ -128,7 +128,7 @@ namespace elle
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -138,7 +138,7 @@ namespace elle
     Status              AbstractSocket::Reply(const I           inputs,
                                               Session*          session)
     {
-      enter();
+      ;
 
       switch (this->type)
         {
@@ -161,7 +161,7 @@ namespace elle
           }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

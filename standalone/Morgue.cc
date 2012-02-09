@@ -45,12 +45,12 @@ namespace elle
     ///
     Status              Morgue::Initialize()
     {
-      enter();
+      ;
 
       // allocate the morgue.
       Morgue::Current = new Morgue;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -58,13 +58,13 @@ namespace elle
     ///
     Status              Morgue::Clean()
     {
-      enter();
+      ;
 
       // delete the morgue.
       if (Morgue::Current != NULL)
         delete Morgue::Current;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -72,15 +72,15 @@ namespace elle
     ///
     Status              Morgue::Instance(Morgue*&               morgue)
     {
-      enter();
+      ;
 
       // verify the morgue's presence.
       if (Morgue::Current == NULL)
-        false();
+        return elle::StatusFalse;
 
       morgue = Morgue::Current;
 
-      true();
+      return elle::StatusTrue;
     }
 
 //
@@ -118,7 +118,7 @@ namespace elle
     ///
     Status              Morgue::Bury()
     {
-      enter();
+      ;
 
       // as long as instances remain.
       while (this->container.empty() == false)
@@ -135,7 +135,7 @@ namespace elle
           this->container.pop_front();
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -150,7 +150,7 @@ namespace elle
       String            alignment(margin, ' ');
       Morgue::Scoutor   scoutor;
 
-      enter();
+      ;
 
       // display the name.
       std::cout << alignment << "[Morgue]" << std::endl;
@@ -167,7 +167,7 @@ namespace elle
                     << "[Instance] " << std::hex << instance << std::endl;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -120,7 +120,7 @@ namespace elle
     template <typename U>
     Status              Derivable<T>::Infer(U*&                 object) const
     {
-      enter();
+      ;
 
       // check the internal object.
       if (this->object == NULL)
@@ -129,7 +129,7 @@ namespace elle
       // hand over the object pointer.
       object = static_cast<U*>(this->object);
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -153,7 +153,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Derivable]" << std::endl;
 
@@ -183,7 +183,7 @@ namespace elle
                     << "[Object] " << none << std::endl;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -196,7 +196,7 @@ namespace elle
     template <typename T>
     Status              Derivable<T>::Serialize(Archive&        archive) const
     {
-      enter();
+      ;
 
       // check that an object has been provided.
       if (this->object == NULL)
@@ -207,7 +207,7 @@ namespace elle
                             *this->object) == StatusError)
         escape("unable to serialize the derivable");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -216,7 +216,7 @@ namespace elle
     template <typename T>
     Status              Derivable<T>::Extract(Archive&          archive)
     {
-      enter();
+      ;
 
       // extract the product.
       if (archive.Extract(this->product) == StatusError)
@@ -238,7 +238,7 @@ namespace elle
       if (archive.Extract(*this->object) == StatusError)
         escape("unable to extract the object");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -77,7 +77,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Parcel] " << std::hex << this << std::endl;
 
@@ -104,7 +104,7 @@ namespace elle
             escape("unable to dump the data");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

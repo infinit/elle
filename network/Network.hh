@@ -138,7 +138,7 @@ namespace elle
                 const Tag E>
       static Status     Register(const Procedure<I, O, E>&);
 
-      static Status     Dispatch(Parcel*);
+      static Status     Dispatch(std::shared_ptr<Parcel>&);
 
       static Status     Show(const Natural32 = 0);
 

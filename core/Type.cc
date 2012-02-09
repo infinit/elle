@@ -64,7 +64,7 @@ namespace elle
     Status              Variable::Convert(const Boolean&        input,
                                           String&               output)
     {
-      enter();
+      ;
 
       // test the input.
       if (input == true)
@@ -72,7 +72,7 @@ namespace elle
       else
         output = "false";
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -83,7 +83,7 @@ namespace elle
     {
       std::stringstream stream;
 
-      enter();
+      ;
 
       // transfer the input into a string.
       stream << input;
@@ -91,7 +91,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -102,7 +102,7 @@ namespace elle
     {
       std::stringstream stream;
 
-      enter();
+      ;
 
       // transfer the input into a string.
       stream << input;
@@ -110,7 +110,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -121,7 +121,7 @@ namespace elle
     {
       std::stringstream stream;
 
-      enter();
+      ;
 
       // transfer the input into a string.
       stream << input;
@@ -129,7 +129,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -140,7 +140,7 @@ namespace elle
     {
       std::stringstream stream;
 
-      enter();
+      ;
 
       // transfer the input into a string.
       stream << input;
@@ -148,7 +148,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -159,7 +159,7 @@ namespace elle
     {
       std::stringstream stream;
 
-      enter();
+      ;
 
       // transfer the input into a string.
       stream << input;
@@ -167,7 +167,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -178,7 +178,7 @@ namespace elle
     {
       std::stringstream stream;
 
-      enter();
+      ;
 
       // transfer the input into a string.
       stream << input;
@@ -186,7 +186,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -197,7 +197,7 @@ namespace elle
     {
       std::stringstream stream;
 
-      enter();
+      ;
 
       // transfer the input into a string.
       stream << input;
@@ -205,7 +205,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -216,7 +216,7 @@ namespace elle
     {
       std::stringstream stream;
 
-      enter();
+      ;
 
       // transfer the input into a string.
       stream << input;
@@ -224,7 +224,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -235,7 +235,7 @@ namespace elle
     {
       std::stringstream stream;
 
-      enter();
+      ;
 
       // transfer the input into a string.
       stream << input;
@@ -243,7 +243,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -254,7 +254,7 @@ namespace elle
     {
       std::stringstream stream;
 
-      enter();
+      ;
 
       // transfer the input into a string.
       stream << input;
@@ -262,7 +262,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -271,7 +271,7 @@ namespace elle
     Status              Variable::Convert(const String&         input,
                                           Boolean&              output)
     {
-      enter();
+      ;
 
       // test the input.
       if ((input == "1") ||
@@ -285,9 +285,9 @@ namespace elle
                (input == "Off") || (input == "off"))
         output = false;
       else
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -298,7 +298,7 @@ namespace elle
     {
       std::istringstream        stream(input);
 
-      enter();
+      ;
 
       // extract the value.
       stream >> output;
@@ -307,10 +307,10 @@ namespace elle
       /*
       // check the stream.
       if (!stream || !stream.eof())
-        false();
+        return elle::StatusFalse;
       */
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -321,16 +321,16 @@ namespace elle
     {
       std::istringstream        stream(input);
 
-      enter();
+      ;
 
       // extract the value.
       stream >> output;
 
       // check the stream.
       if (!stream || !stream.eof())
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -341,16 +341,16 @@ namespace elle
     {
       std::istringstream        stream(input);
 
-      enter();
+      ;
 
       // extract the value.
       stream >> output;
 
       // check the stream.
       if (!stream || !stream.eof())
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -361,16 +361,16 @@ namespace elle
     {
       std::istringstream        stream(input);
 
-      enter();
+      ;
 
       // extract the value.
       stream >> output;
 
       // check the stream.
       if (!stream || !stream.eof())
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -381,16 +381,16 @@ namespace elle
     {
       std::istringstream        stream(input);
 
-      enter();
+      ;
 
       // extract the value.
       stream >> output;
 
       // check the stream.
       if (!stream || !stream.eof())
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -401,16 +401,16 @@ namespace elle
     {
       std::istringstream        stream(input);
 
-      enter();
+      ;
 
       // extract the value.
       stream >> output;
 
       // check the stream.
       if (!stream || !stream.eof())
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -421,16 +421,16 @@ namespace elle
     {
       std::istringstream        stream(input);
 
-      enter();
+      ;
 
       // extract the value.
       stream >> output;
 
       // check the stream.
       if (!stream || !stream.eof())
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -441,16 +441,16 @@ namespace elle
     {
       std::istringstream        stream(input);
 
-      enter();
+      ;
 
       // extract the value.
       stream >> output;
 
       // check the stream.
       if (!stream || !stream.eof())
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -461,16 +461,16 @@ namespace elle
     {
       std::istringstream        stream(input);
 
-      enter();
+      ;
 
       // extract the value.
       stream >> output;
 
       // check the stream.
       if (!stream || !stream.eof())
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -481,16 +481,16 @@ namespace elle
     {
       std::istringstream        stream(input);
 
-      enter();
+      ;
 
       // extract the value.
       stream >> output;
 
       // check the stream.
       if (!stream || !stream.eof())
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
   }

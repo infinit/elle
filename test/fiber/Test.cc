@@ -41,7 +41,7 @@ namespace elle
     ///
     Status              Fiber4()
     {
-      enter();
+      ;
 
       printf("[Fiber4] Start\n");
 
@@ -56,14 +56,14 @@ namespace elle
       printf("[Fiber4] Awaken(ResourceA)\n");
 
       // awaken ResourceA.
-      if (Fiber::Awaken(&Test::ResourceA) == StatusError)
+      if (Fiber::Awaken(Test::ResourceA) == StatusError)
         escape("unable to awaken the fiber");
 
       printf("[Fiber4] /Awaken(ResourceA)\n");
 
       printf("[Fiber4] End\n");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -76,7 +76,7 @@ namespace elle
       Closure< Status,
                Parameters<> >   closure(Callback<>::Infer(&Fiber4));
 
-      enter();
+      ;
 
       printf("[Fiber3] Start\n");
 
@@ -91,7 +91,7 @@ namespace elle
       printf("[Fiber3] Wait(ResourceC)\n");
 
       // wait ResourceC.
-      if (Fiber::Wait(&Test::ResourceC) == StatusError)
+      if (Fiber::Wait(Test::ResourceC) == StatusError)
         escape("unable to wait for the resource");
 
       printf("[Fiber3] /Wait(ResourceC)\n");
@@ -102,7 +102,7 @@ namespace elle
       if (Program::Exit() == StatusError)
         escape("unable to exit from the program");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -112,14 +112,14 @@ namespace elle
     ///
     Status              Fiber2()
     {
-      enter();
+      ;
 
       printf("[Fiber2] Start\n");
 
       printf("[Fiber2] Wait(ResourceB)\n");
 
       // wait for ResourceB.
-      if (Fiber::Wait(&Test::ResourceB) == StatusError)
+      if (Fiber::Wait(Test::ResourceB) == StatusError)
         escape("unable to wait for the resource");
 
       printf("[Fiber2] /Wait(ResourceB)\n");
@@ -127,14 +127,14 @@ namespace elle
       printf("[Fiber2] Awaken(ResourceC)\n");
 
       // awaken ResourceC.
-      if (Fiber::Awaken(&Test::ResourceC) == StatusError)
+      if (Fiber::Awaken(Test::ResourceC) == StatusError)
         escape("unable to awaken the resource");
 
       printf("[Fiber2] /Awaken(ResourceC)\n");
 
       printf("[Fiber2] End\n");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -144,14 +144,14 @@ namespace elle
     ///
     Status              Fiber1()
     {
-      enter();
+      ;
 
       printf("[Fiber1] Start\n");
 
       printf("[Fiber1] Wait(ResourceA)\n");
 
       // wait for ResourceA.
-      if (Fiber::Wait(&Test::ResourceA) == StatusError)
+      if (Fiber::Wait(Test::ResourceA) == StatusError)
         escape("unable to wait for the resource");
 
       printf("[Fiber1] /Wait(ResourceA)\n");
@@ -159,14 +159,14 @@ namespace elle
       printf("[Fiber1] Awaken(ResourceB)\n");
 
       // awaken ResourceB.
-      if (Fiber::Awaken(&Test::ResourceB) == StatusError)
+      if (Fiber::Awaken(Test::ResourceB) == StatusError)
         escape("unable to awaken the resource");
 
       printf("[Fiber1] /Awaken(ResourceB)\n");
 
       printf("[Fiber1] End\n");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -175,7 +175,7 @@ namespace elle
     Status              Main(const Natural32,
                              const Character*[])
     {
-      enter();
+      ;
 
       // initialize the library.
       if (Elle::Initialize() == StatusError)
@@ -232,7 +232,7 @@ namespace elle
       if (Elle::Clean() == StatusError)
         escape("unable to clean the library");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

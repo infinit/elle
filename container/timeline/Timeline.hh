@@ -76,10 +76,8 @@ namespace elle
         //
         // methods
         //
-        Status          Insert(const Time&,
-                               T&);
-        Status          Delete(const Time&,
-                               T&);
+        Status          Insert(Time const&, T const&);
+        Status          Delete(Time const&, T const&);
 
         Status          Clear();
 

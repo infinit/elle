@@ -77,27 +77,27 @@ namespace elle
 
     Status              Generator::Create(Boolean&              value)
     {
-      enter();
+      ;
 
       value = Random::Generate(Generator::MinimumBooleanSize,
                                Generator::MaximumBooleanSize);
 
-      leave();
+      return elle::StatusOk;
     }
 
     Status              Generator::Create(Character&            value)
     {
-      enter();
+      ;
 
       value = Random::Generate(Generator::MinimumCharacterSize,
                                Generator::MaximumCharacterSize);
 
-      leave();
+      return elle::StatusOk;
     }
 
     Status              Generator::Create(Real&                 value)
     {
-      enter();
+      ;
 
       value =
         ((Real)Random::Generate(Generator::MinimumRealSize,
@@ -105,92 +105,92 @@ namespace elle
         ((Real)(1 / (Real)Random::Generate(Generator::MinimumRealSize,
                                            Generator::MaximumRealSize)));
 
-      leave();
+      return elle::StatusOk;
     }
 
     Status              Generator::Create(Integer8&             value)
     {
-      enter();
+      ;
 
       value = Random::Generate(Generator::MinimumInteger8Size,
                                Generator::MaximumInteger8Size);
 
-      leave();
+      return elle::StatusOk;
     }
 
     Status              Generator::Create(Integer16&            value)
     {
-      enter();
+      ;
 
       value = Random::Generate(Generator::MinimumInteger16Size,
                                Generator::MaximumInteger16Size);
 
-      leave();
+      return elle::StatusOk;
     }
 
     Status              Generator::Create(Integer32&            value)
     {
-      enter();
+      ;
 
       value = Random::Generate(Generator::MinimumInteger32Size,
                                Generator::MaximumInteger32Size);
 
-      leave();
+      return elle::StatusOk;
     }
 
     Status              Generator::Create(Integer64&            value)
     {
-      enter();
+      ;
 
       value = Random::Generate(Generator::MinimumInteger64Size,
                                Generator::MaximumInteger64Size);
 
-      leave();
+      return elle::StatusOk;
     }
 
     Status              Generator::Create(Natural8&             value)
     {
-      enter();
+      ;
 
       value = Random::Generate(Generator::MinimumNatural8Size,
                                Generator::MaximumNatural8Size);
 
-      leave();
+      return elle::StatusOk;
     }
 
     Status              Generator::Create(Natural16&            value)
     {
-      enter();
+      ;
 
       value = Random::Generate(Generator::MinimumNatural16Size,
                                Generator::MaximumNatural16Size);
 
-      leave();
+      return elle::StatusOk;
     }
 
     Status              Generator::Create(Natural32&            value)
     {
-      enter();
+      ;
 
       value = Random::Generate(Generator::MinimumNatural32Size,
                                Generator::MaximumNatural32Size);
 
-      leave();
+      return elle::StatusOk;
     }
 
     Status              Generator::Create(Natural64&            value)
     {
-      enter();
+      ;
 
       value = Random::Generate(Generator::MinimumNatural64Size,
                                Generator::MaximumNatural64Size);
 
-      leave();
+      return elle::StatusOk;
     }
 
     Status              Generator::Create(Large&                value)
     {
-      enter();
+      ;
 
       ::BN_init(&value);
       ::BN_rand(&value,
@@ -199,7 +199,7 @@ namespace elle
                 0,
                 0);
 
-      leave();
+      return elle::StatusOk;
     }
 
     Status              Generator::Create(String&               value)
@@ -207,7 +207,7 @@ namespace elle
       Natural32         length;
       Natural32         i;
 
-      enter();
+      ;
 
       length = Random::Generate(Generator::MinimumStringLength,
                                 Generator::MaximumStringLength);
@@ -217,7 +217,7 @@ namespace elle
                      (char)Random::Generate(Generator::MinimumCharacterSize,
                                             Generator::MaximumCharacterSize));
 
-      leave();
+      return elle::StatusOk;
     }
 
     Status              Generator::Create(Region&               value)
@@ -226,7 +226,7 @@ namespace elle
                                                 Generator::MaximumRegionSize);
       Natural32         i;
 
-      enter();
+      ;
 
       if (value.Prepare(size) == StatusError)
         escape("unable to prepare the region");
@@ -237,7 +237,7 @@ namespace elle
         value.contents[i] = Random::Generate(Generator::MinimumCharacterSize,
                                              Generator::MaximumCharacterSize);
 
-      leave();
+      return elle::StatusOk;
     }
 
     Status              Generator::Create(Archive&              value)
@@ -245,7 +245,7 @@ namespace elle
       Integer64         choice = Random::Generate(Generator::MinimumArchiveChoice,
                                                   Generator::MaximumArchiveChoice);
 
-      enter();
+      ;
 
       if (choice == 0)
         {
@@ -259,7 +259,7 @@ namespace elle
             escape("unable to create a pack");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

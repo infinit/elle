@@ -40,7 +40,6 @@ namespace elle
       Selectionoid< Procedure<I, O, E> >*       selectionoid;
       std::pair<Network::Iterator, Boolean>     result;
 
-      enterx(instance(selectionoid));
 
       // check if this tag has already been recorded.
       if (Network::Procedures.find(I) != Network::Procedures.end())
@@ -51,18 +50,17 @@ namespace elle
 
       // insert the selectionoid in the container.
       result = Network::Procedures.insert(
-                 std::pair<const Tag,
-                           Network::Functionoid*>(I,
-                                                  selectionoid));
+        std::pair<const Tag, Network::Functionoid*>(I, selectionoid)
+      );
 
       // check if the insertion was successful.
       if (result.second == false)
-        escape("unable to insert the selectoinoid in the container");
+        {
+          delete selectionoid;
+          escape("unable to insert the selectoinoid in the container");
+        }
 
-      // waive the selectionoid tracking.
-      waive(selectionoid);
-
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -94,13 +92,13 @@ namespace elle
     template <typename P>
     Status      Network::Selectionoid<P>::Dump(const Natural32  margin) const
     {
-      enter();
+      ;
 
       // dump the object.
       if (this->procedure.Dump(margin) == StatusError)
         escape("unable to dump the object");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

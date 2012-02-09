@@ -93,7 +93,7 @@ namespace elle
     {
       const Natural8    type = ArchiveType<T>::Value;
 
-      enter();
+      ;
 
       // serialization mode only.
       if (archive.mode != Archive::ModeSerialization)
@@ -107,7 +107,7 @@ namespace elle
       if (archive.Store(element) == StatusError)
         escape("unable to store the element");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -119,7 +119,7 @@ namespace elle
     {
       Natural8  type;
 
-      enter();
+      ;
 
       // serialization mode only.
       if (archive.mode != Archive::ModeExtraction)
@@ -138,7 +138,7 @@ namespace elle
       if (archive.Load(element) == StatusError)
         escape("unable to load the element");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -192,7 +192,7 @@ namespace elle
     Status              Archive::Serialize(const T&             parameter,
                                            const TT&...         parameters)
     {
-      enter();
+      ;
 
       // serialize the first items.
       if (this->Serialize(parameter) == StatusError)
@@ -202,7 +202,7 @@ namespace elle
       if (this->Serialize(parameters...) == StatusError)
         escape("unable to serialize the additional parameters");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -231,7 +231,7 @@ namespace elle
     Status              Archive::Extract(T&                     parameter,
                                          TT&...                 parameters)
     {
-      enter();
+      ;
 
       // extract the first item.
       if (this->Extract(parameter) == StatusError)
@@ -241,7 +241,7 @@ namespace elle
       if (this->Extract(parameters...) == StatusError)
         escape("unable to extract the additional items");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -268,7 +268,7 @@ namespace elle
           new (this) T(*object);
         }
 
-      // return StatusOk in order to avoid including Report, Status and Maid.
+      // return elle::StatusOk in order to avoid including Report, Status and Maid.
       return (StatusOk);
     }
 
@@ -286,12 +286,12 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[" << core::Type<T>::Name << "] "
                 << element << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

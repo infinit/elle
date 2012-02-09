@@ -28,12 +28,12 @@ namespace elle
     ///
     Status              Path::Create(const String&              string)
     {
-      enter();
+      ;
 
       // assign the string.
       this->string = string;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -41,12 +41,12 @@ namespace elle
     ///
     Status              Path::Create(const Pattern&             pattern)
     {
-      enter();
+      ;
 
       // assign the pattern.
       this->string = pattern.string;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -57,7 +57,7 @@ namespace elle
     {
       String::size_type position;
 
-      enter();
+      ;
 
       // as long as the name is located within the string.
       while ((position = this->string.find(name)) != String::npos)
@@ -66,7 +66,7 @@ namespace elle
           this->string.replace(position, name.length(), value);
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -78,17 +78,17 @@ namespace elle
     ///
     Boolean             Path::operator==(const Path&            element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the internal.
       if (this->string != element.string)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -107,13 +107,13 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Path] "
                 << this->string
                 << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

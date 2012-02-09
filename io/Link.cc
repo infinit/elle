@@ -54,7 +54,7 @@ namespace elle
     Status              Link::Create(const Path&                link,
                                      const Path&                target)
     {
-      enter();
+      ;
 
       // does the link exist.
       if (Link::Exist(link) == StatusTrue)
@@ -79,7 +79,7 @@ namespace elle
 # error "unsupported platform"
 #endif
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -87,7 +87,7 @@ namespace elle
     ///
     Status              Link::Erase(const Path&                 path)
     {
-      enter();
+      ;
 
       // does the link exist.
       if (Link::Exist(path) == StatusFalse)
@@ -96,7 +96,7 @@ namespace elle
       // unlink the link.
       ::unlink(path.string.c_str());
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -106,25 +106,25 @@ namespace elle
     {
       struct ::stat             stat;
 
-      enter();
+      ;
 
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // does the path points to something.
       if (::lstat(path.string.c_str(), &stat) != 0)
-        false();
+        return elle::StatusFalse;
 
       // does the path points to a regular file.
       if (!S_ISLNK(stat.st_mode))
-        false();
+        return elle::StatusFalse;
 #elif defined(INFINIT_WINDOWS)
       // does the path points to something.
       if (::stat(path.string.c_str(), &stat) != 0)
-        false();
+        return elle::StatusFalse;
 #else
 # error "unsupported platform"
 #endif
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -140,7 +140,7 @@ namespace elle
       String            item;
       Path              chemin;
 
-      enter();
+      ;
 
       // free the temporary string used for directory
       free(tmp_str);
@@ -167,7 +167,7 @@ namespace elle
             }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

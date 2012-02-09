@@ -37,44 +37,34 @@ namespace elle
       /// this method adds an object to the bucket.
       ///
       template <typename T>
-      Status            Bucket<T>::Add(T&                       object)
+      Status Bucket<T>::Add(T const& object)
       {
-        typename Bucket<T>::Iterator    iterator;
-
-        enter();
-
         // add the object to the container.
         this->container.push_back(object);
 
-        leave();
+        return elle::StatusOk;
       }
 
       ///
       /// this method removes an object from the bucket.
       ///
       template <typename T>
-      Status            Bucket<T>::Remove(T&                    object)
+      Status Bucket<T>::Remove(T const& object)
       {
-        typename Bucket<T>::Iterator    iterator;
-
-        enter();
-
-        // go through the container.
-        for (iterator = this->container.begin();
-             iterator != this->container.end();
-             iterator++)
+        auto it = this->container.begin(),
+             end = this->container.end();
+        for (; it != end; ++it)
           {
             // check if this object is the one we are looking for.
-            if (*iterator == object)
+            if (*it == object)
               {
                 // remove the object from the container.
-                this->container.erase(iterator);
-
-                break;
+                this->container.erase(it);
+                return elle::StatusOk;
               }
           }
 
-        leave();
+        return elle::StatusOk;
       }
 
 //
@@ -89,12 +79,10 @@ namespace elle
       {
         String          alignment(margin, ' ');
 
-        enter();
-
         std::cout << alignment << "[Bucket] "
                   << std::dec << this->container.size() << std::endl;
 
-        leave();
+        return elle::StatusOk;
       }
 
     }

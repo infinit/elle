@@ -30,14 +30,14 @@ namespace elle
                                     const String&               host,
                                     const Port                  port)
     {
-      enter();
+      ;
 
       // set the attributes.
       this->name = name;
       this->host = host;
       this->port = port;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -48,7 +48,7 @@ namespace elle
       Host              local;
       Locus             remote;
 
-      enter();
+      ;
 
       // create an host.
       if (local.Create(this->host) == StatusError)
@@ -80,7 +80,7 @@ namespace elle
                                              this->table)) == StatusError)
         escape("unable to send the probe");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -95,7 +95,7 @@ namespace elle
     {
       Session*          session;
 
-      enter();
+      ;
 
       // retrieve the current session.
       if (Session::Instance(session) == StatusError)
@@ -113,7 +113,7 @@ namespace elle
       if (this->table.Merge(table) == StatusError)
         escape("unable to update the table");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

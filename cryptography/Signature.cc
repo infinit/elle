@@ -53,17 +53,17 @@ namespace elle
     ///
     Boolean             Signature::operator==(const Signature&  element) const
     {
-      enter();
+      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        true();
+        return elle::StatusTrue;
 
       // compare the regions.
       if (this->region != element.region)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -82,7 +82,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       // display depending on the value.
       if (*this == Signature::Null)
@@ -98,7 +98,7 @@ namespace elle
             escape("unable to dump the secret key");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -110,13 +110,13 @@ namespace elle
     ///
     Status              Signature::Serialize(Archive&           archive) const
     {
-      enter();
+      ;
 
       // serialize the region.
       if (archive.Serialize(this->region) == StatusError)
         escape("unable to serialize the region");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -124,13 +124,13 @@ namespace elle
     ///
     Status              Signature::Extract(Archive&             archive)
     {
-      enter();
+      ;
 
       // extract the content.
       if (archive.Extract(this->region) == StatusError)
         escape("unable to extract the region");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

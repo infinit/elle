@@ -44,10 +44,10 @@ namespace elle
     {
       Natural32         i;
 
-      enter();
+      ;
 
       if ((string.length() % 2) != 0)
-        false();
+        return elle::StatusFalse;
 
       // pass every character.
       for (i = 0; i < string.length(); i++)
@@ -55,13 +55,13 @@ namespace elle
           // verify the validity.
           if (::isalpha(string[i]) != 0)
             if (::islower(string[i]) == 0)
-            false();
+            return elle::StatusFalse;
 
           if (::isxdigit(string[i]) == 0)
-            false();
+            return elle::StatusFalse;
         }
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -72,7 +72,7 @@ namespace elle
     {
       Natural32         i;
 
-      enter();
+      ;
 
       for (i = 0; i < region.size; i++)
         {
@@ -86,7 +86,7 @@ namespace elle
           string.append(hexadecimal, 2);
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -97,7 +97,7 @@ namespace elle
     {
       Natural32         i;
 
-      enter();
+      ;
 
       if (Hexadecimal::Validate(string) != StatusTrue)
         escape("the argument is not a valid hexadecimal string");
@@ -120,7 +120,7 @@ namespace elle
 
       region.size = i;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

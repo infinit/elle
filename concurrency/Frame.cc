@@ -53,7 +53,7 @@ namespace elle
     ///
     Status              Frame::Create(const Natural32           size)
     {
-      enter();
+      ;
 
       // set the size.
       this->size = size;
@@ -63,7 +63,7 @@ namespace elle
            static_cast<Byte*>(::malloc(this->size))) == NULL)
         escape("unable to allocate the stack");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -77,7 +77,7 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Frame] " << std::endl;
 
@@ -85,7 +85,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift << "[Stack] "
                 << std::hex << static_cast<Void*>(this->stack) << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

@@ -124,18 +124,25 @@ namespace elle
       //
       // attributes
       //
-      ::EVP_PKEY*       key;
-
+    private:
+      ::EVP_PKEY*       _key;
       struct
       {
         ::EVP_PKEY_CTX* decrypt;
         ::EVP_PKEY_CTX* sign;
         ::EVP_PKEY_CTX* encrypt;
-      }                 contexts;
+      }                 _contexts;
+
+      //
+      // properties
+      //
+    public:
+      ::EVP_PKEY const* key() const { return this->_key; }
 
       //
       // forward methods
       //
+    public:
 
       ///
       /// these methods basically handle the archive-specific cases.
@@ -146,7 +153,7 @@ namespace elle
       {
         Clear           clear;
 
-        enter();
+        ;
 
         // decrypt the code.
         if (this->Decrypt(code, clear) == StatusError)
@@ -161,7 +168,7 @@ namespace elle
         if (clear.Detach() == StatusError)
           escape("unable to detach the clear's data");
 
-        leave();
+        return elle::StatusOk;
       }
 
       Status            Sign(const Archive&             archive,

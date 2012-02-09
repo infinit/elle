@@ -46,7 +46,7 @@ namespace elle
     {
       Natural32         i;
 
-      enter();
+      ;
 
       // pass every character.
       for (i = 0; i < string.length(); i++)
@@ -56,10 +56,10 @@ namespace elle
               (string[i] != '+') &&
               (string[i] != '-') &&
               (string[i] != '='))
-            false();
+            return elle::StatusFalse;
         }
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -74,7 +74,7 @@ namespace elle
       Natural32         j;
       Natural32         k;
 
-      enter();
+      ;
 
       // first clear the string.
       string.clear();
@@ -118,7 +118,7 @@ namespace elle
             string += '=';
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -133,7 +133,7 @@ namespace elle
       Natural32         j;
       Natural32         k;
 
-      enter();
+      ;
 
       // first, validate the input string.
       if (Base64::Validate(string) != StatusTrue)
@@ -184,7 +184,7 @@ namespace elle
             region.contents[region.size++] = static_cast<Byte>(out[k]);
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }
