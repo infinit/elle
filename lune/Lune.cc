@@ -171,8 +171,6 @@ namespace lune
       elle::System::Path::Separator +
       "infinit";
 
-    enter();
-
     //
     // create the paths.
     //
@@ -430,7 +428,7 @@ namespace lune
         escape("unable to set up the log system");
     }
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -438,11 +436,9 @@ namespace lune
   ///
   elle::Status          Lune::Clean()
   {
-    enter();
-
     // nothing to do.
 
-    leave();
+    return elle::StatusOk;
   }
 
 }

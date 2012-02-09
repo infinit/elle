@@ -36,12 +36,12 @@ namespace lune
   ///
   elle::Status          Passport::Create(const hole::Label&     label)
   {
-    enter();
+    ;
 
     // set the attributes.
     this->label = label;
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -49,14 +49,14 @@ namespace lune
   ///
   elle::Status          Passport::Seal(const Authority&         authority)
   {
-    enter();
+    ;
 
     // sign the pair with the authority.
     if (authority.k->Sign(this->label,
                           this->signature) == elle::StatusError)
       escape("unable to sign the pair with the authority");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -65,14 +65,14 @@ namespace lune
   elle::Status          Passport::Validate(const Authority&     authority)
     const
   {
-    enter();
+    ;
 
     // verify the signature.
     if (authority.K.Verify(this->signature,
                            this->label) == elle::StatusError)
       escape("unable to verify the signature");
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -95,7 +95,7 @@ namespace lune
   {
     elle::String        alignment(margin, ' ');
 
-    enter();
+    ;
 
     std::cout << alignment << "[Passport]" << std::endl;
 
@@ -107,7 +107,7 @@ namespace lune
     if (this->signature.Dump(margin + 2) == elle::StatusError)
       escape("unable to dump the signature");
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -119,14 +119,14 @@ namespace lune
   ///
   elle::Status          Passport::Serialize(elle::Archive&      archive) const
   {
-    enter();
+    ;
 
     // serialize the attributes.
     if (archive.Serialize(this->label,
                           this->signature) == elle::StatusError)
       escape("unable to serialize the attributes");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -134,14 +134,14 @@ namespace lune
   ///
   elle::Status          Passport::Extract(elle::Archive&        archive)
   {
-    enter();
+    ;
 
     // extract the attributes.
     if (archive.Extract(this->label,
                         this->signature) == elle::StatusError)
       escape("unable to extract the attributes");
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -156,7 +156,7 @@ namespace lune
     elle::Path          path;
     elle::Region        region;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Passport) == elle::StatusError)
@@ -173,7 +173,7 @@ namespace lune
           *this) == elle::StatusError)
       escape("unable to decode the object");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -185,7 +185,7 @@ namespace lune
     elle::Region        region;
     elle::String        string;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Passport) == elle::StatusError)
@@ -204,7 +204,7 @@ namespace lune
     if (elle::File::Write(path, region) == elle::StatusError)
       escape("unable to write the file's content");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -214,7 +214,7 @@ namespace lune
   {
     elle::Path          path;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Passport) == elle::StatusError)
@@ -224,7 +224,7 @@ namespace lune
     if (elle::File::Erase(path) == elle::StatusError)
       escape("unable to erase the file");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -234,7 +234,7 @@ namespace lune
   {
     elle::Path          path;
 
-    enter();
+    ;
 
     // create the path.
     if (path.Create(Lune::Passport) == elle::StatusError)
@@ -242,9 +242,9 @@ namespace lune
 
     // test the file.
     if (elle::File::Exist(path) == elle::StatusFalse)
-      false();
+      return elle::StatusFalse;
 
-    true();
+    return elle::StatusTrue;
   }
 
 }
