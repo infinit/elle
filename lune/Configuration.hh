@@ -90,6 +90,11 @@ namespace lune
 # error "unsupported platform"
 #endif
       };
+
+      struct                                    Satellites
+      {
+        static const elle::Boolean              Debug;
+      };
     };
 
     //
@@ -168,6 +173,11 @@ namespace lune
 # error "unsupported platform"
 #endif
     }                           horizon;
+
+    struct
+    {
+      elle::Boolean             debug;
+    }                           satellites;
   };
 
 }

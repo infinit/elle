@@ -86,6 +86,12 @@ namespace lune
 # error "unsupported platform"
 #endif
 
+  ///
+  /// satellites-specific configuration values.
+  ///
+  const elle::Boolean
+  Configuration::Default::Satellites::Debug = false;
+
 //
 // ---------- methods ---------------------------------------------------------
 //
@@ -187,6 +193,16 @@ namespace lune
 #else
 # error "unsupported platform"
 #endif
+    }
+
+    //
+    // satellites
+    //
+    {
+      if (elle::Settings::Set(
+            "satellites", "debug",
+            this->satellites.debug) == elle::StatusError)
+        escape("unable to update the parameter");
     }
 
     leave();
@@ -314,6 +330,18 @@ namespace lune
 #else
 # error "unsupported platform"
 #endif
+    }
+
+    //
+    // satellites
+    //
+    {
+      if (elle::Settings::Get(
+            "satellites", "debug",
+            this->satellites.debug,
+            Configuration::Default::Satellites::Debug) ==
+          elle::StatusError)
+        escape("unable to retrieve the parameter");
     }
 
     leave();
