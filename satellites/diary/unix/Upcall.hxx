@@ -27,7 +27,7 @@ namespace satellite
     template <typename... T>
     elle::Status        Upcall::Inputs(const T&...              inputs)
     {
-      enter();
+      ;
 
       // create the archive.
       if (this->inputs.Create() == elle::StatusError)
@@ -37,7 +37,7 @@ namespace satellite
       if (this->inputs.Serialize(inputs...) == elle::StatusError)
         escape("unable to serialize the inputs");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -47,7 +47,7 @@ namespace satellite
     template <typename... T>
     elle::Status        Upcall::Outputs(const T&...             outputs)
     {
-      enter();
+      ;
 
       // create the archive.
       if (this->outputs.Create() == elle::StatusError)
@@ -57,7 +57,7 @@ namespace satellite
       if (this->outputs.Serialize(outputs...) == elle::StatusError)
         escape("unable to serialize the outputs");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

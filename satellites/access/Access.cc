@@ -42,7 +42,7 @@ namespace satellite
   ///
   elle::Status          Access::Disconnected()
   {
-    enter();
+    ;
 
     // report the problem.
     report("the socket has been unexpectedly disconnected");
@@ -53,7 +53,7 @@ namespace satellite
     // exit.
     elle::Program::Exit();
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -61,7 +61,7 @@ namespace satellite
   ///
   elle::Status          Access::Error(const elle::String&       error)
   {
-    enter();
+    ;
 
     // report the given error.
     report(error.c_str());
@@ -72,7 +72,7 @@ namespace satellite
     // exit.
     elle::Program::Exit();
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -87,7 +87,7 @@ namespace satellite
   {
     lune::Phrase        phrase;
 
-    enter();
+    ;
 
     //
     // load the phrase.
@@ -137,7 +137,7 @@ namespace satellite
         escape("unable to authenticate to Etoile");
     }
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -151,7 +151,7 @@ namespace satellite
     etoile::gear::Identifier    identifier;
     nucleus::Record             record;
 
-    enter();
+    ;
 
     // connect to Etoile.
     if (Access::Connect() == elle::StatusError)
@@ -199,7 +199,7 @@ namespace satellite
     // exit the program.
     elle::Program::Exit();
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -211,7 +211,7 @@ namespace satellite
     etoile::gear::Identifier            identifier;
     nucleus::Range<nucleus::Record>     range;
 
-    enter();
+    ;
 
     // connect to Etoile.
     if (Access::Connect() == elle::StatusError)
@@ -262,7 +262,7 @@ namespace satellite
     // exit the program.
     elle::Program::Exit();
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -277,7 +277,7 @@ namespace satellite
     etoile::gear::Identifier    identifier;
     etoile::path::Way           path;
 
-    enter();
+    ;
 
     // connect to Etoile.
     if (Access::Connect() == elle::StatusError)
@@ -335,7 +335,7 @@ namespace satellite
     // exit the program.
     elle::Program::Exit();
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -348,7 +348,7 @@ namespace satellite
     etoile::gear::Identifier    identifier;
     nucleus::Record             record;
 
-    enter();
+    ;
 
     // connect to Etoile.
     if (Access::Connect() == elle::StatusError)
@@ -392,7 +392,7 @@ namespace satellite
     // exit the program.
     elle::Program::Exit();
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -407,7 +407,7 @@ namespace satellite
   {
     Access::Operation   operation;
 
-    enterx(instance(Infinit::Parser));
+    // XXX Infinit::Parser is not deleted in case of errors
 
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
@@ -559,7 +559,7 @@ namespace satellite
         Infinit::Parser->Usage();
 
         // quit.
-        leave();
+        return elle::StatusOk;
       }
 
     // retrieve the user name.
@@ -922,9 +922,7 @@ namespace satellite
 
     // delete the parser.
     delete Infinit::Parser;
-
-    // waive.
-    waive(Infinit::Parser);
+    Infinit::Parser = nullptr;
 
     // clean Hole.
     if (hole::Hole::Clean() == elle::StatusError)
@@ -950,7 +948,7 @@ namespace satellite
     if (elle::Elle::Clean() == elle::StatusError)
       escape("unable to clean Elle");
 
-    leave();
+    return elle::StatusOk;
   }
 
 }

@@ -28,7 +28,7 @@ namespace satellite
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       // display the name.
       std::cout << alignment << "[Memoirs]" << std::endl;
@@ -37,7 +37,7 @@ namespace satellite
       if (this->archive.Dump(margin + 2) == elle::StatusError)
         escape("unable to dump the archive");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -49,13 +49,13 @@ namespace satellite
   ///
   elle::Status          Memoirs::Serialize(elle::Archive&       archive) const
   {
-    enter();
+    ;
 
     // serialize the attributes.
     if (archive.Serialize(this->archive) == elle::StatusError)
       escape("unable to serialize the attributes");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -63,13 +63,13 @@ namespace satellite
   ///
   elle::Status          Memoirs::Extract(elle::Archive&         archive)
   {
-    enter();
+    ;
 
     // extract the attributes.
     if (archive.Extract(this->archive) == elle::StatusError)
       escape("unable to extract the attributes");
 
-    leave();
+    return elle::StatusOk;
   }
 
 //
@@ -87,7 +87,7 @@ namespace satellite
   {
     elle::Region        region;
 
-    enter();
+    ;
 
     // read the file's content.
     if (elle::File::Read(path, region) == elle::StatusError)
@@ -101,7 +101,7 @@ namespace satellite
     if (region.Detach() == elle::StatusError)
       escape("unable to detach the data");
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -114,7 +114,7 @@ namespace satellite
   elle::Status          Memoirs::Store(const elle::Path&        path)
     const
   {
-    enter();
+    ;
 
     // write the file's content.
     if (elle::File::Write(
@@ -124,7 +124,7 @@ namespace satellite
             this->archive.size)) == elle::StatusError)
       escape("unable to write the file's content");
 
-    leave();
+    return elle::StatusOk;
   }
 
 }

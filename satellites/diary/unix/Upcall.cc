@@ -28,12 +28,12 @@ namespace satellite
     ///
     elle::Status        Upcall::Create(const Operation          operation)
     {
-      enter();
+      ;
 
       // set the operation.
       this->operation = operation;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -42,12 +42,12 @@ namespace satellite
     ///
     elle::Status        Upcall::Result(const elle::Integer32    result)
     {
-      enter();
+      ;
 
       // set the result;
       this->result = result;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -70,7 +70,7 @@ namespace satellite
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Upcall]" << std::endl;
 
@@ -97,7 +97,7 @@ namespace satellite
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Result] " << this->operation << std::endl;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -109,7 +109,7 @@ namespace satellite
     ///
     elle::Status        Upcall::Serialize(elle::Archive&        archive) const
     {
-      enter();
+      ;
 
       // serialize the attributes.
       if (archive.Serialize(static_cast<elle::Natural32>(this->operation),
@@ -118,7 +118,7 @@ namespace satellite
                             this->result) == elle::StatusError)
         escape("unable to serialize the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -128,7 +128,7 @@ namespace satellite
     {
       elle::Natural32   operation;
 
-      enter();
+      ;
 
       // extract the attributes.
       if (archive.Extract(operation,
@@ -140,7 +140,7 @@ namespace satellite
       // set the operation.
       this->operation = static_cast<Upcall::Operation>(operation);
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

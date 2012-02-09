@@ -67,7 +67,7 @@ namespace satellite
       }                 outputs;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -115,7 +115,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Fgetattr(Upcall&                upcall)
@@ -134,7 +134,7 @@ namespace satellite
       elle::Natural64   identifier;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -198,7 +198,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Utimens(Upcall&                 upcall)
@@ -210,7 +210,7 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -236,7 +236,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Opendir(Upcall&                 upcall)
@@ -253,7 +253,7 @@ namespace satellite
       elle::Natural64   identifier;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -293,7 +293,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     // XXX
@@ -339,7 +339,7 @@ namespace satellite
       elle::Natural64   identifier;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -383,7 +383,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Releasedir(Upcall&              upcall)
@@ -400,7 +400,7 @@ namespace satellite
       elle::Natural64   identifier;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -440,7 +440,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Mkdir(Upcall&                   upcall)
@@ -452,7 +452,7 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -478,7 +478,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Rmdir(Upcall&                   upcall)
@@ -489,7 +489,7 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -511,7 +511,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Access(Upcall&                  upcall)
@@ -523,7 +523,7 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -549,7 +549,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Chmod(Upcall&                   upcall)
@@ -561,7 +561,7 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -587,7 +587,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Chown(Upcall&                   upcall)
@@ -600,7 +600,7 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -630,7 +630,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
 #if defined(HAVE_SETXATTR)
@@ -647,7 +647,7 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -685,7 +685,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Getxattr(Upcall&                upcall)
@@ -703,7 +703,7 @@ namespace satellite
       }                 outputs;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -746,7 +746,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Listxattr(Upcall&               upcall)
@@ -763,7 +763,7 @@ namespace satellite
       }                 outputs;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -802,7 +802,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Removexattr(Upcall&             upcall)
@@ -814,7 +814,7 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -840,7 +840,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 # elif defined(INFINIT_MACOSX)
     elle::Status        Replay::Setxattr(Upcall&                upcall)
@@ -898,7 +898,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Getxattr(Upcall&                upcall)
@@ -964,7 +964,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Listxattr(Upcall&               upcall)
@@ -1020,7 +1020,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Removexattr(Upcall&             upcall)
@@ -1058,7 +1058,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 # endif
 #endif
@@ -1072,7 +1072,7 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -1098,7 +1098,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Readlink(Upcall&                upcall)
@@ -1115,7 +1115,7 @@ namespace satellite
       }                 outputs;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -1154,7 +1154,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Create(Upcall&                  upcall)
@@ -1172,7 +1172,7 @@ namespace satellite
       elle::Natural64   identifier;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -1216,7 +1216,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Open(Upcall&                    upcall)
@@ -1233,7 +1233,7 @@ namespace satellite
       elle::Natural64   identifier;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -1273,7 +1273,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Write(Upcall&                   upcall)
@@ -1293,7 +1293,7 @@ namespace satellite
       elle::Natural64   identifier;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -1342,7 +1342,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Read(Upcall&                    upcall)
@@ -1362,7 +1362,7 @@ namespace satellite
       elle::Natural64   identifier;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -1414,7 +1414,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Truncate(Upcall&                upcall)
@@ -1426,7 +1426,7 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -1452,7 +1452,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Ftruncate(Upcall&               upcall)
@@ -1470,7 +1470,7 @@ namespace satellite
       elle::Natural64   identifier;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -1511,7 +1511,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Release(Upcall&                 upcall)
@@ -1528,7 +1528,7 @@ namespace satellite
       elle::Natural64   identifier;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -1570,7 +1570,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Rename(Upcall&                  upcall)
@@ -1582,7 +1582,7 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -1608,7 +1608,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     elle::Status        Replay::Unlink(Upcall&                  upcall)
@@ -1619,7 +1619,7 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      enter();
+      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -1641,7 +1641,7 @@ namespace satellite
         printf("[satellites] /Replay::%s()\n",
                __FUNCTION__);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -1649,7 +1649,7 @@ namespace satellite
     ///
     elle::Status        Replay::Initialize(Memoirs*             memoirs)
     {
-      enter();
+      ;
 
       // set the memoirs pointer.
       Replay::Reference = memoirs;
@@ -1688,7 +1688,7 @@ namespace satellite
       }
 #endif
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -1698,7 +1698,7 @@ namespace satellite
     {
       elle::Natural32   i;
 
-      enter();
+      ;
 
       // first, go through the upcalls that must be ignored.
       for (i = 0;
@@ -1957,7 +1957,7 @@ namespace satellite
       // exit the program.
       elle::Program::Exit();
 
-      leave();
+      return elle::StatusOk;
 
     _error:
       // dump the report.
@@ -1970,7 +1970,7 @@ namespace satellite
       // exit the program.
       elle::Program::Exit();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -1978,7 +1978,7 @@ namespace satellite
     ///
     elle::Status        Replay::Clean()
     {
-      enter();
+      ;
 
 #if defined(INFINIT_LINUX)
       // clean the horizon.
@@ -2001,7 +2001,7 @@ namespace satellite
       if (Live::Clean() == elle::StatusError)
         escape("unable to clean the live system");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

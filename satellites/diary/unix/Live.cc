@@ -52,11 +52,11 @@ namespace satellite
     ///
     elle::Status        Live::Initialize()
     {
-      enter();
+      ;
 
       // nothing to do.
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -66,7 +66,7 @@ namespace satellite
     {
       Live::Iterator    iterator;
 
-      enter();
+      ;
 
       // go through the items.
       for (iterator = Live::Items.begin();
@@ -82,7 +82,7 @@ namespace satellite
       // clear the container.
       Live::Items.clear();
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -104,7 +104,7 @@ namespace satellite
       // waive.
       waive(item);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -117,7 +117,7 @@ namespace satellite
     {
       Live::Scoutor     scoutor;
 
-      enter();
+      ;
 
       // go through the items.
       for (scoutor = Live::Items.begin();
@@ -131,7 +131,7 @@ namespace satellite
             {
               active = item->active;
 
-              leave();
+              return elle::StatusOk;
             }
         }
 
@@ -145,7 +145,7 @@ namespace satellite
     {
       Live::Iterator    iterator;
 
-      enter();
+      ;
 
       // go through the items.
       for (iterator = Live::Items.begin();
@@ -163,7 +163,7 @@ namespace satellite
               // remove it from the container.
               Live::Items.erase(iterator);
 
-              leave();
+              return elle::StatusOk;
             }
         }
 
@@ -178,7 +178,7 @@ namespace satellite
       elle::String      alignment(margin, ' ');
       Live::Scoutor     scoutor;
 
-      enter();
+      ;
 
       std::cout << alignment << "[Live]" << std::endl;
 
@@ -200,7 +200,7 @@ namespace satellite
                     << std::hex << item->active << std::endl;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }
