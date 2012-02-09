@@ -23,32 +23,26 @@
 # include <library-dependency.h>
 #include <idiom/Open.hh>
 
-namespace package
-{
-  namespace module
-  {
+using namespace package::module
 
 //
 // ---------- template methods ------------------------------------------------
 //
 
-    ///
-    /// description of the method.
-    ///
-    template <typename T>
-    Status              CodingStandard::Method3(const Natural32 n,
-                                                T&              object)
-    {
-      ;
+///
+/// description of the method.
+///
+template <typename T>
+Status              CodingStandard::Method3(const Natural32 n,
+                                            T&              object)
+{
+  //
+  // do something.
+  //
 
-      // do something.
-      if (object.Compute(n) == StatusError)
-        escape("unable to do something");
+  [...]
 
-      return elle::StatusOk;
-    }
-
-  }
+  return (StatusOk);
 }
 
 #endif
