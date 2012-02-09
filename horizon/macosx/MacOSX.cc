@@ -112,7 +112,7 @@ namespace horizon
         operations.access = Crux::Access;
         operations.chmod = Crux::Chmod;
         operations.chown = Crux::Chown;
-#ifdef HAVE_SETXATTR
+#if defined(HAVE_SETXATTR)
         operations.setxattr = Crux::Setxattr;
         operations.getxattr = Crux::Getxattr;
         operations.listxattr = Crux::Listxattr;

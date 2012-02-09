@@ -28,9 +28,10 @@
 #include <lune/Lune.hh>
 
 #include <elle/idiom/Close.hh>
+# define _GNU_SOURCE
 # include <fuse.h>
-# ifdef HAVE_SETXATTR
-#  include <attr/xattr.h>
+# if defined(HAVE_SETXATTR)
+#  include <sys/xattr.h>
 # endif
 #include <elle/idiom/Open.hh>
 
@@ -90,17 +91,19 @@ namespace horizon
                               uid_t,
                               gid_t);
 
-#ifdef HAVE_SETXATTR
+#if defined(HAVE_SETXATTR)
       // attribute
       static int        Setxattr(const char*,
                                  const char*,
                                  const char*,
                                  size_t,
-                                 int);
+                                 int,
+                                 uint32_t);
       static int        Getxattr(const char*,
                                  const char*,
                                  char*,
-                                 size_t);
+                                 size_t,
+                                 uint32_t);
       static int        Listxattr(const char*,
                                   char*,
                                   size_t);

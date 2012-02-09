@@ -31,6 +31,7 @@
 #include <horizon/macosx/FUker.hh>
 
 #include <elle/idiom/Close.hh>
+# define _GNU_SOURCE
 # include <fuse/fuse.h>
 #include <elle/idiom/Open.hh>
 

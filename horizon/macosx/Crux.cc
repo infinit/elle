@@ -73,7 +73,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, %p)\n",
+        printf("[horizon] Crux::%s(%s, %p)\n",
                __FUNCTION__,
                path, stat);
 
@@ -115,7 +115,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, %p)\n",
+        printf("[horizon] /Crux::%s(%s, %p)\n",
                __FUNCTION__,
                path, stat);
 
@@ -136,7 +136,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, %p)\n",
+        printf("[horizon] Crux::%s(%s, %p)\n",
                __FUNCTION__,
                path, stat);
 
@@ -290,7 +290,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, %p)\n",
+        printf("[horizon] /Crux::%s(%s, %p)\n",
                __FUNCTION__,
                path, stat);
 
@@ -305,7 +305,7 @@ namespace horizon
     {
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, ...)\n",
+        printf("[horizon] Crux::%s(%s, ...)\n",
                __FUNCTION__,
                path);
 
@@ -315,7 +315,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, ...)\n",
+        printf("[horizon] /Crux::%s(%s, ...)\n",
                __FUNCTION__,
                path);
 
@@ -334,7 +334,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, %p)\n",
+        printf("[horizon] Crux::%s(%s, %p)\n",
                __FUNCTION__,
                path, info);
 
@@ -357,7 +357,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, %p)\n",
+        printf("[horizon] /Crux::%s(%s, %p)\n",
                __FUNCTION__,
                path, info);
 
@@ -379,7 +379,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, %p, %p, %qu, %p)\n",
+        printf("[horizon] Crux::%s(%s, %p, %p, %qu, %p)\n",
                __FUNCTION__,
                path, buffer, filler,
                static_cast<elle::Natural64>(offset), info);
@@ -446,7 +446,7 @@ namespace horizon
                 {
                   // debug.
                   if (Infinit::Configuration.horizon.debug == true)
-                    printf("[horizon] /%s(%s, %p, %p, %qu, %p)\n",
+                    printf("[horizon] /Crux::%s(%s, %p, %p, %qu, %p)\n",
                            __FUNCTION__,
                            path, buffer, filler,
                            static_cast<elle::Natural64>(offset), info);
@@ -467,7 +467,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, %p, %p, %qu, %p)\n",
+        printf("[horizon] /Crux::%s(%s, %p, %p, %qu, %p)\n",
                __FUNCTION__,
                path, buffer, filler,
                static_cast<elle::Natural64>(offset), info);
@@ -483,7 +483,7 @@ namespace horizon
     {
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, %p)\n",
+        printf("[horizon] Crux::%s(%s, %p)\n",
                __FUNCTION__,
                path, info);
 
@@ -502,7 +502,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, %p)\n",
+        printf("[horizon] /Crux::%s(%s, %p)\n",
                __FUNCTION__,
                path, info);
 
@@ -525,7 +525,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, 0%o)\n",
+        printf("[horizon] Crux::%s(%s, 0%o)\n",
                __FUNCTION__,
                path, mode);
 
@@ -599,7 +599,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, 0%o)\n",
+        printf("[horizon] /Crux::%s(%s, 0%o)\n",
                __FUNCTION__,
                path, mode);
 
@@ -623,7 +623,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s)\n",
+        printf("[horizon] Crux::%s(%s)\n",
                __FUNCTION__,
                path);
 
@@ -708,7 +708,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s)\n",
+        printf("[horizon] /Crux::%s(%s)\n",
                __FUNCTION__,
                path);
 
@@ -730,7 +730,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, 0%o)\n",
+        printf("[horizon] Crux::%s(%s, 0%o)\n",
                __FUNCTION__,
                path, mask);
 
@@ -842,7 +842,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, 0%o)\n",
+        printf("[horizon] /Crux::%s(%s, 0%o)\n",
                __FUNCTION__,
                path, mask);
 
@@ -881,7 +881,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, 0%o)\n",
+        printf("[horizon] Crux::%s(%s, 0%o)\n",
                __FUNCTION__,
                path, mode);
 
@@ -987,7 +987,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, 0%o)\n",
+        printf("[horizon] /Crux::%s(%s, 0%o)\n",
                __FUNCTION__,
                path, mode);
 
@@ -1003,7 +1003,7 @@ namespace horizon
     {
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, %u, %u)\n",
+        printf("[horizon] Crux::%s(%s, %u, %u)\n",
                __FUNCTION__,
                path, uid, gid);
 
@@ -1011,14 +1011,14 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, %u, %u)\n",
+        printf("[horizon] /Crux::%s(%s, %u, %u)\n",
                __FUNCTION__,
                path, uid, gid);
 
       return (0);
     }
 
-#ifdef HAVE_SETXATTR
+#if defined(HAVE_SETXATTR)
     ///
     /// this method sets an extended attribute value.
     ///
@@ -1028,7 +1028,8 @@ namespace horizon
                                        const char*              name,
                                        const char*              value,
                                        size_t                   size,
-                                       int                      flags)
+                                       int                      flags,
+                                       uint32_t                 position)
     {
       etoile::gear::Identifier          identifier;
       etoile::path::Way                 way(path);
@@ -1038,9 +1039,9 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, %s, %p, %u, 0x%x)\n",
+        printf("[horizon] Crux::%s(%s, %s, %p, %lu, 0x%x, %u)\n",
                __FUNCTION__,
-               path, name, value, size, flags);
+               path, name, value, size, flags, position);
 
       // resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
@@ -1088,9 +1089,9 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, %s, %p, %u, 0x%x)\n",
+        printf("[horizon] /Crux::%s(%s, %s, %p, %lu, 0x%x, %u)\n",
                __FUNCTION__,
-               path, name, value, size, flags);
+               path, name, value, size, flags, position);
 
       return (0);
     }
@@ -1101,7 +1102,8 @@ namespace horizon
     int                 Crux::Getxattr(const char*              path,
                                        const char*              name,
                                        char*                    value,
-                                       size_t                   size)
+                                       size_t                   size,
+                                       uint32_t                 position)
     {
       etoile::gear::Identifier  identifier;
       etoile::path::Way         way(path);
@@ -1110,9 +1112,9 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, %s, %p, %u)\n",
+        printf("[horizon] Crux::%s(%s, %s, %p, %lu, %u)\n",
                __FUNCTION__,
-               path, name, value, size);
+               path, name, value, size, position);
 
       // resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
@@ -1144,9 +1146,9 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, %s, %p, %u)\n",
+        printf("[horizon] /Crux::%s(%s, %s, %p, %lu, %u)\n",
                __FUNCTION__,
-               path, name, value, size);
+               path, name, value, size, position);
 
       // if the size is null, it means that this call must be considered
       // as a request for the size required to store the value.
@@ -1180,7 +1182,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, %p, %u)\n",
+        printf("[horizon] Crux::%s(%s, %p, %lu)\n",
                __FUNCTION__,
                path, list, size);
 
@@ -1208,7 +1210,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, %p, %u)\n",
+        printf("[horizon] /Crux::%s(%s, %p, %lu)\n",
                __FUNCTION__,
                path, list, size);
 
@@ -1263,7 +1265,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, %s)\n",
+        printf("[horizon] Crux::%s(%s, %s)\n",
                __FUNCTION__,
                path, name);
 
@@ -1312,7 +1314,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, %s)\n",
+        printf("[horizon] /Crux::%s(%s, %s)\n",
                __FUNCTION__,
                path, name);
 
@@ -1336,7 +1338,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, %s)\n",
+        printf("[horizon] Crux::%s(%s, %s)\n",
                __FUNCTION__,
                target, source);
 
@@ -1401,7 +1403,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, %s)\n",
+        printf("[horizon] /Crux::%s(%s, %s)\n",
                __FUNCTION__,
                target, source);
 
@@ -1423,7 +1425,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, %p, %qu)\n",
+        printf("[horizon] Crux::%s(%s, %p, %qu)\n",
                __FUNCTION__,
                path, buffer, static_cast<elle::Natural64>(size));
 
@@ -1473,7 +1475,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, %p, %qu)\n",
+        printf("[horizon] /Crux::%s(%s, %p, %qu)\n",
                __FUNCTION__,
                path, buffer, static_cast<elle::Natural64>(size));
 
@@ -1497,7 +1499,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, 0%o, %p)\n",
+        printf("[horizon] Crux::%s(%s, 0%o, %p)\n",
                __FUNCTION__,
                path, mode, info);
 
@@ -1611,7 +1613,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, 0%o, %p)\n",
+        printf("[horizon] /Crux::%s(%s, 0%o, %p)\n",
                __FUNCTION__,
                path, mode, info);
 
@@ -1630,7 +1632,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, %p)\n",
+        printf("[horizon] Crux::%s(%s, %p)\n",
                __FUNCTION__,
                path, info);
 
@@ -1651,7 +1653,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, %p)\n",
+        printf("[horizon] /Crux::%s(%s, %p)\n",
                __FUNCTION__,
                path, info);
 
@@ -1673,7 +1675,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, %p, %qu, %qu, %p)\n",
+        printf("[horizon] Crux::%s(%s, %p, %qu, %qu, %p)\n",
                __FUNCTION__,
                path, buffer, static_cast<elle::Natural64>(size),
                static_cast<elle::Natural64>(offset), info);
@@ -1710,7 +1712,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, %p, %qu, %qu, %p)\n",
+        printf("[horizon] /Crux::%s(%s, %p, %qu, %qu, %p)\n",
                __FUNCTION__,
                path, buffer, static_cast<elle::Natural64>(size),
                static_cast<elle::Natural64>(offset), info);
@@ -1733,7 +1735,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, %p, %qu, %qu, %p)\n",
+        printf("[horizon] Crux::%s(%s, %p, %qu, %qu, %p)\n",
                __FUNCTION__,
                path, buffer, static_cast<elle::Natural64>(size),
                static_cast<elle::Natural64>(offset), info);
@@ -1768,7 +1770,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, %p, %qu, %qu, %p)\n",
+        printf("[horizon] /Crux::%s(%s, %p, %qu, %qu, %p)\n",
                __FUNCTION__,
                path, buffer, static_cast<elle::Natural64>(size),
                static_cast<elle::Natural64>(offset), info);
@@ -1790,7 +1792,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, %qu)\n",
+        printf("[horizon] Crux::%s(%s, %qu)\n",
                __FUNCTION__,
                path, static_cast<elle::Natural64>(size));
 
@@ -1824,7 +1826,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, %qu)\n",
+        printf("[horizon] /Crux::%s(%s, %qu)\n",
                __FUNCTION__,
                path, static_cast<elle::Natural64>(size));
 
@@ -1843,7 +1845,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, %qu, %p)\n",
+        printf("[horizon] Crux::%s(%s, %qu, %p)\n",
                __FUNCTION__,
                path, static_cast<elle::Natural64>(size), info);
 
@@ -1873,7 +1875,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, %qu, %p)\n",
+        printf("[horizon] /Crux::%s(%s, %qu, %p)\n",
                __FUNCTION__,
                path, static_cast<elle::Natural64>(size), info);
 
@@ -1891,7 +1893,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, %p)\n",
+        printf("[horizon] Crux::%s(%s, %p)\n",
                __FUNCTION__,
                path, info);
 
@@ -1947,7 +1949,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, %p)\n",
+        printf("[horizon] /Crux::%s(%s, %p)\n",
                __FUNCTION__,
                path, info);
 
@@ -1968,7 +1970,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s, %s)\n",
+        printf("[horizon] Crux::%s(%s, %s)\n",
                __FUNCTION__,
                source, target);
 
@@ -2216,7 +2218,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s, %s)\n",
+        printf("[horizon] /Crux::%s(%s, %s)\n",
                __FUNCTION__,
                source, target);
 
@@ -2240,7 +2242,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] %s(%s)\n",
+        printf("[horizon] Crux::%s(%s)\n",
                __FUNCTION__,
                path);
 
@@ -2378,7 +2380,7 @@ namespace horizon
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /%s(%s)\n",
+        printf("[horizon] /Crux::%s(%s)\n",
                __FUNCTION__,
                path);
 

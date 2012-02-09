@@ -29,7 +29,7 @@
 
 #include <elle/idiom/Close.hh>
 # include <fuse.h>
-# ifdef HAVE_SETXATTR
+# if defined(HAVE_SETXATTR)
 #  include <attr/xattr.h>
 # endif
 #include <elle/idiom/Open.hh>
@@ -90,7 +90,7 @@ namespace horizon
                               uid_t,
                               gid_t);
 
-#ifdef HAVE_SETXATTR
+#if defined(HAVE_SETXATTR)
       // attribute
       static int        Setxattr(const char*,
                                  const char*,
