@@ -17,35 +17,22 @@ namespace elle
   {
 
 //
+// ---------- includes --------------------------------------------------------
+//
+
+#include <config.hh>
+
+//
 // ---------- macros ----------------------------------------------------------
 //
 
 ///
-/// unix-specific
+/// linux-specific
 ///
-/// note that the _unix_ macro is undefined since generating conflicts.
+/// note that the _linux_ macro is undefined since generating conflicts.
 ///
-#if defined(__linux) || defined(__unix)
+#if defined(INFINIT_LINUX)
 # undef linux
-# define INFINIT_LINUX
-
-///
-/// macos-specific
-///
-#elif defined(__APPLE__) && defined(__MACH__)
-# define INFINIT_MACOSX
-
-///
-/// windows-specific
-///
-#elif defined(_WIN32) || defined(_WIN64)
-# define INFINIT_WINDOWS
-
-///
-/// unknown platform
-///
-#else
-# error "unknown platform"
 #endif
 
   }

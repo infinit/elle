@@ -8,6 +8,8 @@
 // author        julien quintard   [mon apr 26 21:25:23 2010]
 //
 
+#include <elle/system/Platform.hh>
+
 #if defined(INFINIT_LINUX)
 //
 // ---------- includes --------------------------------------------------------
