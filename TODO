@@ -1,3 +1,7 @@
+- fiber
+ - merger func
+ - comments
+
 - serialization
  - renommer package en serialization
  - utiliser boost::serialization
