@@ -26,8 +26,8 @@
 #include <elle/Elle.hh>
 
 #include <elle/idiom/Close.hh>
+# define _GNU_SOURCE
 # include <fuse.h>
-# include <ulockmgr.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
@@ -36,8 +36,14 @@
 # include <dirent.h>
 # include <errno.h>
 # include <sys/time.h>
-# ifdef HAVE_SETXATTR
-#  include <sys/xattr.h>
+# if defined(HAVE_SETXATTR)
+#  if defined(INFINIT_LINUX)
+#   include <attr/xattr.h>
+#  elif defined(INFINIT_MACOSX)
+#   include <sys/xattr.h>
+#  else
+#   error "unsupported platform"
+#  endif
 # endif
 #include <elle/idiom/Open.hh>
 
@@ -102,8 +108,9 @@ namespace satellite
                                       uid_t,
                                       gid_t);
 
-#ifdef HAVE_SETXATTR
+#if defined(HAVE_SETXATTR)
       // attribute
+# if defined(INFINIT_LINUX)
       static int                Setxattr(const char*,
                                          const char*,
                                          const char*,
@@ -118,6 +125,24 @@ namespace satellite
                                           size_t);
       static int                Removexattr(const char*,
                                             const char*);
+# elif defined(INFINIT_MACOSX)
+      static int                Setxattr(const char*,
+                                         const char*,
+                                         const char*,
+                                         size_t,
+                                         int,
+                                         uint32_t);
+      static int                Getxattr(const char*,
+                                         const char*,
+                                         char*,
+                                         size_t,
+                                         uint32_t);
+      static int                Listxattr(const char*,
+                                          char*,
+                                          size_t);
+      static int                Removexattr(const char*,
+                                            const char*);
+# endif
 #endif
 
       // link

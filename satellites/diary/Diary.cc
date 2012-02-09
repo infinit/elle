@@ -137,15 +137,6 @@ namespace satellite
 
     // register the option.
     if (Infinit::Parser->Register(
-          "User",
-          'u',
-          "user",
-          "specifies the name of the user",
-          elle::Parser::KindRequired) == elle::StatusError)
-      escape("unable to register the option");
-
-    // register the option.
-    if (Infinit::Parser->Register(
           "Network",
           'n',
           "network",
@@ -171,7 +162,7 @@ namespace satellite
 
     // add an example.
     if (Infinit::Parser->Example(
-          "-y test.dia -u myuser -n mynetwork") ==
+          "-y test.dia -n mynetwork") ==
         elle::StatusError)
       escape("unable to set an example");
 
@@ -308,11 +299,6 @@ namespace satellite
                  "To",
                  to) == elle::StatusError))
             escape("unable to retrieve the to value");
-
-          // retrieve the user name.
-          if (Infinit::Parser->Value("User",
-                                     Infinit::User) == elle::StatusError)
-            escape("unable to retrieve the user name");
 
           // retrieve the network name.
           if (Infinit::Parser->Value("Network",

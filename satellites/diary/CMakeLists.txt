@@ -1,12 +1,10 @@
 PROJECT(diary CXX)
 
-ADD_EXECUTABLE(8diary
-  Diary.cc
-  Memoirs.cc
-)
-
-IF(UNIX)
+IF(INFINIT_LINUX OR INFINIT_MACOSX)
   ADD_EXECUTABLE(8diary
+    Diary.cc
+    Memoirs.cc
+
     unix/Crux.cc
     unix/Live.cc
     unix/Memoirs.cc
@@ -14,6 +12,6 @@ IF(UNIX)
     unix/Replay.cc
     unix/Upcall.cc
   )
-ENDIF(UNIX)
+ENDIF(INFINIT_LINUX OR INFINIT_MACOSX)
 
 TARGET_LINK_LIBRARIES(8diary infinit elle nucleus lune etoile horizon)

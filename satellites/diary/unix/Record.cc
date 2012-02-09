@@ -58,6 +58,12 @@ namespace satellite
       Upcall            upcall;
       int               res;
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %p)\n",
+               __FUNCTION__,
+               path, stat);
+
       if (upcall.Create(Upcall::OperationGetattr) == elle::StatusError)
         fail("unable to create the upcall");
 
@@ -82,6 +88,12 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %p)\n",
+               __FUNCTION__,
+               path, stat);
+
       return res;
     }
 
@@ -91,6 +103,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %p)\n",
+               __FUNCTION__,
+               path, stat);
 
       if (upcall.Create(Upcall::OperationFgetattr) == elle::StatusError)
         fail("unable to create the upcall");
@@ -120,6 +138,12 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %p)\n",
+               __FUNCTION__,
+               path, stat);
+
       return res;
     }
 
@@ -128,6 +152,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, ...)\n",
+               __FUNCTION__,
+               path);
 
       if (upcall.Create(Upcall::OperationUtimens) == elle::StatusError)
         fail("unable to create the upcall");
@@ -150,6 +180,12 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, ...)\n",
+               __FUNCTION__,
+               path);
+
       return res;
     }
 
@@ -158,6 +194,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %p)\n",
+               __FUNCTION__,
+               path, fi);
 
       if (upcall.Create(Upcall::OperationOpendir) == elle::StatusError)
         fail("unable to create the upcall");
@@ -183,6 +225,12 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %p)\n",
+               __FUNCTION__,
+               path, fi);
+
       return res;
     }
 
@@ -194,6 +242,13 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %p, %p, %qu, %p)\n",
+               __FUNCTION__,
+               path, buf, filler,
+               static_cast<elle::Natural64>(offset), fi);
 
       if (upcall.Create(Upcall::OperationReaddir) == elle::StatusError)
         fail("unable to create the upcall");
@@ -220,6 +275,13 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %p, %p, %qu, %p)\n",
+               __FUNCTION__,
+               path, buf, filler,
+               static_cast<elle::Natural64>(offset), fi);
+
       return res;
     }
 
@@ -228,6 +290,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %p)\n",
+               __FUNCTION__,
+               path, fi);
 
       if (upcall.Create(Upcall::OperationReleasedir) == elle::StatusError)
         fail("unable to create the upcall");
@@ -253,6 +321,12 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %p)\n",
+               __FUNCTION__,
+               path, fi);
+
       return res;
     }
 
@@ -261,6 +335,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, 0%o)\n",
+               __FUNCTION__,
+               path, mode);
 
       if (upcall.Create(Upcall::OperationMkdir) == elle::StatusError)
         fail("unable to create the upcall");
@@ -282,6 +362,12 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, 0%o)\n",
+               __FUNCTION__,
+               path, mode);
+
       return res;
     }
 
@@ -289,6 +375,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s)\n",
+               __FUNCTION__,
+               path);
 
       if (upcall.Create(Upcall::OperationRmdir) == elle::StatusError)
         fail("unable to create the upcall");
@@ -309,6 +401,12 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s)\n",
+               __FUNCTION__,
+               path);
+
       return res;
     }
 
@@ -317,6 +415,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, 0%o)\n",
+               __FUNCTION__,
+               path, mask);
 
       if (upcall.Create(Upcall::OperationAccess) == elle::StatusError)
         fail("unable to create the upcall");
@@ -338,6 +442,12 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, 0%o)\n",
+               __FUNCTION__,
+               path, mask);
+
       return res;
     }
 
@@ -346,6 +456,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, 0%o)\n",
+               __FUNCTION__,
+               path, mode);
 
       if (upcall.Create(Upcall::OperationChmod) == elle::StatusError)
         fail("unable to create the upcall");
@@ -367,6 +483,12 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, 0%o)\n",
+               __FUNCTION__,
+               path, mode);
+
       return res;
     }
 
@@ -376,6 +498,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %u, %u)\n",
+               __FUNCTION__,
+               path, uid, gid);
 
       if (upcall.Create(Upcall::OperationChown) == elle::StatusError)
         fail("unable to create the upcall");
@@ -398,11 +526,17 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %u, %u)\n",
+               __FUNCTION__,
+               path, uid, gid);
+
       return res;
     }
 
-#ifdef HAVE_SETXATTR
-
+#if defined(HAVE_SETXATTR)
+# if defined(INFINIT_LINUX)
     int                 Record::Setxattr(const char*            path,
                                          const char*            name,
                                          const char*            value,
@@ -411,6 +545,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %s, %p, %u, 0x%x)\n",
+               __FUNCTION__,
+               path, name, value, size, flags);
 
       if (upcall.Create(Upcall::OperationSetxattr) == elle::StatusError)
         fail("unable to create the upcall");
@@ -435,6 +575,12 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %s, %p, %u, 0x%x)\n",
+               __FUNCTION__,
+               path, name, value, size, flags);
+
       return res;
     }
 
@@ -445,6 +591,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %s, %p, %u)\n",
+               __FUNCTION__,
+               path, name, value, size);
 
       if (upcall.Create(Upcall::OperationGetxattr) == elle::StatusError)
         fail("unable to create the upcall");
@@ -470,6 +622,12 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %s, %p, %u)\n",
+               __FUNCTION__,
+               path, name, value, size);
+
       return res;
     }
 
@@ -480,12 +638,18 @@ namespace satellite
       Upcall            upcall;
       int               res;
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %p, %u)\n",
+               __FUNCTION__,
+               path, list, size);
+
       if (upcall.Create(Upcall::OperationListxattr) == elle::StatusError)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(path),
-            elle::String(list, size)
+            elle::String(list, size),
             static_cast<elle::Natural64>(size)) ==
           elle::StatusError)
         fail("unable to specify the upcall's inputs");
@@ -503,6 +667,12 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %p, %u)\n",
+               __FUNCTION__,
+               path, list, size);
+
       return res;
     }
 
@@ -511,6 +681,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %s)\n",
+               __FUNCTION__,
+               path, name);
 
       if (upcall.Create(Upcall::OperationRemovexattr) == elle::StatusError)
         fail("unable to create the upcall");
@@ -532,9 +708,199 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %s)\n",
+               __FUNCTION__,
+               path, name);
+
+      return res;
+    }
+# elif defined(INFINIT_MACOSX)
+    int                 Record::Setxattr(const char*            path,
+                                         const char*            name,
+                                         const char*            value,
+                                         size_t                 size,
+                                         int                    options,
+                                         uint32_t               position)
+    {
+      Upcall            upcall;
+      int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %s, %p, %lu, 0x%x, %u)\n",
+               __FUNCTION__,
+               path, name, value, size, options, position);
+
+      if (upcall.Create(Upcall::OperationSetxattr) == elle::StatusError)
+        fail("unable to create the upcall");
+
+      if (upcall.Inputs(
+            elle::String(path),
+            elle::String(name),
+            elle::String(value),
+            static_cast<elle::Natural64>(size),
+            static_cast<elle::Integer32>(options),
+            static_cast<elle::Natural32>(position)) ==
+          elle::StatusError)
+        fail("unable to specify the upcall's inputs");
+
+      res = Record::Reference->fuse.setxattr(path, name, value, size, options, position);
+
+      if (upcall.Outputs() == elle::StatusError)
+        fail("unable to specify the upcall's outputs");
+
+      if (upcall.Result(res) == elle::StatusError)
+        fail("unable to specify the upcall's result");
+
+      if (Record::Reference->Write(upcall) == elle::StatusError)
+        fail("unable to write the diay");
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %s, %p, %lu, 0x%x, %u)\n",
+               __FUNCTION__,
+               path, name, value, size, options, position);
+
       return res;
     }
 
+    int                 Record::Getxattr(const char*            path,
+                                         const char*            name,
+                                         char*                  value,
+                                         size_t                 size,
+                                         uint32_t               position)
+    {
+      Upcall            upcall;
+      int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %s, %p, %lu, %u)\n",
+               __FUNCTION__,
+               path, name, value, size, position);
+
+      if (upcall.Create(Upcall::OperationGetxattr) == elle::StatusError)
+        fail("unable to create the upcall");
+
+      if (upcall.Inputs(
+            elle::String(path),
+            elle::String(name),
+            elle::String(value, size),
+            static_cast<elle::Natural64>(size),
+            static_cast<elle::Natural32>(position)) ==
+          elle::StatusError)
+        fail("unable to specify the upcall's inputs");
+
+      res = Record::Reference->fuse.getxattr(path, name, value, size, position);
+
+      if (upcall.Outputs(
+            elle::String(value)) ==
+          elle::StatusError)
+        fail("unable to specify the upcall's outputs");
+
+      if (upcall.Result(res) == elle::StatusError)
+        fail("unable to specify the upcall's result");
+
+      if (Record::Reference->Write(upcall) == elle::StatusError)
+        fail("unable to write the diay");
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %s, %p, %lu, %u)\n",
+               __FUNCTION__,
+               path, name, value, size, position);
+
+      return res;
+    }
+
+    int                 Record::Listxattr(const char*           path,
+                                          char*                 list,
+                                          size_t                size)
+    {
+      Upcall            upcall;
+      int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %p, %lu)\n",
+               __FUNCTION__,
+               path, list, size);
+
+      if (upcall.Create(Upcall::OperationListxattr) == elle::StatusError)
+        fail("unable to create the upcall");
+
+      if (upcall.Inputs(
+            elle::String(path),
+            elle::String(list, size),
+            static_cast<elle::Natural64>(size)) ==
+          elle::StatusError)
+        fail("unable to specify the upcall's inputs");
+
+      res = Record::Reference->fuse.listxattr(path, list, size);
+
+      if (upcall.Outputs(
+            elle::String(list)) ==
+          elle::StatusError)
+        fail("unable to specify the upcall's outputs");
+
+      if (upcall.Result(res) == elle::StatusError)
+        fail("unable to specify the upcall's result");
+
+      if (Record::Reference->Write(upcall) == elle::StatusError)
+        fail("unable to write the diay");
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %p, %lu)\n",
+               __FUNCTION__,
+               path, list, size);
+
+      return res;
+    }
+
+    int                 Record::Removexattr(const char*         path,
+                                            const char*         name)
+    {
+      Upcall            upcall;
+      int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %s)\n",
+               __FUNCTION__,
+               path, name);
+
+      if (upcall.Create(Upcall::OperationRemovexattr) == elle::StatusError)
+        fail("unable to create the upcall");
+
+      if (upcall.Inputs(
+            elle::String(path),
+            elle::String(name)) ==
+          elle::StatusError)
+        fail("unable to specify the upcall's inputs");
+
+      res = Record::Reference->fuse.removexattr(path, name);
+
+      if (upcall.Outputs() == elle::StatusError)
+        fail("unable to specify the upcall's outputs");
+
+      if (upcall.Result(res) == elle::StatusError)
+        fail("unable to specify the upcall's result");
+
+      if (Record::Reference->Write(upcall) == elle::StatusError)
+        fail("unable to write the diay");
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %s)\n",
+               __FUNCTION__,
+               path, name);
+
+      return res;
+    }
+# endif
 #endif
 
     int                 Record::Symlink(const char*             to,
@@ -542,6 +908,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %s)\n",
+               __FUNCTION__,
+               to, from);
 
       if (upcall.Create(Upcall::OperationSymlink) == elle::StatusError)
         fail("unable to create the upcall");
@@ -563,6 +935,12 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %s)\n",
+               __FUNCTION__,
+               to, from);
+
       return res;
     }
 
@@ -572,6 +950,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %p, %qu)\n",
+               __FUNCTION__,
+               path, buf, static_cast<elle::Natural64>(size));
 
       if (upcall.Create(Upcall::OperationReadlink) == elle::StatusError)
         fail("unable to create the upcall");
@@ -596,6 +980,12 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %p, %qu)\n",
+               __FUNCTION__,
+               path, buf, static_cast<elle::Natural64>(size));
+
       return res;
     }
 
@@ -605,6 +995,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, 0%o, %p)\n",
+               __FUNCTION__,
+               path, mode, fi);
 
       if (upcall.Create(Upcall::OperationCreate) == elle::StatusError)
         fail("unable to create the upcall");
@@ -631,6 +1027,12 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, 0%o, %p)\n",
+               __FUNCTION__,
+               path, mode, fi);
+
       return res;
     }
 
@@ -639,6 +1041,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %p)\n",
+               __FUNCTION__,
+               path, fi);
 
       if (upcall.Create(Upcall::OperationOpen) == elle::StatusError)
         fail("unable to create the upcall");
@@ -664,6 +1072,12 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %p)\n",
+               __FUNCTION__,
+               path, fi);
+
       return res;
     }
 
@@ -675,6 +1089,13 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %p, %qu, %qu, %p)\n",
+               __FUNCTION__,
+               path, buf, static_cast<elle::Natural64>(size),
+               static_cast<elle::Natural64>(offset), fi);
 
       if (upcall.Create(Upcall::OperationWrite) == elle::StatusError)
         fail("unable to create the upcall");
@@ -704,6 +1125,13 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %p, %qu, %qu, %p)\n",
+               __FUNCTION__,
+               path, buf, static_cast<elle::Natural64>(size),
+               static_cast<elle::Natural64>(offset), fi);
+
       return res;
     }
 
@@ -715,6 +1143,13 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %p, %qu, %qu, %p)\n",
+               __FUNCTION__,
+               path, buf, static_cast<elle::Natural64>(size),
+               static_cast<elle::Natural64>(offset), fi);
 
       if (upcall.Create(Upcall::OperationRead) == elle::StatusError)
         fail("unable to create the upcall");
@@ -744,6 +1179,13 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %p, %qu, %qu, %p)\n",
+               __FUNCTION__,
+               path, buf, static_cast<elle::Natural64>(size),
+               static_cast<elle::Natural64>(offset), fi);
+
       return res;
     }
 
@@ -752,6 +1194,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %qu)\n",
+               __FUNCTION__,
+               path, static_cast<elle::Natural64>(size));
 
       if (upcall.Create(Upcall::OperationTruncate) == elle::StatusError)
         fail("unable to create the upcall");
@@ -773,6 +1221,12 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %qu)\n",
+               __FUNCTION__,
+               path, static_cast<elle::Natural64>(size));
+
       return res;
     }
 
@@ -782,6 +1236,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %qu, %p)\n",
+               __FUNCTION__,
+               path, static_cast<elle::Natural64>(size), fi);
 
       if (upcall.Create(Upcall::OperationFtruncate) == elle::StatusError)
         fail("unable to create the upcall");
@@ -805,6 +1265,12 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %qu, %p)\n",
+               __FUNCTION__,
+               path, static_cast<elle::Natural64>(size), fi);
+
       return res;
     }
 
@@ -813,6 +1279,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %p)\n",
+               __FUNCTION__,
+               path, fi);
 
       if (upcall.Create(Upcall::OperationRelease) == elle::StatusError)
         fail("unable to create the upcall");
@@ -840,6 +1312,12 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %p)\n",
+               __FUNCTION__,
+               path, fi);
+
       return res;
     }
 
@@ -848,6 +1326,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s, %s)\n",
+               __FUNCTION__,
+               from, to);
 
       if (upcall.Create(Upcall::OperationRename) == elle::StatusError)
         fail("unable to create the upcall");
@@ -869,6 +1353,12 @@ namespace satellite
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s, %s)\n",
+               __FUNCTION__,
+               from, to);
+
       return res;
     }
 
@@ -876,6 +1366,12 @@ namespace satellite
     {
       Upcall            upcall;
       int               res;
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] Record::%s(%s)\n",
+               __FUNCTION__,
+               path);
 
       if (upcall.Create(Upcall::OperationUnlink) == elle::StatusError)
         fail("unable to create the upcall");
@@ -895,6 +1391,12 @@ namespace satellite
 
       if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
+
+      // debug.
+      if (Infinit::Configuration.satellites.debug == true)
+        printf("[satellites] /Record::%s(%s)\n",
+               __FUNCTION__,
+               path);
 
       return res;
     }
@@ -931,7 +1433,7 @@ namespace satellite
         Record::Operations.access = Record::Access;
         Record::Operations.chmod = Record::Chmod;
         Record::Operations.chown = Record::Chown;
-#ifdef HAVE_SETXATTR
+#if defined(HAVE_SETXATTR)
         Record::Operations.setxattr = Record::Setxattr;
         Record::Operations.getxattr = Record::Getxattr;
         Record::Operations.listxattr = Record::Listxattr;

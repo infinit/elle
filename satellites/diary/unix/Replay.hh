@@ -28,8 +28,8 @@
 #include <satellites/diary/unix/Upcall.hh>
 
 #include <elle/idiom/Close.hh>
+# define _GNU_SOURCE
 # include <fuse.h>
-# include <ulockmgr.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
@@ -39,8 +39,14 @@
 # include <errno.h>
 # include <sys/time.h>
 # include <sys/stat.h>
-# ifdef HAVE_SETXATTR
-#  include <sys/xattr.h>
+# if defined(HAVE_SETXATTR)
+#  if defined(INFINIT_LINUX)
+#   include <attr/xattr.h>
+#  elif defined(INFINIT_MACOSX)
+#   include <sys/xattr.h>
+#  else
+#   error "unsupported platform"
+#  endif
 # endif
 #include <elle/idiom/Open.hh>
 
@@ -82,10 +88,14 @@ namespace satellite
       static elle::Status       Access(Upcall&);
       static elle::Status       Chmod(Upcall&);
       static elle::Status       Chown(Upcall&);
+
+#if defined(HAVE_SETXATTR)
       static elle::Status       Setxattr(Upcall&);
       static elle::Status       Getxattr(Upcall&);
       static elle::Status       Listxattr(Upcall&);
       static elle::Status       Removexattr(Upcall&);
+#endif
+
       static elle::Status       Symlink(Upcall&);
       static elle::Status       Readlink(Upcall&);
       static elle::Status       Create(Upcall&);
