@@ -120,8 +120,6 @@ namespace horizon
           FUSE::Mountpoint.c_str()
         };
 
-      enter();
-
       //
       // initialize the FUSE event loop.
       //
@@ -186,7 +184,7 @@ namespace horizon
           escape("unable to attach the broker to the event loop");
       }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -203,11 +201,11 @@ namespace horizon
       char*                     buffer;
       int                       res;
 
-      enterx(slab(buffer, ::free));
-
       // allocate a buffer.
       if ((buffer = static_cast<char*>(::malloc(this->size))) == NULL)
         escape("unable to allocate a FUSE buffer");
+
+      std::unique_ptr<char> guard(buffer);
 
       // retrieve the upcall from the kernel through the FUSE channel.
       res = ::fuse_chan_recv(&channel,
@@ -216,7 +214,7 @@ namespace horizon
 
       // retry later if necessary.
       if (res == -EINTR)
-        leave();
+        return elle::StatusOk;
 
       // exit if an error occured.
       if (res <= 0)
@@ -231,13 +229,7 @@ namespace horizon
                              res,
                              channel);
 
-      // release the buffer.
-      ::free(buffer);
-
-      // waive the tracking.
-      waive(buffer);
-
-      leave();
+      return elle::StatusOk;
     }
 
   }

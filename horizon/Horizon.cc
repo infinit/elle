@@ -26,8 +26,6 @@ namespace horizon
   ///
   elle::Status          Horizon::Initialize()
   {
-    enter();
-
 #if defined(INFINIT_LINUX)
     {
       // initialize the Linux implementation.
@@ -62,7 +60,7 @@ namespace horizon
 # error "unsupported platform"
 #endif
 
-    leave();
+    return elle::StatusOk;
   }
 
   ///
@@ -70,8 +68,6 @@ namespace horizon
   ///
   elle::Status          Horizon::Clean()
   {
-    enter();
-
 #if defined(INFINIT_LINUX)
     {
       // clean the Linux implementation.
@@ -93,8 +89,7 @@ namespace horizon
 #else
 # error "unsupported platform"
 #endif
-
-    leave();
+    return elle::StatusOk;
   }
 
 }

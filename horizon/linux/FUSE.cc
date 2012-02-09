@@ -55,8 +55,6 @@ namespace horizon
     elle::Status        FUSE::Initialize(
                           const struct ::fuse_operations&       operations)
     {
-      enter();
-
       // set the fuse operations.
       FUSE::Operations = operations;
 
@@ -95,8 +93,7 @@ namespace horizon
             }
           }
       }
-
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -104,8 +101,6 @@ namespace horizon
     ///
     elle::Status        FUSE::Setup(const elle::String&         mountpoint)
     {
-      enter();
-
       // set the mountpoint.
       FUSE::Mountpoint = mountpoint;
 
@@ -113,7 +108,7 @@ namespace horizon
       if (FUSE::Fuker->Setup() == elle::StatusError)
         escape("unable to set up the FUker");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -121,12 +116,10 @@ namespace horizon
     ///
     elle::Status        FUSE::Clean()
     {
-      enter();
-
       // delete the FUker.
       delete FUSE::Fuker;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }
