@@ -28,7 +28,7 @@ namespace nucleus
     ///
     elle::Status        Porcupine<>::Initialize()
     {
-      enter();
+      ;
 
       //
       // catalog-specific initialization.
@@ -45,7 +45,7 @@ namespace nucleus
 
       // XXX
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -53,7 +53,7 @@ namespace nucleus
     ///
     elle::Status        Porcupine<>::Clean()
     {
-      enter();
+      ;
 
       //
       // catalog-specific cleaning.
@@ -70,7 +70,7 @@ namespace nucleus
 
       // XXX
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

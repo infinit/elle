@@ -85,13 +85,13 @@ XXX
     elle::Status        Handle<T>::Create(const Address&        address,
                                           T*                    object)
     {
-      enter();
+      ;
 
       // set the attributes.
       this->address = address;
       this->_object = object;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -104,7 +104,7 @@ XXX
     template <typename T>
     elle::Status        Handle<T>::Dump(const elle::Natural32   margin)
     {
-      enter();
+      ;
 
       // XXX
 
@@ -125,7 +125,7 @@ XXX
                     << "[_Object] " << elle::none << std::endl;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

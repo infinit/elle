@@ -50,7 +50,7 @@ namespace nucleus
     {
       Quill<V>*                 quill;
 
-      enter();
+      ;
 
       // search for the quill responsible for the given key.
       if (this->Search(key, quill) == elle::StatusError)
@@ -60,7 +60,7 @@ namespace nucleus
       if (this->Insert(quill, key, value) == elle::StatusError)
         escape("unable to insert the key/value tuple");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -71,7 +71,7 @@ namespace nucleus
     {
       Quill<V>*                 quill;
 
-      enter();
+      ;
 
       // search for the quill responsible for the given key.
       if (this->Search(key, quill) == elle::StatusError)
@@ -79,14 +79,14 @@ namespace nucleus
           // purge the error messages.
           purge();
 
-          false();
+          return elle::StatusFalse;
         }
 
       // check whether a value exist for this key.
       if (quill->Exist(key) == elle::StatusFalse)
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -98,7 +98,7 @@ namespace nucleus
     {
       Quill<V>*                 quill;
 
-      enter();
+      ;
 
       // search for the quill responsible for the given key.
       if (this->Search(key, quill) == elle::StatusError)
@@ -108,7 +108,7 @@ namespace nucleus
       if (quill->Locate(key, value) == elle::StatusError)
         escape("unable to locate the value");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -119,7 +119,7 @@ namespace nucleus
     {
       Quill<V>*                 quill;
 
-      enter();
+      ;
 
       // search for the quill responsible for the given key.
       if (this->Search(key, quill) == elle::StatusError)
@@ -129,7 +129,7 @@ namespace nucleus
       if (this->Delete(quill, key) == elle::StatusError)
         escape("unable to delete the key tuple");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -370,7 +370,7 @@ namespace nucleus
             }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -410,7 +410,7 @@ namespace nucleus
       }                 mayor;
       N*                _current;
 
-      enter();
+      ;
 
       // set the convenient _current alias.
       _current = nodule;
@@ -784,7 +784,7 @@ namespace nucleus
             }
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -874,7 +874,7 @@ namespace nucleus
       // increment the height.
       this->height++;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -889,11 +889,11 @@ namespace nucleus
       typename Seam<V>::I*      inlet;
       Handle< Nodule<V> >       root;
 
-      enter();
+      ;
 
       // if the tree is empty or has a root nodule only, ignore this step.
       if (this->height <= 1)
-        leave();
+        return elle::StatusOk;
 
       // load the root nodule.
       NestLoad(this->root);
@@ -933,7 +933,7 @@ namespace nucleus
       // decrease the tree's height.
       this->height--;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -947,7 +947,7 @@ namespace nucleus
     elle::Status        Porcupine<V>::Search(const typename V::K& key,
                                              Quill<V>*&         quill)
     {
-      enter();
+      ;
 
       // if the tree is non-existent, create a first level by making it grow.
       //
@@ -967,7 +967,7 @@ namespace nucleus
       if (this->root._object->Search(key, quill) == elle::StatusError)
         escape("unable to locate the quill for this key");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -978,7 +978,7 @@ namespace nucleus
     template <typename V>
     elle::Status        Porcupine<V>::Check() const
     {
-      enter();
+      ;
 
       // load the parent nodule
       NestLoad(this->root)
@@ -988,7 +988,7 @@ namespace nucleus
             escape("unable to check the root nodule's consistency");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -998,7 +998,7 @@ namespace nucleus
     elle::Status        Porcupine<V>::Load(const Address&       address,
                                            Nodule<V>*&          nodule)
     {
-      enter();
+      ;
 
       // build a block according to the component.
       if (Nucleus::Factory.Build(address.component,
@@ -1007,7 +1007,7 @@ namespace nucleus
 
       // XXX
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -1017,11 +1017,11 @@ namespace nucleus
     elle::Status        Porcupine<V>::Unload(const Address&,
                                              const Nodule<V>*)
     {
-      enter();
+      ;
 
       // XXX
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -1037,7 +1037,7 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Porcupine]" << std::endl;
 
@@ -1052,7 +1052,7 @@ namespace nucleus
       if (this->root.Dump(margin + 4) == elle::StatusError)
         escape("unable to dump the handle");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

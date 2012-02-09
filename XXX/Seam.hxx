@@ -92,15 +92,13 @@ namespace nucleus
     template <typename V>
     elle::Status        Seam<V>::Create()
     {
-      enter();
-
       // initialize the footprint.
       this->_footprint.size = Seam<V>::Footprint;
 
       // set the state.
       this->_state = StateDirty;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -124,7 +122,7 @@ namespace nucleus
       // waive.
       waive(inlet);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -135,8 +133,6 @@ namespace nucleus
     {
       std::pair<typename Seam<V>::Iterator::Forward,
                 elle::Boolean>                                  result;
-
-      enter();
 
       // check if this key has already been recorded.
       if (this->container.find(inlet->key) != this->container.end())
@@ -165,7 +161,7 @@ namespace nucleus
       // set the state.
       this->_state = StateDirty;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -176,8 +172,6 @@ namespace nucleus
                           typename Iterator::Forward&           iterator)
     {
       Seam<V>::I*       inlet;
-
-      enter();
 
       // retrieve the inlet.
       inlet = iterator->second;
@@ -198,7 +192,7 @@ namespace nucleus
       // set the state.
       this->_state = StateDirty;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -209,8 +203,6 @@ namespace nucleus
     {
       typename Seam<V>::Iterator::Forward       iterator;
 
-      enter();
-
       // locate the inlet for the given nodule.
       if (this->Locate(nodule, iterator) == elle::StatusError)
         escape("unable to locate the given nodule");
@@ -219,7 +211,7 @@ namespace nucleus
       if (this->Delete(iterator) == elle::StatusError)
         escape("unable to delete the entry associated with the iterator");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -230,8 +222,6 @@ namespace nucleus
     {
       typename Seam<V>::Iterator::Forward       iterator;
 
-      enter();
-
       // locate the inlet for the given key.
       if (this->Locate(key, iterator) == elle::StatusError)
         escape("unable to locate the given key");
@@ -240,7 +230,7 @@ namespace nucleus
       if (this->Delete(iterator) == elle::StatusError)
         escape("unable to delete the entry associated with the iterator");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -249,13 +239,11 @@ namespace nucleus
     template <typename V>
     elle::Status        Seam<V>::Exist(const typename V::K&     key)
     {
-      enter();
-
       // locate the given key.
       if (this->container.find(key) == this->container.end())
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -271,8 +259,6 @@ namespace nucleus
                           const typename V::K&                  key,
                           typename Iterator::Forward&           iterator)
     {
-      enter();
-
       // go through the container.
       for (iterator = this->container.begin();
            iterator != this->container.end();
@@ -286,8 +272,7 @@ namespace nucleus
               (inlet == this->container.rbegin()->second))
             {
               // return with the correct iterator set.
-              
-              leave();
+              return elle::StatusOk;
             }
         }
 
@@ -303,8 +288,6 @@ namespace nucleus
     {
       typename Seam<V>::Iterator::Forward       iterator;
 
-      enter();
-
       // lookup the entry responsible for the given key.
       if (this->Lookup(key, iterator) == elle::StatusError)
         escape("unable to locate the entry");
@@ -312,7 +295,7 @@ namespace nucleus
       // return the inlet.
       inlet = iterator->second;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -324,8 +307,6 @@ namespace nucleus
     {
       Seam<V>::I*       inlet;
 
-      enter();
-
       // lookup the inlet associated with the given key.
       if (this->Lookup(key, inlet) == elle::StatusError)
         escape("unable to locate the inlet");
@@ -336,7 +317,7 @@ namespace nucleus
       // return the nodule.
       nodule = inlet->_value;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -348,13 +329,11 @@ namespace nucleus
                           const typename V::K&                  key,
                           typename Iterator::Forward&           iterator)
     {
-      enter();
-
       // locate the given key.
       if ((iterator = this->container.find(key)) == this->container.end())
         escape("unable to locate the given key");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -366,8 +345,6 @@ namespace nucleus
     {
       typename Seam<V>::Iterator::Forward       iterator;
 
-      enter();
-
       // locate the given key.
       if (this->Locate(key, iterator) == elle::StatusError)
         escape("unable to locate the entry associated with the given key");
@@ -375,7 +352,7 @@ namespace nucleus
       // return the inlet.
       inlet = iterator->second;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -387,8 +364,6 @@ namespace nucleus
     {
       Seam<V>::I*       inlet;
 
-      enter();
-
       // locate the given key.
       if (this->Locate(key, inlet) == elle::StatusError)
         escape("unable to locate the inlet associated with the given key");
@@ -399,7 +374,7 @@ namespace nucleus
       // return the nodule.
       nodule = inlet->_value;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -412,8 +387,6 @@ namespace nucleus
     {
       typename Seam<V>::Iterator::Forward       iterator;
       Seam<V>::I*                               inlet;
-
-      enter();
 
       // locate the inlet.
       if (this->Locate(from, iterator) == elle::StatusError)
@@ -448,7 +421,7 @@ namespace nucleus
           this->_state = StateDirty;
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -462,8 +435,6 @@ namespace nucleus
     {
       typename V::K     ancient;
       typename V::K     recent;
-
-      enter();
 
       // retrieve the current mayor key.
       if (this->Mayor(ancient) == elle::StatusError)
@@ -490,7 +461,7 @@ namespace nucleus
             escape("unable to propagate the update");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -526,7 +497,7 @@ namespace nucleus
       // waive the r variable.
       waive(r);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -538,8 +509,6 @@ namespace nucleus
     {
       typename V::K     t;
       typename V::K     s;
-
-      enter();
 
       // retrieve the mayor key.
       if (this->Mayor(t) == elle::StatusError)
@@ -563,7 +532,7 @@ namespace nucleus
             escape("unable to import the inlets");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -577,12 +546,10 @@ namespace nucleus
     template <typename V>
     elle::Status        Seam<V>::Mayor(typename V::K&           mayor) const
     {
-      enter();
-
       // return the mayor key.
       mayor = this->container.rbegin()->first;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -591,8 +558,6 @@ namespace nucleus
     template <typename V>
     elle::Status        Seam<V>::Maiden(typename V::K&          maiden) const
     {
-      enter();
-
       // check if a single inlet is present.
       if (this->container.size() != 1)
         escape("unable to retrieve the maiden; multiple inlets are present");
@@ -600,7 +565,7 @@ namespace nucleus
       // return the maiden key.
       maiden = this->container.begin()->first;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -617,8 +582,6 @@ namespace nucleus
       typename Seam<V>::Iterator::Forward       iterator;
       Seam<V>::I*                               inlet;
 
-      enter();
-
       // look up the entry responsible for this key.
       if (this->Lookup(key, iterator) == elle::StatusError)
         escape("unable to look up the entry");
@@ -633,7 +596,7 @@ namespace nucleus
       if (inlet->_value->Search(key, quill) == elle::StatusError)
         escape("unable to locate the quill for the given key");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -644,8 +607,6 @@ namespace nucleus
     elle::Status        Seam<V>::Check() const
     {
       typename Seam<V>::Scoutor::Forward        scoutor;
-
-      enter();
 
       // go through the inlets.
       for (scoutor = this->container.begin();
@@ -676,7 +637,7 @@ namespace nucleus
             escape("unable to check the child nodule's consistency");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -692,8 +653,6 @@ namespace nucleus
     {
       elle::String                              alignment(margin, ' ');
       typename Seam<V>::Scoutor::Forward        scoutor;
-
-      enter();
 
       std::cout << alignment << "[Seam] " << this << std::endl;
 
@@ -715,7 +674,7 @@ namespace nucleus
             escape("unable to dump the inlet");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -730,8 +689,6 @@ namespace nucleus
     {
       typename Seam<V>::Scoutor::Forward        scoutor;
       elle::Natural32                           size;
-
-      enter();
 
       // serialize the parent nodule.
       if (Nodule<V>::Serialize(archive) == elle::StatusError)
@@ -754,7 +711,7 @@ namespace nucleus
             escape("unable to serialize the key/inlet tuple");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -765,8 +722,6 @@ namespace nucleus
     {
       elle::Natural32   size;
       elle::Natural32   i;
-
-      enter();
 
       // extract the parent nodule.
       if (Nodule<V>::Extract(archive) == elle::StatusError)
@@ -796,11 +751,9 @@ namespace nucleus
 
           // waive.
           waive(inlet);
-
-          release();
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -825,8 +778,6 @@ namespace nucleus
     {
       Seam<V>           seam;
 
-      enter();
-
       // compute the initial footprint from which the Insert(), Delete()
       // methods will work in order to adjust it.
       if (seam._footprint.Compute() == elle::StatusError)
@@ -843,7 +794,7 @@ namespace nucleus
           escape("unable to register the factory product");
       }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -852,11 +803,7 @@ namespace nucleus
     template <typename V>
     elle::Status        Seam<V>::Clean()
     {
-      enter();
-
-      // nothing to do.
-
-      leave();
+      return elle::StatusOk;
     }
 
   }

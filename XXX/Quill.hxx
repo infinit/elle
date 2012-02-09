@@ -93,7 +93,6 @@ namespace nucleus
     template <typename V>
     elle::Status        Quill<V>::Create()
     {
-      enter();
 
       // initialize the footprint.
       this->_footprint.size = Quill<V>::Footprint;
@@ -101,7 +100,7 @@ namespace nucleus
       // set the state.
       this->_state = StateDirty;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -125,7 +124,7 @@ namespace nucleus
       // waive.
       waive(inlet);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -137,7 +136,6 @@ namespace nucleus
       std::pair<typename Quill<V>::Iterator::Forward,
                 elle::Boolean>                                  result;
 
-      enter();
 
       // check if this key has already been recorded.
       if (this->container.find(inlet->key) != this->container.end())
@@ -162,7 +160,7 @@ namespace nucleus
       // set the state.
       this->_state = StateDirty;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -174,7 +172,6 @@ namespace nucleus
     {
       Quill<V>::I*      inlet;
 
-      enter();
 
       // retrieve the inlet.
       inlet = iterator->second;
@@ -195,7 +192,7 @@ namespace nucleus
       // set the state.
       this->_state = StateDirty;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -206,7 +203,6 @@ namespace nucleus
     {
       typename Quill<V>::Iterator::Forward      iterator;
 
-      enter();
 
       // locate the inlet for the given value.
       if (this->Locate(value, iterator) == elle::StatusError)
@@ -216,7 +212,7 @@ namespace nucleus
       if (this->Delete(iterator) == elle::StatusError)
         escape("unable to delete the entry associated with the iterator");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -227,7 +223,6 @@ namespace nucleus
     {
       typename Quill<V>::Iterator::Forward      iterator;
 
-      enter();
 
       // locate the inlet for the given key.
       if (this->Locate(key, iterator) == elle::StatusError)
@@ -237,7 +232,7 @@ namespace nucleus
       if (this->Delete(iterator) == elle::StatusError)
         escape("unable to delete the entry associated with the iterator");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -246,13 +241,12 @@ namespace nucleus
     template <typename V>
     elle::Status        Quill<V>::Exist(const typename V::K&    key)
     {
-      enter();
 
       // locate the given key.
       if (this->container.find(key) == this->container.end())
-        false();
+        return elle::StatusFalse;
 
-      true();
+      return elle::StatusTrue;
     }
 
     ///
@@ -267,7 +261,6 @@ namespace nucleus
                           const typename V::K&                  key,
                           typename Iterator::Forward&           iterator)
     {
-      enter();
 
       // go through the container.
       for (iterator = this->container.begin();
@@ -282,8 +275,8 @@ namespace nucleus
               (inlet == this->container.rbegin()->second))
             {
               // return with the correct iterator set.
-              
-              leave();
+
+              return elle::StatusOk;
             }
         }
 
@@ -299,7 +292,6 @@ namespace nucleus
     {
       typename Quill<V>::Iterator::Forward      iterator;
 
-      enter();
 
       // lookup the entry responsible for the given key.
       if (this->Lookup(key, iterator) == elle::StatusError)
@@ -308,7 +300,7 @@ namespace nucleus
       // return the inlet.
       inlet = iterator->second;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -320,7 +312,6 @@ namespace nucleus
     {
       Quill<V>::I*      inlet;
 
-      enter();
 
       // lookup the inlet associated with the given key.
       if (this->Lookup(key, inlet) == elle::StatusError)
@@ -332,7 +323,7 @@ namespace nucleus
       // return the value.
       value = inlet->_value;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -344,13 +335,12 @@ namespace nucleus
                           const typename V::K&                  key,
                           typename Iterator::Forward&           iterator)
     {
-      enter();
 
       // locate the given key.
       if ((iterator = this->container.find(key)) == this->container.end())
         escape("unable to locate the given key");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -362,7 +352,6 @@ namespace nucleus
     {
       typename Quill<V>::Iterator::Forward      iterator;
 
-      enter();
 
       // locate the given key.
       if (this->Locate(key, iterator) == elle::StatusError)
@@ -371,7 +360,7 @@ namespace nucleus
       // return the inlet.
       inlet = iterator->second;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -383,7 +372,6 @@ namespace nucleus
     {
       Quill<V>::I*      inlet;
 
-      enter();
 
       // locate the given key.
       if (this->Locate(key, inlet) == elle::StatusError)
@@ -395,7 +383,7 @@ namespace nucleus
       // return the value.
       value = inlet->_value;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -431,7 +419,7 @@ namespace nucleus
       // waive the r variable.
       waive(r);
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -444,7 +432,6 @@ namespace nucleus
       typename V::K     t;
       typename V::K     q;
 
-      enter();
 
       // retrieve the mayor key.
       if (this->Mayor(t) == elle::StatusError)
@@ -468,7 +455,7 @@ namespace nucleus
             escape("unable to import the inlets");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -481,12 +468,11 @@ namespace nucleus
     template <typename V>
     elle::Status        Quill<V>::Mayor(typename V::K&          mayor) const
     {
-      enter();
 
       // return the mayor key.
       mayor = this->container.rbegin()->first;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -495,7 +481,6 @@ namespace nucleus
     template <typename V>
     elle::Status        Quill<V>::Maiden(typename V::K&         maiden) const
     {
-      enter();
 
       // check if a single inlet is present.
       if (this->container.size() != 1)
@@ -504,7 +489,7 @@ namespace nucleus
       // return the maiden key.
       maiden = this->container.begin()->first;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -516,12 +501,11 @@ namespace nucleus
     elle::Status        Quill<V>::Search(const typename V::K&,
                                          Quill<V>*&             quill)
     {
-      enter();
 
       // return this quill.
       quill = this;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -532,7 +516,6 @@ namespace nucleus
     {
       typename Quill<V>::Scoutor::Forward       scoutor;
 
-      enter();
 
       // go through the inlets.
       for (scoutor = this->container.begin();
@@ -546,7 +529,7 @@ namespace nucleus
             escape("invalid key");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -563,7 +546,6 @@ namespace nucleus
       elle::String                              alignment(margin, ' ');
       typename Quill<V>::Scoutor::Forward       scoutor;
 
-      enter();
 
       std::cout << alignment << "[Quill] " << this << std::endl;
 
@@ -585,7 +567,7 @@ namespace nucleus
             escape("unable to dump the inlet");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -601,7 +583,6 @@ namespace nucleus
       typename Quill<V>::Scoutor::Forward       scoutor;
       elle::Natural32                           size;
 
-      enter();
 
       // serialize the parent nodule.
       if (Nodule<V>::Serialize(archive) == elle::StatusError)
@@ -624,7 +605,7 @@ namespace nucleus
             escape("unable to serialize the key/inlet tuple");
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -636,7 +617,6 @@ namespace nucleus
       elle::Natural32   size;
       elle::Natural32   i;
 
-      enter();
 
       // extract the parent nodule.
       if (Nodule<V>::Extract(archive) == elle::StatusError)
@@ -666,11 +646,9 @@ namespace nucleus
 
           // waive.
           waive(inlet);
-
-          release();
         }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -695,7 +673,6 @@ namespace nucleus
     {
       Quill<V>          quill;
 
-      enter();
 
       // compute the initial footprint from which the Insert(), Delete()
       // methods will work in order to adjust it.
@@ -713,7 +690,7 @@ namespace nucleus
           escape("unable to register the factory product");
       }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -722,11 +699,7 @@ namespace nucleus
     template <typename V>
     elle::Status        Quill<V>::Clean()
     {
-      enter();
-
-      // nothing to do.
-
-      leave();
+      return elle::StatusOk;
     }
 
   }

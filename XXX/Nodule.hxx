@@ -97,7 +97,7 @@ namespace nucleus
       typename T::Iterator::Forward     i;
       typename T::Iterator::Forward     j;
 
-      enter();
+      ;
 
       // initialize the temporary footprint.
       footprint = T::Footprint;
@@ -155,7 +155,7 @@ namespace nucleus
       left->_footprint.state = elle::Footprint::StateConsistent;
       right->_footprint.state = elle::Footprint::StateConsistent;
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -175,7 +175,7 @@ namespace nucleus
       typename T::Iterator::Backward    i;
       typename T::Iterator::Backward    j;
 
-      enter();
+      ;
 
       // initialize the temporary footprint.
       footprint = T::Footprint;
@@ -233,7 +233,7 @@ namespace nucleus
       left->_footprint.state = elle::Footprint::StateConsistent;
       right->_footprint.state = elle::Footprint::StateConsistent;
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -249,7 +249,7 @@ namespace nucleus
     {
       elle::String              alignment(margin, ' ');
 
-      enter();
+      ;
 
       std::cout << alignment << "[Nodule]" << std::endl;
 
@@ -317,7 +317,7 @@ namespace nucleus
       if (this->_footprint.Dump(margin + 4) == elle::StatusError)
         escape("unable to dump the footprint");
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -330,7 +330,7 @@ namespace nucleus
     template <typename V>
     elle::Status        Nodule<V>::Serialize(elle::Archive&     archive) const
     {
-      enter();
+      ;
 
       // serialize the attributes.
       if (archive.Serialize(
@@ -340,7 +340,7 @@ namespace nucleus
             this->right) == elle::StatusError)
         escape("unable to serialize the attributes");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -351,7 +351,7 @@ namespace nucleus
     {
       elle::Natural8    type;
 
-      enter();
+      ;
 
       // extract the attributes.
       if (archive.Extract(type,
@@ -363,7 +363,7 @@ namespace nucleus
       // cast the type.
       this->type = static_cast<Nodule<V>::Type>(type);
 
-      leave();
+      return elle::StatusOk;
     }
 
   }
