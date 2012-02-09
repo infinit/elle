@@ -30,6 +30,8 @@
 //   o use // for in-code comments and /// for the generated documentation
 //     i.e Doxygen. as such the class description, method descriptions,
 //     global variable descriptions etc. are considered documentation.
+//   o XXX must be included in comments in order to specify something which
+//     needs completing or re-working.
 //
 // all comments used for explaining the coding standards are written in
 // C-style i.e /* comment about the coding style */.
