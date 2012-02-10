@@ -156,8 +156,7 @@ namespace elle
 
       // insert the porter in the container.
       auto result = LocalServer::Porters.insert(
-          std::pair<const String, LocalServerPorter*>(name, porter.get())
-      );
+        std::pair<const String, LocalServerPorter*>(name, porter.get()));
 
       // check if the insertion was successful.
       if (result.second == false)
