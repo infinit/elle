@@ -4,7 +4,7 @@
 import json
 from datetime import datetime
 
-from api_client import ApiClient
+import pythia
 
 """
 Tests for the sever API
@@ -13,7 +13,7 @@ Tests for the sever API
 if __name__ == '__main__':
     server = 'http://127.0.0.1:12345'
     session = {}
-    client = ApiClient(server, session)
+    client = pythia.Client(server, session)
 
     email = 'testkaka@infinit.io'
     password = 'pifpif'

@@ -8,7 +8,7 @@ import urllib
 import poster
 import web
 
-class ApiClient(object):
+class Client(object):
     """
     Wrap http client, make it easy to use with a REST server
     """
