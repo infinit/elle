@@ -115,10 +115,9 @@ namespace horizon
       // for example the -d option could be used instead of -f in order
       // to activate the debug mode.
       //
-      elle::String      ofsname("-ofsname='" +
-                                hole::Hole::Descriptor.name +
-                                "'");
-      const char*               arguments[] =
+      elle::String      ofsname("-ofsname=" +
+                                hole::Hole::Descriptor.name);
+      const char*       arguments[] =
         {
           "horizon",
 

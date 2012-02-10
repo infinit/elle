@@ -103,6 +103,10 @@ namespace horizon
     ///
     /// this method sets up the fuker.
     ///
+    /// \todo XXX the -o direct_io messes up with the permissions such
+    ///   that $> ./configure does not work. direct_io is however
+    ///   necessary for etoile to work.
+    ///
     elle::Status        SequentialFUker::Setup()
     {
       //
@@ -115,10 +119,15 @@ namespace horizon
       // for example the -d option could be used instead of -f in order
       // to activate the debug mode.
       //
-      elle::String      ofsname("-ofsname='" +
-                                hole::Hole::Descriptor.name +
-                                "'");
-      const char*               arguments[] =
+      // note that compared to the Linux implementation, the MacOS X
+      // FUSE does not support the -o large_read and -o big_writes
+      // options.
+      //
+      elle::String      ofsname("-ofsname=" +
+                                hole::Hole::Descriptor.name);
+      elle::String      ovolname("-ovolname=" +
+                                 hole::Hole::Descriptor.name);
+      const char*       arguments[] =
         {
           "horizon",
 
@@ -128,9 +137,9 @@ namespace horizon
 
           "-o", "no_remote_lock",
           "-o", "auto_cache",
-          "-o", "direct_io",
 
           ofsname.c_str(),
+          ovolname.c_str(),
           FUSE::Mountpoint.c_str()
         };
 
