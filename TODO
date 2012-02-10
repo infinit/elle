@@ -6,6 +6,7 @@
 - epth
  - ajouter locking
  - ajouter implem pthread
+ - ou passer a asio, cf ci-dessous
 
 - event loop/timer/fibers/socket
  - boost::asio
@@ -20,6 +21,7 @@
 
 
 - linux ne compile pas correctement: A REVOIR!
+- si on fait un umount, Infinit crash
 
 #
 # ---------- porcupine --------------------------------------------------------
