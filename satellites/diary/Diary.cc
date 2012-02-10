@@ -38,8 +38,6 @@ namespace satellite
   {
     Diary::Operation    operation;
 
-    enterx(instance(Infinit::Parser));
-
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
       escape("unable to initialize Elle");
@@ -399,9 +397,6 @@ namespace satellite
 
     // delete the parser.
     delete Infinit::Parser;
-
-    // waive.
-    waive(Infinit::Parser);
 
     // clean the Etoile.
     if (etoile::Etoile::Clean() == elle::StatusError)

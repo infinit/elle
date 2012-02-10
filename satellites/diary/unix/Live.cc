@@ -91,18 +91,14 @@ namespace satellite
     elle::Status        Live::Add(const elle::Natural64         passive,
                                   const elle::Natural64         active)
     {
-      Live::Item*       item;
-
-      enterx(instance(item));
-
-      // allocate the item.
-      item = new Live::Item(passive, active);
+      auto              item =
+        std::unique_ptr<Live::Item>(new Live::Item(passive, active));
 
       // push the item.
-      Live::Items.push_front(item);
+      Live::Items.push_front(item.get());
 
-      // waive.
-      waive(item);
+      // stop tracking.
+      item.release();
 
       return elle::StatusOk;
     }
