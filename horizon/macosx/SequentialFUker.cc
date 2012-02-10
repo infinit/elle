@@ -123,21 +123,16 @@ namespace horizon
           "horizon",
 
           "-s",
-
           "-f",
           "-o", "subtype=infinit",
 
           "-o", "no_remote_lock",
-          // XXX "-o", "large_read",
-          // XXX "-o", "big_writes",
           "-o", "auto_cache",
           "-o", "direct_io",
 
           ofsname.c_str(),
           FUSE::Mountpoint.c_str()
         };
-
-      enter();
 
       //
       // initialize the FUSE event loop.
@@ -202,7 +197,7 @@ namespace horizon
           escape("unable to attach the broker to the event loop");
       }
 
-      leave();
+      return elle::StatusOk;
     }
 
 //
@@ -218,11 +213,11 @@ namespace horizon
       struct ::fuse_chan*       channel = this->channel;
       SequentialFUker::Item     item;
 
-      enterx(slab(item.buffer, ::free));
-
       // allocate a buffer.
       if ((item.buffer = static_cast<char*>(::malloc(this->size))) == NULL)
         escape("unable to allocate a FUSE buffer");
+
+      std::unique_ptr<char> guard(item.buffer);
 
       // retrieve the upcall from the kernel through the FUSE channel.
       item.res = ::fuse_chan_recv(&channel,
@@ -231,7 +226,7 @@ namespace horizon
 
       // retry later if necessary.
       if (item.res == -EINTR)
-        leave();
+        return elle::StatusOk;
 
       // exit if an error occured.
       if (item.res <= 0)
@@ -243,13 +238,12 @@ namespace horizon
       // record the item.
       this->container.push_back(item);
 
-      // waive the tracking.
-      waive(item.buffer);
+      guard.release();
 
       // if the FUker is already processing, return since this
       // FUker processes events in a sequential manner.
       if (this->state == SequentialFUker::StateProcessing)
-        leave();
+        return elle::StatusOk;
 
       // set the state.
       this->state = SequentialFUker::StateProcessing;
@@ -273,12 +267,13 @@ namespace horizon
 
           // release the buffer.
           ::free(item.buffer);
+          item.buffer = nullptr;
         }
 
       // reset the state.
       this->state = SequentialFUker::StateWaiting;
 
-      leave();
+      return elle::StatusOk;
     }
 
   }

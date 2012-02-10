@@ -56,8 +56,6 @@ namespace horizon
     ///
     elle::Status        MacOSX::Initialize()
     {
-      enter();
-
       //
       // initialize the 'somebody' entity.
       //
@@ -144,7 +142,7 @@ namespace horizon
           escape("unable to initialize FUSE");
       }
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -152,13 +150,11 @@ namespace horizon
     ///
     elle::Status        MacOSX::Setup()
     {
-      enter();
-
       // set up FUSE.
       if (FUSE::Setup(Infinit::Mountpoint) == elle::StatusError)
         escape("unable to set up FUSE");
 
-      leave();
+      return elle::StatusOk;
     }
 
     ///
@@ -166,13 +162,11 @@ namespace horizon
     ///
     elle::Status        MacOSX::Clean()
     {
-      enter();
-
       // clean FUSE.
       if (FUSE::Clean() == elle::StatusError)
         escape("unable to clean FUSE");
 
-      leave();
+      return elle::StatusOk;
     }
 
   }
