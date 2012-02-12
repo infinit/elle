@@ -162,12 +162,8 @@ namespace elle
     {
       ::QAbstractEventDispatcher*       dispatcher;
 
-      ;
-
-#include <elle/idiom/Close.hh>
       // retrieve the event dispatcher instance.
       dispatcher = ::QAbstractEventDispatcher::instance();
-#include <elle/idiom/Open.hh>
 
       // register the socket notifier.
       dispatcher->registerSocketNotifier(&broker.notifier);
@@ -182,12 +178,8 @@ namespace elle
     {
       ::QAbstractEventDispatcher*       dispatcher;
 
-      ;
-
-#include <elle/idiom/Close.hh>
       // retrieve the event dispatcher instance.
       dispatcher = ::QAbstractEventDispatcher::instance();
-#include <elle/idiom/Open.hh>
 
       // unregister the socket notifier.
       dispatcher->unregisterSocketNotifier(&broker.notifier);
