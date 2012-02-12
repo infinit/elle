@@ -1256,7 +1256,10 @@ namespace satellite
 
       res = Record::Reference->fuse.ftruncate(path, size, fi);
 
-      if (upcall.Outputs() == elle::StatusError)
+      if (upcall.Outputs(
+            elle::Region(reinterpret_cast<elle::Byte*>(fi),
+                         sizeof (struct ::fuse_file_info))) ==
+          elle::StatusError)
         fail("unable to specify the upcall's outputs");
 
       if (upcall.Result(res) == elle::StatusError)

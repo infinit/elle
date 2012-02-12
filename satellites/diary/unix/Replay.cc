@@ -1966,6 +1966,8 @@ namespace satellite
       // display a message.
       std::cout << "An error occured while replaying the diary"
                 << std::endl;
+      std::cout << "Feel free to take a look at the logs for more information"
+                << std::endl;
 
       // exit the program.
       elle::Program::Exit();
