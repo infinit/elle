@@ -23,6 +23,7 @@ namespace satellite
   /// this namespace contains the UNIX-related stuff for enabling the diary.
   /// recording/replaying.
   ///
+  #undef unix
   namespace unix
   {
 

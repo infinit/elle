@@ -16,6 +16,7 @@
 
 namespace satellite
 {
+  #undef unix
   namespace unix
   {
 

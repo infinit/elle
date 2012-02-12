@@ -28,7 +28,9 @@
 #include <satellites/diary/unix/Upcall.hh>
 
 #include <elle/idiom/Close.hh>
-# define _GNU_SOURCE
+# if defined(INFINIT_MACOSX)
+#  define _GNU_SOURCE
+# endif
 # include <fuse.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -52,6 +54,7 @@
 
 namespace satellite
 {
+  #undef unix
   namespace unix
   {
 
