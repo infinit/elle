@@ -14,7 +14,8 @@ class Login(Page):
         }
             -> {
                 'success': True,
-                'token': "generated session token"
+                'token': "generated session token",
+                'fullname': 'full name',
             }
     """
 
@@ -27,6 +28,8 @@ class Login(Page):
             return json.dumps({
                 'success': True,
                 'token': self.session.session_id,
+                'fullname': self.user['fullname'],
+                'email': self.user['email'],
             })
         return json.dumps({
             'success': False,

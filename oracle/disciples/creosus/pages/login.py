@@ -27,7 +27,17 @@ class Login(creosus.Page):
                 'password': f['password'].value,
             })
             if res['success']:
-                self.api_session['token'] = res['token']
+                s = self.app.session_store.generateNewSession(
+                    self.app.conf['salt'],
+                    troll.security.db.User({
+                        'email': res['email'],
+                        'fullname': res['fullname'],
+                    })
+                )
+                self.app.session_hash = s.hash
+                s['api_session'] = {
+                    'token': res['token'],
+                }
                 raise web.seeother('/')
             else:
                 f.errors.append(res['error'])
