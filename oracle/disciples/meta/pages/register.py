@@ -3,6 +3,8 @@
 import json
 import web.form
 
+import pythia
+
 from meta import database
 from meta.page import Page
 
@@ -13,6 +15,7 @@ class Register(Page):
         'email': "email@pif.net", #required
         'fullname': "The full name", #required
         'password': "password', #required
+        'admin_token': 'admin token', #required
     }
 
     """
@@ -28,6 +31,10 @@ class Register(Page):
             return self.error("Please logout before any register attempt")
 
         user = self.data
+
+        if user.get('admin_token') != pythia.constants.ADMIN_TOKEN:
+            return self.error("You are not allowed to do that")
+
         errors = []
         for k, v in Register._validators.items():
             if not k in user:

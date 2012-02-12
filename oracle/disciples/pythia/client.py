@@ -8,6 +8,8 @@ import urllib
 import poster
 import web
 
+from pythia.constants import DEFAULT_SERVER
+
 class Client(object):
     """
     Wrap http client, make it easy to use with a REST server
@@ -18,7 +20,7 @@ class Client(object):
         404: web.NotFound,
     }
 
-    def __init__(self, server, session):
+    def __init__(self, server=DEFAULT_SERVER, session={}):
         self._session = session
         self._server = server.rstrip('/') + '/'
 

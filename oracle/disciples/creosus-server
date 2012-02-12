@@ -1,17 +1,21 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 
-from creosus import pages
-
 import troll
+import pythia
+
+from creosus import pages
 
 views = {
     '': pages.Root,
     'register': pages.Register,
+    'login': pages.Login,
 }
 
 conf = {
     'database': None,
+    'template_dir': 'creosus/templates',
+    'meta_server': pythia.constants.DEFAULT_SERVER,
 }
 
 if __name__ == '__main__':
