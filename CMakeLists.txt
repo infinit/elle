@@ -15,12 +15,6 @@ find_package(OpenSSL REQUIRED)
 
 include_directories(. ${OPENSSL_INCLUDE_DIR})
 
-message("INFINIT_VERSION: ${INFINIT_VERSION}")
-message("UNIX: ${UNIX}")
-message("WIN32: ${WIN32}")
-message("CMAKE_SYSTEM: ${CMAKE_SYSTEM}")
-message("CMAKE_HOST_SYSTEM: ${CMAKE_HOST_SYSTEM}")
-
 #
 # configurations
 #
@@ -84,3 +78,6 @@ TARGET_LINK_LIBRARIES(8infinit infinit etoile nucleus lune agent hole horizon)
 #)
 
 #TARGET_LINK_LIBRARIES(XXX infinit elle nucleus lune infinit)
+
+# configuration
+CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/config.hh.cmake" "${CMAKE_SOURCE_DIR}/config.hh")
