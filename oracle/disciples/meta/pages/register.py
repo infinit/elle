@@ -40,7 +40,7 @@ class Register(Page):
             if not k in user:
                 errors.append("Field '%s' is mandatory" % k)
             else:
-                f = str(user[k]).strip()
+                f = unicode(user[k]).strip()
                 if not v.valid(f):
                     errors.append(v.msg)
                 else:
