@@ -76,8 +76,6 @@ ADD_EXECUTABLE(8infinit
 
 TARGET_LINK_LIBRARIES(8infinit infinit etoile nucleus lune agent hole horizon)
 
-add_subdirectory(release)
-
 # XXX
 #ADD_EXECUTABLE(XXX
 #  XXX/Porcupine.cc
