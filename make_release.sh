@@ -17,14 +17,15 @@ die()
 [ ! -d build ] && die "You have to build the project into build/ directory"
 
 rev=`git rev-parse --short HEAD`
-version=`cmake -L CMakeLists.txt 2>&1| grep INFINIT_VERSION | cut -d: -f2 | tr -d ' '`
-major=`echo $version | cut -d. -f1`
-minor=`echo $version | cut -d. -f2`
+major=`cat CMakeLists.txt| grep INFINIT_VERSION_MAJOR | head -n1 | cut -d\" -f2`
+minor=`cat CMakeLists.txt| grep INFINIT_VERSION_MINOR | head -n1 | cut -d\" -f2`
 release_dir="$SCRIPTDIR/releases/release-$rev"
+
+echo "Building Infinit $major.$minor.$rev"
 
 mkdir -p "$release_dir"
 rm -rf "$release_dir"
-mkdir -p "$release_dir/binaries"
+mkdir -p "$release_dir"
 
 [ ! -d "$release_dir" ] && die "Cannot create '$release_dir' directory"
 
@@ -33,11 +34,13 @@ build_release()
 {
 	local build_dir release_dir
 	build_dir="$1"
-	release_dir="$2"
+	release_dir="$2/$1"
+	mkdir -p "$release_dir/binaries"
+	[ ! -d "$release_dir/binaries" ] && die "Cannot create '$release_dir/binaries' directory"
 
 	for f in 8infinit \
-	         applications/8dictionary/8dictionary \
-	         applications/8access/8access \
+	         satellites/dictionary/8dictionary \
+	         satellites/access/8access \
 	         plasma/updater/updater \
 	         plasma/installer/installer \
 	         plasma/watchdog/watchdog
@@ -46,7 +49,7 @@ build_release()
 		cp "$build_dir/$f" "$release_dir/binaries" \
 			|| die "Cannot copy '$build_dir/$f' to '$release_dir/binaries'"
 	done
-	python make_release.py "$release_dir" "$major" "$minor" "$rev"
+	python "$SCRIPTDIR"/make_release.py "$release_dir" "$major" "$minor" "$rev"
 }
 
 

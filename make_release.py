@@ -2,7 +2,7 @@
 
 import sys, os, hashlib
 
-XML = """
+XML = """<?xml version="1.0" encoding="UTF-8"?>
 <release major="%(major)s" minor="%(minor)s" rev="%(rev)s">
 %(executables)s
 </release>
@@ -27,6 +27,6 @@ if __name__ == '__main__':
             )
     with open(os.path.join(dest_dir, "release.xml"), "w") as f:
         f.write(XML % {
-            'major': major, 'minor': minor, 'rev': rev
+            'major': major, 'minor': minor, 'rev': rev,
             'executables': '\n'.join(EXE_TAGS)
         })
