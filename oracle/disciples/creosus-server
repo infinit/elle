@@ -10,6 +10,8 @@ views = {
     '': pages.Root,
     'register': pages.Register,
     'login': pages.Login,
+    'logout': pages.Logout,
+    'installer': pages.Installer,
 }
 
 conf = {
@@ -17,6 +19,12 @@ conf = {
     'template_dir': 'creosus/templates',
     'meta_server': pythia.constants.DEFAULT_SERVER,
     'fastcgi': True,
+    'permissions': {
+        'install': 'Allowed to install infinit'
+    },
+    'grants': {
+        'user': ('install',),
+    },
 }
 
 if __name__ == '__main__':

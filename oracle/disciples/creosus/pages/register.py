@@ -24,7 +24,7 @@ class Register(creosus.Page):
         ),
     ])
 
-    @troll.view.expose
+    @troll.view.exposeWhen('subscribe')
     def index(self):
         f = self._form.generate(self)
         if f.is_valid:

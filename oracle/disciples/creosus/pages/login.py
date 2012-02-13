@@ -1,5 +1,7 @@
 # -*- encoding: utf-8 -*-
 
+import web
+
 import troll
 from troll import form
 from troll.form import validators
@@ -18,7 +20,7 @@ class Login(creosus.Page):
         ]
     )
 
-    @troll.view.expose
+    @troll.view.exposeWhen('login')
     def index(self):
         f = self._form.generate(self)
         if f.is_valid:
@@ -30,8 +32,10 @@ class Login(creosus.Page):
                 s = self.app.session_store.generateNewSession(
                     self.app.conf['salt'],
                     troll.security.db.User({
-                        'email': res['email'],
+                        'id': True, # auth test are based on the test 'id is not None'
+                        'mail': res['email'],
                         'fullname': res['fullname'],
+                        'role_id': 'user',
                     })
                 )
                 self.app.session_hash = s.hash
@@ -41,6 +45,6 @@ class Login(creosus.Page):
                 raise web.seeother('/')
             else:
                 f.errors.append(res['error'])
-            print res
+        f['password'].value = ''
         return self.render(obj={'login_form': f.render()})
 

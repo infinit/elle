@@ -1,5 +1,9 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:py="http://genshi.edgewall.org/"
+	xml:lang="en"
+	lang="en">
 	<head>
 		<title> Infinit </title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -13,7 +17,13 @@
 				<a href="/">∞</a>
 			</span>
 			<div class="toolbar">
+				<py:if test="user.id is None">
 				<a href="/login">Log In</a>
+				</py:if>
+				<py:if test="user.id is not None">
+				Welcome <b>${user.fullname}</b> -
+				<a href="/logout">Log out</a>
+				</py:if>
 			</div>
 		</div>
 
