@@ -16,6 +16,7 @@ conf = {
     'database': None,
     'template_dir': 'creosus/templates',
     'meta_server': pythia.constants.DEFAULT_SERVER,
+    'fastcgi': True,
 }
 
 if __name__ == '__main__':
