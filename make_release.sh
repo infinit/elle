@@ -21,7 +21,7 @@ major=`cat CMakeLists.txt| grep INFINIT_VERSION_MAJOR | head -n1 | cut -d\" -f2`
 minor=`cat CMakeLists.txt| grep INFINIT_VERSION_MINOR | head -n1 | cut -d\" -f2`
 release_dir="$SCRIPTDIR/releases/release-$rev"
 
-echo "Building Infinit $major.$minor.$rev"
+echo "==== Building Infinit $major.$minor.$rev"
 
 mkdir -p "$release_dir"
 rm -rf "$release_dir"
@@ -46,9 +46,16 @@ build_release()
 	         plasma/watchdog/watchdog
 	do
 		[ -x "$build_dir/$f" ] || die "cannot find '$build_dir/$f' binary"
+		echo "= Copying '$build_dir/$f' binary"
 		cp "$build_dir/$f" "$release_dir/binaries" \
 			|| die "Cannot copy '$build_dir/$f' to '$release_dir/binaries'"
 	done
+	for bin in "$release_dir/binaries"/*
+	do
+		echo "= Striping '$bin'"
+		strip -s "$bin"
+	done
+	echo "== Writing XML release file of $build_dir platform"
 	python "$SCRIPTDIR"/make_release.py "$release_dir" "$major" "$minor" "$rev"
 }
 
@@ -57,5 +64,9 @@ cd build
 
 for dir in *
 do
+	echo "=== Prepare release for $dir platform"
 	build_release "$dir" "$release_dir"
 done
+
+echo "==== Uploading files"
+scp -r "$release_dir"/* infinit.im:/usr/local/www/infinit.im/downloads
