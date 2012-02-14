@@ -45,6 +45,9 @@ class Login(creosus.Page):
                 raise web.seeother('/')
             else:
                 f.errors.append(res['error'])
-        f['password'].value = ''
+        if f['email'].value is not None:
+            f['password'].value = ''
+        else:
+            f['password'].value = None
         return self.render(obj={'login_form': f.render()})
 
