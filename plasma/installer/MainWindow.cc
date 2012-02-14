@@ -98,6 +98,7 @@ void MainWindow::on_launchInstall_clicked()
       SLOT(download_done(QNetworkReply*))
   );
 
+  std::cout << "Downloading updater from '" << INFINIT_UPDATER_URI << "'\n";
   this->_reply = this->_http->get(QNetworkRequest(QUrl(INFINIT_UPDATER_URI)));
   this->connect(
       this->_reply,
@@ -124,7 +125,7 @@ void MainWindow::download_done(QNetworkReply* reply)
   assert(reply == this->_reply);
   assert(this->_dest_file != 0);
   this->_dest_file->close();
-  this->_dest_file->setPermissions(QFile::ExeOwner | QFile::ExeUser);
+  this->_dest_file->setPermissions(QFile::ExeOwner | QFile::ReadOwner | QFile::WriteOwner);
   this->_reply->deleteLater();
   this->_reply = 0;
   this->_ui->userAgreementLabel->setText("All files successfully downloaded");
