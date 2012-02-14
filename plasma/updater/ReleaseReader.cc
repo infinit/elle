@@ -55,10 +55,10 @@ void ReleaseReader::_ReadElement(QDomElement const& element)
     {
       File file = {
           File::Type::Executable,
-          element.attribute("path").toStdString(),
-          element.attribute("md5sum").toStdString()
+          element.attribute("path"),
+          element.attribute("md5sum"),
       };
-      std::cout << "Found " << file.relpath << " (" << file.md5sum << ")\n";
+      std::cout << "Found " << file.relpath.toStdString() << " (" << file.md5sum.toStdString() << ")\n";
       this->files.push_back(file);
     }
   else

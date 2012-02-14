@@ -46,8 +46,8 @@ namespace plasma {
 
       public:
         Type        type;
-        std::string relpath;
-        std::string md5sum;
+        QString relpath;
+        QString md5sum;
       };
 
     public:

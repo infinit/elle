@@ -16,6 +16,7 @@
 #include <iostream>
 
 #include <QDir>
+#include <QCryptographicHash>
 
 #include "plasma/common/resources.hh"
 
@@ -67,38 +68,58 @@ int Application::Exec()
 
 void Application::_OnDownloadFinished(QNetworkReply* reply)
 {
-  assert(reply != 0);
-  if (reply->error() == QNetworkReply::NoError)
+  if (reply != nullptr)
     {
-      bool result;
+      if (reply->error() == QNetworkReply::NoError)
+        {
+          bool result;
 
-      if (this->_has_list)
-        result = this->_ProcessResource(*reply);
-      else
-        result = this->_ProcessResourceList(*reply);
-      if (!result)
-        this->quit();
-      if (this->_release_reader.files.size() > 0)
-        this->_DownloadNextResource();
+          if (this->_has_list)
+            result = this->_ProcessResource(*reply);
+          else
+            result = this->_ProcessResourceList(*reply);
+          if (!result)
+            this->quit();
+        }
       else
         {
-          std::cout << "All release files downloaded successfully\n";
-          // end checks here
-          this->quit();
+          std::cerr << "An error occured, ignoring further replies\n";
         }
+      reply->deleteLater();
     }
+
+  if (this->_release_reader.files.size() > 0)
+    this->_DownloadNextResource();
   else
     {
-      std::cerr << "An error occured, ignoring further replies\n";
+      std::cout << "All release files downloaded successfully\n";
+      // end checks here
+      this->quit();
     }
-  reply->deleteLater();
 }
 
 void Application::_DownloadNextResource()
 {
   assert(this->_release_reader.files.size() > 0);
   auto& file = this->_release_reader.files.back();
-  QString uri = QString(INFINIT_BASE_URL "/") + QString(file.relpath.c_str());
+  QString uri = (INFINIT_BASE_URL "/") + file.relpath;
+
+  QDir home_directory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
+  QFile dest_file(home_directory.filePath(file.relpath));
+  if (dest_file.open(QIODevice::ReadOnly))
+    {
+      QByteArray fileData = dest_file.readAll();
+      auto array = QCryptographicHash::hash(fileData, QCryptographicHash::Md5).toHex();
+      std::string hex(array.data(), array.length());
+      if (file.md5sum.toStdString() == hex)
+        {
+          std::cout << "The binary " << dest_file.fileName().toStdString() << " is up to date !\n";
+          this->_release_reader.files.pop_back();
+          emit _OnDownloadFinished(nullptr);
+          return;
+        }
+    }
+
   std::cout << "Checking out " << uri.toStdString() << std::endl;
   auto reply = this->_network_access_manager->get(
       QNetworkRequest(QUrl(uri))
@@ -122,11 +143,11 @@ bool Application::_ProcessResource(QNetworkReply& reply)
   QDir home_directory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
   assert(home_directory.exists());
   auto& src_file = this->_release_reader.files.back();
-  std::cout << "Just downloaded " << src_file.relpath << std::endl;
-  QFile dest_file(home_directory.filePath(src_file.relpath.c_str()));
+  std::cout << "Just downloaded " << src_file.relpath.toStdString() << std::endl;
+  QFile dest_file(home_directory.filePath(src_file.relpath));
   if (!dest_file.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
-      std::cerr << "Cannot open file '" << src_file.relpath << "'\n";
+      std::cerr << "Cannot open file '" << src_file.relpath.toStdString() << "'\n";
       return false;
     }
   dest_file.write(reply.readAll());
