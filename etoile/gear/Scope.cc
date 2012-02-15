@@ -329,6 +329,84 @@ namespace etoile
     }
 
     ///
+    /// update the scope container which may contain scopes
+    /// referencing invalid chemins.
+    ///
+    /// XXX note that the mechanism below is not very efficient.
+    ///     instead a tree-based data structure should be used
+    ///     in order to update the container in an efficient
+    ///     manner.
+    ///
+    elle::Status        Scope::Update(const path::Chemin&       from,
+                                      const path::Chemin&       to)
+    {
+      //
+      // go through the onymous scopes and update the chemins
+      // should them derive _from_.
+      //
+
+    retry:
+      auto              iterator = Scope::Scopes::Onymous.begin();
+      auto              end = Scope::Scopes::Onymous.end();
+
+      for (; iterator != end; ++iterator)
+        {
+          Scope*        scope = iterator->second;
+
+          if (scope->chemin.Derives(from) == elle::StatusFalse)
+            continue;
+
+          //
+          // the scope's chemin seems to derive the base
+          // i.e _from_.
+          //
+          // it must therefore be updated so as to be
+          // consistent.
+          //
+
+          scope->chemin = to;
+
+          //
+          // note that the current scope is registered in
+          // the container with its old chemin as the key.
+          //
+          // therefore, the container's key for this scope
+          // must also be updated.
+          //
+          // the following thus removes the scope and
+          // re-inserts it.
+          //
+
+          if (Scope::Remove(from) == elle::StatusError)
+            escape("unable to remove the scope");
+
+          if (Scope::Add(scope->chemin, scope) == elle::StatusError)
+            {
+              //
+              // in this extreme case, manually delete the scope
+              // which is now orphan.
+              //
+
+              delete scope;
+
+              escape("unable to re-insert the scope");
+            }
+
+          //
+          // at this point, we cannot go further with the
+          // iterator as consistency cannot be guaranteed
+          // anymore.
+          //
+          // therefore, go through the whole process again.
+          //
+
+          goto retry;
+        }
+
+      return (elle::StatusOk);
+    }
+
+    ///
     /// this method displays the containers.
     ///
     elle::Status        Scope::Show(const elle::Natural32       margin)

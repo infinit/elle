@@ -99,6 +99,24 @@ namespace etoile
     }
 
     ///
+    /// this method returns true if the current chemin derives the
+    /// given base.
+    ///
+    /// let us imagine two chemins A and B. A is said to derive B
+    /// if both its route and venue are included in B, plus potential
+    /// other entries. in other words A's route and venue can be equal
+    /// or longer.
+    ///
+    elle::Status        Chemin::Derives(const Chemin&            base) const
+    {
+      if ((this->route.Derives(base.route) == elle::StatusTrue) &&
+          (this->venue.Derives(base.venue) == elle::StatusTrue))
+        return (elle::StatusTrue);
+
+      return (elle::StatusFalse);
+    }
+
+    ///
     /// this method generates a Location based on the route and venue.
     ///
     elle::Status        Chemin::Locate(nucleus::Location&       location) const

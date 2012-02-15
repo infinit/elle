@@ -59,6 +59,8 @@ namespace etoile
                                        const nucleus::Size =
                                          elle::Type<nucleus::Size>::Maximum);
 
+      elle::Status              Derives(const Chemin&) const;
+
       elle::Status              Locate(nucleus::Location&) const;
 
       //

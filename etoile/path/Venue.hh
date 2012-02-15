@@ -65,6 +65,8 @@ namespace etoile
       elle::Status              Record(const nucleus::Address&,
                                        const nucleus::Version&);
 
+      elle::Status              Derives(const Venue&) const;
+
       elle::Status              Clear();
 
       //

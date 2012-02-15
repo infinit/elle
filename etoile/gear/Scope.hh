@@ -113,6 +113,9 @@ namespace etoile
       static elle::Status       Relinquish(Scope*);
       static elle::Status       Annihilate(Scope*);
 
+      static elle::Status       Update(const path::Chemin&,
+                                       const path::Chemin&);
+
       static elle::Status       Show(const elle::Natural32 = 0);
 
       //

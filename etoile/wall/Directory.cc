@@ -388,26 +388,30 @@ namespace etoile
         // set the actor's state.
         actor->state = gear::Actor::StateUpdated;
 
+        struct
+        {
+          path::Route           from;
+          path::Route           to;
+        }                       routes;
+
         //
         // create routes for both the _from_ and _to_ since these
         // routes are going to be used below several times.
         //
-        path::Route   f;
-        path::Route   t;
         {
           // build the route associated with the previous version of
           // the renamed entry.
-          if (f.Create(scope->chemin.route, from) == elle::StatusError)
+          if (routes.from.Create(scope->chemin.route, from) == elle::StatusError)
             escape("unable to create the route");
 
           // build the route associated with the new version of
           // the renamed entry.
-          if (t.Create(scope->chemin.route, to) == elle::StatusError)
+          if (routes.to.Create(scope->chemin.route, to) == elle::StatusError)
             escape("unable to create the route");
         }
 
         //
-        // update the route in the scope container.
+        // update the scopes should some reference the renamed entry.
         //
         // indeed, let us imagine the following scenario. a file
         // /tmp/F1 is created. this file is opened by two actors
@@ -418,69 +422,35 @@ namespace etoile
         // has not been updated and since actors remain, i.e A and B,
         // the original scope is retrieved instead of the new one.
         //
-        // for this reason, the scope's route must be updated.
-        //
-        // XXX note that here the mechanism should be improved so
-        //     as to update the chemin of all the scopes involved.
-        //     for instance the scopes /a, /a/c/d with /a being
-        //     renamed to /b, should be updated to /b and /b/c/d.
+        // for this reason, the scopes must be updated.
         //
         {
-          path::Chemin  chemin;
-          path::Venue   venue;
+          path::Venue           venue;
+          struct
+          {
+            path::Chemin        from;
+            path::Chemin        to;
+          }                     chemins;
 
-          // resolve the old route _f_ to a venue.
-          if (path::Path::Resolve(f, venue) == elle::StatusError)
+          // resolve the old route _routes.from_ to a venue.
+          if (path::Path::Resolve(routes.from, venue) == elle::StatusError)
             escape("unable to resolve the route");
 
-          // create a chemin based on both the route and venue.
-          if (chemin.Create(f, venue) == elle::StatusError)
+          // create a chemin based on both the old route and venue.
+          if (chemins.from.Create(routes.from, venue) == elle::StatusError)
             escape("unable to create the chemin");
 
-          // now, we can check whether a scope exists for this
-          // chemin i.e a scope for the directory entry having
-          // been renamed.
-          if (gear::Scope::Exist(chemin) == elle::StatusTrue)
-            {
-              //
-              // if such a scope exists, retrieve it and
-              // update its chemin, especially with the
-              // new route _t_.
-              //
+          // create the new chemin which includes the new route and
+          // the venue, which has not changed since.
+          if (chemins.to.Create(routes.to, venue) == elle::StatusError)
+            escape("unable to create the chemin");
 
-              gear::Scope*      scope;
-
-              if (gear::Scope::Retrieve(chemin, scope) == elle::StatusError)
-                escape("unable to retrieve the scope");
-
-              scope->chemin.route = t;
-
-              //
-              // note that the current scope is registered in
-              // a container given its old chemin.
-              //
-              // therefore, the container's key for this scope
-              // must also be updated.
-              //
-              // the following thus removes the scope and
-              // re-inserts it.
-              //
-
-              if (gear::Scope::Remove(chemin) == elle::StatusError)
-                escape("unable to remove the scope");
-
-              if (gear::Scope::Add(scope->chemin, scope) == elle::StatusError)
-                {
-                  //
-                  // in this extreme case, manually delete the scope
-                  // which is now orphan.
-                  //
-
-                  delete scope;
-
-                  escape("unable to re-insert the scope");
-                }
-            }
+          // update the scope so as to update all the scopes
+          // whose chemins are now inconsistent---i.e referencing
+          // the old chemin _chemin.from_.
+          if (gear::Scope::Update(chemins.from,
+                                  chemins.to) == elle::StatusError)
+            escape("unable to update the scopes");
         }
 
         //
@@ -488,11 +458,11 @@ namespace etoile
         //
         {
           // evict the route from the shrub.
-          if (shrub::Shrub::Evict(f) == elle::StatusError)
+          if (shrub::Shrub::Evict(routes.from) == elle::StatusError)
             escape("unable to evict the route from the shrub");
 
           // evict the route from the shrub.
-          if (shrub::Shrub::Evict(t) == elle::StatusError)
+          if (shrub::Shrub::Evict(routes.to) == elle::StatusError)
             escape("unable to evict the route from the shrub");
         }
       }
