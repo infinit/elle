@@ -107,9 +107,11 @@ CodingStandard::CodingStandard():
 // ---------- getters & setters -----------------------------------------------
 //
 
-///
-/// return the attribute.
-///
+/*
+ * note that getters and setters do not need description unless required for
+ * a specific reason.
+ */
+
 Real                CodingStandard::attribute1()
 {
   /*
@@ -122,10 +124,11 @@ Real                CodingStandard::attribute1()
   return (this->_attribute1);
 }
 
-///
-/// set the attribute.
-///
-Void                CodingStandard::attribute1(const Real&  attribute1)
+/*
+ * note that setters should always return Void.
+ */
+
+Void               CodingStandard::attribute1(const Real&  attribute1)
 {
   /*
    * one must understand two rules when accessing attributes.

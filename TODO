@@ -1,3 +1,7 @@
+- scopes
+ - ameliorer l'update des chemins des scopes existants
+   lorsque l'on rename un objet; cf wall::Directory::Rename::XXX
+
 - fiber
  - merger func
  - comments

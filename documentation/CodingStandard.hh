@@ -44,6 +44,8 @@
 /*
  * first must be included the Infinit dependencies, grouped by package
  * or module.
+ *
+ * note the brackets are used for the includes.
  */
 #include <infinit-dependency-1.hh>
 #include <infinit-dependency-2.hh>
