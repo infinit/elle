@@ -99,7 +99,7 @@ namespace elle
         }
       else
         {
-          std::cout << alignment << "[Digest] " << std::endl;
+          std::cout << alignment << "[Digest]" << std::endl;
 
           // dump the region.
           if (this->region.Dump(margin + 2) == StatusError)
