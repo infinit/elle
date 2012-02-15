@@ -253,8 +253,6 @@ namespace etoile
       Route::Scoutor    s;
       Route::Scoutor    t;
 
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusFalse;
@@ -299,7 +297,8 @@ namespace etoile
 
       ;
 
-      std::cout << alignment << "[Route] " << std::dec
+      std::cout << alignment << "[Route] " << this
+                << " #" << std::dec
                 << this->elements.size() << std::endl;
 
       // for every element.

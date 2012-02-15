@@ -20,11 +20,14 @@
 #include <etoile/gear/Directory.hh>
 #include <etoile/gear/Gear.hh>
 #include <etoile/gear/Operation.hh>
+#include <etoile/gear/Guard.hh>
 
 #include <etoile/automaton/Directory.hh>
 #include <etoile/automaton/Rights.hh>
 
 #include <etoile/journal/Journal.hh>
+
+#include <etoile/path/Path.hh>
 
 #include <etoile/shrub/Shrub.hh>
 
@@ -34,23 +37,6 @@ namespace etoile
 {
   namespace wall
   {
-
-    namespace
-    {
-      /// Scope guard
-      struct ScopeGuard
-      {
-      private:
-        gear::Scope*  _scope;
-        bool          _track;
-
-      public:
-        ScopeGuard(gear::Scope* scope) : _scope(scope), _track(true) {}
-        ~ScopeGuard() { if (_track) gear::Scope::Annihilate(this->_scope); }
-        gear::Scope* release() { this->_track = false; return this->_scope; }
-      };
-
-    }
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -76,7 +62,7 @@ namespace etoile
       if (gear::Scope::Supply(scope) == elle::StatusError)
         escape("unable to supply the scope");
 
-      ScopeGuard guard(scope);
+      gear::Guard               guard(scope);
 
       // declare a critical section.
       elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
@@ -89,23 +75,21 @@ namespace etoile
           escape("unable to retrieve the context");
 
         // allocate an actor.
-        auto actor = new gear::Actor(scope);
+        guard.actor(new gear::Actor(scope));
 
         // return the identifier.
-        identifier = actor->identifier;
+        identifier = guard.actor()->identifier;
 
         // apply the create automaton on the context.
         if (automaton::Directory::Create(*context) == elle::StatusError)
-          {
-            delete actor;
-            escape("unable to create the directory");
-          }
+          escape("unable to create the directory");
 
         // set the actor's state.
-        actor->state = gear::Actor::StateUpdated;
+        guard.actor()->state = gear::Actor::StateUpdated;
 
         // waive the scope.
-        guard.release();
+        if (guard.Release() == elle::StatusError)
+          escape("unable to release the guard");
       }
       zone.Unlock();
 
@@ -131,7 +115,7 @@ namespace etoile
       if (gear::Scope::Acquire(chemin, scope) == elle::StatusError)
         escape("unable to acquire the scope");
 
-      ScopeGuard guard(scope);
+      gear::Guard               guard(scope);
 
       // declare a critical section.
       elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
@@ -144,10 +128,10 @@ namespace etoile
           escape("unable to retrieve the context");
 
         // allocate an actor.
-        auto actor = std::unique_ptr<gear::Actor>(new gear::Actor(scope));
+        guard.actor(new gear::Actor(scope));
 
         // return the identifier.
-        identifier = actor->identifier;
+        identifier = guard.actor()->identifier;
 
         // locate the object based on the chemin.
         if (chemin.Locate(context->location) == elle::StatusError)
@@ -157,11 +141,9 @@ namespace etoile
         if (automaton::Directory::Load(*context) == elle::StatusError)
           escape("unable to load the directory");
 
-        // waive the actor.
-        actor.release();
-
         // waive the scope.
-        guard.release();
+        if (guard.Release() == elle::StatusError)
+          escape("unable to release the guard");
       }
       zone.Unlock();
 
@@ -407,34 +389,110 @@ namespace etoile
         actor->state = gear::Actor::StateUpdated;
 
         //
-        // invalidate the _from_ route from the shrub.
+        // create routes for both the _from_ and _to_ since these
+        // routes are going to be used below several times.
         //
+        path::Route   f;
+        path::Route   t;
         {
-          path::Route   route;
-
           // build the route associated with the previous version of
           // the renamed entry.
-          if (route.Create(scope->chemin.route, from) == elle::StatusError)
+          if (f.Create(scope->chemin.route, from) == elle::StatusError)
             escape("unable to create the route");
-
-          // evict the route from the shrub.
-          if (shrub::Shrub::Evict(route) == elle::StatusError)
-            escape("unable to evict the route from the shrub");
-        }
-
-        //
-        // invalidate the _to_ route from the shrub.
-        //
-        {
-          path::Route   route;
 
           // build the route associated with the new version of
           // the renamed entry.
-          if (route.Create(scope->chemin.route, to) == elle::StatusError)
+          if (t.Create(scope->chemin.route, to) == elle::StatusError)
             escape("unable to create the route");
+        }
+
+        //
+        // update the route in the scope container.
+        //
+        // indeed, let us imagine the following scenario. a file
+        // /tmp/F1 is created. this file is opened by two actors
+        // A and B. then, actor A renames the file into /tmp/F2.
+        //
+        // later one, a actor, say C, re-creates and releases /tmp/F1.
+        // then C loads /tmp/F1. since the original scope for /tmp/F1
+        // has not been updated and since actors remain, i.e A and B,
+        // the original scope is retrieved instead of the new one.
+        //
+        // for this reason, the scope's route must be updated.
+        //
+        // XXX note that here the mechanism should be improved so
+        //     as to update the chemin of all the scopes involved.
+        //     for instance the scopes /a, /a/c/d with /a being
+        //     renamed to /b, should be updated to /b and /b/c/d.
+        //
+        {
+          path::Chemin  chemin;
+          path::Venue   venue;
+
+          // resolve the old route _f_ to a venue.
+          if (path::Path::Resolve(f, venue) == elle::StatusError)
+            escape("unable to resolve the route");
+
+          // create a chemin based on both the route and venue.
+          if (chemin.Create(f, venue) == elle::StatusError)
+            escape("unable to create the chemin");
+
+          // now, we can check whether a scope exists for this
+          // chemin i.e a scope for the directory entry having
+          // been renamed.
+          if (gear::Scope::Exist(chemin) == elle::StatusTrue)
+            {
+              //
+              // if such a scope exists, retrieve it and
+              // update its chemin, especially with the
+              // new route _t_.
+              //
+
+              gear::Scope*      scope;
+
+              if (gear::Scope::Retrieve(chemin, scope) == elle::StatusError)
+                escape("unable to retrieve the scope");
+
+              scope->chemin.route = t;
+
+              //
+              // note that the current scope is registered in
+              // a container given its old chemin.
+              //
+              // therefore, the container's key for this scope
+              // must also be updated.
+              //
+              // the following thus removes the scope and
+              // re-inserts it.
+              //
+
+              if (gear::Scope::Remove(chemin) == elle::StatusError)
+                escape("unable to remove the scope");
+
+              if (gear::Scope::Add(scope->chemin, scope) == elle::StatusError)
+                {
+                  //
+                  // in this extreme case, manually delete the scope
+                  // which is now orphan.
+                  //
+
+                  delete scope;
+
+                  escape("unable to re-insert the scope");
+                }
+            }
+        }
+
+        //
+        // invalidate the _from_ and _to_ routes from the shrub.
+        //
+        {
+          // evict the route from the shrub.
+          if (shrub::Shrub::Evict(f) == elle::StatusError)
+            escape("unable to evict the route from the shrub");
 
           // evict the route from the shrub.
-          if (shrub::Shrub::Evict(route) == elle::StatusError)
+          if (shrub::Shrub::Evict(t) == elle::StatusError)
             escape("unable to evict the route from the shrub");
         }
       }
@@ -521,8 +579,7 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
         escape("unable to select the actor");
 
-
-      std::unique_ptr<gear::Actor> guard(actor);
+      gear::Guard               guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
@@ -551,7 +608,7 @@ namespace etoile
           escape("this operation cannot be performed by this actor");
 
         // delete the actor.
-        guard.reset(nullptr);
+        guard.actor(nullptr);
 
         // specify the closing operation performed on the scope.
         if (scope->Operate(gear::OperationDiscard) == elle::StatusError)
@@ -619,7 +676,7 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
         escape("unable to select the actor");
 
-      std::unique_ptr<gear::Actor> guard(actor);
+      gear::Guard               guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
@@ -648,7 +705,7 @@ namespace etoile
           escape("this operation cannot be performed by this actor");
 
         // delete the actor.
-        guard.reset(nullptr);
+        guard.actor(nullptr);
 
         // specify the closing operation performed on the scope.
         if (scope->Operate(gear::OperationStore) == elle::StatusError)
@@ -715,7 +772,7 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
         escape("unable to select the actor");
 
-      std::unique_ptr<gear::Actor> guard(actor);
+      gear::Guard               guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
@@ -744,7 +801,7 @@ namespace etoile
           escape("this operation cannot be performed by this actor");
 
         // delete the actor.
-        guard.reset(nullptr);
+        guard.actor(nullptr);
 
         // specify the closing operation performed on the scope.
         if (scope->Operate(gear::OperationDestroy) == elle::StatusError)

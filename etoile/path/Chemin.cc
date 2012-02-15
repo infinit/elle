@@ -127,13 +127,11 @@ namespace etoile
     ///
     elle::Boolean       Chemin::operator==(const Chemin&        element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
 
-      // compare the attributes..
+      // compare the attributes.
       if ((this->route != element.route) ||
           (this->venue != element.venue))
         return elle::StatusFalse;
@@ -146,8 +144,6 @@ namespace etoile
     ///
     elle::Boolean       Chemin::operator<(const Chemin&         element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusFalse;
@@ -177,7 +173,7 @@ namespace etoile
 
       ;
 
-      std::cout << alignment << "[Chemin]" << std::endl;
+      std::cout << alignment << "[Chemin] " << this << std::endl;
 
       // dump the route.
       if (this->route.Dump(margin + 2) == elle::StatusError)

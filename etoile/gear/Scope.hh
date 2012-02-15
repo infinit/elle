@@ -97,6 +97,15 @@ namespace etoile
       static elle::Status       Initialize();
       static elle::Status       Clean();
 
+      static elle::Status       Exist(const path::Chemin&);
+      static elle::Status       Add(const path::Chemin&,
+                                    Scope*);
+      static elle::Status       Retrieve(const path::Chemin&,
+                                         Scope*&);
+      static elle::Status       Remove(const path::Chemin&);
+      static elle::Status       Add(Scope*);
+      static elle::Status       Remove(Scope*);
+
       static elle::Status       Inclose(Scope*);
       static elle::Status       Acquire(const path::Chemin&,
                                         Scope*&);

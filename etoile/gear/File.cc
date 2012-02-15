@@ -55,8 +55,6 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[File]" << std::endl;
 
       // dump the inherited object.

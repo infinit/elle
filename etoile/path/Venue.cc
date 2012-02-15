@@ -141,7 +141,8 @@ namespace etoile
 
       ;
 
-      std::cout << alignment << "[Venue] " << std::dec
+      std::cout << alignment << "[Venue] " << this
+                << " #" << std::dec
                 << this->elements.size() << std::endl;
 
       // for every element.

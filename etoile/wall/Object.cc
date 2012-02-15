@@ -17,7 +17,7 @@
 #include <etoile/gear/Identifier.hh>
 #include <etoile/gear/Nature.hh>
 #include <etoile/gear/Scope.hh>
-#include <etoile/gear/ScopeGuard.hh>
+#include <etoile/gear/Guard.hh>
 #include <etoile/gear/Object.hh>
 #include <etoile/gear/Gear.hh>
 
@@ -59,7 +59,7 @@ namespace etoile
       if (gear::Scope::Acquire(chemin, scope) == elle::StatusError)
         escape("unable to acquire the scope");
 
-      gear::ScopeGuard guard(scope);
+      gear::Guard               guard(scope);
 
       // declare a critical section.
       elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
@@ -86,7 +86,8 @@ namespace etoile
           escape("unable to load the object");
 
         // waive the actor and the scope
-        guard.release();
+        if (guard.Release() == elle::StatusError)
+          escape("unable to release the guard");
       }
       zone.Unlock();
 
@@ -188,7 +189,7 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
         escape("unable to select the actor");
 
-      gear::ScopeGuard guard(actor);
+      gear::Guard               guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
@@ -285,7 +286,7 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
         escape("unable to select the actor");
 
-      gear::ScopeGuard guard(actor);
+      gear::Guard               guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
@@ -385,7 +386,7 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
         escape("unable to select the actor");
 
-      gear::ScopeGuard guard(actor);
+      gear::Guard               guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;

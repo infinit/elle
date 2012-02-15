@@ -15,6 +15,7 @@ ADD_LIBRARY(etoile
   gear/Directory.cc
   gear/File.cc
   gear/Gear.cc
+  gear/Guard.cc
   gear/Identifier.cc
   gear/Link.cc
   gear/Object.cc

@@ -19,7 +19,7 @@
 #include <etoile/gear/Scope.hh>
 #include <etoile/gear/File.hh>
 #include <etoile/gear/Gear.hh>
-#include <etoile/gear/ScopeGuard.hh>
+#include <etoile/gear/Guard.hh>
 
 #include <etoile/automaton/File.hh>
 #include <etoile/automaton/Rights.hh>
@@ -57,7 +57,7 @@ namespace etoile
       if (gear::Scope::Supply(scope) == elle::StatusError)
         escape("unable to supply the scope");
 
-      gear::ScopeGuard guard(scope);
+      gear::Guard               guard(scope);
 
       // declare a critical section.
       elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
@@ -70,21 +70,21 @@ namespace etoile
           escape("unable to retrieve the context");
 
         // allocate an actor.
-        auto actor = new gear::Actor(scope);
-        guard.actor(actor);
+        guard.actor(new gear::Actor(scope));
 
         // return the identifier.
-        identifier = actor->identifier;
+        identifier = guard.actor()->identifier;
 
         // apply the create automaton on the context.
         if (automaton::File::Create(*context) == elle::StatusError)
           escape("unable to create the file");
 
         // set the actor's state.
-        actor->state = gear::Actor::StateUpdated;
+        guard.actor()->state = gear::Actor::StateUpdated;
 
         // waive the scope.
-        guard.release();
+        if (guard.Release() == elle::StatusError)
+          escape("unable to release the guard");
       }
       zone.Unlock();
 
@@ -110,7 +110,7 @@ namespace etoile
       if (gear::Scope::Acquire(chemin, scope) == elle::StatusError)
         escape("unable to acquire the scope");
 
-      gear::ScopeGuard guard(scope);
+      gear::Guard               guard(scope);
 
       // declare a critical section.
       elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
@@ -137,7 +137,8 @@ namespace etoile
           escape("unable to load the file");
 
         // waive the actor and the scope.
-        guard.release();
+        if (guard.Release() == elle::StatusError)
+          escape("unable to release the guard");
       }
       zone.Unlock();
 
@@ -334,7 +335,7 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
         escape("unable to select the actor");
 
-      gear::ScopeGuard guard(actor);
+      gear::Guard               guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
@@ -431,7 +432,7 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
         escape("unable to select the actor");
 
-      gear::ScopeGuard guard(actor);
+      gear::Guard               guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;
@@ -527,7 +528,7 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
         escape("unable to select the actor");
 
-      gear::ScopeGuard guard(actor);
+      gear::Guard               guard(actor);
 
       // retrieve the scope.
       scope = actor->scope;

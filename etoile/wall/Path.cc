@@ -53,9 +53,9 @@ namespace etoile
       if (route.Create(way) == elle::StatusError)
         escape("unable to create the route");
 
-      // resolve the way.
+      // resolve the route.
       if (path::Path::Resolve(route, venue) == elle::StatusError)
-        escape("unable to resolve the path");
+        escape("unable to resolve the route");
 
       // create the chemin.
       if (chemin.Create(route, venue) == elle::StatusError)
