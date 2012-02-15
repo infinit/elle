@@ -21,10 +21,11 @@ using namespace plasma::metaclient;
 ///
 /// Handler for network responses
 ///
-struct MetaClient::Request
+struct MetaClient::RequestHandler
 {
-  virtual void OnReply(QString const&) = 0;
+  virtual void OnReply(QByteArray const&) = 0;
   virtual void OnNetworkError(QNetworkReply::NetworkError) = 0;
+  virtual ~RequestHandler() {}
 };
 
 namespace {
@@ -35,22 +36,24 @@ namespace {
     /// In charge of calling callback or errback
     ///
     template<typename ResponseType, Deserializer>
-    struct BaseRequest : MetaClient::Request
+    struct RequestHandler : MetaClient::RequestHandler
     {
     public:
       typedef std::function<void(ResponseType const&)> Callback;
-      typedef std::function<void(MetaClient::Error)> Errback;
+      typedef MetaClient::Errback Errback;
 
     public:
       Callback callback;
       Errback errback;
 
     public:
-      BaseRequest(Callback callback, Errback errback = nullptr) :
+      RequestHandler(Callback callback, Errback errback = nullptr) :
         callback(callback), errback(errback)
-      { assert(callback != nullptr && "Null callbacks not allowed"); }
+      {
+        assert(callback != nullptr && "Null callbacks not allowed");
+      }
 
-      virtual void OnReply(QString const& data)
+      virtual void OnReply(QByteArray const& data)
       {
         QJson::Parser parser;
         bool ok;
@@ -122,6 +125,19 @@ namespace {
 
 
 #undef FILLER
+
+///
+/// Typedef for specific request handler
+///
+#define HANDLER_TYPEDEF(cls)                                                 \
+    typedef RequestHandler<cls#Response, cls#ResponseFiller> cls#Handler
+
+//////////////////////////////////////////////////////////////////////////////
+// Requests handlers defined here
+
+    HANDLER_TYPEDEF(Login);
+
+#undef HANDLER_TYPEDEF
 }
 
 //
@@ -131,7 +147,10 @@ namespace {
 MetaClient::MetaClient(QApplication& app) :
   _network(app)
 {
-
+  this->connect(
+      this->_network, SIGNAL(finished(QNetworkReply*)),
+      this, SLOT(_OnRequestFinished(QNetworkReply*))
+  );
 }
 
 MetaClient::~MetaClient()
@@ -143,14 +162,54 @@ MetaClient::~MetaClient()
 // ---------- methods  --------------------------------------------------------
 //
 
-void MetaClient::_Get(std::string const& url, Request* req, Errback = nullptr);
+void MetaClient::Login(std::string const& email,
+                       std::string const& password,
+                       LoginCallback callback,
+                       Errback errback)
 {
-  QString uri((INFINIT_META_URL + url).c_str());
-  auto reply = this->_network_access_manager->get(QNetworkRequest(QUrl(uri)));
-  this->connect(
-      reply, SIGNAL(error(QNetworkReply::NetworkError)),
-      this, SLOT(_OnDownloadError(QNetworkReply::NetworkError))
-  );
+  QVariantMap req;
+  req.insert("email", email.c_str());
+  req.insert("password", password.c_str());
+  this->_Post("/login", req, new LoginHandler(callback, errback));
 }
 
+void MetaClient::_Post(std::string const& url,
+                       QVariantMap const& data,
+                       RequestHandler* handler)
+{
+  QString uri((INFINIT_META_URL + url).c_str());
+
+  QByteArray json = QJson::Serializer().serialize(data);
+  auto reply = this->_network->post(QNetworkRequest(QUrl(uri)), json);
+  this->handlers[reply] = handler;
+}
+
+void MetaClient::_Get(std::string const& url, RequestHandler* handler);
+{
+  QString uri((INFINIT_META_URL + url).c_str());
+  auto reply = this->_network->get(QNetworkRequest(QUrl(uri)));
+  this->handlers[reply] = handler;
+}
+
+void MetaClient::_OnRequestFinished(QNetworkReply* reply)
+{
+  assert(reply != nullptr);
+  auto it = this->_handlers.find(reply);
+  if (it != this->_handlers.end())
+    {
+      RequestHandler handler = it->second;
+      assert(handler != nullptr && "Corrupter map");
+      this->_handlers.remove(reply); // WARNING do not use it from here
+      if (reply->error() == QNetworkReply::NoError)
+        handler->OnReply(reply->readAll());
+      else
+        handler->OnNetworkError(reply->error());
+      delete handler;
+    }
+  else
+    {
+      std::cerr << "Cannot find any registered handler for this reply\n";
+    }
+  reply->deleteLater();
+}
 

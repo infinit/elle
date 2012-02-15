@@ -37,21 +37,22 @@ namespace plasma
     };
 
     ///
-    /// Convinient interface to the meta server
+    /// Convenient interface to the meta server
     ///
     class MetaClient
     {
     public:
-      typedef std::function<void(LoginResponse const&)> LoginCallback;
       enum class Error
       {
         ConnectionFailure,
         InvalidContent,
         ServerError,
       };
+      typedef std::function<void(LoginResponse const&)> LoginCallback;
       typedef std::function<void(Error, std::string const&)> Errback;
     private:
-      struct Request;
+      struct RequestHandler;
+      typedef std::map<QNetworkReply*, RequestHandler*> HandlerMap;
 
     private:
       /// Network loop
@@ -60,8 +61,8 @@ namespace plasma
       /// Connection token
       std::string           _token;
 
-      /// Current request
-      Request*              _request;
+      /// Current requests handlers
+      HandlerMap            _handlers;
 
     public:
       MetaClient(QApplication& app);
@@ -69,14 +70,18 @@ namespace plasma
 
       void Login(std::string const& email,
                  std::string const& password,
-                 LoginCallback cb
-                 Errback = nullptr);
+                 LoginCallback callback,
+                 Errback errback = nullptr);
 
     private:
-      void _Get(std::string const& url, Request* req, Errback = nullptr);
+      void _Post(std::string const& url,
+                 QVariantMap const& data,
+                 RequestHandler* handler);
+      void _Get(std::string const& url,
+                RequestHandler* handler);
 
     private slot:
-      void _OnDownloadError(QNetworkReply::NetworkError error);
+      void _OnRequestFinished(QNetworkReply* reply);
 
     /// properties
     public:
