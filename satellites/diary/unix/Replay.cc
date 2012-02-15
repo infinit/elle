@@ -1726,6 +1726,10 @@ namespace satellite
           if (Replay::Reference->Read(upcall) == elle::StatusError)
             goto _error;
 
+          // display the index and opcode to keep track of
+          // the execution.
+          printf("#%u upcall(%u)\n", i, upcall.operation);
+
           // forward the call to a specific method depending on
           // the operation code.
           switch (upcall.operation)
