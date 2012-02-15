@@ -40,7 +40,7 @@
 # define INFINIT_RELEASE_URI \
   (INFINIT_BASE_URL "/" "release.xml")
 
-# define INFINIT_META_URL "http://localhost:12345"
+# define INFINIT_META_URL "http://infinit.im:12345"
 
 # ifdef INFINIT_WINDOWS
 #  error "TODO !"
