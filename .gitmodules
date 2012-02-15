@@ -1,0 +1,3 @@
+[submodule "metaclient/qjson"]
+	path = metaclient/qjson
+	url = git://gitorious.org/qjson/qjson.git
