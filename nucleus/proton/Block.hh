@@ -90,7 +90,7 @@ namespace nucleus
       //
       // attributes
       //
-      Network                   network;
+      Network                   network; // XXX seems to be always empty??? it should not!
       Family                    family;
       neutron::Component        component;
 

@@ -197,11 +197,6 @@ namespace nucleus
 
             break;
           }
-        default:
-          {
-            escape("unknown role '%u'",
-                   this->role);
-          }
         }
 
       return elle::StatusOk;
