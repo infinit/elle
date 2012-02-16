@@ -857,8 +857,6 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      enter();
-
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
         printf("[satellites] Replay::%s()\n",
@@ -917,8 +915,6 @@ namespace satellite
         elle::String    value;
       }                 outputs;
       int               res;
-
-      enter();
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -982,8 +978,6 @@ namespace satellite
       }                 outputs;
       int               res;
 
-      enter();
-
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
         printf("[satellites] Replay::%s()\n",
@@ -1032,8 +1026,6 @@ namespace satellite
         elle::String    name;
       }                 inputs;
       int               res;
-
-      enter();
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
