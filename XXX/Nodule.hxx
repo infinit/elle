@@ -97,8 +97,6 @@ namespace nucleus
       typename T::Iterator::Forward     i;
       typename T::Iterator::Forward     j;
 
-      ;
-
       // initialize the temporary footprint.
       footprint = T::Footprint;
 
@@ -175,8 +173,6 @@ namespace nucleus
       typename T::Iterator::Backward    i;
       typename T::Iterator::Backward    j;
 
-      ;
-
       // initialize the temporary footprint.
       footprint = T::Footprint;
 
@@ -248,8 +244,6 @@ namespace nucleus
       const
     {
       elle::String              alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Nodule]" << std::endl;
 
@@ -330,8 +324,6 @@ namespace nucleus
     template <typename V>
     elle::Status        Nodule<V>::Serialize(elle::Archive&     archive) const
     {
-      ;
-
       // serialize the attributes.
       if (archive.Serialize(
             static_cast<elle::Natural8>(this->type),
@@ -350,8 +342,6 @@ namespace nucleus
     elle::Status        Nodule<V>::Extract(elle::Archive&       archive)
     {
       elle::Natural8    type;
-
-      ;
 
       // extract the attributes.
       if (archive.Extract(type,

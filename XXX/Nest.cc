@@ -28,8 +28,6 @@ namespace nucleus
     ///
     elle::Status        Nest::Register(Block*                   block)
     {
-      ;
-
       // XXX here we register the block with an in-memory placement and no
       //     address
 

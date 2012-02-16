@@ -50,8 +50,6 @@ namespace nucleus
     {
       Quill<V>*                 quill;
 
-      ;
-
       // search for the quill responsible for the given key.
       if (this->Search(key, quill) == elle::StatusError)
         escape("unable to locate a quill for this key");
@@ -70,8 +68,6 @@ namespace nucleus
     elle::Status        Porcupine<V>::Exist(const typename V::K& key)
     {
       Quill<V>*                 quill;
-
-      ;
 
       // search for the quill responsible for the given key.
       if (this->Search(key, quill) == elle::StatusError)
@@ -98,8 +94,6 @@ namespace nucleus
     {
       Quill<V>*                 quill;
 
-      ;
-
       // search for the quill responsible for the given key.
       if (this->Search(key, quill) == elle::StatusError)
         escape("unable to locate a quill for this key");
@@ -118,8 +112,6 @@ namespace nucleus
     elle::Status        Porcupine<V>::Remove(const typename V::K& key)
     {
       Quill<V>*                 quill;
-
-      ;
 
       // search for the quill responsible for the given key.
       if (this->Search(key, quill) == elle::StatusError)
@@ -409,8 +401,6 @@ namespace nucleus
         }               right;
       }                 mayor;
       N*                _current;
-
-      ;
 
       // set the convenient _current alias.
       _current = nodule;
@@ -889,8 +879,6 @@ namespace nucleus
       typename Seam<V>::I*      inlet;
       Handle< Nodule<V> >       root;
 
-      ;
-
       // if the tree is empty or has a root nodule only, ignore this step.
       if (this->height <= 1)
         return elle::StatusOk;
@@ -947,8 +935,6 @@ namespace nucleus
     elle::Status        Porcupine<V>::Search(const typename V::K& key,
                                              Quill<V>*&         quill)
     {
-      ;
-
       // if the tree is non-existent, create a first level by making it grow.
       //
       // note that this may occur at the very beginning but also after
@@ -978,8 +964,6 @@ namespace nucleus
     template <typename V>
     elle::Status        Porcupine<V>::Check() const
     {
-      ;
-
       // load the parent nodule
       NestLoad(this->root)
         {
@@ -998,8 +982,6 @@ namespace nucleus
     elle::Status        Porcupine<V>::Load(const Address&       address,
                                            Nodule<V>*&          nodule)
     {
-      ;
-
       // build a block according to the component.
       if (Nucleus::Factory.Build(address.component,
                                  nodule) == elle::StatusError)
@@ -1017,8 +999,6 @@ namespace nucleus
     elle::Status        Porcupine<V>::Unload(const Address&,
                                              const Nodule<V>*)
     {
-      ;
-
       // XXX
 
       return elle::StatusOk;
@@ -1036,8 +1016,6 @@ namespace nucleus
       const
     {
       elle::String      alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Porcupine]" << std::endl;
 

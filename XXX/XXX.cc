@@ -18,8 +18,6 @@
 
 int main(int argc, char** argv)
 {
-  ;
-
   // allocate a new parser.
   Infinit::Parser = new elle::Parser(argc, argv);
 

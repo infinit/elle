@@ -78,8 +78,6 @@ elle::String                    Infinit::Mountpoint;
 ///
 elle::Status            Infinit::Initialize()
 {
-  ;
-
   // disable the meta logging.
   if (elle::Meta::Disable() == elle::StatusError)
     escape("unable to disable the meta logging");
@@ -135,8 +133,6 @@ elle::Status            Infinit::Initialize()
 ///
 elle::Status            Infinit::Clean()
 {
-  ;
-
   // nothing to do.
 
   return elle::StatusOk;

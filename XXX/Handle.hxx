@@ -85,8 +85,6 @@ XXX
     elle::Status        Handle<T>::Create(const Address&        address,
                                           T*                    object)
     {
-      ;
-
       // set the attributes.
       this->address = address;
       this->_object = object;
@@ -104,8 +102,6 @@ XXX
     template <typename T>
     elle::Status        Handle<T>::Dump(const elle::Natural32   margin)
     {
-      ;
-
       // XXX
 
       // dump the hiearchy.

@@ -72,8 +72,6 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Inlet] " << this << std::endl;
 
       // dump the key.
@@ -106,8 +104,6 @@ namespace nucleus
               typename T>
     elle::Status        Inlet<V, T>::Serialize(elle::Archive&   archive) const
     {
-      ;
-
       // serialize the attributes.
       if (archive.Serialize(this->key,
                             this->value) == elle::StatusError)
@@ -123,8 +119,6 @@ namespace nucleus
               typename T>
     elle::Status        Inlet<V, T>::Extract(elle::Archive&     archive)
     {
-      ;
-
       // extracts the attributes.
       if (archive.Extract(this->key,
                           this->value) == elle::StatusError)

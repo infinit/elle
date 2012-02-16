@@ -28,8 +28,6 @@ namespace nucleus
     ///
     elle::Status        Porcupine<>::Initialize()
     {
-      ;
-
       //
       // catalog-specific initialization.
       //
@@ -53,8 +51,6 @@ namespace nucleus
     ///
     elle::Status        Porcupine<>::Clean()
     {
-      ;
-
       //
       // catalog-specific cleaning.
       //
