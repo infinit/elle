@@ -59,11 +59,39 @@ namespace horizon
 //
 
     ///
+    /// this method returns general information on the file system.
+    ///
+    int                 Crux::Statfs(const char*                path,
+                                     struct ::statvfs*          statvfs)
+    {
+      // XXX
+      statvfs->f_bsize = 4096;
+      statvfs->f_frsize = 4096;
+
+      statvfs->f_blocks = 6000000;
+      statvfs->f_bfree = 2000000;
+      statvfs->f_bavail = statvfs->f_blocks - statvfs->f_bfree;
+
+      statvfs->f_files = 6000000;
+      statvfs->f_ffree = 2000000;
+      statvfs->f_favail = statvfs->f_files - statvfs->f_ffree;
+
+      statvfs->f_fsid = 0;
+
+      statvfs->f_flag = ST_NOSUID;
+
+      statvfs->f_namemax = 2048;
+      // XXX
+
+      return (0);
+    }
+
+    ///
     /// this method returns general-purpose information on the file system
     /// object identified by _path_.
     ///
     int                 Crux::Getattr(const char*               path,
-                                      struct stat*              stat)
+                                      struct ::stat*            stat)
     {
       etoile::gear::Identifier  identifier;
       etoile::path::Way         way(path);
@@ -127,7 +155,7 @@ namespace horizon
     /// object identified by _path_.
     ///
     int                 Crux::Fgetattr(const char*              path,
-                                       struct stat*             stat,
+                                       struct ::stat*           stat,
                                        struct ::fuse_file_info* info)
     {
       Handle*                           handle;
@@ -141,7 +169,7 @@ namespace horizon
                path, stat);
 
       // clear the stat structure.
-      ::memset(stat, 0x0, sizeof (struct stat));
+      ::memset(stat, 0x0, sizeof (struct ::stat));
 
       // retrieve the handle.
       handle = reinterpret_cast<Handle*>(info->fh);
@@ -301,7 +329,7 @@ namespace horizon
     /// this method changes the access and modification time of the object.
     ///
     int                 Crux::Utimens(const char*               path,
-                                      const struct timespec[2])
+                                      const struct ::timespec[2])
     {
       // debug.
       if (Infinit::Configuration.horizon.debug == true)

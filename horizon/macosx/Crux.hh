@@ -60,13 +60,15 @@ namespace horizon
       //
 
       // general purpose
+      static int        Statfs(const char*,
+                               struct ::statvfs*);
       static int        Getattr(const char*,
-                                struct stat*);
+                                struct ::stat*);
       static int        Fgetattr(const char*,
-                                 struct stat*,
+                                 struct ::stat*,
                                  struct ::fuse_file_info*);
       static int        Utimens(const char*,
-                                const struct timespec[2]);
+                                const struct ::timespec[2]);
 
       // directory
       static int        Opendir(const char*,

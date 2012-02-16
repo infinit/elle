@@ -96,7 +96,7 @@ namespace horizon
         // set all the pointers to zero.
         ::memset(&operations, 0x0, sizeof (::fuse_operations));
 
-        // operations.statfs: not supported
+        operations.statfs = Crux::Statfs;
         operations.getattr = Crux::Getattr;
         operations.fgetattr = Crux::Fgetattr;
         operations.utimens = Crux::Utimens;
