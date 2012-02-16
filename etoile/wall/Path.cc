@@ -43,8 +43,6 @@ namespace etoile
       path::Route       route;
       path::Venue       venue;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] wall::Path::Resolve()\n");
@@ -78,8 +76,6 @@ namespace etoile
                           const path::Way&                      absolute,
                           path::Way&                            relative)
     {
-      ;
-
       // verify that the given way lies in the mountpoint.
       if (absolute.path.find(Infinit::Mountpoint) == elle::String::npos)
         escape("the given way is not located in this Infinit file system");

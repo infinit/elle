@@ -44,8 +44,6 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       // display the name.
       std::cout << alignment << "[Context] " << std::endl;
 
@@ -77,8 +75,6 @@ namespace etoile
     ///
     elle::Status        Context::Serialize(elle::Archive&       archive) const
     {
-      ;
-
       // serialize the attributes.
       if (archive.Serialize(
             static_cast<elle::Natural8>(this->nature),
@@ -93,8 +89,6 @@ namespace etoile
     ///
     elle::Status        Context::Extract(elle::Archive&         archive)
     {
-      ;
-
       // extract the attributes.
       if (archive.Extract(
             reinterpret_cast<elle::Natural8&>(this->nature),

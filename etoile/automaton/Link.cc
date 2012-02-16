@@ -36,8 +36,6 @@ namespace etoile
     {
       nucleus::Address  address;
 
-      ;
-
       // create the link.
       if (context.object.Create(
             nucleus::GenreLink,
@@ -65,8 +63,6 @@ namespace etoile
     elle::Status        Link::Load(
                           gear::Link&                           context)
     {
-      ;
-
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
         return elle::StatusOk;
@@ -93,8 +89,6 @@ namespace etoile
                           const path::Way&                      way)
     {
       nucleus::Size     size;
-
-      ;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
@@ -146,8 +140,6 @@ namespace etoile
                           gear::Link&                           context,
                           path::Way&                            way)
     {
-      ;
-
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
         escape("unable to determine the rights");
@@ -182,8 +174,6 @@ namespace etoile
     elle::Status        Link::Discard(
                           gear::Link&                           context)
     {
-      ;
-
       // set the context's state.
       context.state = gear::Context::StateDiscarded;
 
@@ -197,8 +187,6 @@ namespace etoile
     elle::Status        Link::Destroy(
                           gear::Link&                           context)
     {
-      ;
-
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
         escape("unable to determine the rights");
@@ -233,8 +221,6 @@ namespace etoile
     elle::Status        Link::Store(
                           gear::Link&                           context)
     {
-      ;
-
       // close the contents.
       if (Contents::Close(context) == elle::StatusError)
         escape("unable to close the contents");

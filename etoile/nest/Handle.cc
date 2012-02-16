@@ -60,8 +60,6 @@ namespace etoile
     ///
     elle::Boolean       Handle::operator==(const Handle&        element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -107,8 +105,6 @@ namespace etoile
     ///
     elle::Boolean       Address::operator<(const Address&       element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusFalse;

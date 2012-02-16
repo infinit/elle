@@ -85,8 +85,6 @@ namespace etoile
     ///
     elle::Status        File::Serialize(elle::Archive&          archive) const
     {
-      ;
-
       // serialize the contents.
       if (this->contents == NULL)
         {
@@ -110,8 +108,6 @@ namespace etoile
     elle::Status        File::Extract(elle::Archive&            archive)
     {
       elle::Archive::Type       type;
-
-      ;
 
       // fetch the next element's type.
       if (archive.Fetch(type) == elle::StatusError)

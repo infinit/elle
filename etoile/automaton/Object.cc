@@ -35,8 +35,6 @@ namespace etoile
     elle::Status        Object::Load(
                           gear::Object&                         context)
     {
-      ;
-
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
         return elle::StatusOk;
@@ -65,8 +63,6 @@ namespace etoile
                           gear::Object&                         context,
                           miscellaneous::Abstract&              abstract)
     {
-      ;
-
       // generate the abstract based on the object.
       if (abstract.Create(context.object) == elle::StatusError)
         escape("unable to generate the abstract");
@@ -81,8 +77,6 @@ namespace etoile
     elle::Status        Object::Discard(
                           gear::Object&                         context)
     {
-      ;
-
       // set the context's state.
       context.state = gear::Context::StateDiscarded;
 
@@ -111,8 +105,6 @@ namespace etoile
     elle::Status        Object::Destroy(
                           gear::Object&                         context)
     {
-      ;
-
       // open the access.
       if (Access::Open(context) == elle::StatusError)
         escape("unable to open the access block");
@@ -139,8 +131,6 @@ namespace etoile
     elle::Status        Object::Store(
                           gear::Object&                         context)
     {
-      ;
-
       // close the access.
       if (Access::Close(context) == elle::StatusError)
         escape("unable to close the access");

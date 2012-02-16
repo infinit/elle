@@ -40,8 +40,6 @@ namespace etoile
     {
       gear::Transcript::Scoutor         scoutor;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] journal::Journal::Record()\n");

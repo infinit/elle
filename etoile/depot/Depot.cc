@@ -30,8 +30,6 @@ namespace etoile
     ///
     elle::Status        Depot::Initialize()
     {
-      ;
-
       // nothing to do.
 
       return elle::StatusOk;
@@ -42,8 +40,6 @@ namespace etoile
     ///
     elle::Status        Depot::Clean()
     {
-      ;
-
       // nothing to do.
 
       return elle::StatusOk;
@@ -54,8 +50,6 @@ namespace etoile
     ///
     elle::Status        Depot::Origin(nucleus::Address&         address)
     {
-      ;
-
       // call the Hole.
       if (hole::Hole::Origin(address) == elle::StatusError)
         escape("unable to retrieve the origin");
@@ -69,8 +63,6 @@ namespace etoile
     elle::Status        Depot::Push(const nucleus::Address&     address,
                                     const nucleus::Block&       block)
     {
-      ;
-
       // call the Hole.
       if (hole::Hole::Push(address, block) == elle::StatusError)
         escape("unable to store the block");
@@ -85,8 +77,6 @@ namespace etoile
                                     const nucleus::Version&     version,
                                     nucleus::Block&             block)
     {
-      ;
-
       // call the Hole.
       if (hole::Hole::Pull(address, version, block) == elle::StatusError)
         escape("unable to retrieve the block");
@@ -99,8 +89,6 @@ namespace etoile
     ///
     elle::Status        Depot::Wipe(const nucleus::Address&     address)
     {
-      ;
-
       // call the Hole.
       if (hole::Hole::Wipe(address) == elle::StatusError)
         escape("unable to remove the block");

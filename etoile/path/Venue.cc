@@ -48,8 +48,6 @@ namespace etoile
     ///
     elle::Status        Venue::Record(const nucleus::Location&  location)
     {
-      ;
-
       // store the location in the container.
       this->elements.push_back(location);
 
@@ -63,8 +61,6 @@ namespace etoile
                                       const nucleus::Version&   version)
     {
       nucleus::Location location;
-
-      ;
 
       // create the location.
       if (location.Create(address, version) == elle::StatusError)
@@ -104,8 +100,6 @@ namespace etoile
     ///
     elle::Status        Venue::Clear()
     {
-      ;
-
       // clear the container.
       this->elements.clear();
 
@@ -123,8 +117,6 @@ namespace etoile
     {
       Venue::Scoutor    s;
       Venue::Scoutor    t;
-
-      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
@@ -161,8 +153,6 @@ namespace etoile
       elle::String      alignment(margin, ' ');
       Venue::Scoutor    scoutor;
 
-      ;
-
       std::cout << alignment << "[Venue] " << this
                 << " #" << std::dec
                 << this->elements.size() << std::endl;
@@ -192,8 +182,6 @@ namespace etoile
       Venue::Scoutor    scoutor;
       elle::Natural32   size;
 
-      ;
-
       // retrieve the container size.
       size = this->elements.size();
 
@@ -221,8 +209,6 @@ namespace etoile
     {
       elle::Natural32   size;
       elle::Natural32   i;
-
-      ;
 
       // extract the size.
       if (archive.Extract(size) == elle::StatusError)

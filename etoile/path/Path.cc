@@ -39,8 +39,6 @@ namespace etoile
     ///
     elle::Status        Path::Initialize()
     {
-      ;
-
       // initialize the route.
       if (Route::Initialize() == elle::StatusError)
         escape("unable to initialize the route");
@@ -53,8 +51,6 @@ namespace etoile
     ///
     elle::Status        Path::Clean()
     {
-      ;
-
       // clean the route.
       if (Route::Clean() == elle::StatusError)
         escape("unable to clean the route");
@@ -79,8 +75,6 @@ namespace etoile
       nucleus::Address  address;
       nucleus::Version  version;
       Route::Scoutor    scoutor;
-
-      ;
 
       // first ask the shrub i.e path cache to resolve as much as it can.
       if (shrub::Shrub::Resolve(route, venue) == elle::StatusError)
@@ -208,8 +202,6 @@ namespace etoile
       Length                    length;
       size_t                    start;
       nucleus::Version::Type    n;
-
-      ;
 
       // if the history mechanism is not supported by the network or
       // has not been activated through the user's configuration, return.

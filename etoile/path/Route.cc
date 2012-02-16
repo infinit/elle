@@ -48,8 +48,6 @@ namespace etoile
     {
       Way               root(elle::System::Path::Separator);
 
-      ;
-
       // create the reference root route.
       if (Route::Root.Create(root) == elle::StatusError)
         escape("unable to create the route");
@@ -62,8 +60,6 @@ namespace etoile
     ///
     elle::Status        Route::Clean()
     {
-      ;
-
       // nothing to do.
 
       return elle::StatusOk;
@@ -110,8 +106,6 @@ namespace etoile
       elle::String::size_type   start;
       elle::String::size_type   end;
       Slab                      slab;
-
-      ;
 
       // check that the way starts with a leading '/'
       if (way.path[0] != elle::System::Path::Separator)
@@ -189,8 +183,6 @@ namespace etoile
     elle::Status        Route::Create(const Route&              route,
                                       const Slab&               slab)
     {
-      ;
-
       // copy the elements.
       this->elements = route.elements;
 
@@ -227,8 +219,6 @@ namespace etoile
     ///
     elle::Status        Route::Clear()
     {
-      ;
-
       // clear the container.
       this->elements.clear();
 
@@ -246,8 +236,6 @@ namespace etoile
     {
       Route::Scoutor    s;
       Route::Scoutor    t;
-
-      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
@@ -317,8 +305,6 @@ namespace etoile
       elle::String      alignment(margin, ' ');
       Route::Scoutor    scoutor;
 
-      ;
-
       std::cout << alignment << "[Route] " << this
                 << " #" << std::dec
                 << this->elements.size() << std::endl;
@@ -348,8 +334,6 @@ namespace etoile
       Route::Scoutor    scoutor;
       elle::Natural32   size;
 
-      ;
-
       // retrieve the container size.
       size = this->elements.size();
 
@@ -377,8 +361,6 @@ namespace etoile
     {
       elle::Natural32   size;
       elle::Natural32   i;
-
-      ;
 
       // extract the size.
       if (archive.Extract(size) == elle::StatusError)

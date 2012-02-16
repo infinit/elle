@@ -827,8 +827,6 @@ namespace etoile
     elle::Status        Directory::Purge(
                           const gear::Identifier&)
     {
-      ;
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] wall::Directory::Purge()\n");

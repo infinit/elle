@@ -54,8 +54,6 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Action]" << std::endl;
 
       // display the type.

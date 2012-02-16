@@ -44,8 +44,6 @@ namespace etoile
   ///
   elle::Status          Etoile::Initialize()
   {
-    ;
-
     // initialize the path.
     if (path::Path::Initialize() == elle::StatusError)
       escape("unable to initialize the path");
@@ -95,8 +93,6 @@ namespace etoile
   ///
   elle::Status          Etoile::Clean()
   {
-    ;
-
     // clean the portal.
     if (portal::Portal::Clean() == elle::StatusError)
       escape("unable to clean the portal");

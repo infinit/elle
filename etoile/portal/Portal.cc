@@ -48,8 +48,6 @@ namespace etoile
     ///
     elle::Status        Portal::Initialize()
     {
-      ;
-
       // build an arbitrary line for applications to connect to
       // the portal and issue requests.
       if (elle::Random::Generate(Portal::Line, 64) == elle::StatusError)
@@ -512,8 +510,6 @@ namespace etoile
     ///
     elle::Status        Portal::Clean()
     {
-      ;
-
       // nothing to do.
 
       return elle::StatusOk;
@@ -526,8 +522,6 @@ namespace etoile
     elle::Status        Portal::Add(Application*                application)
     {
       std::pair<Portal::Iterator, elle::Boolean>        result;
-
-      ;
 
       // check if this application has already been registered.
       if (Portal::Applications.find(application->socket) !=
@@ -554,8 +548,6 @@ namespace etoile
     {
       Portal::Iterator  iterator;
 
-      ;
-
       // locate the entry.
       if ((iterator =
            Portal::Applications.find(socket)) == Portal::Applications.end())
@@ -573,8 +565,6 @@ namespace etoile
     elle::Status        Portal::Remove(elle::LocalSocket*       socket)
     {
       Portal::Iterator  iterator;
-
-      ;
 
       // locate the entry.
       if ((iterator =
@@ -594,8 +584,6 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
       Portal::Scoutor   scoutor;
-
-      ;
 
       std::cout << alignment << "[Portal]" << std::endl;
 
@@ -666,8 +654,6 @@ namespace etoile
       elle::Session*    session;
       Application*      application;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         std::cout << "[etoile] portal::Portal::Authenticate()"
@@ -709,8 +695,6 @@ namespace etoile
       elle::Session*    session;
       Application*      application;
 
-      ;
-
       // retrieve the network session.
       if (elle::Session::Instance(session) == elle::StatusError)
         escape("unable to retrieve the current session");
@@ -745,8 +729,6 @@ namespace etoile
     {
       elle::Session*    session;
       Application*      application;
-
-      ;
 
       // retrieve the network session.
       if (elle::Session::Instance(session) == elle::StatusError)

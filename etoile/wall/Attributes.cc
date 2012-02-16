@@ -44,8 +44,6 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] wall::Attributes::Set()\n");
@@ -98,8 +96,6 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] wall::Attributes::Get()\n");
@@ -147,8 +143,6 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] wall::Attributes::Fetch()\n");
@@ -190,8 +184,6 @@ namespace etoile
       gear::Actor*      actor;
       gear::Scope*      scope;
       gear::Object*     context;
-
-      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)

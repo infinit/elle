@@ -40,8 +40,6 @@ namespace etoile
     {
       nucleus::Record*  r;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] portal::Wrapper:Access::Lookup()\n");
@@ -72,8 +70,6 @@ namespace etoile
                           nucleus::Range<nucleus::Record>&      range)
     {
       nucleus::Range<nucleus::Record>   r;
-
-      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -107,8 +103,6 @@ namespace etoile
     {
       nucleus::Trait*   t;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] portal::Wrapper:Attributes::Get()\n");
@@ -137,8 +131,6 @@ namespace etoile
                           nucleus::Range<nucleus::Trait>&       range)
     {
       nucleus::Range<nucleus::Trait>    r;
-
-      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -170,8 +162,6 @@ namespace etoile
     {
       nucleus::Entry*   e;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] portal::Wrapper:Directory::Lookup()\n");
@@ -202,8 +192,6 @@ namespace etoile
                           nucleus::Range<nucleus::Entry>&       range)
     {
       nucleus::Range<nucleus::Entry>    r;
-
-      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)

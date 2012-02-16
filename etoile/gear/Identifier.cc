@@ -60,8 +60,6 @@ namespace etoile
     ///
     elle::Status        Identifier::Generate()
     {
-      ;
-
       // increments the counter.
       this->value = Identifier::Counter++;
 
@@ -78,8 +76,6 @@ namespace etoile
     elle::Boolean       Identifier::operator==(const Identifier& element)
       const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -113,8 +109,6 @@ namespace etoile
     ///
     elle::Status        Identifier::Serialize(elle::Archive&    archive) const
     {
-      ;
-
       // serialize the attributes.
       if (archive.Serialize(this->value) == elle::StatusError)
         escape("unable to serialize the identifier attributes");
@@ -127,8 +121,6 @@ namespace etoile
     ///
     elle::Status        Identifier::Extract(elle::Archive&      archive)
     {
-      ;
-
       // extract the attributes.
       if (archive.Extract(this->value) == elle::StatusError)
         escape("unable to extract the identifier attributes");
@@ -146,8 +138,6 @@ namespace etoile
     elle::Status        Identifier::Dump(const elle::Natural32  margin) const
     {
       elle::String      alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Identifier] "
                 << std::dec << this->value << std::endl;

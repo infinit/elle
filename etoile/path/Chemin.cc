@@ -50,8 +50,6 @@ namespace etoile
                                        const Venue&             venue,
                                        const nucleus::Size      size)
     {
-      ;
-
       // clear the route because the chemin may have been used for
       // something else before.
       if (this->route.Clear() == elle::StatusError)
@@ -121,8 +119,6 @@ namespace etoile
     ///
     elle::Status        Chemin::Locate(nucleus::Location&       location) const
     {
-      ;
-
       // check the size of the venue.
       if (this->venue.elements.size() == 0)
         escape("the venue seems to be empty");
@@ -189,8 +185,6 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Chemin] " << this << std::endl;
 
       // dump the route.
@@ -213,8 +207,6 @@ namespace etoile
     ///
     elle::Status        Chemin::Serialize(elle::Archive&        archive) const
     {
-      ;
-
       // serialize the attributes.
       if (archive.Serialize(this->route,
                             this->venue) == elle::StatusError)
@@ -228,8 +220,6 @@ namespace etoile
     ///
     elle::Status        Chemin::Extract(elle::Archive&  archive)
     {
-      ;
-
       // extract the attributes.
       if (archive.Extract(this->route,
                           this->venue) == elle::StatusError)

@@ -70,8 +70,6 @@ namespace etoile
     ///
     elle::Status        Application::Create(elle::LocalSocket*  socket)
     {
-      ;
-
       // set the socket.
       this->socket = socket;
 
@@ -120,8 +118,6 @@ namespace etoile
     ///
     elle::Status        Application::Disconnected()
     {
-      ;
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         std::cout << "[etoile] portal::Application::Disconnected()"
@@ -150,8 +146,6 @@ namespace etoile
     ///
     elle::Status        Application::Error(const elle::String&)
     {
-      ;
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         std::cout << "[etoile] portal::Application::Error()"
@@ -171,8 +165,6 @@ namespace etoile
     ///
     elle::Status        Application::Abort()
     {
-      ;
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         std::cout << "[etoile] portal::Application::Abort()"
@@ -205,8 +197,6 @@ namespace etoile
     elle::Status        Application::Dump(elle::Natural32       margin) const
     {
       elle::String      alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Application]" << std::endl;
 

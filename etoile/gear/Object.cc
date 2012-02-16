@@ -73,8 +73,6 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Object]" << std::endl;
 
       // dump the parent context.
@@ -142,8 +140,6 @@ namespace etoile
     ///
     elle::Status        Object::Serialize(elle::Archive&        archive) const
     {
-      ;
-
       // serialize the attributes.
       if (archive.Serialize(this->location,
                             this->object) == elle::StatusError)
@@ -181,8 +177,6 @@ namespace etoile
     elle::Status        Object::Extract(elle::Archive&          archive)
     {
       elle::Archive::Type       type;
-
-      ;
 
       // extract the attributes.
       if (archive.Extract(this->location,

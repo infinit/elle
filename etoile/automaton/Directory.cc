@@ -36,8 +36,6 @@ namespace etoile
     {
       nucleus::Address  address;
 
-      ;
-
       // create the directory.
       if (context.object.Create(
             nucleus::GenreDirectory,
@@ -65,8 +63,6 @@ namespace etoile
     elle::Status        Directory::Load(
                           gear::Directory&                      context)
     {
-      ;
-
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
         return elle::StatusOk;
@@ -192,8 +188,6 @@ namespace etoile
                           const nucleus::Size&                  size,
                           nucleus::Range<nucleus::Entry>&       range)
     {
-      ;
-
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
         escape("unable to determine the rights");
@@ -232,8 +226,6 @@ namespace etoile
                           const path::Slice&                    to)
     {
       nucleus::Size     size;
-
-      ;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
@@ -288,8 +280,6 @@ namespace etoile
     {
       nucleus::Size     size;
 
-      ;
-
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
         escape("unable to determine the rights");
@@ -340,8 +330,6 @@ namespace etoile
     elle::Status        Directory::Discard(
                           gear::Directory&                      context)
     {
-      ;
-
       // set the context's state.
       context.state = gear::Context::StateDiscarded;
 
@@ -355,8 +343,6 @@ namespace etoile
     elle::Status        Directory::Destroy(
                           gear::Directory&                      context)
     {
-      ;
-
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
         escape("unable to determine the rights");
@@ -391,8 +377,6 @@ namespace etoile
     elle::Status        Directory::Store(
                           gear::Directory&                      context)
     {
-      ;
-
       // close the contents.
       if (Contents::Close(context) == elle::StatusError)
         escape("unable to close the contents");

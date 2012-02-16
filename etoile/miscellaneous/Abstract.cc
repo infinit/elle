@@ -48,8 +48,6 @@ namespace etoile
     ///
     elle::Status        Abstract::Create(const nucleus::Object& object)
     {
-      ;
-
       // set the genre.
       this->genre = object.meta.genre;
 
@@ -101,8 +99,6 @@ namespace etoile
     elle::Boolean       Abstract::operator==(const Abstract&    element)
       const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -137,8 +133,6 @@ namespace etoile
     elle::Status        Abstract::Dump(const elle::Natural32    margin) const
     {
       elle::String      alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Abstract]" << std::endl;
 
@@ -241,8 +235,6 @@ namespace etoile
     ///
     elle::Status        Abstract::Serialize(elle::Archive&      archive) const
     {
-      ;
-
       // serialize the attributes.
       if (archive.Serialize(this->genre,
                             this->stamps.creation,
@@ -263,8 +255,6 @@ namespace etoile
     ///
     elle::Status        Abstract::Extract(elle::Archive&        archive)
     {
-      ;
-
       // extract the attributes.
       if (archive.Extract(this->genre,
                           this->stamps.creation,

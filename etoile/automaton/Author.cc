@@ -33,8 +33,6 @@ namespace etoile
     ///
     elle::Status        Author::Forge(gear::Object&             context)
     {
-      ;
-
       // if an author exists, return.
       if (context.author != nucleus::Author::Null)
         return elle::StatusOk;

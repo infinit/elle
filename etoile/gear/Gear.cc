@@ -28,8 +28,6 @@ namespace etoile
     ///
     elle::Status        Gear::Initialize()
     {
-      ;
-
       // initialize the actor system.
       if (Actor::Initialize() == elle::StatusError)
         escape("unable to initialize the actor");
@@ -46,8 +44,6 @@ namespace etoile
     ///
     elle::Status        Gear::Clean()
     {
-      ;
-
       // clean the actor system.
       if (Actor::Clean() == elle::StatusError)
         escape("unable to clean the actor");

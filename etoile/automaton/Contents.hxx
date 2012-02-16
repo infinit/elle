@@ -38,8 +38,6 @@ namespace etoile
     elle::Status        Contents::Open(
                           T&                                    context)
     {
-      ;
-
       // if the contents is already opened, return.
       if (context.contents != NULL)
         return elle::StatusOk;
@@ -87,8 +85,6 @@ namespace etoile
     elle::Status        Contents::Destroy(
                           T&                                    context)
     {
-      ;
-
       // if a block is referenced by the object, mark it as needing removal.
       if (context.object.data.contents != nucleus::Address::Null)
         {
@@ -113,8 +109,6 @@ namespace etoile
     {
       elle::SecretKey   key;
       nucleus::Size     size;
-
-      ;
 
       //
       // first, check if the block has been modified i.e exists and is dirty.

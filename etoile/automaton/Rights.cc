@@ -36,8 +36,6 @@ namespace etoile
     elle::Status        Rights::Determine(
                           gear::Object&                         context)
     {
-      ;
-
       // if the rights have already been determined, return.
       if (context.rights.role != nucleus::RoleUnknown)
         return elle::StatusOk;
@@ -140,8 +138,6 @@ namespace etoile
     elle::Status        Rights::Recompute(
                           gear::Object&                         context)
     {
-      ;
-
       // reset the role in order to make sure the Determine() method
       // will carry one.
       context.rights.role = nucleus::RoleUnknown;
@@ -163,8 +159,6 @@ namespace etoile
                           gear::Object&                         context,
                           const nucleus::Permissions&           permissions)
     {
-      ;
-
       // update the permission.
       context.rights.permissions = permissions;
 
@@ -182,8 +176,6 @@ namespace etoile
                           gear::Object&                         context,
                           const gear::Operation&                operation)
     {
-      ;
-
       // depending on the operation.
       switch (operation)
         {

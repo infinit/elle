@@ -49,8 +49,6 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] wall::Access::Lookup()\n");
@@ -100,8 +98,6 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] wall::Access::Consult()\n");
@@ -146,8 +142,6 @@ namespace etoile
       gear::Actor*      actor;
       gear::Scope*      scope;
       gear::Object*     context;
-
-      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -195,8 +189,6 @@ namespace etoile
       gear::Actor*      actor;
       gear::Scope*      scope;
       gear::Object*     context;
-
-      ;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)

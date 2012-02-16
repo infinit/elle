@@ -125,8 +125,6 @@ namespace etoile
     ///
     elle::Status        Way::Capacity(Length&                   length) const
     {
-      ;
-
       // return the length.
       length = static_cast<Length>(this->path.length());
 
@@ -142,8 +140,6 @@ namespace etoile
     ///
     elle::Boolean       Way::operator==(const Way&              element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -171,8 +167,6 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Way] " << this->path << std::endl;
 
       return elle::StatusOk;
@@ -187,8 +181,6 @@ namespace etoile
     ///
     elle::Status        Way::Serialize(elle::Archive&   archive) const
     {
-      ;
-
       // serialize the target.
       if (archive.Serialize(this->path) == elle::StatusError)
         escape("unable to serialize the path");
@@ -201,8 +193,6 @@ namespace etoile
     ///
     elle::Status        Way::Extract(elle::Archive&     archive)
     {
-      ;
-
       // extract the target.
       if (archive.Extract(this->path) == elle::StatusError)
         escape("unable to extract the path");

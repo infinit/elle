@@ -59,8 +59,6 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Directory]" << std::endl;
 
       // dump the inherited object.
@@ -91,8 +89,6 @@ namespace etoile
     ///
     elle::Status        Directory::Serialize(elle::Archive&     archive) const
     {
-      ;
-
       // serialize the contents.
       if (this->contents == NULL)
         {
@@ -116,8 +112,6 @@ namespace etoile
     elle::Status        Directory::Extract(elle::Archive&       archive)
     {
       elle::Archive::Type       type;
-
-      ;
 
       // fetch the next element's type.
       if (archive.Fetch(type) == elle::StatusError)

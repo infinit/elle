@@ -55,8 +55,6 @@ namespace etoile
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Link]" << std::endl;
 
       // dump the inherited object.
@@ -87,8 +85,6 @@ namespace etoile
     ///
     elle::Status        Link::Serialize(elle::Archive&          archive) const
     {
-      ;
-
       // serialize the contents.
       if (this->contents == NULL)
         {
@@ -112,8 +108,6 @@ namespace etoile
     elle::Status        Link::Extract(elle::Archive&            archive)
     {
       elle::Archive::Type       type;
-
-      ;
 
       // fetch the next element's type.
       if (archive.Fetch(type) == elle::StatusError)

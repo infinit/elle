@@ -35,8 +35,6 @@ namespace etoile
     template <typename T>
     elle::Status        Scope::Use(T*&                          context)
     {
-      ;
-
       // first, if the scope's context is null, allocate one.
       if (this->context == NULL)
         {
