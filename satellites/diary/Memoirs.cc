@@ -28,8 +28,6 @@ namespace satellite
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       // display the name.
       std::cout << alignment << "[Memoirs]" << std::endl;
 
@@ -49,8 +47,6 @@ namespace satellite
   ///
   elle::Status          Memoirs::Serialize(elle::Archive&       archive) const
   {
-    ;
-
     // serialize the attributes.
     if (archive.Serialize(this->archive) == elle::StatusError)
       escape("unable to serialize the attributes");
@@ -63,8 +59,6 @@ namespace satellite
   ///
   elle::Status          Memoirs::Extract(elle::Archive&         archive)
   {
-    ;
-
     // extract the attributes.
     if (archive.Extract(this->archive) == elle::StatusError)
       escape("unable to extract the attributes");
@@ -86,8 +80,6 @@ namespace satellite
   elle::Status          Memoirs::Load(const elle::Path&         path)
   {
     elle::Region        region;
-
-    ;
 
     // read the file's content.
     if (elle::File::Read(path, region) == elle::StatusError)
@@ -114,8 +106,6 @@ namespace satellite
   elle::Status          Memoirs::Store(const elle::Path&        path)
     const
   {
-    ;
-
     // write the file's content.
     if (elle::File::Write(
           path,

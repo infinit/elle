@@ -38,8 +38,6 @@ namespace satellite
     elle::Path          path;
     lune::Configuration configuration;
 
-    ;
-
     //
     // initialize the infinit path.
     //
@@ -89,8 +87,6 @@ namespace satellite
   elle::Status          Setup::Clean()
   {
     elle::Path          path;
-
-    ;
 
     //
     // remove the configuration, if necessary.

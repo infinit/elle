@@ -39,8 +39,6 @@ namespace satellite
   {
     lune::Dictionary    dictionary;
 
-    ;
-
     //
     // check the arguments.
     //
@@ -123,8 +121,6 @@ namespace satellite
   {
     lune::Dictionary    dictionary;
 
-    ;
-
     //
     // check the arguments.
     //
@@ -193,8 +189,6 @@ namespace satellite
   elle::Status          Dictionary::Show(const Dictionary::Type& type)
   {
     lune::Dictionary    dictionary;
-
-    ;
 
     //
     // check the arguments.
@@ -274,8 +268,6 @@ namespace satellite
                                          const elle::String&    name)
   {
     lune::Dictionary    dictionary;
-
-    ;
 
     //
     // check the arguments.

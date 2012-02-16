@@ -29,8 +29,6 @@ namespace satellite
     ///
     elle::Status        Upcall::Create(const Operation          operation)
     {
-      ;
-
       // set the operation.
       this->operation = operation;
 
@@ -43,8 +41,6 @@ namespace satellite
     ///
     elle::Status        Upcall::Result(const elle::Integer32    result)
     {
-      ;
-
       // set the result;
       this->result = result;
 
@@ -70,8 +66,6 @@ namespace satellite
     elle::Status        Upcall::Dump(elle::Natural32            margin) const
     {
       elle::String      alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Upcall]" << std::endl;
 
@@ -110,8 +104,6 @@ namespace satellite
     ///
     elle::Status        Upcall::Serialize(elle::Archive&        archive) const
     {
-      ;
-
       // serialize the attributes.
       if (archive.Serialize(static_cast<elle::Natural32>(this->operation),
                             this->inputs,
@@ -128,8 +120,6 @@ namespace satellite
     elle::Status        Upcall::Extract(elle::Archive&          archive)
     {
       elle::Natural32   operation;
-
-      ;
 
       // extract the attributes.
       if (archive.Extract(operation,

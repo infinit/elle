@@ -63,8 +63,6 @@ namespace satellite
     elle::Status        Memoirs::Initialize(const elle::String& mountpoint,
                                             const elle::String& mirror)
     {
-      ;
-
       // set up the crux.
       if (Crux::Setup(mirror) == elle::StatusError)
         escape("unable to set up the crux");
@@ -95,8 +93,6 @@ namespace satellite
     elle::Status        Memoirs::Initialize(const elle::Natural32 from,
                                             const elle::Natural32 to)
     {
-      ;
-
       // set the mode.
       this->mode = Memoirs::ModeReplay;
 
@@ -124,8 +120,6 @@ namespace satellite
     ///
     elle::Status        Memoirs::Clean()
     {
-      ;
-
       // depending on the mode.
       switch (this->mode)
         {
@@ -159,8 +153,6 @@ namespace satellite
     ///
     elle::Status        Memoirs::Write(const Upcall&            upcall)
     {
-      ;
-
       // check the memoirs mode.
       if (this->mode != Memoirs::ModeRecord)
         escape("unable to write an upcall in a non-recording memoirs");
@@ -177,8 +169,6 @@ namespace satellite
     ///
     elle::Status        Memoirs::Read(Upcall&                   upcall)
     {
-      ;
-
       // check the memoirs mode.
       if (this->mode != Memoirs::ModeReplay)
         escape("unable to read an upcall from a non-replaying memoirs");
@@ -195,8 +185,6 @@ namespace satellite
     ///
     elle::Status        Memoirs::End() const
     {
-      ;
-
       // have we reached the end of the archive.
       if (this->archive.offset == this->archive.size)
         return elle::StatusTrue;
@@ -214,8 +202,6 @@ namespace satellite
     elle::Status        Memoirs::Dump(elle::Natural32           margin) const
     {
       elle::String      alignment(margin, ' ');
-
-      ;
 
       // display the name.
       std::cout << alignment << "[Memoirs]" << std::endl;

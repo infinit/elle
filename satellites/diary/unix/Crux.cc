@@ -856,8 +856,6 @@ namespace satellite
     ///
     elle::Status        Crux::Setup(const elle::String&         mirror)
     {
-      ;
-
       // set the mirror path.
       if (mirror.empty() == false)
         Crux::Mirror = mirror + "/";

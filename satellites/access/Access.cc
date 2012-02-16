@@ -42,8 +42,6 @@ namespace satellite
   ///
   elle::Status          Access::Disconnected()
   {
-    ;
-
     // report the problem.
     report("the socket has been unexpectedly disconnected");
 
@@ -61,8 +59,6 @@ namespace satellite
   ///
   elle::Status          Access::Error(const elle::String&       error)
   {
-    ;
-
     // report the given error.
     report(error.c_str());
 
@@ -86,8 +82,6 @@ namespace satellite
   elle::Status          Access::Connect()
   {
     lune::Phrase        phrase;
-
-    ;
 
     //
     // load the phrase.
@@ -151,8 +145,6 @@ namespace satellite
     etoile::gear::Identifier    identifier;
     nucleus::Record             record;
 
-    ;
-
     // connect to Etoile.
     if (Access::Connect() == elle::StatusError)
       goto _error;
@@ -210,8 +202,6 @@ namespace satellite
     etoile::path::Chemin                chemin;
     etoile::gear::Identifier            identifier;
     nucleus::Range<nucleus::Record>     range;
-
-    ;
 
     // connect to Etoile.
     if (Access::Connect() == elle::StatusError)
@@ -276,8 +266,6 @@ namespace satellite
     etoile::path::Chemin        chemin;
     etoile::gear::Identifier    identifier;
     etoile::path::Way           path;
-
-    ;
 
     // connect to Etoile.
     if (Access::Connect() == elle::StatusError)
@@ -347,8 +335,6 @@ namespace satellite
     etoile::path::Chemin        chemin;
     etoile::gear::Identifier    identifier;
     nucleus::Record             record;
-
-    ;
 
     // connect to Etoile.
     if (Access::Connect() == elle::StatusError)

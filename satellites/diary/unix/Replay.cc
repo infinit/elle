@@ -68,8 +68,6 @@ namespace satellite
       }                 outputs;
       int               res;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
         printf("[satellites] Replay::%s()\n",
@@ -134,8 +132,6 @@ namespace satellite
       }                 outputs;
       elle::Natural64   identifier;
       int               res;
-
-      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -211,8 +207,6 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
         printf("[satellites] Replay::%s()\n",
@@ -253,8 +247,6 @@ namespace satellite
       }                 outputs;
       elle::Natural64   identifier;
       int               res;
-
-      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -340,8 +332,6 @@ namespace satellite
       elle::Natural64   identifier;
       int               res;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
         printf("[satellites] Replay::%s()\n",
@@ -401,8 +391,6 @@ namespace satellite
       elle::Natural64   identifier;
       int               res;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
         printf("[satellites] Replay::%s()\n",
@@ -453,8 +441,6 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
         printf("[satellites] Replay::%s()\n",
@@ -490,8 +476,6 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
         printf("[satellites] Replay::%s()\n",
@@ -523,8 +507,6 @@ namespace satellite
         elle::Integer32 mask;
       }                 inputs;
       int               res;
-
-      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -562,8 +544,6 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
         printf("[satellites] Replay::%s()\n",
@@ -600,8 +580,6 @@ namespace satellite
         elle::Natural32 gid;
       }                 inputs;
       int               res;
-
-      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -647,8 +625,6 @@ namespace satellite
         elle::Integer32 flags;
       }                 inputs;
       int               res;
-
-      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -703,8 +679,6 @@ namespace satellite
         elle::String    value;
       }                 outputs;
       int               res;
-
-      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -764,8 +738,6 @@ namespace satellite
       }                 outputs;
       int               res;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
         printf("[satellites] Replay::%s()\n",
@@ -814,8 +786,6 @@ namespace satellite
         elle::String    name;
       }                 inputs;
       int               res;
-
-      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -1065,8 +1035,6 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
         printf("[satellites] Replay::%s()\n",
@@ -1107,8 +1075,6 @@ namespace satellite
         elle::String    buf;
       }                 outputs;
       int               res;
-
-      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -1164,8 +1130,6 @@ namespace satellite
       }                 outputs;
       elle::Natural64   identifier;
       int               res;
-
-      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -1226,8 +1190,6 @@ namespace satellite
       elle::Natural64   identifier;
       int               res;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
         printf("[satellites] Replay::%s()\n",
@@ -1285,8 +1247,6 @@ namespace satellite
       }                 outputs;
       elle::Natural64   identifier;
       int               res;
-
-      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -1355,8 +1315,6 @@ namespace satellite
       elle::Natural64   identifier;
       int               res;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
         printf("[satellites] Replay::%s()\n",
@@ -1419,8 +1377,6 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
         printf("[satellites] Replay::%s()\n",
@@ -1462,8 +1418,6 @@ namespace satellite
       }                 outputs;
       elle::Natural64   identifier;
       int               res;
-
-      ;
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -1521,8 +1475,6 @@ namespace satellite
       elle::Natural64   identifier;
       int               res;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
         printf("[satellites] Replay::%s()\n",
@@ -1575,8 +1527,6 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
         printf("[satellites] Replay::%s()\n",
@@ -1612,8 +1562,6 @@ namespace satellite
       }                 inputs;
       int               res;
 
-      ;
-
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
         printf("[satellites] Replay::%s()\n",
@@ -1642,8 +1590,6 @@ namespace satellite
     ///
     elle::Status        Replay::Initialize(Memoirs*             memoirs)
     {
-      ;
-
       // set the memoirs pointer.
       Replay::Reference = memoirs;
 
@@ -1690,8 +1636,6 @@ namespace satellite
     elle::Status        Replay::Process()
     {
       elle::Natural32   i;
-
-      ;
 
       // first, go through the upcalls that must be ignored.
       for (i = 0;
@@ -1977,8 +1921,6 @@ namespace satellite
     ///
     elle::Status        Replay::Clean()
     {
-      ;
-
 #if defined(INFINIT_LINUX)
       // clean the horizon.
       if (horizon::linux::Linux::Clean() == elle::StatusError)

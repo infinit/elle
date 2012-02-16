@@ -45,8 +45,6 @@ namespace satellite
     nucleus::Network    network;
     nucleus::Address    address;
 
-    ;
-
     //
     // test the arguments.
     //
@@ -187,8 +185,6 @@ namespace satellite
   ///
   elle::Status          Network::Destroy(const elle::String&    name)
   {
-    ;
-
     //
     // remove the descriptor.
     //
@@ -291,8 +287,6 @@ namespace satellite
   elle::Status          Network::Information(const elle::String& name)
   {
     lune::Descriptor    descriptor;
-
-    ;
 
     //
     // test the arguments.

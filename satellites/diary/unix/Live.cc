@@ -53,8 +53,6 @@ namespace satellite
     ///
     elle::Status        Live::Initialize()
     {
-      ;
-
       // nothing to do.
 
       return elle::StatusOk;
@@ -66,8 +64,6 @@ namespace satellite
     elle::Status        Live::Clean()
     {
       Live::Iterator    iterator;
-
-      ;
 
       // go through the items.
       for (iterator = Live::Items.begin();
@@ -114,8 +110,6 @@ namespace satellite
     {
       Live::Scoutor     scoutor;
 
-      ;
-
       // go through the items.
       for (scoutor = Live::Items.begin();
            scoutor != Live::Items.end();
@@ -141,8 +135,6 @@ namespace satellite
     elle::Status        Live::Remove(const elle::Natural64      passive)
     {
       Live::Iterator    iterator;
-
-      ;
 
       // go through the items.
       for (iterator = Live::Items.begin();
@@ -174,8 +166,6 @@ namespace satellite
     {
       elle::String      alignment(margin, ' ');
       Live::Scoutor     scoutor;
-
-      ;
 
       std::cout << alignment << "[Live]" << std::endl;
 

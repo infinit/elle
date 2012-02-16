@@ -1411,8 +1411,6 @@ namespace satellite
     elle::Status        Record::Initialize(Memoirs*             memoirs,
                                            const elle::String&  mountpoint)
     {
-      ;
-
       // set the memoirs pointer.
       Record::Reference = memoirs;
 
@@ -1497,8 +1495,6 @@ namespace satellite
     ///
     elle::Status        Record::Clean()
     {
-      ;
-
 #if defined(INFINIT_LINUX)
       // clean FUSE.
       if (horizon::linux::FUSE::Clean() == elle::StatusError)

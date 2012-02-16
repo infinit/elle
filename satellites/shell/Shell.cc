@@ -59,8 +59,6 @@ namespace satellite
   {
     elle::Natural32     i;
 
-    ;
-
     std::cout << "Commands:" << std::endl;
 
     for (i = 0; Commands[i].name; i++)
@@ -74,8 +72,6 @@ namespace satellite
   ///
   elle::Status          Shell::Quit(const elle::String&)
   {
-    ;
-
     // exit.
     ::exit(0);
 
@@ -92,8 +88,6 @@ namespace satellite
     elle::String        address;
 
     // XXX XXX -> ameliorer Parser
-
-    ;
 
     // ignore the command.
     iss >> command;

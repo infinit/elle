@@ -28,8 +28,6 @@ namespace satellite
     template <typename... T>
     elle::Status        Upcall::Inputs(const T&...              inputs)
     {
-      ;
-
       // create the archive.
       if (this->inputs.Create() == elle::StatusError)
         escape("unable to create the archive");
@@ -48,8 +46,6 @@ namespace satellite
     template <typename... T>
     elle::Status        Upcall::Outputs(const T&...             outputs)
     {
-      ;
-
       // create the archive.
       if (this->outputs.Create() == elle::StatusError)
         escape("unable to create the archive");

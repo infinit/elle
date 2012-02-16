@@ -38,8 +38,6 @@ namespace satellite
     lune::Authority     authority;
     lune::Passport      passport;
 
-    ;
-
     //
     // test the arguments.
     //
@@ -112,8 +110,6 @@ namespace satellite
   {
     lune::Passport      passport;
 
-    ;
-
     // does the passport exist.
     if (passport.Exist() == elle::StatusTrue)
       {
@@ -131,8 +127,6 @@ namespace satellite
   elle::Status          Passport::Information()
   {
     lune::Passport      passport;
-
-    ;
 
     //
     // test the arguments.

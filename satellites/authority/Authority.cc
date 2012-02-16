@@ -47,8 +47,6 @@ namespace satellite
     elle::KeyPair       pair;
     lune::Authority     authority;
 
-    ;
-
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for the authority keypair: ";
 
@@ -86,8 +84,6 @@ namespace satellite
     elle::KeyPair       pair;
     lune::Authority     authority;
 
-    ;
-
     // erase the authority file.
     if (authority.Erase() == elle::StatusError)
       escape("unable to erase the authority");
@@ -104,8 +100,6 @@ namespace satellite
     elle::String        pass;
     lune::Authority     authority;
     elle::Unique        unique;
-
-    ;
 
     // check if the authority exists.
     if (authority.Exist() == elle::StatusFalse)
