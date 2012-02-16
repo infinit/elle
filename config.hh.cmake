@@ -15,6 +15,8 @@
 #cmakedefine INFINIT_MACOSX
 #cmakedefine INFINIT_WINDOWS
 
-// XXX[MacOS X has some problems] #cmakedefine HAVE_SETXATTR
+#if !defined(INFINIT_MACOSX)
+# cmakedefine HAVE_SETXATTR
+#endif
 
 #endif
