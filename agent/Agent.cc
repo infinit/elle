@@ -50,8 +50,6 @@ namespace agent
     elle::String        prompt;
     elle::String        pass;
 
-    ;
-
     // disable the meta logging.
     if (elle::Meta::Disable() == elle::StatusError)
       escape("unable to disable the meta logging");
@@ -110,8 +108,6 @@ namespace agent
   ///
   elle::Status          Agent::Clean()
   {
-    ;
-
     // nothing to do.
 
     return elle::StatusOk;
