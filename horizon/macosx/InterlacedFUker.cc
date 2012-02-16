@@ -152,12 +152,17 @@ namespace horizon
           //
           "-onoappledouble",
 
-          // XXX volicon=PATH, where PATH is path to an icon (.icns) file
-
-          // XXX noapplexattr (pas sur qu'on veuille, ca utilise des attributes,
-          //                   c'est agnostique du systeme donc c'est cool)
-          // XXX nobrowse (ca pourrait etre bien pour gagner en perf afin
-          //               de desactiver le browse automatique)
+          //
+          // these options activate the custom volume icon.
+          //
+          // note that Apple icon (icns) files can be generated
+          // with the _makeicns_ binary.
+          //
+          // XXX[we should put this file as an output of the
+          //     compilation/installation process]
+          //
+          "-omodules=volicon",
+          "-oiconpath=../../temporary/nazi.icns",
 
           //
           // this option specifies the name of the file system instance.
