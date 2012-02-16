@@ -52,6 +52,13 @@
 # endif
 #include <elle/idiom/Open.hh>
 
+///
+/// the HAVE_SETXATTR macro is undefined because the calls crash on MacOS X.
+///
+#if defined(INFINIT_MACOSX)
+# undef HAVE_SETXATTR
+#endif
+
 namespace satellite
 {
   #undef unix
