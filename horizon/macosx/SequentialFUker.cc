@@ -138,6 +138,17 @@ namespace horizon
           "-o", "no_remote_lock",
           "-o", "auto_cache",
 
+          // XXX tester -o volname= plutot OU -osubtype=infinit
+          // XXX fssubtype
+          // XXX fstypename
+          // XXX extended_security (ACL MacOS X)
+          // XXX noappledouble (interdit access/creation .DS_Store, ._*
+          // XXX noapplexattr (pas sur qu'on veuille, ca utilise des attributes,
+          //                   c'est agnostique du systeme donc c'est cool)
+          // XXX nobrowse (ca pourrait etre bien pour gagner en perf afin
+          //               de desactiver le browse automatique)
+          // XXX volicon=PATH, where PATH is path to an icon (.icns) file
+
           ofsname.c_str(),
           ovolname.c_str(),
           FUSE::Mountpoint.c_str()
