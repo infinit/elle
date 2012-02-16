@@ -121,18 +121,59 @@ namespace horizon
         {
           "horizon",
 
+          //
+          // this option disables multi-threading.
+          //
           "-s",
 
+          //
+          // this option does not register FUSE as a daemon but
+          // run it in foreground.
+          //
           "-f",
-          "-o", "subtype=infinit",
 
-          "-o", "no_remote_lock",
-          "-o", "large_read",
-          "-o", "big_writes",
-          "-o", "auto_cache",
-          "-o", "direct_io",
+          //
+          // this option indicates the name of the file system type.
+          //
+          "-osubtype=infinit",
 
+          //
+          // this option disables remote file locking.
+          //
+          "-ono_remote_lock",
+
+          //
+          // this option indicates the kernel to perform reads
+          // through large chunks.
+          //
+          "-olarge_read",
+
+          //
+          // this option indicates the kernel to perform writes
+          // through big writes.
+          //
+          "-obig_writes",
+
+          //
+          // this option activates the in-kernel caching based on
+          // the modification times.
+          //
+          "-oauto_cache",
+
+          //
+          // this option indicates the kernel to always forward the I/Os
+          // to the filesystem.
+          //
+          "-odirect_io",
+
+          //
+          // this option specifies the name of the file system instance.
+          //
           ofsname.c_str(),
+
+          //
+          // and finally, the mountpoint.
+          //
           FUSE::Mountpoint.c_str()
         };
 

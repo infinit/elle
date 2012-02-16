@@ -131,26 +131,72 @@ namespace horizon
         {
           "horizon",
 
+          "-d", // XXX
+
+          //
+          // this option disables multi-threading.
+          //
           "-s",
+
+          //
+          // this option does not register FUSE as a daemon but
+          // run it in foreground.
+          //
           "-f",
-          "-o", "subtype=infinit",
 
-          "-o", "no_remote_lock",
-          "-o", "auto_cache",
+          //
+          // this option indicates the name of the file system type.
+          //
+          "-ofstypename=infinit",
 
-          // XXX tester -o volname= plutot OU -osubtype=infinit
-          // XXX fssubtype
-          // XXX fstypename
-          // XXX extended_security (ACL MacOS X)
-          // XXX noappledouble (interdit access/creation .DS_Store, ._*
+          //
+          // this option disables remote file locking.
+          //
+          "-ono_remote_lock",
+
+          //
+          // this option activates the in-kernel caching based on
+          // the modification times.
+          //
+          "-oauto_cache",
+
+          //
+          // this options activates the MacOS X ACLs which are set through
+          // extended attributes.
+          //
+          "-oextended_security",
+
+          //
+          // this option forbids the access to and creation of .DS_Store files
+          // along with any ._* file.
+          //
+          "-onoappledouble",
+
+          //
+          // XXX
+          //
+          "-omodules=volicon",
+          "-oiconpath=/Users/mycure/Downloads/nazi.icns",
+
+          //
           // XXX noapplexattr (pas sur qu'on veuille, ca utilise des attributes,
           //                   c'est agnostique du systeme donc c'est cool)
           // XXX nobrowse (ca pourrait etre bien pour gagner en perf afin
           //               de desactiver le browse automatique)
-          // XXX volicon=PATH, where PATH is path to an icon (.icns) file
 
+          //
+          // this option specifies the name of the file system instance.
+          //
           ofsname.c_str(),
+
+          //
+          // this option provides a user-friendly name for the MacOS X volume.
+          //
           ovolname.c_str(),
+
+          //
+          // and finally, the mountpoint.
+          //
           FUSE::Mountpoint.c_str()
         };
 
