@@ -37,8 +37,6 @@ namespace lune
   elle::Status          Phrase::Create(const elle::String&      pass,
                                        const elle::String&      portal)
   {
-    ;
-
     // assign the pass.
     this->pass = pass;
 

@@ -68,8 +68,6 @@ namespace lune
   {
     Map<T>::Entry*      entry;
 
-    ;
-
     // check if the entry exists.
     if (this->Lookup(name) == elle::StatusTrue)
       escape("this name is already registered");
@@ -95,8 +93,6 @@ namespace lune
                                        T*&                      value)
   {
     Map<T>::Scoutor     scoutor;
-
-    ;
 
     // go through the entries.
     for (scoutor = this->container.begin();
@@ -127,8 +123,6 @@ namespace lune
   {
     Map<T>::Scoutor     scoutor;
 
-    ;
-
     // go through the entries.
     for (scoutor = this->container.begin();
          scoutor != this->container.end();
@@ -156,8 +150,6 @@ namespace lune
   elle::Status          Map<T>::Remove(const elle::String&      name)
   {
     Map<T>::Iterator    iterator;
-
-    ;
 
     // go through the entries.
     for (iterator = this->container.begin();
@@ -204,8 +196,6 @@ namespace lune
     Map<T>::Scoutor     scoutor;
     elle::String        alignment(margin, ' ');
 
-    ;
-
     std::cout << alignment << "[Map]" << std::endl;
 
     // go through the entries.
@@ -239,8 +229,6 @@ namespace lune
   {
     Map<T>::Scoutor     scoutor;
 
-    ;
-
     // serialize the number of entries.
     if (archive.Serialize(
           static_cast<elle::Natural32>(
@@ -271,8 +259,6 @@ namespace lune
   {
     elle::Natural32             size;
     elle::Natural32             i;
-
-    ;
 
     // extract the number of entries.
     if (archive.Extract(size) == elle::StatusError)

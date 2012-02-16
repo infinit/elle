@@ -71,8 +71,6 @@ namespace lune
                                            const elle::Real&    contention,
                                            const elle::Real&    balancing)
   {
-    ;
-
     // set the attributes.
     this->name = name;
     this->model = model;
@@ -90,8 +88,6 @@ namespace lune
   ///
   elle::Status          Descriptor::Seal(const Authority&       authority)
   {
-    ;
-
     // sign the attributesr with the authority.
     if (authority.k->Sign(this->name,
                           this->model,
@@ -112,8 +108,6 @@ namespace lune
   elle::Status          Descriptor::Validate(const Authority&   authority)
     const
   {
-    ;
-
     // verify the signature.
     if (authority.K.Verify(this->signature,
                            this->name,
@@ -134,8 +128,6 @@ namespace lune
   ///
   elle::Status          Descriptor::Push()
   {
-    ;
-
     //
     // update the settings with the parameters.
     //
@@ -189,8 +181,6 @@ namespace lune
   ///
   elle::Status          Descriptor::Pull()
   {
-    ;
-
     //
     // retrieve the parameters from the settings.
     //
@@ -261,8 +251,6 @@ namespace lune
   {
     elle::String        alignment(margin, ' ');
 
-    ;
-
     std::cout << alignment << "[Descriptor]" << std::endl;
 
     // dump the parent settings.
@@ -282,8 +270,6 @@ namespace lune
   elle::Status          Descriptor::Load(const elle::String&    name)
   {
     elle::Path          path;
-
-    ;
 
     // create the path.
     if (path.Create(Lune::Network::Descriptor) == elle::StatusError)
@@ -307,8 +293,6 @@ namespace lune
   {
     elle::Path          path;
 
-    ;
-
     // create the path.
     if (path.Create(Lune::Network::Descriptor) == elle::StatusError)
       escape("unable to create the path");
@@ -331,8 +315,6 @@ namespace lune
   {
     elle::Path          path;
 
-    ;
-
     // create the path.
     if (path.Create(Lune::Network::Descriptor) == elle::StatusError)
       escape("unable to create the path");
@@ -354,8 +336,6 @@ namespace lune
   elle::Status          Descriptor::Exist(const elle::String&   name) const
   {
     elle::Path          path;
-
-    ;
 
     // create the path.
     if (path.Create(Lune::Network::Descriptor) == elle::StatusError)

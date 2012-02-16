@@ -122,8 +122,6 @@ namespace lune
   ///
   elle::Status          Identity::Seal(const Authority&         authority)
   {
-    ;
-
     // check the cipher.
     if (this->cipher == NULL)
       escape("unable to seal an unencrypted identity");

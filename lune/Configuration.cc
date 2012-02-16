@@ -102,8 +102,6 @@ namespace lune
   ///
   elle::Status          Configuration::Push()
   {
-    ;
-
     //
     // etoile
     //
@@ -214,8 +212,6 @@ namespace lune
   ///
   elle::Status          Configuration::Pull()
   {
-    ;
-
     //
     // etoile
     //
@@ -370,8 +366,6 @@ namespace lune
   {
     elle::String        alignment(margin, ' ');
 
-    ;
-
     std::cout << alignment << "[Configuration]" << std::endl;
 
     // dump the parent settings.
@@ -392,8 +386,6 @@ namespace lune
   {
     elle::Path          path;
 
-    ;
-
     // create the path.
     if (path.Create(Lune::Configuration) == elle::StatusError)
       escape("unable to create the path");
@@ -411,8 +403,6 @@ namespace lune
   elle::Status          Configuration::Store() const
   {
     elle::Path          path;
-
-    ;
 
     // create the path.
     if (path.Create(Lune::Configuration) == elle::StatusError)
@@ -432,8 +422,6 @@ namespace lune
   {
     elle::Path          path;
 
-    ;
-
     // create the path.
     if (path.Create(Lune::Configuration) == elle::StatusError)
       escape("unable to create the path");
@@ -451,8 +439,6 @@ namespace lune
   elle::Status          Configuration::Exist() const
   {
     elle::Path          path;
-
-    ;
 
     // create the path.
     if (path.Create(Lune::Configuration) == elle::StatusError)

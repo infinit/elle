@@ -36,8 +36,6 @@ namespace lune
   ///
   elle::Status          Passport::Create(const hole::Label&     label)
   {
-    ;
-
     // set the attributes.
     this->label = label;
 
@@ -49,8 +47,6 @@ namespace lune
   ///
   elle::Status          Passport::Seal(const Authority&         authority)
   {
-    ;
-
     // sign the pair with the authority.
     if (authority.k->Sign(this->label,
                           this->signature) == elle::StatusError)
@@ -65,8 +61,6 @@ namespace lune
   elle::Status          Passport::Validate(const Authority&     authority)
     const
   {
-    ;
-
     // verify the signature.
     if (authority.K.Verify(this->signature,
                            this->label) == elle::StatusError)
@@ -95,8 +89,6 @@ namespace lune
   {
     elle::String        alignment(margin, ' ');
 
-    ;
-
     std::cout << alignment << "[Passport]" << std::endl;
 
     // dump the label.
@@ -119,8 +111,6 @@ namespace lune
   ///
   elle::Status          Passport::Serialize(elle::Archive&      archive) const
   {
-    ;
-
     // serialize the attributes.
     if (archive.Serialize(this->label,
                           this->signature) == elle::StatusError)
@@ -134,8 +124,6 @@ namespace lune
   ///
   elle::Status          Passport::Extract(elle::Archive&        archive)
   {
-    ;
-
     // extract the attributes.
     if (archive.Extract(this->label,
                         this->signature) == elle::StatusError)
@@ -155,8 +143,6 @@ namespace lune
   {
     elle::Path          path;
     elle::Region        region;
-
-    ;
 
     // create the path.
     if (path.Create(Lune::Passport) == elle::StatusError)
@@ -185,8 +171,6 @@ namespace lune
     elle::Region        region;
     elle::String        string;
 
-    ;
-
     // create the path.
     if (path.Create(Lune::Passport) == elle::StatusError)
       escape("unable to create the path");
@@ -214,8 +198,6 @@ namespace lune
   {
     elle::Path          path;
 
-    ;
-
     // create the path.
     if (path.Create(Lune::Passport) == elle::StatusError)
       escape("unable to create the path");
@@ -233,8 +215,6 @@ namespace lune
   elle::Status          Passport::Exist() const
   {
     elle::Path          path;
-
-    ;
 
     // create the path.
     if (path.Create(Lune::Passport) == elle::StatusError)

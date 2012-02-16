@@ -63,8 +63,6 @@ namespace lune
   ///
   elle::Status          Authority::Create(const elle::KeyPair&  pair)
   {
-    ;
-
     // set the type.
     this->type = Authority::TypePair;
 
@@ -82,8 +80,6 @@ namespace lune
   ///
   elle::Status          Authority::Create(const elle::PublicKey&        K)
   {
-    ;
-
     // set the type.
     this->type = Authority::TypePublic;
 
@@ -99,8 +95,6 @@ namespace lune
   elle::Status          Authority::Encrypt(const elle::String&          pass)
   {
     elle::SecretKey     key;
-
-    ;
 
     // create a secret key with this pass.
     if (key.Create(pass) == elle::StatusError)
@@ -146,8 +140,6 @@ namespace lune
   elle::Status          Authority::Decrypt(const elle::String&          pass)
   {
     elle::SecretKey     key;
-
-    ;
 
     // check the cipher.
     if (this->cipher == NULL)
@@ -212,8 +204,6 @@ namespace lune
     elle::String        alignment(margin, ' ');
     elle::String        unique;
 
-    ;
-
     std::cout << alignment << "[Authority]" << std::endl;
 
     // dump the type.
@@ -251,8 +241,6 @@ namespace lune
   ///
   elle::Status          Authority::Serialize(elle::Archive&     archive) const
   {
-    ;
-
     // check the cipher.
     if (this->cipher == NULL)
       escape("unable to serialize an unencrypted authority");
@@ -271,8 +259,6 @@ namespace lune
   elle::Status          Authority::Extract(elle::Archive&       archive)
   {
     elle::Natural8      type;
-
-    ;
 
     // allocate the cipher.
     this->cipher = new elle::Cipher;
@@ -298,8 +284,6 @@ namespace lune
   {
     elle::Path          path;
     elle::Region        region;
-
-    ;
 
     // create the path.
     if (path.Create(Lune::Authority) == elle::StatusError)
@@ -328,8 +312,6 @@ namespace lune
     elle::Region        region;
     elle::String        string;
 
-    ;
-
     // create the path.
     if (path.Create(Lune::Authority) == elle::StatusError)
       escape("unable to create the path");
@@ -357,8 +339,6 @@ namespace lune
   {
     elle::Path          path;
 
-    ;
-
     // create the path.
     if (path.Create(Lune::Authority) == elle::StatusError)
       escape("unable to create the path");
@@ -376,8 +356,6 @@ namespace lune
   elle::Status          Authority::Exist() const
   {
     elle::Path          path;
-
-    ;
 
     // create the path.
     if (path.Create(Lune::Authority) == elle::StatusError)
