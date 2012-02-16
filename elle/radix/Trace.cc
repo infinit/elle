@@ -79,8 +79,6 @@ namespace elle
     ///
     Status              Trace::Generate()
     {
-      ;
-
       // retrieve the frame addresses.
       this->size = ::backtrace(this->frames, Trace::Capacity);
 
@@ -99,8 +97,6 @@ namespace elle
       String            alignment(margin, ' ');
       char**            symbols;
       Natural32         i;
-
-      ;
 
       std::cout << alignment << "[Trace]" << std::endl;
 
@@ -221,8 +217,6 @@ namespace elle
     {
       Path              path;
 
-      ;
-
       // create the location.
       ::sprintf(Trace::Location, "/tmp/XXXXXX");
 
@@ -260,8 +254,6 @@ namespace elle
     {
       Path              path;
 
-      ;
-
       // create the path.
       if (path.Create(Trace::Location) == StatusError)
         escape("unable to create the path");
@@ -297,8 +289,6 @@ namespace elle
                              2 + (sizeof (Void*) / sizeof (Byte)) * 2 +
                              1];
       int               fd;
-
-      ;
 
       // generate the trace.
       if (trace.Generate() == StatusError)
@@ -355,8 +345,6 @@ namespace elle
                              1];
       struct ::stat     stat;
 
-      ;
-
       // build the path.
       ::sprintf(path,
                 "%s/%p",
@@ -393,8 +381,6 @@ namespace elle
       String            alignment(margin, ' ');
       ::DIR*            dp;
       struct ::dirent*  entry;
-
-      ;
 
       std::cout << alignment << "[Traces]" << std::endl;
 

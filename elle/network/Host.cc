@@ -50,8 +50,6 @@ namespace elle
       ::QList< ::QHostAddress >         ql =
         ::QNetworkInterface::allAddresses();
 
-      ;
-
       // go through all the host's addresses.
       for (auto scoutor = ql.begin();
            scoutor != ql.end();
@@ -104,8 +102,6 @@ namespace elle
     ///
     Status              Host::Create(const Type         type)
     {
-      ;
-
       // set the type.
       this->type = type;
 
@@ -139,8 +135,6 @@ namespace elle
     ///
     Status              Host::Create(const String&              string)
     {
-      ;
-
       // set the type.
       this->type = Host::TypeIP;
 
@@ -160,8 +154,6 @@ namespace elle
     ///
     Boolean             Host::operator==(const Host&            element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -179,8 +171,6 @@ namespace elle
     ///
     Boolean             Host::operator<(const Host&             element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusFalse;
@@ -233,8 +223,6 @@ namespace elle
     {
       String            host(this->location.toString().toStdString());
 
-      ;
-
       // serialize the host and port.
       if (archive.Serialize(static_cast<Natural8>(this->type),
                             host) == StatusError)
@@ -250,8 +238,6 @@ namespace elle
     {
       Natural8          type;
       String            host;
-
-      ;
 
       // extract the host.
       if (archive.Extract(type, host) == StatusError)
@@ -276,8 +262,6 @@ namespace elle
     Status              Host::Dump(const Natural32              margin) const
     {
       String            alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Host]" << std::endl;
 

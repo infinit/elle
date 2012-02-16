@@ -30,8 +30,6 @@ namespace elle
                                           const Locus&          locus,
                                           const String&         name)
     {
-      ;
-
       // assign the attributes.
       this->node = node;
 
@@ -59,8 +57,6 @@ namespace elle
     ///
     Status              Neighbour::Update(const String&         name)
     {
-      ;
-
       // update the name.
       this->name = name;
 
@@ -72,8 +68,6 @@ namespace elle
     ///
     Status              Neighbour::Refresh()
     {
-      ;
-
       // re-set the timer.
       if (this->timer.Restart(Neighbour::Timeout) == StatusError)
         escape("unable to restart the timer");
@@ -90,8 +84,6 @@ namespace elle
     ///
     Status              Neighbour::Serialize(Archive&           archive) const
     {
-      ;
-
       // serialize the locus and name.
       if (archive.Serialize(this->locus,
                             this->name) == StatusError)
@@ -105,8 +97,6 @@ namespace elle
     ///
     Status              Neighbour::Extract(Archive&             archive)
     {
-      ;
-
       // extract the locus and name.
       if (archive.Extract(this->locus,
                           this->name) == StatusError)
@@ -125,8 +115,6 @@ namespace elle
     Status              Neighbour::Dump(const Natural32         margin) const
     {
       String            alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Neighbour]" << std::endl;
 
@@ -150,8 +138,6 @@ namespace elle
     ///
     Status              Neighbour::Discard()
     {
-      ;
-
       // discard the current neighbour as it has not been refreshed in time.
       if (this->node->table.Remove(this->locus) == StatusError)
         escape("unable to remove the current neighbour");

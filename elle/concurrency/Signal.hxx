@@ -130,8 +130,6 @@ namespace elle
     {
       Signal< Parameters<T...> >::Scoutor       scoutor;
 
-      ;
-
       // go through the container.
       for (scoutor = this->container.begin();
            scoutor != this->container.end();
@@ -159,8 +157,6 @@ namespace elle
     Signal< Parameters<T...> >::Flush()
     {
       Signal< Parameters<T...> >::Scoutor       scoutor;
-
-      ;
 
       // go through the container.
       for (scoutor = this->container.begin();
@@ -217,8 +213,6 @@ namespace elle
     Signal< Parameters<T...> >::
      Selectionoid<Y>::Dump(const Natural32                      margin) const
     {
-      ;
-
       // dump the object.
       if (this->object.Dump(margin) == StatusError)
         escape("unable to dump the object");

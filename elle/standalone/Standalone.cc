@@ -28,8 +28,6 @@ namespace elle
     ///
     Status              Standalone::Initialize()
     {
-      ;
-
       // initialize the report.
       if (Report::Initialize() == StatusError)
         escape("unable to initialize the report");
@@ -50,8 +48,6 @@ namespace elle
     ///
     Status              Standalone::Clean()
     {
-      ;
-
       // clean the morgue class.
       if (Morgue::Clean() == StatusError)
         escape("unable to clean the morgue");

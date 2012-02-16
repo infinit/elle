@@ -61,8 +61,6 @@ namespace elle
     {
       Element*          element;
 
-      ;
-
       if (Referee::List.empty() == true)
         escape("the referee does not contain any element any more");
 
@@ -82,8 +80,6 @@ namespace elle
     Status              Referee::Flush()
     {
       Element*          element;
-
-      ;
 
       while (Referee::List.empty() == false)
         {

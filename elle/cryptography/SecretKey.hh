@@ -132,8 +132,6 @@ namespace elle
       {
         Clear           clear;
 
-        ;
-
         // decrypt the cipher into the clear.
         if (this->Decrypt(cipher, clear) == StatusError)
           escape("unable to decrypt the cipher");

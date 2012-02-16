@@ -28,8 +28,6 @@ namespace elle
     ///
     Status              Table::Create(Node*                     node)
     {
-      ;
-
       // set the node.
       this->node = node;
 
@@ -56,8 +54,6 @@ namespace elle
                                       const String&             name)
     {
       Table::Iterator   iterator;
-
-      ;
 
       // try to locate a previous entry.
       if (this->Locate(locus, iterator) == StatusOk)
@@ -96,8 +92,6 @@ namespace elle
     {
       Table::Iterator   iterator;
 
-      ;
-
       // locate the neighbour.
       if (this->Locate(locus, iterator) != StatusOk)
         escape("unable to locate the given locus");
@@ -115,8 +109,6 @@ namespace elle
     Status              Table::Remove(const Locus&              locus)
     {
       Table::Iterator   iterator;
-
-      ;
 
       // try to locate a previous entry.
       if (this->Locate(locus, iterator) == StatusError)
@@ -137,8 +129,6 @@ namespace elle
     Status              Table::Locate(const Locus&              locus,
                                       Table::Iterator&          iterator)
     {
-      ;
-
       // iterator over the container.
       for (iterator = this->container.begin();
            iterator != this->container.end();
@@ -158,8 +148,6 @@ namespace elle
     Status              Table::Merge(const Table&               table)
     {
       Table::Scoutor    scoutor;
-
-      ;
 
       // explore the received table.
       for (scoutor = table.container.begin();
@@ -186,8 +174,6 @@ namespace elle
     {
       Table::Scoutor    scoutor;
 
-      ;
-
       // serialize the number of neighbours.
       if (archive.Serialize(static_cast<Natural32>(this->container.size())) ==
           StatusError)
@@ -213,8 +199,6 @@ namespace elle
     {
       Natural32         n;
       Natural32         i;
-
-      ;
 
       // extract the number of elements.
       if (archive.Extract(n) == StatusError)
@@ -251,8 +235,6 @@ namespace elle
       String            alignment(margin, ' ');
       Table::Scoutor    scoutor;
 
-      ;
-
       std::cout << alignment << "[Table]" << std::endl;
 
       for (scoutor = this->container.begin();
@@ -277,8 +259,6 @@ namespace elle
     Status              Table::Renew()
     {
       Table::Scoutor    scoutor;
-
-      ;
 
       //
       // first, dump the table.

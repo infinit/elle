@@ -46,8 +46,6 @@ namespace elle
     {
       Natural32         i;
 
-      ;
-
       // pass every character.
       for (i = 0; i < string.length(); i++)
         {
@@ -73,8 +71,6 @@ namespace elle
       Natural32         i;
       Natural32         j;
       Natural32         k;
-
-      ;
 
       // first clear the string.
       string.clear();
@@ -132,8 +128,6 @@ namespace elle
       Natural32         i;
       Natural32         j;
       Natural32         k;
-
-      ;
 
       // first, validate the input string.
       if (Base64::Validate(string) != StatusTrue)

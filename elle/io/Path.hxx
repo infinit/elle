@@ -35,8 +35,6 @@ namespace elle
     template <typename T>
     Status              Path::Complete(T                        piece)
     {
-      ;
-
       // resolve the piece.
       if (this->Complete(piece.name, piece.value) == StatusError)
         escape("unable to resolve the piece");
@@ -52,8 +50,6 @@ namespace elle
     Status              Path::Complete(T                        piece,
                                        TT...                    pieces)
     {
-      ;
-
       // resolve the given piece.
       if (this->Complete(piece) == StatusError)
         escape("unable to resolve the first piece");

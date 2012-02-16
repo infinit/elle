@@ -31,8 +31,6 @@ namespace elle
       String                    alignment(margin, ' ');
       Environment::Scoutor      scoutor;
 
-      ;
-
       std::cout << alignment << "[Environment] "
                 << this->container.size() << std::endl;
 

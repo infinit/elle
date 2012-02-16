@@ -38,8 +38,6 @@ namespace elle
       mode(ModeAllocated),
       value(new ::Json::Value)
     {
-      ;
-
       // set a default value.
       if (this->Set(element) == elle::StatusError)
         yield(_(), "unable to set a default value");
@@ -60,8 +58,6 @@ namespace elle
     {
       Unique            unique;
 
-      ;
-
       // retrieve a string.
       if (this->Get(unique) == StatusError)
         escape("unable to retrieve the unique representation");
@@ -77,8 +73,6 @@ namespace elle
     Status              JSON::Node::Set(const Uniquable<F>&     uniquable)
     {
       Unique            unique;
-
-      ;
 
       // save the uniquable.
       if (uniquable.Save(unique) == StatusError)
@@ -105,8 +99,6 @@ namespace elle
     template <typename X>
     Status              JSON::Document::Get(X&                  target) const
     {
-      ;
-
       // retrieve the target value for the root node.
       if (this->root.Get(target) == StatusError)
         escape("unable to retrieve the target value");
@@ -120,8 +112,6 @@ namespace elle
                                             X&                  target) const
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->root.Get(id1, node) == StatusError)
@@ -144,8 +134,6 @@ namespace elle
     {
       Node              base;
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1,
@@ -176,8 +164,6 @@ namespace elle
     {
       Node              base;
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2,
@@ -210,8 +196,6 @@ namespace elle
     {
       Node              base;
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3,
@@ -246,8 +230,6 @@ namespace elle
     {
       Node              base;
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4,
@@ -284,8 +266,6 @@ namespace elle
     {
       Node              base;
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5,
@@ -324,8 +304,6 @@ namespace elle
     {
       Node              base;
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6,
@@ -366,8 +344,6 @@ namespace elle
     {
       Node              base;
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6, id7,
@@ -411,8 +387,6 @@ namespace elle
       Node              base;
       Node              node;
 
-      ;
-
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6, id7, id8,
                     base) == StatusError)
@@ -434,8 +408,6 @@ namespace elle
     template <typename X>
     Status              JSON::Document::Set(const X&            target)
     {
-      ;
-
       // set the target value for the root node.
       if (this->root.Set(target) == StatusError)
         escape("unable to set the target value");
@@ -449,8 +421,6 @@ namespace elle
                                             const X&            target)
     {
       Node              node;
-
-      ;
 
       // dig the way to the target.
       if (this->Dig(id1,
@@ -472,8 +442,6 @@ namespace elle
                                             const X&            target)
     {
       Node              node;
-
-      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2,
@@ -497,8 +465,6 @@ namespace elle
                                             const X&            target)
     {
       Node              node;
-
-      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3,
@@ -524,8 +490,6 @@ namespace elle
                                             const X&            target)
     {
       Node              node;
-
-      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4,
@@ -553,8 +517,6 @@ namespace elle
                                             const X&            target)
     {
       Node              node;
-
-      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4, id5,
@@ -584,8 +546,6 @@ namespace elle
                                             const X&            target)
     {
       Node              node;
-
-      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4, id5, id6,
@@ -617,8 +577,6 @@ namespace elle
                                             const X&            target)
     {
       Node              node;
-
-      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4, id5, id6, id7,
@@ -652,8 +610,6 @@ namespace elle
                                             const X&            target)
     {
       Node              node;
-
-      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4, id5, id6, id7, id8,
@@ -690,8 +646,6 @@ namespace elle
     {
       Node              node;
 
-      ;
-
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4, id5, id6, id7, id8, id9,
                     node) == StatusError)
@@ -708,8 +662,6 @@ namespace elle
     Status              JSON::Document::Dig(const T1&           id1,
                                             Node&               node)
     {
-      ;
-
       // if the identifier does not exist...
       if (this->root.Exist(id1) == StatusFalse)
         {
@@ -732,8 +684,6 @@ namespace elle
                                             Node&               node)
     {
       Node              base;
-
-      ;
 
       // dig the root identifiers.
       if (this->Dig(id1,
@@ -764,8 +714,6 @@ namespace elle
                                             Node&               node)
     {
       Node              base;
-
-      ;
 
       // dig the root identifiers.
       if (this->Dig(id1, id2,
@@ -798,8 +746,6 @@ namespace elle
                                             Node&               node)
     {
       Node              base;
-
-      ;
 
       // dig the root identifiers.
       if (this->Dig(id1, id2, id3,
@@ -834,8 +780,6 @@ namespace elle
                                             Node&               node)
     {
       Node              base;
-
-      ;
 
       // dig the root identifiers.
       if (this->Dig(id1, id2, id3, id4,
@@ -872,8 +816,6 @@ namespace elle
                                             Node&               node)
     {
       Node              base;
-
-      ;
 
       // dig the root identifiers.
       if (this->Dig(id1, id2, id3, id4, id5,
@@ -912,8 +854,6 @@ namespace elle
                                             Node&               node)
     {
       Node              base;
-
-      ;
 
       // dig the root identifiers.
       if (this->Dig(id1, id2, id3, id4, id5, id6,
@@ -954,8 +894,6 @@ namespace elle
                                             Node&               node)
     {
       Node              base;
-
-      ;
 
       // dig the root identifiers.
       if (this->Dig(id1, id2, id3, id4, id5, id6, id7,
@@ -999,8 +937,6 @@ namespace elle
     {
       Node              base;
 
-      ;
-
       // dig the root identifiers.
       if (this->Dig(id1, id2, id3, id4, id5, id6, id7, id8,
                     base) == StatusError)
@@ -1027,8 +963,6 @@ namespace elle
     {
       Node              node;
 
-      ;
-
       // dig the way to the target.
       if (this->Dig(id1,
                     node) == StatusError)
@@ -1048,8 +982,6 @@ namespace elle
                                                const Bulk&      bulk)
     {
       Node              node;
-
-      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2,
@@ -1072,8 +1004,6 @@ namespace elle
                                                const Bulk&      bulk)
     {
       Node              node;
-
-      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3,
@@ -1098,8 +1028,6 @@ namespace elle
                                                const Bulk&      bulk)
     {
       Node              node;
-
-      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4,
@@ -1126,8 +1054,6 @@ namespace elle
                                                const Bulk&      bulk)
     {
       Node              node;
-
-      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4, id5,
@@ -1156,8 +1082,6 @@ namespace elle
                                                const Bulk&      bulk)
     {
       Node              node;
-
-      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4, id5, id6,
@@ -1188,8 +1112,6 @@ namespace elle
                                                const Bulk&      bulk)
     {
       Node              node;
-
-      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4, id5, id6, id7,
@@ -1222,8 +1144,6 @@ namespace elle
                                                const Bulk&      bulk)
     {
       Node              node;
-
-      ;
 
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4, id5, id6, id7, id8,
@@ -1259,8 +1179,6 @@ namespace elle
     {
       Node              node;
 
-      ;
-
       // dig the way to the target.
       if (this->Dig(id1, id2, id3, id4, id5, id6, id7, id8, id9,
                     node) == StatusError)
@@ -1278,8 +1196,6 @@ namespace elle
     {
       Node              node;
 
-      ;
-
       // erase the identified member from the root node.
       if (this->root.Erase(id1) == StatusError)
         escape("unable to erase the member");
@@ -1293,8 +1209,6 @@ namespace elle
                                               const T2&         id2)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1,
@@ -1316,8 +1230,6 @@ namespace elle
                                               const T3&         id3)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2,
@@ -1341,8 +1253,6 @@ namespace elle
                                               const T4&         id4)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3,
@@ -1368,8 +1278,6 @@ namespace elle
                                               const T5&         id5)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4,
@@ -1397,8 +1305,6 @@ namespace elle
                                               const T6&         id6)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5,
@@ -1428,8 +1334,6 @@ namespace elle
                                               const T7&         id7)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6,
@@ -1461,8 +1365,6 @@ namespace elle
                                               const T8&         id8)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6, id7,
@@ -1497,8 +1399,6 @@ namespace elle
     {
       Node              node;
 
-      ;
-
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6, id7, id8,
                     node) == StatusError)
@@ -1516,8 +1416,6 @@ namespace elle
     {
       Node              node;
 
-      ;
-
       // clear the identified member from the root node.
       if (this->root.Clear(id1) == StatusError)
         escape("unable to clear the member");
@@ -1531,8 +1429,6 @@ namespace elle
                                               const T2&         id2)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1,
@@ -1554,8 +1450,6 @@ namespace elle
                                               const T3&         id3)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2,
@@ -1579,8 +1473,6 @@ namespace elle
                                               const T4&         id4)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3,
@@ -1606,8 +1498,6 @@ namespace elle
                                               const T5&         id5)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4,
@@ -1635,8 +1525,6 @@ namespace elle
                                               const T6&         id6)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5,
@@ -1666,8 +1554,6 @@ namespace elle
                                               const T7&         id7)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6,
@@ -1699,8 +1585,6 @@ namespace elle
                                               const T8&         id8)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6, id7,
@@ -1735,8 +1619,6 @@ namespace elle
     {
       Node              node;
 
-      ;
-
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6, id7, id8,
                     node) == StatusError)
@@ -1755,8 +1637,6 @@ namespace elle
     {
       Node              node;
 
-      ;
-
       // size the identified member from the root node.
       if (this->root.Size(id1) == StatusError)
         escape("unable to size the member");
@@ -1771,8 +1651,6 @@ namespace elle
                                              Natural32&         size)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1,
@@ -1795,8 +1673,6 @@ namespace elle
                                              Natural32&         size)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2,
@@ -1821,8 +1697,6 @@ namespace elle
                                              Natural32&         size)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3,
@@ -1849,8 +1723,6 @@ namespace elle
                                              Natural32&         size)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4,
@@ -1879,8 +1751,6 @@ namespace elle
                                              Natural32&         size)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5,
@@ -1911,8 +1781,6 @@ namespace elle
                                              Natural32&         size)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6,
@@ -1945,8 +1813,6 @@ namespace elle
                                              Natural32&         size)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6, id7,
@@ -1981,8 +1847,6 @@ namespace elle
                                              Natural32&         size)
     {
       Node              node;
-
-      ;
 
       // retrieve the node given the identifiers.
       if (this->Get(id1, id2, id3, id4, id5, id6, id7, id8,

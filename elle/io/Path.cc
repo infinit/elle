@@ -28,8 +28,6 @@ namespace elle
     ///
     Status              Path::Create(const String&              string)
     {
-      ;
-
       // assign the string.
       this->string = string;
 
@@ -41,8 +39,6 @@ namespace elle
     ///
     Status              Path::Create(const Pattern&             pattern)
     {
-      ;
-
       // assign the pattern.
       this->string = pattern.string;
 
@@ -56,8 +52,6 @@ namespace elle
                                        const String&            value)
     {
       String::size_type position;
-
-      ;
 
       // as long as the name is located within the string.
       while ((position = this->string.find(name)) != String::npos)
@@ -78,8 +72,6 @@ namespace elle
     ///
     Boolean             Path::operator==(const Path&            element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -106,8 +98,6 @@ namespace elle
     Status              Path::Dump(const Natural32              margin) const
     {
       String            alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Path] "
                 << this->string

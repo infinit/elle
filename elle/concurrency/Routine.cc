@@ -64,8 +64,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Routine]" << std::endl;
 
       // dump the scheme.

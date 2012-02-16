@@ -48,8 +48,6 @@ namespace elle
       Data              data;
       Header            header;
 
-      ;
-
       // create an data for the inputs.
       if (data.Create() == StatusError)
         escape("unable to create the data");
@@ -144,8 +142,6 @@ namespace elle
     {
       Event             event;
 
-      ;
-
       // generate an event to link the request with the response.
       if (event.Generate() == StatusError)
         escape("unable to generate the event");
@@ -169,8 +165,6 @@ namespace elle
     Status              UDPSocket::Reply(const I                inputs,
                                          Session*               session)
     {
-      ;
-
       // retrieve the current session, if necessary.
       if (session == NULL)
         {

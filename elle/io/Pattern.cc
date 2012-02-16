@@ -33,8 +33,6 @@ namespace elle
     ///
     Status              Pattern::Create(const String&           string)
     {
-      ;
-
       // assign the string.
       this->string = string;
 
@@ -50,8 +48,6 @@ namespace elle
     ///
     Boolean             Pattern::operator==(const Pattern&      element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -78,8 +74,6 @@ namespace elle
     Status              Pattern::Dump(const Natural32           margin) const
     {
       String            alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Pattern] "
                 << this->string << std::endl;

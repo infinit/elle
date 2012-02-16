@@ -153,8 +153,6 @@ namespace elle
       {
         Clear           clear;
 
-        ;
-
         // decrypt the code.
         if (this->Decrypt(code, clear) == StatusError)
           escape("unable to decrypt the code");

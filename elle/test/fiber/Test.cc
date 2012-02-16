@@ -41,8 +41,6 @@ namespace elle
     ///
     Status              Fiber4()
     {
-      ;
-
       printf("[Fiber4] Start\n");
 
       printf("[Fiber4] Sleep()\n");
@@ -75,8 +73,6 @@ namespace elle
     {
       Closure< Status,
                Parameters<> >   closure(Callback<>::Infer(&Fiber4));
-
-      ;
 
       printf("[Fiber3] Start\n");
 
@@ -112,8 +108,6 @@ namespace elle
     ///
     Status              Fiber2()
     {
-      ;
-
       printf("[Fiber2] Start\n");
 
       printf("[Fiber2] Wait(ResourceB)\n");
@@ -144,8 +138,6 @@ namespace elle
     ///
     Status              Fiber1()
     {
-      ;
-
       printf("[Fiber1] Start\n");
 
       printf("[Fiber1] Wait(ResourceA)\n");
@@ -175,8 +167,6 @@ namespace elle
     Status              Main(const Natural32,
                              const Character*[])
     {
-      ;
-
       // initialize the library.
       if (Elle::Initialize() == StatusError)
         escape("unable to initialize the library");

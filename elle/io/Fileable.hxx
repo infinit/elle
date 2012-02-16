@@ -57,8 +57,6 @@ namespace elle
         Archive         archive;
         Region          region;
 
-        ;
-
         // read the file's content.
         if (File::Read(path, region) == StatusError)
           escape("unable to read the file's content");
@@ -82,8 +80,6 @@ namespace elle
       {
         Archive         archive;
 
-        ;
-
         // create an archive.
         if (archive.Create() == StatusError)
           escape("unable to create the archive");
@@ -102,8 +98,6 @@ namespace elle
 
       virtual Status    Erase(const Path&                       path) const
       {
-        ;
-
         // erase the file.
         if (File::Erase(path) == StatusError)
           escape("unable to erase the file");
@@ -137,8 +131,6 @@ namespace elle
         Region          region;
         String          string;
 
-        ;
-
         // read the file's content.
         if (File::Read(path, region) == StatusError)
           escape("unable to read the file's content");
@@ -158,8 +150,6 @@ namespace elle
         String          string;
         Region          region;
 
-        ;
-
         // encode in hexadecimal.
         if (Hexadecimal::Encode(*this, string) == StatusError)
           escape("unable to encode the object in hexadecimal");
@@ -178,8 +168,6 @@ namespace elle
 
       virtual Status    Erase(const Path&                       path) const
       {
-        ;
-
         // erase the file.
         if (File::Erase(path) == StatusError)
           escape("unable to erase the file");
@@ -213,8 +201,6 @@ namespace elle
         Region          region;
         String          string;
 
-        ;
-
         // read the file's content.
         if (File::Read(path, region) == StatusError)
           escape("unable to read the file's content");
@@ -232,8 +218,6 @@ namespace elle
       {
         String          string;
         Region          region;
-
-        ;
 
         // encode in base64.
         if (Base64::Encode(*this, string) == StatusError)
@@ -253,8 +237,6 @@ namespace elle
 
       virtual Status    Erase(const Path&                       path) const
       {
-        ;
-
         // erase the file.
         if (File::Erase(path) == StatusError)
           escape("unable to erase the file");
@@ -285,29 +267,21 @@ namespace elle
       //
       virtual Status    Load(const Path&)
       {
-        ;
-
         escape("this method should never have been called");
       }
 
       virtual Status    Store(const Path&) const
       {
-        ;
-
         escape("this method should never have been called");
       }
 
       virtual Status    Erase(const Path&) const
       {
-        ;
-
         escape("this method should never have been called");
       }
 
       virtual Status    Exist(const Path&) const
       {
-        ;
-
         escape("this method should never have been called");
       }
     };

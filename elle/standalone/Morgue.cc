@@ -45,8 +45,6 @@ namespace elle
     ///
     Status              Morgue::Initialize()
     {
-      ;
-
       // allocate the morgue.
       Morgue::Current = new Morgue;
 
@@ -58,8 +56,6 @@ namespace elle
     ///
     Status              Morgue::Clean()
     {
-      ;
-
       // delete the morgue.
       if (Morgue::Current != NULL)
         delete Morgue::Current;
@@ -72,8 +68,6 @@ namespace elle
     ///
     Status              Morgue::Instance(Morgue*&               morgue)
     {
-      ;
-
       // verify the morgue's presence.
       if (Morgue::Current == NULL)
         return elle::StatusFalse;
@@ -118,8 +112,6 @@ namespace elle
     ///
     Status              Morgue::Bury()
     {
-      ;
-
       // as long as instances remain.
       while (this->container.empty() == false)
         {
@@ -149,8 +141,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
       Morgue::Scoutor   scoutor;
-
-      ;
 
       // display the name.
       std::cout << alignment << "[Morgue]" << std::endl;

@@ -254,8 +254,6 @@ namespace elle
     ///
     Status              JSON::Node::Type(enum JSON::Node::Type& type)
     {
-      ;
-
       // return the type.
       type = static_cast<enum JSON::Node::Type>(this->value->type());
 
@@ -269,8 +267,6 @@ namespace elle
     {
       JSON::Node        node(value);
 
-      ;
-
       // recycle the object.
       if (this->Recycle(&node) == StatusError)
         escape("unable to recycle the object");
@@ -283,8 +279,6 @@ namespace elle
     ///
     Status              JSON::Node::Get(Null&) const
     {
-      ;
-
       // check the type.
       if (this->value->type() != ::Json::nullValue)
         escape("invalid type: node's(%u) expected(%u)",
@@ -298,8 +292,6 @@ namespace elle
     ///
     Status              JSON::Node::Get(Boolean&                element) const
     {
-      ;
-
       // check the type.
       if (this->value->type() != ::Json::booleanValue)
         escape("invalid type: node's(%u) expected(%u)",
@@ -316,8 +308,6 @@ namespace elle
     ///
     Status              JSON::Node::Get(Integer8&               element) const
     {
-      ;
-
       // check the type.
       if (this->value->type() != ::Json::intValue)
         escape("invalid type: node's(%u) expected(%u)",
@@ -334,8 +324,6 @@ namespace elle
     ///
     Status              JSON::Node::Get(Integer16&              element) const
     {
-      ;
-
       // check the type.
       if (this->value->type() != ::Json::intValue)
         escape("invalid type: node's(%u) expected(%u)",
@@ -352,8 +340,6 @@ namespace elle
     ///
     Status              JSON::Node::Get(Integer32&              element) const
     {
-      ;
-
       // check the type.
       if (this->value->type() != ::Json::intValue)
         escape("invalid type: node's(%u) expected(%u)",
@@ -370,8 +356,6 @@ namespace elle
     ///
     Status              JSON::Node::Get(Integer64&              element) const
     {
-      ;
-
       // check the type.
       if (this->value->type() != ::Json::intValue)
         escape("invalid type: node's(%u) expected(%u)",
@@ -388,8 +372,6 @@ namespace elle
     ///
     Status              JSON::Node::Get(Natural8&               element) const
     {
-      ;
-
       // check the type.
       if (this->value->type() != ::Json::uintValue)
         escape("invalid type: node's(%u) expected(%u)",
@@ -406,8 +388,6 @@ namespace elle
     ///
     Status              JSON::Node::Get(Natural16&              element) const
     {
-      ;
-
       // check the type.
       if (this->value->type() != ::Json::uintValue)
         escape("invalid type: node's(%u) expected(%u)",
@@ -424,8 +404,6 @@ namespace elle
     ///
     Status              JSON::Node::Get(Natural32&              element) const
     {
-      ;
-
       // check the type.
       if (this->value->type() != ::Json::uintValue)
         escape("invalid type: node's(%u) expected(%u)",
@@ -442,8 +420,6 @@ namespace elle
     ///
     Status              JSON::Node::Get(Natural64&              element) const
     {
-      ;
-
       // check the type.
       if (this->value->type() != ::Json::uintValue)
         escape("invalid type: node's(%u) expected(%u)",
@@ -460,8 +436,6 @@ namespace elle
     ///
     Status              JSON::Node::Get(Real&                   element) const
     {
-      ;
-
       // check the type.
       if (this->value->type() != ::Json::realValue)
         escape("invalid type: node's(%u) expected(%u)",
@@ -478,8 +452,6 @@ namespace elle
     ///
     Status              JSON::Node::Get(String&                 element) const
     {
-      ;
-
       // check the type.
       if (this->value->type() != ::Json::stringValue)
         escape("invalid type: node's(%u) expected(%u)",
@@ -497,8 +469,6 @@ namespace elle
     Status              JSON::Node::Get(const Natural32&        index,
                                         Node&                   node) const
     {
-      ;
-
       // check the type.
       if (this->value->type() != ::Json::arrayValue)
         escape("invalid type: node's(%u) expected(%u)",
@@ -524,8 +494,6 @@ namespace elle
     Status              JSON::Node::Get(const String&           key,
                                         Node&                   node) const
     {
-      ;
-
       // check the type.
       if (this->value->type() != ::Json::objectValue)
         escape("invalid type: node's(%u) expected(%u)",
@@ -548,8 +516,6 @@ namespace elle
     ///
     Status              JSON::Node::Get(Node&                   node) const
     {
-      ;
-
       // wrap the current value.
       if (node.Wrap(this->value) == StatusError)
         escape("unable to wrap the value");
@@ -562,8 +528,6 @@ namespace elle
     ///
     Status              JSON::Node::Set(const Null&)
     {
-      ;
-
       // set the value.
       *this->value = ::Json::Value(::Json::nullValue);
 
@@ -575,8 +539,6 @@ namespace elle
     ///
     Status              JSON::Node::Set(const Boolean&          element)
     {
-      ;
-
       // set the value.
       *this->value = ::Json::Value(element);
 
@@ -588,8 +550,6 @@ namespace elle
     ///
     Status              JSON::Node::Set(const Integer8&         element)
     {
-      ;
-
       // set the value.
       *this->value = ::Json::Value(element);
 
@@ -601,8 +561,6 @@ namespace elle
     ///
     Status              JSON::Node::Set(const Integer16&        element)
     {
-      ;
-
       // set the value.
       *this->value = ::Json::Value(element);
 
@@ -614,8 +572,6 @@ namespace elle
     ///
     Status              JSON::Node::Set(const Integer32&        element)
     {
-      ;
-
       // set the value.
       *this->value = ::Json::Value(element);
 
@@ -627,8 +583,6 @@ namespace elle
     ///
     Status              JSON::Node::Set(const Integer64&        element)
     {
-      ;
-
       // set the value.
       *this->value = ::Json::Value(static_cast< ::Json::Int >(element));
 
@@ -640,8 +594,6 @@ namespace elle
     ///
     Status              JSON::Node::Set(const Natural8&         element)
     {
-      ;
-
       // set the value.
       *this->value = ::Json::Value(element);
 
@@ -653,8 +605,6 @@ namespace elle
     ///
     Status              JSON::Node::Set(const Natural16&        element)
     {
-      ;
-
       // set the value.
       *this->value = ::Json::Value(element);
 
@@ -666,8 +616,6 @@ namespace elle
     ///
     Status              JSON::Node::Set(const Natural32&        element)
     {
-      ;
-
       // set the value.
       *this->value = ::Json::Value(element);
 
@@ -679,8 +627,6 @@ namespace elle
     ///
     Status              JSON::Node::Set(const Natural64&        element)
     {
-      ;
-
       // set the value.
       *this->value = ::Json::Value(static_cast< ::Json::UInt >(element));
 
@@ -692,8 +638,6 @@ namespace elle
     ///
     Status              JSON::Node::Set(const Real&             element)
     {
-      ;
-
       // set the value.
       *this->value = ::Json::Value(element);
 
@@ -705,8 +649,6 @@ namespace elle
     ///
     Status              JSON::Node::Set(const String&           element)
     {
-      ;
-
       // set the value.
       *this->value = ::Json::Value(element);
 
@@ -719,8 +661,6 @@ namespace elle
     Status              JSON::Node::Set(const Natural32&        index,
                                         const Node&             node)
     {
-      ;
-
       // check the type.
       if (this->value->type() != ::Json::arrayValue)
         {
@@ -740,8 +680,6 @@ namespace elle
     Status              JSON::Node::Set(const String&           key,
                                         const Node&             node)
     {
-      ;
-
       // check the type.
       if (this->value->type() != ::Json::objectValue)
         {
@@ -760,8 +698,6 @@ namespace elle
     ///
     Status              JSON::Node::Set(const Node&             node)
     {
-      ;
-
       // set the value.
       *this->value = node.value;
 
@@ -774,8 +710,6 @@ namespace elle
     Status              JSON::Node::Append(const Bulk&          bulk)
     {
       JSON::Bulk::Scoutor       scoutor;
-
-      ;
 
       // check the type.
       if ((this->value->type() != ::Json::arrayValue) &&
@@ -799,8 +733,6 @@ namespace elle
     ///
     Status              JSON::Node::Erase(const String&         key)
     {
-      ;
-
       // check the type.
       if (this->value->type() != ::Json::objectValue)
         escape("unable to erase from a non-object node");
@@ -816,8 +748,6 @@ namespace elle
     ///
     Status              JSON::Node::Clear()
     {
-      ;
-
       // check the type.
       if ((this->value->type() != ::Json::arrayValue) &&
           (this->value->type() != ::Json::objectValue))
@@ -834,8 +764,6 @@ namespace elle
     ///
     Status              JSON::Node::Size(Natural32&             size)
     {
-      ;
-
       // check the type.
       if (this->value->type() != ::Json::arrayValue)
         escape("unable to size from a non-array node");
@@ -852,8 +780,6 @@ namespace elle
     ///
     Status              JSON::Node::Exist(const Natural32&      index)
     {
-      ;
-
       // check the type.
       if (this->value->type() != ::Json::arrayValue)
         return elle::StatusFalse;
@@ -871,8 +797,6 @@ namespace elle
     ///
     Status              JSON::Node::Exist(const String&         key)
     {
-      ;
-
       // check the type.
       if (this->value->type() != ::Json::objectValue)
         return elle::StatusFalse;
@@ -890,8 +814,6 @@ namespace elle
     Boolean             JSON::Node::operator==(
                           const JSON::Node&                     element) const
     {
-      ;
-
       // compare the values.
       if (*this->value != *element.value)
         return elle::StatusFalse;
@@ -911,8 +833,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
  
-      ;
-
       // depending on the value's type.
       switch (this->value->type())
         {
@@ -1025,8 +945,6 @@ namespace elle
     ///
     Status              JSON::Document::Append(const Bulk&      bulk)
     {
-      ;
-
       // append the bulk to the root node.
       if (this->root.Append(bulk) == StatusError)
         escape("unable to append the root node");
@@ -1039,8 +957,6 @@ namespace elle
     ///
     Status              JSON::Document::Clear()
     {
-      ;
-
       // clear the root node.
       if (this->root.Clear() == StatusError)
         escape("unable to clear the root node");
@@ -1053,8 +969,6 @@ namespace elle
     ///
     Status              JSON::Document::Size(Natural32&         size)
     {
-      ;
-
       // size the root node.
       if (this->root.Size(size) == StatusError)
         escape("unable to size the root node");
@@ -1068,8 +982,6 @@ namespace elle
     Boolean             JSON::Document::operator==(
                           const JSON::Document&                 element) const
     {
-      ;
-
       // compare the root node.
       if (this->root != element.root)
         return elle::StatusFalse;
@@ -1089,8 +1001,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
  
-      ;
-
       std::cout << alignment << "[Document]" << std::endl;
 
       // dump the root node.
@@ -1113,8 +1023,6 @@ namespace elle
     {
       std::stringstream stream;
 
-      ;
-
       // transform the request into a string.
       stream << document;
 
@@ -1132,8 +1040,6 @@ namespace elle
                                      Document&                  document)
     {
       ::Json::Reader    reader;
-
-      ;
 
       // parse the content.
       if (reader.parse(string, *document.root.value) == false)

@@ -28,8 +28,6 @@ namespace elle
     ///
     Status              Client::Setup(const String&             line)
     {
-      ;
-
       // create the locus.
       if (this->locus.Create(line) == StatusError)
         escape("unable to create the locus");
@@ -42,8 +40,6 @@ namespace elle
     ///
     Status              Client::Run()
     {
-      ;
-
       std::cout << "[locus]" << std::endl;
       this->locus.Dump();
 
@@ -74,8 +70,6 @@ namespace elle
       Status            Client::Challenge(const String&         text)
     {
       String            response("RESPONSE");
-
-      ;
 
       // simply display the text.
       std::cout << "[Challenge] " << text << std::endl;

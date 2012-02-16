@@ -76,8 +76,6 @@ namespace elle
     {
       Parser::Option*   option;
 
-      ;
-
       // locate the option.
       if (parser.Locate(name, option) == StatusFalse)
         escape("unable to locate the option '%s'",
@@ -117,8 +115,6 @@ namespace elle
     {
       Parser::Option*   option;
 
-      ;
-
       // locate the option.
       if ((parser.Locate(name, option) == StatusTrue) &&
           (option->value != NULL))
@@ -151,8 +147,6 @@ namespace elle
                   Uniquable<F>&                                 object)
     {
       Parser::Option*   option;
-
-      ;
 
       // locate the option.
       if (parser.Locate(name, option) == StatusFalse)
@@ -194,8 +188,6 @@ namespace elle
                   const Uniquable<F>                            D)
     {
       Parser::Option*   option;
-
-      ;
 
       // locate the option.
       if ((parser.Locate(name, option) == StatusTrue) &&

@@ -48,8 +48,6 @@ namespace elle
     ///
     Status              Log::Initialize()
     {
-      ;
-
       // nothing to do.
 
       return elle::StatusOk;
@@ -60,8 +58,6 @@ namespace elle
     ///
     Status              Log::Clean()
     {
-      ;
-
       // if the log exists, delete it.
       if (Log::Current != NULL)
         delete Log::Current;
@@ -75,8 +71,6 @@ namespace elle
     ///
     Status              Log::Setup(const String&                path)
     {
-      ;
-
       // allocate the log for the initial thread/fiber.
       Log::Current = new Log(path);
 
@@ -90,8 +84,6 @@ namespace elle
     ///
     Status              Log::Instance(Log*&                     log)
     {
-      ;
-
       // verify the log's presence.
       if (Log::Current == NULL)
         return elle::StatusFalse;

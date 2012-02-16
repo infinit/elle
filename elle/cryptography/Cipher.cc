@@ -55,8 +55,6 @@ namespace elle
     ///
     Boolean             Cipher::operator==(const Cipher&        element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -84,8 +82,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      ;
-
       // display the cipher depending on its value.
       if (*this == Cipher::Null)
         {
@@ -112,8 +108,6 @@ namespace elle
     ///
     Status              Cipher::Serialize(Archive&              archive) const
     {
-      ;
-
       // serialize the region.
       if (archive.Serialize(this->region) == StatusError)
         escape("unable to serialize the region");
@@ -126,8 +120,6 @@ namespace elle
     ///
     Status              Cipher::Extract(Archive&                archive)
     {
-      ;
-
       // extract the content.
       if (archive.Extract(this->region) == StatusError)
         escape("unable to extract the region");

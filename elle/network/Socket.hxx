@@ -38,8 +38,6 @@ namespace elle
                                      const Event&               event,
                                      const Locus&               locus)
     {
-      ;
-
       switch (this->type)
         {
         case Socket::TypeLocal:
@@ -72,8 +70,6 @@ namespace elle
     Status              Socket::Receive(const Event&            event,
                                         O                       outputs)
     {
-      ;
-
       switch (this->type)
         {
         case Socket::TypeLocal:
@@ -109,8 +105,6 @@ namespace elle
                                      O                          outputs,
                                      const Locus&               locus)
     {
-      ;
-
       switch (this->type)
         {
         case Socket::TypeLocal:
@@ -143,8 +137,6 @@ namespace elle
     Status              Socket::Reply(const I                   inputs,
                                       Session*                  session)
     {
-      ;
-
       switch (this->type)
         {
         case Socket::TypeLocal:

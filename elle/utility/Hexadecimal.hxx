@@ -49,8 +49,6 @@ namespace elle
     {
       Archive           archive;
 
-      ;
-
       // create an archive.
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -74,8 +72,6 @@ namespace elle
     {
       Archive           archive;
 
-      ;
-
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
 
@@ -97,8 +93,6 @@ namespace elle
                                             String&             string)
     {
       Archive           archive;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -123,8 +117,6 @@ namespace elle
                                             String&             string)
     {
       Archive           archive;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -151,8 +143,6 @@ namespace elle
                                             String&             string)
     {
       Archive           archive;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -181,8 +171,6 @@ namespace elle
                                             String&             string)
     {
       Archive           archive;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -214,8 +202,6 @@ namespace elle
                                             String&             string)
     {
       Archive           archive;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -249,8 +235,6 @@ namespace elle
                                             String&             string)
     {
       Archive           archive;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -287,8 +271,6 @@ namespace elle
     {
       Archive           archive;
 
-      ;
-
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
 
@@ -318,8 +300,6 @@ namespace elle
     {
       Archive           archive;
       Region            region;
-
-      ;
 
       // decode the string.
       if (Hexadecimal::Decode(string, region) == StatusError)

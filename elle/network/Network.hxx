@@ -92,8 +92,6 @@ namespace elle
     template <typename P>
     Status      Network::Selectionoid<P>::Dump(const Natural32  margin) const
     {
-      ;
-
       // dump the object.
       if (this->procedure.Dump(margin) == StatusError)
         escape("unable to dump the object");

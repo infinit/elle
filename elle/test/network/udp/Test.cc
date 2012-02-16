@@ -28,8 +28,6 @@ namespace elle
     {
       Node              node;
 
-      ;
-
       // check the arguments.
       if (argc != 4)
         {

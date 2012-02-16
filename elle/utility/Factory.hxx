@@ -42,8 +42,6 @@ namespace elle
     template <typename T>
     Status      Factory::Generatoid<T>::Allocate(Meta*&         meta) const
     {
-      ;
-
       // allocate the object.
       meta = new T;
 
@@ -91,8 +89,6 @@ namespace elle
                                        U*&                      object) const
     {
       Factory::Scoutor  scoutor;
-
-      ;
 
       // retrieve the associated generator.
       if ((scoutor = this->container.find(identifier)) ==

@@ -44,8 +44,6 @@ namespace elle
     {
       Natural32         i;
 
-      ;
-
       if ((string.length() % 2) != 0)
         return elle::StatusFalse;
 
@@ -72,8 +70,6 @@ namespace elle
     {
       Natural32         i;
 
-      ;
-
       for (i = 0; i < region.size; i++)
         {
           Character     hexadecimal[2];
@@ -96,8 +92,6 @@ namespace elle
                                             Region&             region)
     {
       Natural32         i;
-
-      ;
 
       if (Hexadecimal::Validate(string) != StatusTrue)
         escape("the argument is not a valid hexadecimal string");

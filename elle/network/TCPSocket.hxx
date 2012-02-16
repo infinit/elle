@@ -45,8 +45,6 @@ namespace elle
       Data              data;
       Header            header;
 
-      ;
-
       // create an data for the inputs.
       if (data.Create() == StatusError)
         escape("unable to create the data");
@@ -166,8 +164,6 @@ namespace elle
     Status              TCPSocket::Reply(const I                inputs,
                                          Session*               session)
     {
-      ;
-
       // retrieve the current session, if necessary.
       if (session == NULL)
         {

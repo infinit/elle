@@ -49,8 +49,6 @@ namespace elle
     ///
     Status              Report::Initialize()
     {
-      ;
-
       // allocate the report for the initial thread/fiber.
       Report::Current = new Report;
 
@@ -66,8 +64,6 @@ namespace elle
     ///
     Status              Report::Clean()
     {
-      ;
-
       // delete the report.
       delete Report::Current;
 
@@ -84,8 +80,6 @@ namespace elle
     ///
     Status              Report::Instance(Report*&               report)
     {
-      ;
-
       // verify the report's presence.
       if (Report::Current == NULL)
         return elle::StatusFalse;
@@ -102,8 +96,6 @@ namespace elle
     Status              Report::Govern(const Phase              phase,
                                        Fiber*                   fiber)
     {
-      ;
-
       // perform an operation depending on the phase.
       switch (phase)
         {
@@ -273,8 +265,6 @@ namespace elle
       Report::Scoutor   scoutor;
       String            alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Report]" << std::endl;
 
       // go through the container.
@@ -308,8 +298,6 @@ namespace elle
     {
       Report::Scoutor   scoutor;
 
-      ;
-
       // serialize the number of messages.
       if (archive.Serialize(
             static_cast<Natural32>(this->container.size())) == StatusError)
@@ -339,8 +327,6 @@ namespace elle
     {
       Natural32         size;
       Natural32         i;
-
-      ;
 
       // extract the number of messages.
       if (archive.Extract(size) == StatusError)
@@ -376,8 +362,6 @@ namespace elle
     ///
     Status              Report::Imprint(Natural32&              size) const
     {
-      ;
-
       // return the size.
       size = sizeof (Report);
 
@@ -389,8 +373,6 @@ namespace elle
     ///
     Status              Report::Clone(Report*&                  object) const
     {
-      ;
-
       // allocate the object.
       object = new Report(*this);
 
@@ -402,8 +384,6 @@ namespace elle
     ///
     Boolean             Report::operator==(const Report&) const
     {
-      ;
-
       flee("this method should never have been called");
     }
 
@@ -412,8 +392,6 @@ namespace elle
     ///
     Boolean             Report::operator<(const Report&) const
     {
-      ;
-
       flee("this method should never have been called");
     }
 
@@ -422,8 +400,6 @@ namespace elle
     ///
     Boolean             Report::operator>(const Report&) const
     {
-      ;
-
       flee("this method should never have been called");
     }
 
@@ -432,8 +408,6 @@ namespace elle
     ///
     Report&             Report::operator=(const Report&         element)
     {
-      ;
-
       // test if the reports are identical.
       if (this == &element)
         return (*this);
@@ -460,8 +434,6 @@ namespace elle
     ///
     Boolean             Report::operator<=(const Report&) const
     {
-      ;
-
       flee("this method should never have been called");
     }
 
@@ -470,8 +442,6 @@ namespace elle
     ///
     Boolean             Report::operator>=(const Report&) const
     {
-      ;
-
       flee("this method should never have been called");
     }
 

@@ -87,8 +87,6 @@ namespace elle
     ///
     Status              KeyPair::Initialize()
     {
-      ;
-
       // create the context for the RSA algorithm.
       if ((KeyPair::Contexts::Generate = ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA,
                                                                NULL)) == NULL)
@@ -106,8 +104,6 @@ namespace elle
     ///
     Status              KeyPair::Clean()
     {
-      ;
-
       // release the generation context.
       ::EVP_PKEY_CTX_free(KeyPair::Contexts::Generate);
 
@@ -119,8 +115,6 @@ namespace elle
     ///
     Status              KeyPair::Generate()
     {
-      ;
-
       if (this->Generate(KeyPair::Default::Length) == StatusError)
         escape("unable to generate the key pair");
 

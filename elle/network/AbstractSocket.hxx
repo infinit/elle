@@ -37,8 +37,6 @@ namespace elle
     Status              AbstractSocket::Send(const I            inputs,
                                              const Event&       event)
     {
-      ;
-
       switch (this->type)
         {
         case Socket::TypeLocal:
@@ -70,8 +68,6 @@ namespace elle
     Status              AbstractSocket::Receive(const Event&    event,
                                                 O               outputs)
     {
-      ;
-
       switch (this->type)
         {
         case Socket::TypeLocal:
@@ -105,8 +101,6 @@ namespace elle
     Status              AbstractSocket::Call(const I            inputs,
                                              O                  outputs)
     {
-      ;
-
       switch (this->type)
         {
         case Socket::TypeLocal:
@@ -138,8 +132,6 @@ namespace elle
     Status              AbstractSocket::Reply(const I           inputs,
                                               Session*          session)
     {
-      ;
-
       switch (this->type)
         {
         case Socket::TypeLocal:

@@ -42,8 +42,6 @@ namespace elle
     {
       HTTP::Content     content;
 
-      ;
-
       // request the HTTP GET method.
       if (HTTP::Get(uri,
                     content, code) == StatusError)
@@ -66,8 +64,6 @@ namespace elle
     {
       HTTP::Content     content;
       String            string;
-
-      ;
 
       // encode the request into a string.
       if (JSON::Encode(request, string) == StatusError)
@@ -97,8 +93,6 @@ namespace elle
       HTTP::Content     content;
       String            string;
 
-      ;
-
       // encode the request into a string.
       if (JSON::Encode(request, string) == StatusError)
         escape("unable to encore the request");
@@ -124,8 +118,6 @@ namespace elle
                                      HTTP::Code&                code)
     {
       HTTP::Content     content;
-
-      ;
 
       // request the HTTP DELETE method.
       if (HTTP::Delete(uri,

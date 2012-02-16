@@ -37,8 +37,6 @@ namespace elle
     ///
     Status              Network::Initialize()
     {
-      ;
-
       // initialize the local server.
       if (LocalServer::Initialize() == StatusError)
         escape("unable to initialize the local server");
@@ -59,8 +57,6 @@ namespace elle
     ///
     Status              Network::Clean()
     {
-      ;
-
       // clean the session.
       if (Session::Clean() == StatusError)
         escape("unable to clean the session");
@@ -165,8 +161,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
       Network::Scoutor  scoutor;
-
-      ;
 
       std::cout << alignment << "[Network]" << std::endl;
 

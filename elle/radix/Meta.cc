@@ -63,8 +63,6 @@ namespace elle
     ///
     Status              Meta::Initialize()
     {
-      ;
-
       // if the debug has been activated.
       if (Meta::Debug::Status == true)
         {
@@ -87,8 +85,6 @@ namespace elle
     ///
     Status              Meta::Clean()
     {
-      ;
-
       // if traces exist, dump them.
       if (Meta::Debug::Status == true)
         {
@@ -115,8 +111,6 @@ namespace elle
     ///
     Status              Meta::Enable()
     {
-      ;
-
       // set the state.
       Meta::Debug::State = true;
 
@@ -128,8 +122,6 @@ namespace elle
     ///
     Status              Meta::Disable()
     {
-      ;
-
       // set the state.
       Meta::Debug::State = false;
 
@@ -142,8 +134,6 @@ namespace elle
     Status              Meta::Show(const Natural32              margin)
     {
       String            alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Meta]" << std::endl;
 

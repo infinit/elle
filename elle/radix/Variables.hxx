@@ -124,8 +124,6 @@ namespace elle
       {
         String          alignment(margin, ' ');
 
-        ;
-
         std::cout << alignment
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
@@ -242,8 +240,6 @@ namespace elle
         const
       {
         String          alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment
                   << "[Variables " << P::Quantum << "]"
@@ -386,8 +382,6 @@ namespace elle
         const
       {
         String          alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment
                   << "[Variables " << P::Quantum << "]"
@@ -557,8 +551,6 @@ namespace elle
         const
       {
         String          alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment
                   << "[Variables " << P::Quantum << "]"
@@ -760,8 +752,6 @@ namespace elle
         const
       {
         String          alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment
                   << "[Variables " << P::Quantum << "]"
@@ -999,8 +989,6 @@ namespace elle
         const
       {
         String          alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment
                   << "[Variables " << P::Quantum << "]"
@@ -1282,8 +1270,6 @@ namespace elle
         const
       {
         String          alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment
                   << "[Variables " << P::Quantum << "]"
@@ -1611,8 +1597,6 @@ namespace elle
         const
       {
         String          alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment
                   << "[Variables " << P::Quantum << "]"
@@ -1990,8 +1974,6 @@ namespace elle
         const
       {
         String          alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment
                   << "[Variables " << P::Quantum << "]"
@@ -2423,8 +2405,6 @@ namespace elle
         const
       {
         String          alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment
                   << "[Variables " << P::Quantum << "]"

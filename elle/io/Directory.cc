@@ -139,16 +139,12 @@ namespace elle
     ///
     Status              Directory::Create(const Path&           path)
     {
-      ;
-
       if (!QDir().mkpath(QString::fromStdString(path.string)))
         escape("failed to mkpath: %s", path.string.c_str());
 
       return elle::StatusOk;
 
 #if 0
-      ;
-
       // does the directory already exist.
       if (Directory::Exist(path) == StatusTrue)
         escape("the directory seems to already exist");
@@ -178,8 +174,6 @@ namespace elle
     ///
     Status              Directory::Remove(const Path&           path)
     {
-      ;
-
       // does the directory exist.
       if (Directory::Exist(path) == StatusFalse)
         escape("the directory does not seem to exist");
@@ -196,8 +190,6 @@ namespace elle
     Status              Directory::Exist(const Path&                    path)
     {
       struct ::stat             stat;
-
-      ;
 
       // does the path points to something.
       if (::stat(path.string.c_str(), &stat) != 0)
@@ -218,8 +210,6 @@ namespace elle
     {
       String            directory(::dirname(const_cast<char*>(path.string.c_str())));
 
-      ;
-
       if (!QDir().mkpath(QString::fromStdString(directory)))
         escape("failed to mkpath: %s", directory.c_str());
 
@@ -232,8 +222,6 @@ namespace elle
       std::stringstream stream(directory);
       String            item;
       Path              chemin;
-
-      ;
 
       // go through the components of the path.
       while (std::getline(stream, item, System::Path::Separator))

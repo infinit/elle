@@ -28,8 +28,6 @@ namespace elle
     ///
     Status              Server::Setup(const String&             line)
     {
-      ;
-
       // set the line.
       this->line = line;
 
@@ -41,8 +39,6 @@ namespace elle
     ///
     Status              Server::Run()
     {
-      ;
-
       std::cout << "[line] " << line << std::endl;
 
       // listen for incoming connections.
@@ -65,8 +61,6 @@ namespace elle
     {
       String            challenge("CHALLENGE");
       String            response;
-
-      ;
 
       // push the socket in the container in order not to lose the object.
       this->sockets.push_front(socket);

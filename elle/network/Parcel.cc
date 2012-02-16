@@ -77,8 +77,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Parcel] " << std::hex << this << std::endl;
 
       // dump the session.

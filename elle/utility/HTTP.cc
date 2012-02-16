@@ -68,8 +68,6 @@ namespace elle
       ::CURL*           curl;
       long              r;
 
-      ;
-
       // initialize curl.
       if ((curl = ::curl_easy_init()) == NULL)
         goto _error;
@@ -142,8 +140,6 @@ namespace elle
       String            header = "Content-Type: " + type;
       ::CURL*           curl;
       long              r;
-
-      ;
 
       // initialize curl.
       if ((curl = ::curl_easy_init()) == NULL)
@@ -258,8 +254,6 @@ namespace elle
       String            header = "Content-Type: " + type;
       ::CURL*           curl;
       long              r;
-
-      ;
 
       // initialize curl.
       if ((curl = ::curl_easy_init()) == NULL)
@@ -387,8 +381,6 @@ namespace elle
       Region            output;
       ::CURL*           curl;
       long              r;
-
-      ;
 
       // initialize curl.
       if ((curl = ::curl_easy_init()) == NULL)

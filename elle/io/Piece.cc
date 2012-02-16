@@ -49,8 +49,6 @@ namespace elle
     ///
     Boolean             Piece::operator==(const Piece&          element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -77,8 +75,6 @@ namespace elle
     Status              Piece::Dump(const Natural32             margin) const
     {
       String            alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Piece] "
                 << this->name

@@ -59,8 +59,6 @@ namespace elle
       int               fd;
       Natural32         roffset = 0;
 
-      ;
-
       // does the file exist.
       if (File::Exist(path) == StatusFalse)
         escape("the file does not seem to exist");
@@ -119,8 +117,6 @@ namespace elle
       int               fd;
       Natural32         woffset = 0;
 
-      ;
-
       // dig the directory which will hold the target file.
       if (File::Dig(path) == StatusError)
         escape("unable to dig the chain of directories");
@@ -169,8 +165,6 @@ namespace elle
       struct ::stat     status;
       HANDLE            fd;
       DWORD             roffset = 0;
-
-      ;
 
       // does the file exist.
       if (File::Exist(path) == StatusFalse)
@@ -233,8 +227,6 @@ namespace elle
       HANDLE            fd;
       DWORD             woffset = 0;
 
-      ;
-
       // dig the directory which will hold the target file.
       if (File::Dig(path) == StatusError)
         escape("unable to dig the chain of directories");
@@ -284,8 +276,6 @@ namespace elle
     ///
     Status              File::Erase(const Path&                 path)
     {
-      ;
-
       // does the file exist.
       if (File::Exist(path) == StatusFalse)
         escape("the file does not seem to exist");
@@ -302,8 +292,6 @@ namespace elle
     Status              File::Exist(const Path&                 path)
     {
       struct ::stat             stat;
-
-      ;
 
       // does the path points to something.
       if (::stat(path.string.c_str(), &stat) != 0)
@@ -328,8 +316,6 @@ namespace elle
       std::stringstream stream(directory);
       String            item;
       Path              chemin;
-
-      ;
 
       // free the temporary string used for directory
       free(tmp_str);

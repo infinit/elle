@@ -29,8 +29,6 @@ namespace elle
       Server            server;
       Client            client;
 
-      ;
-
       // check the arguments.
       if (argc != 3)
         {

@@ -38,8 +38,6 @@ namespace elle
     {
       elle::String::size_type   index;
 
-      ;
-
       // first, copy the input in the output.
       output.assign(input);
 
@@ -129,8 +127,6 @@ namespace elle
     ///
     Status              Settings::Section::Exist(const String&  name)
     {
-      ;
-
       // locate the assignment.
       if (this->Locate(name) != StatusTrue)
         return elle::StatusFalse;
@@ -169,8 +165,6 @@ namespace elle
       Settings::Section::Iterator       iterator;
       Settings::Assignment*             assignment;
 
-      ;
-
       // try to locate the assignment.
       if (this->Locate(name, &iterator) != StatusTrue)
         escape("unable to locate the assignment");
@@ -193,8 +187,6 @@ namespace elle
       Settings::Section::Iterator       iterator;
       Settings::Assignment*             assignment;
 
-      ;
-
       // retrieve the assignment.
       if (this->Locate(name, &iterator) != StatusTrue)
         escape("this assignment does not seem to exist");
@@ -215,8 +207,6 @@ namespace elle
     {
       Settings::Section::Iterator       iterator;
       Settings::Assignment*             assignment;
-
-      ;
 
       // try to locate the assignment.
       if (this->Locate(name, &iterator) != StatusTrue)
@@ -242,8 +232,6 @@ namespace elle
                           Settings::Section::Iterator*          iterator)
     {
       Settings::Section::Iterator       i;
-
-      ;
 
       // look for the named assignment.
       for (i = this->assignments.begin();
@@ -312,8 +300,6 @@ namespace elle
       Settings::Iterator        iterator;
       Settings::Section*        section;
 
-      ;
-
       // try to locate the section.
       if (this->Locate(identifier, &iterator) != StatusTrue)
         escape("unable to locate the section");
@@ -337,8 +323,6 @@ namespace elle
                                          Settings::Iterator*    iterator)
     {
       Settings::Iterator        i;
-
-      ;
 
       // look for the identifierd section.
       for (i = this->sections.begin();
@@ -370,8 +354,6 @@ namespace elle
     {
       Settings::Section*        section;
 
-      ;
-
       // check if the section exists.
       if (this->Locate(identifier) != StatusTrue)
         return elle::StatusFalse;
@@ -395,8 +377,6 @@ namespace elle
                                         const String&           value)
     {
       Settings::Section*        section;
-
-      ;
 
       // check if the section exists.
       if (this->Locate(identifier) != StatusTrue)
@@ -436,8 +416,6 @@ namespace elle
     {
       Settings::Section*        section;
 
-      ;
-
       // retrieve the section.
       if (this->Lookup(identifier, section) == StatusError)
         escape("unable to retrieve the section");
@@ -469,8 +447,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
       Settings::Scoutor i;
-
-      ;
 
       std::cout << alignment << "[Settings]" << std::endl;
 
@@ -516,8 +492,6 @@ namespace elle
       Region                    region;
       String                    line;
       Settings::Section*        section;
-
-      ;
 
       // read the content.
       if (File::Read(path, region) == StatusError)
@@ -604,8 +578,6 @@ namespace elle
       String                    string;
       Settings::Scoutor         i;
 
-      ;
-
       // go through the sections.
       for (i = this->sections.begin();
            i != this->sections.end();
@@ -650,8 +622,6 @@ namespace elle
     ///
     Status              Settings::Erase(const Path&             path) const
     {
-      ;
-
       // erase the file.
       if (File::Erase(path) == StatusError)
         escape("unable to erase the file");
