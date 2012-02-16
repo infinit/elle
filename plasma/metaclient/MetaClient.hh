@@ -12,10 +12,12 @@
 # define PLASMA_METCLIENT_METACLIENT_HH
 
 # include <functional>
-# include <memory>
+# include <map>
 
 # include <QApplication>
 # include <QNetworkAccessManager>
+# include <QNetworkReply>
+# include <QVariantMap>
 
 namespace plasma
 {
@@ -39,8 +41,10 @@ namespace plasma
     ///
     /// Convenient interface to the meta server
     ///
-    class MetaClient
+    class MetaClient : public QObject
     {
+      Q_OBJECT
+
     public:
       enum class Error
       {
@@ -80,7 +84,7 @@ namespace plasma
       void _Get(std::string const& url,
                 RequestHandler* handler);
 
-    private slot:
+    private slots:
       void _OnRequestFinished(QNetworkReply* reply);
 
     /// properties

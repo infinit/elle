@@ -12,9 +12,15 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <Qjson/Parser>
+#include <cassert>
+#include <iostream>
+
+#include <QJson/Parser>
+#include <QJson/Serializer>
 
 #include "plasma/common/resources.hh"
+
+#include "MetaClient.hh"
 
 using namespace plasma::metaclient;
 
@@ -35,7 +41,7 @@ namespace {
     /// will call bool Deserializer::Fill(QVariantMap const&, ResponseType&)
     /// In charge of calling callback or errback
     ///
-    template<typename ResponseType, Deserializer>
+    template<typename ResponseType, typename Deserializer>
     struct RequestHandler : MetaClient::RequestHandler
     {
     public:
@@ -58,7 +64,7 @@ namespace {
         QJson::Parser parser;
         bool ok;
 
-        QVariantMap result = parser.parse(data, ok);
+        QVariantMap result = parser.parse(data, &ok).toMap();
 
         if (!ok)
           {
@@ -69,7 +75,7 @@ namespace {
 
         ResponseType response;
         if (Deserializer::Fill(result, response))
-          this->callback(reponse);
+          this->callback(response);
         else if (this->errback != nullptr)
           this->errback(MetaClient::Error::InvalidContent, "Malformed response");
       }
@@ -78,7 +84,7 @@ namespace {
       {
         // XXX fine grained network errors
         if (this->errback != nullptr)
-          this->errback(MetaClient::Error::ConnectionFailure);
+          this->errback(MetaClient::Error::ConnectionFailure, "Network error");
       }
     };
 
@@ -87,9 +93,9 @@ namespace {
 /// It handles the server error
 ///
 #define FILLER(cls)                                                         \
-    struct cls#Filler                                                       \
+    struct cls##Filler                                                      \
     {                                                                       \
-      static bool Fill(QVariantMap const& map, ResponseType& response)      \
+      static bool Fill(QVariantMap const& map, cls& response)               \
       {                                                                     \
         if (!map.contains("success"))                                       \
           return false;                                                     \
@@ -105,9 +111,9 @@ namespace {
       static std::string getstr(QVariantMap const& map, char const* key)    \
       { return map[key].toString().toStdString(); }                         \
                                                                             \
-      static bool _Fill(QVariantMap const&, ResponseType&);                 \
+      static bool _Fill(QVariantMap const&, cls&);                          \
     };                                                                      \
-    bool cls#Filler::_Fill(QVariantMap const& map, ResponseType& response)  \
+    bool cls##Filler::_Fill(QVariantMap const& map, cls& response)          \
 
 /////////////////////////////////////////////////////////////////////////////
 // Response deserializers defined here
@@ -130,7 +136,7 @@ namespace {
 /// Typedef for specific request handler
 ///
 #define HANDLER_TYPEDEF(cls)                                                 \
-    typedef RequestHandler<cls#Response, cls#ResponseFiller> cls#Handler
+    typedef RequestHandler<cls##Response, cls##ResponseFiller> cls##Handler
 
 //////////////////////////////////////////////////////////////////////////////
 // Requests handlers defined here
@@ -145,17 +151,20 @@ namespace {
 //
 
 MetaClient::MetaClient(QApplication& app) :
-  _network(app)
+  _network(&app)
 {
   this->connect(
-      this->_network, SIGNAL(finished(QNetworkReply*)),
+      &this->_network, SIGNAL(finished(QNetworkReply*)),
       this, SLOT(_OnRequestFinished(QNetworkReply*))
   );
 }
 
 MetaClient::~MetaClient()
 {
-
+  if (this->_handlers.size() > 0)
+    std::cerr << "WARNING: Client closed while there are "
+              << this->_handlers.size()
+              << " pending.\n";
 }
 
 //
@@ -180,15 +189,27 @@ void MetaClient::_Post(std::string const& url,
   QString uri((INFINIT_META_URL + url).c_str());
 
   QByteArray json = QJson::Serializer().serialize(data);
-  auto reply = this->_network->post(QNetworkRequest(QUrl(uri)), json);
-  this->handlers[reply] = handler;
+  auto request = QNetworkRequest(QUrl(uri));
+  if (this->_token.size() > 0)
+    request.setRawHeader("Authorization", this->_token.c_str());
+  auto reply = this->_network.post(request, json);
+  if (reply != nullptr)
+    this->_handlers[reply] = handler;
+  else
+    delete handler;
 }
 
-void MetaClient::_Get(std::string const& url, RequestHandler* handler);
+void MetaClient::_Get(std::string const& url, RequestHandler* handler)
 {
   QString uri((INFINIT_META_URL + url).c_str());
-  auto reply = this->_network->get(QNetworkRequest(QUrl(uri)));
-  this->handlers[reply] = handler;
+  auto request = QNetworkRequest(QUrl(uri));
+  if (this->_token.size() > 0)
+    request.setRawHeader("Authorization", this->_token.c_str());
+  auto reply = this->_network.get(request);
+  if (reply != nullptr)
+    this->_handlers[reply] = handler;
+  else
+    delete handler;
 }
 
 void MetaClient::_OnRequestFinished(QNetworkReply* reply)
@@ -197,9 +218,9 @@ void MetaClient::_OnRequestFinished(QNetworkReply* reply)
   auto it = this->_handlers.find(reply);
   if (it != this->_handlers.end())
     {
-      RequestHandler handler = it->second;
+      RequestHandler* handler = it->second;
       assert(handler != nullptr && "Corrupter map");
-      this->_handlers.remove(reply); // WARNING do not use it from here
+      this->_handlers.erase(it); // WARNING do not use it from here
       if (reply->error() == QNetworkReply::NoError)
         handler->OnReply(reply->readAll());
       else
