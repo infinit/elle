@@ -72,8 +72,6 @@ namespace hole
       ///
       elle::Status      Host::Create(const elle::Locus&         locus)
       {
-        ;
-
         // set the locus.
         this->locus = locus;
 
@@ -109,8 +107,6 @@ namespace hole
       ///
       elle::Status      Host::Create(elle::TCPSocket*           socket)
       {
-        ;
-
         // set the socket.
         this->socket = socket;
 
@@ -137,8 +133,6 @@ namespace hole
       ///
       elle::Status      Host::Connect()
       {
-        ;
-
         // subscribe to the signal.
         if (this->socket->signal.connected.Subscribe(
               elle::Callback<>::Infer(&Host::Connected,
@@ -169,8 +163,6 @@ namespace hole
       ///
       elle::Status      Host::Disconnect()
       {
-        ;
-
         // disconnect the socket.
         if (this->socket->Disconnect() == elle::StatusError)
           escape("unable to disconnect the socket");
@@ -183,8 +175,6 @@ namespace hole
       ///
       elle::Status      Host::Authenticated()
       {
-        ;
-
         // delete the timer.
         delete this->timer;
 
@@ -206,8 +196,6 @@ namespace hole
       ///
       elle::Status      Host::Abort()
       {
-        ;
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Host::Abort()\n");
@@ -237,8 +225,6 @@ namespace hole
       ///
       elle::Status      Host::Connected()
       {
-        ;
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Host::Connected()\n");
@@ -254,8 +240,6 @@ namespace hole
       ///
       elle::Status      Host::Disconnected()
       {
-        ;
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Host::Disconnected()\n");
@@ -288,8 +272,6 @@ namespace hole
       ///
       elle::Status      Host::Error(const elle::String&)
       {
-        ;
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Host::Error()\n");
@@ -311,8 +293,6 @@ namespace hole
       elle::Status      Host::Dump(elle::Natural32      margin) const
       {
         elle::String    alignment(margin, ' ');
-
-        ;
 
         // display the name.
         std::cout << alignment << "[Host] "

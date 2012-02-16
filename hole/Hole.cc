@@ -54,8 +54,6 @@ namespace hole
   {
     nucleus::Network    network;
 
-    ;
-
     // disable the meta logging.
     if (elle::Meta::Disable() == elle::StatusError)
       escape("unable to disable the meta logging");
@@ -163,8 +161,6 @@ namespace hole
   ///
   elle::Status          Hole::Clean()
   {
-    ;
-
     // leave the network
     if (Hole::Implementation->Leave() == elle::StatusError)
       escape("unable to leave the network");
@@ -180,8 +176,6 @@ namespace hole
   ///
   elle::Status          Hole::Origin(nucleus::Address&          address)
   {
-    ;
-
     // return the address.
     address = Hole::Descriptor.root;
 
@@ -194,8 +188,6 @@ namespace hole
   elle::Status          Hole::Push(const nucleus::Address&      address,
                                    const nucleus::Block&        block)
   {
-    ;
-
     // XXX check the block's footprint which should not exceed Extent
 
     // forward the request depending on the nature of the block which
@@ -247,8 +239,6 @@ namespace hole
                                    const nucleus::Version&      version,
                                    nucleus::Block&              block)
   {
-    ;
-
     // forward the request depending on the nature of the block which
     // the addres indicates.
     switch (address.family)
@@ -297,8 +287,6 @@ namespace hole
   ///
   elle::Status          Hole::Wipe(const nucleus::Address&      address)
   {
-    ;
-
     // forward the kill request to the implementation.
     if (Hole::Implementation->Kill(address) == elle::StatusError)
       escape("unable to erase the block");

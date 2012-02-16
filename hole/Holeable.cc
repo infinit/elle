@@ -47,8 +47,6 @@ namespace hole
   {
     elle::String        alignment(margin, ' ');
 
-    ;
-
     std::cout << alignment << "[Holeable]" << std::endl;
 
     // dump the network.

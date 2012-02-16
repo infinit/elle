@@ -70,8 +70,6 @@ namespace hole
       ///
       elle::Status      Neighbour::Create(const elle::Locus&    locus)
       {
-        ;
-
         // set the locus.
         this->locus = locus;
 
@@ -107,8 +105,6 @@ namespace hole
           elle::Parameters<>
           >             monitor(&Neighbour::Monitor, this);
 
-        ;
-
         // set the gate.
         this->gate = gate;
 
@@ -130,8 +126,6 @@ namespace hole
           elle::Status,
           elle::Parameters<>
           >                             monitor(&Neighbour::Monitor, this);
-
-        ;
 
         // allocate a gate.
         this->gate = new elle::Gate;
@@ -160,8 +154,6 @@ namespace hole
       ///
       elle::Status      Neighbour::Discard()
       {
-        ;
-
         // if the neighbour has been authenticated...
         if (this->state == Neighbour::StateAuthenticated)
           {
@@ -191,8 +183,6 @@ namespace hole
       ///
       elle::Status      Neighbour::Monitor()
       {
-        ;
-
         // depending on the state of the socket.
         switch (this->gate->state)
           {
@@ -249,8 +239,6 @@ namespace hole
       elle::Status      Neighbour::Dump(elle::Natural32 margin) const
       {
         elle::String    alignment(margin, ' ');
-
-        ;
 
         // display the name.
         std::cout << alignment << "[Neighbour] "

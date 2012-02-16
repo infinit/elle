@@ -57,8 +57,6 @@ namespace hole
       {
         std::pair<Guestlist::Iterator, elle::Boolean>   result;
 
-        ;
-
         // insert the host in the container.
         result = this->container.insert(Guestlist::Value(socket, host));
 
@@ -76,8 +74,6 @@ namespace hole
       {
         Guestlist::Scoutor      scoutor;
 
-        ;
-
         // try to locate the socket.
         if (this->Locate(socket, scoutor) == elle::StatusTrue)
           return elle::StatusTrue;
@@ -93,8 +89,6 @@ namespace hole
         const
       {
         Guestlist::Scoutor      scoutor;
-
-        ;
 
         // try to locate the socket.
         if (this->Locate(socket, scoutor) == elle::StatusFalse)
@@ -113,8 +107,6 @@ namespace hole
       {
         Guestlist::Iterator     iterator;
 
-        ;
-
         // try to locate the socket.
         if (this->Locate(socket, iterator) == elle::StatusFalse)
           escape("unable to locate the given socket");
@@ -132,8 +124,6 @@ namespace hole
                                           Scoutor&              scoutor) const
       {
         Guestlist::Scoutor      s;
-
-        ;
 
         // try to locate the host.
         if ((s = this->container.find(socket)) != this->container.end())
@@ -154,8 +144,6 @@ namespace hole
                                           Iterator&             iterator)
       {
         Guestlist::Iterator     i;
-
-        ;
 
         // try to locate the host.
         if ((i = this->container.find(socket)) != this->container.end())
@@ -180,8 +168,6 @@ namespace hole
       {
         elle::String            alignment(margin, ' ');
         Guestlist::Scoutor      scoutor;
-
-        ;
 
         // display the name.
         std::cout << alignment << "[Guestlist]" << std::endl;

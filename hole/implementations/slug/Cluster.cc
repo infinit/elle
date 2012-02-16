@@ -45,8 +45,6 @@ namespace hole
       {
         Neighbourhood::Scoutor  scoutor;
 
-        ;
-
         // go through the entries.
         for (scoutor = neighbourhood.container.begin();
              scoutor != neighbourhood.container.end();
@@ -83,8 +81,6 @@ namespace hole
         Cluster::Scoutor        scoutor;
         elle::Natural32         size;
 
-        ;
-
         // retrieve the size of the container.
         size = this->container.size();
 
@@ -114,8 +110,6 @@ namespace hole
       {
         elle::Natural32 size;
         elle::Natural32 i;
-
-        ;
 
         // extract the number of entries.
         if (archive.Extract(size) == elle::StatusError)
@@ -148,8 +142,6 @@ namespace hole
       {
         elle::String            alignment(margin, ' ');
         Cluster::Scoutor        scoutor;
-
-        ;
 
         // display the name.
         std::cout << alignment << "[Cluster]" << std::endl;

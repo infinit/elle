@@ -46,8 +46,6 @@ namespace hole
       {
         std::pair<Neighbourhood::Iterator, elle::Boolean>       result;
 
-        ;
-
         // insert the host in the container.
         result = this->container.insert(Neighbourhood::Value(locus, host));
 
@@ -65,8 +63,6 @@ namespace hole
       {
         Neighbourhood::Scoutor  scoutor;
 
-        ;
-
         // try to locate the locus.
         if (this->Locate(locus, scoutor) == elle::StatusTrue)
           return elle::StatusTrue;
@@ -81,8 +77,6 @@ namespace hole
                                                 Host*&          host) const
       {
         Neighbourhood::Scoutor  scoutor;
-
-        ;
 
         // try to locate the locus.
         if (this->Locate(locus, scoutor) == elle::StatusFalse)
@@ -101,8 +95,6 @@ namespace hole
       {
         Neighbourhood::Iterator iterator;
 
-        ;
-
         // try to locate the locus.
         if (this->Locate(locus, iterator) == elle::StatusFalse)
           escape("unable to locate the given locus");
@@ -120,8 +112,6 @@ namespace hole
                                               Scoutor&          scoutor) const
       {
         Neighbourhood::Scoutor  s;
-
-        ;
 
         // try to locate the host.
         if ((s = this->container.find(locus)) != this->container.end())
@@ -142,8 +132,6 @@ namespace hole
                                               Iterator&         iterator)
       {
         Neighbourhood::Iterator i;
-
-        ;
 
         // try to locate the host.
         if ((i = this->container.find(locus)) != this->container.end())
@@ -168,8 +156,6 @@ namespace hole
       {
         elle::String            alignment(margin, ' ');
         Neighbourhood::Scoutor  scoutor;
-
-        ;
 
         // display the name.
         std::cout << alignment << "[Neighbourhood]" << std::endl;

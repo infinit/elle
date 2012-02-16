@@ -44,8 +44,6 @@ namespace hole
       ///
       elle::Status      Implementation::Join()
       {
-        ;
-
         // allocate the machine.
         Remote::Computer = new Machine;
 
@@ -61,8 +59,6 @@ namespace hole
       ///
       elle::Status      Implementation::Leave()
       {
-        ;
-
         // delete the machine.
         delete Remote::Computer;
 
@@ -76,8 +72,6 @@ namespace hole
                           const nucleus::Address&               address,
                           const nucleus::ImmutableBlock&         block)
       {
-        ;
-
         // check if the machine is a client.
         if (Remote::Computer->role != Machine::RoleClient)
           escape("the hole is not acting as a remote client as it should");
@@ -96,8 +90,6 @@ namespace hole
                           const nucleus::Address&               address,
                           const nucleus::MutableBlock&          block)
       {
-        ;
-
         // check if the machine is a client.
         if (Remote::Computer->role != Machine::RoleClient)
           escape("the hole is not acting as a remote client as it should");
@@ -116,8 +108,6 @@ namespace hole
                           const nucleus::Address&               address,
                           nucleus::ImmutableBlock&              block)
       {
-        ;
-
         // check if the machine is a client.
         if (Remote::Computer->role != Machine::RoleClient)
           escape("the hole is not acting as a remote client as it should");
@@ -137,8 +127,6 @@ namespace hole
                           const nucleus::Version&               version,
                           nucleus::MutableBlock&                block)
       {
-        ;
-
         // check if the machine is a client.
         if (Remote::Computer->role != Machine::RoleClient)
           escape("the hole is not acting as a remote client as it should");
@@ -158,8 +146,6 @@ namespace hole
       elle::Status      Implementation::Kill(
                           const nucleus::Address&               address)
       {
-        ;
-
         // check if the machine is a client.
         if (Remote::Computer->role != Machine::RoleClient)
           escape("the hole is not acting as a remote client as it should");
@@ -182,8 +168,6 @@ namespace hole
         const
       {
         elle::String    alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment << "[Implementation] Remote" << std::endl;
 

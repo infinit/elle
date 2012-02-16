@@ -74,8 +74,6 @@ namespace hole
   ///
   elle::Boolean         Label::operator==(const Label&  element) const
   {
-    ;
-
     // check the label as this may actually be the same object.
     if (this == &element)
       return elle::StatusTrue;
@@ -100,8 +98,6 @@ namespace hole
   ///
   elle::Boolean         Label::operator<(const Label&   element) const
   {
-    ;
-
     // check the address as this may actually be the same object.
     if (this == &element)
       return elle::StatusFalse;
@@ -137,8 +133,6 @@ namespace hole
   {
     elle::String        alignment(margin, ' ');
 
-    ;
-
     // display the name.
     std::cout << alignment << "[Label]" << std::endl;
 
@@ -167,8 +161,6 @@ namespace hole
   ///
   elle::Status          Label::Serialize(elle::Archive& archive) const
   {
-    ;
-
     if (this->digest != NULL)
       {
         // serialize the internal digest.
@@ -191,8 +183,6 @@ namespace hole
   elle::Status          Label::Extract(elle::Archive&           archive)
   {
     elle::Archive::Type type;
-
-    ;
 
     // fetch the next element's type.
     if (archive.Fetch(type) == elle::StatusError)

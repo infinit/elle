@@ -44,8 +44,6 @@ namespace hole
       ///
       elle::Status      Implementation::Join()
       {
-        ;
-
         // allocate the machine.
         Cirkle::Computer = new Machine;
 
@@ -61,8 +59,6 @@ namespace hole
       ///
       elle::Status      Implementation::Leave()
       {
-        ;
-
         // delete the machine.
         delete Cirkle::Computer;
 
@@ -76,8 +72,6 @@ namespace hole
                           const nucleus::Address&               address,
                           const nucleus::ImmutableBlock&         block)
       {
-        ;
-
         // forward the request to the machine.
         if (Cirkle::Computer->Put(address, block) == elle::StatusError)
           escape("unable to put the block");
@@ -92,8 +86,6 @@ namespace hole
                           const nucleus::Address&               address,
                           const nucleus::MutableBlock&          block)
       {
-        ;
-
         // forward the request to the machine.
         if (Cirkle::Computer->Put(address, block) == elle::StatusError)
           escape("unable to put the block");
@@ -108,8 +100,6 @@ namespace hole
                           const nucleus::Address&               address,
                           nucleus::ImmutableBlock&              block)
       {
-        ;
-
         // forward the request to the machine.
         if (Cirkle::Computer->Get(address, block) == elle::StatusError)
           escape("unable to get the block");
@@ -125,8 +115,6 @@ namespace hole
                           const nucleus::Version&               version,
                           nucleus::MutableBlock&                block)
       {
-        ;
-
         // forward the request to the machine.
         if (Cirkle::Computer->Get(address,
                                   version,
@@ -142,8 +130,6 @@ namespace hole
       elle::Status      Implementation::Kill(
                           const nucleus::Address&               address)
       {
-        ;
-
         // forward the request to the machine.
         if (Cirkle::Computer->Kill(address) == elle::StatusError)
           escape("unable to kill the block");
@@ -162,8 +148,6 @@ namespace hole
         const
       {
         elle::String    alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment << "[Implementation] Cirkle" << std::endl;
 

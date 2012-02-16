@@ -57,8 +57,6 @@ namespace hole
     elle::String        string(name);
     elle::Natural32     i;
 
-    ;
-
     // transform the given name in lowercase.
     std::transform(string.begin(), string.end(),
                    string.begin(), std::ptr_fun(::tolower));
@@ -86,8 +84,6 @@ namespace hole
                                        elle::String&            name)
   {
     elle::Natural32     i;
-
-    ;
 
     // go through the descriptors.
     for (i = 0; i < Model::Types; i++)
@@ -134,8 +130,6 @@ namespace hole
   ///
   elle::Status          Model::Create(const Type                type)
   {
-    ;
-
     // set the type.
     this->type = type;
 
@@ -147,8 +141,6 @@ namespace hole
   ///
   elle::Status          Model::Create(const elle::String&       name)
   {
-    ;
-
     // convert the name into a type.
     if (Model::Convert(name, this->type) == elle::StatusError)
       escape("unable to convert the model name into a valid type");
@@ -165,8 +157,6 @@ namespace hole
     ///
     elle::Boolean       Model::operator==(const Model&  element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -194,8 +184,6 @@ namespace hole
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       // display the name.
       std::cout << alignment << "[Model] " << this->type << std::endl;
 
@@ -211,8 +199,6 @@ namespace hole
     ///
     elle::Status        Model::Serialize(elle::Archive& archive) const
     {
-      ;
-
       // serialize the internal digest.
       if (archive.Serialize(static_cast<elle::Natural8>(this->type)) ==
           elle::StatusError)
@@ -226,8 +212,6 @@ namespace hole
     ///
     elle::Status        Model::Extract(elle::Archive&           archive)
     {
-      ;
-
       // extract the internal digest.
       if (archive.Extract(reinterpret_cast<elle::Natural8&>(this->type)) ==
           elle::StatusError)

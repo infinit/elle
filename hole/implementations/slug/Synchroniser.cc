@@ -32,8 +32,6 @@ namespace hole
       ///
       elle::Status      Synchroniser::Start()
       {
-        ;
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Synchroniser::Start()\n");
@@ -65,8 +63,6 @@ namespace hole
       ///
       elle::Status      Synchroniser::Run()
       {
-        ;
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Synchroniser::Run()\n");
@@ -103,8 +99,6 @@ namespace hole
       elle::Status      Synchroniser::Dump(const elle::Natural32 margin) const
       {
         elle::String    alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment << "[Synchroniser]" << std::endl;
 

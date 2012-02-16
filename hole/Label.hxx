@@ -25,8 +25,6 @@ namespace hole
   template <typename T>
   elle::Status          Label::Create(const T&                  parameter)
   {
-    ;
-
     // release the previous digest.
     if (this->digest != NULL)
       delete this->digest;

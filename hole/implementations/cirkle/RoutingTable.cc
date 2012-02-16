@@ -46,8 +46,6 @@ namespace hole
       {
         std::pair<RoutingTable::Iterator, elle::Boolean>        result;
 
-        ;
-
         // insert the neighbour in the container.
         result = this->container.insert(std::pair<const Label,
                                                   Neighbour*>(label,
@@ -65,8 +63,6 @@ namespace hole
       ///
       elle::Status      RoutingTable::Exist(const Label&        label)
       {
-        ;
-
         // try to locate the label.
         if (this->Locate(label) == elle::StatusTrue)
           return elle::StatusTrue;
@@ -81,8 +77,6 @@ namespace hole
                                                Neighbour*&      neighbour)
       {
         RoutingTable::Iterator  iterator;
-
-        ;
 
         // try to locate the label.
         if (this->Locate(label, &iterator) == elle::StatusFalse)
@@ -104,8 +98,6 @@ namespace hole
       {
         RoutingTable::Iterator  iterator;
 
-        ;
-
         // try to locate the label.
         if (this->Locate(label, &iterator) == elle::StatusFalse)
           escape("unable to locate the given label");
@@ -123,8 +115,6 @@ namespace hole
                                              Iterator*          iterator)
       {
         RoutingTable::Iterator  i;
-
-        ;
 
         // try to locate the neighbour.
         if ((i = this->container.find(label)) != this->container.end())
@@ -149,8 +139,6 @@ namespace hole
       {
         elle::String            alignment(margin, ' ');
         RoutingTable::Scoutor   scoutor;
-
-        ;
 
         // display the name.
         std::cout << alignment << "[RoutingTable]" << std::endl;

@@ -77,8 +77,6 @@ namespace hole
         elle::String    string;
         elle::Locus     locus;
 
-        ;
-
         // retrieve the server's locus.
         if (Hole::Descriptor.Get("remote", "server",
                                  string) == elle::StatusError)

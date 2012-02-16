@@ -59,8 +59,6 @@ namespace hole
       ///
       elle::Status      Client::Launch()
       {
-        ;
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Client::Launch()\n");
@@ -169,8 +167,6 @@ namespace hole
         nucleus::Derivable<nucleus::Block>      derivable(address.component,
                                                           block);
 
-        ;
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Client::Put[Mutable]()\n");
@@ -196,8 +192,6 @@ namespace hole
                                     nucleus::ImmutableBlock&    block)
       {
         nucleus::Derivable<nucleus::Block>      derivable(block);
-
-        ;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -226,8 +220,6 @@ namespace hole
       {
         nucleus::Derivable<nucleus::Block>      derivable(block);
 
-        ;
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Client::Get[Mutable]()\n");
@@ -251,8 +243,6 @@ namespace hole
       ///
       elle::Status      Client::Kill(const nucleus::Address&    address)
       {
-        ;
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Client::Kill()\n");
@@ -280,8 +270,6 @@ namespace hole
       ///
       elle::Status      Client::Connected()
       {
-        ;
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Client::Connected()\n");
@@ -298,8 +286,6 @@ namespace hole
       ///
       elle::Status      Client::Disconnected()
       {
-        ;
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Client::Disconnected()\n");
@@ -327,8 +313,6 @@ namespace hole
       ///
       elle::Status      Client::Error(const elle::String&)
       {
-        ;
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Client::Error()\n");
@@ -345,8 +329,6 @@ namespace hole
       ///
       elle::Status      Client::Authenticated()
       {
-        ;
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Client::Authenticated()\n");
@@ -365,8 +347,6 @@ namespace hole
       ///
       elle::Status      Client::Exception(const elle::Report&   report)
       {
-        ;
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Client::Exception()\n");
@@ -390,8 +370,6 @@ namespace hole
       elle::Status      Client::Dump(const elle::Natural32      margin) const
       {
         elle::String    alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment << "[Client]" << std::endl;
 

@@ -71,8 +71,6 @@ namespace hole
       ///
       elle::Status      Customer::Create(elle::TCPSocket*       socket)
       {
-        ;
-
         // register the client.
         this->socket = socket;
 
@@ -118,8 +116,6 @@ namespace hole
       ///
       elle::Status      Customer::Disconnected()
       {
-        ;
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Customer::Disconnected()");
@@ -140,8 +136,6 @@ namespace hole
       ///
       elle::Status      Customer::Error(const elle::String&     error)
       {
-        ;
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Customer::Error()");
@@ -162,8 +156,6 @@ namespace hole
       ///
       elle::Status      Customer::Abort()
       {
-        ;
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Customer::Abort()");
@@ -195,8 +187,6 @@ namespace hole
       elle::Status      Customer::Dump(const elle::Natural32    margin) const
       {
         elle::String    alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment << "[Customer]" << std::endl;
 
