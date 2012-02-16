@@ -47,8 +47,6 @@ namespace elle
     {
       Archive           archive;
 
-      ;
-
       // create an archive.
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -72,8 +70,6 @@ namespace elle
     {
       Archive           archive;
 
-      ;
-
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
 
@@ -95,8 +91,6 @@ namespace elle
                                      Digest&                    digest)
     {
       Archive           archive;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -121,8 +115,6 @@ namespace elle
                                      Digest&                    digest)
     {
       Archive           archive;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -149,8 +141,6 @@ namespace elle
                                      Digest&                    digest)
     {
       Archive           archive;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -179,8 +169,6 @@ namespace elle
                                      Digest&                    digest)
     {
       Archive           archive;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -211,8 +199,6 @@ namespace elle
                                      Digest&                    digest)
     {
       Archive           archive;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -245,8 +231,6 @@ namespace elle
                                      Digest&                    digest)
     {
       Archive           archive;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -281,8 +265,6 @@ namespace elle
                                      Digest&                    digest)
     {
       Archive           archive;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");

@@ -74,8 +74,6 @@ namespace elle
     ///
     Status              SecretKey::Create(const String&         password)
     {
-      ;
-
       // assign the password to the internal key object.
       if (this->region.Duplicate(
             reinterpret_cast<const Byte*>(password.c_str()),
@@ -101,8 +99,6 @@ namespace elle
     Status              SecretKey::Generate(const Natural32     length)
     {
       Natural32         size;
-
-      ;
 
       // convert the length in a byte-specific size.
       size = length / 8;
@@ -302,8 +298,6 @@ namespace elle
     ///
     Boolean             SecretKey::operator==(const SecretKey&  element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -331,8 +325,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      ;
-
       // display the key depending on its value.
       if (*this == SecretKey::Null)
         {
@@ -359,8 +351,6 @@ namespace elle
     ///
     Status              SecretKey::Serialize(Archive&           archive) const
     {
-      ;
-
       // serialize the internal key.
       if (archive.Serialize(this->region) == StatusError)
         escape("unable to serialize the internal key");
@@ -373,8 +363,6 @@ namespace elle
     ///
     Status              SecretKey::Extract(Archive&             archive)
     {
-      ;
-
       // extract the key.
       if (archive.Extract(this->region) == StatusError)
         escape("unable to extract the internal key");

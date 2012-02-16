@@ -56,8 +56,6 @@ namespace elle
     {
       Archive           archive;
 
-      ;
-
       // extract an archive.
       if (this->Decrypt(code, archive) == StatusError)
         escape("unable to decrypt into an archive");
@@ -85,8 +83,6 @@ namespace elle
       Archive           archive;
       Digest            digest;
 
-      ;
-
       // create th archive.
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -112,8 +108,6 @@ namespace elle
       Archive           archive;
       Digest            digest;
 
-      ;
-
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
 
@@ -137,8 +131,6 @@ namespace elle
     {
       Archive           archive;
       Digest            digest;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -165,8 +157,6 @@ namespace elle
     {
       Archive           archive;
       Digest            digest;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -195,8 +185,6 @@ namespace elle
     {
       Archive           archive;
       Digest            digest;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -227,8 +215,6 @@ namespace elle
     {
       Archive           archive;
       Digest            digest;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -261,8 +247,6 @@ namespace elle
     {
       Archive           archive;
       Digest            digest;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -297,8 +281,6 @@ namespace elle
     {
       Archive           archive;
       Digest            digest;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -336,8 +318,6 @@ namespace elle
       Archive           archive;
       Digest            digest;
 
-      ;
-
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
 
@@ -368,8 +348,6 @@ namespace elle
     {
       Archive           archive;
 
-      ;
-
       // create an archive.
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -393,8 +371,6 @@ namespace elle
     {
       Archive           archive;
 
-      ;
-
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
 
@@ -416,8 +392,6 @@ namespace elle
                                             Code&               code) const
     {
       Archive           archive;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -442,8 +416,6 @@ namespace elle
                                             Code&               code) const
     {
       Archive           archive;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -470,8 +442,6 @@ namespace elle
                                             Code&               code) const
     {
       Archive           archive;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -500,8 +470,6 @@ namespace elle
                                             Code&               code) const
     {
       Archive           archive;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -532,8 +500,6 @@ namespace elle
                                             Code&               code) const
     {
       Archive           archive;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -566,8 +532,6 @@ namespace elle
                                             Code&               code) const
     {
       Archive           archive;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");
@@ -602,8 +566,6 @@ namespace elle
                                             Code&               code) const
     {
       Archive           archive;
-
-      ;
 
       if (archive.Create() == StatusError)
         escape("unable to create the archive");

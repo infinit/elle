@@ -53,8 +53,6 @@ namespace elle
     ///
     Status              Code::Create(const Region&      region)
     {
-      ;
-
       // set the region.
       this->region = region;
 
@@ -70,8 +68,6 @@ namespace elle
     ///
     Boolean             Code::operator==(const Code&    element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -99,8 +95,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      ;
-
       // display depending on the value.
       if (*this == Code::Null)
         {
@@ -127,8 +121,6 @@ namespace elle
     ///
     Status              Code::Serialize(Archive&                archive) const
     {
-      ;
-
       // serialize the region.
       if (archive.Serialize(this->region) == StatusError)
         escape("unable to serialize the region");
@@ -141,8 +133,6 @@ namespace elle
     ///
     Status              Code::Extract(Archive&          archive)
     {
-      ;
-
       // extract the content.
       if (archive.Extract(this->region) == StatusError)
         escape("unable to extract the region");

@@ -48,8 +48,6 @@ namespace elle
     {
       Natural32         size;
 
-      ;
-
       // compute the size in bytes.
       size = length / 8;
 
@@ -70,8 +68,6 @@ namespace elle
                                      Seed&                      seed) const
     {
       Code              code;
-
-      ;
 
       // encrypt the seed object with the given private key.
       if (k.Encrypt(*this, code) == StatusError)
@@ -98,8 +94,6 @@ namespace elle
       Code              code;
       Region            chunk;
 
-      ;
-
       // wrap the seed's region.
       if (chunk.Wrap(this->region.contents,
                      this->region.size) == StatusError)
@@ -125,8 +119,6 @@ namespace elle
     ///
     Boolean             Seed::operator==(const Seed&            element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -154,8 +146,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Seed]" << std::endl;
 
       // dump the region.
@@ -174,8 +164,6 @@ namespace elle
     ///
     Status              Seed::Serialize(Archive&                archive) const
     {
-      ;
-
       // serialize the internal region.
       if (archive.Serialize(this->region) == StatusError)
         escape("unable to serialize the internal region");
@@ -188,8 +176,6 @@ namespace elle
     ///
     Status              Seed::Extract(Archive&                  archive)
     {
-      ;
-
       // extract the region.
       if (archive.Extract(this->region) == StatusError)
         escape("unable to extract the internal region");
