@@ -31,8 +31,6 @@ namespace nucleus
     elle::Status        Stamp::Create(const Location&           master,
                                       const Location&           slave)
     {
-      ;
-
       // set the attributes.
       this->master = master;
       this->slave = slave;
@@ -45,8 +43,6 @@ namespace nucleus
     ///
     elle::Status        Stamp::Seal(const elle::PrivateKey&     k)
     {
-      ;
-
       // sign the attributes.
       if (k.Sign(this->master, this->slave,
                  this->signature) == elle::StatusError)
@@ -61,8 +57,6 @@ namespace nucleus
     ///
     elle::Status        Stamp::Validate()
     {
-      ;
-
       // sign the attributes.
       if (Infinit::Authority.K.Verify(
             this->signature,
@@ -81,8 +75,6 @@ namespace nucleus
     ///
     elle::Boolean       Stamp::operator==(const Stamp&          element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -111,8 +103,6 @@ namespace nucleus
     elle::Status        Stamp::Dump(elle::Natural32             margin) const
     {
       elle::String      alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Stamp]" << std::endl;
 
@@ -148,8 +138,6 @@ namespace nucleus
     ///
     elle::Status        Stamp::Serialize(elle::Archive&         archive) const
     {
-      ;
-
       // serialize the attributes.
       if (archive.Serialize(this->master,
                             this->slave,
@@ -164,8 +152,6 @@ namespace nucleus
     ///
     elle::Status        Stamp::Extract(elle::Archive&           archive)
     {
-      ;
-
       // extract the attributes.
       if (archive.Extract(this->master,
                           this->slave,

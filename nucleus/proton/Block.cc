@@ -62,8 +62,6 @@ namespace nucleus
     ///
     elle::Status        Block::Bind(Address&) const
     {
-      ;
-
       escape("this method should never have been called");
     }
 
@@ -73,8 +71,6 @@ namespace nucleus
     ///
     elle::Status        Block::Validate(const Address&) const
     {
-      ;
-
       escape("this method should never have been called");
     }
 
@@ -97,8 +93,6 @@ namespace nucleus
     elle::Status        Block::Dump(const elle::Natural32       margin) const
     {
       elle::String      alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Block]" << std::endl;
 
@@ -130,8 +124,6 @@ namespace nucleus
     ///
     elle::Status        Block::Serialize(elle::Archive& archive) const
     {
-      ;
-
       // serialize the attributes.
       if (archive.Serialize(
             this->network,
@@ -147,8 +139,6 @@ namespace nucleus
     ///
     elle::Status        Block::Extract(elle::Archive&           archive)
     {
-      ;
-
       // extracts the attributes.
       if (archive.Extract(
             this->network,
@@ -170,8 +160,6 @@ namespace nucleus
     elle::Status        Block::Erase(const Network&,
                                      const Address&) const
     {
-      ;
-
       escape("this method should never have been called");
     }
 

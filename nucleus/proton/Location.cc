@@ -49,8 +49,6 @@ namespace nucleus
     elle::Status        Location::Create(const Address&         address,
                                          const Version&         version)
     {
-      ;
-
       // set the attributes.
       this->address = address;
       this->version = version;
@@ -67,8 +65,6 @@ namespace nucleus
     ///
     elle::Boolean       Location::operator==(const Location&    element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -97,8 +93,6 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Location]" << std::endl;
 
       // dump the address.
@@ -121,8 +115,6 @@ namespace nucleus
     ///
     elle::Status        Location::Serialize(elle::Archive&      archive) const
     {
-      ;
-
       // serialize the attributes.
       if (archive.Serialize(this->address,
                             this->version) == elle::StatusError)
@@ -136,8 +128,6 @@ namespace nucleus
     ///
     elle::Status        Location::Extract(elle::Archive&        archive)
     {
-      ;
-
       // extracts the attributes.
       if (archive.Extract(this->address,
                           this->version) == elle::StatusError)

@@ -41,8 +41,6 @@ namespace nucleus
     elle::Status        Data::Write(const Offset&               offset,
                                     const elle::Region&         region)
     {
-      ;
-
       // expand if necessary.
       if ((offset + region.size) > this->region.capacity)
         {
@@ -71,8 +69,6 @@ namespace nucleus
                                    elle::Region&                region) const
     {
       Size              length;
-
-      ;
 
       // check the operation's validity: note that since such out-of-bound
       // calls are frequent, no warning or error is raised. instead, no data
@@ -108,8 +104,6 @@ namespace nucleus
     ///
     elle::Status        Data::Adjust(const Size&                size)
     {
-      ;
-
       // first, make sure the region's capacity is large enough.
       if (this->region.Adjust(size) == elle::StatusError)
         escape("unable to adjust the region size");
@@ -128,8 +122,6 @@ namespace nucleus
     ///
     elle::Status        Data::Capacity(Size&                    size) const
     {
-      ;
-
       // set the size.
       size = this->region.size;
 
@@ -156,8 +148,6 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Data]" << std::endl;
 
       // dump the state.
@@ -180,8 +170,6 @@ namespace nucleus
     ///
     elle::Status        Data::Serialize(elle::Archive&          archive) const
     {
-      ;
-
       // serialize the internal region.
       if (archive.Serialize(this->region) == elle::StatusError)
         escape("unable to serialize the internal region");
@@ -194,8 +182,6 @@ namespace nucleus
     ///
     elle::Status        Data::Extract(elle::Archive&            archive)
     {
-      ;
-
       // extract the region.
       if (archive.Extract(this->region) == elle::StatusError)
         escape("unable to extract the region");

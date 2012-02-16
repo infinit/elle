@@ -101,8 +101,6 @@ namespace nucleus
     {
       elle::Archive     archive;
 
-      ;
-
       // if there is no block, this operation cannot be performed.
       if (this->content == NULL)
         escape("unable to encrypt a non-existing block");
@@ -138,8 +136,6 @@ namespace nucleus
     {
       elle::Archive     archive;
       elle::Clear       clear;
-
-      ;
 
       // if there is no cipher, this operation cannot be performed.
       if (this->cipher == NULL)
@@ -190,8 +186,6 @@ namespace nucleus
     template <typename T>
     elle::Status        Contents<T>::Create()
     {
-      ;
-
       // allocate the block.
       this->content = new T;
 
@@ -205,8 +199,6 @@ namespace nucleus
     elle::Status        Contents<T>::Dump(elle::Natural32       margin) const
     {
       elle::String      alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Contents]" << std::endl;
 
@@ -259,8 +251,6 @@ namespace nucleus
     template <typename T>
     elle::Status        Contents<T>::Serialize(elle::Archive&   archive) const
     {
-      ;
-
       // check if the block's ciphered version is ready.
       if (this->cipher == NULL)
         escape("unable to serialize an unciphered content");
@@ -283,8 +273,6 @@ namespace nucleus
     template <typename T>
     elle::Status        Contents<T>::Extract(elle::Archive&     archive)
     {
-      ;
-
       // call the parent class.
       if (proton::ContentHashBlock::Extract(archive) == elle::StatusError)
         escape("unable to extract the underlying CHB");

@@ -60,8 +60,6 @@ namespace nucleus
     elle::Status        Object::Create(const Genre              genre,
                                        const elle::PublicKey&   owner)
     {
-      ;
-
       // (i)
       {
         // create the underlying owner key block.
@@ -111,8 +109,6 @@ namespace nucleus
                                        const Token&             token)
 
     {
-      ;
-
       // set the author.
       this->author = author;
 
@@ -158,8 +154,6 @@ namespace nucleus
     elle::Status        Object::Administrate(const Attributes&  attributes,
                                              const Permissions& permissions)
     {
-      ;
-
       // set the last management time.
       if (this->meta.stamp.Current() == elle::StatusError)
         escape("unable to set the last management time");
@@ -194,8 +188,6 @@ namespace nucleus
     elle::Status        Object::Seal(const elle::PrivateKey&    k,
                                      const Access&              access)
     {
-      ;
-
       // re-sign the data if required.
       if (this->data._state == proton::StateDirty)
         {
@@ -302,8 +294,6 @@ namespace nucleus
     ///
     elle::Status        Object::Validate(const proton::Address&) const
     {
-      ;
-
       escape("this method should never have been called");
     }
 
@@ -321,8 +311,6 @@ namespace nucleus
       const
     {
       elle::PublicKey   author;
-
-      ;
 
       // (i)
       {
@@ -497,8 +485,6 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Object]" << std::endl;
 
       // dump the parent class.
@@ -588,8 +574,6 @@ namespace nucleus
     ///
     elle::Status        Object::Serialize(elle::Archive&        archive) const
     {
-      ;
-
       // call the parent class.
       if (proton::ImprintBlock::Serialize(archive) == elle::StatusError)
         escape("unable to serialize the underlying physical block");
@@ -625,8 +609,6 @@ namespace nucleus
     ///
     elle::Status        Object::Extract(elle::Archive&          archive)
     {
-      ;
-
       // call the parent class.
       if (proton::ImprintBlock::Extract(archive) == elle::StatusError)
         escape("unable to extract the underyling physical block");

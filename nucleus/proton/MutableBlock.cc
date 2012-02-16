@@ -69,8 +69,6 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[MutableBlock]" << std::endl;
 
       // dump the parent.
@@ -93,8 +91,6 @@ namespace nucleus
     ///
     elle::Status        MutableBlock::Serialize(elle::Archive&  archive) const
     {
-      ;
-
       // serialize the parent class.
       if (Block::Serialize(archive) == elle::StatusError)
         escape("unable to serialize the underlying block");
@@ -111,8 +107,6 @@ namespace nucleus
     ///
     elle::Status        MutableBlock::Extract(elle::Archive&    archive)
     {
-      ;
-
       // extract the parent class.
       if (Block::Extract(archive) == elle::StatusError)
         escape("unable to extract the underlying block");
@@ -137,8 +131,6 @@ namespace nucleus
     {
       elle::Path        path;
       elle::String      unique;
-
-      ;
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
@@ -250,8 +242,6 @@ namespace nucleus
     {
       elle::Path        file;
       elle::String      unique;
-
-      ;
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
@@ -402,8 +392,6 @@ namespace nucleus
       elle::Unique      unique;
       elle::Path        path;
 
-      ;
-
       // turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
                                     unique) == elle::StatusError)
@@ -521,8 +509,6 @@ namespace nucleus
     {
       elle::Path                path;
       elle::String              unique;
-
-      ;
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,

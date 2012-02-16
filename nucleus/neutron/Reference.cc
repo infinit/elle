@@ -40,8 +40,6 @@ namespace nucleus
     ///
     elle::Status        Reference::Bind(const elle::String&     target)
     {
-      ;
-
       // set the target.
       this->target = target;
 
@@ -56,8 +54,6 @@ namespace nucleus
     ///
     elle::Status        Reference::Resolve(elle::String&        target) const
     {
-      ;
-
       // retrieve the target.
       target = this->target;
 
@@ -69,8 +65,6 @@ namespace nucleus
     ///
     elle::Status        Reference::Capacity(Size&               size) const
     {
-      ;
-
       // retrieve the length.
       size = static_cast<Size>(this->target.length());
 
@@ -97,8 +91,6 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Reference] " << std::endl;
 
       // dump the state.
@@ -121,8 +113,6 @@ namespace nucleus
     ///
     elle::Status        Reference::Serialize(elle::Archive&     archive) const
     {
-      ;
-
       // serialize the target.
       if (archive.Serialize(this->target) == elle::StatusError)
         escape("unable to serialize the target");
@@ -135,8 +125,6 @@ namespace nucleus
     ///
     elle::Status        Reference::Extract(elle::Archive&       archive)
     {
-      ;
-
       // extract the target.
       if (archive.Extract(this->target) == elle::StatusError)
         escape("unable to extract the target");

@@ -58,8 +58,6 @@ namespace nucleus
     ///
     elle::Status        ImprintBlock::Create(const elle::PublicKey& owner)
     {
-      ;
-
       // retrieve the current time.
       if (this->stamp.Current() == elle::StatusError)
         escape("unable to retrieve the current time");
@@ -86,8 +84,6 @@ namespace nucleus
     elle::Status        ImprintBlock::Bind(Address&             address)
       const
     {
-      ;
-
       // compute the address.
       if (address.Create(this->family, this->component,
                          this->network,
@@ -107,8 +103,6 @@ namespace nucleus
       const
     {
       Address           self;
-
-      ;
 
       //
       // make sure the address has not be tampered and correspond to the
@@ -142,8 +136,6 @@ namespace nucleus
                                              elle::Natural32    margin) const
     {
       elle::String      alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[ImprintBlock]" << std::endl;
 
@@ -186,8 +178,6 @@ namespace nucleus
     ///
     elle::Status        ImprintBlock::Serialize(elle::Archive& archive) const
     {
-      ;
-
       // serialize the parent class.
       if (MutableBlock::Serialize(archive) == elle::StatusError)
         escape("unable to serialize the underlying block");
@@ -206,8 +196,6 @@ namespace nucleus
     ///
     elle::Status        ImprintBlock::Extract(elle::Archive&    archive)
     {
-      ;
-
       // extract the parent class.
       if (MutableBlock::Extract(archive) == elle::StatusError)
         escape("unable to extract the underlying block");

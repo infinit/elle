@@ -30,8 +30,6 @@ namespace nucleus
     elle::Status        Base::Create(const Version&             version,
                                      const elle::Digest&        digest)
     {
-      ;
-
       // set the attributes.
       this->version = version;
       this->digest = digest;
@@ -44,8 +42,6 @@ namespace nucleus
     ///
     elle::Status        Base::Create(const MutableBlock&        block)
     {
-      ;
-
       // set the version.
       this->version = block.version;
 
@@ -63,8 +59,6 @@ namespace nucleus
     elle::Status        Base::Match(const MutableBlock&         block) const
     {
       elle::Digest      digest;
-
-      ;
 
       // check the versions.
       if (this->version != block.version)
@@ -90,8 +84,6 @@ namespace nucleus
     ///
     elle::Boolean       Base::operator==(const Base&            element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -120,8 +112,6 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Base]" << std::endl;
 
       // dump the version.
@@ -144,8 +134,6 @@ namespace nucleus
     ///
     elle::Status        Base::Serialize(elle::Archive&          archive) const
     {
-      ;
-
       // serialize the attributes.
       if (archive.Serialize(this->version,
                             this->digest) == elle::StatusError)
@@ -159,8 +147,6 @@ namespace nucleus
     ///
     elle::Status        Base::Extract(elle::Archive&            archive)
     {
-      ;
-
       // extract the attributes.
       if (archive.Extract(this->version,
                           this->digest) == elle::StatusError)

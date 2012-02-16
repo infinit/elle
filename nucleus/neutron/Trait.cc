@@ -58,8 +58,6 @@ namespace nucleus
     ///
     elle::Boolean       Trait::operator==(const Trait&          element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -88,8 +86,6 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Trait]" << std::endl;
 
       // dump the name.
@@ -112,8 +108,6 @@ namespace nucleus
     ///
     elle::Status        Trait::Serialize(elle::Archive&         archive) const
     {
-      ;
-
       // serialize the attributes.
       if (archive.Serialize(this->name,
                             this->value) == elle::StatusError)
@@ -127,8 +121,6 @@ namespace nucleus
     ///
     elle::Status        Trait::Extract(elle::Archive&           archive)
     {
-      ;
-
       // extract the attributes.
       if (archive.Extract(this->name,
                           this->value) == elle::StatusError)

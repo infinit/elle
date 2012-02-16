@@ -39,8 +39,6 @@ namespace nucleus
   ///
   elle::Status          Nucleus::Initialize()
   {
-    ;
-
     //
     // register the nucleus products.
     //
@@ -79,8 +77,6 @@ namespace nucleus
   ///
   elle::Status          Nucleus::Clean()
   {
-    ;
-
     // initialize the proton.
     if (proton::Proton::Initialize() == elle::StatusError)
       escape("unable to initialize the proton");

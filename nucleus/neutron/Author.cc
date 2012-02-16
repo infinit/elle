@@ -56,8 +56,6 @@ namespace nucleus
     ///
     elle::Status        Author::Create()
     {
-      ;
-
       // set the role.
       this->role = RoleOwner;
 
@@ -71,8 +69,6 @@ namespace nucleus
     ///
     elle::Status        Author::Create(const Index&             index)
     {
-      ;
-
       // set the role.
       this->role = RoleLord;
 
@@ -91,8 +87,6 @@ namespace nucleus
     ///
     elle::Boolean       Author::operator==(const Author&        element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -159,8 +153,6 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Author]" << std::endl;
 
       // dump the role.
@@ -211,8 +203,6 @@ namespace nucleus
     ///
     elle::Status        Author::Serialize(elle::Archive&        archive) const
     {
-      ;
-
       // serialize the role.
       if (archive.Serialize(this->role) == elle::StatusError)
         escape("unable to serialize the role");
@@ -261,8 +251,6 @@ namespace nucleus
     ///
     elle::Status        Author::Extract(elle::Archive&          archive)
     {
-      ;
-
       // extract the role.
       if (archive.Extract(this->role) == elle::StatusError)
         escape("unable to extract the role");

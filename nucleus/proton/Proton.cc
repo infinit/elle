@@ -30,8 +30,6 @@ namespace nucleus
     ///
     elle::Status        Proton::Initialize()
     {
-      ;
- 
       // initialize the address.
       if (Address::Initialize() == elle::StatusError)
         escape("unable to initialize the address");
@@ -44,8 +42,6 @@ namespace nucleus
     ///
     elle::Status        Proton::Clean()
     {
-      ;
-
       // clean the address.
       if (Address::Clean() == elle::StatusError)
         escape("unable to clean the address");

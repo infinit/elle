@@ -49,8 +49,6 @@ namespace nucleus
     ///
     elle::Status        PublicKeyBlock::Create(const elle::PublicKey& K)
     {
-      ;
-
       // copy the public key.
       this->K = K;
 
@@ -63,8 +61,6 @@ namespace nucleus
     elle::Status        PublicKeyBlock::Bind(Address&           address)
       const
     {
-      ;
-
       // compute the address.
       if (address.Create(this->family, this->component,
                          this->network,
@@ -83,8 +79,6 @@ namespace nucleus
       const
     {
       Address           self;
-
-      ;
 
       //
       // make sure the address has not be tampered and correspond to the
@@ -132,8 +126,6 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[PublicKeyBlock]" << std::endl;
 
       // dump the parent class.
@@ -158,8 +150,6 @@ namespace nucleus
     ///
     elle::Status        PublicKeyBlock::Serialize(elle::Archive& archive) const
     {
-      ;
-
       // serialize the parent class.
       if (MutableBlock::Serialize(archive) == elle::StatusError)
         escape("unable to serialize the underlying block");
@@ -176,8 +166,6 @@ namespace nucleus
     ///
     elle::Status        PublicKeyBlock::Extract(elle::Archive&  archive)
     {
-      ;
-
       // extract the parent class.
       if (MutableBlock::Extract(archive) == elle::StatusError)
         escape("unable to extract the underlying block");

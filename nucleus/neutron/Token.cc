@@ -76,8 +76,6 @@ namespace nucleus
     elle::Status        Token::Update(const elle::SecretKey&    key,
                                       const elle::PublicKey&    K)
     {
-      ;
-
       // delete the previous code.
       if (this->code != NULL)
         delete this->code;
@@ -106,8 +104,6 @@ namespace nucleus
     elle::Status        Token::Extract(const elle::PrivateKey&  k,
                                        elle::SecretKey&         key) const
     {
-      ;
-
       // check the code.
       if (this->code == NULL)
         escape("unable to retrieve the key out of a null token");
@@ -128,8 +124,6 @@ namespace nucleus
     ///
     elle::Boolean       Token::operator==(const Token&          element) const
     {
-      ;
-
       // check if the objects are the same.
       if (this == &element)
         return elle::StatusTrue;
@@ -165,8 +159,6 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Token] " << std::endl;
 
       // dump the code.
@@ -193,8 +185,6 @@ namespace nucleus
     ///
     elle::Status        Token::Serialize(elle::Archive&         archive) const
     {
-      ;
-
       // serialize the code.
       if (this->code != NULL)
         {
@@ -217,8 +207,6 @@ namespace nucleus
     elle::Status        Token::Extract(elle::Archive&           archive)
     {
       elle::Archive::Type       type;
-
-      ;
 
       // fetch the next element's type.
       if (archive.Fetch(type) == elle::StatusError)

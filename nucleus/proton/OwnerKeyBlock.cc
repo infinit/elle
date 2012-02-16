@@ -51,8 +51,6 @@ namespace nucleus
     {
       elle::KeyPair     pair;
 
-      ;
-
       // retrieve the current time.
       if (this->stamp.Current() == elle::StatusError)
         escape("unable to retrieve the current time");
@@ -87,8 +85,6 @@ namespace nucleus
     elle::Status        OwnerKeyBlock::Bind(Address&            address)
       const
     {
-      ;
-
       // compute the address.
       if (address.Create(this->family, this->component,
                          this->network,
@@ -107,8 +103,6 @@ namespace nucleus
       const
     {
       Address           self;
-
-      ;
 
       //
       // make sure the address has not be tampered and correspond to the
@@ -155,8 +149,6 @@ namespace nucleus
                                                elle::Natural32  margin) const
     {
       elle::String      alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[OwnerKeyBlock]" << std::endl;
 
@@ -208,8 +200,6 @@ namespace nucleus
     ///
     elle::Status        OwnerKeyBlock::Serialize(elle::Archive& archive) const
     {
-      ;
-
       // serialize the parent class.
       if (MutableBlock::Serialize(archive) == elle::StatusError)
         escape("unable to serialize the underlying block");
@@ -229,8 +219,6 @@ namespace nucleus
     ///
     elle::Status        OwnerKeyBlock::Extract(elle::Archive&   archive)
     {
-      ;
-
       // extract the parent class.
       if (MutableBlock::Extract(archive) == elle::StatusError)
         escape("unable to extract the underlying block");

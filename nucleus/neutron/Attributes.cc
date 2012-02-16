@@ -28,8 +28,6 @@ namespace nucleus
     ///
     elle::Status        Attributes::Add(Trait*                  trait)
     {
-      ;
-
       // add the trait in the range.
       if (this->range.Add(trait) == elle::StatusError)
         escape("unable to add the trait in the range");
@@ -42,8 +40,6 @@ namespace nucleus
     ///
     elle::Status        Attributes::Exist(const elle::String&   name) const
     {
-      ;
-
       // test.
       if (this->range.Exist(name) == false)
         return elle::StatusFalse;
@@ -57,8 +53,6 @@ namespace nucleus
     elle::Status        Attributes::Lookup(const elle::String&  name,
                                            Trait*&              trait) const
     {
-      ;
-
       // look in the range.
       if (this->range.Lookup(name, trait) == elle::StatusError)
         escape("unable to retrieve the trait");
@@ -76,8 +70,6 @@ namespace nucleus
     {
       Range<Trait>::Scoutor     scoutor;
       Index                     i;
-
-      ;
 
       // first detach the data from the range.
       if (range.Detach() == elle::StatusError)
@@ -110,8 +102,6 @@ namespace nucleus
     {
       Range<Trait>::Iterator    iterator;
 
-      ;
-
       // locate the trait.
       if (this->range.Locate(name, iterator) == false)
         escape("unable to locate the named trait");
@@ -127,8 +117,6 @@ namespace nucleus
     ///
     elle::Status        Attributes::Remove(const elle::String&  name)
     {
-      ;
-
       // remove the trait from the range.
       if (this->range.Remove(name) == elle::StatusError)
         escape("unable to remove the trait");
@@ -141,8 +129,6 @@ namespace nucleus
     ///
     elle::Status        Attributes::Capacity(Size&              size) const
     {
-      ;
-
       // look at the size of the range.
       if (this->range.Capacity(size) == elle::StatusError)
         escape("unable to retrieve the range size");
@@ -159,8 +145,6 @@ namespace nucleus
     ///
     elle::Boolean       Attributes::operator==(const Attributes& element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -189,8 +173,6 @@ namespace nucleus
       elle::String              alignment(margin, ' ');
       Range<Trait>::Scoutor     scoutor;
 
-      ;
-
       std::cout << alignment << "[Attributes]" << std::endl;
 
       // dump the range.
@@ -209,8 +191,6 @@ namespace nucleus
     ///
     elle::Status        Attributes::Serialize(elle::Archive&    archive) const
     {
-      ;
-
       // serialize the range.
       if (archive.Serialize(this->range) == elle::StatusError)
         escape("unable to serialize the range");
@@ -223,8 +203,6 @@ namespace nucleus
     ///
     elle::Status        Attributes::Extract(elle::Archive&      archive)
     {
-      ;
-
       // extract the range.
       if (archive.Extract(this->range) == elle::StatusError)
         escape("unable to extract the range");

@@ -62,8 +62,6 @@ namespace nucleus
                                        const Permissions&       permissions,
                                        const elle::SecretKey&   key)
     {
-      ;
-
       // set the subject.
       this->subject = subject;
 
@@ -114,8 +112,6 @@ namespace nucleus
                                        const Permissions&       permissions,
                                        const Token&             token)
     {
-      ;
-
       // set the subject.
       this->subject = subject;
 
@@ -137,8 +133,6 @@ namespace nucleus
     ///
     elle::Boolean       Record::operator==(const Record&        element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -168,8 +162,6 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Record]" << std::endl;
 
       // dump the subject.
@@ -197,8 +189,6 @@ namespace nucleus
     ///
     elle::Status        Record::Serialize(elle::Archive&        archive) const
     {
-      ;
-
       // serialize the attributes.
       if (archive.Serialize(this->subject,
                             this->permissions,
@@ -213,8 +203,6 @@ namespace nucleus
     ///
     elle::Status        Record::Extract(elle::Archive&          archive)
     {
-      ;
-
       // extract the attributes.
       if (archive.Extract(this->subject,
                           this->permissions,

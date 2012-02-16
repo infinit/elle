@@ -49,8 +49,6 @@ namespace nucleus
     ///
     elle::Status        Address::Initialize()
     {
-      ;
-
       // create the any address with default meaningless values.
       if (Address::Any.Create(
             Address::Any.family, Address::Any.component,
@@ -67,8 +65,6 @@ namespace nucleus
     ///
     elle::Status        Address::Clean()
     {
-      ;
-
       // nothing to do.
 
       return elle::StatusOk;
@@ -128,8 +124,6 @@ namespace nucleus
     ///
     elle::Boolean       Address::operator==(const Address&      element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -154,8 +148,6 @@ namespace nucleus
     ///
     elle::Boolean       Address::operator<(const Address&       element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusFalse;
@@ -190,8 +182,6 @@ namespace nucleus
     elle::Status        Address::Dump(elle::Natural32           margin) const
     {
       elle::String      alignment(margin, ' ');
-
-      ;
 
       // check the value.
       if (*this == Address::Null)
@@ -241,8 +231,6 @@ namespace nucleus
     ///
     elle::Status        Address::Serialize(elle::Archive&       archive) const
     {
-      ;
-
       if (this->digest != NULL)
         {
           // serialize the internal digest.
@@ -267,8 +255,6 @@ namespace nucleus
     elle::Status        Address::Extract(elle::Archive&         archive)
     {
       elle::Archive::Type       type;
-
-      ;
 
       // fetch the next element's type.
       if (archive.Fetch(type) == elle::StatusError)

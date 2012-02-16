@@ -46,8 +46,6 @@ namespace nucleus
       elle::String      string(name);
       elle::Natural32   i;
 
-      ;
-
       // transform the given name in lowercase.
       std::transform(string.begin(), string.end(),
                      string.begin(), std::ptr_fun(::tolower));
@@ -75,8 +73,6 @@ namespace nucleus
                                          elle::String&          name)
     {
       elle::Natural32   i;
-
-      ;
 
       // go through the descriptors.
       for (i = 0; i < Subject::Types; i++)
@@ -174,8 +170,6 @@ namespace nucleus
     ///
     elle::Status        Subject::Create(const elle::PublicKey&  K)
     {
-      ;
-
       // set the type.
       this->type = Subject::TypeUser;
 
@@ -190,8 +184,6 @@ namespace nucleus
     ///
     elle::Status        Subject::Create(const proton::Address&  descriptor)
     {
-      ;
-
       // set the type.
       this->type = Subject::TypeGroup;
 
@@ -210,8 +202,6 @@ namespace nucleus
     ///
     elle::Boolean       Subject::operator==(const Subject&      element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -255,8 +245,6 @@ namespace nucleus
     elle::Status        Subject::Dump(elle::Natural32           margin) const
     {
       elle::String      alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Subject]" << std::endl;
 
@@ -307,8 +295,6 @@ namespace nucleus
     ///
     elle::Status        Subject::Serialize(elle::Archive&       archive) const
     {
-      ;
-
       // serialize the type.
       if (archive.Serialize(static_cast<elle::Natural8>(this->type)) ==
           elle::StatusError)
@@ -347,8 +333,6 @@ namespace nucleus
     ///
     elle::Status        Subject::Extract(elle::Archive&         archive)
     {
-      ;
-
       // extract the type.
       if (archive.Extract(reinterpret_cast<elle::Natural8&>(this->type)) ==
           elle::StatusError)

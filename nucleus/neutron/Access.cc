@@ -51,8 +51,6 @@ namespace nucleus
     ///
     elle::Status        Access::Add(Record*                     record)
     {
-      ;
-
       // add the record in the range.
       if (this->range.Add(record) == elle::StatusError)
         escape("unable to add the record in the range");
@@ -68,8 +66,6 @@ namespace nucleus
     ///
     elle::Status        Access::Exist(const Subject&            subject) const
     {
-      ;
-
       // test.
       if (this->range.Exist(subject) == false)
         return elle::StatusFalse;
@@ -83,8 +79,6 @@ namespace nucleus
     elle::Status        Access::Lookup(const Subject&           subject,
                                        Record*&                 record) const
     {
-      ;
-
       // look in the range.
       if (this->range.Lookup(subject, record) == elle::StatusError)
         escape("unable to retrieve the record");
@@ -99,8 +93,6 @@ namespace nucleus
                                        Index&                   index) const
     {
       Range<Record>::Scoutor    scoutor;
-
-      ;
 
       // go through the range.
       for (scoutor = this->range.container.begin(), index = 0;
@@ -125,8 +117,6 @@ namespace nucleus
     {
       Range<Record>::Scoutor    scoutor;
       Index                     i;
-
-      ;
 
       // set the record to null.
       record = NULL;
@@ -160,8 +150,6 @@ namespace nucleus
       Range<Record>::Scoutor    scoutor;
       Index                     i;
 
-      ;
-
       // first detach the data from the range.
       if (range.Detach() == elle::StatusError)
         escape("unable to detach the data from the range");
@@ -192,8 +180,6 @@ namespace nucleus
     elle::Status        Access::Upgrade(const elle::SecretKey&  key)
     {
       Range<Record>::Iterator   iterator;
-
-      ;
 
       // go through the range.
       for (iterator = this->range.container.begin();
@@ -258,8 +244,6 @@ namespace nucleus
     {
       Range<Record>::Iterator   iterator;
 
-      ;
-
       // go through the range.
       for (iterator = this->range.container.begin();
            iterator != this->range.container.end();
@@ -286,8 +270,6 @@ namespace nucleus
     ///
     elle::Status        Access::Remove(const Subject&           subject)
     {
-      ;
-
       // remove the record from the range.
       if (this->range.Remove(subject) == elle::StatusError)
         escape("unable to remove the record");
@@ -303,8 +285,6 @@ namespace nucleus
     ///
     elle::Status        Access::Capacity(Size&                  size) const
     {
-      ;
-
       // look at the size of the range.
       if (this->range.Capacity(size) == elle::StatusError)
         escape("unable to retrieve the range size");
@@ -322,8 +302,6 @@ namespace nucleus
     {
       elle::Archive             archive;
       Range<Record>::Scoutor    scoutor;
-
-      ;
 
       // create the archive.
       if (archive.Create() == elle::StatusError)
@@ -358,8 +336,6 @@ namespace nucleus
     ///
     elle::Boolean       Access::operator==(const Access&        element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -387,8 +363,6 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Access]" << std::endl;
 
       // dump the range.
@@ -407,8 +381,6 @@ namespace nucleus
     ///
     elle::Status        Access::Serialize(elle::Archive&        archive) const
     {
-      ;
-
       // call the parent class.
       if (proton::ContentHashBlock::Serialize(archive) == elle::StatusError)
         escape("unable to serialize the underlying CHB");
@@ -425,8 +397,6 @@ namespace nucleus
     ///
     elle::Status        Access::Extract(elle::Archive&          archive)
     {
-      ;
-
       // call the parent class.
       if (proton::ContentHashBlock::Extract(archive) == elle::StatusError)
         escape("unable to extract the underlying CHB");

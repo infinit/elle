@@ -39,8 +39,6 @@ namespace nucleus
     ///
     elle::Status        History::Register(const Version&        version)
     {
-      ;
-
       // store the version in the history's vector.
       this->container.push_back(version);
 
@@ -54,8 +52,6 @@ namespace nucleus
     elle::Status        History::Select(const Version::Type     index,
                                         Version&                version) const
     {
-      ;
-
       // check if the index is out of bound.
       if (index >= this->container.size())
         escape("the version index is out of bound");
@@ -71,8 +67,6 @@ namespace nucleus
     ///
     elle::Status        History::Size(Version::Type&            size) const
     {
-      ;
-
       // return the size.
       size = this->container.size();
 
@@ -90,8 +84,6 @@ namespace nucleus
     {
       Version::Type     size;
       Version::Type     i;
-
-      ;
 
       // check the address as this may actually be the same object.
       if (this == &element)
@@ -132,8 +124,6 @@ namespace nucleus
       elle::String      alignment(margin, ' ');
       Version::Type     i;
 
-      ;
-
       // display the name.
       std::cout << alignment << "[History]" << std::endl;
 
@@ -173,8 +163,6 @@ namespace nucleus
       Version::Type     size;
       Version::Type     i;
 
-      ;
-
       // retrieve the size.
       size = this->container.size();
 
@@ -200,8 +188,6 @@ namespace nucleus
     {
       Version::Type     size;
       Version::Type     i;
-
-      ;
 
       // extract the size.
       if (archive.Extract(size) == elle::StatusError)
@@ -238,8 +224,6 @@ namespace nucleus
       elle::String      unique;
       elle::Region      region;
       elle::Archive     archive;
-
-      ;
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
@@ -281,8 +265,6 @@ namespace nucleus
       elle::String      unique;
       elle::Region      region;
       elle::Archive     archive;
-
-      ;
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
@@ -328,8 +310,6 @@ namespace nucleus
       elle::Path        path;
       elle::String      unique;
 
-      ;
-
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
                                     unique) == elle::StatusError)
@@ -364,8 +344,6 @@ namespace nucleus
     {
       elle::Path        path;
       elle::String      unique;
-
-      ;
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,

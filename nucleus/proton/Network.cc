@@ -48,8 +48,6 @@ namespace nucleus
     ///
     elle::Status        Network::Create(const elle::String&     name)
     {
-      ;
-
       // assign the name.
       this->name = name;
 
@@ -65,8 +63,6 @@ namespace nucleus
     ///
     elle::Boolean       Network::operator==(const Network&      element) const
     {
-      ;
-
       // check the network as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -83,8 +79,6 @@ namespace nucleus
     ///
     elle::Boolean       Network::operator<(const Network&       element) const
     {
-      ;
-
       // check the network as this may actually be the same object.
       if (this == &element)
         return elle::StatusFalse;
@@ -112,8 +106,6 @@ namespace nucleus
     {
       elle::String      alignment(margin, ' ');
 
-      ;
-
       // display the network's name.
       std::cout << alignment << "[Network] "
                 << this->name << std::endl;
@@ -130,8 +122,6 @@ namespace nucleus
     ///
     elle::Status        Network::Serialize(elle::Archive&       archive) const
     {
-      ;
-
       // serialize the internal.
       if (archive.Serialize(this->name) == elle::StatusError)
         escape("unable to serialize the name");
@@ -144,8 +134,6 @@ namespace nucleus
     ///
     elle::Status        Network::Extract(elle::Archive&         archive)
     {
-      ;
-
       // extract the internal.
       if (archive.Extract(this->name) == elle::StatusError)
         escape("unable to extract the name");

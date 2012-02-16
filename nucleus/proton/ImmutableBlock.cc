@@ -67,8 +67,6 @@ namespace nucleus
       elle::Region      region;
       elle::Archive     archive;
 
-      ;
-
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
                                     unique) == elle::StatusError)
@@ -114,8 +112,6 @@ namespace nucleus
       elle::String      unique;
       elle::Region      region;
       elle::Archive     archive;
-
-      ;
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
@@ -166,8 +162,6 @@ namespace nucleus
       elle::Path        path;
       elle::String      unique;
 
-      ;
-
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
                                     unique) == elle::StatusError)
@@ -207,8 +201,6 @@ namespace nucleus
     {
       elle::Path        path;
       elle::String      unique;
-
-      ;
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,

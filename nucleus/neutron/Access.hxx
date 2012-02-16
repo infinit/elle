@@ -35,8 +35,6 @@ namespace nucleus
     {
       Record*           record;
 
-      ;
-
       // retrieve the record.
       if (this->Lookup(subject, record) == elle::StatusError)
         escape("unable to retrieve the subject's record");
