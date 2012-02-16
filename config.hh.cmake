@@ -15,8 +15,6 @@
 #cmakedefine INFINIT_MACOSX
 #cmakedefine INFINIT_WINDOWS
 
-#if !defined(INFINIT_MACOSX)
-# cmakedefine HAVE_SETXATTR
-#endif
+#cmakedefine HAVE_SETXATTR
 
 #endif
