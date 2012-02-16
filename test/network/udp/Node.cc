@@ -30,8 +30,6 @@ namespace elle
                                     const String&               host,
                                     const Port                  port)
     {
-      ;
-
       // set the attributes.
       this->name = name;
       this->host = host;
@@ -47,8 +45,6 @@ namespace elle
     {
       Host              local;
       Locus             remote;
-
-      ;
 
       // create an host.
       if (local.Create(this->host) == StatusError)
@@ -94,8 +90,6 @@ namespace elle
                                      const Table&               table)
     {
       Session*          session;
-
-      ;
 
       // retrieve the current session.
       if (Session::Instance(session) == StatusError)

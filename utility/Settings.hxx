@@ -73,8 +73,6 @@ namespace elle
     {
       String    string;
 
-      ;
-
       // transform the value into a string-based format.
       if (Variable::Convert(value, string) == StatusFalse)
         escape("unable to convert the value for '%s' to the section '%s'",
@@ -98,8 +96,6 @@ namespace elle
                                                T&               value)
     {
       String    string;
-
-      ;
 
       // if the item does not exist, return the default value.
       if (settings.Find(identifier, name) == StatusFalse)
@@ -130,8 +126,6 @@ namespace elle
                                                const T          D)
     {
       String    string;
-
-      ;
 
       // if the item does not exist, return the default value.
       if (settings.Find(identifier, name) == StatusFalse)
@@ -171,8 +165,6 @@ namespace elle
     {
       Unique    unique;
 
-      ;
-
       // save the object in a unique representation.
       if (object.Save(unique) == StatusError)
         escape("unable to save the object for '%s' to the section '%s'",
@@ -198,8 +190,6 @@ namespace elle
                   Uniquable<F>&                                 object)
     {
       Unique    unique;
-
-      ;
 
       // if the item does not exist, return the default value.
       if (settings.Find(identifier, name) == StatusFalse)
@@ -233,8 +223,6 @@ namespace elle
                   const Uniquable<F>                            D)
     {
       Unique    unique;
-
-      ;
 
       // if the item does not exist, return the default value.
       if (settings.Find(identifier, name) == StatusFalse)

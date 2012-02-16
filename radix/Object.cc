@@ -31,8 +31,6 @@ namespace elle
     ///
     Status              Object::Imprint(Natural32&) const
     {
-      ;
-
       escape("this method should never have been called");
     }
 
@@ -42,8 +40,6 @@ namespace elle
     ///
     Status              Object::Clone(Object*&) const
     {
-      ;
-
       escape("this method should never have been called");
     }
 
@@ -56,8 +52,6 @@ namespace elle
     ///
     Boolean             Object::operator==(const Object&) const
     {
-      ;
-
       flee("this method should never have been called");
     }
 
@@ -66,8 +60,6 @@ namespace elle
     ///
     Boolean             Object::operator<(const Object&) const
     {
-      ;
-
       flee("this method should never have been called");
     }
 
@@ -76,8 +68,6 @@ namespace elle
     ///
     Boolean             Object::operator>(const Object&) const
     {
-      ;
-
       flee("this method should never have been called");
     }
 
@@ -86,8 +76,6 @@ namespace elle
     ///
     Object              Object::operator+(const Object&)
     {
-      ;
-
       yield(*this, "this method should never have been called");
     }
 
@@ -99,8 +87,6 @@ namespace elle
     ///
     Object&             Object::operator=(const Object&)
     {
-      ;
-
       yield(*this, "this method should never have been called");
     }
 
@@ -111,8 +97,6 @@ namespace elle
     ///
     Boolean             Object::operator!=(const Object&) const
     {
-      ;
-
       flee("this method should never have been called");
     }
 
@@ -121,8 +105,6 @@ namespace elle
     ///
     Boolean             Object::operator<=(const Object&) const
     {
-      ;
-
       flee("this method should never have been called");
     }
 
@@ -131,8 +113,6 @@ namespace elle
     ///
     Boolean             Object::operator>=(const Object&) const
     {
-      ;
-
       flee("this method should never have been called");
     }
 

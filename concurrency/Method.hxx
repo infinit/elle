@@ -78,8 +78,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      ;
-
       // dump the quantum.
       std::cout << alignment << Dumpable::Shift << "[Quantum] "
                 << std::dec << sizeof... (T) << std::endl;
@@ -198,8 +196,6 @@ namespace elle
     Method< R, Parameters<T...> >::Dump(const Natural32         margin) const
     {
       String            alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Method]" << std::endl;
 

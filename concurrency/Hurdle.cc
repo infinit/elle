@@ -62,8 +62,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Zone]" << std::endl;
 
       // dump the hurdle.

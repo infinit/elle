@@ -87,8 +87,6 @@ namespace elle
       {
         Region          region;
 
-        ;
-
         // decode the string.
         if (Base64::Decode(string, region) == StatusError)
           escape("unable to decode the string");

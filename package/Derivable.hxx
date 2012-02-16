@@ -120,8 +120,6 @@ namespace elle
     template <typename U>
     Status              Derivable<T>::Infer(U*&                 object) const
     {
-      ;
-
       // check the internal object.
       if (this->object == NULL)
         escape("no object has been provided");
@@ -152,8 +150,6 @@ namespace elle
     Status              Derivable<T>::Dump(Natural32            margin) const
     {
       String            alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Derivable]" << std::endl;
 
@@ -196,8 +192,6 @@ namespace elle
     template <typename T>
     Status              Derivable<T>::Serialize(Archive&        archive) const
     {
-      ;
-
       // check that an object has been provided.
       if (this->object == NULL)
         escape("no derivable object has been provided");
@@ -216,8 +210,6 @@ namespace elle
     template <typename T>
     Status              Derivable<T>::Extract(Archive&          archive)
     {
-      ;
-
       // extract the product.
       if (archive.Extract(this->product) == StatusError)
         escape("unable to extract the factory product");

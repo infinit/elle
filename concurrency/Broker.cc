@@ -57,8 +57,6 @@ namespace elle
     ///
     Status              Broker::Activate()
     {
-      ;
-
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // connect the QT signals.
       if (this->connect(&this->notifier, SIGNAL(activated(int)),
@@ -81,8 +79,6 @@ namespace elle
     ///
     Status              Broker::Deactivate()
     {
-      ;
-
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // disconnect the QT signals.
       if (this->disconnect(&this->notifier, SIGNAL(activated(int)),
@@ -110,8 +106,6 @@ namespace elle
     ///
     Status              Broker::Trigger()
     {
-      ;
-
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // emit the signal.
       if (this->signal.ready.Emit(this->descriptor) == StatusError)

@@ -84,8 +84,6 @@ namespace elle
           >::Type
         >               callback(&Archive::Serialize, &archive);
 
-      ;
-
       // trigger the serialization callback.
       if (this->arguments.Call(callback) == StatusError)
         escape("unable to serialize the arguments");
@@ -102,8 +100,6 @@ namespace elle
     Bundle::Inputs< G,
                     Parameters<T...> >::Extract(Archive&)
     {
-      ;
-
       escape("unable to extract from an inputs bundle");
     }
 
@@ -118,8 +114,6 @@ namespace elle
       const
     {
       String    alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Bundle] Inputs" << std::endl;
 
@@ -179,8 +173,6 @@ namespace elle
     Bundle::Outputs< G,
                      Parameters<T...> >::Serialize(Archive&) const
     {
-      ;
-
       escape("unable to serialize to an outputs bundle");
     }
 
@@ -202,8 +194,6 @@ namespace elle
           >::Type
         >               callback(&Archive::Extract, &archive);
 
-      ;
-
       // trigger the serialization callback.
       if (this->arguments.Call(callback) == StatusError)
         escape("unable to extract the arguments");
@@ -223,8 +213,6 @@ namespace elle
       const
     {
       String    alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Bundle] Outputs" << std::endl;
 

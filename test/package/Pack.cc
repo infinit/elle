@@ -32,8 +32,6 @@ namespace elle
     {
       Natural32         i;
 
-      ;
-
       for (i = 0; i < n; i++)
         {
           Byte          random = Random::Generate(Archive::TypeBoolean,
@@ -363,8 +361,6 @@ namespace elle
       Archive::Type     type;
       void*             data;
       Natural32         size;
-
-      ;
 
       while (archive.offset != archive.size)
         {

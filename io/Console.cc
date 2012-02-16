@@ -42,8 +42,6 @@ namespace elle
                                        const String&            prompt,
                                        const Console::Option    option)
     {
-      ;
-
       // retrieve the input depending on the option.
       switch (option)
         {

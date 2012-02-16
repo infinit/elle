@@ -41,8 +41,6 @@ namespace elle
     template <typename T>
     Status              Morgue::Register(T*                     instance)
     {
-      ;
-
       // if the timer has not been allocated, set it up.
       if (this->timer == NULL)
         {

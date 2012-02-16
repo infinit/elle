@@ -36,8 +36,6 @@ namespace elle
     ///
     Status              Archivable::Serialize(Archive&) const
     {
-      ;
-
       escape("this method should never have been called");
     }
 
@@ -46,8 +44,6 @@ namespace elle
     ///
     Status              Archivable::Extract(Archive&)
     {
-      ;
-
       escape("this method should never have been called");
     }
 

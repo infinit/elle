@@ -56,8 +56,6 @@ namespace elle
     ///
     Status              Event::Generate()
     {
-      ;
-
       // try until the generated event is different from Null.
       do
         {
@@ -78,8 +76,6 @@ namespace elle
     ///
     Boolean             Event::operator==(const Event&          element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -113,8 +109,6 @@ namespace elle
     ///
     Status              Event::Serialize(Archive&               archive) const
     {
-      ;
-
       // serialize the attributes.
       if (archive.Serialize(this->identifier) == StatusError)
         escape("unable to serialize the event attributes");
@@ -127,8 +121,6 @@ namespace elle
     ///
     Status              Event::Extract(Archive&                 archive)
     {
-      ;
-
       // extract the attributes.
       if (archive.Extract(this->identifier) == StatusError)
         escape("unable to extract the event attributes");
@@ -146,8 +138,6 @@ namespace elle
     Status              Event::Dump(const Natural32             margin) const
     {
       String            alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Event] " << this->identifier << std::endl;
 

@@ -130,8 +130,6 @@ namespace elle
       {
         String          alignment(margin, ' ');
 
-        ;
-
         std::cout << alignment
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
@@ -243,8 +241,6 @@ namespace elle
         const
       {
         String          alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment
                   << "[Arguments " << P::Quantum << "]"
@@ -383,8 +379,6 @@ namespace elle
         const
       {
         String          alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment
                   << "[Arguments " << P::Quantum << "]"
@@ -549,8 +543,6 @@ namespace elle
         const
       {
         String          alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment
                   << "[Arguments " << P::Quantum << "]"
@@ -747,8 +739,6 @@ namespace elle
         const
       {
         String          alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment
                   << "[Arguments " << P::Quantum << "]"
@@ -981,8 +971,6 @@ namespace elle
         const
       {
         String          alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment
                   << "[Arguments " << P::Quantum << "]"
@@ -1259,8 +1247,6 @@ namespace elle
         const
       {
         String          alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment
                   << "[Arguments " << P::Quantum << "]"
@@ -1583,8 +1569,6 @@ namespace elle
         const
       {
         String          alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment
                   << "[Arguments " << P::Quantum << "]"
@@ -1957,8 +1941,6 @@ namespace elle
         const
       {
         String          alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment
                   << "[Arguments " << P::Quantum << "]"
@@ -2385,8 +2367,6 @@ namespace elle
         const
       {
         String          alignment(margin, ' ');
-
-        ;
 
         std::cout << alignment
                   << "[Arguments " << P::Quantum << "]"

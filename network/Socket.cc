@@ -53,8 +53,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Socket] " << std::hex << this << std::endl;
 
       // dump the type.

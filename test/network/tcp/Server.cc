@@ -50,8 +50,6 @@ namespace elle
     ///
     Status              Server::Setup(const String&             line)
     {
-      ;
-
       // set the locus.
       if (this->locus.Create(line) == StatusError)
         escape("unable to create the locus");
@@ -64,8 +62,6 @@ namespace elle
     ///
     Status              Server::Run()
     {
-      ;
-
       std::cout << "[bridge]" << std::endl;
       locus.Dump();
 
@@ -89,8 +85,6 @@ namespace elle
     {
       String            challenge("CHALLENGE");
       String            response;
-
-      ;
 
       // if there is already a client, exit.
       if (this->socket != NULL)

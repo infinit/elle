@@ -28,8 +28,6 @@ namespace elle
     ///
     Status              Client::Setup(const String&             line)
     {
-      ;
-
       // set the line.
       this->line = line;
 
@@ -41,8 +39,6 @@ namespace elle
     ///
     Status              Client::Run()
     {
-      ;
-
       std::cout << "[line] " << this->line << std::endl;
 
       // register the message.
@@ -73,8 +69,6 @@ namespace elle
     Status              Client::Challenge(const String&         text)
     {
       String            response("RESPONSE");
-
-      ;
 
       // simply display the text.
       std::cout << "[Challenge] " << text << std::endl;

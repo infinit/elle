@@ -29,8 +29,6 @@ namespace elle
     {
       Footprint         footprint;
 
-      ;
-
       // create the footprint i.e archive in order to set it in
       // serialization mode.
       if (footprint.Create() == StatusError)

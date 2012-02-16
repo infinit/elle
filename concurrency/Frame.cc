@@ -53,8 +53,6 @@ namespace elle
     ///
     Status              Frame::Create(const Natural32           size)
     {
-      ;
-
       // set the size.
       this->size = size;
 
@@ -76,8 +74,6 @@ namespace elle
     Status              Frame::Dump(const Natural32             margin) const
     {
       String            alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Frame] " << std::endl;
 

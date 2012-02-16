@@ -64,8 +64,6 @@ namespace elle
     Status              Variable::Convert(const Boolean&        input,
                                           String&               output)
     {
-      ;
-
       // test the input.
       if (input == true)
         output = "true";
@@ -82,8 +80,6 @@ namespace elle
                                           String&               output)
     {
       std::stringstream stream;
-
-      ;
 
       // transfer the input into a string.
       stream << input;
@@ -102,8 +98,6 @@ namespace elle
     {
       std::stringstream stream;
 
-      ;
-
       // transfer the input into a string.
       stream << input;
 
@@ -120,8 +114,6 @@ namespace elle
                                           String&               output)
     {
       std::stringstream stream;
-
-      ;
 
       // transfer the input into a string.
       stream << input;
@@ -140,8 +132,6 @@ namespace elle
     {
       std::stringstream stream;
 
-      ;
-
       // transfer the input into a string.
       stream << input;
 
@@ -158,8 +148,6 @@ namespace elle
                                           String&               output)
     {
       std::stringstream stream;
-
-      ;
 
       // transfer the input into a string.
       stream << input;
@@ -178,8 +166,6 @@ namespace elle
     {
       std::stringstream stream;
 
-      ;
-
       // transfer the input into a string.
       stream << input;
 
@@ -196,8 +182,6 @@ namespace elle
                                           String&               output)
     {
       std::stringstream stream;
-
-      ;
 
       // transfer the input into a string.
       stream << input;
@@ -216,8 +200,6 @@ namespace elle
     {
       std::stringstream stream;
 
-      ;
-
       // transfer the input into a string.
       stream << input;
 
@@ -234,8 +216,6 @@ namespace elle
                                           String&               output)
     {
       std::stringstream stream;
-
-      ;
 
       // transfer the input into a string.
       stream << input;
@@ -254,8 +234,6 @@ namespace elle
     {
       std::stringstream stream;
 
-      ;
-
       // transfer the input into a string.
       stream << input;
 
@@ -271,8 +249,6 @@ namespace elle
     Status              Variable::Convert(const String&         input,
                                           Boolean&              output)
     {
-      ;
-
       // test the input.
       if ((input == "1") ||
           (input == "True") || (input == "true") ||
@@ -298,8 +274,6 @@ namespace elle
     {
       std::istringstream        stream(input);
 
-      ;
-
       // extract the value.
       stream >> output;
 
@@ -321,8 +295,6 @@ namespace elle
     {
       std::istringstream        stream(input);
 
-      ;
-
       // extract the value.
       stream >> output;
 
@@ -340,8 +312,6 @@ namespace elle
                                           Integer16&            output)
     {
       std::istringstream        stream(input);
-
-      ;
 
       // extract the value.
       stream >> output;
@@ -361,8 +331,6 @@ namespace elle
     {
       std::istringstream        stream(input);
 
-      ;
-
       // extract the value.
       stream >> output;
 
@@ -380,8 +348,6 @@ namespace elle
                                           Integer64&            output)
     {
       std::istringstream        stream(input);
-
-      ;
 
       // extract the value.
       stream >> output;
@@ -401,8 +367,6 @@ namespace elle
     {
       std::istringstream        stream(input);
 
-      ;
-
       // extract the value.
       stream >> output;
 
@@ -420,8 +384,6 @@ namespace elle
                                           Natural16&            output)
     {
       std::istringstream        stream(input);
-
-      ;
 
       // extract the value.
       stream >> output;
@@ -441,8 +403,6 @@ namespace elle
     {
       std::istringstream        stream(input);
 
-      ;
-
       // extract the value.
       stream >> output;
 
@@ -461,8 +421,6 @@ namespace elle
     {
       std::istringstream        stream(input);
 
-      ;
-
       // extract the value.
       stream >> output;
 
@@ -480,8 +438,6 @@ namespace elle
                                           Real&                 output)
     {
       std::istringstream        stream(input);
-
-      ;
 
       // extract the value.
       stream >> output;

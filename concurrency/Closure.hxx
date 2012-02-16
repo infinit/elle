@@ -71,8 +71,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Closure]" << std::endl;
 
       // dump the callback.
@@ -153,8 +151,6 @@ namespace elle
              Parameters<V...> >::Dump(const Natural32           margin) const
     {
       String            alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Closure]" << std::endl;
 

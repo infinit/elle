@@ -53,8 +53,6 @@ namespace elle
     ///
     Status              System::Initialize()
     {
-      ;
-
       //
       // set the static definitions.
       //
@@ -102,8 +100,6 @@ namespace elle
     ///
     Status              System::Clean()
     {
-      ;
-
       // nothing to do
 
       return elle::StatusOk;

@@ -108,8 +108,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Function]" << std::endl;
 
       // dump the quantum.

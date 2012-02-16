@@ -42,8 +42,6 @@ namespace elle
     ///
     Status              Session::Initialize()
     {
-      ;
-
       // register the govern callback to the fiber system.
       if (Fiber::Register(Callback<>::Infer(&Session::Govern)) == StatusError)
         escape("unable to register the govern callback");
@@ -56,8 +54,6 @@ namespace elle
     ///
     Status              Session::Clean()
     {
-      ;
-
       // nothing to do.
 
       return elle::StatusOk;
@@ -68,8 +64,6 @@ namespace elle
     ///
     Status              Session::Instance(Session*&             session)
     {
-      ;
-
       // return the current session.
       session = Session::Current;
 
@@ -81,8 +75,6 @@ namespace elle
     ///
     Status              Session::Assign(Session*                session)
     {
-      ;
-
       // set the current session.
       Session::Current = session;
 
@@ -95,8 +87,6 @@ namespace elle
     ///
     Status              Session::Clear()
     {
-      ;
-
       // clear the locuser.
       Session::Current = NULL;
 
@@ -110,8 +100,6 @@ namespace elle
     Status              Session::Govern(const Phase             phase,
                                         Fiber*                  fiber)
     {
-      ;
-
       // perform an operation depending on the phase.
       switch (phase)
         {
@@ -183,8 +171,6 @@ namespace elle
                                         const Locus&            locus,
                                         const Event&            event)
     {
-      ;
-
       // set the attributes.
       this->socket = socket;
       this->locus = locus;
@@ -203,8 +189,6 @@ namespace elle
     Status              Session::Dump(const Natural32           margin) const
     {
       String            alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Session] " << std::hex << this << std::endl;
 

@@ -112,8 +112,6 @@ namespace elle
     {
       TCPServer::Scoutor        scoutor;
 
-      ;
-
       // go through the porters.
       for (scoutor = TCPServer::Porters.begin();
            scoutor != TCPServer::Porters.end();
@@ -184,8 +182,6 @@ namespace elle
     {
       TCPServer::Iterator       iterator;
       TCPServerPorter*          porter;
-
-      ;
 
       // locate the porter.
       if (TCPServer::Locate(locus, &iterator) == StatusFalse)
@@ -350,8 +346,6 @@ namespace elle
         Parameters<>
         >               closure(Callback<>::Infer(
                                   &TCPServerPorter::Accept, this));
-
-      ;
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)

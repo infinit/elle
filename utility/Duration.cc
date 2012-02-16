@@ -51,8 +51,6 @@ namespace elle
     ///
     Boolean             Duration::operator==(const Duration&    element) const
     {
-      ;
-
       // compare the attributes.
       if ((this->unit != element.unit) ||
           (this->value != element.value))
@@ -77,8 +75,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
  
-      ;
-
       std::cout << alignment << "[Duration]" << std::endl;
 
       std::cout << alignment << Dumpable::Shift << "[Unit] "
@@ -100,8 +96,6 @@ namespace elle
     ///
     Status              Duration::Serialize(Archive&            archive) const
     {
-      ;
-
       // serialize the internal attributes.
       if (archive.Serialize(static_cast<Natural8>(this->unit),
                             this->value) == StatusError)
@@ -115,8 +109,6 @@ namespace elle
     ///
     Status              Duration::Extract(Archive&              archive)
     {
-      ;
-
       // extract the internal attributes.
       if (archive.Extract(reinterpret_cast<Natural8&>(this->unit),
                           this->value) == StatusError)

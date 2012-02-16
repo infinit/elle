@@ -34,8 +34,6 @@ namespace elle
     Status              Environment::Store(const String&        name,
                                            T*                   value)
     {
-      ;
-
       // push the (name, value) tuple.
       this->container.push_back(
         Environment::Value(name, static_cast<Meta*>(value)));
@@ -51,8 +49,6 @@ namespace elle
                                           T*&                   value)
     {
       Environment::Iterator     iterator;
-
-      ;
 
       // go through the elements.
       for (iterator = this->container.begin();

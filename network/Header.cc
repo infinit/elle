@@ -53,8 +53,6 @@ namespace elle
                                        const Tag                tag,
                                        const Natural32          size)
     {
-      ;
-
       // set the attributes.
       this->event = event;
       this->tag = tag;
@@ -83,8 +81,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Header] " << std::endl;
 
       // dump the event.
@@ -111,8 +107,6 @@ namespace elle
     ///
     Status              Header::Serialize(Archive&              archive) const
     {
-      ;
-
       // serialize the attributes.
       if (archive.Serialize(Header::Name,
                             this->event,
@@ -129,8 +123,6 @@ namespace elle
     Status              Header::Extract(Archive&                archive)
     {
       String            name;
-
-      ;
 
       // extract the attributes.
       if (archive.Extract(name,

@@ -26,8 +26,6 @@ namespace elle
                     wchar_t **   output,
                     ssize_t *    output_size)
     {
-      ;
-
       *output_size = MultiByteToWideChar(CP_UTF8, // CodePage
                                          0,       // dwFlags
                                          input,
@@ -61,8 +59,6 @@ namespace elle
                     char **         output,
                     ssize_t *       output_size)
     {
-      ;
-
       *output_size = WideCharToMultiByte(CP_UTF8,    // CodePage
                                          0,          // dwFlags
                                          input,

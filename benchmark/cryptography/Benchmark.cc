@@ -39,8 +39,6 @@ namespace elle
     {
       Byte              buffer[Benchmark::BlockSize];
 
-      ;
-
       // init the library.
       if (Elle::Initialize() == StatusError)
         escape("unable to initialize the Elle library");

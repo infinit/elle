@@ -93,8 +93,6 @@ namespace elle
     {
       const Natural8    type = ArchiveType<T>::Value;
 
-      ;
-
       // serialization mode only.
       if (archive.mode != Archive::ModeSerialization)
         escape("unable to serialize while not in serialization mode");
@@ -118,8 +116,6 @@ namespace elle
                                                   T&            element)
     {
       Natural8  type;
-
-      ;
 
       // serialization mode only.
       if (archive.mode != Archive::ModeExtraction)
@@ -192,8 +188,6 @@ namespace elle
     Status              Archive::Serialize(const T&             parameter,
                                            const TT&...         parameters)
     {
-      ;
-
       // serialize the first items.
       if (this->Serialize(parameter) == StatusError)
         escape("unable to serialize the first item");
@@ -231,8 +225,6 @@ namespace elle
     Status              Archive::Extract(T&                     parameter,
                                          TT&...                 parameters)
     {
-      ;
-
       // extract the first item.
       if (this->Extract(parameter) == StatusError)
         escape("unable to extract the first item");
@@ -285,8 +277,6 @@ namespace elle
                                        const Natural32          margin)
     {
       String            alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[" << core::Type<T>::Name << "] "
                 << element << std::endl;

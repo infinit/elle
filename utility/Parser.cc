@@ -62,8 +62,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      ;
-
       std::cout << alignment << "[Option] " << this->name << std::endl;
 
       // dump the character.
@@ -151,8 +149,6 @@ namespace elle
     ///
     Status              Parser::Description(const String&       description)
     {
-      ;
-
       // set the description.
       this->description = description;
 
@@ -188,8 +184,6 @@ namespace elle
     ///
     Status              Parser::Example(const String&           example)
     {
-      ;
-
       // add the example.
       this->examples.push_back(example);
 
@@ -204,8 +198,6 @@ namespace elle
                                        Parser::Option*&         option)
     {
       Natural32         i;
-
-      ;
 
       // go through the options.
       for (i = 0; i < this->options.size(); i++)
@@ -231,8 +223,6 @@ namespace elle
                                        Parser::Option*&         option)
     {
       Natural32         i;
-
-      ;
 
       // go through the options.
       for (i = 0; i < this->options.size(); i++)
@@ -260,8 +250,6 @@ namespace elle
     Status              Parser::Parse()
     {
       Character         character;
-
-      ;
 
       // check if the shorts and longs structure has been generated, if
       // not do it.
@@ -435,8 +423,6 @@ namespace elle
     {
       Parser::Option*   option;
 
-      ;
-
       // locate the option.
       if (this->Locate(name, option) == StatusFalse)
         escape("unable to locate the option");
@@ -455,8 +441,6 @@ namespace elle
     Status              Parser::Argument(const String&          name)
     {
       Parser::Option*   option;
-
-      ;
 
       // locate the option.
       if (this->Locate(name, option) == StatusFalse)
@@ -590,8 +574,6 @@ namespace elle
     {
       String            alignment(margin, ' ');
       Natural32         i;
-
-      ;
 
       std::cout << alignment << "[Parser]" << std::endl;
 

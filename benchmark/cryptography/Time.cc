@@ -28,8 +28,6 @@ namespace elle
     ///
     Status              Time::Start()
     {
-      ;
-
       ::gettimeofday(&this->start, NULL);
 
       return elle::StatusOk;
@@ -40,8 +38,6 @@ namespace elle
     ///
     Status              Time::Stop()
     {
-      ;
-
       ::gettimeofday(&this->stop, NULL);
 
       return elle::StatusOk;
@@ -53,8 +49,6 @@ namespace elle
     Status              Time::Print()
     {
       Natural32         useconds;
-
-      ;
 
       useconds =
         ((this->stop.tv_sec * 1000000.0) + this->stop.tv_usec) -

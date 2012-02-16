@@ -31,8 +31,6 @@ namespace elle
     ///
     Status              Radix::Initialize()
     {
-      ;
-
       // initialize the meta class.
       if (Meta::Initialize() == StatusError)
         escape("unable to initialize the meta class");
@@ -45,8 +43,6 @@ namespace elle
     ///
     Status              Radix::Clean()
     {
-      ;
-
       // clean the meta class.
       if (Meta::Clean() == StatusError)
         escape("unable to clean the meta class");

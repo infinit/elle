@@ -93,8 +93,6 @@ namespace elle
       Status            status;
       Session*          session;
 
-      ;
-
       // retrieve the session.
       if (Session::Instance(session) == StatusError)
         escape("unable to retrieve the session instance");
@@ -235,8 +233,6 @@ namespace elle
     Status              Procedure<I, O, E>::Dump(const Natural32 margin) const
     {
       String            alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Procedure]" << std::endl;
 

@@ -131,8 +131,6 @@ namespace elle
     Status              Region::Wrap(const Byte*                contents,
                                      Natural64                  size)
     {
-      ;
-
       // check if the operation is valid.
       if (this->type != Region::TypeUnknown)
         escape("region already in use");
@@ -153,8 +151,6 @@ namespace elle
     Status              Region::Acquire(Byte*                   contents,
                                         Natural64               size)
     {
-      ;
-
       // check if the operation is valid.
       if (this->type != Region::TypeUnknown)
         escape("region already in use");
@@ -176,8 +172,6 @@ namespace elle
     ///
     Status              Region::Prepare(const Natural64         capacity)
     {
-      ;
-
       // check the type.
       if (this->type == Region::TypeChunk)
         escape("unable to prepare an already in use chunk region");
@@ -204,8 +198,6 @@ namespace elle
     Status              Region::Duplicate(const Byte*           contents,
                                           Natural64             size)
     {
-      ;
-
       // check the type.
       if (this->type == Region::TypeChunk)
         escape("unable to prepare an already in use chunk region");
@@ -241,8 +233,6 @@ namespace elle
     ///
     Status              Region::Adjust(const Natural64          size)
     {
-      ;
-
       // check the type.
       if (this->type == Region::TypeChunk)
         escape("unable to prepare an already in use chunk region");
@@ -289,8 +279,6 @@ namespace elle
     Status              Region::Append(const Byte*              contents,
                                        const Natural64          size)
     {
-      ;
-
       // check the type.
       if (this->type == Region::TypeChunk)
         escape("unable to prepare an already in use chunk region");
@@ -314,8 +302,6 @@ namespace elle
                                      Byte*                      contents,
                                      const Natural64            size) const
     {
-      ;
-
       // check that the copy stays in the bounds.
       if ((offset + size) > this->size)
         escape("this operation is out of bounds");
@@ -334,8 +320,6 @@ namespace elle
                                       const Byte*               contents,
                                       const Natural64           size)
     {
-      ;
-
       // check that the copy stays in the bounds.
       if ((offset + size) > this->capacity)
         escape("this operation is out of bounds");
@@ -356,8 +340,6 @@ namespace elle
     ///
     Status              Region::Detach()
     {
-      ;
-
       // check the type.
       if (this->type != Region::TypeBuffer)
         escape("unable to detach non-buffer regions");
@@ -384,8 +366,6 @@ namespace elle
       String            alignment(margin, ' ');
       Natural32         i;
       Natural32         j;
-
-      ;
 
       std::cout << alignment
                 << "[Region] "
@@ -441,8 +421,6 @@ namespace elle
     ///
     Status              Region::Imprint(Natural32&              size) const
     {
-      ;
-
       // return the size.
       size = sizeof (Region);
 
@@ -454,8 +432,6 @@ namespace elle
     ///
     Status              Region::Clone(Region*&                  object) const
     {
-      ;
-
       // allocate the object.
       object = new Region(*this);
 
@@ -467,8 +443,6 @@ namespace elle
     ///
     Boolean             Region::operator==(const Region&        element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -489,8 +463,6 @@ namespace elle
     ///
     Boolean             Region::operator<(const Region&         element) const
     {
-      ;
-
       // check the address as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -519,8 +491,6 @@ namespace elle
     ///
     Region&             Region::operator=(const Region&         element)
     {
-      ;
-
       // test if the regions are identical.
       if (this == &element)
         return (*this);

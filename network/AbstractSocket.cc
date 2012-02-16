@@ -89,8 +89,6 @@ namespace elle
       String                    alignment(margin, ' ');
       AbstractSocket::Scoutor   scoutor;
 
-      ;
-
       std::cout << alignment << "[AbstractSocket]" << std::endl;
 
       // dump the socket.

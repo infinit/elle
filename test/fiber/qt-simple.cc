@@ -19,15 +19,11 @@ using namespace elle;
 
 Status fiber2()
 {
-  ;
-  log_here;
   return elle::StatusOk;
 }
 
 Status fiber1()
 {
-  ;
-  log_here;
   Closure< Status,
            Parameters<> >       closure(Callback<>::Infer(&fiber2));
 

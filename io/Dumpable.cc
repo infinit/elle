@@ -45,8 +45,6 @@ namespace elle
     ///
     Status              Dumpable::Dump(const Natural32) const
     {
-      ;
-
       escape("this method should never have been called");
     }
 

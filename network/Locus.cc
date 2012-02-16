@@ -57,8 +57,6 @@ namespace elle
     {
       size_t            separator;
 
-      ;
-
       // locate the ':' separator.
       if ((separator = string.find_first_of(':')) == string.npos)
         escape("unable to locate the host/port separator ':'");
@@ -81,8 +79,6 @@ namespace elle
     Status              Locus::Create(const Host&               host,
                                       const Port                port)
     {
-      ;
-
       this->host = host;
       this->port = port;
 
@@ -98,8 +94,6 @@ namespace elle
     ///
     Boolean             Locus::operator==(const Locus&          element) const
     {
-      ;
-
       // check the locus as this may actually be the same object.
       if (this == &element)
         return elle::StatusTrue;
@@ -117,8 +111,6 @@ namespace elle
     ///
     Boolean             Locus::operator<(const Locus&           element) const
     {
-      ;
-
       // check the locus as this may actually be the same object.
       if (this == &element)
         return elle::StatusFalse;
@@ -160,8 +152,6 @@ namespace elle
     ///
     Status              Locus::Serialize(Archive&               archive) const
     {
-      ;
-
       // serialize the host and port.
       if (archive.Serialize(this->host,
                             this->port) == StatusError)
@@ -175,8 +165,6 @@ namespace elle
     ///
     Status              Locus::Extract(Archive&                 archive)
     {
-      ;
-
       // extract the locus.
       if (archive.Extract(this->host,
                           this->port) == StatusError)
@@ -195,8 +183,6 @@ namespace elle
     Status              Locus::Dump(const Natural32             margin) const
     {
       String            alignment(margin, ' ');
-
-      ;
 
       std::cout << alignment << "[Locus]" << std::endl;
 

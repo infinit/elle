@@ -54,8 +54,6 @@ namespace elle
     Status              Link::Create(const Path&                link,
                                      const Path&                target)
     {
-      ;
-
       // does the link exist.
       if (Link::Exist(link) == StatusTrue)
         escape("the link seems to already exist");
@@ -87,8 +85,6 @@ namespace elle
     ///
     Status              Link::Erase(const Path&                 path)
     {
-      ;
-
       // does the link exist.
       if (Link::Exist(path) == StatusFalse)
         escape("the link does not seem to exist");
@@ -105,8 +101,6 @@ namespace elle
     Status              Link::Exist(const Path&                 path)
     {
       struct ::stat             stat;
-
-      ;
 
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // does the path points to something.
@@ -139,8 +133,6 @@ namespace elle
       std::stringstream stream(directory);
       String            item;
       Path              chemin;
-
-      ;
 
       // free the temporary string used for directory
       free(tmp_str);

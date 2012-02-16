@@ -28,8 +28,6 @@ namespace elle
     ///
     Status              Concurrency::Initialize()
     {
-      ;
-
       // initialize the program.
       if (Program::Initialize() == StatusError)
         escape("unable to initialize the program");
@@ -46,8 +44,6 @@ namespace elle
     ///
     Status              Concurrency::Clean()
     {
-      ;
-
       // clean the fiber system.
       if (Fiber::Clean() == StatusError)
         escape("unable to clean the fiber system");

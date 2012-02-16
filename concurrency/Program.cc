@@ -43,8 +43,6 @@ namespace elle
     ///
     Status              Program::Initialize()
     {
-      ;
-
       // allocate a new program.
       program = new Program;
 
@@ -56,8 +54,6 @@ namespace elle
     ///
     Status              Program::Clean()
     {
-      ;
-
       // delete the program.
       if (program != NULL)
         delete program;
@@ -71,8 +67,6 @@ namespace elle
     Status              Program::Setup()
     {
       int               n;
-
-      ;
 
       // set the number of arguments as zero since we do not want
       // QCoreApplication to bother parsing arguments.
@@ -101,8 +95,6 @@ namespace elle
     ///
     Status              Program::Exit()
     {
-      ;
-
       // exit the core application.
       program->core->exit();
 
@@ -114,8 +106,6 @@ namespace elle
     ///
     Status              Program::Launch()
     {
-      ;
-
       // check the program.
       if ((program == NULL) || (program->core == NULL))
         escape("unable to process events since the program has not "
