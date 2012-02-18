@@ -40,7 +40,6 @@ namespace elle
     ///
     Status              Client::Run()
     {
-      std::cout << "[locus]" << std::endl;
       this->locus.Dump();
 
       // register the message.

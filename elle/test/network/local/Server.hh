@@ -50,7 +50,6 @@ namespace elle
       // attributes
       //
       String                    line;
-      std::list<LocalSocket*>   sockets;
     };
 
   }

@@ -53,7 +53,7 @@ namespace elle
 
       // connect the socket.
       if (this->socket.Connect(this->line,
-                               StreamSocket::ModeSynchronous) == StatusError)
+                               AbstractSocket::ModeSynchronous) == StatusError)
         escape("unable to connect to the line");
 
       return elle::StatusOk;

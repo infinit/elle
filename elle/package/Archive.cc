@@ -796,8 +796,11 @@ namespace elle
           // extract the element.
           object >> element;
         }
-      catch (...)
+      catch (const std::exception& e)
         {
+          // XXX
+          std::cerr << e.what() << std::endl;
+
           escape("an error occured during the deserialization process");
         }
 

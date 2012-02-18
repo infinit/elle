@@ -66,8 +66,6 @@ namespace elle
         {
           Neighbour*    neighbour;
 
-          enterx(instance(neighbour));
-
           // allocate a new neighbour.
           neighbour = new Neighbour;
 
@@ -77,9 +75,6 @@ namespace elle
 
           // add the neighbour to the list.
           this->container.push_back(neighbour);
-
-          // stop tracking.
-          waive(neighbour);
         }
 
       return elle::StatusOk;
