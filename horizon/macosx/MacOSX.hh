@@ -71,6 +71,7 @@ namespace horizon
 // ---------- includes --------------------------------------------------------
 //
 
+#include <horizon/macosx/Crib.hh>
 #include <horizon/macosx/Crux.hh>
 #include <horizon/macosx/FUSE.hh>
 #include <horizon/macosx/FUker.hh>

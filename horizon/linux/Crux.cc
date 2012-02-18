@@ -16,6 +16,7 @@
 #include <horizon/linux/Linux.hh>
 #include <horizon/linux/Janitor.hh>
 #include <horizon/linux/Handle.hh>
+#include <horizon/macosx/Crib.hh>
 
 #include <agent/Agent.hh>
 #include <etoile/Etoile.hh>
@@ -940,16 +941,51 @@ namespace horizon
               -EACCES,
               identifier);
 
-      // update the accesses.
+      // the permission modification must be performed according to the
+      // object state.
       //
-      // note that the method assumes that the caller is the object's owner!
-      // if not, an error will occur anyway, so why bother checking.
-      if (etoile::wall::Access::Grant(identifier,
-                                      agent::Agent::Subject,
-                                      permissions) == elle::StatusError)
-        error("unable to update the access records",
-              -EPERM,
-              identifier);
+      // indeed, if the object has just been created, the permissions assigned
+      // at creation will actually be granted when closed.
+      //
+      // therefore, should a chmod() be requested between a create() and
+      // a close(), the change of permissions should be delayed as it is
+      // the case for any file being created.
+      //
+      // the following therefore checks if the path corresponds to a file
+      // in creation. if so, the permissions are recorded for future
+      // application.
+      //
+      if (Crib::Exist(elle::String(path)) == elle::StatusTrue)
+        {
+          Handle*       handle;
+
+          //
+          // retrieve the handle, representing the created file, from
+          // the crib.
+          //
+          // then update the future permissions in the handle so that,
+          // when the file gets closed, these permissions get applied.
+          //
+
+          if (Crib::Retrieve(elle::String(path), handle) == elle::StatusError)
+            escape("unable to retrieve the handle from the crib");
+
+          handle->permissions = permissions;
+        }
+      else
+        {
+          // update the accesses.
+          //
+          // note that the method assumes that the caller is the object's
+          // owner! if not, an error will occur anyway, so why bother
+          // checking.
+          if (etoile::wall::Access::Grant(identifier,
+                                          agent::Agent::Subject,
+                                          permissions) == elle::StatusError)
+            error("unable to update the access records",
+                  -EPERM,
+                  identifier);
+        }
 
       // if the execution bit is to be set...
       if (mode & S_IXUSR)
@@ -1609,6 +1645,11 @@ namespace horizon
                                               file,
                                               permissions));
 
+      // add the created and opened file in the crib.
+      if (Crib::Add(elle::String(path),
+                    reinterpret_cast<Handle*>(info->fh)) == elle::StatusError)
+        escape("unable to add the created file to the crib");
+
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, 0%o, %p)\n",
@@ -1903,6 +1944,10 @@ namespace horizon
         {
         case Handle::OperationCreate:
           {
+            // remove the created and opened file in the crib.
+            if (Crib::Remove(elle::String(path)) == elle::StatusError)
+              escape("unable to remove the created file to the crib");
+
             //
             // the permissions settings have been delayed in order to support
             // a read-only file being copied in which case a file is created
