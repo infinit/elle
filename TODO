@@ -1,5 +1,5 @@
-- macosx
- - compiler infinit sur infinit ne marche pas
+- SocketNotifier
+ - regarder pourquoi le warning
 
 - fiber
  - merger func
@@ -21,6 +21,15 @@
  - boost::socket
 
 - bouger le .conf et .log dans network/
+
+- tests
+ - rename un fichier A en B tout en gardant le scope A ouvert et en faisant
+   un nouveau open sur A (qui n'existe plus) on ne doit pas etre capable
+   d'etre raccroche au scope existant, un autre doit etre cree.
+ - creer un fichier en lecture seule et ecrire dedans puis close. ca doit
+   marcher.
+ - open/read/write concurrents entre plusieurs instances d'infinit; sans
+   faire de close on doit quand meme recuperer les donnees ecrites.
 
 #
 # ---------- bugs -------------------------------------------------------------
