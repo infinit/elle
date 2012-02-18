@@ -375,7 +375,6 @@ namespace hole
                                     const nucleus::Version&     version,
                                     nucleus::MutableBlock&      block)
       {
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Server::Get[Mutable]()\n");

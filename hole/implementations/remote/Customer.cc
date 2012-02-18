@@ -118,7 +118,7 @@ namespace hole
       {
         // debug.
         if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Customer::Disconnected()");
+          printf("[hole] implementations::remote::Customer::Disconnected()\n");
 
         // set the customer's state as dead.
         this->state = Customer::StateDead;
@@ -138,7 +138,7 @@ namespace hole
       {
         // debug.
         if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Customer::Error()");
+          printf("[hole] implementations::remote::Customer::Error()\n");
 
         // log the error.
         log(error.c_str());
@@ -158,7 +158,7 @@ namespace hole
       {
         // debug.
         if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Customer::Abort()");
+          printf("[hole] implementations::remote::Customer::Abort()\n");
 
         // delete the timer.
         delete this->timer;
