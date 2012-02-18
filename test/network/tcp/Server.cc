@@ -62,7 +62,6 @@ namespace elle
     ///
     Status              Server::Run()
     {
-      std::cout << "[bridge]" << std::endl;
       locus.Dump();
 
       // listen for incoming connections.
@@ -101,6 +100,12 @@ namespace elle
         escape("unable to call the challenge");
 
       std::cout << "[response] " << response << std::endl;
+
+      // check the response
+      if (response != elle::String("RESPONSE"))
+        std::cerr << "unexpected response '" << response << "'" << std::endl;
+
+      elle::Program::Exit();
 
       return elle::StatusOk;
     }
