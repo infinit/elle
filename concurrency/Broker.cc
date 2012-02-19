@@ -163,8 +163,23 @@ namespace elle
 
         FD_SET(this->descriptor, &set);
 
-        if (::select(FD_SETSIZE, &set, NULL, NULL, &timeout) == -1)
-          return;
+        switch (::select(FD_SETSIZE, &set, NULL, NULL, &timeout))
+          {
+          case -1:
+            {
+              log(::strerror(errno));
+
+              return;
+            }
+          case 0:
+            {
+              return;
+            }
+          default:
+            {
+              // nothing to do i.e proceed.
+            }
+          }
       }
 #endif
 
