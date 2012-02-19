@@ -54,8 +54,13 @@ Status              CodingStandard::Method1()
   /*
    * one must align the variable declarations so as to easily and quickly
    * identify the type and name.
+   *
+   * besides, note that the * character for pointer declarations is
+   * kept close to the type, not the variable's name.
    */
-  std::list<Natural32>      list;
+  std::list<Natural32>*     list;
+
+  list = new std::list<Natural32>;
 
   /*
    * one must rely on the C++11 features such as auto in order to recude
@@ -64,8 +69,8 @@ Status              CodingStandard::Method1()
    *
    * the developer should therefore use auto when its use is unambiguous.
    */
-  auto                      iterator = list.begin();
-  auto                      end = list.end();
+  auto                      iterator = list->begin();
+  auto                      end = list->end();
 
   /*
    * every block of logically related operations must be commented so
@@ -83,6 +88,8 @@ Status              CodingStandard::Method1()
     {
       [...]
     }
+
+  delete list;
 
   return (StatusOk);
 }
