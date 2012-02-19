@@ -71,6 +71,7 @@ namespace horizon
 // ---------- includes --------------------------------------------------------
 //
 
+#include <horizon/linux/Crib.hh>
 #include <horizon/linux/Crux.hh>
 #include <horizon/linux/FUSE.hh>
 #include <horizon/linux/FUker.hh>
