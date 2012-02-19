@@ -1,3 +1,12 @@
+- ?
+- 182f8d7f784e31a29987ca8547ffb6938a3d4c4a: Simplified the platform-specific code.
+- b6ae332c1ef8105dc1c743c07f58b0d7f12138d9: Modified the platform-specific compilation.
+- a35cbeda9c52944f24b9399a1cbf9fe54870fa3e: Updated the platform selection.
+- 30da593a58c355e3ed0313905e0de1360ff0624f: some spaces
+
+- bugs:
+ - Broker: select() == 0
+
 - SocketNotifier
  - regarder pourquoi le warning
 
