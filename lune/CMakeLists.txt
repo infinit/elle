@@ -1,6 +1,6 @@
-PROJECT(Lune CXX)
+project(Lune CXX)
 
-ADD_LIBRARY(lune
+add_library(lune
   Authority.cc
   Configuration.cc
   Descriptor.cc
@@ -12,4 +12,6 @@ ADD_LIBRARY(lune
   Phrase.cc
 )
 
-TARGET_LINK_LIBRARIES(lune nucleus hole horizon)
+add_definitions(-fPIC)
+
+target_link_libraries(lune nucleus hole horizon)

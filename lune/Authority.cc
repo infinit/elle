@@ -278,29 +278,41 @@ namespace lune
 //
 
   ///
-  /// this method loads the system's authority file.
+  /// this method loads an authority file.
   ///
-  elle::Status          Authority::Load()
+  elle::Status          Authority::Load(elle::Path const& path)
   {
-    elle::Path          path;
     elle::Region        region;
-
-    // create the path.
-    if (path.Create(Lune::Authority) == elle::StatusError)
-      escape("unable to create the path");
 
     // read the file's content.
     if (elle::File::Read(path, region) == elle::StatusError)
       escape("unable to read the file's content");
 
     // decode and extract the object.
-    if (elle::Hexadecimal::Decode(
-          elle::String(reinterpret_cast<char*>(region.contents),
-                       region.size),
-          *this) == elle::StatusError)
+    auto status = elle::Hexadecimal::Decode(
+        // XXX this copy the whole buffer, not opti
+        elle::String(reinterpret_cast<char*>(region.contents), region.size),
+        *this
+    );
+
+    if (status == elle::StatusError)
       escape("unable to decode the object");
 
     return elle::StatusOk;
+  }
+
+  ///
+  /// this method loads the system's authority file.
+  ///
+  elle::Status          Authority::Load()
+  {
+    elle::Path          path;
+
+    // create the path.
+    if (path.Create(Lune::Authority) == elle::StatusError)
+      escape("unable to create the path");
+
+    return this->Load(path);
   }
 
   ///

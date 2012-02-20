@@ -83,6 +83,7 @@ namespace lune
 
     // fileable
     elle::Status        Load();
+    elle::Status        Load(elle::Path const& path);
     elle::Status        Store() const;
     elle::Status        Erase() const;
     elle::Status        Exist() const;
