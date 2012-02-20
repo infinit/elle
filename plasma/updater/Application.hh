@@ -17,13 +17,10 @@
 
 #include <string>
 
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QUrl>
 #include <QApplication>
 
-#include "ReleaseReader.hh"
+#include "IdentityUpdater.hh"
+#include "ReleaseUpdater.hh"
 
 namespace plasma {
   namespace updater {
@@ -43,22 +40,17 @@ namespace plasma {
       Q_OBJECT
 
     private:
-      QNetworkAccessManager*  _network_access_manager;
-      bool                    _has_list;
-      ReleaseReader           _release_reader;
+      ReleaseUpdater  _releaseUpdater;
+      IdentityUpdater _identityUpdater;
 
     public:
       Application(int ac, char** av);
       virtual ~Application();
       int Exec();
-    private slots:
-      void _OnDownloadFinished(QNetworkReply* reply);
-      void _OnDownloadError(QNetworkReply::NetworkError error);
     private:
-      bool _ProcessResource(QNetworkReply& reply);
-      bool _ProcessResourceList(QNetworkReply& reply);
-      bool _PrepareInfinitHome();
-      void _DownloadNextResource();
+      bool _CheckInfinitHome();
+    private slots:
+      void _OnReleaseUpdated(bool);
     };
 
   }

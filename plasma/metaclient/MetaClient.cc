@@ -123,7 +123,7 @@ namespace {
       if (map.contains("token") && map.contains("fullname"))
         {
           response.token = getstr(map, "token");
-          response.fullname = getstr(map, "token");
+          response.fullname = getstr(map, "fullname");
           return response.token.size() > 0 && response.fullname.size() > 0;
         }
       return false;
