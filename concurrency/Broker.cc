@@ -163,8 +163,16 @@ namespace elle
 
         FD_SET(this->descriptor, &set);
 
-        if (::select(FD_SETSIZE, &set, NULL, NULL, &timeout) == -1)
-          return;
+        int res = ::select(FD_SETSIZE, &set, NULL, NULL, &timeout);
+        if (res == 0)
+          {
+            return;
+          }
+        else if (res < 0)
+          {
+            log("select() error: %s", strerror(errno));
+            return;
+          }
       }
 #endif
 
