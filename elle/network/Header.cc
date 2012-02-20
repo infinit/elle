@@ -129,7 +129,7 @@ namespace elle
                           this->event,
                           this->tag,
                           this->size) == StatusError)
-        escape("unable to serialize the header attributes");
+        escape("unable to extract the header attributes");
 
       // verify the name.
       if (Header::Name != name)

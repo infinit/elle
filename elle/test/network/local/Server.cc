@@ -62,9 +62,6 @@ namespace elle
       String            challenge("CHALLENGE");
       String            response;
 
-      // push the socket in the container in order not to lose the object.
-      this->sockets.push_front(socket);
-
       std::cout << "[challenging...] " << std::endl;
 
       // call the challenge.
@@ -73,6 +70,12 @@ namespace elle
         escape("unable to call the challenge");
 
       std::cout << "[response] " << response << std::endl;
+
+      // check the response
+      if (response != elle::String("RESPONSE"))
+        std::cerr << "unexpected response '" << response << "'" << std::endl;
+
+      elle::Program::Exit();
 
       return elle::StatusOk;
     }
