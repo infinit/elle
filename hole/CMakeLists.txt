@@ -1,4 +1,7 @@
-ADD_LIBRARY(hole
+
+add_definitions(-fPIC)
+
+add_library(hole
   implementations/local/Implementation.cc
   implementations/local/Local.cc
   implementations/local/Machine.cc
@@ -35,10 +38,7 @@ ADD_LIBRARY(hole
   Model.cc
 )
 
-TARGET_LINK_LIBRARIES(hole elle)
+target_link_libraries(hole elle)
 
-ADD_EXECUTABLE(8hole
-  _hole.cc
-)
-
-TARGET_LINK_LIBRARIES(8hole infinit nucleus lune hole)
+add_executable(8hole _hole.cc)
+target_link_libraries(8hole infinit nucleus lune hole)
