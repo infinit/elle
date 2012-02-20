@@ -112,9 +112,8 @@ namespace elle
       // if no slot is waiting for this event, dispatch it right away.
       //
       {
-        Network::Scoutor        scoutor;
-
         auto it = Network::Procedures.find(parcel->header->tag);
+
         // retrieve the procedure's functionoid associated to the header's tag.
         if (it == Network::Procedures.end())
           {

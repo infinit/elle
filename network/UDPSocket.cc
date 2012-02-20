@@ -233,6 +233,10 @@ namespace elle
           Packet        packet;
           Region        frame;
 
+          // check the remaining data.
+          if ((raw.size - offset) == 0)
+            break;
+
           // create the frame based on the previously extracted raw.
           if (frame.Wrap(raw.contents + offset,
                          raw.size - offset) == StatusError)
@@ -252,6 +256,8 @@ namespace elle
           // if there is not enough data in the raw to complete the parcel...
           if ((packet.size - packet.offset) < parcel->header->size)
             {
+              log("this should not haappen in normal conditions");
+
               // exit the loop since there is not enough data anyway.
               break;
             }

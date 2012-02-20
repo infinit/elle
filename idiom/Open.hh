@@ -174,7 +174,7 @@
       else                                                              \
         {                                                               \
           std::cerr << _message_                                        \
-                    << " (" << _location_ << ") @"                      \
+                    << " (" << _location_ << ") @ "                     \
                     << _time_ << std::endl;                             \
                                                                         \
           show();                                                       \
@@ -214,7 +214,7 @@
       else                                                              \
         {                                                               \
           std::cerr << _message_                                        \
-                    << " (" << _location_ << ") @"                      \
+                    << " (" << _location_ << ") @ "                     \
                     << _time_ << std::endl;                             \
                                                                         \
           show();                                                       \
