@@ -1162,12 +1162,12 @@ namespace etoile
 
         struct OnExit
         {
-          Actor*&   actor;
-          Scope*&   scope;
+          Actor*   actor;
+          Scope*   scope;
           bool      track;
 
-          OnExit(Actor*& actor, Scope*& scope) :
-            actor(actor), scope(scope), track(true)
+          OnExit() :
+            actor(nullptr), scope(nullptr), track(true)
           {}
           ~OnExit()
           {
@@ -1177,7 +1177,7 @@ namespace etoile
             if (this->scope != nullptr)
               gear::Scope::Annihilate(this->scope);
           }
-        } guard(actor, scope);
+        } guard;
 
         //
         // create a scope, very much as for wall::*::Create(), except
@@ -1186,6 +1186,7 @@ namespace etoile
         // supply a scope i.e request a new anonymous scope.
         if (gear::Scope::Supply(scope) == elle::StatusError)
           escape("unable to supply a scope");
+        guard.scope = scope;
 
         // retrieve the context.
         if (scope->Use(context) == elle::StatusError)
@@ -1194,6 +1195,7 @@ namespace etoile
         // allocate an actor on the new scope, making the scope valid
         // for triggering automata.
         actor = new gear::Actor(scope);
+        guard.actor = actor;
 
         //
         // swap the contexts.
