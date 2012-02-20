@@ -16,7 +16,13 @@
 //
 
 #include <elle/Elle.hh>
+#include <elle/package/Derivable.hh>
 #include <nucleus/Nucleus.hh>
+
+namespace elle
+{
+  using namespace package;
+}
 
 namespace nucleus
 {

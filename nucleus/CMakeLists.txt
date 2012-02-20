@@ -1,5 +1,7 @@
 PROJECT(Nucleus CXX)
 
+add_definitions(-fPIC)
+
 ADD_LIBRARY(nucleus
   Nucleus.cc
 
@@ -33,5 +35,7 @@ ADD_LIBRARY(nucleus
   neutron/Token.cc
   neutron/Trait.cc
 )
+
+
 
 TARGET_LINK_LIBRARIES(nucleus elle)
