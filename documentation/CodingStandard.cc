@@ -25,6 +25,16 @@
 /*
  * the 'using namespace' is used to reduce the indentation
  * in source files.
+ *
+ * The only allowed 'using namespace' are in the implementation file for its
+ * own module, or in a function scope when it improves readability.
+ *
+ * void f()
+ * {
+ *    using namespace tcp = boost::asio::tcp;
+ *    tcp::socket s(io_service);
+ * }
+ *
  */
 using namespace package::module;
 

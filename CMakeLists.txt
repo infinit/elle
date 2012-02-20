@@ -55,6 +55,7 @@ add_subdirectory(horizon)
 add_subdirectory(hole)
 add_subdirectory(satellites)
 add_subdirectory(plasma)
+add_subdirectory(oracle)
 
 # just to make files appears on qtcreator
 file(GLOB_RECURSE HEADERS *.hh *.hxx)
