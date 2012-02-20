@@ -459,7 +459,7 @@ int                     main(int                                argc,
           return (1);
         }
     }
-  catch (std::exception& e)
+  catch (std::exception const& e)
     {
       std::cout << "The program has been terminated following "
                 << "a fatal error (" << e.what() << ")." << std::endl;
