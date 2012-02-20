@@ -136,12 +136,12 @@ namespace {
 /// Typedef for specific request handler
 ///
 #define HANDLER_TYPEDEF(cls)                                                 \
-    typedef RequestHandler<cls##Response, cls##ResponseFiller> cls##Handler
+    typedef RequestHandler<cls, cls##Filler> cls##Handler
 
 //////////////////////////////////////////////////////////////////////////////
 // Requests handlers defined here
 
-    HANDLER_TYPEDEF(Login);
+    HANDLER_TYPEDEF(LoginResponse);
 
 #undef HANDLER_TYPEDEF
 }
@@ -164,7 +164,7 @@ MetaClient::~MetaClient()
   if (this->_handlers.size() > 0)
     std::cerr << "WARNING: Client closed while there are "
               << this->_handlers.size()
-              << " pending.\n";
+              << " request pending.\n";
 }
 
 //
@@ -179,7 +179,7 @@ void MetaClient::Login(std::string const& email,
   QVariantMap req;
   req.insert("email", email.c_str());
   req.insert("password", password.c_str());
-  this->_Post("/login", req, new LoginHandler(callback, errback));
+  this->_Post("/login", req, new LoginResponseHandler(callback, errback));
 }
 
 void MetaClient::_Post(std::string const& url,
@@ -189,27 +189,39 @@ void MetaClient::_Post(std::string const& url,
   QString uri((INFINIT_META_URL + url).c_str());
 
   QByteArray json = QJson::Serializer().serialize(data);
-  auto request = QNetworkRequest(QUrl(uri));
+  QNetworkRequest request{QUrl{uri}};
   if (this->_token.size() > 0)
     request.setRawHeader("Authorization", this->_token.c_str());
+  request.setRawHeader("Content-Type", "application/json");
   auto reply = this->_network.post(request, json);
   if (reply != nullptr)
-    this->_handlers[reply] = handler;
+    {
+      this->_handlers[reply] = handler;
+    }
   else
-    delete handler;
+    {
+      std::cerr << "Cannot create the POST request !\n";
+      delete handler;
+    }
 }
 
 void MetaClient::_Get(std::string const& url, RequestHandler* handler)
 {
   QString uri((INFINIT_META_URL + url).c_str());
-  auto request = QNetworkRequest(QUrl(uri));
+  QNetworkRequest request{QUrl{uri}};
   if (this->_token.size() > 0)
     request.setRawHeader("Authorization", this->_token.c_str());
+  request.setRawHeader("Content-Type", "application/json");
   auto reply = this->_network.get(request);
   if (reply != nullptr)
-    this->_handlers[reply] = handler;
+    {
+      this->_handlers[reply] = handler;
+    }
   else
-    delete handler;
+    {
+      std::cerr << "Cannot create the GET request !\n";
+      delete handler;
+    }
 }
 
 void MetaClient::_OnRequestFinished(QNetworkReply* reply)
@@ -233,4 +245,3 @@ void MetaClient::_OnRequestFinished(QNetworkReply* reply)
     }
   reply->deleteLater();
 }
-

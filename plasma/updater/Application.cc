@@ -57,6 +57,10 @@ void Application::_OnReleaseUpdated(bool)
   if (!this->_CheckInfinitHome())
     return;
   this->_identityUpdater.Start();
+  this->connect(
+    &this->_identityUpdater, SIGNAL(identityUpdated(bool)),
+    this, SLOT(_OnIdentityUpdated(bool))
+  );
 }
 
 bool Application::_CheckInfinitHome()
@@ -73,4 +77,9 @@ bool Application::_CheckInfinitHome()
     }
 
   return true;
+}
+void Application::_OnIdentityUpdated(bool)
+{
+  std::cout << "Identity updated, quitting...\n";
+  this->quit();
 }

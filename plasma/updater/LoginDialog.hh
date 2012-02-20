@@ -14,6 +14,7 @@ public:
     ~LoginDialog();
 
     void GetLoginPassword(std::string& login, std::string& password);
+    void SetErrorMessage(std::string const& error);
 
 private:
     Ui::LoginDialog *ui;

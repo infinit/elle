@@ -22,3 +22,8 @@ void LoginDialog::GetLoginPassword(std::string& login, std::string& password)
       password = this->ui->password->text().toStdString();
     }
 }
+
+void LoginDialog::SetErrorMessage(std::string const& error)
+{
+  this->ui->error->setText(error.c_str());
+}

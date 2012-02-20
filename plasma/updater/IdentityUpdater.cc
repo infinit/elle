@@ -43,30 +43,46 @@ void IdentityUpdater::_DoLogin()
 {
   std::string login, password;
   this->_loginDialog.GetLoginPassword(login, password);
+  if (!login.size() || !password.size())
+    {
+      this->_loginDialog.SetErrorMessage("Wrong login/password");
+      this->_loginDialog.show();
+      return;
+    }
   this->_api.Login(
     login, password,
     std::bind(&IdentityUpdater::_OnLogin, this, std::placeholders::_1),
     std::bind(&IdentityUpdater::_OnError, this, std::placeholders::_1)
   );
+  this->_loginDialog.setDisabled(true);
+  this->_loginDialog.show();
 }
 
 void IdentityUpdater::_OnLogin(plasma::metaclient::LoginResponse const& response)
 {
+  this->_loginDialog.setDisabled(false);
   if (response.success)
     {
       std::cout << "Login success: "
                 << response.fullname << ' '
                 << response.token
                 << '\n';
+      this->_loginDialog.hide();
+      emit identityUpdated(true);
     }
   else
     {
       std::cerr << "Login error: " << response.error << '\n';
+      this->_loginDialog.SetErrorMessage(response.error);
     }
 }
 
 void IdentityUpdater::_OnError(plasma::metaclient::MetaClient::Error error)
 {
   std::cout << "ERROR: " << (int)error << "\n";
+  this->_loginDialog.SetErrorMessage(
+    "An error occured, please check your internet connection"
+  );
+  this->_loginDialog.setDisabled(false);
 }
 
