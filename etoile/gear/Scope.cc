@@ -157,7 +157,7 @@ namespace etoile
 
       scope = scoutor->second;
 
-      return elle::StatusFalse;
+      return elle::StatusOk;
     }
 
     ///
@@ -1264,6 +1264,7 @@ namespace etoile
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] gear::Scope::Supervisor()\n");
 
+      // XXX
       return elle::StatusOk;
 
       // if the scope is already being taking care of, ignore this
