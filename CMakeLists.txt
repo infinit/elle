@@ -117,6 +117,8 @@ ADD_LIBRARY(elle
   ${elle_PLATFORM}
 )
 
+add_definitions(-fPIC)
+
 TARGET_LINK_LIBRARIES(elle
   comet
   ${QT_QTNETWORK_LIBRARIES}
