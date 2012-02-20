@@ -1,9 +1,10 @@
 PROJECT(Comet CXX)
 
-ADD_LIBRARY(comet
+add_definitions(-fPIC)
+add_library(comet
   BN.cc
   RAND.cc
   RSA.cc
 )
 
-TARGET_LINK_LIBRARIES(comet ${OPENSSL_LIBRARIES})
+target_link_libraries(comet ${OPENSSL_LIBRARIES})
