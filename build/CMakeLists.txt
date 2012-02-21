@@ -14,6 +14,20 @@ SET(EXEC_PERMS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WOR
 
 INCLUDE_DIRECTORIES(${PROJECT_DIR}/json_spirit)
 
+#########################
+# Settings
+#########################
+IF(NOT DEFINED JSON_SPIRIT_BUILD_DEMOS)
+  SET(JSON_SPIRIT_BUILD_DEMOS TRUE CACHE BOOL "If enabled, builds demos.")
+ELSE()
+  SET(JSON_SPIRIT_BUILD_DEMOS JSON_SPIRIT_BUILD_DEMOS CACHE BOOL "If enabled, builds demos.")
+ENDIF()
+
+IF(NOT DEFINED JSON_SPIRIT_BUILD_TESTS)
+  SET(JSON_SPIRIT_BUILD_TESTS TRUE CACHE BOOL "If enabled, builds tests.")
+ELSE()
+  SET(JSON_SPIRIT_BUILD_TESTS JSON_SPIRIT_BUILD_TESTS CACHE BOOL "If enabled, builds tests.")
+ENDIF()
 
 #########################
 # Requirements
@@ -56,47 +70,48 @@ INSTALL(
 #########################
 # JSON Test
 #########################
-SET(JSON_TEST_DIR ${PROJECT_DIR}/json_test)
-SET(JSON_TEST_SRCS
-  ${JSON_TEST_DIR}/utils_test.cpp
-  ${JSON_TEST_DIR}/json_spirit_reader_test.cpp
-  ${JSON_TEST_DIR}/json_spirit_stream_reader_test.cpp
-  ${JSON_TEST_DIR}/json_spirit_utils_test.cpp
-  ${JSON_TEST_DIR}/json_spirit_value_test.cpp
-  ${JSON_TEST_DIR}/json_spirit_writer_test.cpp
-  ${JSON_TEST_DIR}/json_test.cpp)
-ADD_EXECUTABLE(json_test ${JSON_TEST_SRCS})
-TARGET_LINK_LIBRARIES(json_test json_spirit)
+IF(JSON_SPIRIT_BUILD_TESTS)
+  SET(JSON_TEST_DIR ${PROJECT_DIR}/json_test)
+  SET(JSON_TEST_SRCS
+    ${JSON_TEST_DIR}/utils_test.cpp
+    ${JSON_TEST_DIR}/json_spirit_reader_test.cpp
+    ${JSON_TEST_DIR}/json_spirit_stream_reader_test.cpp
+    ${JSON_TEST_DIR}/json_spirit_utils_test.cpp
+    ${JSON_TEST_DIR}/json_spirit_value_test.cpp
+    ${JSON_TEST_DIR}/json_spirit_writer_test.cpp
+    ${JSON_TEST_DIR}/json_test.cpp)
+  ADD_EXECUTABLE(json_test ${JSON_TEST_SRCS})
+  TARGET_LINK_LIBRARIES(json_test json_spirit)
+ENDIF()
 
 
-#########################
-# JSON Spirit Demo
-#########################
-SET(JSON_DEMO_DIR ${PROJECT_DIR}/json_demo)
-SET(JSON_DEMO_SRCS
-  ${JSON_DEMO_DIR}/json_demo.cpp)
-ADD_EXECUTABLE(json_demo ${JSON_DEMO_SRCS})
-TARGET_LINK_LIBRARIES(json_demo json_spirit)
+IF(JSON_SPIRIT_BUILD_DEMOS)
+  #########################
+  # JSON Spirit Demo
+  #########################
+  SET(JSON_DEMO_DIR ${PROJECT_DIR}/json_demo)
+  SET(JSON_DEMO_SRCS
+    ${JSON_DEMO_DIR}/json_demo.cpp)
+  ADD_EXECUTABLE(json_demo ${JSON_DEMO_SRCS})
+  TARGET_LINK_LIBRARIES(json_demo json_spirit)
 
 
-#########################
-# JSON Header-only Demo
-#########################
-SET(JSON_HEADERS_ONLY_DEMO_DIR ${PROJECT_DIR}/json_headers_only_demo)
-SET(JSON_HEADERS_ONLY_DEMO_SRCS
+  #########################
+  # JSON Header-only Demo
+  #########################
+  SET(JSON_HEADERS_ONLY_DEMO_DIR ${PROJECT_DIR}/json_headers_only_demo)
+  SET(JSON_HEADERS_ONLY_DEMO_SRCS
     ${JSON_HEADERS_ONLY_DEMO_DIR}/json_headers_only_demo.cpp)
-ADD_EXECUTABLE(json_headers_only_demo ${JSON_HEADERS_ONLY_DEMO_SRCS})
-TARGET_LINK_LIBRARIES(json_headers_only_demo json_spirit)
+  ADD_EXECUTABLE(json_headers_only_demo ${JSON_HEADERS_ONLY_DEMO_SRCS})
+  TARGET_LINK_LIBRARIES(json_headers_only_demo json_spirit)
 
 
-#########################
-# JSON Map Demo
-#########################
-SET(JSON_MAP_DEMO_DIR ${PROJECT_DIR}/json_map_demo)
-SET(JSON_MAP_DEMO_SRCS
-  ${JSON_MAP_DEMO_DIR}/json_map_demo.cpp)
-ADD_EXECUTABLE(json_map_demo ${JSON_MAP_DEMO_SRCS})
-TARGET_LINK_LIBRARIES(json_map_demo json_spirit)
-
-
-INCLUDE(CPack)
+  #########################
+  # JSON Map Demo
+  #########################
+  SET(JSON_MAP_DEMO_DIR ${PROJECT_DIR}/json_map_demo)
+  SET(JSON_MAP_DEMO_SRCS
+    ${JSON_MAP_DEMO_DIR}/json_map_demo.cpp)
+  ADD_EXECUTABLE(json_map_demo ${JSON_MAP_DEMO_SRCS})
+  TARGET_LINK_LIBRARIES(json_map_demo json_spirit)
+ENDIF() # Demos

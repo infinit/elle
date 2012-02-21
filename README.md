@@ -32,6 +32,12 @@ This adds the json-spirit build as a subdirectory of your project. You
 can use the json-spirit targets (e.g. json_spirit, json_test) in your
 own CMake commands.
 
+There are a couple of CMake settings which control which components
+are built:
+
+    JSON_SPIRIT_BUILD_DEMOS - set to FALSE to disable demos
+    JSON_SPIRIT_BUILD_TESTS - set to FALSE to disable tests
+
 References
 ----------
 
