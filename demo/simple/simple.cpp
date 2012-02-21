@@ -6,12 +6,12 @@
 // This demo shows you how to read and write JSON objects and arrays.
 // In this demo objects are stored as a vector of name/value pairs.
 
-#include "json_spirit.h"
+#include <json_spirit/json_spirit.h>
 #include <cassert>
 #include <fstream>
 
 #ifndef JSON_SPIRIT_VALUE_ENABLED
-#error Please define JSON_SPIRIT_VALUE_ENABLED for the Value type to be enabled 
+#error Please define JSON_SPIRIT_VALUE_ENABLED for the Value type to be enabled
 #endif
 
 using namespace std;

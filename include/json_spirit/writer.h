@@ -10,8 +10,8 @@
 # pragma once
 #endif
 
-#include "json_spirit_value.h"
-#include "json_spirit_writer_options.h"
+#include "value.h"
+#include "writer_options.h"
 #include <iostream>
 
 namespace json_spirit
@@ -40,7 +40,7 @@ namespace json_spirit
 
     // these "formatted" versions of the "write" functions are the equivalent of the above functions
     // with option "pretty_print"
-    
+
 #ifdef JSON_SPIRIT_VALUE_ENABLED
     void         write_formatted( const Value& value, std::ostream&  os );
     std::string  write_formatted( const Value& value );

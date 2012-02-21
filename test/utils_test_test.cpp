@@ -3,9 +3,9 @@
 
 // json spirit version 4.05
 
-#include "json_spirit_utils_test.h"
+#include "utils_test_test.h"
 #include "utils_test.h"
-#include "json_spirit_utils.h"
+#include <json_spirit/utils.h>
 
 #include <boost/assign/list_of.hpp>
 
@@ -26,7 +26,7 @@ namespace
         {
             return ::to_str< String_type >( c_str );
         }
- 
+
         void assert_equal( const Obj_t& obj, const Map_t& mp_obj )
         {
             typename Obj_t::size_type obj_size = obj.size();

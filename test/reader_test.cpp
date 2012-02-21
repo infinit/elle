@@ -3,11 +3,11 @@
 
 // json spirit version 4.05
 
-#include "json_spirit_reader_test.h"
+#include "reader_test.h"
 #include "utils_test.h"
-#include "json_spirit_reader.h"
-#include "json_spirit_value.h" 
-#include "json_spirit_writer.h" 
+#include <json_spirit/reader.h>
+#include <json_spirit/value.h>
+#include <json_spirit/writer.h>
 
 #include <limits.h>
 #include <sstream>
@@ -69,7 +69,7 @@ namespace
 
             for( ; i1 != obj_1.end(); ++i1, ++i2 )
             {
-                assert_eq( *i1, *i2 ); 
+                assert_eq( *i1, *i2 );
             }
         }
 
@@ -181,7 +181,7 @@ namespace
 
             test_read( in_s, value );
 
-            const String_type result = write_formatted( value ); 
+            const String_type result = write_formatted( value );
 
             assert_eq( in_s, result );
         }
@@ -516,15 +516,15 @@ namespace
 
         void check_is_null( const char* c_str  )
         {
-            assert_eq( read_cstr( c_str ).type(), null_type ); 
+            assert_eq( read_cstr( c_str ).type(), null_type );
         }
 
         template< typename T >
         void check_value( const char* c_str, const T& expected_value )
         {
             const Value_type v( read_cstr( c_str ) );
-            
-            assert_eq( v.template get_value< T >(), expected_value ); 
+
+            assert_eq( v.template get_value< T >(), expected_value );
         }
 
         void test_values()
@@ -605,7 +605,7 @@ namespace
         void check_value_sequence( Iter_type first, Iter_type last, const Ints& expected_values, bool all_input_consumed )
         {
             Value_type value;
-            
+
             for( Ints::size_type i = 0; i < expected_values.size(); ++i )
             {
                 const bool ok = test_read_range( first, last, value );
@@ -616,7 +616,7 @@ namespace
 
                 assert_eq( first == last, is_last ? all_input_consumed : false );
             }
-  
+
             const bool ok = test_read_range( first, last, value );
 
             assert_eq( ok, false );
@@ -625,18 +625,18 @@ namespace
         void check_value_sequence( Istream_type& is, const Ints& expected_values, bool all_input_consumed )
         {
             Value_type value;
-            
+
             for( Ints::size_type i = 0; i < expected_values.size(); ++i )
             {
                 read_or_throw( is, value );
 
-                assert_eq( value.get_int(), expected_values[i] ); 
+                assert_eq( value.get_int(), expected_values[i] );
 
                 const bool is_last( i == expected_values.size() - 1 );
 
                 assert_eq( is.eof(), is_last ? all_input_consumed : false );
             }
-                
+
             try
             {
                 read_or_throw( is, value );
@@ -646,7 +646,7 @@ namespace
             catch( ... )
             {
             }
-             
+
             assert_eq( is.eof(), true );
         }
 
@@ -726,7 +726,7 @@ namespace
             check_value_sequence( "     10 11 12", list_of( 10 )( 11 )( 12 ), true);
             check_value_sequence( "10 11 12",      list_of( 10 )( 11 )( 12 ), true);
 
-            // 
+            //
 
             check_reading_arrays( "[] [ 1 ] [ 1, 2 ] [ 1, 2, 3 ]" );
  //         check_reading_arrays( "[][1][1,2][1,2,3]" );  // fails due to multi_pass iterator bug,
@@ -736,11 +736,11 @@ namespace
         void test_uint64( const char* value_str, int expected_int, int64_t expected_int64, uint64_t expected_uint64 )
         {
             const Value_type v( read_cstr( value_str ) );
-            
-            assert_eq( v.get_int(),    expected_int ); 
-            assert_eq( v.get_int64(),  expected_int64 ); 
-            assert_eq( v.get_uint64(), expected_uint64 ); 
-        } 
+
+            assert_eq( v.get_int(),    expected_int );
+            assert_eq( v.get_int64(),  expected_int64 );
+            assert_eq( v.get_uint64(), expected_uint64 );
+        }
 
         void test_uint64()
         {
@@ -770,7 +770,7 @@ namespace
             assert_eq( a[4].get_real(), 12.3 );
             assert_eq( a[5].is_null(), true );
         }
-        
+
         void run_tests()
         {
             test_syntax();

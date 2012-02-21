@@ -3,17 +3,17 @@
 
 // json spirit version 4.05
 
-// This demo shows you how to read and write JSON objects and arrays 
+// This demo shows you how to read and write JSON objects and arrays
 // using header files only, i.e. not linking to the JSON Spirit object library.
 // In this demo objects are stored as a vector of name/value pairs.
 
-#include "json_spirit_reader_template.h"
-#include "json_spirit_writer_template.h"
+#include <json_spirit/reader_template.h>
+#include <json_spirit/writer_template.h>
 #include <cassert>
 #include <fstream>
 
 #ifndef JSON_SPIRIT_VALUE_ENABLED
-#error Please define JSON_SPIRIT_VALUE_ENABLED for the Value type to be enabled 
+#error Please define JSON_SPIRIT_VALUE_ENABLED for the Value type to be enabled
 #endif
 
 using namespace std;

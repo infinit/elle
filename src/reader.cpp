@@ -3,8 +3,8 @@
 
 // json spirit version 4.05
 
-#include "json_spirit_reader.h"
-#include "json_spirit_reader_template.h"
+#include <json_spirit/reader.h>
+#include <json_spirit/reader_template.h>
 
 using namespace json_spirit;
 
@@ -13,7 +13,7 @@ using namespace json_spirit;
     {
         return read_string( s, value );
     }
-    
+
     void json_spirit::read_or_throw( const std::string& s, Value& value )
     {
         read_string_or_throw( s, value );
@@ -82,7 +82,7 @@ using namespace json_spirit;
     {
         read_string_or_throw( s, value );
     }
-    
+
     bool json_spirit::read( std::istream& is, mValue& value )
     {
         return read_stream( is, value );

@@ -3,9 +3,9 @@
 
 // json spirit version 4.05
 
-#include "json_spirit_stream_reader_test.h"
+#include "stream_reader_test.h"
 #include "utils_test.h"
-#include "json_spirit_stream_reader.h"
+#include <json_spirit/stream_reader.h>
 
 #include <sstream>
 #include <boost/assign/list_of.hpp>

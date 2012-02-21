@@ -3,10 +3,10 @@
 
 // json spirit version 4.05
 
-#include "json_spirit_writer_test.h"
+#include "writer_test.h"
 #include "utils_test.h"
-#include "json_spirit_writer.h"
-#include "json_spirit_value.h" 
+#include <json_spirit/writer.h>
+#include <json_spirit/value.h>
 
 #include <sstream>
 #include <boost/integer_traits.hpp>
@@ -35,7 +35,7 @@ namespace
         {
             return ::to_str< String_type >( c_str );
         }
- 
+
         String_type zero_str()
         {
 #ifdef WIN32
@@ -176,7 +176,7 @@ namespace
         void test_obj_with_grandchild_obj()
         {
             Object_type child_1; add_c_str( child_1, "name_1", "value_1" );
-            Object_type child_2; 
+            Object_type child_2;
             Object_type child_3; add_c_str( child_3, "name_3", "value_3" );
 
             add_value( child_2, "grandchild", child_3 );
@@ -216,7 +216,7 @@ namespace
             add_value( obj, "name_1", true  );
             add_value( obj, "name_2", false );
             add_value( obj, "name_3", true  );
-     
+
             check_eq( obj, "{\"name_1\":true,\"name_2\":false,\"name_3\":true}" );
         }
 
@@ -231,7 +231,7 @@ namespace
             ostringstream os;
 
             os << "{\"name_1\":11,\"name_2\":" << INT_MAX << ",\"name_3\":" << max_int64 << "}";
-     
+
             check_eq( obj, os.str().c_str() );
         }
 
@@ -243,7 +243,7 @@ namespace
             add_value( obj, "name_2", 1.234567890123456789e-108 );
             add_value( obj, "name_3", -1234567890.123456789 );
             add_value( obj, "name_4", -1.2e-126 );
-     
+
             check_eq( obj, to_str( "{\"name_1\":" ) + zero_str() + to_str( ","
                            "\"name_2\":1.2345678901234567e-108,"
                            "\"name_3\":-1234567890.1234567,"
@@ -257,7 +257,7 @@ namespace
             add_value( obj, "name_1", Value_type::null );
             add_value( obj, "name_2", Value_type::null );
             add_value( obj, "name_3", Value_type::null );
-     
+
             check_eq( obj, "{\"name_1\":null,\"name_2\":null,\"name_3\":null}" );
         }
 
@@ -312,7 +312,7 @@ namespace
             check_eq_pretty( arr, "[\n"
                                   "    \"value_1\",\n"
                                   "    123,\n"
-                                  "    123.45600000000000,\n" 
+                                  "    123.45600000000000,\n"
                                   "    true,\n"
                                   "    false,\n"
                                   "    null\n"
@@ -565,7 +565,7 @@ namespace
             arr.push_back( 111 );
             arr.push_back( 222 );
 
-            os << hex;  // the code should handle this, i.e. output decimal 
+            os << hex;  // the code should handle this, i.e. output decimal
 
             write( arr, os );
 

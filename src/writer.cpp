@@ -3,8 +3,8 @@
 
 // json spirit version 4.05
 
-#include "json_spirit_writer.h"
-#include "json_spirit_writer_template.h"
+#include <json_spirit/writer.h>
+#include <json_spirit/writer_template.h>
 
 using namespace json_spirit;
 

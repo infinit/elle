@@ -3,11 +3,11 @@
 
 // json spirit version 4.05
 
-#include "json_spirit_value_test.h"
-#include "json_spirit_writer_test.h"
-#include "json_spirit_reader_test.h"
-#include "json_spirit_stream_reader_test.h"
-#include "json_spirit_utils_test.h"
+#include "value_test.h"
+#include "writer_test.h"
+#include "reader_test.h"
+#include "stream_reader_test.h"
+#include "utils_test_test.h"
 
 #include <string>
 #include <iostream>
@@ -31,4 +31,3 @@ int main()
 
 	return 0;
 }
-
