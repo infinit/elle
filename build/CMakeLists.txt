@@ -18,7 +18,9 @@ INCLUDE_DIRECTORIES(${PROJECT_DIR}/json_spirit)
 #########################
 # Requirements
 #########################
-FIND_PACKAGE(Boost 1.34 REQUIRED)
+IF(NOT Boost_INCLUDE_DIR)
+  FIND_PACKAGE(Boost 1.34 REQUIRED)
+ENDIF()
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 
 #########################
