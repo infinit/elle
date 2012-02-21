@@ -43,7 +43,4 @@ namespace elle
 #include <elle/utility/Unicode.hh>
 #include <elle/utility/URI.hh>
 
-// XXX
-#include <elle/utility/ScopeReset.hh>
-
 #endif
