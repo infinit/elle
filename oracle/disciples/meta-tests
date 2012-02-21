@@ -12,14 +12,14 @@ Tests for the sever API
 
 if __name__ == '__main__':
     session = {}
-    client = pythia.Client(server, session)
+    client = pythia.Client(session=session)
 
     email = 'testkaka@infinit.io'
     password = 'pifpif'
 
     res = client.post('/login', {'email': email, 'password': password})
     if not res['success']:
-        res = client.post('/register', {'fullname': 'Mister Test', 'email': email, 'password': password})
+        res = pythia.Admin().post('/register', {'fullname': 'Mister Test', 'email': email, 'password': password})
         if not res['success']:
             raise Exception("Cannot register: " + res['error'])
         res = client.post('/login', {'email': email, 'password': password})

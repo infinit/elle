@@ -18,9 +18,9 @@ class Session(web.session.Session):
         ################################ ADDED PART HERE
         if self.session_id is None:
             self.session_id = web.ctx.env.get('HTTP_' + conf.SESSION_HEADER_NAME.upper())
-            print "FOUND SESSION ID", self.session_id
         if self.session_id is None:
             self.session_id = web.input().get(conf.SESSION_TOKEN_NAME)
+        #print "FOUND SESSION ID", self.session_id
         ################################
 
 

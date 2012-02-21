@@ -24,5 +24,6 @@ class Account(Page):
             'email': self.user['email'],
             'devices': self.user.get('devices', []),
             'networks': self.user.get('networks', []),
+            'identity': self.user['identity'],
         })
 

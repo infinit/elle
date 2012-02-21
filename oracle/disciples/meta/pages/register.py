@@ -2,10 +2,12 @@
 
 import json
 import web.form
+import time
 
 import pythia
+import metalib
 
-from meta import database
+from meta import conf, database
 from meta.page import Page
 
 class Register(Page):
@@ -54,15 +56,18 @@ class Register(Page):
                 'errors': errors,
             })
 
+        identity, identity_pub = metalib.generate_identity(
+            user['email'], user['password'],
+            conf.INFINIT_AUTHORITY_PATH,
+            conf.INFINIT_AUTHORITY_PASSWORD
+        )
+
         self.registerUser(
             email=user['email'],
             fullname=user['fullname'],
             password=self.hashPassword(user['password']),
-            identity=metalib.generate_identity(
-              user['email'], user['password'],
-              constants.INFINIT_AUTHORITY_PATH,
-              constants.INFINIT_AUTHORITY_PASSWORD
-            )
+            identity=identity,
+            identity_pub=identity_pub,
         )
         return json.dumps({
             'success': True,

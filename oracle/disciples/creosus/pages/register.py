@@ -32,9 +32,7 @@ class Register(creosus.Page):
                 'email': f['email'].value,
                 'fullname': f['fullname'].value,
                 'password': f['password'].value,
-                'admin_token': pythia.constants.ADMIN_TOKEN,
             })
-            print res
             if res['success']:
                 raise web.seeother('/')
         return self.render(obj={

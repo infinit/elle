@@ -28,13 +28,25 @@ static PyMethodDef _metalib_methods[] = {
     "generate_identity",
     &metalib_generate_identity,
     METH_VARARGS,
-    "Generate an identity."
+    "Generate an identity.\n"
+    "\n"
+    ":param login: The user unique id (its email)\n"
+    ":param password: The user password\n"
+    ":param authority_file: The path to the authority file\n"
+    ":param authority_password: Password to decrypt the authority file\n"
+    ":rtype: A tuple of two string\n"
+    ":return: a pair of strings: the whole identity and the public part of the identity\n"
   },
   {
     "generate_passport",
     &metalib_generate_passport,
     METH_VARARGS,
-    "Generate a passport."
+    "Generate a passport.\n"
+    "\n"
+    ":param authority_file: The path to the authority file\n"
+    ":param authority_password: Password to decrypt the authority file\n"
+    ":rtype: String\n"
+    ":return: The encoded passport\n"
   },
   {NULL, NULL, 0, NULL}        /* Sentinel */
 };

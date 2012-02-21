@@ -3,7 +3,9 @@
 import pymongo.objectid
 import json
 
-from meta import database
+import metalib
+
+from meta import conf, database
 from meta.page import Page
 
 class Device(Page):
@@ -18,6 +20,7 @@ class Device(Page):
                 '_id': "id",
                 'name': "pretty name",
                 'ip_address': 'address',
+                'passport': "passport string",
             }
 
     Create a new device
@@ -85,10 +88,16 @@ class Device(Page):
                 'success': False,
                 'error': "You have to provide a valid device ip address",
             }
+
+        passport = metalib.generate_passport(
+            conf.INFINIT_AUTHORITY_PATH,
+            conf.INFINIT_AUTHORITY_PASSWORD
+        )
         device = {
             'name': name,
             'ip_address': ip_address,
             'owner': self.user['_id'],
+            'passport': passport,
         }
         id = database.devices.insert(device)
         assert id is not None
