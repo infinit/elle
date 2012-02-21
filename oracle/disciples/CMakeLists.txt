@@ -1,7 +1,7 @@
 add_subdirectory(metalib)
 
 file(
-  COPY creosus meta pythia
+  COPY creosus meta pythia troll
   DESTINATION . FILES_MATCHING PATTERN "*.py"
 )
 
