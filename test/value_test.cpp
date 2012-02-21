@@ -25,12 +25,12 @@ namespace
 
     void test_obj_value()
     {
-        const Pair p1( "name1", "value1" );
-        const Pair p3( "name3", "value3" );
+        const Object::value_type p1( "name1", "value1" );
+        const Object::value_type p3( "name3", "value3" );
 
-        Object obj_1; obj_1.push_back( p1 );
-        Object obj_2; obj_2.push_back( p1 );
-        Object obj_3; obj_3.push_back( p3 );
+        Object obj_1; obj_1.insert( p1 );
+        Object obj_2; obj_2.insert( p1 );
+        Object obj_3; obj_3.insert( p3 );
 
         Value v1( obj_1 );
         Value v2( obj_2 );
@@ -168,7 +168,7 @@ namespace
 
         test_get_value( a );
 
-        Object obj; obj.push_back( Pair( "name1", "value1" ) );
+        Object obj; obj.insert( Object::value_type( "name1", "value1" ) );
 
         test_get_value( obj );
     }
@@ -229,7 +229,7 @@ namespace
             assert_array_eq( v2, array_1 );
         }
         {
-            const Object obj_1 = list_of( Pair( "a", 1 ) )( Pair( "b", 2 ) );
+            const Object obj_1 = list_of( Object::value_type( "a", 1 ) )( Object::value_type( "b", 2 ) );
 
             Value v1( obj_1 );
             Value v2;
@@ -237,11 +237,6 @@ namespace
             v2 = v1;
 
             assert_obj_eq( v1, obj_1 );
-            assert_obj_eq( v2, obj_1 );
-
-            v1.get_obj()[0] = Pair( "c", 3 );
-
-            assert_obj_eq( v1, list_of( Pair( "c", 3 ) )( Pair( "b", 2 ) ) );
             assert_obj_eq( v2, obj_1 );
         }
         {
@@ -254,7 +249,7 @@ namespace
             check_copy( false );
             const Array array_1 = list_of(1)(2);
             check_copy( array_1 );
-            const Object obj_1 = list_of( Pair( "a", 1 ) )( Pair( "b", 2 ) );
+            const Object obj_1 = list_of( Object::value_type( "a", 1 ) )( Object::value_type( "b", 2 ) );
             check_copy( obj_1 );
             check_copying_null();
         }
@@ -262,8 +257,8 @@ namespace
 
     template< typename ObjectType > void check_pair_typedefs( ObjectType &object )
     {
-        typename ObjectType::value_type::String_type name = object[0].name_;
-        typename ObjectType::value_type::Value_type value = object[0].value_;
+        typename ObjectType::key_type name = object.begin()->first;
+        typename ObjectType::value_type::second_type value = object.begin()->second;
     }
 
     void check_pair_typedefs()
@@ -279,8 +274,8 @@ namespace
 
     void test_obj_map_implemention()
     {
-#ifdef JSON_SPIRIT_MVALUE_ENABLED
-        mObject obj;
+#ifdef JSON_SPIRIT_VALUE_ENABLED
+        Object obj;
 
         obj[ "name 1" ] = 1;
         obj[ "name 2" ] = "two";
@@ -395,16 +390,10 @@ namespace
     void test_container_constructor()
     {
 #ifdef JSON_SPIRIT_VALUE_ENABLED
-       Container_constructor_runner< Config  >();
-#endif
-#ifdef JSON_SPIRIT_MVALUE_ENABLED
-       Container_constructor_runner< mConfig >();
+       Container_constructor_runner< Config >();
 #endif
 #if defined( JSON_SPIRIT_WVALUE_ENABLED ) && !defined( BOOST_NO_STD_WSTRING )
-        Container_constructor_runner< wConfig  >();
-#endif
-#if defined( JSON_SPIRIT_WMVALUE_ENABLED ) && !defined( BOOST_NO_STD_WSTRING )
-        Container_constructor_runner< wmConfig >();
+        Container_constructor_runner< wConfig >();
 #endif
     }
 
@@ -470,17 +459,10 @@ namespace
     void test_variant_constructor()
     {
 #ifdef JSON_SPIRIT_VALUE_ENABLED
-        Variant_constructor_runner< Config  >();
-#endif
-#ifdef JSON_SPIRIT_MVALUE_ENABLED
-        Variant_constructor_runner< mConfig >();
-
+        Variant_constructor_runner< Config >();
 #endif
 #if defined( JSON_SPIRIT_WVALUE_ENABLED ) && !defined( BOOST_NO_STD_WSTRING )
-        Variant_constructor_runner< wConfig  >();
-#endif
-#if defined( JSON_SPIRIT_WMVALUE_ENABLED ) && !defined( BOOST_NO_STD_WSTRING )
-       Variant_constructor_runner< wmConfig >();
+       Variant_constructor_runner< wConfig >();
 #endif
     }
 }
@@ -509,7 +491,7 @@ void json_spirit::test_value()
     assert_neq( value_str, value_bool );
 
     Object obj_2;
-    obj_2.push_back( Pair( "name", value_str ) );
+    obj_2.insert( Object::value_type( "name", value_str ) );
     Value value_str_3( "xxxxx" );
     Value value_obj_3( obj_2 );
 

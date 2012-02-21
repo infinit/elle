@@ -7,7 +7,6 @@
 #include "writer_test.h"
 #include "reader_test.h"
 #include "stream_reader_test.h"
-#include "utils_test_test.h"
 
 #include <string>
 #include <iostream>
@@ -21,7 +20,6 @@ int main()
     test_writer();
     test_reader();
     test_stream_reader();
-    test_utils();
 
     cout << "all tests passed" << endl << endl;
     cout << "press any key to continue";

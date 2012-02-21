@@ -122,16 +122,10 @@ namespace
 void json_spirit::test_stream_reader()
 {
 #ifdef JSON_SPIRIT_VALUE_ENABLED
-    Test_runner< Config  >().run_tests();
-#endif
-#ifdef JSON_SPIRIT_MVALUE_ENABLED
-    Test_runner< mConfig >().run_tests();
+    Test_runner< Config >().run_tests();
 #endif
 
 #if defined( JSON_SPIRIT_WVALUE_ENABLED ) && !defined( BOOST_NO_STD_WSTRING )
-    Test_runner< wConfig  >().run_tests();
-#endif
-#if defined( JSON_SPIRIT_WMVALUE_ENABLED ) && !defined( BOOST_NO_STD_WSTRING )
-    Test_runner< wmConfig >().run_tests();
+    Test_runner< wConfig >().run_tests();
 #endif
 }

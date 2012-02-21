@@ -78,7 +78,6 @@ IF(JSON_SPIRIT_BUILD_TESTS)
     ${JSON_TEST_DIR}/utils_test.cpp
     ${JSON_TEST_DIR}/reader_test.cpp
     ${JSON_TEST_DIR}/stream_reader_test.cpp
-    ${JSON_TEST_DIR}/utils_test_test.cpp
     ${JSON_TEST_DIR}/value_test.cpp
     ${JSON_TEST_DIR}/writer_test.cpp
     ${JSON_TEST_DIR}/test.cpp)
@@ -109,13 +108,4 @@ IF(JSON_SPIRIT_BUILD_DEMOS)
   ADD_EXECUTABLE(json_headers_demo ${JSON_HEADERS_DEMO_SRCS})
   TARGET_LINK_LIBRARIES(json_headers_demo json_spirit)
 
-
-  #########################
-  # JSON Map Demo
-  #########################
-  SET(JSON_MAP_DEMO_DIR ${JSON_DEMO_DIR}/map)
-  SET(JSON_MAP_DEMO_SRCS
-    ${JSON_MAP_DEMO_DIR}/map.cpp)
-  ADD_EXECUTABLE(json_map_demo ${JSON_MAP_DEMO_SRCS})
-  TARGET_LINK_LIBRARIES(json_map_demo json_spirit)
 ENDIF() # Demos

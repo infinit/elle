@@ -823,18 +823,12 @@ namespace
 void json_spirit::test_reader()
 {
 #ifdef JSON_SPIRIT_VALUE_ENABLED
-    Test_runner< Config  >().run_tests();
+    Test_runner< Config >().run_tests();
     test_extended_ascii();
 #endif
-#ifdef JSON_SPIRIT_MVALUE_ENABLED
-    Test_runner< mConfig >().run_tests();
-#endif
 #if defined( JSON_SPIRIT_WVALUE_ENABLED ) && !defined( BOOST_NO_STD_WSTRING )
-    Test_runner< wConfig  >().run_tests();
+    Test_runner< wConfig >().run_tests();
     test_wide_esc_u();
-#endif
-#if defined( JSON_SPIRIT_WMVALUE_ENABLED ) && !defined( BOOST_NO_STD_WSTRING )
-    Test_runner< wmConfig >().run_tests();
 #endif
 
 

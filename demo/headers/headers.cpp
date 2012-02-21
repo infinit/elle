@@ -41,11 +41,11 @@ void write_address( Array& a, const Address& addr )
 {
     Object addr_obj;
 
-    addr_obj.push_back( Pair( "house_number", addr.house_number_ ) );
-    addr_obj.push_back( Pair( "road",         addr.road_ ) );
-    addr_obj.push_back( Pair( "town",         addr.town_ ) );
-    addr_obj.push_back( Pair( "county",       addr.county_ ) );
-    addr_obj.push_back( Pair( "country",      addr.country_ ) );
+    addr_obj["house_number"] = addr.house_number_;
+    addr_obj["road"] = addr.road_;
+    addr_obj["town"] = addr.town_;
+    addr_obj["county"] = addr.county_;
+    addr_obj["country"] = addr.country_;
 
     a.push_back( addr_obj );
 }
@@ -54,12 +54,10 @@ Address read_address( const Object& obj )
 {
     Address addr;
 
-    for( Object::size_type i = 0; i != obj.size(); ++i )
+    for( Object::const_iterator i = obj.begin(); i != obj.end(); ++i )
     {
-        const Pair& pair = obj[i];
-
-        const string& name  = pair.name_;
-        const Value&  value = pair.value_;
+        const string& name  = i->first;
+        const Value&  value = i->second;
 
         if( name == "house_number" )
         {
