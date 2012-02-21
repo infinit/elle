@@ -20,6 +20,7 @@ rev=`git rev-parse --short HEAD`
 major=`cat CMakeLists.txt| grep INFINIT_VERSION_MAJOR | head -n1 | cut -d\" -f2`
 minor=`cat CMakeLists.txt| grep INFINIT_VERSION_MINOR | head -n1 | cut -d\" -f2`
 release_dir="$SCRIPTDIR/releases/release-$rev"
+server_arch=linux64
 
 echo "==== Building Infinit $major.$minor.$rev"
 
@@ -38,6 +39,7 @@ build_release()
 	mkdir -p "$release_dir/binaries"
 	[ ! -d "$release_dir/binaries" ] && die "Cannot create '$release_dir/binaries' directory"
 
+	echo "== Copying $build_dir files"
 	for f in 8infinit \
 	         satellites/dictionary/8dictionary \
 	         satellites/access/8access \
@@ -50,9 +52,10 @@ build_release()
 		cp "$build_dir/$f" "$release_dir/binaries" \
 			|| die "Cannot copy '$build_dir/$f' to '$release_dir/binaries'"
 	done
+	echo "== Stripping $build_dir files"
 	for bin in "$release_dir/binaries"/*
 	do
-		echo "= Striping '$bin'"
+		echo "= Stripping '`basename "$bin"`'"
 		strip -s "$bin"
 	done
 	echo "== Writing XML release file of $build_dir platform"
@@ -65,8 +68,51 @@ cd build
 for dir in *
 do
 	echo "=== Prepare release for $dir platform"
-	build_release "$dir" "$release_dir"
+	cmake "$dir"
+	make -C "$dir"
+	build_release "$dir" "$release_dir/downloads"
 done
 
-echo "==== Uploading files"
-scp -r "$release_dir"/* infinit.im:/usr/local/www/infinit.im/downloads
+[ ! -d "$server_arch" ] && die "Server architecture need $server_arch build dir"
+
+echo "==== Prepare server release ($server_arch)"
+
+for f in creosus            \
+	creosus-server     \
+	meta               \
+	meta-server        \
+	meta-tests         \
+	pythia             \
+	metalib            \
+	troll              \
+	spawn-fcgi.sh
+do
+	echo "=== Copying '$f' to 'release-$rev/'"
+	cp -r "$server_arch/oracle/disciples/$f" "$release_dir/"
+done
+
+clean_release()
+{
+	echo "==== Cleaning release-$rev/ directory"
+	find "$1" -name 'CMakeFiles' | xargs rm -rf
+	find "$1" \(                    \
+		-name '*.pyc' -or       \
+		-name '*.o' -or         \
+		-name '*.cmake' -or     \
+		-name '*.marks' -or     \
+		-name 'Makefile'        \
+	\) -delete 2>&1 > /dev/null
+}
+
+clean_release "$release_dir"
+
+cd "$release_dir"
+ln -s "creosus/static" .
+cd - > /dev/null
+
+which tree > /dev/null
+[ $? = 0 ] && tree -h "$release_dir"
+
+size=`du -hs "$release_dir" | cut -f1`
+echo "==== Uploading files ($size)"
+scp -r "$release_dir"/* infinit.im:/usr/local/www/infinit.im/
