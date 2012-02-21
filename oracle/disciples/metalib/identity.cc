@@ -74,29 +74,38 @@ extern "C" PyObject* metalib_generate_identity(PyObject* self, PyObject* args)
             * auth_password = nullptr;
   PyObject* ret = nullptr;
 
-  if (!PyArg_ParseTuple(args, "ssss:generate_identity", &login, &password, &auth_path, &auth_password))
+  if (!PyArg_ParseTuple(args, "ssss:generate_identity",
+                        &login, &password, &auth_path, &auth_password))
     return nullptr;
-  if (!login || !password)
+
+  if (!login || !password || !auth_path || !auth_password)
     return nullptr;
 
 
   Py_BEGIN_ALLOW_THREADS;
 
   try
-  {
-    auto identity = create_identity(auth_path, auth_password, login, password);
-    elle::String all, pub;
-    if (identity.Save(all) != elle::StatusError &&
-        identity.pair.k.Save(pub) != elle::StatusError)
-      {
-        ret = Py_BuildValue("(ss)", all.c_str(), pub.c_str());
-      }
-  }
+    {
+      auto identity = create_identity(auth_path, auth_password, login, password);
+      elle::String all, pub;
+      if (identity.Save(all) != elle::StatusError &&
+          identity.pair.k.Save(pub) != elle::StatusError)
+        {
+          ret = Py_BuildValue("(ss)", all.c_str(), pub.c_str());
+        }
+      else
+        {
+          PyErr_SetString(
+              metalib_MetaError,
+              "Cannot convert the identity to string"
+          );
+        }
+    }
   catch (std::exception const& err)
-  {
-    show();
-    PyErr_SetString(metalib_MetaError, err.what());
-  }
+    {
+      show();
+      PyErr_SetString(metalib_MetaError, err.what());
+    }
 
   Py_END_ALLOW_THREADS;
 

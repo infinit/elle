@@ -16,6 +16,7 @@
 #include "elle/Elle.hh"
 
 #include "identity.hh"
+#include "passport.hh"
 #include "metalib.hh"
 
 /// metalib error
@@ -28,6 +29,12 @@ static PyMethodDef _metalib_methods[] = {
     &metalib_generate_identity,
     METH_VARARGS,
     "Generate an identity."
+  },
+  {
+    "generate_passport",
+    &metalib_generate_passport,
+    METH_VARARGS,
+    "Generate a passport."
   },
   {NULL, NULL, 0, NULL}        /* Sentinel */
 };
@@ -48,6 +55,7 @@ PyMODINIT_FUNC initmetalib(void)
   PyObject* module = Py_InitModule(METALIB_MOD_NAME, _metalib_methods);
 
   char error_name[] = "metalib.MetaError";
+
   metalib_MetaError = PyErr_NewException(error_name, nullptr, nullptr);
   Py_INCREF(metalib_MetaError);
   PyModule_AddObject(module, error_name, metalib_MetaError);

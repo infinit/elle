@@ -58,6 +58,11 @@ class Register(Page):
             email=user['email'],
             fullname=user['fullname'],
             password=self.hashPassword(user['password']),
+            identity=metalib.generate_identity(
+              user['email'], user['password'],
+              constants.INFINIT_AUTHORITY_PATH,
+              constants.INFINIT_AUTHORITY_PASSWORD
+            )
         )
         return json.dumps({
             'success': True,

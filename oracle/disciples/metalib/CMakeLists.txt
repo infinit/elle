@@ -3,7 +3,7 @@
 find_package(PythonLibs)
 include_directories(${PYTHON_INCLUDE_DIR})
 
-set(metalib_srcs metalib.cc identity.cc)
+file(GLOB metalib_srcs *.cc)
 
 add_library(metalib SHARED ${metalib_srcs})
 target_link_libraries(metalib elle lune)
