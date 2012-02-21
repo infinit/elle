@@ -4,7 +4,11 @@ set(INFINIT_VERSION_MAJOR "0")
 set(INFINIT_VERSION_MINOR "1")
 set(INFINIT_VERSION "${INFINIT_VERSION_MAJOR}.${INFINIT_VERSION_MINOR}")
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+cmake_minimum_required(VERSION 2.6)
+
+# follow symlink when copying
+cmake_policy(SET CMP0009 NEW)
+
 
 find_package(Qt4 4.8.0 REQUIRED QtCore QtNetwork)
 set(QT_DONT_USE_QTGUI true)
