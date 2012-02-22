@@ -8,7 +8,12 @@ SCRIPTDIR=`python -c "import os;print os.path.abspath(os.path.dirname('$0'))"`
 
 cd "$SCRIPTDIR"
 
-mkdir -p build
+ARCH=linux64
+
+BUILDDIR="$SCRIPTDIR/$ARCH/build"
+
+mkdir -p "$BUILDDIR"
+cd "$SCRIPTDIR/$ARCH"
 
 die()
 {
@@ -36,8 +41,8 @@ fi
   ! -e build/lib/libcrypto.a -o ! -e build/lib/libcrypto.so ] && (
 	echo "**** Build OpenSSL"
 	cd $openssl_dir
-	./config --prefix="$SCRIPTDIR/build"                \
-	         --openssldir="$SCRIPTDIR/build/openssl"    \
+	./config --prefix="$BUILDDIR"                       \
+	         --openssldir="$BUILDDIR/openssl"     \
 	         shared no-threads zlib
 	make install
 	cd -
@@ -60,3 +65,12 @@ else
 		cd -
 	) 2>&1 > /dev/null
 fi
+
+[ ! -e build/lib/libmsgpack.a -o ! -e build/lib/libmsgpack.so ] && (
+	echo "**** Build msgpack"
+	cd msgpack/cpp
+	./bootstrap
+	./configure --prefix="$BUILDDIR"
+	make install
+	cd -
+)
