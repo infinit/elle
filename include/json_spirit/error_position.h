@@ -11,14 +11,15 @@
 #endif
 
 #include <string>
+#include "platform.h"
 
 namespace json_spirit
 {
     // An Error_position exception is thrown by the "read_or_throw" functions below on finding an error.
-    // Note the "read_or_throw" functions are around 3 times slower than the standard functions "read" 
+    // Note the "read_or_throw" functions are around 3 times slower than the standard functions "read"
     // functions that return a bool.
     //
-    struct Error_position
+    struct JSON_SPIRIT_EXPORT Error_position
     {
         Error_position();
         Error_position( unsigned int line, unsigned int column, const std::string& reason );
@@ -47,7 +48,7 @@ namespace json_spirit
 
         return ( reason_ == lhs.reason_ ) &&
                ( line_   == lhs.line_ ) &&
-               ( column_ == lhs.column_ ); 
+               ( column_ == lhs.column_ );
     }
 }
 

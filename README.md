@@ -35,6 +35,7 @@ own CMake commands.
 There are a couple of CMake settings which control which components
 are built:
 
+    JSON_SPIRIT_LIBRARY_TYPE - set to STATIC or SHARED
     JSON_SPIRIT_BUILD_DEMOS - set to FALSE to disable demos
     JSON_SPIRIT_BUILD_TESTS - set to FALSE to disable tests
 

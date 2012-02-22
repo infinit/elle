@@ -332,7 +332,7 @@ namespace
         {
             ostringstream os;
 
-            os << "value type is " << null_type << " not " << vtype;
+            os << "value type is " << (int)null_type << " not " << (int)vtype;
 
             assert_eq( e.what(), os.str() );
         }

@@ -331,7 +331,7 @@ namespace json_spirit
         {
             std::ostringstream os;
 
-            os << "value type is " << type() << " not " << vtype;
+            os << "value type is " << (int)type() << " not " << (int)vtype;
 
             throw std::runtime_error( os.str() );
         }

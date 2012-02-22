@@ -10,6 +10,7 @@
 # pragma once
 #endif
 
+#include "platform.h"
 #include "value.h"
 #include "writer_options.h"
 #include <iostream>
@@ -19,26 +20,26 @@ namespace json_spirit
     // these functions to convert JSON Values to text
 
 #ifdef JSON_SPIRIT_VALUE_ENABLED
-    void         write( const Value& value, std::ostream&  os, unsigned int options = 0 );
-    std::string  write( const Value& value, unsigned int options = 0 );
+void JSON_SPIRIT_FUNCTION_EXPORT write(const Value& value, std::ostream&  os, unsigned int options = 0);
+std::string JSON_SPIRIT_FUNCTION_EXPORT write(const Value& value, unsigned int options = 0);
 #endif
 
 #if defined( JSON_SPIRIT_WVALUE_ENABLED ) && !defined( BOOST_NO_STD_WSTRING )
-    void         write( const wValue& value, std::wostream& os, unsigned int options = 0 );
-    std::wstring write( const wValue& value, unsigned int options = 0 );
+void JSON_SPIRIT_FUNCTION_EXPORT write(const wValue& value, std::wostream& os, unsigned int options = 0);
+std::wstring JSON_SPIRIT_FUNCTION_EXPORT write(const wValue& value, unsigned int options = 0);
 #endif
 
     // these "formatted" versions of the "write" functions are the equivalent of the above functions
     // with option "pretty_print"
 
 #ifdef JSON_SPIRIT_VALUE_ENABLED
-    void         write_formatted( const Value& value, std::ostream&  os );
-    std::string  write_formatted( const Value& value );
+void JSON_SPIRIT_FUNCTION_EXPORT write_formatted(const Value& value, std::ostream&  os);
+std::string JSON_SPIRIT_FUNCTION_EXPORT write_formatted(const Value& value);
 #endif
 
 #if defined( JSON_SPIRIT_WVALUE_ENABLED ) && !defined( BOOST_NO_STD_WSTRING )
-    void         write_formatted( const wValue& value, std::wostream& os );
-    std::wstring write_formatted( const wValue& value );
+void JSON_SPIRIT_FUNCTION_EXPORT write_formatted(const wValue& value, std::wostream& os);
+std::wstring JSON_SPIRIT_FUNCTION_EXPORT write_formatted(const wValue& value);
 #endif
 }
 
