@@ -4,6 +4,17 @@ set(INFINIT_VERSION_MAJOR "0")
 set(INFINIT_VERSION_MINOR "1")
 set(INFINIT_VERSION "${INFINIT_VERSION_MAJOR}.${INFINIT_VERSION_MINOR}")
 
+set(INFINIT_LIBRARIES_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/libraries/build")
+set(INFINIT_OPENSSL_STATIC_LIBRARIES
+	${INFINIT_LIBRARIES_PREFIX}/lib/libssl.a
+	${INFINIT_LIBRARIES_PREFIX}/lib/libcrypto.a
+)
+set(INFINIT_OPENSSL_SHARED_LIBRARIES
+	${INFINIT_LIBRARIES_PREFIX}/lib/libssl.so
+	${INFINIT_LIBRARIES_PREFIX}/lib/libcrypto.so
+)
+message("External librairies directory: ${INFINIT_LIBRARIES_DIR}")
+
 cmake_minimum_required(VERSION 2.6)
 
 # follow symlink when copying
@@ -15,38 +26,40 @@ set(QT_DONT_USE_QTGUI true)
 include(${QT_USE_FILE})
 include_directories(${QT_INCLUDES})
 
-find_package(OpenSSL REQUIRED)
+# tell cmake to not build shared libraries by default
+set(BUILD_SHARED_LIBS OFF)
 
-include_directories(. ${OPENSSL_INCLUDE_DIR})
+include_directories(BEFORE ${INFINIT_LIBRARIES_PREFIX}/include .)
+
 
 #
 # configurations
 #
-IF(APPLE)
-  SET(INFINIT_MACOSX true)
-ELSEIF(WIN32)
-  SET(INFINIT_WINDOWS true)
-ELSEIF(UNIX)
-  SET(INFINIT_LINUX true)
-ENDIF()
+if(APPLE)
+  set(INFINIT_MACOSX true)
+elseif(WIN32)
+  set(INFINIT_WINDOWS true)
+elseiF(UNIX)
+  set(INFINIT_LINUX true)
+endif()
 
 #
 # MSVC CXXFLAGS
 #
 # XXX is is still relevant?
 #
-IF(MSVC)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Wall")
-ENDIF(MSVC)
+if(MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Wall")
+endiF(MSVC)
 
 #
 # MACOSX FLAGS
 #
-IF(INFINIT_MACOSX)
-  INCLUDE_DIRECTORIES(/usr/local/include /opt/local/include /usr/local/include/osxfuse)
-  LINK_DIRECTORIES(/usr/local/lib /opt/local/lib)
+if(INFINIT_MACOSX)
+  include_directories(/usr/local/include /opt/local/include /usr/local/include/osxfuse)
+  link_directories(/usr/local/lib /opt/local/lib)
 
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 ENDIF(INFINIT_MACOSX)
 
 add_subdirectory(comet)
