@@ -21,11 +21,6 @@ int main()
     test_reader();
     test_stream_reader();
 
-    cout << "all tests passed" << endl << endl;
-    cout << "press any key to continue";
-
-    string s;
-    cin >> s;
-
-	return 0;
+    cout << "all tests passed" << endl;
+    return 0;
 }
