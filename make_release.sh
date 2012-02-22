@@ -73,42 +73,48 @@ do
 	build_release "$dir" "$release_dir/downloads"
 done
 
-[ ! -d "$server_arch" ] && die "Server architecture need $server_arch build dir"
+if [ ! -d "$server_arch" ]
+then
+	restart_server=0
+	echo "Server architecture need $server_arch build dir"
+else
+	restart_server=1
+	echo "==== Prepare server release ($server_arch)"
 
-echo "==== Prepare server release ($server_arch)"
+	for f in creosus                        \
+	         creosus-server                 \
+	         meta                           \
+	         meta-server                    \
+	         meta-tests                     \
+	         pythia                         \
+	         metalib                        \
+	         troll                          \
+	         production-meta-server.sh      \
+	         production-creosus-server.sh
+	do
+		echo "=== Copying '$f' to 'release-$rev/'"
+		cp -r "$server_arch/oracle/disciples/$f" "$release_dir/"
+	done
 
-for f in creosus            \
-	creosus-server     \
-	meta               \
-	meta-server        \
-	meta-tests         \
-	pythia             \
-	metalib            \
-	troll              \
-	spawn-fcgi.sh
-do
-	echo "=== Copying '$f' to 'release-$rev/'"
-	cp -r "$server_arch/oracle/disciples/$f" "$release_dir/"
-done
+	clean_release()
+	{
+		echo "==== Cleaning release-$rev/ directory"
+		find "$1" -name 'CMakeFiles' | xargs rm -rf
+		find "$1" \(                    \
+		        -name '*.pyc' -or       \
+		        -name '*.o' -or         \
+		        -name '*.cmake' -or     \
+		        -name '*.marks' -or     \
+		        -name 'Makefile'        \
+		\) -delete 2>&1 > /dev/null
+	}
 
-clean_release()
-{
-	echo "==== Cleaning release-$rev/ directory"
-	find "$1" -name 'CMakeFiles' | xargs rm -rf
-	find "$1" \(                    \
-		-name '*.pyc' -or       \
-		-name '*.o' -or         \
-		-name '*.cmake' -or     \
-		-name '*.marks' -or     \
-		-name 'Makefile'        \
-	\) -delete 2>&1 > /dev/null
-}
+	clean_release "$release_dir"
 
-clean_release "$release_dir"
-
-cd "$release_dir"
-ln -s "creosus/static" .
-cd - > /dev/null
+	cd "$release_dir"
+	ln -s "creosus/static" .
+	cd - > /dev/null
+fi
 
 which tree > /dev/null
 [ $? = 0 ] && tree -h "$release_dir"
@@ -116,3 +122,10 @@ which tree > /dev/null
 size=`du -hs "$release_dir" | cut -f1`
 echo "==== Uploading files ($size)"
 scp -r "$release_dir"/* infinit.im:/usr/local/www/infinit.im/
+
+if [ $restart_server = 1 ]
+then
+	echo "==== Restarting servers"
+	ssh infinit.im sh /usr/local/www/infinit.im/production-meta-server.sh
+	ssh infinit.im sh /usr/local/www/infinit.im/production-creosus-server.sh
+fi

@@ -59,7 +59,7 @@ add_subdirectory(horizon)
 add_subdirectory(hole)
 add_subdirectory(satellites)
 add_subdirectory(plasma)
-# XXX add_subdirectory(oracle)
+add_subdirectory(oracle)
 
 # just to make files appears on qtcreator
 file(GLOB_RECURSE HEADERS *.hh *.hxx)
@@ -69,11 +69,13 @@ add_library(infinit
   ${HEADERS}
 )
 
-ADD_EXECUTABLE(8infinit
+add_executable(8infinit
   _infinit.cc
 )
 
-TARGET_LINK_LIBRARIES(8infinit infinit etoile nucleus lune agent hole horizon)
+target_link_libraries(8infinit
+	infinit elle etoile nucleus lune agent hole horizon
+)
 
 # XXX
 #ADD_EXECUTABLE(XXX
@@ -85,4 +87,4 @@ TARGET_LINK_LIBRARIES(8infinit infinit etoile nucleus lune agent hole horizon)
 #TARGET_LINK_LIBRARIES(XXX infinit elle nucleus lune infinit)
 
 # configuration
-CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/config.hh.cmake" "${CMAKE_SOURCE_DIR}/config.hh")
+configure_file("${CMAKE_SOURCE_DIR}/config.hh.cmake" "${CMAKE_SOURCE_DIR}/config.hh")
