@@ -119,7 +119,7 @@ ADD_LIBRARY(elle
 
 add_definitions(-fPIC)
 target_link_libraries(elle
-	${INFINIT_OPENSSL_LIBRARIES}
+	${INFINIT_OPENSSL_STATIC_LIBRARIES}
 	comet
 	${QT_QTNETWORK_LIBRARIES}
 	${QT_QTCORE_LIBRARIES}
