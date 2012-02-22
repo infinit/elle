@@ -14,7 +14,6 @@
 
 #include <elle/standalone/Morgue.hh>
 #include <elle/concurrency/Fiber.hh>
-#include <elle/utility/ScopeReset.hh>
 
 namespace elle
 {
@@ -293,6 +292,24 @@ namespace elle
     ///
     Status              Fiber::Schedule()
     {
+      struct Guard
+      {
+      public:
+        Guard(Boolean& var, const Boolean value):
+          _var(var),
+          _value(value)
+        {
+        }
+
+        ~Guard()
+        {
+          this->_var = this->_value;
+        }
+
+      private:
+        Boolean&        _var;
+        const Boolean   _value;
+      };
       Fiber::W::Iterator        iterator;
 
       if (Fiber::IsScheduling)
@@ -303,8 +320,8 @@ namespace elle
         return elle::StatusOk;
 
       // We are now scheduling
-      utility::ScopeReset<decltype (Fiber::IsScheduling)>
-        reset_scheduling(Fiber::IsScheduling, false);
+      Guard             guard(Fiber::IsScheduling, false);
+
       Fiber::IsScheduling = true;
 
       // iterate over the container.
