@@ -118,21 +118,21 @@ ADD_LIBRARY(elle
 )
 
 add_definitions(-fPIC)
-
-TARGET_LINK_LIBRARIES(elle
-  comet
-  ${QT_QTNETWORK_LIBRARIES}
-  ${QT_QTCORE_LIBRARIES}
-  crypto
-  ssl
-  pth
-  readline
-  msgpack
-  jsoncpp
-  curl)
+target_link_libraries(elle
+	${INFINIT_OPENSSL_LIBRARIES}
+	comet
+	${QT_QTNETWORK_LIBRARIES}
+	${QT_QTCORE_LIBRARIES}
+	pth
+	z
+	msgpack
+	readline
+	#jsoncpp
+	#curl
+)
 
 IF(INFINIT_LINUX)
-  TARGET_LINK_LIBRARIES(elle dl)
+	TARGET_LINK_LIBRARIES(elle dl)
 ELSEIF(INFINIT_MACOSX)
   TARGET_LINK_LIBRARIES(elle dl)
 ELSEIF(INFINIT_WINDOWS)
