@@ -7,4 +7,4 @@ add_library(comet
   RSA.cc
 )
 
-target_link_libraries(comet ${OPENSSL_LIBRARIES})
+target_link_libraries(comet)
