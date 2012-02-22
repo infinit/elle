@@ -6,7 +6,12 @@ file(
 )
 
 file(
-  COPY creosus-server meta-server meta-tests spawn-fcgi.sh
+  COPY
+	creosus-server
+	meta-server
+	meta-tests
+	production-meta-server.sh
+	production-creosus-server.sh
   DESTINATION .
 )
 
