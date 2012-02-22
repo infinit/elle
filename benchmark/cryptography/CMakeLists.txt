@@ -1,8 +1,11 @@
-ADD_EXECUTABLE(benchmark-crypto
-  Benchmark.cc
-  Time.cc
+add_executable(benchmark-crypto
+	Benchmark.cc
+	Time.cc
 )
 
-TARGET_LINK_LIBRARIES(benchmark-crypto elle
-				       ${QT_QTNETWORK_LIBRARIES}
-				       ${QT_QTCORE_LIBRARIES})
+target_link_libraries(benchmark-crypto
+	elle
+	${QT_QTNETWORK_LIBRARIES}
+	${QT_QTCORE_LIBRARIES}
+	${OPENSSL_LIBRARIES}
+)
