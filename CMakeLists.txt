@@ -40,11 +40,7 @@ set(INFINIT_QJSON_SHARED_LIBRARIES
 )
 message("-- External librairies directory: ${INFINIT_LIBRARIES_PREFIX}")
 
-add_custom_target(make_libraries ALL
-	COMMAND ./make_libraries.sh ${INFINIT_ARCH}
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/libraries
-)
-add_dependencies(make_libraries
+set(INFINIT_EXTERNAL_LIBRARIES
 	${INFINIT_OPENSSL_STATIC_LIBRARIES}
 	${INFINIT_OPENSSL_SHARED_LIBRARIES}
 	${INFINIT_MSGPACK_STATIC_LIBRARIES}
@@ -55,6 +51,17 @@ add_dependencies(make_libraries
 	${INFINIT_CURL_SHARED_LIBRARIES}
 	${INFINIT_QJSON_SHARED_LIBRARIES}
 )
+
+add_custom_target(make_external_libraries)
+add_custom_command(
+	TARGET
+		make_external_libraries
+	COMMAND
+		./make_libraries.sh ${INFINIT_ARCH}
+	WORKING_DIRECTORY
+		${CMAKE_CURRENT_SOURCE_DIR}/libraries
+)
+message(${INFINIT_EXTERNAL_LIBRARIES})
 
 
 
@@ -128,7 +135,7 @@ add_library(infinit
 add_executable(8infinit
   _infinit.cc
 )
-
+add_dependencies(8infinit make_external_libraries)
 target_link_libraries(8infinit
 	infinit elle etoile nucleus lune agent hole horizon
 )

@@ -35,6 +35,7 @@ if [ ! -d $openssl_dir ]
 then
 	echo "**** Download OpenSSL"
 	wget "$openssl_url" -O $openssl_tarball
+	#cp ~/Downloads/$openssl_tarball .
 	tar xzf $openssl_tarball
 	rm $openssl_tarball
 fi
@@ -43,8 +44,9 @@ fi
 	echo "**** Build OpenSSL"
 	cd $openssl_dir
 	./config --prefix="$BUILDDIR"                       \
-	         --openssldir="$BUILDDIR/openssl"     \
-	         shared no-threads zlib
+	         --openssldir="$BUILDDIR/openssl"           \
+	         no-shared no-asm no-threads zlib           \
+	         -fPIC
 	make install
 	cd -
 )
