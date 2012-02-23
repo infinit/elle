@@ -14,7 +14,7 @@ CFLAGS="$CFLAGS -Wfloat-equal -Wundef -Wpointer-arith"
 CFLAGS="$CFLAGS -Wmissing-declarations -Wnested-externs"
 CFLAGS="$CFLAGS -Wmissing-prototypes"
 CXXFLAGS="$CXXFLAGS -std=gnu++0x -pipe -W -Wall -Wundef -Wpointer-arith -Wabi"
-CXXFLAGS="$CXXFLAGS -Wcast-align -Wold-style-cast -Wno-empty-body"
+CXXFLAGS="$CXXFLAGS -Wcast-align -Wno-empty-body" #XXX msgpack vomit with -Wold-style-cast
 LDFLAGS="$LDFLAGS"
 PREFIX="/usr/local"
 QTCREATOR=0
