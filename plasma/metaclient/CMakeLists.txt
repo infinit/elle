@@ -1,7 +1,4 @@
 
-add_subdirectory(qjson)
-include_directories(qjson/include)
-
 include(${QT_USE_FILE})
 add_definitions(${QT_DEFINITIONS})
 
@@ -9,11 +6,8 @@ file(GLOB metaclient_srcs *.cc)
 file(GLOB metaclient_moc_hdrs MetaClient.hh)
 QT4_WRAP_CPP(metaclient_moc_srcs ${metaclient_moc_hdrs})
 
-
 add_library(metaclient ${metaclient_srcs} ${metaclient_moc_srcs})
-target_link_libraries(
-  metaclient
-  qjson
-  ${QT_QTNETWORK_LIBRARIES}
-  ${QT_QTCORE_LIBRARIES}
+target_link_libraries(metaclient
+	${QT_QTNETWORK_LIBRARIES}
+	${QT_QTCORE_LIBRARIES}
 )
