@@ -10,6 +10,7 @@
 # pragma once
 #endif
 
+#include "platform.h"
 #include <vector>
 #include <map>
 #include <string>

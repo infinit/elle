@@ -38,7 +38,7 @@ namespace
 
         String_type zero_str()
         {
-#ifdef WIN32
+#ifdef JSON_SPIRIT_PLATFORM == JSON_SPIRIT_PLATFORM_WINDOWS
             return to_str( "0.00000000000000000" );
 #else
             return to_str( "0.0000000000000000" );
@@ -632,7 +632,7 @@ namespace
 
         void test_remove_trailing_zeros()
         {
-#ifdef WIN32
+#ifdef JSON_SPIRIT_PLATFORM == JSON_SPIRIT_PLATFORM_WINDOWS
             const String_type exp = to_str( "099" );
 #else
             const String_type exp = to_str( "99" );

@@ -229,7 +229,7 @@ namespace
             assert_array_eq( v2, array_1 );
         }
         {
-            const Object obj_1 = list_of( Object::value_type( "a", 1 ) )( Object::value_type( "b", 2 ) );
+            const Object obj_1 = map_list_of( "a", 1 )( "b", 2 );
 
             Value v1( obj_1 );
             Value v2;
@@ -249,7 +249,7 @@ namespace
             check_copy( false );
             const Array array_1 = list_of(1)(2);
             check_copy( array_1 );
-            const Object obj_1 = list_of( Object::value_type( "a", 1 ) )( Object::value_type( "b", 2 ) );
+            const Object obj_1 = map_list_of( "a", 1 )( "b", 2 );
             check_copy( obj_1 );
             check_copying_null();
         }
