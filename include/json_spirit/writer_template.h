@@ -190,14 +190,14 @@ namespace json_spirit
         {
             switch( value.type() )
             {
-                case obj_type:   output( value.get_obj() );   break;
-                case array_type: output( value.get_array() ); break;
-                case str_type:   output( value.get_str() );   break;
-                case bool_type:  output( value.get_bool() );  break;
-                case real_type:  output( value.get_real() );  break;
-                case int_type:   output_int( value );         break;
-                case null_type:  os_ << "null";               break;
-                default: assert( false );
+              case Value_type::OBJECT_TYPE:   output( value.get_obj() );   break;
+              case Value_type::ARRAY_TYPE: output( value.get_array() ); break;
+              case Value_type::STRING_TYPE:   output( value.get_str() );   break;
+              case Value_type::BOOL_TYPE:  output( value.get_bool() );  break;
+              case Value_type::REAL_TYPE:  output( value.get_real() );  break;
+              case Value_type::INT_TYPE:   output_int( value );         break;
+              case Value_type::NULL_TYPE:  os_ << "null";               break;
+              default: assert( false );
             }
         }
 
@@ -262,8 +262,8 @@ namespace json_spirit
             {
                 const Value_type& val = *i;
 
-                if( val.type() == obj_type ||
-                    val.type() == array_type )
+                if( val.type() == Value_type::OBJECT_TYPE ||
+                    val.type() == Value_type::ARRAY_TYPE )
                 {
                     return true;
                 }

@@ -26,7 +26,7 @@ namespace
         typedef typename Config_type::String_type String_type;
         typedef typename Config_type::Object_type Object_type;
         typedef typename Config_type::Array_type Array_type;
-        typedef typename Config_type::Value_type Value_type;
+        typedef typename Config_type::ValueType ValueType;
         typedef typename String_type::value_type Char_type;
         typedef typename String_type::const_iterator Iter_type;
         typedef std::basic_ostream< Char_type > Ostream_type;
@@ -45,7 +45,7 @@ namespace
 #endif
         }
 
-        void add_value( Object_type& obj, const char* c_name, const Value_type& value )
+        void add_value( Object_type& obj, const char* c_name, const ValueType& value )
         {
             Config_type::add( obj, to_str( c_name ), value );
         }
@@ -55,33 +55,33 @@ namespace
             add_value( obj, c_name, to_str( c_value ) );
         }
 
-        void check_eq( const Value_type& value, const String_type& expected_result )
+        void check_eq( const ValueType& value, const String_type& expected_result )
         {
            assert_eq( write( value ), expected_result );
         }
 
-        void check_eq( const Value_type& value, const char* expected_result )
+        void check_eq( const ValueType& value, const char* expected_result )
         {
            check_eq( value, to_str( expected_result ) );
         }
 
-        void check_eq_pretty( const Value_type& value, const char* expected_result )
+        void check_eq_pretty( const ValueType& value, const char* expected_result )
         {
             assert_eq( write_formatted( value ), to_str( expected_result ) );
             assert_eq( write( value, pretty_print ), to_str( expected_result ) );
         }
 
-        void check_eq_single_line_arrays( const Value_type& value, const char* expected_result )
+        void check_eq_single_line_arrays( const ValueType& value, const char* expected_result )
         {
             assert_eq( write( value, single_line_arrays ), to_str( expected_result ) );
         }
 
-        void check_eq( const Value_type& value, const String_type& expected_result , unsigned int options )
+        void check_eq( const ValueType& value, const String_type& expected_result , unsigned int options )
         {
             assert_eq( write( value, options ), expected_result );
         }
 
-        void check_eq( const Value_type& value, const char* expected_result, unsigned int options )
+        void check_eq( const ValueType& value, const char* expected_result, unsigned int options )
         {
             check_eq( value, to_str( expected_result ), options );
         }
@@ -254,9 +254,9 @@ namespace
         {
             Object_type obj;
 
-            add_value( obj, "name_1", Value_type::null );
-            add_value( obj, "name_2", Value_type::null );
-            add_value( obj, "name_3", Value_type::null );
+            add_value( obj, "name_1", ValueType::null );
+            add_value( obj, "name_2", ValueType::null );
+            add_value( obj, "name_3", ValueType::null );
 
             check_eq( obj, "{\"name_1\":null,\"name_2\":null,\"name_3\":null}" );
         }
@@ -306,7 +306,7 @@ namespace
             arr.push_back( 123.456 );
             arr.push_back( true );
             arr.push_back( false );
-            arr.push_back( Value_type() );
+            arr.push_back( ValueType() );
 
             check_eq       ( arr, "[\"value_1\",123,123.45600000000000,true,false,null]" );
             check_eq_pretty( arr, "[\n"
@@ -578,26 +578,26 @@ namespace
             check_eq( 1.234, "1.2340000000000000" );
             check_eq( to_str( "abc" ), "\"abc\"" );
             check_eq( false, "false" );
-            check_eq( Value_type::null, "null" );
+            check_eq( ValueType::null, "null" );
         }
 
         void test_uint64()
         {
-            check_eq( Value_type( 0 ),             "0" );
-            check_eq( Value_type( int64_t( 0 ) ),  "0" );
-            check_eq( Value_type( uint64_t( 0 ) ), "0" );
+            check_eq( ValueType( 0 ),             "0" );
+            check_eq( ValueType( int64_t( 0 ) ),  "0" );
+            check_eq( ValueType( uint64_t( 0 ) ), "0" );
 
-            check_eq( Value_type( 1 ),             "1" );
-            check_eq( Value_type( int64_t( 1 ) ),  "1" );
-            check_eq( Value_type( uint64_t( 1 ) ), "1" );
+            check_eq( ValueType( 1 ),             "1" );
+            check_eq( ValueType( int64_t( 1 ) ),  "1" );
+            check_eq( ValueType( uint64_t( 1 ) ), "1" );
 
-            check_eq( Value_type( -1 ),            "-1" );
-            check_eq( Value_type( int64_t( -1 ) ), "-1" );
+            check_eq( ValueType( -1 ),            "-1" );
+            check_eq( ValueType( int64_t( -1 ) ), "-1" );
 
-            check_eq( Value_type( max_int64 ),             "9223372036854775807" );
-            check_eq( Value_type( uint64_t( max_int64 ) ), "9223372036854775807" );
+            check_eq( ValueType( max_int64 ),             "9223372036854775807" );
+            check_eq( ValueType( uint64_t( max_int64 ) ), "9223372036854775807" );
 
-            check_eq( Value_type( max_uint64 ), "18446744073709551615" );
+            check_eq( ValueType( max_uint64 ), "18446744073709551615" );
         }
 
         void test_ios_state_saved()

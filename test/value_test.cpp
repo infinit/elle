@@ -36,7 +36,7 @@ namespace
         Value v2( obj_2 );
         Value v3( obj_3 );
 
-        assert_eq( v1.type(), obj_type );
+        assert_eq( v1.type(), Value::OBJECT_TYPE );
         assert_eq ( v1, v2 );
         assert_neq( v1, v3 );
 
@@ -54,7 +54,7 @@ namespace
         Value v2( array_2 );
         Value v3( array_3 );
 
-        assert_eq( v1.type(), array_type );
+        assert_eq( v1.type(), Value::ARRAY_TYPE );
         assert_eq ( v1, v2 );
         assert_neq( v1, v3 );
 
@@ -68,7 +68,7 @@ namespace
         Value v2( true );
         Value v3( false );
 
-        assert_eq( v1.type(), bool_type );
+        assert_eq( v1.type(), Value::BOOL_TYPE );
         assert_eq ( v1, v2 );
         assert_neq( v1, v3 );
 
@@ -82,7 +82,7 @@ namespace
         Value v2( 1 );
         Value v3( INT_MAX );
 
-        assert_eq( v1.type(), int_type );
+        assert_eq( v1.type(), Value::INT_TYPE );
         assert_eq ( v1, v2 );
         assert_neq( v1, v3 );
 
@@ -129,7 +129,7 @@ namespace
         Value v2( 1.0 );
         Value v3( 2.0 );
 
-        assert_eq( v1.type(), real_type );
+        assert_eq( v1.type(), Value::REAL_TYPE );
         assert_eq ( v1, v2 );
         assert_neq( v1, v3 );
 
@@ -142,7 +142,7 @@ namespace
         Value v1;
         Value v2;
 
-        assert_eq( v1.type(), null_type );
+        assert_eq( v1.type(), Value::NULL_TYPE );
         assert_eq( v1.is_null(), true );
         assert_eq( v1, v2 );
         assert_eq( v1.is_null(), true );
@@ -208,8 +208,8 @@ namespace
         Value v3;
         v3 = v1;
 
-        assert_eq( v2.type(), null_type );
-        assert_eq( v3.type(), null_type );
+        assert_eq( v2.type(), Value::NULL_TYPE );
+        assert_eq( v3.type(), Value::NULL_TYPE );
     }
 
     void test_copying()
@@ -316,11 +316,11 @@ namespace
     }
 
     template< typename T >
-    void check_wrong_type_exceptions( const Value_type vtype )
+    void check_wrong_type_exceptions( const Value::Type vtype )
     {
         Value v;
 
-        assert_eq( v.type(), null_type );
+        assert_eq( v.type(), Value::NULL_TYPE );
 
         try
         {
@@ -332,7 +332,7 @@ namespace
         {
             ostringstream os;
 
-            os << "value type is " << (int)null_type << " not " << (int)vtype;
+            os << "value type is " << (int)Value::NULL_TYPE << " not " << (int)vtype;
 
             assert_eq( e.what(), os.str() );
         }
@@ -340,13 +340,13 @@ namespace
 
     void test_wrong_type_exceptions()
     {
-        check_wrong_type_exceptions< Object >( obj_type );
-        check_wrong_type_exceptions< Array >( array_type );
-        check_wrong_type_exceptions< string >( str_type );
-        check_wrong_type_exceptions< bool >( bool_type );
-        check_wrong_type_exceptions< boost::int64_t >( int_type );
-        check_wrong_type_exceptions< int >( int_type );
-        check_wrong_type_exceptions< double >( real_type );
+        check_wrong_type_exceptions< Object >( Value::OBJECT_TYPE );
+        check_wrong_type_exceptions< Array >( Value::ARRAY_TYPE );
+        check_wrong_type_exceptions< string >( Value::STRING_TYPE );
+        check_wrong_type_exceptions< bool >( Value::BOOL_TYPE );
+        check_wrong_type_exceptions< boost::int64_t >( Value::INT_TYPE );
+        check_wrong_type_exceptions< int >( Value::INT_TYPE );
+        check_wrong_type_exceptions< double >( Value::REAL_TYPE );
     }
 #endif
 
@@ -370,13 +370,13 @@ namespace
     private:
 
         typedef typename Config_type::Array_type Array_type;
-        typedef typename Config_type::Value_type Value_type;
+        typedef typename Config_type::ValueType ValueType;
 
         template< class Cont >
         void test_container_constructor( const Cont& cont )
         {
             typedef typename Cont::value_type Cont_value_type;
-            const Value_type val( cont.begin(), cont.end() );
+            const ValueType val( cont.begin(), cont.end() );
             const Array_type& arr = val.get_array();
             Cont result;
             for( unsigned int i = 0; i < arr.size(); ++i )
@@ -413,7 +413,7 @@ namespace
 
             {
                 variant< int, Null > variant = Null();
-                const Value_type val( variant );
+                const ValueType val( variant );
                 assert( val.is_null() );
             }
 
@@ -431,13 +431,13 @@ namespace
 
         typedef typename Config_type::String_type String_type;
         typedef typename Config_type::Array_type Array_type;
-        typedef typename Config_type::Value_type Value_type;
+        typedef typename Config_type::ValueType ValueType;
 
         template< class Variant_t, typename T >
         void test_variant_constructor( const T& t )
         {
             const Variant_t variant( t );
-            const Value_type val( variant );
+            const ValueType val( variant );
             assert_eq( val.template get_value< T >(), t );
         }
 
@@ -445,7 +445,7 @@ namespace
         void test_variant_array_constructor( const Cont< T, A >& cont )
         {
             const variant< int, Cont< T, A > > variant = cont;
-            const Value_type val( variant );
+            const ValueType val( variant );
             const Array_type& arr = val.get_array();
             Cont< T, A > result;
             for( unsigned int i = 0; i < arr.size(); ++i )

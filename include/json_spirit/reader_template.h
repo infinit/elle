@@ -11,7 +11,7 @@
 #endif
 
 #include "value.h"
-#include "error_position.h"
+#include "parse_error.h"
 
 //#define BOOST_SPIRIT_THREADSAFE  // uncomment for multithreaded use, requires linking to boost.thread
 
@@ -245,7 +245,7 @@ namespace json_spirit
 
         void new_name( Iter_type begin, Iter_type end )
         {
-            assert( current_p_->type() == obj_type );
+            assert( current_p_->type() == Value_type::OBJECT_TYPE );
 
             name_ = get_str< String_type >( begin, end );
         }
@@ -338,14 +338,14 @@ namespace json_spirit
             {
                 return add_first( value );
             }
-            else if( current_p_->type() == array_type )
+            else if( current_p_->type() == Value_type::ARRAY_TYPE )
             {
                 current_p_->get_array().push_back( value );
 
                 return &current_p_->get_array().back();
             }
 
-            assert( current_p_->type() == obj_type );
+            assert( current_p_->type() == Value_type::OBJECT_TYPE );
 
             return &Config_type::add( current_p_->get_obj(), name_, value );
         }
@@ -363,7 +363,7 @@ namespace json_spirit
     template< typename Iter_type >
     void throw_error( spirit_namespace::position_iterator< Iter_type > i, const std::string& reason )
     {
-        throw Error_position( i.get_position().line, i.get_position().column, reason );
+        throw ParseError( i.get_position().line, i.get_position().column, reason );
     }
 
     template< typename Iter_type >

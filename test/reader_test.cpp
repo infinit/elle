@@ -22,14 +22,14 @@ using namespace boost::assign;
 
 namespace
 {
-    template< class String_type, class Value_type >
-    void test_read( const String_type& s, Value_type& value )
+    template< class String_type, class ValueType >
+    void test_read( const String_type& s, ValueType& value )
     {
         // performs both types of read and checks they produce the same value
 
         read( s, value );
 
-        Value_type value_2;
+        ValueType value_2;
 
         read_or_throw( s, value_2 );
 
@@ -42,7 +42,7 @@ namespace
         typedef typename Config_type::String_type String_type;
         typedef typename Config_type::Object_type Object_type;
         typedef typename Config_type::Array_type Array_type;
-        typedef typename Config_type::Value_type Value_type;
+        typedef typename Config_type::ValueType ValueType;
         typedef typename Config_type::Pair_type Pair_type;
         typedef typename String_type::value_type  Char_type;
         typedef typename String_type::const_iterator Iter_type;
@@ -73,7 +73,7 @@ namespace
             }
         }
 
-        void add_value( Object_type& obj, const char* c_name, const Value_type& value )
+        void add_value( Object_type& obj, const char* c_name, const ValueType& value )
         {
             Config_type::add( obj, to_str( c_name ), value );
         }
@@ -87,7 +87,7 @@ namespace
         {
             const String_type str = to_str( c_str );
 
-            Value_type value;
+            ValueType value;
 
             const bool ok = read( str, value );
 
@@ -159,23 +159,23 @@ namespace
             test_syntax( "[1 2 3]", false );
         }
 
-        Value_type read_cstr( const char* c_str )
+        ValueType read_cstr( const char* c_str )
         {
-            Value_type value;
+            ValueType value;
 
             test_read( to_str( c_str ), value );
 
             return value;
         }
 
-        void read_cstr( const char* c_str, Value_type& value )
+        void read_cstr( const char* c_str, ValueType& value )
         {
             test_read( to_str( c_str ), value );
         }
 
         void check_reading( const char* c_str )
         {
-            Value_type value;
+            ValueType value;
 
             String_type in_s( to_str( c_str ) );
 
@@ -204,7 +204,7 @@ namespace
             check_reading( "{\n}" );
 
             Object_type obj;
-            Value_type value;
+            ValueType value;
 
             read_cstr( "{\n"
                        "    \"name 1\" : \"value 1\"\n"
@@ -420,7 +420,7 @@ namespace
 
         void test_reading_reals()
         {
-            Value_type value;
+            ValueType value;
 
             const String_type in_s = to_str( "[1.200000000000000,1.234567890123456e+125,-1.234000000000000e-123,"
                                              " 1.000000000000000e-123,1234567890.123456,123]" );
@@ -430,7 +430,7 @@ namespace
             const bool ok = read( is, value );
 
             assert_eq( ok, true );
-            assert_eq( value.type(), array_type );
+            assert_eq( value.type(), ValueType::ARRAY_TYPE );
 
             const Array_type arr = value.get_array();
 
@@ -444,9 +444,9 @@ namespace
         }
 
         void test_from_stream( const char* json_str, bool expected_success,
-                               const Error_position& expected_error )
+                               const ParseError& expected_error )
         {
-            Value_type value;
+            ValueType value;
 
             String_type in_s( to_str( json_str ) );
 
@@ -471,7 +471,7 @@ namespace
 
                 assert_eq( in_s, write( value ) );
             }
-            catch( const Error_position error )
+            catch( const ParseError error )
             {
                 assert_eq( error, expected_error );
             }
@@ -479,13 +479,13 @@ namespace
 
         void test_from_stream()
         {
-            test_from_stream( "[1,2]", true, Error_position() );
-            test_from_stream( "\n\n foo", false, Error_position( 3, 2,"not a value"  ) );
+            test_from_stream( "[1,2]", true, ParseError() );
+            test_from_stream( "\n\n foo", false, ParseError( 3, 2,"not a value"  ) );
         }
 
         void test_escape_chars( const char* json_str, const char* c_str )
         {
-            Value_type value;
+            ValueType value;
 
             string s( string( "{\"" ) + json_str + "\" : \"" + json_str + "\"} " );
 
@@ -516,13 +516,13 @@ namespace
 
         void check_is_null( const char* c_str  )
         {
-            assert_eq( read_cstr( c_str ).type(), null_type );
+            assert_eq( read_cstr( c_str ).type(), ValueType::NULL_TYPE );
         }
 
         template< typename T >
         void check_value( const char* c_str, const T& expected_value )
         {
-            const Value_type v( read_cstr( c_str ) );
+            const ValueType v( read_cstr( c_str ) );
 
             assert_eq( v.template get_value< T >(), expected_value );
         }
@@ -539,7 +539,7 @@ namespace
 
         void check_read_fails( const char* c_str, int line, int column, const string& reason )
         {
-            Value_type value;
+            ValueType value;
 
             try
             {
@@ -547,9 +547,9 @@ namespace
 
                 assert( false );
             }
-            catch( const Error_position posn )
+            catch( const ParseError posn )
             {
-                assert_eq( posn, Error_position( line, column, reason ) );
+                assert_eq( posn, ParseError( line, column, reason ) );
             }
         }
 
@@ -579,7 +579,7 @@ namespace
 
         typedef vector< int > Ints;
 
-        bool test_read_range( Iter_type& first, Iter_type last, Value_type& value )
+        bool test_read_range( Iter_type& first, Iter_type last, ValueType& value )
         {
             Iter_type first_ = first;
 
@@ -587,7 +587,7 @@ namespace
 
             try
             {
-                Value_type value_;
+                ValueType value_;
 
                 read_or_throw( first_, last, value_ );
 
@@ -604,7 +604,7 @@ namespace
 
         void check_value_sequence( Iter_type first, Iter_type last, const Ints& expected_values, bool all_input_consumed )
         {
-            Value_type value;
+            ValueType value;
 
             for( Ints::size_type i = 0; i < expected_values.size(); ++i )
             {
@@ -624,7 +624,7 @@ namespace
 
         void check_value_sequence( Istream_type& is, const Ints& expected_values, bool all_input_consumed )
         {
-            Value_type value;
+            ValueType value;
 
             for( Ints::size_type i = 0; i < expected_values.size(); ++i )
             {
@@ -661,9 +661,9 @@ namespace
             check_value_sequence( is, expected_values, all_input_consumed );
         }
 
-        void check_array( const Value_type& value, typename Array_type::size_type expected_size )
+        void check_array( const ValueType& value, typename Array_type::size_type expected_size )
         {
-            assert_eq( value.type(), array_type );
+            assert_eq( value.type(), ValueType::ARRAY_TYPE );
 
             const Array_type& arr = value.get_array();
 
@@ -671,16 +671,16 @@ namespace
 
             for( typename Array_type::size_type i = 0; i < expected_size; ++i )
             {
-                const Value_type& val = arr[i];
+                const ValueType& val = arr[i];
 
-                assert_eq( val.type(), int_type );
+                assert_eq( val.type(), ValueType::INT_TYPE );
                 assert_eq( val.get_int(), int( i + 1 ) );
             }
         }
 
         void check_reading_array( Iter_type& begin, Iter_type end, typename Array_type::size_type expected_size )
         {
-            Value_type value;
+            ValueType value;
 
             test_read_range( begin, end, value );
 
@@ -689,7 +689,7 @@ namespace
 
         void check_reading_array( Istream_type& is, typename Array_type::size_type expected_size )
         {
-            Value_type value;
+            ValueType value;
 
             read( is, value );
 
@@ -735,7 +735,7 @@ namespace
 
         void test_uint64( const char* value_str, int expected_int, int64_t expected_int64, uint64_t expected_uint64 )
         {
-            const Value_type v( read_cstr( value_str ) );
+            const ValueType v( read_cstr( value_str ) );
 
             assert_eq( v.get_int(),    expected_int );
             assert_eq( v.get_int64(),  expected_int64 );
@@ -752,11 +752,11 @@ namespace
 
         void test_types()
         {
-            Value_type value;
+            ValueType value;
 
             read( to_str( "[ \"foo\", true, false, 1, 12.3, null ]" ), value );
 
-            assert_eq( value.type(), array_type );
+            assert_eq( value.type(), ValueType::ARRAY_TYPE );
 
             const Array_type& a = value.get_array();
 

@@ -19,24 +19,40 @@
 #include <stdexcept>
 #include <boost/config.hpp>
 #include <boost/cstdint.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/variant.hpp>
 
 // comment out the value types you don't need to reduce build times and intermediate file sizes
 #define JSON_SPIRIT_VALUE_ENABLED
 #define JSON_SPIRIT_WVALUE_ENABLED
 
-namespace json_spirit
-{
-    enum Value_type{ obj_type, array_type, str_type, bool_type, int_type, real_type, null_type };
+namespace json_spirit {
 
     struct Null{};
 
     template< class Config >    // Config determines whether the value uses std::string or std::wstring and
                                 // whether JSON Objects are represented as vectors or maps
-    class Value_impl
+    class BasicValue
     {
     public:
+
+        /** The type held within a variant. */
+        // Note: This order needs to match the order of the variant so
+        // variant::which() matches.
+        enum Type {
+            // Ensuring NULL_TYPE is 0 makes for easy null checks:
+            // if (!Value.type())
+            //   do something with value
+            NULL_TYPE = 0,
+            OBJECT_TYPE,
+            ARRAY_TYPE,
+            STRING_TYPE,
+            BOOL_TYPE,
+            INT_TYPE,
+            REAL_TYPE,
+
+            // Don't use externally
+            UINT64_TYPE
+        };
 
         typedef Config Config_type;
         typedef typename Config::String_type String_type;
@@ -44,30 +60,30 @@ namespace json_spirit
         typedef typename Config::Array_type Array;
         typedef typename String_type::const_pointer Const_str_ptr;  // eg const char*
 
-        Value_impl();  // creates null value
-        Value_impl( Const_str_ptr      value );
-        Value_impl( const String_type& value );
-        Value_impl( const Object&      value );
-        Value_impl( const Array&       value );
-        Value_impl( bool               value );
-        Value_impl( int                value );
-        Value_impl( boost::int64_t     value );
-        Value_impl( boost::uint64_t    value );
-        Value_impl( double             value );
+        BasicValue();  // creates null value
+        BasicValue( Const_str_ptr      value );
+        BasicValue( const String_type& value );
+        BasicValue( const Object&      value );
+        BasicValue( const Array&       value );
+        BasicValue( bool               value );
+        BasicValue( int                value );
+        BasicValue( boost::int64_t     value );
+        BasicValue( boost::uint64_t    value );
+        BasicValue( double             value );
 
         template< class Iter >
-        Value_impl( Iter first, Iter last );    // constructor from containers, e.g. std::vector or std::list
+        BasicValue( Iter first, Iter last );    // constructor from containers, e.g. std::vector or std::list
 
         template< BOOST_VARIANT_ENUM_PARAMS( typename T ) >
-        Value_impl( const boost::variant< BOOST_VARIANT_ENUM_PARAMS(T) >& variant ); // constructor for compatible variant types
+        BasicValue( const boost::variant< BOOST_VARIANT_ENUM_PARAMS(T) >& variant ); // constructor for compatible variant types
 
-        Value_impl( const Value_impl& other );
+        BasicValue( const BasicValue& other );
 
-        bool operator==( const Value_impl& lhs ) const;
+        bool operator==( const BasicValue& lhs ) const;
 
-        Value_impl& operator=( const Value_impl& lhs );
+        BasicValue& operator=( const BasicValue& lhs );
 
-        Value_type type() const;
+        Type type() const;
 
         bool is_uint64() const;
         bool is_null() const;
@@ -87,14 +103,14 @@ namespace json_spirit
         template< typename T > T get_value() const;  // example usage: int    i = value.get_value< int >();
                                                      // or             double d = value.get_value< double >();
 
-        static const Value_impl null;
+        static const BasicValue null;
 
     private:
 
-        void check_type( const Value_type vtype ) const;
+        void check_type( const Type vtype ) const;
 
-        typedef boost::variant< boost::recursive_wrapper< Object >, boost::recursive_wrapper< Array >,
-                                String_type, bool, boost::int64_t, double, Null, boost::uint64_t > Variant;
+        typedef boost::variant< Null, boost::recursive_wrapper< Object >, boost::recursive_wrapper< Array >,
+                                String_type, bool, boost::int64_t, double, boost::uint64_t > Variant;
 
         Variant v_;
 
@@ -128,12 +144,12 @@ namespace json_spirit
     struct Config_map
     {
         typedef String String_type;
-        typedef Value_impl< Config_map > Value_type;
-        typedef std::vector< Value_type > Array_type;
-        typedef std::map< String_type, Value_type > Object_type;
-        typedef std::pair< String_type, Value_type > Pair_type;
+        typedef BasicValue< Config_map > ValueType;
+        typedef std::vector< ValueType > Array_type;
+        typedef std::map< String_type, ValueType > Object_type;
+        typedef std::pair< String_type, ValueType > Pair_type;
 
-        static Value_type& add( Object_type& obj, const String_type& name, const Value_type& value )
+        static ValueType& add( Object_type& obj, const String_type& name, const ValueType& value )
         {
             return obj[ name ] = value;
         }
@@ -143,7 +159,7 @@ namespace json_spirit
             return pair.first;
         }
 
-        static Value_type get_value( const Pair_type& pair )
+        static ValueType get_value( const Pair_type& pair )
         {
             return pair.second;
         }
@@ -155,7 +171,7 @@ namespace json_spirit
 #ifdef JSON_SPIRIT_VALUE_ENABLED
     typedef Config_map< std::string > Config;
 
-    typedef Config::Value_type  Value;
+    typedef Config::ValueType  Value;
     typedef Config::Object_type Object;
     typedef Config::Array_type  Array;
 #endif
@@ -165,7 +181,7 @@ namespace json_spirit
 #if defined( JSON_SPIRIT_WVALUE_ENABLED ) && !defined( BOOST_NO_STD_WSTRING )
     typedef Config_map< std::wstring > wConfig;
 
-    typedef wConfig::Value_type  wValue;
+    typedef wConfig::ValueType  wValue;
     typedef wConfig::Object_type wObject;
     typedef wConfig::Array_type  wArray;
 #endif
@@ -180,92 +196,92 @@ namespace json_spirit
     }
 
     template< class Config >
-    const Value_impl< Config > Value_impl< Config >::null;
+    const BasicValue< Config > BasicValue< Config >::null;
 
     template< class Config >
-    Value_impl< Config >::Value_impl()
+    BasicValue< Config >::BasicValue()
     :   v_( Null() )
     {
     }
 
     template< class Config >
-    Value_impl< Config >::Value_impl( const Const_str_ptr value )
+    BasicValue< Config >::BasicValue( const Const_str_ptr value )
     :  v_( String_type( value ) )
     {
     }
 
     template< class Config >
-    Value_impl< Config >::Value_impl( const String_type& value )
+    BasicValue< Config >::BasicValue( const String_type& value )
     :   v_( value )
     {
     }
 
     template< class Config >
-    Value_impl< Config >::Value_impl( const Object& value )
+    BasicValue< Config >::BasicValue( const Object& value )
     :   v_( value )
     {
     }
 
     template< class Config >
-    Value_impl< Config >::Value_impl( const Array& value )
+    BasicValue< Config >::BasicValue( const Array& value )
     :   v_( value )
     {
     }
 
     template< class Config >
-    Value_impl< Config >::Value_impl( bool value )
+    BasicValue< Config >::BasicValue( bool value )
     :   v_( value )
     {
     }
 
     template< class Config >
-    Value_impl< Config >::Value_impl( int value )
+    BasicValue< Config >::BasicValue( int value )
     :   v_( static_cast< boost::int64_t >( value ) )
     {
     }
 
     template< class Config >
-    Value_impl< Config >::Value_impl( boost::int64_t value )
+    BasicValue< Config >::BasicValue( boost::int64_t value )
     :   v_( value )
     {
     }
 
     template< class Config >
-    Value_impl< Config >::Value_impl( boost::uint64_t value )
+    BasicValue< Config >::BasicValue( boost::uint64_t value )
     :   v_( value )
     {
     }
 
     template< class Config >
-    Value_impl< Config >::Value_impl( double value )
+    BasicValue< Config >::BasicValue( double value )
     :   v_( value )
     {
     }
 
     template< class Config >
-    Value_impl< Config >::Value_impl( const Value_impl< Config >& other )
+    BasicValue< Config >::BasicValue( const BasicValue< Config >& other )
     :   v_( other.v_ )
     {
     }
 
     template< class Config >
     template< class Iter >
-    Value_impl< Config >::Value_impl( Iter first, Iter last )
+    BasicValue< Config >::BasicValue( Iter first, Iter last )
     :   v_( Array( first, last ) )
     {
     }
 
     template< class Config >
     template< BOOST_VARIANT_ENUM_PARAMS( typename T ) >
-    Value_impl< Config >::Value_impl( const boost::variant< BOOST_VARIANT_ENUM_PARAMS(T) >& variant )
+    BasicValue< Config >::BasicValue( const boost::variant< BOOST_VARIANT_ENUM_PARAMS(T) >& variant )
     :   v_( boost::apply_visitor( Variant_converter_visitor(), variant) )
     {
     }
 
     template< class Config >
-    Value_impl< Config >& Value_impl< Config >::operator=( const Value_impl& lhs )
+    BasicValue< Config >& BasicValue< Config >::operator=( const BasicValue& lhs )
     {
-        Value_impl tmp( lhs );
+        BasicValue tmp( lhs );
 
         std::swap( v_, tmp.v_ );
 
@@ -273,7 +289,7 @@ namespace json_spirit
     }
 
     template< class Config >
-    bool Value_impl< Config >::operator==( const Value_impl& lhs ) const
+    bool BasicValue< Config >::operator==( const BasicValue& lhs ) const
     {
         if( this == &lhs ) return true;
 
@@ -283,30 +299,30 @@ namespace json_spirit
     }
 
     template< class Config >
-    Value_type Value_impl< Config >::type() const
+    typename BasicValue<Config>::Type BasicValue< Config >::type() const
     {
         if( is_uint64() )
         {
-            return int_type;
+            return INT_TYPE;
         }
 
-        return static_cast< Value_type >( v_.which() );
+        return static_cast< Type >( v_.which() );
     }
 
     template< class Config >
-    bool Value_impl< Config >::is_uint64() const
+    bool BasicValue< Config >::is_uint64() const
     {
-        return v_.which() == null_type + 1;
+        return v_.which() == UINT64_TYPE;
     }
 
     template< class Config >
-    bool Value_impl< Config >::is_null() const
+    bool BasicValue< Config >::is_null() const
     {
-        return type() == null_type;
+        return type() == NULL_TYPE;
     }
 
     template< class Config >
-    void Value_impl< Config >::check_type( const Value_type vtype ) const
+    void BasicValue< Config >::check_type( const Type vtype ) const
     {
         if( type() != vtype )
         {
@@ -319,49 +335,49 @@ namespace json_spirit
     }
 
     template< class Config >
-    const typename Config::String_type& Value_impl< Config >::get_str() const
+    const typename Config::String_type& BasicValue< Config >::get_str() const
     {
-        check_type( str_type );
+        check_type( STRING_TYPE );
 
         return *boost::get< String_type >( &v_ );
     }
 
     template< class Config >
-    const typename Value_impl< Config >::Object& Value_impl< Config >::get_obj() const
+    const typename BasicValue< Config >::Object& BasicValue< Config >::get_obj() const
     {
-        check_type( obj_type );
+        check_type( OBJECT_TYPE );
 
         return *boost::get< Object >( &v_ );
     }
 
     template< class Config >
-    const typename Value_impl< Config >::Array& Value_impl< Config >::get_array() const
+    const typename BasicValue< Config >::Array& BasicValue< Config >::get_array() const
     {
-        check_type( array_type );
+        check_type( ARRAY_TYPE );
 
         return *boost::get< Array >( &v_ );
     }
 
     template< class Config >
-    bool Value_impl< Config >::get_bool() const
+    bool BasicValue< Config >::get_bool() const
     {
-        check_type( bool_type );
+        check_type( BOOL_TYPE );
 
         return boost::get< bool >( v_ );
     }
 
     template< class Config >
-    int Value_impl< Config >::get_int() const
+    int BasicValue< Config >::get_int() const
     {
-        check_type( int_type );
+        check_type( INT_TYPE );
 
         return static_cast< int >( get_int64() );
     }
 
     template< class Config >
-    boost::int64_t Value_impl< Config >::get_int64() const
+    boost::int64_t BasicValue< Config >::get_int64() const
     {
-        check_type( int_type );
+        check_type( INT_TYPE );
 
         if( is_uint64() )
         {
@@ -372,9 +388,9 @@ namespace json_spirit
     }
 
     template< class Config >
-    boost::uint64_t Value_impl< Config >::get_uint64() const
+    boost::uint64_t BasicValue< Config >::get_uint64() const
     {
-        check_type( int_type );
+        check_type( INT_TYPE );
 
         if( !is_uint64() )
         {
@@ -385,31 +401,31 @@ namespace json_spirit
     }
 
     template< class Config >
-    double Value_impl< Config >::get_real() const
+    double BasicValue< Config >::get_real() const
     {
-        if( type() == int_type )
+        if( type() == INT_TYPE )
         {
             return is_uint64() ? static_cast< double >( get_uint64() )
                                : static_cast< double >( get_int64() );
         }
 
-        check_type( real_type );
+        check_type( REAL_TYPE );
 
         return boost::get< double >( v_ );
     }
 
     template< class Config >
-    typename Value_impl< Config >::Object& Value_impl< Config >::get_obj()
+    typename BasicValue< Config >::Object& BasicValue< Config >::get_obj()
     {
-        check_type( obj_type );
+        check_type( OBJECT_TYPE );
 
         return *boost::get< Object >( &v_ );
     }
 
     template< class Config >
-    typename Value_impl< Config >::Array& Value_impl< Config >::get_array()
+    typename BasicValue< Config >::Array& BasicValue< Config >::get_array()
     {
-        check_type( array_type );
+        check_type( ARRAY_TYPE );
 
         return *boost::get< Array >( &v_ );
     }
@@ -492,7 +508,7 @@ namespace json_spirit
 
     template< class Config >
     template< typename T >
-    T Value_impl< Config >::get_value() const
+    T BasicValue< Config >::get_value() const
     {
         return internal_::get_value( *this, internal_::Type_to_type< T >() );
     }

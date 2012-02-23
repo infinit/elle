@@ -1,5 +1,5 @@
-#ifndef JSON_SPIRIT_ERROR_POSITION
-#define JSON_SPIRIT_ERROR_POSITION
+#ifndef JSON_SPIRIT_PARSE_ERROR
+#define JSON_SPIRIT_PARSE_ERROR
 
 //          Copyright John W. Wilkinson 2007 - 2011
 // Distributed under the MIT License, see accompanying file LICENSE.txt
@@ -15,34 +15,34 @@
 
 namespace json_spirit
 {
-    // An Error_position exception is thrown by the "read_or_throw" functions below on finding an error.
+    // An ParseError exception is thrown by the "read_or_throw" functions below on finding an error.
     // Note the "read_or_throw" functions are around 3 times slower than the standard functions "read"
     // functions that return a bool.
     //
-    struct JSON_SPIRIT_EXPORT Error_position
+    struct JSON_SPIRIT_EXPORT ParseError
     {
-        Error_position();
-        Error_position( unsigned int line, unsigned int column, const std::string& reason );
-        bool operator==( const Error_position& lhs ) const;
+        ParseError();
+        ParseError( unsigned int line, unsigned int column, const std::string& reason );
+        bool operator==( const ParseError& lhs ) const;
         unsigned int line_;
         unsigned int column_;
         std::string reason_;
     };
 
-    inline Error_position::Error_position()
+    inline ParseError::ParseError()
     :   line_( 0 )
     ,   column_( 0 )
     {
     }
 
-    inline Error_position::Error_position( unsigned int line, unsigned int column, const std::string& reason )
+    inline ParseError::ParseError( unsigned int line, unsigned int column, const std::string& reason )
     :   line_( line )
     ,   column_( column )
     ,   reason_( reason )
     {
     }
 
-    inline bool Error_position::operator==( const Error_position& lhs ) const
+    inline bool ParseError::operator==( const ParseError& lhs ) const
     {
         if( this == &lhs ) return true;
 

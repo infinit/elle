@@ -12,7 +12,7 @@
 
 #include "platform.h"
 #include "value.h"
-#include "error_position.h"
+#include "parse_error.h"
 #include <iostream>
 
 namespace json_spirit

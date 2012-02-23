@@ -23,7 +23,7 @@ namespace
         typedef typename Config_type::String_type String_type;
         typedef typename Config_type::Object_type Object_type;
         typedef typename Config_type::Array_type Array_type;
-        typedef typename Config_type::Value_type Value_type;
+        typedef typename Config_type::ValueType ValueType;
         typedef typename Config_type::Pair_type Pair_type;
         typedef typename String_type::value_type  Char_type;
         typedef typename String_type::const_iterator Iter_type;
@@ -39,12 +39,12 @@ namespace
         {
         }
 
-        void check_stream_reader( Stream_reader< Istream_type, Value_type >& reader, const vector< int >& expected_result )
+        void check_stream_reader( BasicStreamReader< Istream_type, ValueType >& reader, const vector< int >& expected_result )
         {
-            Value_type v;
-            const bool ok = reader.read_next( v );
+            ValueType v;
+            const bool ok = reader.read( v );
             assert_eq( ok, true );
-            assert_eq( v.type(), array_type );
+            assert_eq( v.type(), ValueType::ARRAY_TYPE );
             assert_eq( v.get_array().size(), expected_result.size() );
             for( vector< int >::size_type i = 0; i < v.get_array().size(); ++i )
             {
@@ -52,14 +52,14 @@ namespace
             }
         }
 
-        void check_stream_read_or_throw( Stream_reader_thrower< Istream_type, Value_type >& reader, const vector< int >& expected_result )
+        void check_stream_read_or_throw( BasicStreamReader< Istream_type, ValueType >& reader, const vector< int >& expected_result )
         {
-            Value_type v;
+            ValueType v;
 
             try
             {
-                reader.read_next( v );
-                assert_eq( v.type(), array_type );
+                reader.read( v );
+                assert_eq( v.type(), ValueType::ARRAY_TYPE );
                 assert_eq( v.get_array().size(), expected_result.size() );
                 for( vector< int >::size_type i = 0; i < v.get_array().size(); ++i )
                 {
@@ -77,21 +77,21 @@ namespace
             {
                 Istringstream_type is( to_str( s ) );
 
-                Stream_reader< Istream_type, Value_type > reader( is );
+                BasicStreamReader< Istream_type, ValueType > reader( is, false );
 
                 check_stream_reader( reader, vector< int >() );
                 check_stream_reader( reader, list_of( 1 ) );
                 check_stream_reader( reader, list_of( 1 )( 2 ) );
                 check_stream_reader( reader, list_of( 1 )( 2 )( 3 ) );
 
-                Value_type v;
-                const bool ok = reader.read_next( v );
+                ValueType v;
+                const bool ok = reader.read( v );
                 assert_eq( ok, false );
             }
             {
                 Istringstream_type is( to_str( s ) );
 
-                Stream_reader_thrower< Istream_type, Value_type > reader( is );
+                BasicStreamReader< Istream_type, ValueType > reader( is, true);
 
                 check_stream_read_or_throw( reader, vector< int >() );
                 check_stream_read_or_throw( reader, list_of( 1 ) );
@@ -100,8 +100,8 @@ namespace
 
                 try
                 {
-                    Value_type v;
-                    reader.read_next( v );
+                    ValueType v;
+                    reader.read( v );
                     assert( false );
                 }
                 catch( ... )
