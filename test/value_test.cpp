@@ -348,6 +348,65 @@ namespace
         check_wrong_type_exceptions< int >( Value::INT_TYPE );
         check_wrong_type_exceptions< double >( Value::REAL_TYPE );
     }
+
+void test_path_insert() {
+    Object n;
+    Value v1(n);
+    assert_eq( v1.type(), Value::OBJECT_TYPE);
+
+    bool inserted;
+
+    // Single element path, integer
+    inserted = v1.insert("a", 7);
+    assert_eq(inserted, true);
+    assert( v1.getObject().find("a") != v1.getObject().end());
+    assert_eq( v1.getObject()["a"].type(), Value::INT_TYPE );
+    assert_eq( v1.getObject()["a"].getInt(), 7);
+
+    // Two element path, string
+    inserted = v1.insert("b.cd", "XXX");
+    assert_eq(inserted, true);
+    assert( v1.getObject().find("b") != v1.getObject().end());
+    assert_eq( v1.getObject()["b"].type(), Value::OBJECT_TYPE );
+    assert( v1.getObject()["b"].getObject().find("cd") != v1.getObject()["b"].getObject().end());
+    assert_eq( v1.getObject()["b"].getObject()["cd"].type(), Value::STRING_TYPE);
+    assert_eq( v1.getObject()["b"].getObject()["cd"].getString(), "XXX");
+
+    // Two elements, preserve previous elements
+    inserted = v1.insert("b.e", "YYY");
+    assert_eq(inserted, true);
+    assert_eq( v1.getObject()["b"].getObject()["cd"].getString(), "XXX");
+    assert( v1.getObject()["b"].getObject().find("e") != v1.getObject()["b"].getObject().end());
+    assert_eq( v1.getObject()["b"].getObject()["e"].type(), Value::STRING_TYPE);
+    assert_eq( v1.getObject()["b"].getObject()["e"].getString(), "YYY");
+
+    // Fail to insert over existing element
+    inserted = v1.insert("b.e", "ZZZ");
+    assert_eq(inserted, false);
+    assert_eq( v1.getObject()["b"].getObject()["e"].getString(), "YYY");
+}
+
+void test_path_put() {
+    // Assume test_path_insert() passes. We only need to check the changes in
+    // behavior: overwriting data.
+
+    Object n;
+    Value v1(n);
+    assert_eq( v1.type(), Value::OBJECT_TYPE);
+
+    // Prep some test data
+    v1.put("b.e", "YYY");
+    assert( v1.getObject()["b"].getObject().find("e") != v1.getObject()["b"].getObject().end());
+    assert_eq( v1.getObject()["b"].getObject()["e"].type(), Value::STRING_TYPE);
+    assert_eq( v1.getObject()["b"].getObject()["e"].getString(), "YYY");
+
+    // Overwrite test
+    v1.put("b.e", 2);
+    assert( v1.getObject()["b"].getObject().find("e") != v1.getObject()["b"].getObject().end());
+    assert_eq( v1.getObject()["b"].getObject()["e"].type(), Value::INT_TYPE);
+    assert_eq( v1.getObject()["b"].getObject()["e"].getInt(), 2);
+}
+
 #endif
 
     template< class Config_type >
@@ -510,6 +569,8 @@ void json_spirit::test_value()
     test_is_uint64();
     test_an_int_is_a_real();
     test_wrong_type_exceptions();
+    test_path_insert();
+    test_path_put();
 #endif
     test_container_constructor();
     test_variant_constructor();

@@ -107,9 +107,62 @@ namespace json_spirit {
         template< typename T > T getValue() const;  // example usage: int    i = value.getValue< int >();
                                                      // or             double d = value.getValue< double >();
 
+        // Object-specific utility methods based on paths such as
+        // 'foo.bar.baz' rather than having to traverse manually.
+
+        /** Insert the value into this object at the given path. Unlike
+         *  manipulating objects directly, this uses a 'path' to the
+         *  destination, creating objects along the way if they don't
+         *  exist. For example insert('foo.bar', 7) would ensure the
+         *  current object looks like this:
+         *  {
+         *     'foo' : {
+         *         'bar' : 7
+         *     }
+         *  }
+         *  as long as a value didn't already exist at the position.
+         *
+         *  \param path the path, through objects, to the destination
+         *         location of the value.
+         *  \param val the value to insert
+         *  \param delim the delimiter to use in parsing the path into
+         *         components. Defaults to '.'
+         *  \returns true if the insertion was successful, false if
+         *         there was already a value at the given path
+         *
+         *  \note If you want to overwrite a value if it already
+         *  exists, use put().
+         */
+        bool insert(const String& path, const BasicValue& val, const typename String::value_type delim = '.');
+        /** Insert the value into this object at the given path. Unlike
+         *  manipulating objects directly, this uses a 'path' to the
+         *  destination, creating objects along the way if they don't
+         *  exist. For example put('foo.bar', 7) would ensure the
+         *  current object looks like this:
+         *  {
+         *     'foo' : {
+         *         'bar' : 7
+         *     }
+         *  }
+         *
+         *  \param path the path, through objects, to the destination
+         *         location of the value.
+         *  \param val the value to insert
+         *  \param delim the delimiter to use in parsing the path into
+         *         components. Defaults to '.'
+         *  \returns true if the insertion was successful, false if
+         *         there was already a value at the given path
+         *
+         *  \note If you want to overwrite a value if it already
+         *  exists, use put().
+         */
+        void put(const String& path, const BasicValue& val, const typename String::value_type delim = '.');
+
         static const BasicValue null;
 
     private:
+
+        bool insert_put_impl(const String& path, const BasicValue& val, const typename String::value_type delim, bool force_val);
 
         void check_type( const Type vtype ) const;
 
@@ -442,6 +495,56 @@ namespace json_spirit {
         return boost::get< double >( v_ );
     }
 
+    template< class Config >
+    bool BasicValue< Config >::insert_put_impl(const String& path, const BasicValue& val, const typename String::value_type delim, bool force_val) {
+        Object* obj = &(getObject());
+
+        // We need to stop before we process the last path component
+        // because the last one represents the actual value we're
+        // inserting.
+        std::size_t stop_pos = path.rfind(delim);
+
+        // If we have delimiters, process them to ensure they have
+        // objects.
+        if (stop_pos != String::npos) {
+            // And these track our progress moving forwards through the path
+            std::size_t prev_delim_pos = -1, delim_pos = 0;
+            do {
+                delim_pos = path.find(delim, prev_delim_pos+1);
+                String subpath;
+                // We should never have delim_pos == npos because of the outer
+                // check for stop_pos
+                subpath = path.substr(prev_delim_pos+1, delim_pos-prev_delim_pos-1);
+
+                if (!subpath.empty()) {
+                    // Insert a new object. If an object was already
+                    // there, we just get back the existing object to work
+                    // with.
+
+                    typename Object::iterator sub_obj_it = (obj->insert( std::make_pair(subpath, BasicValue(Object())) )).first;
+                    obj = &(sub_obj_it->second.getObject());
+                }
+
+                prev_delim_pos = delim_pos;
+            } while(prev_delim_pos != stop_pos);
+        }
+
+        // Finally, insert the value
+        String last_subpath = (stop_pos != String::npos ? path.substr(stop_pos+1) : path);
+        if (force_val)
+            obj->erase( last_subpath );
+        bool inserted = obj->insert( std::make_pair(last_subpath, val) ).second;
+        return inserted;
+    }
+
+    template< class Config >
+    bool BasicValue< Config >::insert(const String& path, const BasicValue& val, const typename String::value_type delim) {
+        return insert_put_impl(path, val, delim, false);
+    }
+    template< class Config >
+    void BasicValue< Config >::put(const String& path, const BasicValue& val, const typename String::value_type delim) {
+        insert_put_impl(path, val, delim, true);
+    }
 
     // converts a C string, ie. 8 bit char array, to a string object
     //
