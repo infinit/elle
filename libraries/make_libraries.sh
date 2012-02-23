@@ -4,7 +4,7 @@
 # @version @FIXME@
 
 SCRIPT=`basename "$0"`
-SCRIPTDIR=`python -c "import os;print os.path.abspath(os.path.dirname('$0'))"`
+SCRIPTDIR=`python -c "import os;print(os.path.abspath(os.path.dirname('$0')))"`
 
 cd "$SCRIPTDIR"
 
