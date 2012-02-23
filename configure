@@ -145,8 +145,8 @@ CXXFLAGS="${CPPFLAGS} ${CXXFLAGS}"
 
 function gen_build_dir()
 (
-	local infinit_arch
-	infinit_arch=`basename $BUILDDIR`
+    local infinit_arch
+    infinit_arch=`basename $BUILDDIR`
     echo "---[ configuration for ${BUILDDIR}:"
 
     ./libraries/make_libraries.sh "$infinit_arch"

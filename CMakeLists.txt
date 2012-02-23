@@ -40,6 +40,11 @@ set(INFINIT_QJSON_SHARED_LIBRARIES
 )
 message("-- External librairies directory: ${INFINIT_LIBRARIES_PREFIX}")
 
+add_custom_target(make_libraries ALL
+	COMMAND make_libraries.sh
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/libraries
+)
+#add_dependencies(
 
 cmake_minimum_required(VERSION 2.6)
 

@@ -8,18 +8,20 @@ SCRIPTDIR=`python -c "import os;print os.path.abspath(os.path.dirname('$0'))"`
 
 cd "$SCRIPTDIR"
 
-ARCH=linux64
-
-BUILDDIR="$SCRIPTDIR/$ARCH/build"
-
-mkdir -p "$BUILDDIR"
-cd "$SCRIPTDIR/$ARCH"
+ARCH=$1
 
 die()
 {
 	echo $1 1>&2
 	exit 1
 }
+
+[ -z $ARCH ] && die "You have to specify an architecture"
+
+BUILDDIR="$SCRIPTDIR/$ARCH/build"
+
+mkdir -p "$BUILDDIR"
+cd "$SCRIPTDIR/$ARCH"
 
 #############################################################################
 # OpenSSL
@@ -37,8 +39,7 @@ then
 	rm $openssl_tarball
 fi
 
-[ ! -e build/lib/libssl.a -o ! -e build/lib/libssl.so -o \
-  ! -e build/lib/libcrypto.a -o ! -e build/lib/libcrypto.so ] && (
+[ ! -e build/lib/libssl.a -o ! -e build/lib/libcrypto.a ] && (
 	echo "**** Build OpenSSL"
 	cd $openssl_dir
 	./config --prefix="$BUILDDIR"                       \
@@ -66,7 +67,7 @@ then
 	rm $msgpack_tarball
 fi
 
-[ ! -e build/lib/libmsgpack.a -o ! -e build/lib/libmsgpack.so ] && (
+[ ! -e build/lib/libmsgpack.a ] && (
 	echo "**** Build msgpack"
 	cd $msgpack_dir
 	./configure --prefix="$BUILDDIR" CFLAGS="${CFLAGS} -fPIC"
@@ -84,7 +85,7 @@ echo "**** msgpack up-to-date"
 	svn co https://jsoncpp.svn.sourceforge.net/svnroot/jsoncpp/trunk/jsoncpp jsoncpp
 )
 
-[ ! -e build/lib/libjson.a -o ! -e build/lib/libjson.so ] && (
+[ ! -e build/lib/libjson.a ] && (
 	echo "**** Build jsoncpp"
 	cd jsoncpp
 	scons platform=linux-gcc
@@ -112,7 +113,7 @@ then
 	rm $curl_tarball
 fi
 
-[ ! -e build/lib/libcurl.a -o ! -e build/lib/libcurl.so ] && (
+[ ! -e build/lib/libcurl.a ] && (
 	cd $curl_dir
 	./configure --prefix="$BUILDDIR" --with-ssl="$BUILDDIR/openssl"
 	make install
@@ -130,7 +131,7 @@ echo "**** curl up-to-date"
 	git clone git://gitorious.org/qjson/qjson.git
 )
 
-[ ! -e build/lib/libqjson.so ] && (
+[ -z "`ls build/lib/libqjson*`" ] && (
 	echo "**** build qjson"
 	cd qjson
 	mkdir build
