@@ -97,6 +97,7 @@ namespace json_spirit {
         bool isObject() const;
         bool isString() const;
         bool isArray() const;
+        bool isBool() const;
         bool isInt() const;
         bool isInt64() const;
         bool isUInt64() const;
@@ -508,6 +509,12 @@ namespace json_spirit {
     bool BasicValue< Config >::isArray() const
     {
         return v_.which() == ARRAY_TYPE;
+    }
+
+    template< class Config >
+    bool BasicValue< Config >::isBool() const
+    {
+        return v_.which() == BOOL_TYPE;
     }
 
     template< class Config >
