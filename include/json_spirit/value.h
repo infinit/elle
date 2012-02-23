@@ -21,6 +21,8 @@
 #include <boost/cstdint.hpp>
 #include <boost/variant.hpp>
 
+#include "path_error.h"
+
 // comment out the value types you don't need to reduce build times and intermediate file sizes
 #define JSON_SPIRIT_VALUE_ENABLED
 #define JSON_SPIRIT_WVALUE_ENABLED
@@ -64,6 +66,8 @@ namespace json_spirit {
         typedef typename Config::Array_type Array;
         typedef typename String::const_pointer Const_str_ptr;  // eg const char*
 
+        typedef BasicPathError<String> PathError;
+
         BasicValue();  // creates null value
         BasicValue( Const_str_ptr      value );
         BasicValue( const String& value );
@@ -89,8 +93,14 @@ namespace json_spirit {
 
         Type type() const;
 
-        bool isUInt64() const;
         bool isNull() const;
+        bool isObject() const;
+        bool isString() const;
+        bool isArray() const;
+        bool isInt() const;
+        bool isInt64() const;
+        bool isUInt64() const;
+        bool isReal() const;
 
         const String&      getString()    const;
         String& getString();
@@ -231,6 +241,8 @@ namespace json_spirit {
     typedef Config::ValueType  Value;
     typedef Config::Object_type Object;
     typedef Config::Array_type  Array;
+
+    typedef Value::PathError PathError;
 #endif
 
     // typedefs for Unicode
@@ -241,6 +253,8 @@ namespace json_spirit {
     typedef wConfig::ValueType  wValue;
     typedef wConfig::Object_type wObject;
     typedef wConfig::Array_type  wArray;
+
+    typedef wValue::PathError wPathError;
 #endif
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -367,16 +381,54 @@ namespace json_spirit {
     }
 
     template< class Config >
+    bool BasicValue< Config >::isNull() const
+    {
+        return type() == NULL_TYPE;
+    }
+
+    template< class Config >
+    bool BasicValue< Config >::isObject() const
+    {
+        return v_.which() == OBJECT_TYPE;
+    }
+
+    template< class Config >
+    bool BasicValue< Config >::isString() const
+    {
+        return v_.which() == STRING_TYPE;
+    }
+
+    template< class Config >
+    bool BasicValue< Config >::isArray() const
+    {
+        return v_.which() == ARRAY_TYPE;
+    }
+
+    template< class Config >
+    bool BasicValue< Config >::isInt() const
+    {
+        return v_.which() == INT_TYPE;
+    }
+
+    template< class Config >
+    bool BasicValue< Config >::isInt64() const
+    {
+        // We treat int64 and uint64 the same
+        return v_.which() == UINT64_TYPE;
+    }
+
+    template< class Config >
     bool BasicValue< Config >::isUInt64() const
     {
         return v_.which() == UINT64_TYPE;
     }
 
     template< class Config >
-    bool BasicValue< Config >::isNull() const
+    bool BasicValue< Config >::isReal() const
     {
-        return type() == NULL_TYPE;
+        return v_.which() == REAL_TYPE;
     }
+
 
     template< class Config >
     void BasicValue< Config >::check_type( const Type vtype ) const
@@ -497,6 +549,9 @@ namespace json_spirit {
 
     template< class Config >
     bool BasicValue< Config >::insert_put_impl(const String& path, const BasicValue& val, const typename String::value_type delim, bool force_val) {
+        if (!isObject())
+            throw PathError(path, "<root>", "Value isn't an object.");
+
         Object* obj = &(getObject());
 
         // We need to stop before we process the last path component
@@ -516,14 +571,17 @@ namespace json_spirit {
                 // check for stop_pos
                 subpath = path.substr(prev_delim_pos+1, delim_pos-prev_delim_pos-1);
 
-                if (!subpath.empty()) {
-                    // Insert a new object. If an object was already
-                    // there, we just get back the existing object to work
-                    // with.
+                if (subpath.empty())
+                    throw PathError(path, subpath, "Found empty subpath");
 
-                    typename Object::iterator sub_obj_it = (obj->insert( std::make_pair(subpath, BasicValue(Object())) )).first;
-                    obj = &(sub_obj_it->second.getObject());
-                }
+                // Insert a new object. If an object was already
+                // there, we just get back the existing object to work
+                // with.
+
+                typename Object::iterator sub_obj_it = (obj->insert( std::make_pair(subpath, BasicValue(Object())) )).first;
+                if (!sub_obj_it->second.isObject())
+                    throw PathError(path, subpath, "Path component isn't an object.");
+                obj = &(sub_obj_it->second.getObject());
 
                 prev_delim_pos = delim_pos;
             } while(prev_delim_pos != stop_pos);

@@ -407,6 +407,35 @@ void test_path_put() {
     assert_eq( v1.getObject()["b"].getObject()["e"].getInt(), 2);
 }
 
+template<typename T>
+void check_insert_path_error_exception(Value& v, const std::string& path, const T& val, const Value::PathError& expected_error) {
+    try {
+        v.insert(path, val);
+    }
+    catch(const Value::PathError& e) {
+        assert_eq(expected_error, e);
+        return;
+    }
+    assert(false);
+}
+
+void test_path_insert_error() {
+    // Non-object values
+    Value v1(2);
+    check_insert_path_error_exception(v1, "foo", 2, Value::PathError("foo", "<root>"));
+
+    Object n;
+    Value v2(n);
+
+    // Empty subpath
+    check_insert_path_error_exception(v2, "foo..bar", 2, Value::PathError("foo..bar", ""));
+
+    // baz isn't an object
+    v2.insert("foo.baz", 2);
+    check_insert_path_error_exception(v2, "foo.baz.bar", 2, Value::PathError("foo.baz.bar", "baz"));
+
+}
+
 #endif
 
     template< class Config_type >
@@ -571,6 +600,7 @@ void json_spirit::test_value()
     test_wrong_type_exceptions();
     test_path_insert();
     test_path_put();
+    test_path_insert_error();
 #endif
     test_container_constructor();
     test_variant_constructor();
