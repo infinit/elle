@@ -159,6 +159,18 @@ namespace json_spirit {
         boost::uint64_t getUInt64(const String& path, const typename String::value_type delim = '.') const;
         double getReal(const String& path, const typename String::value_type delim = '.') const;
 
+        // Accessors with alternative defaults. Note that these do *not* throw
+        // an exception if they find the path and it is the wrong type. The
+        // return the default value instead.
+        const String& getString(const String& path, const String& default_, const typename String::value_type delim = '.') const;
+        const Object& getObject(const String& path, const Object& default_, const typename String::value_type delim = '.') const;
+        const Array& getArray(const String& path, const Array& default_, const typename String::value_type delim = '.') const;
+        bool getBool(const String& path, bool default_, const typename String::value_type delim = '.') const;
+        int getInt(const String& path, int default_, const typename String::value_type delim = '.') const;
+        boost::int64_t getInt64(const String& path, boost::int64_t default_, const typename String::value_type delim = '.') const;
+        boost::uint64_t getUInt64(const String& path, boost::uint64_t default_, const typename String::value_type delim = '.') const;
+        double getReal(const String& path, double default_, const typename String::value_type delim = '.') const;
+
         /** Insert the value into this object at the given path. Unlike
          *  manipulating objects directly, this uses a 'path' to the
          *  destination, creating objects along the way if they don't
@@ -720,6 +732,8 @@ bool BasicValue<Config>::contains(const String& path, const typename String::val
     }
 
 
+// Shortcut accessors
+
 template<class Config>
 const typename BasicValue<Config>::String& BasicValue<Config>::getString(const String& path, const typename String::value_type delim) const {
     return get(path, delim).getString();
@@ -770,6 +784,72 @@ boost::uint64_t BasicValue<Config>::getUInt64(const String& path, const typename
 template<class Config>
 double BasicValue<Config>::getReal(const String& path, const typename String::value_type delim) const {
     return get(path, delim).getReal();
+}
+
+
+// Shortcut accessors with defaults
+template<class Config>
+const typename BasicValue<Config>::String& BasicValue<Config>::getString(const String& path, const String& default_, const typename String::value_type delim) const {
+    if (!contains(path, delim)) return default_;
+    const BasicValue& val = get(path, delim);
+    if (val.type() != STRING_TYPE) return default_;
+    return val.getString();
+}
+
+template<class Config>
+const typename BasicValue<Config>::Object& BasicValue<Config>::getObject(const String& path, const Object& default_, const typename String::value_type delim) const {
+    if (!contains(path, delim)) return default_;
+    const BasicValue& val = get(path, delim);
+    if (val.type() != OBJECT_TYPE) return default_;
+    return val.getObject();
+}
+
+template<class Config>
+const typename BasicValue<Config>::Array& BasicValue<Config>::getArray(const String& path, const Array& default_, const typename String::value_type delim) const {
+    if (!contains(path, delim)) return default_;
+    const BasicValue& val = get(path, delim);
+    if (val.type() != ARRAY_TYPE) return default_;
+    return val.getArray();
+}
+
+template<class Config>
+bool BasicValue<Config>::getBool(const String& path, bool default_, const typename String::value_type delim) const {
+    if (!contains(path, delim)) return default_;
+    const BasicValue& val = get(path, delim);
+    if (val.type() != BOOL_TYPE) return default_;
+    return val.getBool();
+}
+
+template<class Config>
+int BasicValue<Config>::getInt(const String& path, int default_, const typename String::value_type delim) const {
+    if (!contains(path, delim)) return default_;
+    const BasicValue& val = get(path, delim);
+    if (val.type() != INT_TYPE) return default_;
+    return val.getInt();
+}
+
+template<class Config>
+boost::int64_t BasicValue<Config>::getInt64(const String& path, boost::int64_t default_, const typename String::value_type delim) const {
+    if (!contains(path, delim)) return default_;
+    const BasicValue& val = get(path, delim);
+    if (val.type() != INT_TYPE) return default_;
+    return val.getInt64();
+}
+
+template<class Config>
+boost::uint64_t BasicValue<Config>::getUInt64(const String& path, boost::uint64_t default_, const typename String::value_type delim) const {
+    if (!contains(path, delim)) return default_;
+    const BasicValue& val = get(path, delim);
+    if (val.type() != INT_TYPE) return default_;
+    return val.getUInt64();
+}
+
+template<class Config>
+double BasicValue<Config>::getReal(const String& path, double default_, const typename String::value_type delim) const {
+    if (!contains(path, delim)) return default_;
+    const BasicValue& val = get(path, delim);
+    if (val.type() != REAL_TYPE) return default_;
+    return val.getReal();
 }
 
 
