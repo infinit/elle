@@ -25,7 +25,7 @@ BUILDDIR="$SCRIPTDIR/$ARCH/build"
 	mkdir -p "$BUILDDIR" || die "Cannot create $BUILDDIR directory"
 )
 
-cd "$SCRIPTDIR/$ARCH" || die "Cannot cd to $SCRIPTDIR/$ARCH" directory"
+cd "$SCRIPTDIR/$ARCH" || die "Cannot cd to $SCRIPTDIR/$ARCH directory"
 
 #############################################################################
 # OpenSSL
