@@ -55,14 +55,14 @@ namespace json_spirit {
         };
 
         typedef Config Config_type;
-        typedef typename Config::String_type String_type;
+        typedef typename Config::String_type String;
         typedef typename Config::Object_type Object;
         typedef typename Config::Array_type Array;
-        typedef typename String_type::const_pointer Const_str_ptr;  // eg const char*
+        typedef typename String::const_pointer Const_str_ptr;  // eg const char*
 
         BasicValue();  // creates null value
         BasicValue( Const_str_ptr      value );
-        BasicValue( const String_type& value );
+        BasicValue( const String& value );
         BasicValue( const Object&      value );
         BasicValue( const Array&       value );
         BasicValue( bool               value );
@@ -88,7 +88,7 @@ namespace json_spirit {
         bool is_uint64() const;
         bool is_null() const;
 
-        const String_type& get_str()    const;
+        const String&      get_str()    const;
         const Object&      get_obj()    const;
         const Array&       get_array()  const;
         bool               get_bool()   const;
@@ -110,7 +110,7 @@ namespace json_spirit {
         void check_type( const Type vtype ) const;
 
         typedef boost::variant< Null, boost::recursive_wrapper< Object >, boost::recursive_wrapper< Array >,
-                                String_type, bool, boost::int64_t, double, boost::uint64_t > Variant;
+                                String, bool, boost::int64_t, double, boost::uint64_t > Variant;
 
         Variant v_;
 
@@ -206,12 +206,12 @@ namespace json_spirit {
 
     template< class Config >
     BasicValue< Config >::BasicValue( const Const_str_ptr value )
-    :  v_( String_type( value ) )
+    :  v_( String( value ) )
     {
     }
 
     template< class Config >
-    BasicValue< Config >::BasicValue( const String_type& value )
+    BasicValue< Config >::BasicValue( const String& value )
     :   v_( value )
     {
     }
@@ -339,7 +339,7 @@ namespace json_spirit {
     {
         check_type( STRING_TYPE );
 
-        return *boost::get< String_type >( &v_ );
+        return *boost::get< String >( &v_ );
     }
 
     template< class Config >
@@ -480,7 +480,7 @@ namespace json_spirit {
         }
 
         template< class Value >
-        typename Value::String_type get_value( const Value& value, Type_to_type< typename Value::String_type > )
+        typename Value::String get_value( const Value& value, Type_to_type< typename Value::String > )
         {
             return value.get_str();
         }

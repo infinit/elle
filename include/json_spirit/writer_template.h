@@ -374,9 +374,9 @@ namespace json_spirit
     // const string json_str = write( value, pretty_print );
     //
     template< class Value_type >
-    typename Value_type::String_type write_string( const Value_type& value, unsigned int options = 0 )
+    typename Value_type::String write_string( const Value_type& value, unsigned int options = 0 )
     {
-        typedef typename Value_type::String_type::value_type Char_type;
+        typedef typename Value_type::String::value_type Char_type;
 
         std::basic_ostringstream< Char_type > os;
 

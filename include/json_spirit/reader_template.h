@@ -427,7 +427,7 @@ namespace json_spirit
             {
                 using namespace spirit_namespace;
 
-                typedef typename Value_type::String_type::value_type Char_type;
+                typedef typename Value_type::String::value_type Char_type;
 
                 // first we convert the semantic action class methods to functors with the
                 // parameter signature expected by spirit
