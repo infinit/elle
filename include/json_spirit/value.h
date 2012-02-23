@@ -120,6 +120,23 @@ namespace json_spirit {
         // Object-specific utility methods based on paths such as
         // 'foo.bar.baz' rather than having to traverse manually.
 
+        /** Read a value from a path within this object.
+         *
+         *  \param path the path to the value to access
+         *  \return a reference to the requested value
+         *  \throw PathError if this value is not an object or one of the
+         *         objects along the path does not exist or is not an object
+         */
+        BasicValue& get(const String& path, const typename String::value_type delim = '.');
+        /** Read a value from a path within this object.
+         *
+         *  \param path the path to the value to access
+         *  \return a reference to the requested value
+         *  \throw PathError if this value is not an object or one of the
+         *         objects along the path does not exist or is not an object
+         */
+        const BasicValue& get(const String& path, const typename String::value_type delim = '.') const;
+
         /** Insert the value into this object at the given path. Unlike
          *  manipulating objects directly, this uses a 'path' to the
          *  destination, creating objects along the way if they don't
@@ -172,6 +189,59 @@ namespace json_spirit {
 
     private:
 
+#ifndef IGNORE_FOR_DOCUMENTATION
+        // Helper for path functions which provides an iterator interface for
+        // splitting a path into parts and traversing them
+        struct PathIterator {
+            // The path passed in must remain valid for the entire use of the
+            // PathIterator, it isn't copied
+            PathIterator(const String& path_, const typename String::value_type delim_)
+             : path(path_), delim(delim_), prev_delim_pos(-1), delim_pos(0)
+            {
+                // prev_delim_pos = -1 so when we search at prev_delim_pos+1 for
+                // the next delimiter, it'll do the right thing by search from
+                // the start of the string. Note that we need to be careful with
+                // this since this could mean prev_delim_pos == npos.
+
+                // delim_pos just needs to be non-npos here so finished()
+                // returns false, even if this is an empty string. The value
+                // doesn't matter since as soon as we try to look at the next
+                // value we'll just overwrite it.
+            }
+
+            // Get the next part of the path. The return value is the subpath
+            // and, if we've reached the end of the path, subsequent calls to
+            // finished() will return true.
+            String next() {
+                assert(!finished());
+
+                delim_pos = path.find(delim, prev_delim_pos+1);
+                // We should never have delim_pos == npos because of the outer
+                // check for stop_pos
+                String subpath;
+                if (delim_pos == String::npos)
+                    subpath = path.substr(prev_delim_pos+1);
+                else
+                    subpath = path.substr(prev_delim_pos+1, delim_pos-prev_delim_pos-1);
+
+                if (subpath.empty())
+                    throw PathError(path, subpath, "Found empty subpath");
+
+                prev_delim_pos = delim_pos;
+                return subpath;
+            }
+
+            bool finished() const {
+                return (prev_delim_pos == String::npos && delim_pos == String::npos);
+            }
+
+            const String& path;
+            const typename String::value_type delim;
+            std::size_t prev_delim_pos;
+            std::size_t delim_pos;
+        };
+#endif
+
         bool insert_put_impl(const String& path, const BasicValue& val, const typename String::value_type delim, bool force_val);
 
         void check_type( const Type vtype ) const;
@@ -181,6 +251,7 @@ namespace json_spirit {
 
         Variant v_;
 
+#ifndef IGNORE_FOR_DOCUMENTATION
         class Variant_converter_visitor : public boost::static_visitor< Variant >
         {
         public:
@@ -203,6 +274,7 @@ namespace json_spirit {
               }
         };
     };
+#endif
 
     // map objects
 
@@ -548,31 +620,71 @@ namespace json_spirit {
     }
 
     template< class Config >
+    BasicValue<Config>& BasicValue< Config >::get(const String& path, const typename String::value_type delim) {
+        if (!isObject())
+            throw PathError(path, "<root>", "Value isn't an object.");
+
+        Object* obj = &(getObject());
+
+        PathIterator path_it(path, delim);
+        do {
+            String subpath = path_it.next();
+
+            // We need to find the element in the object either way
+            typename Object::iterator sub_obj_it = obj->find(subpath);
+            if (sub_obj_it == obj->end())
+                throw PathError(path, subpath, "Path component not found");
+
+            // Then we either extract the next object, or the result value
+            if (!path_it.finished())
+                obj = &(sub_obj_it->second.getObject());
+            else
+                return sub_obj_it->second;
+        } while(!path_it.finished());
+
+        // Shouldn't get here, just have the return to make the compiler happy.
+        throw PathError(path, "", "Shouldn't have reached this point.");
+    }
+
+    template< class Config >
+    const BasicValue<Config>& BasicValue< Config >::get(const String& path, const typename String::value_type delim) const {
+        if (!isObject())
+            throw PathError(path, "<root>", "Value isn't an object.");
+
+        const Object* obj = &(getObject());
+
+        PathIterator path_it(path, delim);
+        do {
+            String subpath = path_it.next();
+
+            // We need to find the element in the object either way
+            typename Object::const_iterator sub_obj_it = obj->find(subpath);
+            if (sub_obj_it == obj->end())
+                throw PathError(path, subpath, "Path component not found");
+
+            // Then we either extract the next object, or the result value
+            if (!path_it.finished())
+                obj = &(sub_obj_it->second.getObject());
+            else
+                return sub_obj_it->second;
+        } while(!path_it.finished());
+
+        // Shouldn't get here, just have the return to make the compiler happy.
+        throw PathError(path, "", "Shouldn't have reached this point.");
+    }
+
+    template< class Config >
     bool BasicValue< Config >::insert_put_impl(const String& path, const BasicValue& val, const typename String::value_type delim, bool force_val) {
         if (!isObject())
             throw PathError(path, "<root>", "Value isn't an object.");
 
         Object* obj = &(getObject());
 
-        // We need to stop before we process the last path component
-        // because the last one represents the actual value we're
-        // inserting.
-        std::size_t stop_pos = path.rfind(delim);
-
-        // If we have delimiters, process them to ensure they have
-        // objects.
-        if (stop_pos != String::npos) {
-            // And these track our progress moving forwards through the path
-            std::size_t prev_delim_pos = -1, delim_pos = 0;
-            do {
-                delim_pos = path.find(delim, prev_delim_pos+1);
-                String subpath;
-                // We should never have delim_pos == npos because of the outer
-                // check for stop_pos
-                subpath = path.substr(prev_delim_pos+1, delim_pos-prev_delim_pos-1);
-
-                if (subpath.empty())
-                    throw PathError(path, subpath, "Found empty subpath");
+        PathIterator path_it(path, delim);
+        do {
+            String subpath = path_it.next();
+            if (!path_it.finished()) {
+                // Not the last component, get the next subobject
 
                 // Insert a new object. If an object was already
                 // there, we just get back the existing object to work
@@ -582,17 +694,17 @@ namespace json_spirit {
                 if (!sub_obj_it->second.isObject())
                     throw PathError(path, subpath, "Path component isn't an object.");
                 obj = &(sub_obj_it->second.getObject());
+            }
+            else {
+                // Finally, insert the value
+                if (force_val)
+                    obj->erase(subpath);
+                return obj->insert( std::make_pair(subpath, val) ).second;
+            }
+        } while(!path_it.finished());
 
-                prev_delim_pos = delim_pos;
-            } while(prev_delim_pos != stop_pos);
-        }
-
-        // Finally, insert the value
-        String last_subpath = (stop_pos != String::npos ? path.substr(stop_pos+1) : path);
-        if (force_val)
-            obj->erase( last_subpath );
-        bool inserted = obj->insert( std::make_pair(last_subpath, val) ).second;
-        return inserted;
+        // Shouldn't get here, just have the return to make the compiler happy.
+        return false;
     }
 
     template< class Config >

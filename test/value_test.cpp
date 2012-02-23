@@ -349,6 +349,68 @@ namespace
         check_wrong_type_exceptions< double >( Value::REAL_TYPE );
     }
 
+void test_path_get() {
+    // Construct a hierarchy of objects for tests
+    const Object bar = map_list_of( "a", 1 )( "b", 2 );
+    const Object foo = map_list_of( "bar", Value(bar) )( "c", 3 );
+    const Object obj1 = map_list_of( "foo", Value(foo))( "d", 4 );
+    const Value v1(obj1);
+
+    // Top level get of a value
+    const Value& dval = v1.get("d");
+    assert_eq(dval.type(), Value::INT_TYPE);
+    assert_eq(dval.getInt(), 4);
+
+    // Two level
+    const Value& cval = v1.get("foo.c");
+    assert_eq(cval.type(), Value::INT_TYPE);
+    assert_eq(cval.getInt(), 3);
+
+    // Three level
+    const Value& aval = v1.get("foo.bar.a");
+    assert_eq(aval.type(), Value::INT_TYPE);
+    assert_eq(aval.getInt(), 1);
+
+    // Mutable access
+    Value v2(obj1);
+    Value& subval1 = v2.get("foo.bar");
+    assert_eq(subval1.type(), Value::OBJECT_TYPE);
+    subval1.insert("x", "val");
+    assert_eq(subval1.getObject()["x"].getString(), "val");
+}
+
+void check_get_path_error_exception(const Value& v, const std::string& path, const Value::PathError& expected_error) {
+    try {
+        v.get(path);
+    }
+    catch(const Value::PathError& e) {
+        assert_eq(expected_error, e);
+        return;
+    }
+    assert(false);
+}
+
+void test_path_get_exceptions() {
+    // Construct a hierarchy of objects for tests
+    const Object bar = map_list_of( "a", 1 )( "b", 2 );
+    const Object foo = map_list_of( "bar", Value(bar) )( "c", 3 );
+    const Object obj1 = map_list_of( "foo", Value(foo))( "d", 4 );
+    const Value v1(obj1);
+
+    // Non-object
+    const Value vint(2);
+    check_get_path_error_exception(vint, "x", Value::PathError("x", "<root>"));
+
+    // Non-existent path component
+    check_get_path_error_exception(v1, "shazaam", Value::PathError("shazaam", "shazaam"));
+
+    // Empty subpath
+    check_get_path_error_exception(v1, "foo..a", Value::PathError("foo..a", ""));
+
+    // Non-object in path
+    check_get_path_error_exception(v1, "foo.d.c", Value::PathError("foo.d.c", "d"));
+}
+
 void test_path_insert() {
     Object n;
     Value v1(n);
@@ -598,6 +660,8 @@ void json_spirit::test_value()
     test_is_uint64();
     test_an_int_is_a_real();
     test_wrong_type_exceptions();
+    test_path_get();
+    test_path_get_exceptions();
     test_path_insert();
     test_path_put();
     test_path_insert_error();
