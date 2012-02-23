@@ -52,10 +52,11 @@ set(INFINIT_EXTERNAL_LIBRARIES
 	${INFINIT_QJSON_SHARED_LIBRARIES}
 )
 
-add_custom_target(make_external_libraries)
+add_custom_target(make_external_libraries ALL)
 add_custom_command(
 	TARGET
 		make_external_libraries
+	PRE_BUILD
 	COMMAND
 		./make_libraries.sh ${INFINIT_ARCH}
 	WORKING_DIRECTORY
@@ -71,7 +72,7 @@ cmake_minimum_required(VERSION 2.6)
 cmake_policy(SET CMP0009 NEW)
 
 
-find_package(Qt4 4.8.0 REQUIRED QtCore QtNetwork)
+find_package(Qt4 4.6.0 REQUIRED QtCore QtNetwork)
 set(QT_DONT_USE_QTGUI true)
 include(${QT_USE_FILE})
 include_directories(${QT_INCLUDES})
@@ -136,6 +137,7 @@ add_executable(8infinit
   _infinit.cc
 )
 add_dependencies(8infinit make_external_libraries)
+add_dependencies(infinit make_external_libraries)
 target_link_libraries(8infinit
 	infinit elle etoile nucleus lune agent hole horizon
 )
