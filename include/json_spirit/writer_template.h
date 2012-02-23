@@ -190,11 +190,11 @@ namespace json_spirit
         {
             switch( value.type() )
             {
-              case Value_type::OBJECT_TYPE:   output( value.get_obj() );   break;
-              case Value_type::ARRAY_TYPE: output( value.get_array() ); break;
-              case Value_type::STRING_TYPE:   output( value.get_str() );   break;
-              case Value_type::BOOL_TYPE:  output( value.get_bool() );  break;
-              case Value_type::REAL_TYPE:  output( value.get_real() );  break;
+              case Value_type::OBJECT_TYPE:   output( value.getObject() );   break;
+              case Value_type::ARRAY_TYPE: output( value.getArray() ); break;
+              case Value_type::STRING_TYPE:   output( value.getString() );   break;
+              case Value_type::BOOL_TYPE:  output( value.getBool() );  break;
+              case Value_type::REAL_TYPE:  output( value.getReal() );  break;
               case Value_type::INT_TYPE:   output_int( value );         break;
               case Value_type::NULL_TYPE:  os_ << "null";               break;
               default: assert( false );
@@ -215,13 +215,13 @@ namespace json_spirit
 
         void output_int( const Value_type& value )
         {
-            if( value.is_uint64() )
+            if( value.isUInt64() )
             {
-                os_ << value.get_uint64();
+                os_ << value.getUInt64();
             }
             else
             {
-               os_ << value.get_int64();
+               os_ << value.getInt64();
             }
         }
 

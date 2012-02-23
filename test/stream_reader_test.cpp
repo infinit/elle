@@ -45,10 +45,10 @@ namespace
             const bool ok = reader.read( v );
             assert_eq( ok, true );
             assert_eq( v.type(), ValueType::ARRAY_TYPE );
-            assert_eq( v.get_array().size(), expected_result.size() );
-            for( vector< int >::size_type i = 0; i < v.get_array().size(); ++i )
+            assert_eq( v.getArray().size(), expected_result.size() );
+            for( vector< int >::size_type i = 0; i < v.getArray().size(); ++i )
             {
-                assert_eq( v.get_array()[i], expected_result[i] );
+                assert_eq( v.getArray()[i], expected_result[i] );
             }
         }
 
@@ -60,10 +60,10 @@ namespace
             {
                 reader.read( v );
                 assert_eq( v.type(), ValueType::ARRAY_TYPE );
-                assert_eq( v.get_array().size(), expected_result.size() );
-                for( vector< int >::size_type i = 0; i < v.get_array().size(); ++i )
+                assert_eq( v.getArray().size(), expected_result.size() );
+                for( vector< int >::size_type i = 0; i < v.getArray().size(); ++i )
                 {
-                    assert_eq( v.get_array()[i], expected_result[i] );
+                    assert_eq( v.getArray()[i], expected_result[i] );
                 }
             }
             catch( ... )

@@ -340,14 +340,14 @@ namespace json_spirit
             }
             else if( current_p_->type() == Value_type::ARRAY_TYPE )
             {
-                current_p_->get_array().push_back( value );
+                current_p_->getArray().push_back( value );
 
-                return &current_p_->get_array().back();
+                return &current_p_->getArray().back();
             }
 
             assert( current_p_->type() == Value_type::OBJECT_TYPE );
 
-            return &Config_type::add( current_p_->get_obj(), name_, value );
+            return &Config_type::add( current_p_->getObject(), name_, value );
         }
 
         Value_type& value_;             // this is the object or array that is being created

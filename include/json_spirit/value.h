@@ -29,6 +29,10 @@ namespace json_spirit {
 
     struct Null{};
 
+/** BasicValue represents a JSON value. It can contain all the normal
+ *  JSON datatypes: null, numbers, bools, strings, arrays, and other
+ *  objects. Objects and arrays are filled with other BasicValues.
+ */
     template< class Config >    // Config determines whether the value uses std::string or std::wstring and
                                 // whether JSON Objects are represented as vectors or maps
     class BasicValue
@@ -85,23 +89,23 @@ namespace json_spirit {
 
         Type type() const;
 
-        bool is_uint64() const;
-        bool is_null() const;
+        bool isUInt64() const;
+        bool isNull() const;
 
-        const String&      get_str()    const;
-        const Object&      get_obj()    const;
-        const Array&       get_array()  const;
-        bool               get_bool()   const;
-        int                get_int()    const;
-        boost::int64_t     get_int64()  const;
-        boost::uint64_t    get_uint64() const;
-        double             get_real()   const;
+        const String&      getString()    const;
+        String& getString();
+        const Object&      getObject()    const;
+        Object& getObject();
+        const Array&       getArray()  const;
+        Array&  getArray();
+        bool               getBool()   const;
+        int                getInt()    const;
+        boost::int64_t     getInt64()  const;
+        boost::uint64_t    getUInt64() const;
+        double             getReal()   const;
 
-        Object& get_obj();
-        Array&  get_array();
-
-        template< typename T > T get_value() const;  // example usage: int    i = value.get_value< int >();
-                                                     // or             double d = value.get_value< double >();
+        template< typename T > T getValue() const;  // example usage: int    i = value.getValue< int >();
+                                                     // or             double d = value.getValue< double >();
 
         static const BasicValue null;
 
@@ -301,7 +305,7 @@ namespace json_spirit {
     template< class Config >
     typename BasicValue<Config>::Type BasicValue< Config >::type() const
     {
-        if( is_uint64() )
+        if( isUInt64() )
         {
             return INT_TYPE;
         }
@@ -310,13 +314,13 @@ namespace json_spirit {
     }
 
     template< class Config >
-    bool BasicValue< Config >::is_uint64() const
+    bool BasicValue< Config >::isUInt64() const
     {
         return v_.which() == UINT64_TYPE;
     }
 
     template< class Config >
-    bool BasicValue< Config >::is_null() const
+    bool BasicValue< Config >::isNull() const
     {
         return type() == NULL_TYPE;
     }
@@ -335,7 +339,7 @@ namespace json_spirit {
     }
 
     template< class Config >
-    const typename Config::String_type& BasicValue< Config >::get_str() const
+    const typename Config::String_type& BasicValue< Config >::getString() const
     {
         check_type( STRING_TYPE );
 
@@ -343,7 +347,15 @@ namespace json_spirit {
     }
 
     template< class Config >
-    const typename BasicValue< Config >::Object& BasicValue< Config >::get_obj() const
+    typename BasicValue< Config >::String& BasicValue< Config >::getString()
+    {
+        check_type( STRING_TYPE );
+
+        return *boost::get< String >( &v_ );
+    }
+
+    template< class Config >
+    const typename BasicValue< Config >::Object& BasicValue< Config >::getObject() const
     {
         check_type( OBJECT_TYPE );
 
@@ -351,7 +363,15 @@ namespace json_spirit {
     }
 
     template< class Config >
-    const typename BasicValue< Config >::Array& BasicValue< Config >::get_array() const
+    typename BasicValue< Config >::Object& BasicValue< Config >::getObject()
+    {
+        check_type( OBJECT_TYPE );
+
+        return *boost::get< Object >( &v_ );
+    }
+
+    template< class Config >
+    const typename BasicValue< Config >::Array& BasicValue< Config >::getArray() const
     {
         check_type( ARRAY_TYPE );
 
@@ -359,7 +379,15 @@ namespace json_spirit {
     }
 
     template< class Config >
-    bool BasicValue< Config >::get_bool() const
+    typename BasicValue< Config >::Array& BasicValue< Config >::getArray()
+    {
+        check_type( ARRAY_TYPE );
+
+        return *boost::get< Array >( &v_ );
+    }
+
+    template< class Config >
+    bool BasicValue< Config >::getBool() const
     {
         check_type( BOOL_TYPE );
 
@@ -367,46 +395,46 @@ namespace json_spirit {
     }
 
     template< class Config >
-    int BasicValue< Config >::get_int() const
+    int BasicValue< Config >::getInt() const
     {
         check_type( INT_TYPE );
 
-        return static_cast< int >( get_int64() );
+        return static_cast< int >( getInt64() );
     }
 
     template< class Config >
-    boost::int64_t BasicValue< Config >::get_int64() const
+    boost::int64_t BasicValue< Config >::getInt64() const
     {
         check_type( INT_TYPE );
 
-        if( is_uint64() )
+        if( isUInt64() )
         {
-            return static_cast< boost::int64_t >( get_uint64() );
+            return static_cast< boost::int64_t >( getUInt64() );
         }
 
         return boost::get< boost::int64_t >( v_ );
     }
 
     template< class Config >
-    boost::uint64_t BasicValue< Config >::get_uint64() const
+    boost::uint64_t BasicValue< Config >::getUInt64() const
     {
         check_type( INT_TYPE );
 
-        if( !is_uint64() )
+        if( !isUInt64() )
         {
-            return static_cast< boost::uint64_t >( get_int64() );
+            return static_cast< boost::uint64_t >( getInt64() );
         }
 
         return boost::get< boost::uint64_t >( v_ );
     }
 
     template< class Config >
-    double BasicValue< Config >::get_real() const
+    double BasicValue< Config >::getReal() const
     {
         if( type() == INT_TYPE )
         {
-            return is_uint64() ? static_cast< double >( get_uint64() )
-                               : static_cast< double >( get_int64() );
+            return isUInt64() ? static_cast< double >( getUInt64() )
+                               : static_cast< double >( getInt64() );
         }
 
         check_type( REAL_TYPE );
@@ -414,21 +442,6 @@ namespace json_spirit {
         return boost::get< double >( v_ );
     }
 
-    template< class Config >
-    typename BasicValue< Config >::Object& BasicValue< Config >::get_obj()
-    {
-        check_type( OBJECT_TYPE );
-
-        return *boost::get< Object >( &v_ );
-    }
-
-    template< class Config >
-    typename BasicValue< Config >::Array& BasicValue< Config >::get_array()
-    {
-        check_type( ARRAY_TYPE );
-
-        return *boost::get< Array >( &v_ );
-    }
 
     // converts a C string, ie. 8 bit char array, to a string object
     //
@@ -458,49 +471,49 @@ namespace json_spirit {
         template< class Value >
         int get_value( const Value& value, Type_to_type< int > )
         {
-            return value.get_int();
+            return value.getInt();
         }
 
         template< class Value >
         boost::int64_t get_value( const Value& value, Type_to_type< boost::int64_t > )
         {
-            return value.get_int64();
+            return value.getInt64();
         }
 
         template< class Value >
         boost::uint64_t get_value( const Value& value, Type_to_type< boost::uint64_t > )
         {
-            return value.get_uint64();
+            return value.getUInt64();
         }
 
         template< class Value >
         double get_value( const Value& value, Type_to_type< double > )
         {
-            return value.get_real();
+            return value.getReal();
         }
 
         template< class Value >
         typename Value::String get_value( const Value& value, Type_to_type< typename Value::String > )
         {
-            return value.get_str();
+            return value.getString();
         }
 
         template< class Value >
         typename Value::Array get_value( const Value& value, Type_to_type< typename Value::Array > )
         {
-            return value.get_array();
+            return value.getArray();
         }
 
         template< class Value >
         typename Value::Object get_value( const Value& value, Type_to_type< typename Value::Object > )
         {
-            return value.get_obj();
+            return value.getObject();
         }
 
         template< class Value >
         bool get_value( const Value& value, Type_to_type< bool > )
         {
-            return value.get_bool();
+            return value.getBool();
         }
     }
 
@@ -508,7 +521,7 @@ namespace json_spirit {
 
     template< class Config >
     template< typename T >
-    T BasicValue< Config >::get_value() const
+    T BasicValue< Config >::getValue() const
     {
         return internal_::get_value( *this, internal_::Type_to_type< T >() );
     }

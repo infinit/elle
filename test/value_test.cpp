@@ -40,8 +40,8 @@ namespace
         assert_eq ( v1, v2 );
         assert_neq( v1, v3 );
 
-        assert_eq( v1.get_obj(), obj_1 );
-        assert_eq( v3.get_obj(), obj_3 );
+        assert_eq( v1.getObject(), obj_1 );
+        assert_eq( v3.getObject(), obj_3 );
     }
 
     void test_array_value()
@@ -58,8 +58,8 @@ namespace
         assert_eq ( v1, v2 );
         assert_neq( v1, v3 );
 
-        assert_eq( v1.get_array(), array_1 );
-        assert_eq( v3.get_array(), array_3 );
+        assert_eq( v1.getArray(), array_1 );
+        assert_eq( v3.getArray(), array_3 );
     }
 
     void test_bool_value()
@@ -72,8 +72,8 @@ namespace
         assert_eq ( v1, v2 );
         assert_neq( v1, v3 );
 
-        assert( v1.get_bool() );
-        assert( !v3.get_bool() );
+        assert( v1.getBool() );
+        assert( !v3.getBool() );
     }
 
     void test_int_value()
@@ -88,39 +88,39 @@ namespace
 
         unsigned int uint_max = INT_MAX;
 
-        assert_eq( v1.get_int(),    1 );
-        assert_eq( v1.get_int64(),  1 );
-        assert_eq( v1.get_uint64(), 1u );
-        assert_eq( v3.get_int(),    INT_MAX );
-        assert_eq( v3.get_int64(),  INT_MAX );
-        assert_eq( v3.get_uint64(), uint_max );
+        assert_eq( v1.getInt(),    1 );
+        assert_eq( v1.getInt64(),  1 );
+        assert_eq( v1.getUInt64(), 1u );
+        assert_eq( v3.getInt(),    INT_MAX );
+        assert_eq( v3.getInt64(),  INT_MAX );
+        assert_eq( v3.getUInt64(), uint_max );
 
         Value v4( max_int64 );
 
-        assert_eq( v4.get_int64(), max_int64 );
-        assert_eq( v4.get_uint64(), static_cast< uint64_t >( max_int64 ) );
+        assert_eq( v4.getInt64(), max_int64 );
+        assert_eq( v4.getUInt64(), static_cast< uint64_t >( max_int64 ) );
 
         const uint64_t max_int64_plus_1 = max_int64 + uint64_t( 1 );
 
         Value v5( max_int64_plus_1 );
 
-        assert_eq( v5.get_uint64(), max_int64_plus_1 );
+        assert_eq( v5.getUInt64(), max_int64_plus_1 );
 
         Value v6( max_uint64 );
 
-        assert_eq( v6.get_uint64(), max_uint64 );
+        assert_eq( v6.getUInt64(), max_uint64 );
 
         Value v7( 0 );
 
-        assert_eq( v7.get_int(),    0 );
-        assert_eq( v7.get_int64(),  0 );
-        assert_eq( v7.get_uint64(), 0u );
+        assert_eq( v7.getInt(),    0 );
+        assert_eq( v7.getInt64(),  0 );
+        assert_eq( v7.getUInt64(), 0u );
 
         Value v8( -1 );
 
-        assert_eq( v8.get_int(),   -1 );
-        assert_eq( v8.get_int64(), -1 );
-        assert_eq( v8.get_uint64(), max_uint64 );
+        assert_eq( v8.getInt(),   -1 );
+        assert_eq( v8.getInt64(), -1 );
+        assert_eq( v8.getUInt64(), max_uint64 );
     }
 
     void test_real_value()
@@ -133,8 +133,8 @@ namespace
         assert_eq ( v1, v2 );
         assert_neq( v1, v3 );
 
-        assert_eq( v1.get_real(), 1.0 );
-        assert_eq( v3.get_real(), 2.0 );
+        assert_eq( v1.getReal(), 1.0 );
+        assert_eq( v3.getReal(), 2.0 );
     }
 
     void test_null_value()
@@ -143,16 +143,16 @@ namespace
         Value v2;
 
         assert_eq( v1.type(), Value::NULL_TYPE );
-        assert_eq( v1.is_null(), true );
+        assert_eq( v1.isNull(), true );
         assert_eq( v1, v2 );
-        assert_eq( v1.is_null(), true );
-        assert_eq( Value( 1 ).is_null(), false );
+        assert_eq( v1.isNull(), true );
+        assert_eq( Value( 1 ).isNull(), false );
     }
 
     template< typename T >
     void test_get_value( const T& t )
     {
-        assert_eq( Value( t ).get_value< T >(), t );
+        assert_eq( Value( t ).getValue< T >(), t );
     }
 
     void test_get_value()
@@ -175,12 +175,12 @@ namespace
 
     void assert_array_eq( const Value& v, const Array& a )
     {
-        assert_eq( v.get_array(), a );
+        assert_eq( v.getArray(), a );
     }
 
     void assert_obj_eq( const Value& v, const Object& obj )
     {
-        assert_eq( v.get_obj(), obj );
+        assert_eq( v.getObject(), obj );
     }
 
     template< typename T >
@@ -194,11 +194,11 @@ namespace
         assert_eq( v1, v2 );
         assert_eq( v1, v3 );
 
-        assert_eq( v2.get_value< T >(), t );
-        assert_eq( v3.get_value< T >(), t );
+        assert_eq( v2.getValue< T >(), t );
+        assert_eq( v3.getValue< T >(), t );
 
-        assert_eq( v1.is_uint64(), v2.is_uint64() );
-        assert_eq( v1.is_uint64(), v3.is_uint64() );
+        assert_eq( v1.isUInt64(), v2.isUInt64() );
+        assert_eq( v1.isUInt64(), v3.isUInt64() );
     }
 
     void check_copying_null()
@@ -223,7 +223,7 @@ namespace
             assert_array_eq( v1, array_1 );
             assert_array_eq( v2, array_1 );
 
-            v1.get_array()[0] = 3;
+            v1.getArray()[0] = 3;
 
             assert_array_eq( v1, list_of(3)(2) );
             assert_array_eq( v2, array_1 );
@@ -282,15 +282,15 @@ namespace
 
         assert_eq( obj.size(), 2u );
 
-        assert_eq( obj.find( "name 1" )->second.get_int(), 1 );
-        assert_eq( obj.find( "name 2" )->second.get_str(), "two" );
+        assert_eq( obj.find( "name 1" )->second.getInt(), 1 );
+        assert_eq( obj.find( "name 2" )->second.getString(), "two" );
 #endif
     }
 
     template< typename Int >
     void check_an_int_is_a_real( Int i, bool expected_result )
     {
-        assert_eq( Value( i ).is_uint64(), expected_result );
+        assert_eq( Value( i ).isUInt64(), expected_result );
     }
 
     void test_is_uint64()
@@ -303,7 +303,7 @@ namespace
     template< typename Int >
     void check_an_int_is_a_real( Int i, double expected_result )
     {
-        assert_eq( Value( i ).get_real(), expected_result );
+        assert_eq( Value( i ).getReal(), expected_result );
     }
 
     void test_an_int_is_a_real()
@@ -324,7 +324,7 @@ namespace
 
         try
         {
-            v.get_value< T >();
+            v.getValue< T >();
 
             assert( false );
         }
@@ -377,11 +377,11 @@ namespace
         {
             typedef typename Cont::value_type Cont_value_type;
             const ValueType val( cont.begin(), cont.end() );
-            const Array_type& arr = val.get_array();
+            const Array_type& arr = val.getArray();
             Cont result;
             for( unsigned int i = 0; i < arr.size(); ++i )
             {
-                result.push_back( arr[i].template get_value< Cont_value_type>() );
+                result.push_back( arr[i].template getValue< Cont_value_type>() );
             }
             assert_eq( result, cont );
         }
@@ -414,7 +414,7 @@ namespace
             {
                 variant< int, Null > variant = Null();
                 const ValueType val( variant );
-                assert( val.is_null() );
+                assert( val.isNull() );
             }
 
             vector< double > vd = list_of( 1.2 )( 1.3 );   test_variant_array_constructor< double > ( vd );
@@ -438,7 +438,7 @@ namespace
         {
             const Variant_t variant( t );
             const ValueType val( variant );
-            assert_eq( val.template get_value< T >(), t );
+            assert_eq( val.template getValue< T >(), t );
         }
 
         template< typename T, typename A, template< typename, typename > class Cont >
@@ -446,11 +446,11 @@ namespace
         {
             const variant< int, Cont< T, A > > variant = cont;
             const ValueType val( variant );
-            const Array_type& arr = val.get_array();
+            const Array_type& arr = val.getArray();
             Cont< T, A > result;
             for( unsigned int i = 0; i < arr.size(); ++i )
             {
-                result.push_back( arr[i].template get_value< T >() );
+                result.push_back( arr[i].template getValue< T >() );
             }
             assert_eq( result, cont );
         }

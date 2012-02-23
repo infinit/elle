@@ -59,23 +59,23 @@ Address read_address( const Object& obj )
 
         if( name == "house_number" )
         {
-            addr.house_number_ = value.get_int();
+            addr.house_number_ = value.getInt();
         }
         else if( name == "road" )
         {
-            addr.road_ = value.get_str();
+            addr.road_ = value.getString();
         }
         else if( name == "town" )
         {
-            addr.town_ = value.get_str();
+            addr.town_ = value.getString();
         }
         else if( name == "county" )
         {
-            addr.county_ = value.get_str();
+            addr.county_ = value.getString();
         }
         else if( name == "country" )
         {
-            addr.country_ = value.get_str();
+            addr.country_ = value.getString();
         }
         else
         {
@@ -110,13 +110,13 @@ vector< Address > read_addrs( const char* file_name )
 
     read( is, value );
 
-    const Array& addr_array = value.get_array();
+    const Array& addr_array = value.getArray();
 
     vector< Address > addrs;
 
     for( unsigned int i = 0; i < addr_array.size(); ++i )
     {
-        addrs.push_back( read_address( addr_array[i].get_obj() ) );
+        addrs.push_back( read_address( addr_array[i].getObject() ) );
     }
 
     return addrs;

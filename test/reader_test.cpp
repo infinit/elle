@@ -212,13 +212,13 @@ namespace
 
             add_c_str( obj, "name 1", "value 1" );
 
-            check_eq( value.get_obj(), obj );
+            check_eq( value.getObject(), obj );
 
             read_cstr( "{\"name 1\":\"value 1\",\"name 2\":\"value 2\"}", value );
 
             add_c_str( obj, "name 2", "value 2" );
 
-            check_eq( value.get_obj(), obj );
+            check_eq( value.getObject(), obj );
 
             read_cstr( "{\n"
                        "    \"name 1\" : \"value 1\",\n"
@@ -228,7 +228,7 @@ namespace
 
             add_c_str( obj, "name 3", "value 3" );
 
-            check_eq( value.get_obj(), obj );
+            check_eq( value.getObject(), obj );
 
             check_reading( "{\n"
                             "    \"\" : \"value\",\n"
@@ -432,15 +432,15 @@ namespace
             assert_eq( ok, true );
             assert_eq( value.type(), ValueType::ARRAY_TYPE );
 
-            const Array_type arr = value.get_array();
+            const Array_type arr = value.getArray();
 
             assert_eq( arr.size(), (unsigned int)6 );
-            assert_eq( arr[0].get_real(), 1.200000000000000, 1e-16 );
-            assert_eq( arr[1].get_real(), 1.234567890123456e+125, 1e+110 );
-            assert_eq( arr[2].get_real(), -1.234000000000000e-123, 1e+108 );
-            assert_eq( arr[3].get_real(), 1.000000000000000e-123, 1e+108 );
-            assert_eq( arr[4].get_real(), 1234567890.123456, 1e-7 );
-            assert_eq( arr[5].get_real(), 123.0, 1e-13 );
+            assert_eq( arr[0].getReal(), 1.200000000000000, 1e-16 );
+            assert_eq( arr[1].getReal(), 1.234567890123456e+125, 1e+110 );
+            assert_eq( arr[2].getReal(), -1.234000000000000e-123, 1e+108 );
+            assert_eq( arr[3].getReal(), 1.000000000000000e-123, 1e+108 );
+            assert_eq( arr[4].getReal(), 1234567890.123456, 1e-7 );
+            assert_eq( arr[5].getReal(), 123.0, 1e-13 );
         }
 
         void test_from_stream( const char* json_str, bool expected_success,
@@ -491,7 +491,7 @@ namespace
 
             read_cstr( s.c_str(), value );
 
-            const Pair_type& pair( *value.get_obj().begin() );
+            const Pair_type& pair( *value.getObject().begin() );
 
             assert_eq( Config_type::get_name ( pair ), to_str( c_str ) );
             assert_eq( Config_type::get_value( pair ), to_str( c_str ) );
@@ -524,7 +524,7 @@ namespace
         {
             const ValueType v( read_cstr( c_str ) );
 
-            assert_eq( v.template get_value< T >(), expected_value );
+            assert_eq( v.template getValue< T >(), expected_value );
         }
 
         void test_values()
@@ -630,7 +630,7 @@ namespace
             {
                 read_or_throw( is, value );
 
-                assert_eq( value.get_int(), expected_values[i] );
+                assert_eq( value.getInt(), expected_values[i] );
 
                 const bool is_last( i == expected_values.size() - 1 );
 
@@ -665,7 +665,7 @@ namespace
         {
             assert_eq( value.type(), ValueType::ARRAY_TYPE );
 
-            const Array_type& arr = value.get_array();
+            const Array_type& arr = value.getArray();
 
             assert_eq( arr.size(), expected_size );
 
@@ -674,7 +674,7 @@ namespace
                 const ValueType& val = arr[i];
 
                 assert_eq( val.type(), ValueType::INT_TYPE );
-                assert_eq( val.get_int(), int( i + 1 ) );
+                assert_eq( val.getInt(), int( i + 1 ) );
             }
         }
 
@@ -737,9 +737,9 @@ namespace
         {
             const ValueType v( read_cstr( value_str ) );
 
-            assert_eq( v.get_int(),    expected_int );
-            assert_eq( v.get_int64(),  expected_int64 );
-            assert_eq( v.get_uint64(), expected_uint64 );
+            assert_eq( v.getInt(),    expected_int );
+            assert_eq( v.getInt64(),  expected_int64 );
+            assert_eq( v.getUInt64(), expected_uint64 );
         }
 
         void test_uint64()
@@ -758,17 +758,17 @@ namespace
 
             assert_eq( value.type(), ValueType::ARRAY_TYPE );
 
-            const Array_type& a = value.get_array();
+            const Array_type& a = value.getArray();
 
-            assert_eq( a[0].get_str(), to_str( "foo" ) );
-            assert_eq( a[1].get_bool(), true );
-            assert_eq( a[2].get_bool(), false );
-            assert_eq( a[3].get_int(), 1 );
-            assert_eq( a[3].get_int64(), 1 );
-            assert_eq( a[3].get_uint64(), 1u );
-            assert_eq( a[3].get_real(), 1.0 );
-            assert_eq( a[4].get_real(), 12.3 );
-            assert_eq( a[5].is_null(), true );
+            assert_eq( a[0].getString(), to_str( "foo" ) );
+            assert_eq( a[1].getBool(), true );
+            assert_eq( a[2].getBool(), false );
+            assert_eq( a[3].getInt(), 1 );
+            assert_eq( a[3].getInt64(), 1 );
+            assert_eq( a[3].getUInt64(), 1u );
+            assert_eq( a[3].getReal(), 1.0 );
+            assert_eq( a[4].getReal(), 12.3 );
+            assert_eq( a[5].isNull(), true );
         }
 
         void run_tests()
@@ -793,7 +793,7 @@ namespace
 
         test_read( L"[\"\\uABCD\"]", value );
 
-        const wstring s( value.get_array()[0].get_str() );
+        const wstring s( value.getArray()[0].getString() );
 
         assert_eq( s.length(), static_cast< wstring::size_type >( 1u ) );
         assert_eq( s[0], 0xABCD );
@@ -807,7 +807,7 @@ namespace
 
         test_read( "[\"" + s + "\"]", value );
 
-        assert_eq( value.get_array()[0].get_str(), "äöüß" );
+        assert_eq( value.getArray()[0].getString(), "äöüß" );
     }
 
     void test_extended_ascii()
