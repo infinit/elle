@@ -39,6 +39,16 @@ are built:
     JSON_SPIRIT_BUILD_DEMOS - set to FALSE to disable demos
     JSON_SPIRIT_BUILD_TESTS - set to FALSE to disable tests
 
+Documentation
+-------------
+
+You can generate documentation from the source code using doxygen:
+
+    doxygen doc/Doxyfile
+
+The output will be placed in doc/[type], e.g. doc/html if you
+generated HTML documentation (the default).
+
 References
 ----------
 

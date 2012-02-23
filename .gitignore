@@ -1,3 +1,6 @@
 
 # Build output
 build/out/
+
+# Generated docs
+doc/html
