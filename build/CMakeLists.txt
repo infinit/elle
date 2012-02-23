@@ -86,18 +86,10 @@ INSTALL(
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
 )
-INSTALL(
-  FILES
-  ${JSON_SPIRIT_DIR}/json_spirit.h
-  ${JSON_SPIRIT_DIR}/error_position.h
-  ${JSON_SPIRIT_DIR}/reader.h
-  ${JSON_SPIRIT_DIR}/reader_template.h
-  ${JSON_SPIRIT_DIR}/stream_reader.h
-  ${JSON_SPIRIT_DIR}/value.h
-  ${JSON_SPIRIT_DIR}/writer.h
-  ${JSON_SPIRIT_DIR}/writer_template.h
-  DESTINATION include)
-
+INSTALL(DIRECTORY
+  ${JSON_SPIRIT_INCLUDE_DIR}/
+  DESTINATION include
+)
 
 #########################
 # JSON Test
