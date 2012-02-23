@@ -121,26 +121,6 @@ namespace json_spirit
         };
     };
 
-    // vector objects
-
-    template< class Config >
-    struct Pair_impl
-    {
-        typedef typename Config::String_type String_type;
-        typedef typename Config::Value_type Value_type;
-
-        Pair_impl()
-        {
-        }
-
-        Pair_impl( const String_type& name, const Value_type& value );
-
-        bool operator==( const Pair_impl& lhs ) const;
-
-        String_type name_;
-        Value_type value_;
-    };
-
     // map objects
 
 #if defined( JSON_SPIRIT_VALUE_ENABLED ) || defined( JSON_SPIRIT_WVALUE_ENABLED )
@@ -432,21 +412,6 @@ namespace json_spirit
         check_type( array_type );
 
         return *boost::get< Array >( &v_ );
-    }
-
-    template< class Config >
-    Pair_impl< Config >::Pair_impl( const String_type& name, const Value_type& value )
-    :   name_( name )
-    ,   value_( value )
-    {
-    }
-
-    template< class Config >
-    bool Pair_impl< Config >::operator==( const Pair_impl< Config >& lhs ) const
-    {
-        if( this == &lhs ) return true;
-
-        return ( name_ == lhs.name_ ) && ( value_ == lhs.value_ );
     }
 
     // converts a C string, ie. 8 bit char array, to a string object
