@@ -155,6 +155,8 @@ namespace json_spirit
         str += exp;
     }
 
+#ifndef IGNORE_FOR_DOCUMENTATION
+
     // this class generates the JSON text,
     // it keeps track of the indentation level etc.
     //
@@ -353,6 +355,8 @@ namespace json_spirit
         bool single_line_arrays_;
         boost::io::basic_ios_all_saver< Char_type > ios_saver_;  // so that ostream state is reset after control is returned to the caller
     };
+
+#endif
 
     // writes JSON Value to a stream, e.g.
     //

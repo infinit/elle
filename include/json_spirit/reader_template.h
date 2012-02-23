@@ -191,6 +191,8 @@ namespace json_spirit
         return get_str( tmp.begin(), tmp.end() );
     }
 
+#ifndef IGNORE_FOR_DOCUMENTATION
+
     // this class's methods get called by the spirit parse resulting
     // in the creation of a JSON object or array
     //
@@ -356,6 +358,8 @@ namespace json_spirit
         String_type name_;              // of current name/value pair
     };
 
+#endif
+
     template< typename Iter_type >
     void throw_error( spirit_namespace::position_iterator< Iter_type > i, const std::string& reason )
     {
@@ -367,6 +371,8 @@ namespace json_spirit
     {
        throw reason;
     }
+
+#ifndef IGNORE_FOR_DOCUMENTATION
 
     // the spirit grammer
     //
@@ -518,6 +524,8 @@ namespace json_spirit
         Semantic_actions_t& actions_;
     };
 
+#endif
+
     template< class Iter_type, class Value_type >
     void add_posn_iter_and_read_range_or_throw( Iter_type begin, Iter_type end, Value_type& value )
     {
@@ -528,6 +536,8 @@ namespace json_spirit
 
         read_range_or_throw( posn_begin, posn_end, value );
     }
+
+#ifndef IGNORE_FOR_DOCUMENTATION
 
     template< class Istream_type >
     struct Multi_pass_iters
@@ -547,6 +557,8 @@ namespace json_spirit
         Mp_iter begin_;
         Mp_iter end_;
     };
+
+#endif
 
     // reads a JSON Value from a pair of input iterators throwing an exception on invalid input, e.g.
     //

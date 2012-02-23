@@ -429,7 +429,8 @@ namespace json_spirit
         return result;
     }
 
-    //
+
+#ifndef IGNORE_FOR_DOCUMENTATION
 
     namespace internal_
     {
@@ -486,6 +487,8 @@ namespace json_spirit
             return value.get_bool();
         }
     }
+
+#endif
 
     template< class Config >
     template< typename T >
