@@ -94,7 +94,7 @@ echo "**** msgpack up-to-date"
 	cd -
 	cp jsoncpp/buildscons/*/src/lib_json/*.a build/lib/libjson.a
 	cp jsoncpp/buildscons/*/src/lib_json/*.so build/lib/libjson.so
-	cp -r jsoncpp/include/json build/include
+	cp -r jsoncpp/include/json build/include/jsoncpp
 )
 
 echo "**** jsoncpp up-to-date"
