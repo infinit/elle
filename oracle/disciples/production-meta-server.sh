@@ -54,6 +54,8 @@ do
 	fi
 	try=`expr $try + 1`
 	echo "Retrying to start meta server (try $try)"
-	cat "$SCRIPTDIR"/screenlog.0
-	rm "$SCRIPTDIR"/screenlog.0
+	[ -f "$SCRIPTDIR"/screenlog.0 ] && (
+		cat "$SCRIPTDIR"/screenlog.0
+		rm "$SCRIPTDIR"/screenlog.0
+	)
 done
