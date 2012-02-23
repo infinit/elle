@@ -88,7 +88,6 @@ INSTALL(
   ${JSON_SPIRIT_DIR}/reader.h
   ${JSON_SPIRIT_DIR}/reader_template.h
   ${JSON_SPIRIT_DIR}/stream_reader.h
-  ${JSON_SPIRIT_DIR}/utils.h
   ${JSON_SPIRIT_DIR}/value.h
   ${JSON_SPIRIT_DIR}/writer.h
   ${JSON_SPIRIT_DIR}/writer_template.h
