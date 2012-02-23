@@ -149,7 +149,6 @@ function gen_build_dir()
     infinit_arch=`basename $BUILDDIR`
     echo "---[ configuration for ${BUILDDIR}:"
 
-    ./libraries/make_libraries.sh "$infinit_arch"
     rm -rf "$BUILDDIR"
     mkdir -p "$BUILDDIR" &&
     cd "$BUILDDIR" &&
