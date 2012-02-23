@@ -120,6 +120,14 @@ namespace json_spirit {
         // Object-specific utility methods based on paths such as
         // 'foo.bar.baz' rather than having to traverse manually.
 
+        /** Check if the given path exists within this object.
+         *
+         *  \param path the path to the value to access
+         *  \return true if the path exists, false otherwise
+         *  \throw PathError for path related errors that aren't due to missing
+         *         objects, e.g. improperly formatted paths.
+         */
+        bool contains(const String& path, const typename String::value_type delim = '.') const;
         /** Read a value from a path within this object.
          *
          *  \param path the path to the value to access
@@ -632,6 +640,30 @@ namespace json_spirit {
 
         return boost::get< double >( v_ );
     }
+
+template<class Config>
+bool BasicValue<Config>::contains(const String& path, const typename String::value_type delim) const {
+    if (!isObject())
+        throw PathError(path, "<root>", "Value isn't an object.");
+
+    const Object* obj = &(getObject());
+
+    PathIterator path_it(path, delim);
+    do {
+        String subpath = path_it.next();
+
+        // We need to find the element in the object either way
+        typename Object::const_iterator sub_obj_it = obj->find(subpath);
+        if (sub_obj_it == obj->end())
+            return false;
+
+        // Then we either extract the next object, or the result value
+        if (!path_it.finished())
+            obj = &(sub_obj_it->second.getObject());
+    } while(!path_it.finished());
+
+    return true;
+}
 
     template< class Config >
     BasicValue<Config>& BasicValue< Config >::get(const String& path, const typename String::value_type delim) {

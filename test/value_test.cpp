@@ -349,6 +349,26 @@ namespace
         check_wrong_type_exceptions< double >( Value::REAL_TYPE );
     }
 
+void test_path_contains() {
+    // Construct a hierarchy of objects for tests
+    const Object bar = map_list_of( "a", 1 )( "b", 2 );
+    const Object foo = map_list_of( "bar", Value(bar) )( "c", 3 );
+    const Object obj1 = map_list_of( "foo", Value(foo))( "d", 4 );
+    const Value v1(obj1);
+
+    // Top level get of a value
+    assert_eq(v1.contains("d"), true);
+    assert_eq(v1.contains("not there"), false);
+
+    // Two level
+    assert_eq(v1.contains("foo.c"), true);
+    assert_eq(v1.contains("foo.not there"), false);
+
+    // Three level
+    assert_eq(v1.contains("foo.bar.a"), true);
+    assert_eq(v1.contains("foo.bar.not there"), false);
+}
+
 void test_path_get() {
     // Construct a hierarchy of objects for tests
     const Object bar = map_list_of( "a", 1 )( "b", 2 );
@@ -685,6 +705,7 @@ void json_spirit::test_value()
     test_is_uint64();
     test_an_int_is_a_real();
     test_wrong_type_exceptions();
+    test_path_contains();
     test_path_get();
     test_path_get_exceptions();
     test_path_get_helpers();
