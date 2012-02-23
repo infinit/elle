@@ -137,6 +137,20 @@ namespace json_spirit {
          */
         const BasicValue& get(const String& path, const typename String::value_type delim = '.') const;
 
+        // Utilities that perform a get by path, then extract the
+        // actual value.
+        const String& getString(const String& path, const typename String::value_type delim = '.') const;
+        String& getString(const String& path, const typename String::value_type delim = '.');
+        const Object& getObject(const String& path, const typename String::value_type delim = '.') const;
+        Object& getObject(const String& path, const typename String::value_type delim = '.');
+        const Array& getArray(const String& path, const typename String::value_type delim = '.') const;
+        Array& getArray(const String& path, const typename String::value_type delim = '.');
+        bool getBool(const String& path, const typename String::value_type delim = '.') const;
+        int getInt(const String& path, const typename String::value_type delim = '.') const;
+        boost::int64_t getInt64(const String& path, const typename String::value_type delim = '.') const;
+        boost::uint64_t getUInt64(const String& path, const typename String::value_type delim = '.') const;
+        double getReal(const String& path, const typename String::value_type delim = '.') const;
+
         /** Insert the value into this object at the given path. Unlike
          *  manipulating objects directly, this uses a 'path' to the
          *  destination, creating objects along the way if they don't
@@ -672,6 +686,61 @@ namespace json_spirit {
         // Shouldn't get here, just have the return to make the compiler happy.
         throw PathError(path, "", "Shouldn't have reached this point.");
     }
+
+
+template<class Config>
+const typename BasicValue<Config>::String& BasicValue<Config>::getString(const String& path, const typename String::value_type delim) const {
+    return get(path, delim).getString();
+}
+template<class Config>
+typename BasicValue<Config>::String& BasicValue<Config>::getString(const String& path, const typename String::value_type delim) {
+    return get(path, delim).getString();
+}
+
+template<class Config>
+const typename BasicValue<Config>::Object& BasicValue<Config>::getObject(const String& path, const typename String::value_type delim) const {
+    return get(path, delim).getObject();
+}
+template<class Config>
+typename BasicValue<Config>::Object& BasicValue<Config>::getObject(const String& path, const typename String::value_type delim) {
+    return get(path, delim).getObject();
+}
+
+template<class Config>
+const typename BasicValue<Config>::Array& BasicValue<Config>::getArray(const String& path, const typename String::value_type delim) const {
+    return get(path, delim).getArray();
+}
+template<class Config>
+typename BasicValue<Config>::Array& BasicValue<Config>::getArray(const String& path, const typename String::value_type delim) {
+    return get(path, delim).getArray();
+}
+
+template<class Config>
+bool BasicValue<Config>::getBool(const String& path, const typename String::value_type delim) const {
+    return get(path, delim).getBool();
+}
+
+template<class Config>
+int BasicValue<Config>::getInt(const String& path, const typename String::value_type delim) const {
+    return get(path, delim).getInt();
+}
+
+template<class Config>
+boost::int64_t BasicValue<Config>::getInt64(const String& path, const typename String::value_type delim) const {
+    return get(path, delim).getInt64();
+}
+
+template<class Config>
+boost::uint64_t BasicValue<Config>::getUInt64(const String& path, const typename String::value_type delim) const {
+    return get(path, delim).getUInt64();
+}
+
+template<class Config>
+double BasicValue<Config>::getReal(const String& path, const typename String::value_type delim) const {
+    return get(path, delim).getReal();
+}
+
+
 
     template< class Config >
     bool BasicValue< Config >::insert_put_impl(const String& path, const BasicValue& val, const typename String::value_type delim, bool force_val) {

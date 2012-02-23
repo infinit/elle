@@ -411,6 +411,31 @@ void test_path_get_exceptions() {
     check_get_path_error_exception(v1, "foo.d.c", Value::PathError("foo.d.c", "d"));
 }
 
+void test_path_get_helpers() {
+    // Test the helpers that extract values directly by path. Provide
+    // one of each type
+    const Object obj = map_list_of("a", 2)("b", 3);
+    const Array arr = list_of(2)(3);
+    const Object foo = map_list_of
+        ("string", Value("a string"))
+        ("object", obj)
+        ("array", arr)
+        ("bool", true)
+        ("int", 42)
+        ("real", 52.3)
+        ;
+    Value v(foo);
+
+    assert_eq(v.getString("string"), "a string");
+    assert_eq(v.getObject("object"), obj);
+    assert_eq(v.getArray("array"), arr);
+    assert_eq(v.getBool("bool"), true);
+    assert_eq(v.getInt("int"), 42);
+    assert_eq(v.getInt64("int"), (boost::int64_t)42);
+    assert_eq(v.getUInt64("int"), (boost::uint64_t)42);
+    assert_eq(v.getReal("real"), 52.3);
+}
+
 void test_path_insert() {
     Object n;
     Value v1(n);
@@ -662,6 +687,7 @@ void json_spirit::test_value()
     test_wrong_type_exceptions();
     test_path_get();
     test_path_get_exceptions();
+    test_path_get_helpers();
     test_path_insert();
     test_path_put();
     test_path_insert_error();
