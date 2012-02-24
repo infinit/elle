@@ -7,7 +7,7 @@ include(${QT_USE_FILE})
 add_definitions(${QT_DEFINITIONS})
 
 file(GLOB watchdog_srcs *.cc)
-file(GLOB watchdog_moc_hdrs MetaClient.hh)
+#file(GLOB watchdog_moc_hdrs MetaClient.hh)
 
 QT4_WRAP_CPP(watchdog_moc_srcs ${watchdog_moc_hdrs})
 

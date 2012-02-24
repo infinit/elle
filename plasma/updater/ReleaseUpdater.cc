@@ -142,7 +142,7 @@ void ReleaseUpdater::_DownloadNextResource()
 void ReleaseUpdater::_OnDownloadError(QNetworkReply::NetworkError error)
 {
   std::cout << "Got error code = " << error << std::endl;
-  emit releaseUpdated(false);
+  //emit releaseUpdated(false);
 }
 
 bool ReleaseUpdater::_ProcessResource(QNetworkReply& reply)

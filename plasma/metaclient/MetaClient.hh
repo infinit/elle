@@ -36,6 +36,8 @@ namespace plasma
     {
       std::string token;
       std::string fullname;
+      std::string email;
+      std::string identity;
     };
 
     ///

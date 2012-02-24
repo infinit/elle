@@ -30,7 +30,8 @@ using namespace plasma::updater;
 Application::Application(int ac, char** av) :
   QApplication(ac, av, true),
   _releaseUpdater(*this),
-  _identityUpdater(*this)
+  _identityUpdater(*this),
+  _watchdogProcess(this)
 {}
 
 Application::~Application()
@@ -58,8 +59,10 @@ void Application::_OnReleaseUpdated(bool)
     return;
   this->_identityUpdater.Start();
   this->connect(
-    &this->_identityUpdater, SIGNAL(identityUpdated(bool)),
-    this, SLOT(_OnIdentityUpdated(bool))
+    &this->_identityUpdater,
+    SIGNAL(identityUpdated(std::string const&, std::string const&)),
+    this,
+    SLOT(_OnIdentityUpdated(std::string const&, std::string const&))
   );
 }
 
@@ -78,8 +81,35 @@ bool Application::_CheckInfinitHome()
 
   return true;
 }
-void Application::_OnIdentityUpdated(bool)
+
+void Application::_OnIdentityUpdated(std::string const& token,
+                                     std::string const& identity)
 {
-  std::cout << "Identity updated, quitting...\n";
+  QDir home_directory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
+  QString watchdogPath = home_directory.filePath("binaries/watchdog");
+  if (home_directory.exists("infinit.wtg"))
+    {
+      std::cout << "Found running infinit watchdog\n";
+      assert(false);
+    }
+  this->_watchdogProcess.start(watchdogPath);
+  this->_watchdogProcess.setReadChannel(QProcess::StandardOutput);
+  this->connect(
+      &this->_watchdogProcess, SIGNAL(readyReadStandardOutput()),
+      this, SLOT(_OnWatchdogLaunched())
+  );
+  this->_watchdogProcess.write(token.c_str());
+  this->_watchdogProcess.write(" ");
+  this->_watchdogProcess.write(identity.c_str());
+  this->_watchdogProcess.closeWriteChannel();
+  std::cout << "Waiting watchdog readiness\n";
+}
+
+
+void Application::_OnWatchdogLaunched()
+{
+  std::cout << "Watchdog response:"
+            << QString(this->_watchdogProcess.readAll()).toStdString()
+            << std::endl;
   this->quit();
 }

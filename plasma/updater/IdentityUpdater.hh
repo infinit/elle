@@ -52,7 +52,8 @@ namespace plasma
       void _DoLogin();
 
     signals:
-      void identityUpdated(bool);
+      void identityUpdated(std::string const& token,
+                           std::string const& identity);
     };
 
   }

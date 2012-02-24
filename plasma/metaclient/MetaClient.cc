@@ -120,13 +120,16 @@ namespace {
 
     FILLER(LoginResponse)
     {
-      if (map.contains("token") && map.contains("fullname"))
-        {
-          response.token = getstr(map, "token");
-          response.fullname = getstr(map, "fullname");
-          return response.token.size() > 0 && response.fullname.size() > 0;
-        }
-      return false;
+        response.token = getstr(map, "token");
+        response.fullname = getstr(map, "fullname");
+        response.email = getstr(map, "email");
+        response.identity = getstr(map, "identity");
+        return (
+            response.token.size() > 0 &&
+            response.fullname.size() > 0 &&
+            response.identity.size() > 0 &&
+            response.email.size() > 0
+        );
     }
 
 

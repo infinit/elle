@@ -15,7 +15,6 @@
 #include "plasma/common/resources.hh"
 
 #include "Application.hh"
-#include "MetaClient.hh"
 
 using namespace plasma::watchdog;
 
@@ -24,14 +23,11 @@ using namespace plasma::watchdog;
 //
 
 Application::Application(int ac, char* av[]) :
-  QApplication(ac, av),
-  _meta(nullptr)
+  QApplication(ac, av)
 {}
 
 Application::~Application()
 {
-  delete this->_meta;
-  this->_meta = nullptr;
 }
 
 //
@@ -40,7 +36,6 @@ Application::~Application()
 
 int Application::Exec()
 {
-  this->_meta = new MetaClient(INFINIT_META_URL);
   return this->exec();
 }
 

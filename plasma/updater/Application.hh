@@ -18,6 +18,7 @@
 #include <string>
 
 #include <QApplication>
+#include <QProcess>
 
 #include "IdentityUpdater.hh"
 #include "ReleaseUpdater.hh"
@@ -42,6 +43,7 @@ namespace plasma {
     private:
       ReleaseUpdater  _releaseUpdater;
       IdentityUpdater _identityUpdater;
+      QProcess        _watchdogProcess;
 
     public:
       Application(int ac, char** av);
@@ -51,7 +53,9 @@ namespace plasma {
       bool _CheckInfinitHome();
     private slots:
       void _OnReleaseUpdated(bool);
-      void _OnIdentityUpdated(bool);
+      void _OnIdentityUpdated(std::string const& token,
+                              std::string const& identity);
+      void _OnWatchdogLaunched();
     };
 
   }

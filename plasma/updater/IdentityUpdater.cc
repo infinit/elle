@@ -33,6 +33,7 @@ IdentityUpdater::IdentityUpdater(QApplication& app) :
 
 void IdentityUpdater::Start()
 {
+  std::cout << "IdentityUpdater::Start()\n";
   this->_loginDialog.show();
   this->connect(
     &this->_loginDialog, SIGNAL(accepted()),
@@ -41,6 +42,7 @@ void IdentityUpdater::Start()
 }
 void IdentityUpdater::_DoLogin()
 {
+  std::cout << "DO LOGIN\n";
   std::string login, password;
   this->_loginDialog.GetLoginPassword(login, password);
   if (!login.size() || !password.size())
@@ -65,10 +67,11 @@ void IdentityUpdater::_OnLogin(plasma::metaclient::LoginResponse const& response
     {
       std::cout << "Login success: "
                 << response.fullname << ' '
+                << response.email << ' '
                 << response.token
                 << '\n';
       this->_loginDialog.hide();
-      emit identityUpdated(true);
+      emit identityUpdated(response.token, response.identity);
     }
   else
     {

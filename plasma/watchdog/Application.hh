@@ -22,8 +22,6 @@ namespace plasma
   namespace watchdog
   {
 
-    class MetaClient;
-
 //
 // ---------- classes ---------------------------------------------------------
 //
@@ -33,9 +31,6 @@ namespace plasma
     ///
     class Application : public QApplication
     {
-    private:
-      MetaClient* _meta;
-
     public:
       Application(int ac, char* av[]);
       ~Application();
