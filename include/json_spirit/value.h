@@ -74,9 +74,15 @@ namespace json_spirit {
         BasicValue( const Object&      value );
         BasicValue( const Array&       value );
         BasicValue( bool               value );
-        BasicValue( int                value );
+        BasicValue( boost::int8_t value );
+        BasicValue( boost::uint8_t value );
+        BasicValue( boost::int16_t value );
+        BasicValue( boost::uint16_t value );
+        BasicValue( boost::int32_t value );
+        BasicValue( boost::uint32_t value );
         BasicValue( boost::int64_t     value );
         BasicValue( boost::uint64_t    value );
+        BasicValue( float value );
         BasicValue( double             value );
 
         template< class Iter >
@@ -413,7 +419,38 @@ namespace json_spirit {
     }
 
     template< class Config >
-    BasicValue< Config >::BasicValue( int value )
+    BasicValue< Config >::BasicValue( boost::int8_t value )
+    :   v_( static_cast< boost::int64_t >( value ) )
+    {
+    }
+
+    template< class Config >
+    BasicValue< Config >::BasicValue( boost::uint8_t value )
+    :   v_( static_cast< boost::int64_t >( value ) )
+    {
+    }
+
+    template< class Config >
+    BasicValue< Config >::BasicValue( boost::int16_t value )
+    :   v_( static_cast< boost::int64_t >( value ) )
+    {
+    }
+
+    template< class Config >
+    BasicValue< Config >::BasicValue( boost::uint16_t value )
+    :   v_( static_cast< boost::int64_t >( value ) )
+    {
+    }
+
+
+    template< class Config >
+    BasicValue< Config >::BasicValue( boost::int32_t value )
+    :   v_( static_cast< boost::int64_t >( value ) )
+    {
+    }
+
+    template< class Config >
+    BasicValue< Config >::BasicValue( boost::uint32_t value )
     :   v_( static_cast< boost::int64_t >( value ) )
     {
     }
@@ -433,6 +470,12 @@ namespace json_spirit {
     template< class Config >
     BasicValue< Config >::BasicValue( double value )
     :   v_( value )
+    {
+    }
+
+    template< class Config >
+    BasicValue< Config >::BasicValue( float value )
+    :   v_( static_cast< double >( value ) )
     {
     }
 
