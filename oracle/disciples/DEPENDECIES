@@ -4,6 +4,7 @@ Python packages:
 	* genshi
 	* poster
 	* httplib2
+	* flup (for fcgi)
 
 git clone git://github.com/hotgloupi/troll
 
