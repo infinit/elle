@@ -1,6 +1,49 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 
+"""Infinit web server
+
+The creosus web server allow users to subscribe into
+infinit, download latest installer and manage their
+account, their networks and their devices.
+
+It works by talking directly to the API server, with
+the little help of Pythia. Pythia is a simple API
+client, and holds a special token (soon something better)
+when admin actions are required.
+
+To locally start the creosus web server, you just have
+to launch it as you would with a classic web.py app :
+
+    # Listening on 127.0.0.1:8080
+    ./creosus-server
+
+    # Listening on 127.0.0.1:8888
+    ./creosus-server 8888
+
+
+    # Listening on 0.0.0.0:8080
+    ./creosus-server 0.0.0.0
+
+    # Listening on 0.0.0.0:8888
+    ./creosus-server 0:8888
+
+
+In production server with nginx for example,
+you might want to launch it with the home made script :
+
+    ./production-creosus-server.sh
+
+This script use spawn-fcgi program to connect the web
+server and the web app. It also give the environment
+variable 'ENABLE_FASTCGI' to the application, so it
+will actually activate it (You'll need to install flup).
+
+"""
+
+
+import os
+
 import troll
 import pythia
 
@@ -18,7 +61,7 @@ conf = {
     'database': None,
     'template_dir': 'creosus/templates',
     'meta_server': pythia.constants.DEFAULT_SERVER,
-    'fastcgi': True,
+    'fastcgi': os.environ.get('ENABLE_FASTCGI', False) and True,
     'permissions': {
         'install': 'Allowed to install infinit'
     },
