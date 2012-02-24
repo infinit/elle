@@ -1,28 +1,15 @@
 #!/usr/bin/env python
 
-#
-# ---------- imports ----------------------------------------------------------
-#
+
+"""Meta server provide a JSON-RPC API to infinit
+users, networks and devices managment.
+
+"""
 
 import sys
 
 from meta.application import Application
 
-#
-# ---------- functions --------------------------------------------------------
-#
-
-def Usage():
-  print 'usage: $> ' + sys.argv[0]
-  sys.exit(1)
-
-#
-# ---------- main -------------------------------------------------------------
-#
-
 if __name__ == '__main__':
-  if len(sys.argv) != 1:
-    Usage()
-
-  app = Application("0.0.0.0")
-  app.run()
+    app = Application("0.0.0.0")
+    app.run()
