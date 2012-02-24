@@ -82,14 +82,21 @@ extern "C" PyObject* metalib_generate_identity(PyObject* self, PyObject* args)
     return nullptr;
 
 
-  Py_BEGIN_ALLOW_THREADS;
+  PyThreadState *_save;
+  _save = PyEval_SaveThread();
 
   try
     {
       auto identity = create_identity(auth_path, auth_password, login, password);
       elle::String all, pub;
-      if (identity.Save(all) != elle::StatusError &&
-          identity.pair.k.Save(pub) != elle::StatusError)
+      bool res = (
+          identity.Save(all) != elle::StatusError &&
+          identity.pair.k.Save(pub) != elle::StatusError
+      );
+      // WARNING: restore state before setting exception !
+      PyEval_RestoreThread(_save);
+
+      if (res)
         {
           ret = Py_BuildValue("(ss)", all.c_str(), pub.c_str());
         }
@@ -103,11 +110,12 @@ extern "C" PyObject* metalib_generate_identity(PyObject* self, PyObject* args)
     }
   catch (std::exception const& err)
     {
-      show();
-      PyErr_SetString(metalib_MetaError, err.what());
+      // WARNING: restore state before setting exception !
+      PyEval_RestoreThread(_save);
+      //show();
+      char const* error_string = err.what();
+      PyErr_SetString(metalib_MetaError, error_string);
     }
-
-  Py_END_ALLOW_THREADS;
 
   return ret;
 }
