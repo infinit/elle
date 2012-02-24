@@ -51,6 +51,11 @@ static PyMethodDef _metalib_methods[] = {
   {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
+
+char const* const _metalib_doc =
+  "User friendly interface for infinit files\n"
+;
+
 PyMODINIT_FUNC initmetalib(void)
 {
   if (elle::Elle::Initialize() == elle::StatusError)
@@ -64,7 +69,11 @@ PyMODINIT_FUNC initmetalib(void)
       return;
     }
 
-  PyObject* module = Py_InitModule(METALIB_MOD_NAME, _metalib_methods);
+  PyObject* module = Py_InitModule3(
+      METALIB_MOD_NAME,
+      _metalib_methods,
+      _metalib_doc
+  );
 
   char error_name[] = "metalib.MetaError";
 
