@@ -14,6 +14,8 @@ class Account(Page):
                 'devices': [device_id1, ...],
                 'networks': [network_id1, ...]
             }
+
+        TODO: Get other user information (identity public key)
     """
 
     def GET(self):
