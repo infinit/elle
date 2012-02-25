@@ -76,7 +76,7 @@ uptodate "${OPENSSL_LIBRARIES}" ||
 
     ./config                                                            \
         --prefix="${WORKDDIR}"                                          \
-	--openssldir="${WORKDIR}"                                       \
+	--openssldir="${WORKDIR}/etc/ssl"                               \
 	zlib no-asm no-krb5 shared ||
     die "unable to configure"
 

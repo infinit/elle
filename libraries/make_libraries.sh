@@ -51,9 +51,7 @@ then
 		echo "**** Build OpenSSL"
 		cd $openssl_dir && \
 		./config --prefix="$BUILDDIR"                       \
-				 --openssldir="$BUILDDIR/openssl"           \
-				 no-shared no-asm no-threads zlib           \
-				 -fPIC && \
+				 --openssldir="$BUILDDIR/openssl" && \
 		make install && \
 		cd -
 	) || die "Couldn't build openssl"

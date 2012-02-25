@@ -46,9 +46,7 @@ uptodate "${OPENSSL_LIBRARIES}" ||
 
     ./config                                                            \
         --prefix="${WORKDDIR}"                                          \
-	--openssldir="${WORKDIR}"                                       \
-	no-shared no-asm no-threads zlib                                \
-	-fPIC ||
+	--openssldir="${WORKDIR}/etc/ssl" ||
     die "unable to configure"
 
     make install ||
