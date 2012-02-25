@@ -9,9 +9,6 @@
 int     main(int ac, char* av[])
 {
 
-  std::cout << "BIET" << std::endl;
-  plasma::watchdog::Application app(ac, av);
-
   auto buf = new char[BUF_SIZE];
   size_t sz = 0;
   do {
@@ -36,8 +33,10 @@ int     main(int ac, char* av[])
   std::string token(buf, idx);
   idx += 1;
   std::string identity(buf + idx, sz - idx);
+  delete [] buf;
   std::cout << "Started with token=" << token
             << " id=" << identity << std::endl;
 
+  plasma::watchdog::Application app(ac, av);
   return app.Exec();
 }
