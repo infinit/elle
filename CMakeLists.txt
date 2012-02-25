@@ -3,9 +3,10 @@ project(Infinit C CXX)
 set(INFINIT_VERSION_MAJOR "0")
 set(INFINIT_VERSION_MINOR "1")
 set(INFINIT_VERSION "${INFINIT_VERSION_MAJOR}.${INFINIT_VERSION_MINOR}")
-message("-- BUILD infinit ${INFINIT_VERSION} for ${INFINIT_ARCH}")
 
-set(INFINIT_LIBRARIES_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/libraries/${INFINIT_ARCH}/build")
+message("---[ building infinit-${INFINIT_VERSION} for ${INFINIT_PLATFORM}")
+
+set(INFINIT_LIBRARIES_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/libraries/${INFINIT_PLATFORM}/build")
 set(INFINIT_OPENSSL_STATIC_LIBRARIES
 	${INFINIT_LIBRARIES_PREFIX}/lib/libssl.a
 	${INFINIT_LIBRARIES_PREFIX}/lib/libcrypto.a
@@ -58,7 +59,7 @@ add_custom_command(
 		make_external_libraries
 	PRE_BUILD
 	COMMAND
-		./make_libraries.sh ${INFINIT_ARCH}
+		./make_libraries.sh ${INFINIT_PLATFORM}
 	WORKING_DIRECTORY
 		${CMAKE_CURRENT_SOURCE_DIR}/libraries
 )

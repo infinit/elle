@@ -145,8 +145,8 @@ CXXFLAGS="${CPPFLAGS} ${CXXFLAGS}"
 
 function gen_build_dir()
 (
-    local infinit_arch
-    infinit_arch=`basename $BUILDDIR`
+    local infinit_platform
+    infinit_platform=`basename $BUILDDIR`
     echo "---[ configuration for ${BUILDDIR}:"
 
     rm -rf "$BUILDDIR"
@@ -156,7 +156,7 @@ function gen_build_dir()
         -DCMAKE_VERBOSE_MAKEFILE=$VERBOSE \
         -DCMAKE_COLOR_MAKEFILE=$COLOR \
         -DCMAKE_INSTALL_PREFIX="$PREFIX" \
-        -DINFINIT_ARCH="$infinit_arch" \
+        -DINFINIT_PLATFORM="$infinit_platform" \
         $@ \
         "$CMAKE_GENERATOR" "$ROOTDIR"
 )
