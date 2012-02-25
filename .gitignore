@@ -1,7 +1,7 @@
 CMakeLists.txt.shared
 CMakeLists.txt.user
 agent
-build*
+build
 comet
 config.hh
 config.mk
