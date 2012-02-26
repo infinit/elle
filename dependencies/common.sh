@@ -63,7 +63,9 @@ QJSON_LIBRARIES=""
 # ---------- imports ----------------------------------------------------------
 #
 
-source "${PLATFORMDIR}/common.sh"
+if [ -d "${PLATFORMDIR}" ] ; then
+    source "${PLATFORMDIR}/common.sh"
+fi
 
 #
 # ---------- functions --------------------------------------------------------

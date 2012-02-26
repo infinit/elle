@@ -23,7 +23,7 @@ PLATFORM="${1}"
 
 BASEDIR="${ROOTDIR}"
 
-source "common.sh"
+source "${BASEDIR}/common.sh"
 
 #
 # ---------- entry point ------------------------------------------------------
