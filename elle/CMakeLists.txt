@@ -133,7 +133,7 @@ target_link_libraries(elle
 add_dependencies(elle make_external_libraries)
 
 IF(INFINIT_LINUX)
-	TARGET_LINK_LIBRARIES(elle dl)
+  TARGET_LINK_LIBRARIES(elle dl)
 ELSEIF(INFINIT_MACOSX)
   TARGET_LINK_LIBRARIES(elle dl)
 ELSEIF(INFINIT_WINDOWS)
