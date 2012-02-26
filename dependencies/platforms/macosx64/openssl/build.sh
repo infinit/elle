@@ -74,10 +74,10 @@ uptodate "${OPENSSL_LIBRARIES}" ||
     cd "${OPENSSL_NAME}" ||
     die "unable to enter the directory"
 
-    ./config                                                            \
+    ./Configure                                                         \
         --prefix="${WORKDDIR}"                                          \
-	--openssldir="${WORKDIR}/etc/ssl"                               \
-	zlib no-asm no-krb5 shared ||
+	--openssldir="${WORKDIR}"                                       \
+	zlib no-asm no-krb5 shared darwin64-x86_64-cc ||
     die "unable to configure"
 
     make install ||
