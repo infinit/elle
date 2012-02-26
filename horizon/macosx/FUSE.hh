@@ -90,4 +90,22 @@ struct fuse
   /* [...] */
 };
 
+/// XXX
+#define __u64 uint64_t
+#define __s64 int64_t
+#define __u32 uint32_t
+#define __s32 int32_t
+#define __u16 uint16_t
+
+struct fuse_in_header {
+  __u32   len;
+  __u32   opcode;
+  __u64   unique;
+  __u64   nodeid;
+  __u32   uid;
+  __u32   gid;
+  __u32   pid;
+  __u32   padding;
+};
+
 #endif

@@ -17,6 +17,9 @@
 
 #include <hole/Hole.hh>
 
+// XXX
+#include <sys/event.h>
+
 namespace horizon
 {
   namespace macosx
