@@ -38,7 +38,7 @@ uptodate "${QJSON_LIBRARIES}" ||
     cd "${BUILDDIR}" ||
     die "unable to move to the build directory '${BUILDDIR}'"
 
-    tar xzf "${QJSON_TARBALL}" ||
+    tar xjf "${QJSON_TARBALL}" ||
     die "unable to extract the tarball"
 
     cd "${QJSON_NAME}" ||

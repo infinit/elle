@@ -14,3 +14,6 @@ nucleus
 oracle
 plasma
 satellites
+dependencies/environment.sh
+dependencies/build
+dependencies/work
