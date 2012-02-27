@@ -130,7 +130,7 @@ target_link_libraries(elle
 	z
 	readline
 )
-add_dependencies(elle make_external_libraries)
+add_dependencies(elle dependencies)
 
 IF(INFINIT_LINUX)
   TARGET_LINK_LIBRARIES(elle dl)
