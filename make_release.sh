@@ -128,7 +128,7 @@ echo "==== Creating `basename $release_tarball`"
 
 size=`du -hs "$release_tarball" | cut -f1`
 echo "==== Uploading tarball ($size)"
-scp "$release_tarball" infinit.im:/usr/local/www/infinit.im/
+scp "$release_tarball" oracle@infinit.im:www/infinit.im/
 
 echo "==== Deploying tarball"
 ssh oracle@infinit.im "cd www/infinit.im && tar xf `basename "$release_tarball"` && rm `basename "$release_tarball"`"
