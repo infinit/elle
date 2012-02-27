@@ -32,8 +32,7 @@ uptodate "${MSGPACK_LIBRARIES}" ||
 (
     rm -Rf "${BUILDDIR}/${MSGPACK_NAME}"
 
-    download "${MSGPACK_SNAPSHOT}" "${BUILDDIR}/${MSGPACK_TARBALL}" ||
-    die "unable to download the snapshot"
+    download "${MSGPACK_SNAPSHOT}" "${MSGPACK_FINGERPRINT}" "${BUILDDIR}/${MSGPACK_TARBALL}"
 
     cd "${BUILDDIR}" ||
     die "unable to move to the build directory '${BUILDDIR}'"

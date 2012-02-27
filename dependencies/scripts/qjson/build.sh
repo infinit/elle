@@ -32,8 +32,7 @@ uptodate "${QJSON_LIBRARIES}" ||
 (
     rm -Rf "${BUILDDIR}/${QJSON_NAME}"
 
-    download "${QJSON_SNAPSHOT}" "${BUILDDIR}/${QJSON_TARBALL}" ||
-    die "unable to download the snapshot"
+    download "${QJSON_SNAPSHOT}" "${QJSON_FINGERPRINT}" "${BUILDDIR}/${QJSON_TARBALL}"
 
     cd "${BUILDDIR}" ||
     die "unable to move to the build directory '${BUILDDIR}'"

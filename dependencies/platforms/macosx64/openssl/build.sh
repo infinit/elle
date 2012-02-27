@@ -50,8 +50,7 @@ uptodate "${OPENSSL_LIBRARIES}" ||
 (
     rm -Rf "${BUILDDIR}/${OPENSSL_NAME}"
 
-    download "${OPENSSL_SNAPSHOT}" "${BUILDDIR}/${OPENSSL_TARBALL}" ||
-    die "unable to download the snapshot"
+    download "${OPENSSL_SNAPSHOT}" "${OPENSSL_FINGERPRINT}" "${BUILDDIR}/${OPENSSL_TARBALL}"
 
     cd "${BUILDDIR}" ||
     die "unable to move to the build directory '${BUILDDIR}'"

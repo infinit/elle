@@ -32,8 +32,7 @@ uptodate "${JSONCPP_LIBRARIES}" ||
 (
     rm -Rf "${BUILDDIR}/${JSONCPP_NAME}"
 
-    download "${JSONCPP_SNAPSHOT}" "${BUILDDIR}/${JSONCPP_TARBALL}" ||
-    die "unable to download the snapshot"
+    download "${JSONCPP_SNAPSHOT}" "${JSONCPP_FINGERPRINT}" "${BUILDDIR}/${JSONCPP_TARBALL}"
 
     cd "${BUILDDIR}" ||
     die "unable to move to the build directory '${BUILDDIR}'"
