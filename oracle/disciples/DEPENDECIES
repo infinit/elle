@@ -5,6 +5,7 @@ Python packages:
 	* poster
 	* httplib2
 	* flup (for fcgi)
+	* pymongo
 
 git clone git://github.com/hotgloupi/troll
 
