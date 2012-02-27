@@ -32,8 +32,7 @@ uptodate "${CURL_LIBRARIES}" ||
 (
     rm -Rf "${BUILDDIR}/${CURL_NAME}"
 
-    download "${CURL_SNAPSHOT}" "${BUILDDIR}/${CURL_TARBALL}" ||
-    die "unable to download the snapshot"
+    download "${CURL_SNAPSHOT}" "${CURL_FINGERPRINT}" "${BUILDDIR}/${CURL_TARBALL}"
 
     cd "${BUILDDIR}" ||
     die "unable to move to the build directory '${BUILDDIR}'"

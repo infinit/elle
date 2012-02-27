@@ -66,7 +66,7 @@ doc:
 view-doc:
 	$(BROWSER) documentation/sources/html/index.html
 
-clean:
+clear:
 	$(MAKE) -C $(BUILD) clean
 	$(RM) $(BUILD) $(CONFIG)
 
@@ -114,3 +114,7 @@ push:
 	  $(GIT) push							; \
 	  cd ..								; \
 	done
+
+clean:
+	rm -Rf build//*
+	rm -Rf dependencies/{build,work}/

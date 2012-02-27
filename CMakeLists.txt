@@ -62,10 +62,10 @@ set(INFINIT_EXTERNAL_LIBRARIES
 	${INFINIT_QJSON_SHARED_LIBRARIES}
 )
 
-add_custom_target(make_external_libraries ALL)
+add_custom_target(dependencies ALL)
 add_custom_command(
 	TARGET
-		make_external_libraries
+		dependencies
 	PRE_BUILD
 	COMMAND
 		./build.sh ${INFINIT_PLATFORM}
@@ -146,8 +146,8 @@ add_library(infinit
 add_executable(8infinit
   _infinit.cc
 )
-add_dependencies(8infinit make_external_libraries)
-add_dependencies(infinit make_external_libraries)
+add_dependencies(8infinit dependencies)
+add_dependencies(infinit dependencies)
 target_link_libraries(8infinit
 	infinit elle etoile nucleus lune agent hole horizon
 )
