@@ -19,6 +19,14 @@
 #include "passport.hh"
 #include "metalib.hh"
 
+// XXX When Qt is out, remove this
+#ifdef slots
+# undef slots
+#endif
+#ifdef slot
+# undef slot
+#endif
+
 /// metalib error
 PyObject* metalib_MetaError = nullptr;
 
