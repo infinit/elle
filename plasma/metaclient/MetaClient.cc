@@ -1,0 +1,250 @@
+//
+// ---------- header ----------------------------------------------------------
+//
+// project       plasma/metaclient
+//
+// license       infinit
+//
+// author        Raphaël Londeix   [Tue 14 Feb 2012 04:17:19 PM CET]
+//
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <cassert>
+#include <iostream>
+
+#include <QJson/Parser>
+#include <QJson/Serializer>
+
+#include "plasma/common/resources.hh"
+
+#include "MetaClient.hh"
+
+using namespace plasma::metaclient;
+
+///
+/// Handler for network responses
+///
+struct MetaClient::RequestHandler
+{
+  virtual void OnReply(QByteArray const&) = 0;
+  virtual void OnNetworkError(QNetworkReply::NetworkError) = 0;
+  virtual ~RequestHandler() {}
+};
+
+namespace {
+
+    ///
+    /// Generic response handler
+    /// will call bool Deserializer::Fill(QVariantMap const&, ResponseType&)
+    /// In charge of calling callback or errback
+    ///
+    template<typename ResponseType, typename Deserializer>
+    struct RequestHandler : MetaClient::RequestHandler
+    {
+    public:
+      typedef std::function<void(ResponseType const&)> Callback;
+      typedef MetaClient::Errback Errback;
+
+    public:
+      Callback callback;
+      Errback errback;
+
+    public:
+      RequestHandler(Callback callback, Errback errback = nullptr) :
+        callback(callback), errback(errback)
+      {
+        assert(callback != nullptr && "Null callbacks not allowed");
+      }
+
+      virtual void OnReply(QByteArray const& data)
+      {
+        QJson::Parser parser;
+        bool ok;
+
+        QVariantMap result = parser.parse(data, &ok).toMap();
+
+        if (!ok)
+          {
+            if (this->errback != nullptr)
+              this->errback(MetaClient::Error::InvalidContent, "Cannot parse json data");
+            return;
+          }
+
+        ResponseType response;
+        if (Deserializer::Fill(result, response))
+          this->callback(response);
+        else if (this->errback != nullptr)
+          this->errback(MetaClient::Error::InvalidContent, "Malformed response");
+      }
+
+      virtual void OnNetworkError(QNetworkReply::NetworkError)
+      {
+        // XXX fine grained network errors
+        if (this->errback != nullptr)
+          this->errback(MetaClient::Error::ConnectionFailure, "Network error");
+      }
+    };
+
+///
+/// Helper macro to focus on deserialize response
+/// It handles the server error
+///
+#define FILLER(cls)                                                         \
+    struct cls##Filler                                                      \
+    {                                                                       \
+      static bool Fill(QVariantMap const& map, cls& response)               \
+      {                                                                     \
+        if (!map.contains("success"))                                       \
+          return false;                                                     \
+        response.success = map["success"].toBool();                         \
+        if (!response.success)                                              \
+          {                                                                 \
+            response.error = getstr(map, "error");                          \
+            return true;                                                    \
+          }                                                                 \
+        return _Fill(map, response);                                        \
+      }                                                                     \
+                                                                            \
+      static std::string getstr(QVariantMap const& map, char const* key)    \
+      { return map[key].toString().toStdString(); }                         \
+                                                                            \
+      static bool _Fill(QVariantMap const&, cls&);                          \
+    };                                                                      \
+    bool cls##Filler::_Fill(QVariantMap const& map, cls& response)          \
+
+/////////////////////////////////////////////////////////////////////////////
+// Response deserializers defined here
+
+    FILLER(LoginResponse)
+    {
+        response.token = getstr(map, "token");
+        response.fullname = getstr(map, "fullname");
+        response.email = getstr(map, "email");
+        response.identity = getstr(map, "identity");
+        return (
+            response.token.size() > 0 &&
+            response.fullname.size() > 0 &&
+            response.identity.size() > 0 &&
+            response.email.size() > 0
+        );
+    }
+
+
+#undef FILLER
+
+///
+/// Typedef for specific request handler
+///
+#define HANDLER_TYPEDEF(cls)                                                 \
+    typedef RequestHandler<cls, cls##Filler> cls##Handler
+
+//////////////////////////////////////////////////////////////////////////////
+// Requests handlers defined here
+
+    HANDLER_TYPEDEF(LoginResponse);
+
+#undef HANDLER_TYPEDEF
+}
+
+//
+// ---------- contructors & descructors ---------------------------------------
+//
+
+MetaClient::MetaClient(QApplication& app) :
+  _network(&app)
+{
+  this->connect(
+      &this->_network, SIGNAL(finished(QNetworkReply*)),
+      this, SLOT(_OnRequestFinished(QNetworkReply*))
+  );
+}
+
+MetaClient::~MetaClient()
+{
+  if (this->_handlers.size() > 0)
+    std::cerr << "WARNING: Client closed while there are "
+              << this->_handlers.size()
+              << " request pending.\n";
+}
+
+//
+// ---------- methods  --------------------------------------------------------
+//
+
+void MetaClient::Login(std::string const& email,
+                       std::string const& password,
+                       LoginCallback callback,
+                       Errback errback)
+{
+  QVariantMap req;
+  req.insert("email", email.c_str());
+  req.insert("password", password.c_str());
+  this->_Post("/login", req, new LoginResponseHandler(callback, errback));
+}
+
+void MetaClient::_Post(std::string const& url,
+                       QVariantMap const& data,
+                       RequestHandler* handler)
+{
+  QString uri((INFINIT_META_URL + url).c_str());
+
+  QByteArray json = QJson::Serializer().serialize(data);
+  QNetworkRequest request{QUrl{uri}};
+  if (this->_token.size() > 0)
+    request.setRawHeader("Authorization", this->_token.c_str());
+  request.setRawHeader("Content-Type", "application/json");
+  auto reply = this->_network.post(request, json);
+  if (reply != nullptr)
+    {
+      this->_handlers[reply] = handler;
+    }
+  else
+    {
+      std::cerr << "Cannot create the POST request !\n";
+      delete handler;
+    }
+}
+
+void MetaClient::_Get(std::string const& url, RequestHandler* handler)
+{
+  QString uri((INFINIT_META_URL + url).c_str());
+  QNetworkRequest request{QUrl{uri}};
+  if (this->_token.size() > 0)
+    request.setRawHeader("Authorization", this->_token.c_str());
+  request.setRawHeader("Content-Type", "application/json");
+  auto reply = this->_network.get(request);
+  if (reply != nullptr)
+    {
+      this->_handlers[reply] = handler;
+    }
+  else
+    {
+      std::cerr << "Cannot create the GET request !\n";
+      delete handler;
+    }
+}
+
+void MetaClient::_OnRequestFinished(QNetworkReply* reply)
+{
+  assert(reply != nullptr);
+  auto it = this->_handlers.find(reply);
+  if (it != this->_handlers.end())
+    {
+      RequestHandler* handler = it->second;
+      assert(handler != nullptr && "Corrupter map");
+      this->_handlers.erase(it); // WARNING do not use it from here
+      if (reply->error() == QNetworkReply::NoError)
+        handler->OnReply(reply->readAll());
+      else
+        handler->OnNetworkError(reply->error());
+      delete handler;
+    }
+  else
+    {
+      std::cerr << "Cannot find any registered handler for this reply\n";
+    }
+  reply->deleteLater();
+}
