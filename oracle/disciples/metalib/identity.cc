@@ -20,7 +20,7 @@
 #endif
 #ifdef slot
 # undef slot
-#undef
+#endif
 
 
 #include "metalib.hh"
