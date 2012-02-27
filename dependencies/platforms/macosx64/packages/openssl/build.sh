@@ -46,9 +46,6 @@ source "${BASEDIR}/common.sh"
 
 FILESDIR="${PLATFORMDIR}/packages/openssl/files"
 
-echo ${FILESDIR}
-echo ${OPENSSL_LIBRARIES}
-
 uptodate "${OPENSSL_LIBRARIES}" ||
 (
     rm -Rf "${BUILDDIR}/${OPENSSL_NAME}"
