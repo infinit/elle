@@ -69,7 +69,7 @@ for dir in *
 do
 	echo "=== Prepare release for $dir platform"
 	cmake "$dir"
-	make -C "$dir"
+	make --quiet -C "$dir"
 	build_release "$dir" "$release_dir/downloads"
 done
 
@@ -119,13 +119,23 @@ fi
 which tree > /dev/null
 [ $? = 0 ] && tree -h "$release_dir"
 
-size=`du -hs "$release_dir" | cut -f1`
-echo "==== Uploading files ($size)"
-scp -r "$release_dir"/* infinit.im:/usr/local/www/infinit.im/
+release_tarball="$release_dir.tgz"
+echo "==== Creating `basename $release_tarball`"
+(
+	cd "$release_dir" &&
+	tar cjf "$release_tarball" *
+) || die "Cannot create tarball $release_tarball"
+
+size=`du -hs "$release_tarball" | cut -f1`
+echo "==== Uploading tarball ($size)"
+scp "$release_tarball" infinit.im:/usr/local/www/infinit.im/
+
+echo "==== Deploying tarball"
+ssh infinit.im "cd /usr/local/www/infinit.im && tar xf `basename "$release_tarball"` && rm `basename "$release_tarball"`"
 
 if [ $restart_server = 1 ]
 then
 	echo "==== Restarting servers"
-	ssh infinit.im sh /usr/local/www/infinit.im/production-meta-server.sh
-	ssh infinit.im sh /usr/local/www/infinit.im/production-creosus-server.sh
+	#ssh infinit.im sh /usr/local/www/infinit.im/production-meta-server.sh
+	#ssh infinit.im sh /usr/local/www/infinit.im/production-creosus-server.sh
 fi
