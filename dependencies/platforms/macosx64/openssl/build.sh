@@ -76,8 +76,8 @@ uptodate "${OPENSSL_LIBRARIES}" ||
 
     ./Configure                                                         \
         --prefix="${WORKDDIR}"                                          \
-	--openssldir="${WORKDIR}"                                       \
-	zlib no-asm no-krb5 shared darwin64-x86_64-cc ||
+        --openssldir="${WORKDIR}"                                       \
+        zlib no-asm no-krb5 shared darwin64-x86_64-cc ||
     die "unable to configure"
 
     make install ||

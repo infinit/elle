@@ -46,8 +46,8 @@ uptodate "${OPENSSL_LIBRARIES}" ||
 
     ./config                                                            \
         --prefix="${WORKDDIR}"                                          \
-	--openssldir="${WORKDIR}" ||
-    die "unable to configure"
+        --openssldir="${WORKDIR}"
+    || die "unable to configure"
 
     make install ||
     die "unable to build"
