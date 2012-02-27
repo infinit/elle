@@ -4,6 +4,17 @@ set(INFINIT_VERSION_MAJOR "0")
 set(INFINIT_VERSION_MINOR "1")
 set(INFINIT_VERSION "${INFINIT_VERSION_MAJOR}.${INFINIT_VERSION_MINOR}")
 
+#
+# configurations
+#
+if(APPLE)
+  set(INFINIT_MACOSX true)
+elseif(WIN32)
+  set(INFINIT_WINDOWS true)
+elseiF(UNIX)
+  set(INFINIT_LINUX true)
+endif()
+
 message("---[ building infinit-${INFINIT_VERSION} for ${INFINIT_PLATFORM}")
 
 set(INFINIT_LIBRARIES_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/platforms/${INFINIT_PLATFORM}/work")
@@ -92,18 +103,6 @@ set(BUILD_SHARED_LIBS OFF)
 
 include_directories(BEFORE ${INFINIT_LIBRARIES_PREFIX}/include .)
 
-
-#
-# configurations
-#
-if(APPLE)
-  set(INFINIT_MACOSX true)
-elseif(WIN32)
-  set(INFINIT_WINDOWS true)
-elseiF(UNIX)
-  set(INFINIT_LINUX true)
-endif()
-
 #
 # MSVC CXXFLAGS
 #
@@ -133,7 +132,10 @@ add_subdirectory(horizon)
 add_subdirectory(hole)
 add_subdirectory(satellites)
 add_subdirectory(plasma)
-add_subdirectory(oracle)
+
+if("${INFINIT_PLATFORM}" STREQUAL "linux64")
+  add_subdirectory(oracle)
+endif()
 
 # just to make files appears on qtcreator
 file(GLOB_RECURSE HEADERS *.hh *.hxx)
