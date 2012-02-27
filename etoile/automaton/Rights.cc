@@ -1,0 +1,234 @@
+//
+// ---------- header ----------------------------------------------------------
+//
+// project       etoile
+//
+// license       infinit
+//
+// author        julien quintard   [mon jun 20 14:04:21 2011]
+//
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/automaton/Rights.hh>
+#include <etoile/automaton/Access.hh>
+
+#include <agent/Agent.hh>
+
+namespace etoile
+{
+  namespace automaton
+  {
+
+//
+// ---------- methods ---------------------------------------------------------
+//
+
+    ///
+    /// this method determines the rights the current user has over the
+    /// given context.
+    ///
+    /// note that should have the rights already been determined, the
+    /// method returns. therefore, this method can be called successively.
+    ///
+    elle::Status        Rights::Determine(
+                          gear::Object&                         context)
+    {
+      // if the rights have already been determined, return.
+      if (context.rights.role != nucleus::RoleUnknown)
+        return elle::StatusOk;
+
+      // determine the rights according to the subject.
+      if (agent::Agent::Subject == context.object.owner._subject)
+        {
+          //
+          // if the user is the object's owner, retrieve the user's
+          // permissions, token etc. from the object's meta section.
+          //
+
+          // set the role.
+          context.rights.role = nucleus::RoleOwner;
+
+          // set the permissions.
+          context.rights.permissions = context.object.meta.owner.permissions;
+
+          // if a token is present, decrypt it.
+          if (context.object.meta.owner.token != nucleus::Token::Null)
+            {
+              // extract the secret key from the token.
+              if (context.object.meta.owner.token.Extract(
+                    agent::Agent::Identity.pair.k,
+                    context.rights.key) == elle::StatusError)
+                escape("unable to extract the secret key from the token");
+            }
+
+          // set the record for ease purpose.
+          context.rights.record = context.object.meta.owner._record;
+        }
+      else
+        {
+          //
+          // if the user is not the owner, open the access block and
+          // retrieve the permissions, token etc. from the access record
+          // associated with the subject.
+          //
+
+          // open the access.
+          if (Access::Open(context) == elle::StatusError)
+            escape("unable to open the access block");
+
+          // check that the subject is referenced in the access block.
+          if (context.access->Exist(agent::Agent::Subject) == elle::StatusTrue)
+            {
+              //
+              // in this case, the subject is referenced in the ACL, hence
+              // is considered a lord.
+              //
+              nucleus::Record*  record;
+
+              // retrieve the record associated with this subject.
+              if (context.access->Lookup(agent::Agent::Subject,
+                                         record) == elle::StatusError)
+                escape("unable to retrieve the access record");
+
+              // set the role.
+              context.rights.role = nucleus::RoleLord;
+
+              // set the permissions according to the access record.
+              context.rights.permissions = record->permissions;
+
+              // if a token is present, decrypt it.
+              if (record->token != nucleus::Token::Null)
+                {
+                  // extract the secret key from the token.
+                  if (record->token.Extract(
+                        agent::Agent::Identity.pair.k,
+                        context.rights.key) == elle::StatusError)
+                    escape("unable to extract the secret key from the token");
+                }
+
+              // finally, set the record for ease purpose.
+              context.rights.record = *record;
+            }
+          else
+            {
+              //
+              // the subject seems to be a vassal of some sort i.e either
+              // referenced by a Group or referenced nowhere but possessing
+              // a token.
+              //
+
+              // set the role.
+              context.rights.role = nucleus::RoleVassal;
+
+              // set the permissions.
+              context.rights.permissions = nucleus::PermissionNone;
+            }
+        }
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// this method is triggered whenever the user's rights need to be
+    /// recomputed.
+    ///
+    elle::Status        Rights::Recompute(
+                          gear::Object&                         context)
+    {
+      // reset the role in order to make sure the Determine() method
+      // will carry one.
+      context.rights.role = nucleus::RoleUnknown;
+
+      // call Determine().
+      if (Rights::Determine(context) == elle::StatusError)
+        escape("unable to determine the rights");
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// this method is triggered whenever the user's permissions have
+    /// been changed.
+    ///
+    /// note however that the token, key etc. are not being changed.
+    ///
+    elle::Status        Rights::Update(
+                          gear::Object&                         context,
+                          const nucleus::Permissions&           permissions)
+    {
+      // update the permission.
+      context.rights.permissions = permissions;
+
+      // also update the record which also include the user's permission.
+      context.rights.record.permissions = permissions;
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// this method checks whether the user has the necessary permissions
+    /// and eventually the required role to perform the given operation.
+    ///
+    elle::Status        Rights::Operate(
+                          gear::Object&                         context,
+                          const gear::Operation&                operation)
+    {
+      // depending on the operation.
+      switch (operation)
+        {
+        case gear::OperationUnknown:
+          {
+            escape("unable to check the rights for a unknown operation");
+          }
+        case gear::OperationDiscard:
+          {
+            //
+            // nothing to check since discarding does not require
+            // special privileges.
+            //
+
+            break;
+          }
+        case gear::OperationStore:
+          {
+            //
+            // in this case, the user must have had the permission to write
+            // the object.
+            //
+            // however, the permission checking process would have been
+            // performed once the modifying operation such as Add() for
+            // a directory would have been invoked.
+            //
+            // therefore, no special check is performed here.
+            //
+
+            break;
+          }
+        case gear::OperationDestroy:
+          {
+            //
+            // in this case, the user must be the object's owner in order
+            // to destroy it.
+            //
+
+            // determine the user's rights on this context.
+            if (Rights::Determine(context) == elle::StatusError)
+              escape("unable to determine the rights");
+
+            // check if the current user has the given role.
+            if (context.rights.role != nucleus::RoleOwner)
+              escape("the user does not seem to have the permission to "
+                     "perform the requested operation");
+
+            break;
+          }
+        }
+
+      return elle::StatusOk;
+    }
+
+  }
+}
