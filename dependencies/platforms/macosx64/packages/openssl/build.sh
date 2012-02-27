@@ -35,7 +35,7 @@ ROOTDIR=`python -c "import os;print(os.path.abspath(os.path.dirname('$0')))"`
 # ---------- imports ----------------------------------------------------------
 #
 
-BASEDIR="${ROOTDIR}/../../.."
+BASEDIR="${ROOTDIR}/../../../.."
 
 source "${BASEDIR}/environment.sh"
 source "${BASEDIR}/common.sh"
@@ -44,7 +44,7 @@ source "${BASEDIR}/common.sh"
 # ---------- entry point ------------------------------------------------------
 #
 
-FILESDIR="${PLATFORMDIR}/openssl/files"
+FILESDIR="${PLATFORMDIR}/packages/openssl/files"
 
 uptodate "${OPENSSL_LIBRARIES}" ||
 (

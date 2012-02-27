@@ -8,5 +8,5 @@
 # author        julien quintard   [sat feb 25 12:55:32 2012]
 #
 
-# qjson
-QJSON_LIBRARIES="${QJSON_LIBRARIES} ${WORKDIR}/lib/libqjson.so"
+# extension
+PLATFORM_LIBRARY_EXTENSION="so"

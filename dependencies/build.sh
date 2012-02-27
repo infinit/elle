@@ -64,9 +64,9 @@ EOF
 for dependency in ${DEPENDENCIES} ; do
     echo "----------[ ${dependency}"
 
-    if [ -f "${PLATFORMDIR}/${dependency}/build.sh" ] ; then
-        ${PLATFORMDIR}/${dependency}/build.sh || exit 1
+    if [ -f "${PLATFORMDIR}/packages/${dependency}/build.sh" ] ; then
+        ${PLATFORMDIR}/packages/${dependency}/build.sh || exit 1
     else
-        ${SCRIPTSDIR}/${dependency}/build.sh || exit 1
+        ${PACKAGESDIR}/${dependency}/build.sh || exit 1
     fi
 done

@@ -1,7 +1,6 @@
 CMakeLists.txt.shared
 CMakeLists.txt.user
 agent
-build
 comet
 config.hh
 config.mk
@@ -15,5 +14,6 @@ oracle
 plasma
 satellites
 dependencies/environment.sh
-dependencies/build
-dependencies/work
+
+build
+work
