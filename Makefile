@@ -45,10 +45,6 @@ documentation:
 view:
 	$(BROWSER) documentation/sources/html/index.html
 
-clear:
+clean:
 	$(MAKE) -C $(BUILD) clean
 	$(RM) $(BUILD) $(CONFIG)
-
-clean:
-	$(RM) -Rf build//*
-	$(RM) -Rf dependencies/{build,work}/
