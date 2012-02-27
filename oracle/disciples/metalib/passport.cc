@@ -17,6 +17,14 @@
 
 #include "lune/Passport.hh"
 
+// XXX When Qt is out, remove this
+#ifdef slots
+# undef slots
+#endif
+#ifdef slot
+# undef slot
+#undef
+
 #include "metalib.hh"
 #include "passport.hh"
 
