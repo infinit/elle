@@ -11,7 +11,7 @@ link_directories(${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(metalib
     elle lune
     ${INFINIT_OPENSSL_SHARED_LIBRARIES}
-	${INFINIT_MSGPACK_SHARED_LIBRARIES}
+	${INFINIT_MSGPACK_STATIC_LIBRARIES}
 )
 set_target_properties(metalib PROPERTIES PREFIX "")
 

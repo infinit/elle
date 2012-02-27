@@ -131,11 +131,11 @@ echo "==== Uploading tarball ($size)"
 scp "$release_tarball" infinit.im:/usr/local/www/infinit.im/
 
 echo "==== Deploying tarball"
-ssh infinit.im "cd /usr/local/www/infinit.im && tar xf `basename "$release_tarball"` && rm `basename "$release_tarball"`"
+ssh oracle@infinit.im "cd www/infinit.im && tar xf `basename "$release_tarball"` && rm `basename "$release_tarball"`"
 
 if [ $restart_server = 1 ]
 then
 	echo "==== Restarting servers"
-	#ssh infinit.im sh /usr/local/www/infinit.im/production-meta-server.sh
-	#ssh infinit.im sh /usr/local/www/infinit.im/production-creosus-server.sh
+	#ssh oracle@infinit.im sh www/infinit.im/production-meta-server.sh
+	#ssh oracle@infinit.im sh www/infinit.im/production-creosus-server.sh
 fi

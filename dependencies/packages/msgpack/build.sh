@@ -43,9 +43,8 @@ uptodate "${MSGPACK_LIBRARIES}" ||
     cd "${MSGPACK_NAME}" ||
     die "unable to enter the directory"
 
-    ./configure                                                         \
-        --prefix="${WORKDIR}" ||
-    die "unable to configure"
+    ./configure --prefix="${WORKDIR}" CFLAGS="${CFLAGS} -fPIC" \
+        || die "unable to configure"
 
     make install ||
     die "unable to build"
