@@ -1,0 +1,3 @@
+[submodule "disciples/troll"]
+	path = disciples/troll
+	url = git://github.com/hotgloupi/troll.git

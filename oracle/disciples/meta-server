@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+
+
+"""Meta server provide a JSON-RPC API to infinit
+users, networks and devices managment.
+
+"""
+
+import sys
+
+from meta.application import Application
+
+if __name__ == '__main__':
+    app = Application("0.0.0.0")
+    app.run()

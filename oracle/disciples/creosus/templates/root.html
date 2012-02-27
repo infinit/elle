@@ -1,0 +1,10 @@
+<div
+	xmlns:py="http://genshi.edgewall.org/">
+	<h1>Welcome to the Infinit alpha version.</h1>
+	<py:if test="user.id is None">
+	<a class="button" href="/register">Register</a>
+	</py:if>
+	<py:if test="user.id is not None">
+	<a href="/installer">Download the installer now!</a>
+	</py:if>
+</div>
