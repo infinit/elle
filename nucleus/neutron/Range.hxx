@@ -1,0 +1,415 @@
+//
+// ---------- header ----------------------------------------------------------
+//
+// project       nucleus
+//
+// license       infinit
+//
+// author        julien quintard   [wed mar 31 23:36:12 2010]
+//
+
+#ifndef NUCLEUS_NEUTRON_RANGE_HXX
+#define NUCLEUS_NEUTRON_RANGE_HXX
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <nucleus/neutron/Index.hh>
+
+namespace nucleus
+{
+  namespace neutron
+  {
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    template <typename T>
+    Range<T>::Range():
+      options(Range<T>::OptionNone)
+    {
+    }
+
+    ///
+    /// copy constructor.
+    ///
+    template <typename T>
+    Range<T>::Range(const Range<T>&                             element):
+      Object(element),
+
+      options(element.options)
+    {
+      Range<T>::Scoutor         scoutor;
+
+      // go through the container.
+      for (scoutor = element.container.begin();
+           scoutor != element.container.end();
+           scoutor++)
+        {
+          T*                    item;
+
+          // copy the item depending on the options.
+          switch (this->options)
+            {
+            case Range<T>::OptionNone:
+              {
+                // in this case, the data must be duplicated.
+                item = new T(**scoutor);
+
+                break;
+              }
+            case Range<T>::OptionDetach:
+              {
+                // in this case, the memory is not handled by this instance,
+                // hence just copy the pointer.
+                item = *scoutor;
+
+                break;
+              }
+            }
+
+          // add the item to the container.
+          if (this->Add(item) == elle::StatusError)
+            fail("unable to add the item to the container");
+        }
+    }
+
+    ///
+    /// destructor.
+    ///
+    template <typename T>
+    Range<T>::~Range()
+    {
+      Range<T>::Iterator        i;
+
+      // until the range is empty.
+      while (this->container.empty() == false)
+        {
+          T*    item = this->container.front();
+
+          // remove the first element.
+          this->container.pop_front();
+
+          // delete the item, if necessary.
+          if ((this->options & Range<T>::OptionDetach) == 0)
+            delete item;
+        }
+    }
+
+//
+// ---------- methods ---------------------------------------------------------
+//
+
+    ///
+    /// this method adds an item to the range.
+    ///
+    template <typename T>
+    elle::Status        Range<T>::Add(T*                        item)
+    {
+      // check if another item exists with this symbol.
+      if (this->Exist(item->Symbol()) == true)
+        escape("an item with this symbol already exist");
+
+      // add the item to the container.
+      this->container.push_back(item);
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// this method returns true if an item for the given symbol exists.
+    ///
+    template <typename T>
+    elle::Status        Range<T>::Exist(const Range<T>::S&      symbol) const
+    {
+      Range<T>::Scoutor scoutor;
+
+      // try to locate the entry.
+      if (this->Locate(symbol, scoutor) != elle::StatusTrue)
+        return elle::StatusFalse;
+
+      return elle::StatusTrue;
+    }
+
+    ///
+    /// this method looks up the range.
+    ///
+    /// the method returns true if the item is found, false otherwise.
+    ///
+    template <typename T>
+    elle::Status        Range<T>::Lookup(const Range<T>::S&     symbol,
+                                         T*&                    item) const
+    {
+      Range<T>::Scoutor scoutor;
+
+      // initialize the pointer to null.
+      item = NULL;
+
+      // try to locate the item.
+      if (this->Locate(symbol, scoutor) == false)
+        return elle::StatusFalse;
+
+      // return the item.
+      item = *scoutor;
+
+      return elle::StatusTrue;
+    }
+
+    ///
+    /// this method removes an item from the range.
+    ///
+    template <typename T>
+    elle::Status        Range<T>::Remove(const Range<T>::S&     symbol)
+    {
+      Range<T>::Iterator        iterator;
+
+      // locate the item.
+      if (this->Locate(symbol, iterator) == false)
+        escape("this symbol does not seem to be present in this range");
+
+      // delete the item.
+      delete *iterator;
+
+      // erase the item from the container.
+      this->container.erase(iterator);
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// this method returns the number of items in the range.
+    ///
+    template <typename T>
+    elle::Status        Range<T>::Capacity(Size&                size) const
+    {
+      // return the size.
+      size = this->container.size();
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// this method returns a scoutor on the identified item.
+    ///
+    template <typename T>
+    elle::Status        Range<T>::Locate(const Range<T>::S&     symbol,
+                                         Range<T>::Scoutor&     scoutor) const
+    {
+      Range<T>::Scoutor s;
+
+      // go through the container.
+      for (s = this->container.begin();
+           s != this->container.end();
+           s++)
+        {
+          T*                    item = *s;
+
+          // if found...
+          if (item->Symbol() == symbol)
+            {
+              // return the scoutor.
+              scoutor = s;
+
+              return elle::StatusTrue;
+            }
+        }
+
+      return elle::StatusFalse;
+    }
+
+    ///
+    /// this method returns an iterator on the identified item.
+    ///
+    /// the method returns true if the item is found, false otherwise.
+    ///
+    template <typename T>
+    elle::Status        Range<T>::Locate(const Range<T>::S&     symbol,
+                                         Range<T>::Iterator&    iterator)
+    {
+      Range<T>::Iterator        i;
+
+      // go through the container.
+      for (i = this->container.begin();
+           i != this->container.end();
+           i++)
+        {
+          T*                    item = *i;
+
+          // if found...
+          if (item->Symbol() == symbol)
+            {
+              // return the iterator.
+              iterator = i;
+
+              return elle::StatusTrue;
+            }
+        }
+
+      return elle::StatusFalse;
+    }
+
+    ///
+    /// this method instructs the range to detach the memory management
+    /// from the object so that items do not get deleted once the range
+    /// dies.
+    ///
+    template <typename T>
+    elle::Status        Range<T>::Detach()
+    {
+      // activate the option.
+      this->options = Range<T>::OptionDetach;
+
+      return elle::StatusOk;
+    }
+
+//
+// ---------- object ----------------------------------------------------------
+//
+
+    ///
+    /// this operator compares two objects.
+    ///
+    template <typename T>
+    elle::Boolean       Range<T>::operator==(const Range<T>&    element) const
+    {
+      Range<T>::Scoutor s;
+      Range<T>::Scoutor t;
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+        return elle::StatusTrue;
+
+      // compare the sizes.
+      if (this->container.size() != element.container.size())
+        return elle::StatusFalse;
+
+      // go through the elements.
+      for (s = this->container.begin(), t = element.container.begin();
+           s != this->container.end();
+           s++, t++)
+        {
+          // compare the entries.
+          if (*s != *t)
+            return elle::StatusFalse;
+        }
+
+      return elle::StatusTrue;
+    }
+
+    ///
+    /// this macro-function call generates the object.
+    ///
+    embed(Range<T>, _(template <typename T>));
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// this function dumps a range.
+    ///
+    template <typename T>
+    elle::Status        Range<T>::Dump(elle::Natural32          margin) const
+    {
+      elle::String      alignment(margin, ' ');
+      Range<T>::Scoutor scoutor;
+
+      std::cout << alignment << "[Range] "
+                << std::dec << this->container.size() << std::endl;
+
+      // dump the options.
+      std::cout << alignment << elle::Dumpable::Shift << "[Options] "
+                << this->options << std::endl;
+
+      // dump every item.
+      for (scoutor = this->container.begin();
+           scoutor != this->container.end();
+           scoutor++)
+        {
+          T*            item = *scoutor;
+
+          // dump the item.
+          if (item->Dump(margin + 2) == elle::StatusError)
+            escape("unable to dump the item");
+        }
+
+      return elle::StatusOk;
+    }
+
+//
+// ---------- archivable ------------------------------------------------------
+//
+
+    ///
+    /// this method serializes the range object.
+    ///
+    template <typename T>
+    elle::Status        Range<T>::Serialize(elle::Archive&      archive) const
+    {
+      Range<T>::Scoutor scoutor;
+      Size              size;
+
+      // retrieve the number of items.
+      size = this->container.size();
+
+      // serialize the number of items.
+      if (archive.Serialize(size) == elle::StatusError)
+        escape("unable to serialize the number of items");
+
+      // serialize every item.
+      for (scoutor = this->container.begin();
+           scoutor != this->container.end();
+           scoutor++)
+        {
+          T*            item = *scoutor;
+
+          // serialize the item.
+          if (archive.Serialize(*item) == elle::StatusError)
+            escape("unable to serialize the item");
+        }
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// this method extracts the range object.
+    ///
+    template <typename T>
+    elle::Status        Range<T>::Extract(elle::Archive&        archive)
+    {
+      Size              size;
+      Index             i;
+
+      // extract the number of items.
+      if (archive.Extract(size) == elle::StatusError)
+        escape("unable to extract the number of items");
+
+      // extract every item.
+      for (i = 0; i < size; i++)
+        {
+          // allocate a new item.
+          auto item = new T;
+
+          // extract the item.
+          if (archive.Extract(*item) == elle::StatusError)
+            {
+              delete item;
+              escape("unable to extract the item");
+            }
+
+          // add the item to the container.
+          this->container.push_back(item);
+        }
+
+      return elle::StatusOk;
+    }
+
+  }
+}
+
+#endif
