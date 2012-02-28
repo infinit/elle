@@ -50,13 +50,13 @@ int Application::Exec()
     this, SLOT(_OnReleaseUpdated(bool))
   );
 
+  if (!this->_CheckInfinitHome())
+    return EXIT_FAILURE;
   return this->exec();
 }
 
 void Application::_OnReleaseUpdated(bool)
 {
-  if (!this->_CheckInfinitHome())
-    return;
   this->_identityUpdater.Start();
   this->connect(
     &this->_identityUpdater,

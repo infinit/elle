@@ -47,7 +47,8 @@ namespace plasma
       void Start();
     private:
       void _OnLogin(plasma::metaclient::LoginResponse const& response);
-      void _OnError(plasma::metaclient::MetaClient::Error error);
+      void _OnError(plasma::metaclient::MetaClient::Error error,
+                    std::string const& error_string);
     private slots:
       void _DoLogin();
 

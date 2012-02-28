@@ -42,7 +42,6 @@ void IdentityUpdater::Start()
 }
 void IdentityUpdater::_DoLogin()
 {
-  std::cout << "DO LOGIN\n";
   std::string login, password;
   this->_loginDialog.GetLoginPassword(login, password);
   if (!login.size() || !password.size())
@@ -51,11 +50,16 @@ void IdentityUpdater::_DoLogin()
       this->_loginDialog.show();
       return;
     }
-  this->_api.Login(
-    login, password,
-    std::bind(&IdentityUpdater::_OnLogin, this, std::placeholders::_1),
-    std::bind(&IdentityUpdater::_OnError, this, std::placeholders::_1)
-  );
+
+    {
+      std::cout << "DO LOGIN CALL\n";
+      using namespace std::placeholders;
+      this->_api.Login(
+          login, password,
+          std::bind(&IdentityUpdater::_OnLogin, this, _1),
+          std::bind(&IdentityUpdater::_OnError, this, _1, _2)
+      );
+    }
   this->_loginDialog.setDisabled(true);
   this->_loginDialog.show();
 }
@@ -80,9 +84,10 @@ void IdentityUpdater::_OnLogin(plasma::metaclient::LoginResponse const& response
     }
 }
 
-void IdentityUpdater::_OnError(plasma::metaclient::MetaClient::Error error)
+void IdentityUpdater::_OnError(plasma::metaclient::MetaClient::Error error,
+                               std::string const& error_string)
 {
-  std::cout << "ERROR: " << (int)error << "\n";
+  std::cout << "ERROR: " << (int)error << ": " << error_string << "\n";
   this->_loginDialog.SetErrorMessage(
     "An error occured, please check your internet connection"
   );
