@@ -278,6 +278,8 @@ class Path(object):
         >>> p.exists()
         False
         """
+        if _OS.path.islink(str(self)):
+            return True
         return _OS.path.exists(str(self))
 
     def is_file(self):
