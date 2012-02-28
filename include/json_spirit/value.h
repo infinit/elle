@@ -21,6 +21,10 @@
 #include <boost/cstdint.hpp>
 #include <boost/variant.hpp>
 
+// These help us figure out whether we need 64-bit constructors
+# include <boost/limits.hpp> // implementation artifact; not part of interface
+# include <limits.h>         // needed for limits macros
+
 #include "path_error.h"
 
 // comment out the value types you don't need to reduce build times and intermediate file sizes
@@ -82,8 +86,44 @@ namespace json_spirit {
         BasicValue( unsigned int value );
         BasicValue( long value );
         BasicValue( unsigned long value );
-        BasicValue( boost::int64_t     value );
-        BasicValue( boost::uint64_t    value );
+// Handling 64-bit is tricky, this is similar to the rules for 64-bit typedefs
+// in boost's cstdint.
+#ifdef BOOST_HAS_STDINT_H
+#  // Apparently different platforms seem to disagree on whether the 64-bit type
+#  // is the same as long...
+#  if JSON_SPIRIT_PLATFORM == JSON_SPIRIT_PLATFORM_LINUX
+#    // If we have 64-bit longs then we don't need to do anything since long == int64_t
+#    if ULONG_MAX != 0xffffffff
+#      if ULONG_MAX == 18446744073709551615U // 2**64 - 1
+#        // Do nothing
+#      else
+#        define JSON_SPIRIT_USE_BOOST_INT64
+#      endif
+#    else // probably long long
+#      define JSON_SPIRIT_USE_BOOST_INT64
+#    endif
+#  elif JSON_SPIRIT_PLATFORM == JSON_SPIRIT_PLATFORM_MAC
+#    // Mac seems to not make the int64_t equivalent, even with 64-bit
+#    define JSON_SPIRIT_USE_BOOST_INT64
+#  else // Hope this is right?
+#    define JSON_SPIRIT_USE_BOOST_INT64
+#  endif
+#else
+# if ULONG_MAX != 0xffffffff
+#    if ULONG_MAX == 18446744073709551615U // 2**64 - 1
+#      // Nothing to do here: long is 64-bit, so we've already got 64-bit coverage.
+#    else
+#       error unsupported sizeof(long); you must modify json_spirit/json.h
+#    endif
+# else
+#   define JSON_SPIRIT_USE_BOOST_INT64
+# endif
+#endif
+
+#if defined(JSON_SPIRIT_USE_BOOST_INT64)
+        BasicValue( boost::int64_t value );
+        BasicValue( boost::uint64_t value );
+#endif
         BasicValue( float value );
         BasicValue( double             value );
 
@@ -428,7 +468,7 @@ namespace json_spirit {
 
     template< class Config >
     BasicValue< Config >::BasicValue( unsigned char value )
-    :   v_( static_cast< boost::int64_t >( value ) )
+    :   v_( static_cast< boost::uint64_t >( value ) )
     {
     }
 
@@ -440,7 +480,7 @@ namespace json_spirit {
 
     template< class Config >
     BasicValue< Config >::BasicValue( unsigned short value )
-    :   v_( static_cast< boost::int64_t >( value ) )
+    :   v_( static_cast< boost::uint64_t >( value ) )
     {
     }
 
@@ -452,7 +492,7 @@ namespace json_spirit {
 
     template< class Config >
     BasicValue< Config >::BasicValue( unsigned int value )
-    :   v_( static_cast< boost::int64_t >( value ) )
+    :   v_( static_cast< boost::uint64_t >( value ) )
     {
     }
 
@@ -464,10 +504,12 @@ namespace json_spirit {
 
     template< class Config >
     BasicValue< Config >::BasicValue( unsigned long value )
-    :   v_( static_cast< boost::int64_t >( value ) )
+    :   v_( static_cast< boost::uint64_t >( value ) )
     {
     }
 
+
+#if defined(JSON_SPIRIT_USE_BOOST_INT64)
     template< class Config >
     BasicValue< Config >::BasicValue( boost::int64_t value )
     :   v_( value )
@@ -479,6 +521,7 @@ namespace json_spirit {
     :   v_( value )
     {
     }
+#endif
 
     template< class Config >
     BasicValue< Config >::BasicValue( double value )
