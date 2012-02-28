@@ -12,6 +12,7 @@ import inspect
 from copy import deepcopy
 import drake.debug
 import atexit
+import stat
 from drake.sched import Coroutine, Scheduler
 
 
@@ -1956,8 +1957,17 @@ class Copy(Builder):
         """Copy the source to the target."""
         self.output('Copy %s to %s' % (self.__source.path(), self.__target.path()),
                     'Copy %s' % self.__target,)
+        dst = str(self.__target.path())
         # FIXME: errors!
-        shutil.copy2(str(self.__source.path()), str(self.__target.path()))
+        try:
+            _OS.chmod(dst, _OS.stat(dst).st_mode | stat.S_IWUSR)
+        except OSError as e:
+            if e.errno == 2:
+                pass
+            else:
+                raise
+        shutil.copy2(str(self.__source.path()), dst)
+        _OS.chmod(dst, _OS.stat(dst).st_mode & ~stat.S_IWRITE)
         return True
 
 
