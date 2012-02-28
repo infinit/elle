@@ -452,9 +452,9 @@ namespace elle
 
       std::cout << alignment << "[TCPSocket]" << std::endl;
 
-      // dump the channel.
+      // dump the abstract socket.
       if (AbstractSocket::Dump(margin + 2) == StatusError)
-        escape("unable to dump the channel");
+        escape("unable to dump the abstract socket");
 
       // retrieve the target.
       if (this->Target(locus) == StatusError)
