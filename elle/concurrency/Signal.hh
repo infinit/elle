@@ -95,13 +95,6 @@ namespace elle
         Status          Call(T&...) const;
 
         //
-        // interfaces
-        //
-
-        // dumpable
-        Status          Dump(const Natural32) const;
-
-        //
         // attributes
         //
         Y               object;
@@ -135,6 +128,13 @@ namespace elle
       Status            Emit(T...);
 
       Status            Flush();
+
+      //
+      // interfaces
+      //
+
+      // dumpable
+      Status            Dump(const Natural32 = 0) const;
 
       //
       // attributes

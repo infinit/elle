@@ -10,6 +10,18 @@
 #
 
 #
+# ---------- information ------------------------------------------------------
+#
+# this script is responsible for locally building the dependency libraries.
+#
+# the script goes through all the dependencies all call a script dedicated
+# to building the library. first the script looks for a platform-specific
+# script, for example platforms/macosx64/packages/openssl/build.sh would
+# be used, if present. otherwise, the system relies on the default building
+# script, for example packages/openssl/build.sh.
+#
+
+#
 # ---------- globals ----------------------------------------------------------
 #
 
@@ -62,11 +74,11 @@ EOF
 # otherwise, the default build script is used.
 #
 for dependency in ${DEPENDENCIES} ; do
-    echo "----------[ ${dependency}"
-
     if [ -f "${PLATFORMDIR}/packages/${dependency}/build.sh" ] ; then
         ${PLATFORMDIR}/packages/${dependency}/build.sh || exit 1
     else
         ${PACKAGESDIR}/${dependency}/build.sh || exit 1
     fi
+
+    echo "[ dep] Built target ${dependency}"
 done
