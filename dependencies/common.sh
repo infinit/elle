@@ -23,7 +23,7 @@ DEPENDENCIES="openssl msgpack jsoncpp curl qjson"
 # ---------- imports ----------------------------------------------------------
 #
 
-source "${PLATFORMDIR}/common.sh"
+. "${PLATFORMDIR}/common.sh"
 
 #
 # ---------- packages ---------------------------------------------------------
