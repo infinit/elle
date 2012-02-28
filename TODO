@@ -1,9 +1,13 @@
 - Slug
  - tests:
-  - pour ce meme test, on se retrouve avec un objet (le premier)
-    qui a 2 attributs lorsqu'il est fetched.
+  - copier kaneton && node joins
+   -> probable que ca vienne du fait que lors d'un Pull ou recupere et stocke
+      la derniere version des autres nodes: sauf que en stockant, on rend cette
+      version la derniere. si notre noeud avait la derneire version, on ne
+      la voit plus et on voit une ancienne a la place.
   - compile kaneton && au milieu, noeud joins
   - compile kaneton && while true: ls -R
+  - reduire le temps d'attente pour etre Alone (5 to 2 seconds)
 
 - bugs:
  - Broker: select() == 0

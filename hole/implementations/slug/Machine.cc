@@ -37,9 +37,9 @@ namespace hole
       const elle::Natural16             Machine::Default::Port = 1912;
 
       ///
-      /// XXX 6 seconds
+      /// XXX 5 seconds
       ///
-      const elle::Natural32             Machine::Timeout = 2000;
+      const elle::Natural32             Machine::Timeout = 5000;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -648,27 +648,17 @@ namespace hole
                         {
                           // XXX do not verify the block's validity.
 
-                          h = b.get();
-                          b.release();
-
-                          break;
+                          // finally, since the block has been retrieved,
+                          // store it locally.
+                          if (mb->Store(Hole::Implementation->network,
+                                        address) == elle::StatusError)
+                            escape("unable to store the block");
                         }
 
                       // ignore the error messages and continue with the
                       // next neighbour.
                       purge();
                     }
-
-                  // check if none if the neighbour has the block.
-                  if (scoutor == this->neighbourhood.container.end())
-                    escape("unable to locate the block associated with "
-                           "the given address");
-
-                  // finally, since the block has been retrieved,
-                  // store it locally.
-                  if (h->Store(Hole::Implementation->network,
-                               address) == elle::StatusError)
-                    escape("unable to store the block");
                 }
 
               // does the block exist.
