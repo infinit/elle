@@ -432,12 +432,12 @@ namespace json_spirit {
 
     template< class Config >
     BasicValue< Config >::BasicValue( const Const_str_ptr value )
-    :  v_( String( value ) )
+    :  v_( typename Config::String_type( value ) )
     {
     }
 
     template< class Config >
-    BasicValue< Config >::BasicValue( const String& value )
+    BasicValue< Config >::BasicValue( const typename Config::String_type& value )
     :   v_( value )
     {
     }
@@ -664,7 +664,7 @@ namespace json_spirit {
     }
 
     template< class Config >
-    typename BasicValue< Config >::String& BasicValue< Config >::getString()
+    typename Config::String_type& BasicValue< Config >::getString()
     {
         check_type( STRING_TYPE );
 
@@ -760,7 +760,7 @@ namespace json_spirit {
     }
 
 template<class Config>
-bool BasicValue<Config>::contains(const String& path, const typename String::value_type delim) const {
+bool BasicValue<Config>::contains(const typename Config::String_type& path, const typename Config::String_type::value_type delim) const {
     if (!isObject())
         throw PathError(path, "<root>", "Value isn't an object.");
 
@@ -784,7 +784,7 @@ bool BasicValue<Config>::contains(const String& path, const typename String::val
 }
 
     template< class Config >
-    BasicValue<Config>& BasicValue< Config >::get(const String& path, const typename String::value_type delim) {
+    BasicValue<Config>& BasicValue< Config >::get(const typename Config::String_type& path, const typename Config::String_type::value_type delim) {
         if (!isObject())
             throw PathError(path, "<root>", "Value isn't an object.");
 
@@ -811,7 +811,7 @@ bool BasicValue<Config>::contains(const String& path, const typename String::val
     }
 
     template< class Config >
-    const BasicValue<Config>& BasicValue< Config >::get(const String& path, const typename String::value_type delim) const {
+    const BasicValue<Config>& BasicValue< Config >::get(const typename Config::String_type& path, const typename Config::String_type::value_type delim) const {
         if (!isObject())
             throw PathError(path, "<root>", "Value isn't an object.");
 
@@ -841,61 +841,61 @@ bool BasicValue<Config>::contains(const String& path, const typename String::val
 // Shortcut accessors
 
 template<class Config>
-const typename BasicValue<Config>::String& BasicValue<Config>::getString(const String& path, const typename String::value_type delim) const {
+const typename BasicValue<Config>::String& BasicValue<Config>::getString(const typename Config::String_type& path, const typename Config::String_type::value_type delim) const {
     return get(path, delim).getString();
 }
 template<class Config>
-typename BasicValue<Config>::String& BasicValue<Config>::getString(const String& path, const typename String::value_type delim) {
+typename BasicValue<Config>::String& BasicValue<Config>::getString(const typename Config::String_type& path, const typename Config::String_type::value_type delim) {
     return get(path, delim).getString();
 }
 
 template<class Config>
-const typename BasicValue<Config>::Object& BasicValue<Config>::getObject(const String& path, const typename String::value_type delim) const {
+const typename BasicValue<Config>::Object& BasicValue<Config>::getObject(const typename Config::String_type& path, const typename Config::String_type::value_type delim) const {
     return get(path, delim).getObject();
 }
 template<class Config>
-typename BasicValue<Config>::Object& BasicValue<Config>::getObject(const String& path, const typename String::value_type delim) {
+typename BasicValue<Config>::Object& BasicValue<Config>::getObject(const typename Config::String_type& path, const typename Config::String_type::value_type delim) {
     return get(path, delim).getObject();
 }
 
 template<class Config>
-const typename BasicValue<Config>::Array& BasicValue<Config>::getArray(const String& path, const typename String::value_type delim) const {
+const typename BasicValue<Config>::Array& BasicValue<Config>::getArray(const typename Config::String_type& path, const typename Config::String_type::value_type delim) const {
     return get(path, delim).getArray();
 }
 template<class Config>
-typename BasicValue<Config>::Array& BasicValue<Config>::getArray(const String& path, const typename String::value_type delim) {
+typename BasicValue<Config>::Array& BasicValue<Config>::getArray(const typename Config::String_type& path, const typename Config::String_type::value_type delim) {
     return get(path, delim).getArray();
 }
 
 template<class Config>
-bool BasicValue<Config>::getBool(const String& path, const typename String::value_type delim) const {
+bool BasicValue<Config>::getBool(const typename Config::String_type& path, const typename Config::String_type::value_type delim) const {
     return get(path, delim).getBool();
 }
 
 template<class Config>
-int BasicValue<Config>::getInt(const String& path, const typename String::value_type delim) const {
+int BasicValue<Config>::getInt(const typename Config::String_type& path, const typename Config::String_type::value_type delim) const {
     return get(path, delim).getInt();
 }
 
 template<class Config>
-boost::int64_t BasicValue<Config>::getInt64(const String& path, const typename String::value_type delim) const {
+boost::int64_t BasicValue<Config>::getInt64(const typename Config::String_type& path, const typename Config::String_type::value_type delim) const {
     return get(path, delim).getInt64();
 }
 
 template<class Config>
-boost::uint64_t BasicValue<Config>::getUInt64(const String& path, const typename String::value_type delim) const {
+boost::uint64_t BasicValue<Config>::getUInt64(const typename Config::String_type& path, const typename Config::String_type::value_type delim) const {
     return get(path, delim).getUInt64();
 }
 
 template<class Config>
-double BasicValue<Config>::getReal(const String& path, const typename String::value_type delim) const {
+double BasicValue<Config>::getReal(const typename Config::String_type& path, const typename Config::String_type::value_type delim) const {
     return get(path, delim).getReal();
 }
 
 
 // Shortcut accessors with defaults
 template<class Config>
-const typename BasicValue<Config>::String& BasicValue<Config>::getString(const String& path, const String& default_, const typename String::value_type delim) const {
+const typename BasicValue<Config>::String& BasicValue<Config>::getString(const typename Config::String_type& path, const typename Config::String_type& default_, const typename Config::String_type::value_type delim) const {
     if (!contains(path, delim)) return default_;
     const BasicValue& val = get(path, delim);
     if (val.type() != STRING_TYPE) return default_;
@@ -903,7 +903,7 @@ const typename BasicValue<Config>::String& BasicValue<Config>::getString(const S
 }
 
 template<class Config>
-const typename BasicValue<Config>::Object& BasicValue<Config>::getObject(const String& path, const Object& default_, const typename String::value_type delim) const {
+const typename BasicValue<Config>::Object& BasicValue<Config>::getObject(const typename Config::String_type& path, const Object& default_, const typename Config::String_type::value_type delim) const {
     if (!contains(path, delim)) return default_;
     const BasicValue& val = get(path, delim);
     if (val.type() != OBJECT_TYPE) return default_;
@@ -911,7 +911,7 @@ const typename BasicValue<Config>::Object& BasicValue<Config>::getObject(const S
 }
 
 template<class Config>
-const typename BasicValue<Config>::Array& BasicValue<Config>::getArray(const String& path, const Array& default_, const typename String::value_type delim) const {
+const typename BasicValue<Config>::Array& BasicValue<Config>::getArray(const typename Config::String_type& path, const Array& default_, const typename Config::String_type::value_type delim) const {
     if (!contains(path, delim)) return default_;
     const BasicValue& val = get(path, delim);
     if (val.type() != ARRAY_TYPE) return default_;
@@ -919,7 +919,7 @@ const typename BasicValue<Config>::Array& BasicValue<Config>::getArray(const Str
 }
 
 template<class Config>
-bool BasicValue<Config>::getBool(const String& path, bool default_, const typename String::value_type delim) const {
+bool BasicValue<Config>::getBool(const typename Config::String_type& path, bool default_, const typename Config::String_type::value_type delim) const {
     if (!contains(path, delim)) return default_;
     const BasicValue& val = get(path, delim);
     if (val.type() != BOOL_TYPE) return default_;
@@ -927,7 +927,7 @@ bool BasicValue<Config>::getBool(const String& path, bool default_, const typena
 }
 
 template<class Config>
-int BasicValue<Config>::getInt(const String& path, int default_, const typename String::value_type delim) const {
+int BasicValue<Config>::getInt(const typename Config::String_type& path, int default_, const typename Config::String_type::value_type delim) const {
     if (!contains(path, delim)) return default_;
     const BasicValue& val = get(path, delim);
     if (val.type() != INT_TYPE) return default_;
@@ -935,7 +935,7 @@ int BasicValue<Config>::getInt(const String& path, int default_, const typename 
 }
 
 template<class Config>
-boost::int64_t BasicValue<Config>::getInt64(const String& path, boost::int64_t default_, const typename String::value_type delim) const {
+boost::int64_t BasicValue<Config>::getInt64(const typename Config::String_type& path, boost::int64_t default_, const typename Config::String_type::value_type delim) const {
     if (!contains(path, delim)) return default_;
     const BasicValue& val = get(path, delim);
     if (val.type() != INT_TYPE) return default_;
@@ -943,7 +943,7 @@ boost::int64_t BasicValue<Config>::getInt64(const String& path, boost::int64_t d
 }
 
 template<class Config>
-boost::uint64_t BasicValue<Config>::getUInt64(const String& path, boost::uint64_t default_, const typename String::value_type delim) const {
+boost::uint64_t BasicValue<Config>::getUInt64(const typename Config::String_type& path, boost::uint64_t default_, const typename Config::String_type::value_type delim) const {
     if (!contains(path, delim)) return default_;
     const BasicValue& val = get(path, delim);
     if (val.type() != INT_TYPE) return default_;
@@ -951,7 +951,7 @@ boost::uint64_t BasicValue<Config>::getUInt64(const String& path, boost::uint64_
 }
 
 template<class Config>
-double BasicValue<Config>::getReal(const String& path, double default_, const typename String::value_type delim) const {
+double BasicValue<Config>::getReal(const typename Config::String_type& path, double default_, const typename Config::String_type::value_type delim) const {
     if (!contains(path, delim)) return default_;
     const BasicValue& val = get(path, delim);
     if (val.type() != REAL_TYPE) return default_;
@@ -961,7 +961,7 @@ double BasicValue<Config>::getReal(const String& path, double default_, const ty
 
 
     template< class Config >
-    bool BasicValue< Config >::insert_put_impl(const String& path, const BasicValue& val, const typename String::value_type delim, bool force_val) {
+    bool BasicValue< Config >::insert_put_impl(const typename Config::String_type& path, const BasicValue& val, const typename Config::String_type::value_type delim, bool force_val) {
         if (!isObject())
             throw PathError(path, "<root>", "Value isn't an object.");
 
@@ -995,11 +995,11 @@ double BasicValue<Config>::getReal(const String& path, double default_, const ty
     }
 
     template< class Config >
-    bool BasicValue< Config >::insert(const String& path, const BasicValue& val, const typename String::value_type delim) {
+    bool BasicValue< Config >::insert(const typename Config::String_type& path, const BasicValue& val, const typename Config::String_type::value_type delim) {
         return insert_put_impl(path, val, delim, false);
     }
     template< class Config >
-    void BasicValue< Config >::put(const String& path, const BasicValue& val, const typename String::value_type delim) {
+    void BasicValue< Config >::put(const typename Config::String_type& path, const BasicValue& val, const typename Config::String_type::value_type delim) {
         insert_put_impl(path, val, delim, true);
     }
 
