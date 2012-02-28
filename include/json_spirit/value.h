@@ -74,12 +74,14 @@ namespace json_spirit {
         BasicValue( const Object&      value );
         BasicValue( const Array&       value );
         BasicValue( bool               value );
-        BasicValue( boost::int8_t value );
-        BasicValue( boost::uint8_t value );
-        BasicValue( boost::int16_t value );
-        BasicValue( boost::uint16_t value );
-        BasicValue( boost::int32_t value );
-        BasicValue( boost::uint32_t value );
+        BasicValue( char value );
+        BasicValue( unsigned char value );
+        BasicValue( short value );
+        BasicValue( unsigned short value );
+        BasicValue( int value );
+        BasicValue( unsigned int value );
+        BasicValue( long value );
+        BasicValue( unsigned long value );
         BasicValue( boost::int64_t     value );
         BasicValue( boost::uint64_t    value );
         BasicValue( float value );
@@ -419,38 +421,49 @@ namespace json_spirit {
     }
 
     template< class Config >
-    BasicValue< Config >::BasicValue( boost::int8_t value )
+    BasicValue< Config >::BasicValue( char value )
     :   v_( static_cast< boost::int64_t >( value ) )
     {
     }
 
     template< class Config >
-    BasicValue< Config >::BasicValue( boost::uint8_t value )
+    BasicValue< Config >::BasicValue( unsigned char value )
     :   v_( static_cast< boost::int64_t >( value ) )
     {
     }
 
     template< class Config >
-    BasicValue< Config >::BasicValue( boost::int16_t value )
+    BasicValue< Config >::BasicValue( short value )
     :   v_( static_cast< boost::int64_t >( value ) )
     {
     }
 
     template< class Config >
-    BasicValue< Config >::BasicValue( boost::uint16_t value )
-    :   v_( static_cast< boost::int64_t >( value ) )
-    {
-    }
-
-
-    template< class Config >
-    BasicValue< Config >::BasicValue( boost::int32_t value )
+    BasicValue< Config >::BasicValue( unsigned short value )
     :   v_( static_cast< boost::int64_t >( value ) )
     {
     }
 
     template< class Config >
-    BasicValue< Config >::BasicValue( boost::uint32_t value )
+    BasicValue< Config >::BasicValue( int value )
+    :   v_( static_cast< boost::int64_t >( value ) )
+    {
+    }
+
+    template< class Config >
+    BasicValue< Config >::BasicValue( unsigned int value )
+    :   v_( static_cast< boost::int64_t >( value ) )
+    {
+    }
+
+    template< class Config >
+    BasicValue< Config >::BasicValue( long value )
+    :   v_( static_cast< boost::int64_t >( value ) )
+    {
+    }
+
+    template< class Config >
+    BasicValue< Config >::BasicValue( unsigned long value )
     :   v_( static_cast< boost::int64_t >( value ) )
     {
     }
