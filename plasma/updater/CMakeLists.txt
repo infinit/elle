@@ -19,8 +19,8 @@ QT4_WRAP_CPP(updater_moc_srcs ${updater_moc_hdrs})
 QT4_WRAP_UI(updater_ui_hdrs ${updater_ui})
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-add_executable(updater ${updater_srcs} ${updater_moc_srcs} ${updater_ui_hdrs})
-target_link_libraries(updater
+add_executable(8updater ${updater_srcs} ${updater_moc_srcs} ${updater_ui_hdrs})
+target_link_libraries(8updater
 	metaclient
 	${QT_LIBRARIES}
 	${INFINIT_QJSON_SHARED_LIBRARIES}

@@ -92,37 +92,41 @@ void Application::_OnIdentityUpdated(std::string const& token,
       std::cout << "Found running infinit watchdog\n";
       assert(false);
     }
-  QProcess p;
-  p.start(watchdogPath);
-  //p.setReadChannel(QProcess::StandardOutput);
 
-  //this->_watchdogProcess.startDetached(watchdogPath);
-  //this->_watchdogProcess.setReadChannel(QProcess::StandardOutput);
-  this->_idCard.token = token;
-  this->_idCard.identity = identity;
-  //this->connect(
-  //    //&this->_watchdogProcess, SIGNAL(started()),
-  //    &p, SIGNAL(started()),
-  //    this, SLOT(_OnWatchdogLaunched())
-  //);
-  std::cout << "Waiting watchdog write ok\n";
-  p.write(this->_idCard.token.c_str());
-  p.write(" ");
-  p.write(this->_idCard.identity.c_str());
-  p.closeWriteChannel();
-  p.closeReadChannel(QProcess::StandardOutput);
-  p.waitForBytesWritten(2000);
-  std::cout << "DONE\n";
-  ::exit(0);
+  {
+      QProcess p;
+      p.start(watchdogPath);
+      //p.setReadChannel(QProcess::StandardOutput);
+
+      //this->_watchdogProcess.startDetached(watchdogPath);
+      p.setReadChannel(QProcess::StandardOutput);
+      this->_idCard.token = token;
+      this->_idCard.identity = identity;
+      this->connect(
+          //&this->_watchdogProcess, SIGNAL(started()),
+          &p, SIGNAL(started()),
+          this, SLOT(_OnWatchdogLaunched())
+      );
+      std::cout << "Waiting watchdog write ok\n";
+      p.write(this->_idCard.token.c_str());
+      p.write(" ");
+      p.write(this->_idCard.identity.c_str());
+      p.waitForBytesWritten(2000);
+      p.closeWriteChannel();
+
+      this->_watchdogProcess.setReadChannel(QProcess::StandardOutput);
+      p.waitForReadyRead(2000);
+      p.closeReadChannel(QProcess::StandardOutput);
+
+      std::cout << "DONE: "
+                << QString(p.readAll()).toStdString()
+                <<"\n";
+  }
 }
 
 
 void Application::_OnWatchdogLaunched()
 {
   std::cout << "BPIDS6\n";
-  this->quit();
   return;
-  std::cout << "Watchdog response:"
-            << QString(this->_watchdogProcess.readAll()).toStdString()
-            << std::endl;
 }

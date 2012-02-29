@@ -22,6 +22,14 @@ minor=`cat CMakeLists.txt| grep INFINIT_VERSION_MINOR | head -n1 | cut -d\" -f2`
 release_dir="$SCRIPTDIR/releases/release-$rev"
 server_arch=linux64
 
+local_install=0
+if [ "$2" = local ]
+then
+	local_install=1
+fi
+
+upload_install=1
+
 echo "==== Building Infinit $major.$minor.$rev"
 
 mkdir -p "$release_dir"
@@ -43,9 +51,9 @@ build_release()
 	for f in 8infinit \
 	         satellites/dictionary/8dictionary \
 	         satellites/access/8access \
-	         plasma/updater/updater \
-	         plasma/installer/installer \
-	         plasma/watchdog/watchdog
+	         plasma/updater/8updater \
+	         plasma/installer/8installer \
+	         plasma/watchdog/8watchdog
 	do
 		[ -x "$build_dir/$f" ] || die "cannot find '$build_dir/$f' binary"
 		echo "= Copying '$build_dir/$f' binary"
@@ -73,7 +81,7 @@ do
 	build_release "$dir" "$release_dir/downloads"
 done
 
-if [ ! -d "$server_arch" ]
+if true #[ ! -d "$server_arch" ]
 then
 	restart_server=0
 	echo "Server architecture need $server_arch build dir"
@@ -126,12 +134,20 @@ echo "==== Creating `basename $release_tarball`"
 	tar cjf "$release_tarball" *
 ) || die "Cannot create tarball $release_tarball"
 
-size=`du -hs "$release_tarball" | cut -f1`
-echo "==== Uploading tarball ($size)"
-scp "$release_tarball" oracle@infinit.im:www/infinit.im/
+if [ $upload_install = 1 ]
+then
+	size=`du -hs "$release_tarball" | cut -f1`
+	echo "==== Uploading tarball ($size)"
+	scp "$release_tarball" oracle@infinit.im:www/infinit.im/
 
-echo "==== Deploying tarball"
-ssh oracle@infinit.im "cd www/infinit.im && tar xf `basename "$release_tarball"` && rm `basename "$release_tarball"`"
+	echo "==== Deploying tarball"
+	ssh oracle@infinit.im "cd www/infinit.im && tar xf `basename "$release_tarball"` && rm `basename "$release_tarball"`"
+fi
+
+if [ $local_install = 1 ]
+then
+	echo TODO
+fi
 
 if [ $restart_server = 1 ]
 then

@@ -27,12 +27,11 @@ using namespace plasma::watchdog;
 Application::Application(int ac, char* av[]) :
   QApplication(ac, av)
 {
-  std::cout << "ctor\n";
+  this->_server = new QLocalServer(this);
 }
 
 Application::~Application()
 {
-  std::cout << "dtor\n";
 }
 
 //
@@ -41,8 +40,6 @@ Application::~Application()
 
 int Application::Exec()
 {
-  std::cout << "YEAH !\n";
   return this->exec();
-  std::cout << "YEAH !(fin)\n";
 }
 
