@@ -41,9 +41,17 @@ namespace plasma {
       Q_OBJECT
 
     private:
+      struct IdCard
+      {
+          std::string token;
+          std::string identity;
+      };
+
+    private:
       ReleaseUpdater  _releaseUpdater;
       IdentityUpdater _identityUpdater;
       QProcess        _watchdogProcess;
+      IdCard          _idCard;
 
     public:
       Application(int ac, char** av);

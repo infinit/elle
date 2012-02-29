@@ -14,6 +14,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <stdexcept>
 
 #include <QJson/Parser>
 #include <QJson/Serializer>
@@ -73,11 +74,22 @@ namespace {
             return;
           }
 
-        ResponseType response;
-        if (Deserializer::Fill(result, response))
-          this->callback(response);
-        else if (this->errback != nullptr)
-          this->errback(MetaClient::Error::InvalidContent, "Malformed response");
+        try
+          {
+            ResponseType response;
+            Deserializer::Fill(result, response);
+              this->callback(response);
+          }
+        catch (std::exception const& error)
+          {
+            if (this->errback != nullptr)
+              this->errback(
+                  MetaClient::Error::InvalidContent,
+                  "Malformed response: " + std::string(error.what())
+              );
+            else
+              std::cerr << "Missing errback (" << error.what() << ")\n";
+          }
       }
 
       virtual void OnNetworkError(QNetworkReply::NetworkError)
@@ -95,41 +107,60 @@ namespace {
 #define FILLER(cls)                                                         \
     struct cls##Filler                                                      \
     {                                                                       \
-      static bool Fill(QVariantMap const& map, cls& response)               \
+      static void Fill(QVariantMap const& map, cls& response)               \
       {                                                                     \
-        if (!map.contains("success"))                                       \
-          return false;                                                     \
-        response.success = map["success"].toBool();                         \
-        if (!response.success)                                              \
+        if (map.contains("success"))                                        \
           {                                                                 \
-            response.error = getstr(map, "error");                          \
-            return true;                                                    \
+            response.success = map["success"].toBool();                     \
+            if (!response.success)                                          \
+              {                                                             \
+                response.error = _GetString(map, "error");                  \
+                return ;                                                    \
+              }                                                             \
           }                                                                 \
         return _Fill(map, response);                                        \
       }                                                                     \
                                                                             \
-      static std::string getstr(QVariantMap const& map, char const* key)    \
-      { return map[key].toString().toStdString(); }                         \
+    protected:                                                              \
+      static std::string _GetString(QVariantMap const& map,                 \
+                                    char const* key,                        \
+                                    char const* default_value)              \
+      {                                                                     \
+        if (!map.contains(key))                                             \
+          return default_value;                                             \
+        return _GetString(map, key);                                        \
+      }                                                                     \
                                                                             \
-      static bool _Fill(QVariantMap const&, cls&);                          \
+      static std::string _GetString(QVariantMap const& map, char const* key)\
+      {                                                                     \
+        if (!map.contains(key))                                             \
+          throw std::runtime_error("KeyError: " + std::string(key));        \
+        return map[key].toString().toStdString();                           \
+      }                                                                     \
+                                                                            \
+      static std::string _GetNonEmptyString(QVariantMap const& map,         \
+                                            char const* key)                \
+        {                                                                   \
+          std::string val{_GetString(map, key)};                            \
+          if (val.empty())                                                  \
+            throw std::runtime_error(                                       \
+                "ValueError: map[\"" + std::string(key) + "\"] is emtpy"    \
+            );                                                              \
+          return val;                                                       \
+        }                                                                   \
+      static void _Fill(QVariantMap const&, cls&);                          \
     };                                                                      \
-    bool cls##Filler::_Fill(QVariantMap const& map, cls& response)          \
+    void cls##Filler::_Fill(QVariantMap const& map, cls& response)          \
 
 /////////////////////////////////////////////////////////////////////////////
 // Response deserializers defined here
 
     FILLER(LoginResponse)
     {
-        response.token = getstr(map, "token");
-        response.fullname = getstr(map, "fullname");
-        response.email = getstr(map, "email");
-        response.identity = getstr(map, "identity");
-        return (
-            response.token.size() > 0 &&
-            response.fullname.size() > 0 &&
-            response.identity.size() > 0 &&
-            response.email.size() > 0
-        );
+      response.token =    _GetNonEmptyString(map, "token");
+      response.fullname = _GetNonEmptyString(map, "fullname");
+      response.email =    _GetNonEmptyString(map, "email");
+      response.identity = _GetNonEmptyString(map, "identity");
     }
 
 

@@ -50,13 +50,13 @@ int Application::Exec()
     this, SLOT(_OnReleaseUpdated(bool))
   );
 
+  if (!this->_CheckInfinitHome())
+    return EXIT_FAILURE;
   return this->exec();
 }
 
 void Application::_OnReleaseUpdated(bool)
 {
-  if (!this->_CheckInfinitHome())
-    return;
   this->_identityUpdater.Start();
   this->connect(
     &this->_identityUpdater,
@@ -92,24 +92,37 @@ void Application::_OnIdentityUpdated(std::string const& token,
       std::cout << "Found running infinit watchdog\n";
       assert(false);
     }
-  this->_watchdogProcess.start(watchdogPath);
-  this->_watchdogProcess.setReadChannel(QProcess::StandardOutput);
-  this->connect(
-      &this->_watchdogProcess, SIGNAL(readyReadStandardOutput()),
-      this, SLOT(_OnWatchdogLaunched())
-  );
-  this->_watchdogProcess.write(token.c_str());
-  this->_watchdogProcess.write(" ");
-  this->_watchdogProcess.write(identity.c_str());
-  this->_watchdogProcess.closeWriteChannel();
-  std::cout << "Waiting watchdog readiness\n";
+  QProcess p;
+  p.start(watchdogPath);
+  //p.setReadChannel(QProcess::StandardOutput);
+
+  //this->_watchdogProcess.startDetached(watchdogPath);
+  //this->_watchdogProcess.setReadChannel(QProcess::StandardOutput);
+  this->_idCard.token = token;
+  this->_idCard.identity = identity;
+  //this->connect(
+  //    //&this->_watchdogProcess, SIGNAL(started()),
+  //    &p, SIGNAL(started()),
+  //    this, SLOT(_OnWatchdogLaunched())
+  //);
+  std::cout << "Waiting watchdog write ok\n";
+  p.write(this->_idCard.token.c_str());
+  p.write(" ");
+  p.write(this->_idCard.identity.c_str());
+  p.closeWriteChannel();
+  p.closeReadChannel(QProcess::StandardOutput);
+  p.waitForBytesWritten(2000);
+  std::cout << "DONE\n";
+  ::exit(0);
 }
 
 
 void Application::_OnWatchdogLaunched()
 {
+  std::cout << "BPIDS6\n";
+  this->quit();
+  return;
   std::cout << "Watchdog response:"
             << QString(this->_watchdogProcess.readAll()).toStdString()
             << std::endl;
-  this->quit();
 }

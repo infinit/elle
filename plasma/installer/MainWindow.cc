@@ -7,6 +7,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QProcess>
 #include <QUrl>
 
 #include "resources.hh"
@@ -137,12 +138,17 @@ void MainWindow::download_done(QNetworkReply* reply)
             "Cannot continue !",
             "The updater is not available"
         );
-      else if(system(this->_dest_file->fileName().toStdString().c_str()))
-        QMessageBox::warning(
-            this,
-            "Cannot continue !",
-            "The updater is not executable"
-        );
+      else
+        {
+          QProcess updater;
+          updater.startDetached(this->_dest_file->fileName());
+          exit(EXIT_SUCCESS);
+        }
+        //QMessageBox::warning(
+        //    this,
+        //    "Cannot continue !",
+        //    "The updater is not executable"
+        //);
       exit(EXIT_FAILURE);
     }
 }

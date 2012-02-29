@@ -37,8 +37,8 @@ ROOTDIR=`python -c "import os;print(os.path.abspath(os.path.dirname('$0')))"`
 
 BASEDIR="${ROOTDIR}/../../../.."
 
-source "${BASEDIR}/environment.sh"
-source "${BASEDIR}/common.sh"
+. "${BASEDIR}/environment.sh"
+. "${BASEDIR}/common.sh"
 
 #
 # ---------- entry point ------------------------------------------------------
