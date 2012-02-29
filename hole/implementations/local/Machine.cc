@@ -114,34 +114,6 @@ namespace hole
             }
           }
 
-        // does the block already exist.
-        if (block.Exist(Hole::Implementation->network,
-                        address,
-                        nucleus::Version::Last) == elle::StatusTrue)
-          {
-            nucleus::MutableBlock*      current;
-
-            // build a block according to the component.
-            if (nucleus::Nucleus::Factory.Build(address.component,
-                                                current) == elle::StatusError)
-              escape("unable to build the block");
-
-            {
-              std::unique_ptr<nucleus::MutableBlock> guard(current);
-
-              // load the latest version.
-              if (current->Load(Hole::Implementation->network,
-                                address,
-                                nucleus::Version::Last) == elle::StatusError)
-                escape("unable to load the current version");
-
-              // does the given block derive the current version.
-              if (!(block.version > current->version))
-                escape("the block to store does not seem to derive the current "
-                       "version");
-            }
-          }
-
         // store the block.
         if (block.Store(Hole::Implementation->network,
                         address) == elle::StatusError)
