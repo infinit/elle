@@ -272,11 +272,31 @@ namespace nucleus
           //
           elle::Archive         archive;
           elle::Region          region;
+          MutableBlock          block;
 
           // complete the file path.
           if (file.Complete(elle::Piece("%VERSION%", "@")) ==
               elle::StatusError)
             escape("unable to complete the path");
+
+          // does the block already exist.
+          if (block.Exist(network,
+                          address,
+                          nucleus::Version::Last) == elle::StatusTrue)
+            {
+              MutableBlock      current;
+
+              // load the latest version.
+              if (current.Load(network,
+                               address,
+                               nucleus::Version::Last) == elle::StatusError)
+                escape("unable to load the current block");
+
+              // does the given block derive the current version.
+              if (!(this->version > current.version))
+                escape("the block to store does not seem to derive the "
+                       "current version");
+            }
 
           // create the archive.
           if (archive.Create() == elle::StatusError)
@@ -362,6 +382,17 @@ namespace nucleus
                   reinterpret_cast<const elle::Byte*>(number.c_str()),
                   number.length())) == elle::StatusError)
             escape("unable to create the block link");
+
+          // XXX here the history should be loaded before the file is
+          // XXX being stored. then the file should be stored only if the
+          // XXX file does not already exist. finally, the @ link should be
+          // XXX updated (if the file has been stored) with the latest version
+          // XXX number (which is not necessarily the one given here; indeed
+          // XXX this method could be called for version 4 though a version
+          // XXX 32 already exists). finally, the history should be re-worked
+          // XXX so as to used a sorted data structure such as a map which
+          // XXX would then be used to retrieve the latest version number.
+          escape("XXX");
 
           // if there is a history, load it.
           if (history.Exist(network, address) == elle::StatusTrue)
