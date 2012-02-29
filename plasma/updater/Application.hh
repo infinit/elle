@@ -45,7 +45,7 @@ namespace plasma {
       IdentityUpdater _identityUpdater;
 
     public:
-      Application(int ac, char** av);
+      Application(int& ac, char** av);
       virtual ~Application();
       int Exec();
     private:

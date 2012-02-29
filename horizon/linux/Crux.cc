@@ -1175,12 +1175,7 @@ namespace horizon
 
       // test if a trait has been found.
       if (trait == NULL)
-        {
-          log("unable to locate the '%s' attribute",
-              trait->name.c_str());
-
-          return (-ENOATTR);
-        }
+        return (-ENOATTR);
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
