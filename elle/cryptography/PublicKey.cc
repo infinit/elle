@@ -485,13 +485,16 @@ Status              PublicKey::Dump(const Natural32         margin) const
 ///
 /// this method serializes a public key object.
 ///
-Status PublicKey::Serialize(Archive& archive) const
+Status          PublicKey::Serialize(Archive&           archive) const
 {
-  assert(this->_key != nullptr);
+  // XXX assert(this->_key != nullptr);
+  // XXX[to remove]
+  if (this->_key == nullptr)
+    escape("XXX");
 
   // serialize the internal numbers.
-  auto res = archive.Serialize(*this->_key->pkey.rsa->n, *this->_key->pkey.rsa->e);
-  if (res == StatusError)
+  if (archive.Serialize(*this->_key->pkey.rsa->n,
+                        *this->_key->pkey.rsa->e) == StatusError)
     escape("unable to serialize the internal numbers");
 
   return elle::StatusOk;
@@ -500,7 +503,7 @@ Status PublicKey::Serialize(Archive& archive) const
 ///
 /// this method extract a public key from the given archive.
 ///
-Status PublicKey::Extract(Archive& archive)
+Status          PublicKey::Extract(Archive&             archive)
 {
   struct Scope
   {

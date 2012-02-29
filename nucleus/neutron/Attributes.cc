@@ -28,6 +28,10 @@ namespace nucleus
     ///
     elle::Status        Attributes::Add(Trait*                  trait)
     {
+      // check that the trait's name is non-empty.
+      if (trait->name.empty() == true)
+        escape("unable to create an empty-named trait in the attributes");
+
       // add the trait in the range.
       if (this->range.Add(trait) == elle::StatusError)
         escape("unable to add the trait in the range");

@@ -1,11 +1,17 @@
-- ?
-- 182f8d7f784e31a29987ca8547ffb6938a3d4c4a: Simplified the platform-specific code.
-- b6ae332c1ef8105dc1c743c07f58b0d7f12138d9: Modified the platform-specific compilation.
-- a35cbeda9c52944f24b9399a1cbf9fe54870fa3e: Updated the platform selection.
-- 30da593a58c355e3ed0313905e0de1360ff0624f: some spaces
+- Slug
+ - tests:
+  - copier kaneton && node joins
+   -> probable que ca vienne du fait que lors d'un Pull ou recupere et stocke
+      la derniere version des autres nodes: sauf que en stockant, on rend cette
+      version la derniere. si notre noeud avait la derneire version, on ne
+      la voit plus et on voit une ancienne a la place.
+  - compile kaneton && au milieu, noeud joins
+  - compile kaneton && while true: ls -R
+  - reduire le temps d'attente pour etre Alone (5 to 2 seconds)
 
 - bugs:
  - Broker: select() == 0
+ - regler ca en passant a un nouveau core: asio
 
 - SocketNotifier
  - regarder pourquoi le warning
@@ -23,11 +29,6 @@
  - ajouter locking
  - ajouter implem pthread
  - ou passer a asio, cf ci-dessous
-
-- event loop/timer/fibers/socket
- - boost::asio
- - boost::timer
- - boost::socket
 
 - bouger le .conf et .log dans network/
 

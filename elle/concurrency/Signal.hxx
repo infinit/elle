@@ -176,6 +176,26 @@ namespace elle
       return elle::StatusOk;
     }
 
+    ///
+    /// this method dumps the signal.
+    ///
+    template <typename... T>
+    Status
+    Signal< Parameters<T...> >::Dump(const Natural32            margin) const
+    {
+      String            alignment(margin, ' ');
+      auto              iterator = this->container.begin();
+      auto              end = this->container.end();
+
+      std::cout << alignment << "[Signal]" << std::endl;
+
+      // dump the mode.
+      std::cout << alignment << Dumpable::Shift
+                << "[Functionoids] " << this->container.size() << std::endl;
+
+      return elle::StatusOk;
+    }
+
 //
 // ---------- selectonoid -----------------------------------------------------
 //
@@ -202,22 +222,6 @@ namespace elle
       const
     {
       return (this->object.Call(arguments...));
-    }
-
-    ///
-    /// this method dumps the selectionoid.
-    ///
-    template <typename... T>
-    template <typename Y>
-    Status
-    Signal< Parameters<T...> >::
-     Selectionoid<Y>::Dump(const Natural32                      margin) const
-    {
-      // dump the object.
-      if (this->object.Dump(margin) == StatusError)
-        escape("unable to dump the object");
-
-      return elle::StatusOk;
     }
 
   }
