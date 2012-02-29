@@ -94,7 +94,7 @@ include_directories(${QT_INCLUDES})
 # tell cmake to not build shared libraries by default
 set(BUILD_SHARED_LIBS OFF)
 
-include_directories(BEFORE ${INFINIT_LIBRARIES_PREFIX}/include .)
+include_directories(BEFORE SYSTEM ${INFINIT_LIBRARIES_PREFIX}/include .)
 
 #
 # MSVC CXXFLAGS
