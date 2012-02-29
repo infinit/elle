@@ -37,9 +37,9 @@ namespace hole
       const elle::Natural16             Machine::Default::Port = 1912;
 
       ///
-      /// XXX 5 seconds
+      /// XXX 3 seconds
       ///
-      const elle::Natural32             Machine::Timeout = 5000;
+      const elle::Natural32             Machine::Timeout = 3000;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -490,7 +490,6 @@ namespace hole
                   // the block from them.
                   //
                   Neighbourhood::Scoutor        scoutor;
-                  nucleus::ImmutableBlock*      h;
 
                   // for every scoutor.
                   for (scoutor = this->neighbourhood.container.begin();
@@ -498,38 +497,24 @@ namespace hole
                        scoutor++)
                     {
                       Host*                     host = scoutor->second;
-                      nucleus::ImmutableBlock*  ib;
-
-                      // duplicate the block in its original form.
-                      if (nucleus::Nucleus::Factory.Build(
-                            block.component,
-                            ib) == elle::StatusError)
-                        escape("unable to clone the block");
-
-                      auto                                      b =
-                        std::unique_ptr<nucleus::ImmutableBlock>(ib);
-                      nucleus::Derivable<nucleus::Block>        d(*b.get());
-
-                      // XXX recuperer les N versions et prendre
-                      // XXX la plus vieille.
 
                       // request the host.
                       if (host->socket->Call(
                             elle::Inputs<TagPull>(address,
                                                   nucleus::Version::Any),
-                            elle::Outputs<TagBlock>(d)) == elle::StatusOk)
+                            elle::Outputs<TagBlock>(derivable)) ==
+                          elle::StatusOk)
                         {
-                          // XXX do not verify the block's validity.
-
-                          h = b.get();
-                          b.release();
-
                           break;
                         }
 
                       // ignore the error messages and continue with the
                       // next neighbour.
                       purge();
+
+                      // XXX eventuellement Recycle le derivable's object
+                      // XXX au cas ou il ait ete modifie i.e des champs
+                      // XXX ont ete settes.
                     }
 
                   // check if none if the neighbour has the block.
@@ -537,10 +522,14 @@ namespace hole
                     escape("unable to locate the block associated with "
                            "the given address");
 
+                  // validate the block.
+                  if (block.Validate(address) == elle::StatusError)
+                    escape("the block seems to be invalid");
+
                   // finally, since the block has been retrieved,
                   // store it locally.
-                  if (h->Store(Hole::Implementation->network,
-                               address) == elle::StatusError)
+                  if (block.Store(Hole::Implementation->network,
+                                  address) == elle::StatusError)
                     escape("unable to store the block");
                 }
 
@@ -592,7 +581,13 @@ namespace hole
               if (version == nucleus::Version::Last)
                 {
                   Neighbourhood::Scoutor        scoutor;
-                  nucleus::MutableBlock*        h;
+
+                  // XXX une autre solution: on parcours et on recupere
+                  // XXX de chaque node dans un derivable propre (on aura
+                  // XXX pris soin de Nucleus::Factory.Build(block.component)
+                  // XXX pour cloner le block). enfin on stocke le ou les
+                  // XXX blocs recus. pour finir, on lit du disque le block
+                  // XXX recupere qui doit maintenant exister: block.Load().
 
                   // for every scoutor.
                   for (scoutor = this->neighbourhood.container.begin();
@@ -678,9 +673,6 @@ namespace hole
                                   address,
                                   nucleus::Access::Null) == elle::StatusError)
                               escape("unable to validate the object");
-
-                            // XXX
-                            printf("FILE VALID\n");
                           }
 
                         break;
@@ -708,6 +700,13 @@ namespace hole
                   //
                   Neighbourhood::Scoutor        scoutor;
 
+                  // XXX une autre solution: on parcours et on recupere
+                  // XXX de chaque node dans un derivable propre (on aura
+                  // XXX pris soin de Nucleus::Factory.Build(block.component)
+                  // XXX pour cloner le block). enfin on stocke le ou les
+                  // XXX blocs recus. pour finir, on lit du disque le block
+                  // XXX recupere qui doit maintenant exister: block.Load().
+
                   // for every scoutor.
                   for (scoutor = this->neighbourhood.container.begin();
                        scoutor != this->neighbourhood.container.end();
@@ -722,7 +721,6 @@ namespace hole
                             elle::Outputs<TagBlock>(derivable)) ==
                           elle::StatusOk)
                         {
-                          // XXX do not verify the block's validity.
                           break;
                         }
 
@@ -735,6 +733,60 @@ namespace hole
                   if (scoutor == this->neighbourhood.container.end())
                     escape("unable to locate the block associated with "
                            "the given address");
+
+                  // validate the block, depending on its component.
+                  //
+                  // indeed, the Object component requires as additional
+                  // block for being validated.
+                  switch (address.component)
+                    {
+                    case nucleus::ComponentObject:
+                      {
+                        const nucleus::Object*  object =
+                          static_cast<const nucleus::Object*>(&block);
+
+                        // validate the object according to the presence of
+                        // a referenced access block.
+                        if (object->meta.access != nucleus::Address::Null)
+                          {
+                            nucleus::Access     access;
+
+                            // load the access block.
+                            if (Hole::Pull(object->meta.access,
+                                           nucleus::Version::Last,
+                                           access) == elle::StatusError)
+                              escape("unable to load the access block");
+
+                            // validate the object, providing the
+                            if (object->Validate(address,
+                                                 access) == elle::StatusError)
+                              escape("unable to validate the object");
+                          }
+                        else
+                          {
+                            // validate the object.
+                            if (object->Validate(
+                                  address,
+                                  nucleus::Access::Null) == elle::StatusError)
+                              escape("unable to validate the object");
+                          }
+
+                        break;
+                      }
+                    default:
+                      {
+                        // validate the block through the common interface.
+                        if (block.Validate(address) == elle::StatusError)
+                          escape("the block seems to be invalid");
+
+                        break;
+                      }
+                    case nucleus::ComponentUnknown:
+                      {
+                        escape("unknown component '%u'",
+                               address.component);
+                      }
+                    }
 
                   // finally, since the block has been retrieved,
                   // store it locally.
