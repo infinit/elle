@@ -27,7 +27,7 @@ using namespace plasma::updater;
 // ---------- constructors & destructors --------------------------------------
 //
 
-Application::Application(int ac, char** av) :
+Application::Application(int& ac, char** av) :
   QApplication(ac, av, true),
   _releaseUpdater(*this),
   _identityUpdater(*this),
