@@ -22,6 +22,9 @@ int     main(int ac, char* av[])
           return EXIT_FAILURE;
         }
   } while (true);
+
+  //::close(STDIN_FILENO);
+
   size_t idx = 0;
   while (idx < sz && buf[idx] != ' ')
     ++idx;
@@ -35,7 +38,11 @@ int     main(int ac, char* av[])
   std::string identity(buf + idx, sz - idx);
   delete [] buf;
   std::cout << "Started with token=" << token
-            << " id=" << identity << std::endl;
+            << " identity=" << identity << std::endl;
+
+  std::cout << "bip\n";
+  sleep(1);
+  std::cout << "bip\n";
 
   plasma::watchdog::Application app(ac, av);
   return app.Exec();

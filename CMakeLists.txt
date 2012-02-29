@@ -15,7 +15,7 @@ elseiF(UNIX)
   set(INFINIT_LINUX true)
 endif()
 
-message("---[ building infinit-${INFINIT_VERSION} for ${INFINIT_PLATFORM}")
+message("--- building infinit-${INFINIT_VERSION} for ${INFINIT_PLATFORM}")
 
 set(INFINIT_LIBRARIES_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/platforms/${INFINIT_PLATFORM}/work")
 
@@ -126,7 +126,7 @@ add_subdirectory(hole)
 add_subdirectory(satellites)
 add_subdirectory(plasma)
 
-if("${INFINIT_PLATFORM}" STREQUAL "linux64")
+if("${INFINIT_PLATFORM}" MATCHES "linux*")
   add_subdirectory(oracle)
 endif()
 

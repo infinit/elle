@@ -16,6 +16,7 @@ class Login(Page):
                 'success': True,
                 'token': "generated session token",
                 'fullname': 'full name',
+                'identity': 'Full base64 identity',
             }
     """
 
@@ -30,6 +31,7 @@ class Login(Page):
                 'token': self.session.session_id,
                 'fullname': self.user['fullname'],
                 'email': self.user['email'],
+                'identity': self.user['identity'],
             })
         return json.dumps({
             'success': False,
