@@ -30,8 +30,7 @@ using namespace plasma::updater;
 Application::Application(int ac, char** av) :
   QApplication(ac, av, true),
   _releaseUpdater(*this),
-  _identityUpdater(*this),
-  _watchdogProcess(this)
+  _identityUpdater(*this)
 {}
 
 Application::~Application()
@@ -86,47 +85,24 @@ void Application::_OnIdentityUpdated(std::string const& token,
                                      std::string const& identity)
 {
   QDir home_directory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
-  QString watchdogPath = home_directory.filePath("binaries/watchdog");
+  QString watchdogPath = home_directory.filePath("binaries/8watchdog");
   if (home_directory.exists("infinit.wtg"))
     {
       std::cout << "Found running infinit watchdog\n";
       assert(false);
     }
 
+  // We finaly launch the watchdog
   {
       QProcess p;
-      p.start(watchdogPath);
-      //p.setReadChannel(QProcess::StandardOutput);
-
-      //this->_watchdogProcess.startDetached(watchdogPath);
-      p.setReadChannel(QProcess::StandardOutput);
-      this->_idCard.token = token;
-      this->_idCard.identity = identity;
-      this->connect(
-          //&this->_watchdogProcess, SIGNAL(started()),
-          &p, SIGNAL(started()),
-          this, SLOT(_OnWatchdogLaunched())
-      );
-      std::cout << "Waiting watchdog write ok\n";
-      p.write(this->_idCard.token.c_str());
-      p.write(" ");
-      p.write(this->_idCard.identity.c_str());
-      p.waitForBytesWritten(2000);
-      p.closeWriteChannel();
-
-      this->_watchdogProcess.setReadChannel(QProcess::StandardOutput);
-      p.waitForReadyRead(2000);
-      p.closeReadChannel(QProcess::StandardOutput);
-
-      std::cout << "DONE: "
-                << QString(p.readAll()).toStdString()
-                <<"\n";
+      if (!p.startDetached(watchdogPath))
+        {
+          std::cerr << "Cannot start the watchdog !\n";
+          return;
+        }
+      p.waitForStarted(2000);
+      std::cout << "Started !\n";
   }
+  this->exit(EXIT_SUCCESS);
 }
 
-
-void Application::_OnWatchdogLaunched()
-{
-  std::cout << "BPIDS6\n";
-  return;
-}

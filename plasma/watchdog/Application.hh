@@ -16,12 +16,14 @@
 //
 
 #include <QApplication>
-#include <QLocalServer>
+
 
 namespace plasma
 {
   namespace watchdog
   {
+
+    class LocalServer;
 
 //
 // ---------- classes ---------------------------------------------------------
@@ -35,7 +37,8 @@ namespace plasma
       Q_OBJECT
 
     private:
-      QLocalServer*   _server;
+      LocalServer*    _server;
+
     public:
       Application(int ac, char* av[]);
       ~Application();

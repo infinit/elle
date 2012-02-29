@@ -9,6 +9,8 @@
 
 # ifdef WIN32
 #  define _INFINIT_FILENAME_SUFFIX ".exe"
+# elif defined(INFINIT_MACOSX)
+#  define _INFINIT_FILENAME_SUFFIX ".dmg"
 # else
 #  define _INFINIT_FILENAME_SUFFIX ""
 # endif
@@ -29,7 +31,7 @@
 #  error "unsupported platform"
 # endif
 
-# define INFINIT_UPDATER_FILENAME "updater" _INFINIT_FILENAME_SUFFIX
+# define INFINIT_UPDATER_FILENAME "8updater" _INFINIT_FILENAME_SUFFIX
 
 # define INFINIT_BASE_URL \
   _INFINIT_HOST_PROTOCOL ":/" "/" _INFINIT_HOST "/" _INFINIT_DOWNLOAD_DIR "/" _INFINIT_PLATFORM
@@ -48,5 +50,8 @@
 # else
 #  define INFINIT_HOME_DIRECTORY ".config/infinit"
 # endif
+
+
+# define WATCHDOG_SERVER_NAME "INFINIT_WATCHDOG_LOCAL_SOCKET"
 
 #endif // RESOURCES_HPP
