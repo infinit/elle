@@ -16,6 +16,7 @@
 //
 
 #include <QApplication>
+#include <QLocalServer>
 
 namespace plasma
 {
@@ -31,6 +32,10 @@ namespace plasma
     ///
     class Application : public QApplication
     {
+      Q_OBJECT
+
+    private:
+      QLocalServer*   _server;
     public:
       Application(int ac, char* av[]);
       ~Application();

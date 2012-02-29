@@ -40,10 +40,6 @@ int     main(int ac, char* av[])
   std::cout << "Started with token=" << token
             << " identity=" << identity << std::endl;
 
-  std::cout << "bip\n";
-  sleep(1);
-  std::cout << "bip\n";
-
   plasma::watchdog::Application app(ac, av);
   return app.Exec();
 }
