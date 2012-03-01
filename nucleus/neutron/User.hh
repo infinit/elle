@@ -40,12 +40,6 @@ namespace nucleus
       //
       elle::Status      Create(const elle::PublicKey&);
 
-      elle::Status      Seal(const elle::PrivateKey&,
-                             const Access* = NULL);
-
-      elle::Status      Validate(const proton::Address&,
-                                 const Access* = NULL) const;
-
       //
       // interfaces
       //

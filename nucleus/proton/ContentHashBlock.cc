@@ -91,7 +91,7 @@ namespace nucleus
       if (address != self)
         escape("the recorded address does not correspond to this block");
 
-      return elle::StatusTrue;
+      return elle::StatusOk;
     }
 
 //
