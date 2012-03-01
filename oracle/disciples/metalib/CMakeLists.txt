@@ -9,7 +9,7 @@ add_definitions(-fPIC)
 add_library(metalib SHARED ${metalib_srcs})
 link_directories(${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(metalib
-    elle lune
+    elle lune hole nucleus infinit
     ${INFINIT_OPENSSL_SHARED_LIBRARIES}
 	${INFINIT_MSGPACK_STATIC_LIBRARIES}
 )
