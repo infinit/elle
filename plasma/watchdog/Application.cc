@@ -19,6 +19,7 @@
 
 #include <QDir>
 #include <QFile>
+#include <QLocalSocket>
 
 #include "plasma/common/resources.hh"
 
@@ -34,7 +35,7 @@ using namespace plasma::watchdog;
 Application::Application(int ac, char* av[]) :
   QApplication(ac, av)
 {
-  this->_server = new LocalServer(this);
+  this->_server = new LocalServer(*this);
 }
 
 Application::~Application()
