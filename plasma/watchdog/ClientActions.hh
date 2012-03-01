@@ -40,6 +40,7 @@ namespace plasma
 
     private:
       void _OnRun(Connection& conn, Client& client, QVariantList const& args);
+      void _OnStop(Connection& conn, Client& client, QVariantList const& args);
     };
 
   }

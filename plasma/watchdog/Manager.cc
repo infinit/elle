@@ -105,3 +105,7 @@ void Manager::ExecuteCommand(ConnectionPtr& conn, QVariantMap const& cmd)
     }
   (it->second)(*conn, *(*this->_clients)[conn], cmd["arguments"].toList());
 }
+
+void Manager::Stop()
+{
+}
