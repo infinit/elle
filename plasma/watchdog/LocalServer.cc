@@ -50,20 +50,21 @@ void LocalServer::Start(std::string const& watchdogId)
   if (this->_state == State::Running)
     return;
 
-  char const* id = watchdogId.c_str();
+  this->_watchdogId = watchdogId;
+
   // Trying to create a listening socket
-  if (!this->listen(id))
+  if (!this->listen(WATCHDOG_SERVER_NAME))
     {
       std::cerr << "Warning: Server name already used (maybe previous crash)\n";
 
       // We try to remove the server instance first
-      if (!QLocalServer::removeServer(id))
+      if (!QLocalServer::removeServer(WATCHDOG_SERVER_NAME))
         throw std::runtime_error("Cannot remove previous server instance");
 
       // Then call listen again, since old socket have been removed
-      if (!this->listen(id))
+      if (!this->listen(WATCHDOG_SERVER_NAME))
         throw std::runtime_error(
-            "Cannot start the local server: " + watchdogId
+            "Cannot start the local server: " WATCHDOG_SERVER_NAME
         );
     }
 
@@ -94,7 +95,6 @@ void LocalServer::_OnNewConnection()
 
 void LocalServer::_HandleNewConnection(ConnectionPtr& conn)
 {
-  std::cerr << "Handling\n";
   using namespace std::placeholders;
   conn->Connect(
       std::bind(&LocalServer::_OnClientCommand, this, conn, _1),
@@ -117,6 +117,10 @@ void LocalServer::_OnClientCommand(ConnectionPtr conn, QByteArray const& data)
   QVariantMap cmd = parser.parse(data, &result).toMap();
   if (!result)
     std::cerr << "Warning: Got invalid command: " << QString(data).toStdString();
+  else if (!cmd.contains("id"))
+    std::cerr << "Warning: The command has to contains an id.\n";
+  else if (cmd["id"].toString() != this->_watchdogId.c_str())
+    std::cerr << "Warning: Invalid given token: " << cmd["id"].toString().toStdString() << "\n";
   else
     this->_manager->ExecuteCommand(conn, cmd);
 }

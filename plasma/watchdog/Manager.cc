@@ -28,12 +28,16 @@ using namespace plasma::watchdog;
 
 Manager::Manager(QApplication& app) :
   _app(app),
-  _clients(new ClientMap)
+  _clients(new ClientMap()),
+  _commands(new CommandMap())
 {}
 
 Manager::~Manager()
 {
   delete this->_clients;
+  this->_clients = nullptr;
+  delete this->_commands;
+  this->_commands = nullptr;
 }
 
 //
@@ -66,7 +70,38 @@ void Manager::UnregisterConnection(ConnectionPtr& conn)
     this->_clients->erase(it);
 }
 
+void Manager::RegisterCommand(std::string const& id, Command cmd)
+{
+  if (this->_commands->find(id) != this->_commands->end())
+    throw std::runtime_error(
+        "The command '" + id + "' is already registered !"
+    );
+  auto res = this->_commands->insert(
+      CommandMap::value_type(id, cmd)
+  );
+  if (res.second == false)
+    throw std::runtime_error("Could not register a new command");
+}
+
+void Manager::UnregisterCommand(std::string const& id)
+{
+  auto it = this->_commands->find(id);
+  if (it == this->_commands->end())
+    throw std::runtime_error(
+        "The command '" + id + "' is not registered !"
+    );
+  this->_commands->erase(it);
+}
+
+
 void Manager::ExecuteCommand(ConnectionPtr& conn, QVariantMap const& cmd)
 {
-
+  auto it = this->_commands->find(cmd["command"].toString().toStdString());
+  if (it == this->_commands->end())
+    {
+      std::cerr << "Warning: command not found: "
+                << cmd["command"].toString().toStdString() << ".\n";
+      return;
+    }
+  (it->second)(*conn, *(*this->_clients)[conn], cmd["arguments"].toList());
 }

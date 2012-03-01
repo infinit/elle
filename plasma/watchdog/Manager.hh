@@ -17,9 +17,11 @@
 
 # include <unordered_map>
 # include <memory>
+# include <functional>
 
 # include <QApplication>
 # include <QVariantMap>
+# include <QVariantList>
 
 namespace plasma
 {
@@ -28,11 +30,16 @@ namespace plasma
 
     class Connection;
     class Client;
+    class ClientActions;
 
 //
 // ---------- classes ---------------------------------------------------------
 //
 
+    ///
+    /// The manager dispatch received command and stores clients with
+    /// and their connection.
+    ///
     class Manager
     {
     public:
@@ -40,15 +47,23 @@ namespace plasma
       typedef std::unique_ptr<Client> ClientPtr;
       typedef std::unordered_map<ConnectionPtr, ClientPtr> ClientMap;
 
+      typedef std::function<void(Connection&, Client&, QVariantList const&)> Command;
+      typedef std::unordered_map<std::string, Command> CommandMap;
+
     private:
-      QApplication& _app;
-      ClientMap* _clients;
+      QApplication&   _app;
+      ClientMap*      _clients;
+      CommandMap*     _commands;
 
     public:
       Manager(QApplication& app);
       ~Manager();
+
       Client& RegisterConnection(ConnectionPtr& conn);
       void UnregisterConnection(ConnectionPtr& conn);
+
+      void RegisterCommand(std::string const& id, Command cmd);
+      void UnregisterCommand(std::string const& id);
       void ExecuteCommand(ConnectionPtr& conn, QVariantMap const& cmd);
     };
 

@@ -55,6 +55,8 @@ namespace
   int initRand() { ::srand(::time(nullptr)+42); return 42; }
   int dummy = initRand();
 
+  /// Returns string of size `len` filled randomly with chars contained in
+  /// the string `in'.
   std::string randString(std::string const& in, size_t len)
   {
     assert(in.size() > 0);
@@ -99,16 +101,16 @@ int Application::Exec()
   if (watchdogId.size())
     {
       QLocalSocket conn;
-      conn.connectToServer(watchdogId.c_str());
+      conn.connectToServer(WATCHDOG_SERVER_NAME);
       if (conn.isValid() && conn.waitForConnected(2000))
         {
-          conn.write("STOP\n");
+          std::string cmd = "{\"command\":\"STOP\",\"id\": \"" + watchdogId + "\"}\n";
+          conn.write(cmd.c_str());
           if (!conn.waitForBytesWritten(2000))
             std::cerr << "Warning: Cannot stop the watchdog...\n";
         }
       else
-        std::cerr << "The watchdog " << watchdogId
-                  << " is not connected anymore.\n";
+        std::cerr << "The watchdog " WATCHDOG_SERVER_NAME " is not connected anymore.\n";
     }
 
   // Generate new watchdog id

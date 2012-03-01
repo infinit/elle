@@ -6,3 +6,5 @@ dependencies/environment.sh
 
 build
 work
+*.swp
+releases/
