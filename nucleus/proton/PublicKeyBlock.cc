@@ -102,7 +102,7 @@ namespace nucleus
       // to the recorded public key and identifies the block requested.
       //
 
-      return elle::StatusTrue;
+      return elle::StatusOk;
     }
 
 //

@@ -270,6 +270,10 @@ namespace hole
                                 address) == elle::StatusTrue)
                   escape("this immutable block seems to already exist");
 
+                // validate the block.
+                if (block.Validate(address) == elle::StatusError)
+                  escape("unable to validate the block");
+
                 // store the block.
                 if (block.Store(Hole::Implementation->network,
                                 address) == elle::StatusError)
@@ -290,9 +294,9 @@ namespace hole
                     Host*               host = scoutor->second;
 
                     // send the block to the host.
-                    // XXX do not check the success!
                     host->socket->Send(
                       elle::Inputs<TagPush>(address, derivable));
+                    // XXX do not check the success!
 
                     // ignore the error messages and continue with the
                     // next neighbour.
@@ -417,9 +421,9 @@ namespace hole
                     Host*               host = scoutor->second;
 
                     // send the block to the host.
-                    // XXX do not check the success!
                     host->socket->Send(
                       elle::Inputs<TagPush>(address, derivable));
+                    // XXX do not check the success!
 
                     // ignore the error messages and continue with the
                     // next neighbour.
@@ -446,8 +450,6 @@ namespace hole
       elle::Status      Machine::Get(const nucleus::Address&    address,
                                      nucleus::ImmutableBlock&   block)
       {
-        nucleus::Derivable<nucleus::Block>      derivable(block);
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Machine::Get[Immutable]()\n");
@@ -469,11 +471,6 @@ namespace hole
               if (block.Exist(Hole::Implementation->network,
                               address) == elle::StatusTrue)
                 {
-                  // does the block exist.
-                  if (block.Exist(Hole::Implementation->network,
-                                  address) == elle::StatusFalse)
-                    escape("the block does not seem to exist");
-
                   // load the block.
                   if (block.Load(Hole::Implementation->network,
                                  address) == elle::StatusError)
@@ -489,7 +486,7 @@ namespace hole
                   // otherwise, go through the neighbours and retrieve
                   // the block from them.
                   //
-                  Neighbourhood::Scoutor        scoutor;
+                  Neighbourhood::Scoutor                scoutor;
 
                   // for every scoutor.
                   for (scoutor = this->neighbourhood.container.begin();
@@ -497,6 +494,17 @@ namespace hole
                        scoutor++)
                     {
                       Host*                     host = scoutor->second;
+                      nucleus::ImmutableBlock*  b;
+
+                      // clone the block by relying on the factory.
+                      if (nucleus::Nucleus::Factory.Build(
+                            block.component,
+                            b) == elle::StatusError)
+                        escape("unable to clone the block");
+
+                      auto                                      ptr =
+                        std::unique_ptr<nucleus::ImmutableBlock>(b);
+                      nucleus::Derivable<nucleus::Block>        derivable(*b);
 
                       // request the host.
                       if (host->socket->Call(
@@ -505,32 +513,31 @@ namespace hole
                             elle::Outputs<TagBlock>(derivable)) ==
                           elle::StatusOk)
                         {
-                          break;
+                          // validate the block.
+                          if (b->Validate(address) == elle::StatusOk)
+                            {
+                              // finally, store it locally.
+                              if (b->Store(Hole::Implementation->network,
+                                           address) == elle::StatusOk)
+                                break;
+                            }
                         }
 
                       // ignore the error messages and continue with the
                       // next neighbour.
                       purge();
-
-                      // XXX eventuellement Recycle le derivable's object
-                      // XXX au cas ou il ait ete modifie i.e des champs
-                      // XXX ont ete settes.
                     }
 
                   // check if none if the neighbour has the block.
                   if (scoutor == this->neighbourhood.container.end())
-                    escape("unable to locate the block associated with "
-                           "the given address");
+                    escape("unable to retrieve the block associated with "
+                           "the given address from the other peers");
 
-                  // validate the block.
-                  if (block.Validate(address) == elle::StatusError)
-                    escape("the block seems to be invalid");
-
-                  // finally, since the block has been retrieved,
-                  // store it locally.
-                  if (block.Store(Hole::Implementation->network,
-                                  address) == elle::StatusError)
-                    escape("unable to store the block");
+                  // finally, load the block since it has been retrieved
+                  // and stored locally.
+                  if (block.Load(Hole::Implementation->network,
+                                 address) == elle::StatusError)
+                    escape("unable to load the block");
                 }
 
               break;
@@ -582,137 +589,23 @@ namespace hole
                 {
                   Neighbourhood::Scoutor        scoutor;
 
-                  // XXX une autre solution: on parcours et on recupere
-                  // XXX de chaque node dans un derivable propre (on aura
-                  // XXX pris soin de Nucleus::Factory.Build(block.component)
-                  // XXX pour cloner le block). enfin on stocke le ou les
-                  // XXX blocs recus. pour finir, on lit du disque le block
-                  // XXX recupere qui doit maintenant exister: block.Load().
-
                   // for every scoutor.
                   for (scoutor = this->neighbourhood.container.begin();
                        scoutor != this->neighbourhood.container.end();
                        scoutor++)
                     {
                       Host*                     host = scoutor->second;
-                      nucleus::MutableBlock*    mb;
+                      nucleus::MutableBlock*    b;
 
                       // duplicate the block in its original form.
                       if (nucleus::Nucleus::Factory.Build(
                             block.component,
-                            mb) == elle::StatusError)
+                            b) == elle::StatusError)
                         escape("unable to clone the block");
 
-                      auto                                      b =
-                        std::unique_ptr<nucleus::MutableBlock>(mb);
-                      nucleus::Derivable<nucleus::Block>        d(*b.get());
-
-                      // request the host.
-                      if (host->socket->Call(
-                            elle::Inputs<TagPull>(address,
-                                                  version),
-                            elle::Outputs<TagBlock>(d)) == elle::StatusOk)
-                        {
-                          // XXX do not verify the block's validity.
-
-                          // finally, since the block has been retrieved,
-                          // store it locally.
-                          mb->Store(Hole::Implementation->network,
-                                    address);
-                          // XXX do not check the result as the block to
-                          // XXX store may not be the latest.
-                        }
-
-                      // ignore the error messages and continue with the
-                      // next neighbour.
-                      purge();
-                    }
-                }
-
-              // does the block exist.
-              if (block.Exist(Hole::Implementation->network,
-                              address, version) == elle::StatusTrue)
-                {
-                  // load the block.
-                  if (block.Load(Hole::Implementation->network,
-                                 address, version) == elle::StatusError)
-                    escape("unable to load the block");
-
-                  // validate the block, depending on its component.
-                  //
-                  // indeed, the Object component requires as additional
-                  // block for being validated.
-                  switch (address.component)
-                    {
-                    case nucleus::ComponentObject:
-                      {
-                        const nucleus::Object*  object =
-                          static_cast<const nucleus::Object*>(&block);
-
-                        // validate the object according to the presence of
-                        // a referenced access block.
-                        if (object->meta.access != nucleus::Address::Null)
-                          {
-                            nucleus::Access     access;
-
-                            // load the access block.
-                            if (Hole::Pull(object->meta.access,
-                                           nucleus::Version::Last,
-                                           access) == elle::StatusError)
-                              escape("unable to load the access block");
-
-                            // validate the object, providing the
-                            if (object->Validate(address,
-                                                 access) == elle::StatusError)
-                              escape("unable to validate the object");
-                          }
-                        else
-                          {
-                            // validate the object.
-                            if (object->Validate(
-                                  address,
-                                  nucleus::Access::Null) == elle::StatusError)
-                              escape("unable to validate the object");
-                          }
-
-                        break;
-                      }
-                    default:
-                      {
-                        // validate the block through the common interface.
-                        if (block.Validate(address) == elle::StatusError)
-                          escape("the block seems to be invalid");
-
-                        break;
-                      }
-                    case nucleus::ComponentUnknown:
-                      {
-                        escape("unknown component '%u'",
-                               address.component);
-                      }
-                    }
-                }
-              else
-                {
-                  //
-                  // otherwise, go through the neighbours and retrieve
-                  // the block from them.
-                  //
-                  Neighbourhood::Scoutor        scoutor;
-
-                  // XXX une autre solution: on parcours et on recupere
-                  // XXX de chaque node dans un derivable propre (on aura
-                  // XXX pris soin de Nucleus::Factory.Build(block.component)
-                  // XXX pour cloner le block). enfin on stocke le ou les
-                  // XXX blocs recus. pour finir, on lit du disque le block
-                  // XXX recupere qui doit maintenant exister: block.Load().
-
-                  // for every scoutor.
-                  for (scoutor = this->neighbourhood.container.begin();
-                       scoutor != this->neighbourhood.container.end();
-                       scoutor++)
-                    {
-                      Host*             host = scoutor->second;
+                      auto                                      ptr =
+                        std::unique_ptr<nucleus::MutableBlock>(b);
+                      nucleus::Derivable<nucleus::Block>        derivable(*b);
 
                       // request the host.
                       if (host->socket->Call(
@@ -721,7 +614,72 @@ namespace hole
                             elle::Outputs<TagBlock>(derivable)) ==
                           elle::StatusOk)
                         {
-                          break;
+                          // validate the block, depending on its component.
+                          //
+                          // indeed, the Object component requires as
+                          // additional block for being validated.
+                          switch (address.component)
+                            {
+                            case nucleus::ComponentObject:
+                              {
+                                const nucleus::Object*  object =
+                                  static_cast<const nucleus::Object*>(b);
+
+                                // validate the object according to the
+                                // presence of a referenced access block.
+                                if (object->meta.access !=
+                                    nucleus::Address::Null)
+                                  {
+                                    nucleus::Access     access;
+
+                                    // load the access block.
+                                    if (Hole::Pull(
+                                          object->meta.access,
+                                          nucleus::Version::Last,
+                                          access) == elle::StatusError)
+                                      escape("unable to load the access "
+                                             "block");
+
+                                    // validate the object, providing the
+                                    if (object->Validate(
+                                          address,
+                                          access) == elle::StatusError)
+                                      escape("unable to validate the object");
+                                  }
+                                else
+                                  {
+                                    // validate the object.
+                                    if (object->Validate(
+                                          address,
+                                          nucleus::Access::Null) ==
+                                        elle::StatusError)
+                                      escape("unable to validate the object");
+                                  }
+
+                                break;
+                              }
+                            default:
+                              {
+                                // validate the block through the common
+                                // interface.
+                                if (b->Validate(address) == elle::StatusError)
+                                  escape("the block seems to be invalid");
+
+                                break;
+                              }
+                            case nucleus::ComponentUnknown:
+                              {
+                                escape("unknown component '%u'",
+                                       address.component);
+                              }
+                            }
+
+                          // finally, since the block has been retrieved,
+                          // store it locally.
+                          b->Store(Hole::Implementation->network,
+                                   address);
+                          // XXX do not check the result as the block to
+                          // XXX store may not be the latest.
                         }
 
                       // ignore the error messages and continue with the
@@ -729,78 +687,291 @@ namespace hole
                       purge();
                     }
 
-                  // check if none if the neighbour has the block.
-                  if (scoutor == this->neighbourhood.container.end())
-                    escape("unable to locate the block associated with "
-                           "the given address");
-
-                  // validate the block, depending on its component.
                   //
-                  // indeed, the Object component requires as additional
-                  // block for being validated.
-                  switch (address.component)
-                    {
-                    case nucleus::ComponentObject:
-                      {
-                        const nucleus::Object*  object =
-                          static_cast<const nucleus::Object*>(&block);
+                  // at this point, we may have retrieved one or more versions
+                  // of the mutable block but we do not have any guarantee.
+                  //
 
-                        // validate the object according to the presence of
-                        // a referenced access block.
-                        if (object->meta.access != nucleus::Address::Null)
-                          {
-                            nucleus::Access     access;
-
-                            // load the access block.
-                            if (Hole::Pull(object->meta.access,
-                                           nucleus::Version::Last,
-                                           access) == elle::StatusError)
-                              escape("unable to load the access block");
-
-                            // validate the object, providing the
-                            if (object->Validate(address,
-                                                 access) == elle::StatusError)
-                              escape("unable to validate the object");
-                          }
-                        else
-                          {
-                            // validate the object.
-                            if (object->Validate(
+                  // does the block exist.
+                  if (block.Exist(Hole::Implementation->network,
                                   address,
-                                  nucleus::Access::Null) == elle::StatusError)
-                              escape("unable to validate the object");
+                                  version) == elle::StatusTrue)
+                    {
+                      // load the block.
+                      if (block.Load(Hole::Implementation->network,
+                                     address,
+                                     version) == elle::StatusError)
+                        escape("unable to load the block");
+
+                      // validate the block, depending on its component.
+                      // although every stored block has been checked, the
+                      // block may have been corrupt while on the hard disk.
+                      //
+                      // note that the Object component requires as additional
+                      // block for being validated.
+                      switch (address.component)
+                        {
+                        case nucleus::ComponentObject:
+                          {
+                            const nucleus::Object*  object =
+                              static_cast<const nucleus::Object*>(&block);
+
+                            // validate the object according to the presence of
+                            // a referenced access block.
+                            if (object->meta.access != nucleus::Address::Null)
+                              {
+                                nucleus::Access     access;
+
+                                // load the access block.
+                                if (Hole::Pull(object->meta.access,
+                                               nucleus::Version::Last,
+                                               access) == elle::StatusError)
+                                  escape("unable to load the access block");
+
+                                // validate the object, providing the
+                                if (object->Validate(address,
+                                                     access) ==
+                                    elle::StatusError)
+                                  escape("unable to validate the object");
+                              }
+                            else
+                              {
+                                // validate the object.
+                                if (object->Validate(
+                                      address,
+                                      nucleus::Access::Null) ==
+                                    elle::StatusError)
+                                  escape("unable to validate the object");
+                              }
+
+                            break;
                           }
+                        default:
+                          {
+                            // validate the block through the common interface.
+                            if (block.Validate(address) == elle::StatusError)
+                              escape("the block seems to be invalid");
 
-                        break;
-                      }
-                    default:
-                      {
-                        // validate the block through the common interface.
-                        if (block.Validate(address) == elle::StatusError)
-                          escape("the block seems to be invalid");
+                            break;
+                          }
+                        case nucleus::ComponentUnknown:
+                          {
+                            escape("unknown component '%u'",
+                                   address.component);
+                          }
+                        }
+                    }
+                }
+              else
+                {
+                  //
+                  // otherwise, go through the neighbours and retrieve the
+                  // specific version of the block from them.
+                  //
 
-                        break;
-                      }
-                    case nucleus::ComponentUnknown:
-                      {
-                        escape("unknown component '%u'",
-                               address.component);
-                      }
+                  // does the block exist: if it does not, retrieve it
+                  // from the peers.
+                  if (block.Exist(Hole::Implementation->network,
+                                  address,
+                                  version) == elle::StatusFalse)
+                    {
+                      Neighbourhood::Scoutor        scoutor;
+
+                      // for every scoutor.
+                      for (scoutor = this->neighbourhood.container.begin();
+                           scoutor != this->neighbourhood.container.end();
+                           scoutor++)
+                        {
+                          Host*                     host = scoutor->second;
+                          nucleus::MutableBlock*    b;
+
+                          // duplicate the block in its original form.
+                          if (nucleus::Nucleus::Factory.Build(
+                                block.component,
+                                b) == elle::StatusError)
+                            escape("unable to clone the block");
+
+                          auto                                  ptr =
+                            std::unique_ptr<nucleus::MutableBlock>(b);
+                          nucleus::Derivable<nucleus::Block>    derivable(*b);
+
+                          // request the host.
+                          if (host->socket->Call(
+                                elle::Inputs<TagPull>(address,
+                                                      version),
+                                elle::Outputs<TagBlock>(derivable)) ==
+                              elle::StatusOk)
+                            {
+                              // validate the block, depending on its
+                              // component.
+                              //
+                              // indeed, the Object component requires as
+                              // additional block for being validated.
+                              switch (address.component)
+                                {
+                                case nucleus::ComponentObject:
+                                  {
+                                    const nucleus::Object*  object =
+                                      static_cast<const nucleus::Object*>(b);
+
+                                    // validate the object according to the
+                                    // presence of a referenced access block.
+                                    if (object->meta.access !=
+                                        nucleus::Address::Null)
+                                      {
+                                        nucleus::Access     access;
+
+                                        // load the access block.
+                                        if (Hole::Pull(
+                                              object->meta.access,
+                                              nucleus::Version::Last,
+                                              access) == elle::StatusError)
+                                          escape("unable to load the access "
+                                                 "block");
+
+                                        // validate the object, providing the
+                                        if (object->Validate(
+                                              address,
+                                              access) == elle::StatusError)
+                                          escape("unable to validate the "
+                                                 "object");
+                                      }
+                                    else
+                                      {
+                                        // validate the object.
+                                        if (object->Validate(
+                                              address,
+                                              nucleus::Access::Null) ==
+                                            elle::StatusError)
+                                          escape("unable to validate the "
+                                                 "object");
+                                      }
+
+                                    break;
+                                  }
+                                default:
+                                  {
+                                    // validate the block through the common
+                                    // interface.
+                                    if (b->Validate(address) ==
+                                        elle::StatusError)
+                                      escape("the block seems to be invalid");
+
+                                    break;
+                                  }
+                                case nucleus::ComponentUnknown:
+                                  {
+                                    escape("unknown component '%u'",
+                                           address.component);
+                                  }
+                                }
+
+                              // finally, since the block has been retrieved,
+                              // store it locally.
+                              b->Store(Hole::Implementation->network,
+                                       address);
+                              // XXX do not check the result as the block to
+                              // XXX store may not be the latest i.e when
+                              // XXX history is not active.
+
+                              // stop since a block for this specific
+                              // version has been retrieved.
+                              break;
+                            }
+
+                          // ignore the error messages and continue with the
+                          // next neighbour.
+                          purge();
+                        }
+
+                      // check if none if the neighbour has the block.
+                      if (scoutor == this->neighbourhood.container.end())
+                        escape("unable to retrieve the block associated with "
+                               "the given address from the other peers");
                     }
 
-                  // finally, since the block has been retrieved,
-                  // store it locally.
-                  if (block.Store(Hole::Implementation->network,
-                                  address) == elle::StatusError)
-                    escape("unable to store the block");
+                  //
+                  // now let us try to retrieve the block from the
+                  // local storage.
+                  //
+
+                  // does the block exist.
+                  if (block.Exist(Hole::Implementation->network,
+                                  address,
+                                  version) == elle::StatusTrue)
+                    {
+                      // load the block.
+                      if (block.Load(Hole::Implementation->network,
+                                     address,
+                                     version) == elle::StatusError)
+                        escape("unable to load the block");
+
+                      // validate the block, depending on its component.
+                      // although every stored block has been checked, the
+                      // block may have been corrupt while on the hard disk.
+                      //
+                      // note that the Object component requires as additional
+                      // block for being validated.
+                      switch (address.component)
+                        {
+                        case nucleus::ComponentObject:
+                          {
+                            const nucleus::Object*  object =
+                              static_cast<const nucleus::Object*>(&block);
+
+                            // validate the object according to the presence of
+                            // a referenced access block.
+                            if (object->meta.access != nucleus::Address::Null)
+                              {
+                                nucleus::Access     access;
+
+                                // load the access block.
+                                if (Hole::Pull(object->meta.access,
+                                               nucleus::Version::Last,
+                                               access) == elle::StatusError)
+                                  escape("unable to load the access block");
+
+                                // validate the object, providing the
+                                if (object->Validate(address,
+                                                     access) ==
+                                    elle::StatusError)
+                                  escape("unable to validate the object");
+                              }
+                            else
+                              {
+                                // validate the object.
+                                if (object->Validate(
+                                      address,
+                                      nucleus::Access::Null) ==
+                                    elle::StatusError)
+                                  escape("unable to validate the object");
+                              }
+
+                            break;
+                          }
+                        default:
+                          {
+                            // validate the block through the common interface.
+                            if (block.Validate(address) == elle::StatusError)
+                              escape("the block seems to be invalid");
+
+                            break;
+                          }
+                        case nucleus::ComponentUnknown:
+                          {
+                            escape("unknown component '%u'",
+                                   address.component);
+                          }
+                        }
+                    }
                 }
 
               break;
             }
           default:
             {
-              escape("the machine's state '%u' does not allow one to request "
-                     "operations on the storage layer",
+              escape("the machine's state '%u' does not allow one "
+                     "to request operations on the storage layer",
                      this->state);
             }
           }
