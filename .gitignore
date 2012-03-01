@@ -1,18 +1,7 @@
 CMakeLists.txt.shared
 CMakeLists.txt.user
-agent
-comet
 config.hh
 config.mk
-elle
-etoile
-hole
-horizon
-lune
-nucleus
-oracle
-plasma
-satellites
 dependencies/environment.sh
 
 build
