@@ -16,6 +16,8 @@
 #include <iostream>
 
 #include <QDir>
+#include <QLocalSocket>
+#include <QFile>
 
 #include "plasma/common/resources.hh"
 
@@ -84,13 +86,8 @@ bool Application::_CheckInfinitHome()
 void Application::_OnIdentityUpdated(std::string const& token,
                                      std::string const& identity)
 {
-  QDir home_directory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
-  QString watchdogPath = home_directory.filePath("binaries/8watchdog");
-  if (home_directory.exists("infinit.wtg"))
-    {
-      std::cout << "Found running infinit watchdog\n";
-      assert(false);
-    }
+  QDir homeDirectory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
+  QString watchdogPath = homeDirectory.filePath("binaries/8watchdog");
 
   // We finaly launch the watchdog
   {
@@ -102,6 +99,42 @@ void Application::_OnIdentityUpdated(std::string const& token,
         }
       p.waitForStarted(2000);
       std::cout << "Started !\n";
+      if (!homeDirectory.exists("infinit.wtg"))
+        {
+          std::cerr << "Couldn't find infinit watchdog id file\n";
+          this->exit(EXIT_FAILURE);
+        }
+
+      // Reading wathdog id string
+      QString watchdogId;
+      QFile f(homeDirectory.filePath("infinit.wtg"));
+      if (f.open(QIODevice::ReadOnly))
+        {
+          watchdogId = QString{f.readAll()};
+        }
+      else
+        {
+          std::cerr << "Couldn't open infinit watchdog id file\n";
+        }
+      QLocalSocket conn;
+      conn.connectToServer(WATCHDOG_SERVER_NAME);
+      if (conn.isValid() && conn.waitForConnected(2000))
+        {
+          QString token = this->_identityUpdater.api().token();
+          QByteArray cmd = QString("{"
+            "\"command\":\"stop\","
+            "\"id\": \"" + watchdogId + "\","
+            "\"token\": \"" + token + "\","
+          "}\n").toAscii();
+          conn.write(cmd);
+          if (!conn.waitForBytesWritten(2000))
+            {
+              std::cerr << "Warning: Couldn't run the watchdog...\n";
+              this->exit(EXIT_FAILURE);
+            }
+        }
+      else
+        this->exit(EXIT_FAILURE);
   }
   this->exit(EXIT_SUCCESS);
 }

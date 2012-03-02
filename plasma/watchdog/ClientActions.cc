@@ -73,6 +73,9 @@ void ClientActions::_OnStop(Connection& conn,
                            Client& client,
                            QVariantList const& args)
 {
-  this->_manager.UnregisterAllCommands();
-  this->_manager.Stop();
+  if (args.size() == 1 && this->_watchdogId == args[0])
+    {
+      this->_manager.UnregisterAllCommands();
+      this->_manager.Stop();
+    }
 }

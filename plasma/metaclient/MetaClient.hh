@@ -65,7 +65,7 @@ namespace plasma
       QNetworkAccessManager _network;
 
       /// Connection token
-      std::string           _token;
+      QByteArray            _token;
 
       /// Current requests handlers
       HandlerMap            _handlers;
@@ -79,6 +79,11 @@ namespace plasma
                  LoginCallback callback,
                  Errback errback = nullptr);
 
+    /// properties
+    public:
+      QByteArray const& token() const { return this->_token; }
+      void token(QByteArray const& token) { this->_token = token; }
+
     private:
       void _Post(std::string const& url,
                  QVariantMap const& data,
@@ -89,10 +94,6 @@ namespace plasma
     private slots:
       void _OnRequestFinished(QNetworkReply* reply);
 
-    /// properties
-    public:
-      std::string const& token() { return this->_token; }
-      void token(std::string const& token) { this->_token = token; }
     };
 
   } // !metaclient

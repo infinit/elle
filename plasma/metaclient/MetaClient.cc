@@ -225,7 +225,7 @@ void MetaClient::_Post(std::string const& url,
   QByteArray json = QJson::Serializer().serialize(data);
   QNetworkRequest request{QUrl{uri}};
   if (this->_token.size() > 0)
-    request.setRawHeader("Authorization", this->_token.c_str());
+    request.setRawHeader("Authorization", this->_token);
   request.setRawHeader("Content-Type", "application/json");
   auto reply = this->_network.post(request, json);
   if (reply != nullptr)
@@ -244,7 +244,7 @@ void MetaClient::_Get(std::string const& url, RequestHandler* handler)
   QString uri((INFINIT_META_URL + url).c_str());
   QNetworkRequest request{QUrl{uri}};
   if (this->_token.size() > 0)
-    request.setRawHeader("Authorization", this->_token.c_str());
+    request.setRawHeader("Authorization", this->_token);
   request.setRawHeader("Content-Type", "application/json");
   auto reply = this->_network.get(request);
   if (reply != nullptr)

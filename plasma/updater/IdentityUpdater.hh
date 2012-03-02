@@ -45,6 +45,9 @@ namespace plasma
     public:
       IdentityUpdater(QApplication& app);
       void Start();
+
+      plasma::metaclient::MetaClient& api() { return this->_api; }
+
     private:
       void _OnLogin(plasma::metaclient::LoginResponse const& response);
       void _OnError(plasma::metaclient::MetaClient::Error error,

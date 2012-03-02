@@ -45,6 +45,7 @@ namespace plasma
     public:
       typedef std::shared_ptr<Connection> ConnectionPtr;
       typedef std::unique_ptr<Client> ClientPtr;
+      typedef std::unique_ptr<ClientActions> ClientActionsPtr;
       typedef std::unordered_map<ConnectionPtr, ClientPtr> ClientMap;
 
       typedef std::function<void(Connection&, Client&, QVariantList const&)> Command;
@@ -54,6 +55,7 @@ namespace plasma
       QApplication&   _app;
       ClientMap*      _clients;
       CommandMap*     _commands;
+      ClientActions*  _actions;
 
     public:
       Manager(QApplication& app);
@@ -66,6 +68,8 @@ namespace plasma
       void UnregisterCommand(std::string const& id);
       void UnregisterAllCommands();
       void ExecuteCommand(ConnectionPtr& conn, QVariantMap const& cmd);
+
+      void Start(std::string const& watchdogId);
       void Stop();
     };
 

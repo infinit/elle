@@ -17,6 +17,7 @@
 #include <iostream>
 
 #include "Client.hh"
+#include "ClientActions.hh"
 #include "Connection.hh"
 #include "Manager.hh"
 
@@ -29,7 +30,8 @@ using namespace plasma::watchdog;
 Manager::Manager(QApplication& app) :
   _app(app),
   _clients(new ClientMap()),
-  _commands(new CommandMap())
+  _commands(new CommandMap()),
+  _actions(new ClientActions(*this))
 {}
 
 Manager::~Manager()
@@ -38,6 +40,8 @@ Manager::~Manager()
   this->_clients = nullptr;
   delete this->_commands;
   this->_commands = nullptr;
+  delete this->_actions;
+  this->_actions = nullptr;
 }
 
 //
@@ -113,4 +117,9 @@ void Manager::ExecuteCommand(ConnectionPtr& conn, QVariantMap const& cmd)
 
 void Manager::Stop()
 {
+}
+
+void Manager::Start(std::string const& watchdogId)
+{
+  this->_actions->watchdogId(watchdogId);
 }
