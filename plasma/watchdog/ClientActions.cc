@@ -30,7 +30,7 @@ using namespace plasma::watchdog;
     this->_manager.RegisterCommand(                                           \
         name,                                                                 \
         std::bind(&ClientActions::method, this, _1, _2, _3)                   \
-    )                                                                         \
+    );                                                                        \
   } while(false)                                                              \
 
 #define UNREGISTER(name)                                                      \
@@ -45,9 +45,8 @@ using namespace plasma::watchdog;
 ClientActions::ClientActions(Manager& manager) :
   _manager(manager)
 {
-  using namespace std::placeholders;
-  REGISTER("RUN", _OnRun);
-  REGISTER("STOP", _OnStop);
+  REGISTER("run", _OnRun);
+  REGISTER("stop", _OnStop);
 }
 
 //
@@ -59,12 +58,21 @@ void ClientActions::_OnRun(Connection& conn,
                            Client& client,
                            QVariantList const& args)
 {
-  UNREGISTER("RUN");
+  if (args.size() == 2 && this->_watchdogId == args[0])
+    {
+      QString token = args[1].toString();
+      if (token.size() > 0)
+        {
+          this->_token = token;
+          UNREGISTER("run");
+        }
+    }
 }
 
 void ClientActions::_OnStop(Connection& conn,
                            Client& client,
                            QVariantList const& args)
 {
+  this->_manager.UnregisterAllCommands();
   this->_manager.Stop();
 }

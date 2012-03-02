@@ -93,6 +93,11 @@ void Manager::UnregisterCommand(std::string const& id)
   this->_commands->erase(it);
 }
 
+void Manager::UnregisterAllCommands()
+{
+  this->_commands->clear();
+}
+
 
 void Manager::ExecuteCommand(ConnectionPtr& conn, QVariantMap const& cmd)
 {

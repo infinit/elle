@@ -50,7 +50,6 @@ void LocalServer::Start(std::string const& watchdogId)
   if (this->_state == State::Running)
     return;
 
-  this->_watchdogId = watchdogId;
 
   // Trying to create a listening socket
   if (!this->listen(WATCHDOG_SERVER_NAME))

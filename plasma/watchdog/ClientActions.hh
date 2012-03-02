@@ -34,6 +34,8 @@ namespace plasma
     {
     private:
       Manager&    _manager;
+      QString     _token;
+      QString     _watchdogId;
 
     public:
       ClientActions(Manager& manager);
