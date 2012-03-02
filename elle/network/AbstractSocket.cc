@@ -28,7 +28,7 @@ namespace elle
     ///
     /// \todo XXX to change to something around 10MB
     ///
-    const Natural32             AbstractSocket::Capacity = 52428800;
+    const Natural32             AbstractSocket::Capacity = 209715200;
 
 //
 // ---------- constructors & destructors --------------------------------------
