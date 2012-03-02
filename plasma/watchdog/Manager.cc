@@ -31,17 +31,33 @@ Manager::Manager(QApplication& app) :
   _app(app),
   _clients(new ClientMap()),
   _commands(new CommandMap()),
-  _actions(new ClientActions(*this))
+  _actions(new ClientActions(*this)),
+  _admin(new Client(app))
 {}
 
 Manager::~Manager()
 {
+  std::cerr << "Manager::~Manager()\n";
   delete this->_clients;
   this->_clients = nullptr;
   delete this->_commands;
   this->_commands = nullptr;
   delete this->_actions;
   this->_actions = nullptr;
+  delete this->_admin;
+  this->_admin = nullptr;
+}
+
+//
+// --------- properties -------------------------------------------------------
+//
+
+void Manager::token(QByteArray const& token)
+{
+  this->_admin->token(token);
+  auto it = this->_clients->begin(), end = this->_clients->end();
+  for (; it != end; ++it)
+    it->second->token(token);
 }
 
 //
@@ -58,7 +74,7 @@ Client& Manager::RegisterConnection(ConnectionPtr& conn)
       return *(it->second);
     }
   auto res = this->_clients->insert(
-      ClientMap::value_type(conn, ClientPtr(new Client))
+      ClientMap::value_type(conn, ClientPtr(new Client(this->_app)))
   );
   if (res.second == false)
     throw std::runtime_error("Couldn't insert the new client");
@@ -105,6 +121,12 @@ void Manager::UnregisterAllCommands()
 
 void Manager::ExecuteCommand(ConnectionPtr& conn, QVariantMap const& cmd)
 {
+  if (cmd["id"].toString() != this->_actions->watchdogId())
+    {
+      std::cerr << "Warning: Invalid given watchdog id: "
+                << cmd["id"].toString().toStdString() << "\n";
+      return;
+    }
   auto it = this->_commands->find(cmd["command"].toString().toStdString());
   if (it == this->_commands->end())
     {
@@ -112,14 +134,32 @@ void Manager::ExecuteCommand(ConnectionPtr& conn, QVariantMap const& cmd)
                 << cmd["command"].toString().toStdString() << ".\n";
       return;
     }
-  (it->second)(*conn, *(*this->_clients)[conn], cmd["arguments"].toList());
+
+  (it->second)(*conn, *(*this->_clients)[conn], cmd);
 }
 
 void Manager::Stop()
 {
+  std::cerr << "STOPPING\n";
+
+  // XXX couldn't get rid of a double free corruption
+  //this->_app.quit();
+  ::exit(EXIT_SUCCESS);
 }
 
 void Manager::Start(std::string const& watchdogId)
 {
-  this->_actions->watchdogId(watchdogId);
+  this->_actions->watchdogId(watchdogId.c_str());
+}
+
+void Manager::RefreshNetworks()
+{
+  this->_admin->Update(
+      std::bind(&Manager::_OnNetworksUpdated, this)
+  );
+}
+
+void Manager::_OnNetworksUpdated()
+{
+  std::cerr << "networks up to date !\n";
 }

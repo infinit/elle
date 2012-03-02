@@ -43,7 +43,6 @@ namespace plasma
     private:
       State                         _state;
       std::unique_ptr<Manager>      _manager;
-      std::string                   _watchdogId;
 
     public:
       LocalServer(QApplication& app);

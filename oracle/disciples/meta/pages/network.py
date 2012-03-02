@@ -12,7 +12,9 @@ class Network(Page):
     """
     Return all user's network ids
         GET /networks
-            -> [network_id1, ...]
+            -> {
+                'networks': [network_id1, ...]
+            }
 
     Return one user network
         GET /network/id1
@@ -62,7 +64,7 @@ class Network(Page):
     def GET(self, id=None):
         self.requireLoggedIn()
         if id is None:
-            return json.dumps(self.user.get('networks', []))
+            return json.dumps({'networks': self.user.get('networks', [])})
         else:
             network = database.networks.find_one({
                 '_id': pymongo.objectid.ObjectId(id),
@@ -147,7 +149,7 @@ class Network(Page):
                     root_address,
                     self.user['identity_pub']
                 )
-                if !is_valid:
+                if not is_valid:
                     return self.error("The root block was not properly signed")
 
                 to_save['root_block'] = network['root_block']

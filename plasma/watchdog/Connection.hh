@@ -18,6 +18,8 @@
 # include <functional>
 # include <memory>
 
+# include <boost/noncopyable.hpp>
+
 # include <QLocalSocket>
 
 namespace plasma
@@ -29,7 +31,7 @@ namespace plasma
 // ---------- classes ---------------------------------------------------------
 //
 
-    class Connection : QObject
+    class Connection : public QObject, private boost::noncopyable
     {
       Q_OBJECT
 
@@ -44,7 +46,7 @@ namespace plasma
       Cmdback           _cmdback;
 
     public:
-      Connection(QLocalSocketPtr&& socket, QObject* parent = nullptr);
+      Connection(QLocalSocketPtr&& socket);
       ~Connection();
 
     public:

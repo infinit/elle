@@ -23,8 +23,8 @@ using namespace plasma::watchdog;
 // ---------- contructors & descructors ---------------------------------------
 //
 
-Connection::Connection(QLocalSocketPtr&& socket, QObject* parent) :
-  QObject(parent),
+Connection::Connection(QLocalSocketPtr&& socket) :
+  QObject(),
   _socket(std::move(socket))
 {
   this->_socket->setParent(this);
@@ -32,6 +32,7 @@ Connection::Connection(QLocalSocketPtr&& socket, QObject* parent) :
 
 Connection::~Connection()
 {
+  std::cerr << "Connection::~Connection()\n";
 }
 
 //

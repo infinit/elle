@@ -14,6 +14,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <stdexcept>
 
 #include <QDir>
 #include <QLocalSocket>
@@ -83,59 +84,129 @@ bool Application::_CheckInfinitHome()
   return true;
 }
 
+
+/// XXX The following is ugly, do not read
 void Application::_OnIdentityUpdated(std::string const& token,
                                      std::string const& identity)
 {
   QDir homeDirectory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
-  QString watchdogPath = homeDirectory.filePath("binaries/8watchdog");
+  QString watchdogId;
 
-  // We finaly launch the watchdog
-  {
-      QProcess p;
-      if (!p.startDetached(watchdogPath))
-        {
-          std::cerr << "Cannot start the watchdog !\n";
-          return;
-        }
-      p.waitForStarted(2000);
-      std::cout << "Started !\n";
-      if (!homeDirectory.exists("infinit.wtg"))
-        {
-          std::cerr << "Couldn't find infinit watchdog id file\n";
-          this->exit(EXIT_FAILURE);
-        }
-
-      // Reading wathdog id string
-      QString watchdogId;
+  ///////////////////////////////////////////////////////////////////////////
+  // Read old watchdog id
+  if (homeDirectory.exists("infinit.wtg"))
+    {
       QFile f(homeDirectory.filePath("infinit.wtg"));
       if (f.open(QIODevice::ReadOnly))
-        {
-          watchdogId = QString{f.readAll()};
-        }
-      else
-        {
-          std::cerr << "Couldn't open infinit watchdog id file\n";
-        }
+        watchdogId = QString{f.readAll()};
+    }
+
+  ///////////////////////////////////////////////////////////////////////////
+  // Trying to stop the watchdog
+  if (watchdogId.size() > 0)
+    {
       QLocalSocket conn;
       conn.connectToServer(WATCHDOG_SERVER_NAME);
-      if (conn.isValid() && conn.waitForConnected(2000))
+      if (conn.waitForConnected(2000))
         {
           QString token = this->_identityUpdater.api().token();
           QByteArray cmd = QString("{"
-            "\"command\":\"stop\","
-            "\"id\": \"" + watchdogId + "\","
-            "\"token\": \"" + token + "\","
+                "\"command\":\"stop\","
+                "\"id\": \"" + watchdogId + "\""
           "}\n").toAscii();
           conn.write(cmd);
           if (!conn.waitForBytesWritten(2000))
-            {
-              std::cerr << "Warning: Couldn't run the watchdog...\n";
-              this->exit(EXIT_FAILURE);
-            }
+              throw std::runtime_error("Couldn't stop the old watchdog instance");
+
         }
       else
-        this->exit(EXIT_FAILURE);
-  }
+        {
+          std::cerr << "Warning: Couldn't connect to the old watchdog instance\n";
+          watchdogId = "";
+        }
+    }
+
+  ///////////////////////////////////////////////////////////////////////////
+  // Waiting for the old server to be stopped
+  if (watchdogId.size() > 0)
+    {
+      int tries = 1;
+      do {
+          QLocalSocket conn;
+          conn.connectToServer(WATCHDOG_SERVER_NAME);
+          if (conn.waitForConnected(2000))
+            break;
+          std::cerr << "Waiting for the old watchdog to be stopped ("
+                    << tries << ")\n";
+          ::sleep(1);
+      } while (++tries < 10);
+
+      if (tries >= 10)
+        std::cerr << "Warning: The old watchdog instance does not stop !\n";
+    }
+
+  ///////////////////////////////////////////////////////////////////////////
+  // We finaly launch the watchdog
+    {
+      QString watchdogPath = homeDirectory.filePath("binaries/8watchdog");
+      std::cerr << "Launching the process\n";
+      QProcess p;
+      if (!p.startDetached(watchdogPath))
+        throw std::runtime_error("Cannot start the watchdog !");
+      std::cerr << "process started\n";
+      // XXX Cannot do that
+      //if(!p.waitForStarted(2000))
+      //  {
+      //    std::cerr << "Couln't wait\n";
+      //    throw std::runtime_error("Couldn't start the watchdog");
+      //  }
+      //std::cerr << "process ready\n";
+    }
+
+  std::cerr << "Started !\n";
+
+  QLocalSocket conn;
+
+  ///////////////////////////////////////////////////////////////////////////
+  // Connect to the new watchdog instance
+  int tries = 0;
+  while (tries++ < 5)
+    {
+      conn.connectToServer(WATCHDOG_SERVER_NAME);
+      std::cerr << "Trying to connect to the watchdog\n";
+      if (conn.waitForConnected(2000))
+        break;
+      std::cerr << "Retrying to connect (" << tries << ")\n";
+      ::sleep(1);
+    }
+  if (!conn.isValid())
+    throw std::runtime_error("Couldn't connect to the new watchdog instance");
+
+
+  std::cerr << "Connected to the watchdog\n";
+
+  ///////////////////////////////////////////////////////////////////////////
+  // Getting the new watchdog id
+  // When connected, the watchdog id file should exists
+  if (!homeDirectory.exists("infinit.wtg"))
+    throw std::runtime_error("Couldn't find infinit watchdog id file");
+  QFile f(homeDirectory.filePath("infinit.wtg"));
+  if (f.open(QIODevice::ReadOnly))
+    watchdogId = QString{f.readAll()};
+  else
+    throw std::runtime_error("Couldn't open infinit watchdog id file");
+
+  ///////////////////////////////////////////////////////////////////////////
+  // calling watchdog run command (which gives the meta token)
+  QByteArray cmd = QString("{"
+      "\"command\":\"run\","
+      "\"id\": \"" + watchdogId + "\","
+      "\"token\": \"" + QString(token.c_str()) + "\""
+  "}\n").toAscii();
+  conn.write(cmd);
+  if (!conn.waitForBytesWritten(2000))
+    throw std::runtime_error("Couldn't run the watchdog");
+
   this->exit(EXIT_SUCCESS);
 }
 

@@ -74,11 +74,11 @@ namespace {
             return;
           }
 
+        ResponseType response;
+        // Deserialize the response
         try
           {
-            ResponseType response;
             Deserializer::Fill(result, response);
-              this->callback(response);
           }
         catch (std::exception const& error)
           {
@@ -90,6 +90,9 @@ namespace {
             else
               std::cerr << "Missing errback (" << error.what() << ")\n";
           }
+
+        // Calling the callback with the response
+        this->callback(response);
       }
 
       virtual void OnNetworkError(QNetworkReply::NetworkError)
@@ -163,6 +166,15 @@ namespace {
       response.identity = _GetNonEmptyString(map, "identity");
     }
 
+    FILLER(NetworksResponse)
+    {
+      auto networks = map["networks"].toList();
+      auto it = networks.begin(), end = networks.end();
+      for (; it != end; ++it)
+        {
+          response.networks.push_back((*it).toString().toStdString());
+        }
+    }
 
 #undef FILLER
 
@@ -176,6 +188,7 @@ namespace {
 // Requests handlers defined here
 
     HANDLER_TYPEDEF(LoginResponse);
+    HANDLER_TYPEDEF(NetworksResponse);
 
 #undef HANDLER_TYPEDEF
 }
@@ -214,6 +227,12 @@ void MetaClient::Login(std::string const& email,
   req.insert("email", email.c_str());
   req.insert("password", password.c_str());
   this->_Post("/login", req, new LoginResponseHandler(callback, errback));
+}
+
+void MetaClient::GetNetworks(NetworksCallback callback,
+                             Errback errback)
+{
+  this->_Get("/networks", new NetworksResponseHandler(callback, errback));
 }
 
 void MetaClient::_Post(std::string const& url,

@@ -39,14 +39,15 @@ namespace plasma
 
     public:
       ClientActions(Manager& manager);
+      ~ClientActions();
 
     // properties
-      std::string watchdogId() const { return this->_watchdogId.toStdString(); }
-      void watchdogId(std::string const& id) { this->_watchdogId = id.c_str(); }
+      QString const& watchdogId() const { return this->_watchdogId; }
+      void watchdogId(QString const& id) { this->_watchdogId = id; }
 
     private:
-      void _OnRun(Connection& conn, Client& client, QVariantList const& args);
-      void _OnStop(Connection& conn, Client& client, QVariantList const& args);
+      void _OnRun(Connection& conn, Client& client, QVariantMap const& args);
+      void _OnStop(Connection& conn, Client& client, QVariantMap const& args);
     };
 
   }

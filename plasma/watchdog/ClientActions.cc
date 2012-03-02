@@ -12,6 +12,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <iostream>
+
 #include "Client.hh"
 #include "ClientActions.hh"
 #include "Manager.hh"
@@ -36,17 +38,30 @@ using namespace plasma::watchdog;
 #define UNREGISTER(name)                                                      \
   this->_manager.UnregisterCommand(name)                                      \
 
+#define CHECK_ID(args)                                                        \
+  do {                                                                        \
+      if (args["id"].toString() != this->_watchdogId)                         \
+        {                                                                     \
+          std::cerr << "Warning: Invalid watchdog id: "                       \
+                    << this->_watchdogId.toStdString() << "\n";               \
+          return;                                                             \
+        }                                                                     \
+  } while(false)                                                              \
+
 //
 // ---------- contructors & descructors ---------------------------------------
 //
-
-
 
 ClientActions::ClientActions(Manager& manager) :
   _manager(manager)
 {
   REGISTER("run", _OnRun);
   REGISTER("stop", _OnStop);
+}
+
+ClientActions::~ClientActions()
+{
+  std::cerr << "ClientActions::~ClientActions()\n";
 }
 
 //
@@ -56,26 +71,25 @@ ClientActions::ClientActions(Manager& manager) :
 
 void ClientActions::_OnRun(Connection& conn,
                            Client& client,
-                           QVariantList const& args)
+                           QVariantMap const& args)
 {
-  if (args.size() == 2 && this->_watchdogId == args[0])
+  std::cerr << "ClientActions::_OnRun()\n";
+  CHECK_ID(args);
+  QString token = args["token"].toString();
+  if (token.size() > 0)
     {
-      QString token = args[1].toString();
-      if (token.size() > 0)
-        {
-          this->_token = token;
-          UNREGISTER("run");
-        }
+      std::cerr << "Running watchdog !\n";
+      this->_manager.token(token);
+      this->_manager.RefreshNetworks();
+      UNREGISTER("run");
     }
+  else
+    std::cerr << "Warning: token not provided to run watchdog\n";
 }
 
 void ClientActions::_OnStop(Connection& conn,
                            Client& client,
-                           QVariantList const& args)
+                           QVariantMap const& args)
 {
-  if (args.size() == 1 && this->_watchdogId == args[0])
-    {
-      this->_manager.UnregisterAllCommands();
-      this->_manager.Stop();
-    }
+  this->_manager.Stop();
 }

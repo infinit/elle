@@ -30,7 +30,7 @@ using namespace plasma::watchdog;
 //
 
 LocalServer::LocalServer(QApplication& app) :
-  QLocalServer(&app),
+  QLocalServer(),
   _state(State::Stopped),
   _manager(new Manager(app))
 {
@@ -38,6 +38,7 @@ LocalServer::LocalServer(QApplication& app) :
 
 LocalServer::~LocalServer()
 {
+  std::cerr << "LocalServer::~LocalServer()\n";
 }
 
 //
@@ -119,8 +120,6 @@ void LocalServer::_OnClientCommand(ConnectionPtr conn, QByteArray const& data)
     std::cerr << "Warning: Got invalid command: " << QString(data).toStdString();
   else if (!cmd.contains("id"))
     std::cerr << "Warning: The command has to contains an id.\n";
-  else if (cmd["id"].toString() != this->_watchdogId.c_str())
-    std::cerr << "Warning: Invalid given token: " << cmd["id"].toString().toStdString() << "\n";
   else
     this->_manager->ExecuteCommand(conn, cmd);
 }

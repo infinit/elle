@@ -48,7 +48,7 @@ namespace plasma
       typedef std::unique_ptr<ClientActions> ClientActionsPtr;
       typedef std::unordered_map<ConnectionPtr, ClientPtr> ClientMap;
 
-      typedef std::function<void(Connection&, Client&, QVariantList const&)> Command;
+      typedef std::function<void(Connection&, Client&, QVariantMap const&)> Command;
       typedef std::unordered_map<std::string, Command> CommandMap;
 
     private:
@@ -56,11 +56,19 @@ namespace plasma
       ClientMap*      _clients;
       CommandMap*     _commands;
       ClientActions*  _actions;
+      Client*         _admin;
 
     public:
+
+      /// ctor & dtor
       Manager(QApplication& app);
       ~Manager();
 
+      /// properties
+      void token(QByteArray const& token);
+      void token(QString const& token) { this->token(token.toAscii()); }
+
+      /// methods
       Client& RegisterConnection(ConnectionPtr& conn);
       void UnregisterConnection(ConnectionPtr& conn);
 
@@ -71,6 +79,11 @@ namespace plasma
 
       void Start(std::string const& watchdogId);
       void Stop();
+
+      void RefreshNetworks();
+
+    private:
+      void _OnNetworksUpdated();
     };
 
   }

@@ -40,8 +40,8 @@ Application::Application(int ac, char* av[]) :
 
 Application::~Application()
 {
-  delete this->_server;
-  this->_server = nullptr;
+  //delete this->_server;
+  //this->_server = nullptr;
 }
 
 //
@@ -83,35 +83,35 @@ int Application::Exec()
   std::string watchdogId;
 
   // Reading any existing watchdog id
-  if (homeDirectory.exists("infinit.wtg"))
-    {
-      QFile f(homeDirectory.filePath("infinit.wtg"));
-      if (f.open(QIODevice::ReadOnly))
-        {
-          watchdogId = QString{f.readAll()}.toStdString();
-        }
-      f.close();
-      if (!f.remove())
-        std::cerr << "Warning: Cannot remove file '"
-                  << f.fileName().toStdString()
-                  << "'\n";
-    }
+  //if (homeDirectory.exists("infinit.wtg"))
+  //  {
+  //    QFile f(homeDirectory.filePath("infinit.wtg"));
+  //    if (f.open(QIODevice::ReadOnly))
+  //      {
+  //        watchdogId = QString{f.readAll()}.toStdString();
+  //      }
+  //    f.close();
+  //    if (!f.remove())
+  //      std::cerr << "Warning: Cannot remove file '"
+  //                << f.fileName().toStdString()
+  //                << "'\n";
+  //  }
 
-  // Stopping already running watchdog
-  if (watchdogId.size())
-    {
-      QLocalSocket conn;
-      conn.connectToServer(WATCHDOG_SERVER_NAME);
-      if (conn.isValid() && conn.waitForConnected(2000))
-        {
-          std::string cmd = "{\"command\":\"STOP\",\"id\": \"" + watchdogId + "\"}\n";
-          conn.write(cmd.c_str());
-          if (!conn.waitForBytesWritten(2000))
-            std::cerr << "Warning: Cannot stop the watchdog...\n";
-        }
-      else
-        std::cerr << "The watchdog " WATCHDOG_SERVER_NAME " is not connected anymore.\n";
-    }
+  //// Stopping already running watchdog
+  //if (watchdogId.size())
+  //  {
+  //    QLocalSocket conn;
+  //    conn.connectToServer(WATCHDOG_SERVER_NAME);
+  //    if (conn.isValid() && conn.waitForConnected(2000))
+  //      {
+  //        std::string cmd = "{\"command\":\"stop\",\"id\": \"" + watchdogId + "\"}\n";
+  //        conn.write(cmd.c_str());
+  //        if (!conn.waitForBytesWritten(2000))
+  //          std::cerr << "Warning: Cannot stop the watchdog...\n";
+  //      }
+  //    else
+  //      std::cerr << "The watchdog " WATCHDOG_SERVER_NAME " is not connected anymore.\n";
+  //  }
 
   // Generate new watchdog id
   watchdogId = randString(ASCII, 96);
