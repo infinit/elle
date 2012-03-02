@@ -194,7 +194,10 @@ namespace horizon
       // set the size.
       stat->st_size = static_cast<off_t>(abstract.size);
 
-      // XXX[fill the block-oriented sizes]
+      // set the disk usage by assuming the smallest disk unit is
+      // 512 bytes.
+      //
+      // note however the the optimised size of I/Os is set to 4096.
       stat->st_blksize = 4096;
       stat->st_blocks =
         (stat->st_size / 512) +
