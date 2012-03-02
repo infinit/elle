@@ -1,0 +1,152 @@
+#!/bin/sh
+
+set -ex
+
+MYSELF="$0"
+
+error ()
+{
+    for line; do
+	echo "$MYSELF: $1" 1>&2
+    done
+}
+
+fatal ()
+{
+    error "$@"
+    exit 1
+}
+
+for d in "$DIR_SOURCE" "$DIR_BUILD"; do
+    test -d "$d" || fatal "directory $d does not exist"
+done
+
+name=$(cd "$DIR_SOURCE" && git describe)
+rev=$(git rev-parse --short HEAD)
+version=${name%-*}
+version=${name%-*}
+major=${version%.*}
+minor=${version#*.}
+
+
+DIR_INSTALL_CLIENT="$DIR_INSTALL/client"
+rm -rf "$DIR_INSTALL_CLIENT"
+mkdir -p "$DIR_INSTALL_CLIENT"
+
+error ()
+{
+    for line; do
+        echo 1>&2 "$line"
+    done
+}
+
+fatal ()
+{
+    error "$@"
+    exit 1
+}
+
+ship_libs ()
+{
+    _IFS="$IFS"
+    IFS="
+"
+    for line in $(ldd $1 | awk '{print $1 " " $3}'); do
+        lib=$(echo "$line" | cut -d ' ' -f 1)
+        path=$(echo "$line" | cut -d ' ' -f 2)
+        case "$lib" in
+            (\
+             /lib64/ld-linux-x86-64.so.2|\
+             libICE.so.6|\
+             libSM.so.6|\
+             libX11.so.6|\
+             libXau.so.6|\
+             libXdmcp.so.6|\
+             libXext.so.6|\
+             libXrandr.so.2|\
+             libXrender.so.1|\
+             libc.so.6|\
+             libdl.so.2|\
+             libfontconfig.so.1|\
+             libfreetype.so.6|\
+             libfuse.so.2|\
+             libgcc_s.so.1|\
+             libglib-2.0.so.0|\
+             libgthread-2.0.so.0|\
+             libm.so.6|\
+             libpthread.so.0|\
+             librt.so.1|\
+             libstdc++.so.6|\
+             libuuid.so.1|\
+             libxcb.so.1|\
+             linux-vdso.so.1\
+             )
+                ;;
+            (\
+             libQtCore.so.4|\
+             libQtGui.so.4|\
+             libQtNetwork.so.4|\
+             libQtXml.so.4|\
+             libbz2.so.1|\
+             libexpat.so.1|\
+             libncurses.so.5|\
+             libpng15.so.15|\
+             libpth.so.20|\
+             libqjson.so.0|\
+             libreadline.so.6|\
+             libz.so.1\
+            )
+                test -e "$2/$(basename "$path")" || cp "$path" "$2"
+                ;;
+            (*)
+                fatal "unrecognized dynamic dependency: $lib"
+                ;;
+        esac
+    done
+    IFS="$IFS"
+}
+
+DIR_INSTALL_CLIENT_BIN="$DIR_INSTALL_CLIENT/bin"
+DIR_INSTALL_CLIENT_LIB="$DIR_INSTALL_CLIENT/lib"
+mkdir -p "$DIR_INSTALL_CLIENT_BIN" "$DIR_INSTALL_CLIENT_LIB"
+for f in 8infinit                               \
+    satellites/dictionary/8dictionary           \
+    satellites/access/8access                   \
+    plasma/updater/8updater                     \
+    plasma/watchdog/8watchdog
+do
+    dst="$DIR_INSTALL_CLIENT_BIN/$(basename $f)"
+    cp "$DIR_BUILD/$f" "$dst"
+    strip "$dst"
+    echo "Ship libs for $dst"
+    ship_libs "$dst" "$DIR_INSTALL_CLIENT_LIB"
+    patchelf --set-rpath '$ORIGIN/../lib' "$dst"
+done
+
+
+
+DIR_INSTALL_SERVER="$DIR_INSTALL/server"
+rm -rf "$DIR_INSTALL_SERVER"
+mkdir -p "$DIR_INSTALL_SERVER"
+
+list ()
+{
+    cd "$DIR_BUILD/oracle/disciples/"
+    find "$@"
+}
+
+for f in                                                \
+    metalib/__init__.py                                 \
+    metalib/metalib.so                                  \
+    $(list pythia -name '*.py')                         \
+    $(list meta -name '*.py')                           \
+    $(list creosus -name '*.py' -or -name '*.html')     \
+    $(list troll -name '*.py')                          \
+    meta-server                                         \
+    meta-tests                                          \
+    production-meta-server.sh                           \
+    production-creosus-server.sh
+do
+    mkdir -p "$DIR_INSTALL_SERVER/$(dirname "$f")"
+    cp -r "$DIR_BUILD/oracle/disciples/$f" "$DIR_INSTALL_SERVER/$f"
+done
