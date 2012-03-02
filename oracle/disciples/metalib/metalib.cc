@@ -18,6 +18,7 @@
 #include "identity.hh"
 #include "passport.hh"
 #include "metalib.hh"
+#include "network.hh"
 
 // XXX When Qt is out, remove this
 #ifdef slots
@@ -55,6 +56,32 @@ static PyMethodDef _metalib_methods[] = {
     ":param authority_password: Password to decrypt the authority file\n"
     ":rtype: String\n"
     ":return: The encoded passport\n"
+  },
+  {
+    "generate_network_descriptor",
+    &metalib_generate_network_descriptor,
+    METH_VARARGS,
+    "Generate a network descriptor\n"
+    "\n"
+    ":param network_id: The network unique identifier\n"
+    ":param model: Then network model name\n"
+    ":param root_address: The base64 encoded root block address\n"
+    ":param authority_file: The path to the authority file\n"
+    ":param authority_password: Password to decrypt the authority file\n"
+    ":rtype: String\n"
+    ":return: base64 encoded network descriptor\n"
+  },
+  {
+    "check_root_block_signature",
+    &metalib_check_root_block_signature,
+    METH_VARARGS,
+    "Check wether or not the root block is valid.\n"
+    "\n"
+    ":param root_block: The base64 encoded root block\n"
+    ":param root_address: The base64 encoded root address\n"
+    ":param public_key: The base64 encoded public key\n"
+    ":rtype: Boolean\n"
+    ":return: Wether or not the root_block is valid\n"
   },
   {NULL, NULL, 0, NULL}        /* Sentinel */
 };

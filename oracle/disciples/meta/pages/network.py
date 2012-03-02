@@ -3,8 +3,10 @@
 import json
 import pymongo.objectid
 
+import metalib
+
 from meta.page import Page
-from meta import database
+from meta import database, conf
 
 class Network(Page):
     """
@@ -17,8 +19,11 @@ class Network(Page):
             -> {
                 '_id': "id",
                 'name': "pretty name",
+                'model': 'slug',
                 'devices': [device_id1, ...],
-                'users': [user_id1, ...]
+                'users': [user_id1, ...],
+                'root_block': "base64 string of the root block"
+                'descriptor': "base64 string of descriptor",
             }
 
     Create a new network
@@ -38,6 +43,8 @@ class Network(Page):
             'name': 'pretty name', # optional
             'users': [user_id1, ...], # optional
             'devices': [device_id1, ...], # optional
+            'root_block': "base64 root block", # optional (implies root_address)
+            'root_address': "base64 root address", # optional (implies root_block)
         }
             -> {
                 'success': True,
@@ -79,9 +86,9 @@ class Network(Page):
 
         if action_func is None:
             return self.error("Unknown action '%s'" % str(action))
-        return json.dumps(action_func(network))
+        return action_func(network)
 
-    def _create(self, network):
+    def _create(self, network, network_model="slug"):
         if '_id' in network:
             return self.error("An id cannot be specified while creating a network")
         name = network.get('name', '').strip()
@@ -95,15 +102,18 @@ class Network(Page):
             'owner': self.user['_id'],
             'users': users,
             'devices': devices,
+            'descriptor': None,
+            'root_block': None,
+            'root_address': None,
         }
         id = database.networks.insert(network)
         assert id is not None
         self.user.setdefault('networks', []).append(str(id))
         database.users.save(self.user)
-        return {
+        return json.dumps({
             'success': True,
             'created_network_id': str(id)
-        }
+        })
 
     def _update(self, network):
         id = str(network['_id']).strip()
@@ -124,11 +134,42 @@ class Network(Page):
             users = filter(self._checkUser, map(lambda d: d.strip(), network.get('users', [])))
             to_save['users'] = users
 
+        if 'root_block' in network and 'root_address' in network:
+            if to_save['root_block'] is not None:
+                return self.error("This network has already a root block")
+
+            try:
+                root_block = network['root_block']
+                root_address = network['root_address']
+                assert(network['descriptor'] is None)
+                is_valid = metalib.check_root_block_signature(
+                    root_block,
+                    root_address,
+                    self.user['identity_pub']
+                )
+                if !is_valid:
+                    return self.error("The root block was not properly signed")
+
+                to_save['root_block'] = network['root_block']
+
+                to_save['descriptor'] = metalib.generate_network_descriptor(
+                    str(id),
+                    network['model'],
+                    root,
+                    conf.INFINIT_AUTHORITY_FILE,
+                    conf.INFINIT_AUTHORITY_PASSWORD,
+                )
+            except Exception, err:
+                return self.error("Unexpected error: " + str(err))
+        elif 'root_address' in network or 'root_block' in network:
+            return self.error("You need to provide both root_address and root_block, not one of them")
+
+
         id = database.networks.save(to_save)
-        return {
+        return json.dumps({
             'success': True,
             'updated_network_id': str(id)
-        }
+        })
 
     def _checkName(self, name):
         return bool(name)

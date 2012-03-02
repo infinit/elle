@@ -65,6 +65,7 @@ namespace plasma
       void RegisterCommand(std::string const& id, Command cmd);
       void UnregisterCommand(std::string const& id);
       void ExecuteCommand(ConnectionPtr& conn, QVariantMap const& cmd);
+      void Stop();
     };
 
   }
