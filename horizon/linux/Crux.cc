@@ -194,6 +194,12 @@ namespace horizon
       // set the size.
       stat->st_size = static_cast<off_t>(abstract.size);
 
+      // XXX[fill the block-oriented sizes]
+      stat->st_blksize = 4096;
+      stat->st_blocks =
+        (stat->st_size / 512) +
+        (stat->st_size % 512) > 0 ? 1 : 0;
+
       // convert the times into time_t structures.
       stat->st_atime = time(NULL);
 
