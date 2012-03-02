@@ -149,11 +149,10 @@ void Application::_OnIdentityUpdated(std::string const& token,
   // We finaly launch the watchdog
     {
       QString watchdogPath = homeDirectory.filePath("binaries/8watchdog");
-      std::cerr << "Launching the process\n";
       QProcess p;
       if (!p.startDetached(watchdogPath))
         throw std::runtime_error("Cannot start the watchdog !");
-      std::cerr << "process started\n";
+      std::cerr << "Process started\n";
       // XXX Cannot do that
       //if(!p.waitForStarted(2000))
       //  {
@@ -162,8 +161,6 @@ void Application::_OnIdentityUpdated(std::string const& token,
       //  }
       //std::cerr << "process ready\n";
     }
-
-  std::cerr << "Started !\n";
 
   QLocalSocket conn;
 
