@@ -312,7 +312,7 @@ namespace nucleus
         escape("unable to locate the inlet");
 
       // load the value block.
-      NestLoad(inlet, value);
+      NestLoad(inlet->value);
 
       // return the nodule.
       nodule = inlet->_value;
@@ -369,7 +369,7 @@ namespace nucleus
         escape("unable to locate the inlet associated with the given key");
 
       // load the value block.
-      NestLoad(inlet, value);
+      NestLoad(inlet->value);
 
       // return the nodule.
       nodule = inlet->_value;
@@ -454,7 +454,7 @@ namespace nucleus
           (this->parent != Address::Null))
         {
           // load the parent nodule.
-          NestLoad(this, parent);
+          NestLoad(this->parent);
 
           // progate the update.
           if (this->_parent->Propagate(ancient, recent) == elle::StatusError)
@@ -590,7 +590,7 @@ namespace nucleus
       inlet = iterator->second;
 
       // load the child nodule.
-      NestLoad(inlet, value);
+      NestLoad(inlet->value);
 
       // search in this nodule.
       if (inlet->_value->Search(key, quill) == elle::StatusError)
@@ -621,7 +621,7 @@ namespace nucleus
             escape("invalid key");
 
           // load the value block.
-          NestLoad(inlet, value);
+          NestLoad(inlet->value);
 
           // retrieve the child's mauor key.
           if (inlet->_value->Mayor(mayor) == elle::StatusError)

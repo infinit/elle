@@ -42,10 +42,13 @@ namespace nucleus
     ///
     /// XXX
     ///
+    /* XXX
     template <typename T>
     Handle<T>::Handle(T*                                        object):
       XXX Address::Some
+    */
 
+    /* XXX
 XXX
 - on load un block.
 - on veut loader son frere gauche, on load a partir de l addresse.
@@ -62,6 +65,7 @@ XXX
 
 - a noter que peut etre qu il serait utile de garder le handle dans chaque
   nodule pour eviter de recalculer.
+    */
 
     ///
     /// the destructor.

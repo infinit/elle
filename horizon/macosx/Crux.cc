@@ -222,6 +222,19 @@ namespace horizon
       // set the size.
       stat->st_size = static_cast<off_t>(abstract.size);
 
+      // set the disk usage by assuming the smallest disk unit is
+      // 512 bytes.
+      //
+      // note however the the optimised size of I/Os is set to 4096.
+      stat->st_blksize = 4096;
+      stat->st_blocks =
+        (stat->st_size / 512) +
+        (stat->st_size % 512) > 0 ? 1 : 0;
+
+      // set the number of hard links to 1 since no hard link exist
+      // but the original object.
+      stat->st_nlink = 1;
+
       // convert the times into time_t structures.
       stat->st_atime = time(NULL);
 

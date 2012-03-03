@@ -206,7 +206,7 @@ namespace nucleus
           //
 
           // load the right nodule, if possible.
-          NestLoad(_current, right)
+          NestLoad(_current->right)
             {
               // update the old right nodule's neighbour links.
               _current->_right->left = Address::Some;
@@ -263,7 +263,7 @@ namespace nucleus
           else
             {
               // load the parent nodule.
-              NestLoad(_current, parent);
+              NestLoad(_current->parent);
 
               // set the parent.
               _parent = _current->_parent;
@@ -350,7 +350,7 @@ namespace nucleus
                   (_current->parent != Address::Null))
                 {
                   // load the parent nodule.
-                  NestLoad(_current, parent);
+                  NestLoad(_current->parent);
 
                   // propagate the change of mayor key throughout the
                   // hiearchy.
@@ -432,7 +432,7 @@ namespace nucleus
               //
 
               // load the parent nodule.
-              NestLoad(_current, parent);
+              NestLoad(_current->parent);
 
               //
               // update the neighbour nodules. note that this step is performed
@@ -447,7 +447,7 @@ namespace nucleus
               //
 
               // load the left neighbour, if possible.
-              NestLoad(_current, left)
+              NestLoad(_current->left)
                 {
                   // update the left nodule's right neighbour.
                   _current->_left->right = _current->right;
@@ -455,7 +455,7 @@ namespace nucleus
                 }
 
               // load the right neighbour, if possible.
-              NestLoad(_current, right)
+              NestLoad(_current->right)
                 {
                   // update the right nodule's left neighbour.
                   _current->_right->left = _current->left;
@@ -505,7 +505,7 @@ namespace nucleus
           N*            _right;
 
           // load the left nodule, if possible.
-          NestLoad(_current, left)
+          NestLoad(_current->left)
             {
               // set the _left alias.
               _left = static_cast<N*>(_current->_left);
@@ -517,7 +517,7 @@ namespace nucleus
             }
 
           // load the right nodule, if possible.
-          NestLoad(_current, right)
+          NestLoad(_current->right)
             {
               // set the _right alias.
               _right = static_cast<N*>(_current->_right);
@@ -529,7 +529,7 @@ namespace nucleus
             }
 
           // load the parent nodule, if possible.
-          NestLoad(_current, parent);
+          NestLoad(_current->parent);
 
           // operate depending of several configurations, ranging from
           // the easiest or more convenient to the less optimised.
@@ -638,7 +638,7 @@ namespace nucleus
                 }
 
               // load the parent nodule.
-              NestLoad(_current, parent);
+              NestLoad(_current->parent);
                 {
                   // delete the current nodule in its parent since the
                   // nodule is now empty.
@@ -655,7 +655,7 @@ namespace nucleus
                   // the tree may have been shrunk, leading for instance
                   // the _left_ nodule to become the new root; in which case
                   // this nodule would no longer have a parent.
-                  NestLoad(_left, parent)
+                  NestLoad(_left->parent)
                     {
                       // update the parent so that the left nodule gets
                       // referenced with the proper key.
@@ -714,7 +714,7 @@ namespace nucleus
                 }
 
               // load the parent nodule.
-              NestLoad(_current, parent)
+              NestLoad(_current->parent)
                 {
                   // delete the current nodule in its parent since the
                   // nodule is now empty.
@@ -763,7 +763,7 @@ namespace nucleus
               (_current->parent != Address::Null))
             {
               // load the parent nodule.
-              NestLoad(_current, parent);
+              NestLoad(_current->parent);
 
               // propagate the change of mayor key throughout the
               // hiearchy.

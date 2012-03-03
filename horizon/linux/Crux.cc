@@ -203,6 +203,10 @@ namespace horizon
         (stat->st_size / 512) +
         (stat->st_size % 512) > 0 ? 1 : 0;
 
+      // set the number of hard links to 1 since no hard link exist
+      // but the original object.
+      stat->st_nlink = 1;
+
       // convert the times into time_t structures.
       stat->st_atime = time(NULL);
 

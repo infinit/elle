@@ -318,7 +318,7 @@ namespace nucleus
         escape("unable to locate the inlet");
 
       // load the value block.
-      NestLoad(inlet, value);
+      NestLoad(inlet->value);
 
       // return the value.
       value = inlet->_value;
@@ -378,7 +378,7 @@ namespace nucleus
         escape("unable to locate the inlet associated with the given key");
 
       // load the value block.
-      NestLoad(inlet, value);
+      NestLoad(inlet->value);
 
       // return the value.
       value = inlet->_value;

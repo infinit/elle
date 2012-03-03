@@ -154,8 +154,8 @@ target_link_libraries(8infinit
 #  XXX/XXX.cc
 #  XXX/Nest.cc
 #)
-
 #TARGET_LINK_LIBRARIES(XXX infinit elle nucleus lune infinit)
+# XXX
 
 # configuration
 configure_file("${CMAKE_SOURCE_DIR}/config.hh.cmake" "${CMAKE_SOURCE_DIR}/config.hh")

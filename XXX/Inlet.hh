@@ -18,6 +18,7 @@
 #include <elle/Elle.hh>
 
 #include <nucleus/proton/Address.hh>
+#include <XXX/Handle.hh>
 
 namespace nucleus
 {
