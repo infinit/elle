@@ -31,6 +31,10 @@ namespace plasma
 // ---------- classes ---------------------------------------------------------
 //
 
+    ///
+    /// The local server binds whatever local socket in a portable way (thx Qt)
+    /// and binds to it. It also stores and manages all client connections.
+    ///
     class LocalServer : public QLocalServer
     {
       Q_OBJECT

@@ -17,7 +17,4 @@ class Logout(Page):
         if not self.user:
             return self.error("Not logged in")
         self.logout()
-        return json.dumps({
-            'success': True,
-        })
-        raise web.seeother('/')
+        return self.success()

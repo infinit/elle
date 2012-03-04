@@ -2,6 +2,8 @@
 
 import json
 import pymongo.objectid
+import traceback
+import web
 
 import metalib
 
@@ -64,14 +66,14 @@ class Network(Page):
     def GET(self, id=None):
         self.requireLoggedIn()
         if id is None:
-            return json.dumps({'networks': self.user.get('networks', [])})
+            return self.success({'networks': self.user.get('networks', [])})
         else:
             network = database.networks.find_one({
                 '_id': pymongo.objectid.ObjectId(id),
                 'owner': self.user['_id'],
             })
             network.pop('owner')
-            return json.dumps(network, default=str)
+            return self.success(network)
 
     def POST(self):
         self.requireLoggedIn()
@@ -102,6 +104,7 @@ class Network(Page):
         network = {
             'name': name,
             'owner': self.user['_id'],
+            'model': 'slug',
             'users': users,
             'devices': devices,
             'descriptor': None,
@@ -112,16 +115,15 @@ class Network(Page):
         assert id is not None
         self.user.setdefault('networks', []).append(str(id))
         database.users.save(self.user)
-        return json.dumps({
-            'success': True,
-            'created_network_id': str(id)
+        return self.success({
+            'created_network_id': id
         })
 
     def _update(self, network):
-        id = str(network['_id']).strip()
+        id = database.ObjectId(network['_id'])
         if id not in self.user['networks']:
-            raise web.Forbidden("This network does not belong to you")
-        id = pymongo.objectid.ObjectId(id)
+            print "user %s has no network %s in his networks" % (self.user['_id'], id), self.user['networks']
+            raise web.Forbidden("The network '"+id+"' does not belong to you")
         to_save = database.networks.find_one({'_id': id})
         if 'name' in network:
             name = network['name'].strip()
@@ -136,7 +138,8 @@ class Network(Page):
             users = filter(self._checkUser, map(lambda d: d.strip(), network.get('users', [])))
             to_save['users'] = users
 
-        if 'root_block' in network and 'root_address' in network:
+        if 'root_block' in network and 'root_address' in network and \
+           network['root_block'] and network['root_address']:
             if to_save['root_block'] is not None:
                 return self.error("This network has already a root block")
 
@@ -162,15 +165,12 @@ class Network(Page):
                     conf.INFINIT_AUTHORITY_PASSWORD,
                 )
             except Exception, err:
+                traceback.print_exc()
                 return self.error("Unexpected error: " + str(err))
-        elif 'root_address' in network or 'root_block' in network:
-            return self.error("You need to provide both root_address and root_block, not one of them")
-
 
         id = database.networks.save(to_save)
-        return json.dumps({
-            'success': True,
-            'updated_network_id': str(id)
+        return self.success({
+            'updated_network_id': id
         })
 
     def _checkName(self, name):
@@ -213,8 +213,7 @@ class Network(Page):
             '_id': pymongo.objectid.ObjectId(id),
             'owner': self.user['_id'], #not required
         }, remove=True)
-        return json.dumps({
-            'success': True,
+        return  self.success({
             'deleted_network_id': id,
         })
 

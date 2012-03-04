@@ -26,14 +26,10 @@ class Login(Page):
         email = self.data.get('email')
         password = self.data.get('password')
         if self.authenticate(email, password):
-            return json.dumps({
-                'success': True,
+            return self.success({
                 'token': self.session.session_id,
                 'fullname': self.user['fullname'],
                 'email': self.user['email'],
                 'identity': self.user['identity'],
             })
-        return json.dumps({
-            'success': False,
-            'error': 'Wrong login/password',
-        })
+        return self.error('Wrong login/password')

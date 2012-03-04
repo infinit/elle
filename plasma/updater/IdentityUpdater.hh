@@ -30,6 +30,8 @@ namespace plasma
 // ---------- classes ---------------------------------------------------------
 //
 
+    namespace meta = ::plasma::metaclient;
+
     ///
     /// Retreive a token from meta, and update the passport and the identity
     /// file.
@@ -39,25 +41,37 @@ namespace plasma
       Q_OBJECT
 
     private:
-      plasma::metaclient::MetaClient  _api;
-      LoginDialog                     _loginDialog;
-
-    public:
-      IdentityUpdater(QApplication& app);
-      void Start();
-
-      plasma::metaclient::MetaClient& api() { return this->_api; }
 
     private:
-      void _OnLogin(plasma::metaclient::LoginResponse const& response);
-      void _OnError(plasma::metaclient::MetaClient::Error error,
+      meta::MetaClient  _api;
+      LoginDialog       _loginDialog;
+      std::string       _token;
+      std::string       _identity;
+
+    public:
+      /// ctor & dtor
+      IdentityUpdater(QApplication& app);
+
+      /// properties
+      std::string const&              token() const     { return _token; }
+      std::string const&              identity() const  { return _identity; }
+      plasma::metaclient::MetaClient& api()             { return _api; }
+
+      /// methods
+      void Start();
+
+    private:
+      void _OnLogin(meta::LoginResponse const& response);
+      void _OnError(meta::MetaClient::Error error,
                     std::string const& error_string);
+      void _UpdatePassport();
+      void _OnDeviceCreated(meta::CreateDeviceResponse const& res);
+
     private slots:
       void _DoLogin();
 
     signals:
-      void identityUpdated(std::string const& token,
-                           std::string const& identity);
+      void identityUpdated();
     };
 
   }

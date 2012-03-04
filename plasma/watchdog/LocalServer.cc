@@ -118,8 +118,8 @@ void LocalServer::_OnClientCommand(ConnectionPtr conn, QByteArray const& data)
   QVariantMap cmd = parser.parse(data, &result).toMap();
   if (!result)
     std::cerr << "Warning: Got invalid command: " << QString(data).toStdString();
-  else if (!cmd.contains("id"))
-    std::cerr << "Warning: The command has to contains an id.\n";
+  else if (!cmd.contains("_id"))
+    std::cerr << "Warning: The command has to contain an _id.\n";
   else
     this->_manager->ExecuteCommand(conn, cmd);
 }

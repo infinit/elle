@@ -75,6 +75,12 @@ class Page(object):
             'error': str(s),
         })
 
+    def success(self, obj={}):
+        assert(isinstance(obj, dict))
+        obj.setdefault('success', True)
+        return json.dumps(obj, default=str)
+
+
     _data = None
     @property
     def data(self):

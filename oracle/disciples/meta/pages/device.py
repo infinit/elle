@@ -12,7 +12,9 @@ class Device(Page):
     """
     Return all user's device ids
         GET /devices
-            -> [device_id1, ...]
+            -> {
+                'devices': [device_id1, ...],
+            }
 
     Return one user device
         GET /device/id1
@@ -31,6 +33,7 @@ class Device(Page):
             -> {
                 'success': True,
                 'created_device_id': "id",
+                'passport': "passport string",
             }
 
     Update an existing device
@@ -55,14 +58,14 @@ class Device(Page):
     def GET(self, id=None):
         self.requireLoggedIn()
         if id is None:
-            return json.dumps(self.user.get('devices', []))
+            return self.success({'devices': self.user.get('devices', [])})
         else:
             device = database.devices.find_one({
                 '_id': pymongo.objectid.ObjectId(id),
                 'owner': self.user['_id'],
             })
             device.pop('owner')
-            return json.dumps(device, default=str)
+            return self.success(device)
 
     def POST(self):
         self.requireLoggedIn()
@@ -73,7 +76,7 @@ class Device(Page):
         else:
             func = self._create
 
-        return json.dumps(func(device))
+        return self.success(func(device))
 
     def _create(self, device):
         name = device.get('name', '').strip()
@@ -101,11 +104,13 @@ class Device(Page):
         }
         id = database.devices.insert(device)
         assert id is not None
+        # XXX check unique device ?
         self.user.setdefault('devices', []).append(str(id))
         database.users.save(self.user)
         return {
             'success': True,
             'created_device_id': str(id),
+            'passport': passport,
         }
 
     def _update(self, device):
@@ -154,8 +159,7 @@ class Device(Page):
             '_id': pymongo.objectid.ObjectId(id),
             'owner': self.user['_id'], #not required
         }, remove=True)
-        return json.dumps({
-            'success': True,
+        return self.success({
             'deleted_device_id': id,
         })
 

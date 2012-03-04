@@ -45,15 +45,19 @@ namespace plasma {
       IdentityUpdater _identityUpdater;
 
     public:
+      /// ctor & dtor
       Application(int& ac, char** av);
       virtual ~Application();
+
+      /// methods
       int Exec();
+
     private:
       bool _CheckInfinitHome();
     private slots:
       void _OnReleaseUpdated(bool);
-      void _OnIdentityUpdated(std::string const& token,
-                              std::string const& identity);
+      void _OnIdentityUpdated();
+
     };
 
   }

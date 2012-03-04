@@ -16,8 +16,9 @@
 
 #include "Client.hh"
 #include "ClientActions.hh"
-#include "Manager.hh"
 #include "Connection.hh"
+#include "Manager.hh"
+#include "NetworkManager.hh"
 
 using namespace plasma::watchdog;
 
@@ -26,6 +27,9 @@ using namespace plasma::watchdog;
 // ---------- helper macros ---------------------------------------------------
 //
 
+///
+/// Register a command to the manager.
+///
 #define REGISTER(name, method)                                                \
   do {                                                                        \
     using namespace std::placeholders;                                        \
@@ -38,12 +42,15 @@ using namespace plasma::watchdog;
 #define UNREGISTER(name)                                                      \
   this->_manager.UnregisterCommand(name)                                      \
 
+///
+/// Security check (the watchdog id is valid)
+///
 #define CHECK_ID(args)                                                        \
   do {                                                                        \
-      if (args["id"].toString() != this->_watchdogId)                         \
+      if (args["_id"].toString() != this->_watchdogId)                        \
         {                                                                     \
           std::cerr << "Warning: Invalid watchdog id: "                       \
-                    << this->_watchdogId.toStdString() << "\n";               \
+                    << args["_id"].toString().toStdString() << "\n";          \
           return;                                                             \
         }                                                                     \
   } while(false)                                                              \
@@ -80,7 +87,7 @@ void ClientActions::_OnRun(Connection& conn,
     {
       std::cerr << "Running watchdog !\n";
       this->_manager.token(token);
-      this->_manager.RefreshNetworks();
+      this->_manager.networkManager().UpdateNetworks();
       UNREGISTER("run");
     }
   else

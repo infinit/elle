@@ -12,6 +12,7 @@
 # define PLASMA_METCLIENT_METACLIENT_HH
 
 # include <functional>
+# include <list>
 # include <map>
 
 # include <QApplication>
@@ -34,16 +35,34 @@ namespace plasma
     /// Login response
     struct LoginResponse : Response
     {
-      std::string token;
-      std::string fullname;
-      std::string email;
-      std::string identity;
+      std::string  token;
+      std::string  fullname;
+      std::string  email;
+      std::string  identity;
     };
 
     struct NetworksResponse : Response
     {
       std::list<std::string> networks;
     };
+
+    struct NetworkResponse : Response
+    {
+      std::string              _id;
+      std::string              name;
+      std::string              model;
+      std::string              root_block;
+      std::string              descriptor;
+      std::list<std::string>   devices;
+      std::list<std::string>   users;
+    };
+
+    struct CreateDeviceResponse : Response
+    {
+      std::string             created_device_id;
+      std::string             passport;
+    };
+
 
     ///
     /// Convenient interface to the meta server
@@ -63,6 +82,8 @@ namespace plasma
       /// Callbacks for API calls
       typedef std::function<void(LoginResponse const&)> LoginCallback;
       typedef std::function<void(NetworksResponse const&)> NetworksCallback;
+      typedef std::function<void(NetworkResponse const&)> NetworkCallback;
+      typedef std::function<void(CreateDeviceResponse const&)> CreateDeviceCallback;
 
       typedef std::function<void(Error, std::string const&)> Errback;
     private:
@@ -91,8 +112,16 @@ namespace plasma
                  LoginCallback callback,
                  Errback errback = nullptr);
 
+      void CreateDevice(std::string const& name,
+                        std::string const& endpoint,
+                        CreateDeviceCallback callback,
+                        Errback errback = nullptr);
+
       void GetNetworks(NetworksCallback callback,
                        Errback errback = nullptr);
+      void GetNetwork(std::string const& id,
+                      NetworkCallback callback,
+                      Errback errback = nullptr);
       /// properties
       QByteArray const& token() const { return this->_token; }
       void token(QByteArray const& token) { this->_token = token; }

@@ -31,16 +31,16 @@ if __name__ == '__main__':
 
     account = client.get('/account')
     print "account:", account
-    assert 'success' not in account
+    assert account['success'] is True
 
     # Testing devices
-    if not client.get('/devices'):
+    if not client.get('/devices')['devices']:
         res = client.post('/devices', {'name': "New device", "ip_address": "[::1]"})
         print res
         assert res['success'] is True
         print "added device", res['created_device_id']
 
-    devices = client.get('/devices')
+    devices = client.get('/devices')['devices']
     assert len(devices) > 0
     print "User devices:", devices
     device = client.get('/device/' + devices[0])
@@ -55,7 +55,6 @@ if __name__ == '__main__':
     assert device['name'] == "THIS IS A NEW NAME"
 
     res = client.delete('/device/' + devices[0])
-    print res
     assert res['success'] is True
 
     # Testing networks
@@ -64,7 +63,7 @@ if __name__ == '__main__':
         assert res['success'] is True
         print "added network", res['created_network_id']
 
-    networks = client.get('/networks')
+    networks = client.get('/networks')['networks']
     assert len(networks) > 0
     print "user networks", networks
 
@@ -72,7 +71,9 @@ if __name__ == '__main__':
     network = client.get('/network/' + networks[0])
     network['name'] = "THIS IS A NEW `network` NAME"
     res = client.post('/networks', network)
-    assert res['success'] is True
+    if res['success'] is False:
+        print "ERROR:", res["error"]
+        assert False
 
     network = client.get('/network/' + networks[0])
     assert network['name'] == "THIS IS A NEW `network` NAME"

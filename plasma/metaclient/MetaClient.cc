@@ -70,7 +70,10 @@ namespace {
         if (!ok)
           {
             if (this->errback != nullptr)
-              this->errback(MetaClient::Error::InvalidContent, "Cannot parse json data");
+              this->errback(
+                  MetaClient::Error::InvalidContent,
+                  "Cannot parse json data"
+              );
             return;
           }
 
@@ -103,12 +106,56 @@ namespace {
       }
     };
 
+    /// Make life easer for fillers (tools box)
+    class _BasicFiller
+    {
+    protected:
+      static std::string _GetString(QVariantMap const& map,
+                                    char const* key,
+                                    char const* default_value)
+      {
+        if (!map.contains(key))
+          return default_value;
+        return _GetString(map, key);
+      }
+
+      static std::string _GetString(QVariantMap const& map, char const* key)
+      {
+        if (!map.contains(key))
+          throw std::runtime_error("KeyError: " + std::string(key));
+        return map[key].toString().toStdString();
+      }
+
+      static std::list<std::string> _GetStringList(QVariantMap const& map,
+                                                   char const* key)
+      {
+        auto list = map[key].toList();
+        auto it = list.begin(), end = list.end();
+        std::list<std::string> res;
+        for (; it != end; ++it)
+          res.push_back((*it).toString().toStdString());
+        return res;
+      }
+
+      static std::string _GetNonEmptyString(QVariantMap const& map,
+                                            char const* key)
+      {
+        std::string val{_GetString(map, key)};
+        if (val.empty())
+          throw std::runtime_error(
+              "ValueError: map[\"" + std::string(key) + "\"] is emtpy"
+          );
+        return val;
+      }
+    };
 ///
-/// Helper macro to focus on deserialize response
-/// It handles the server error
+/// Helper macro to focus on deserializing the response
+/// It handles the server error.
+/// Note: it declares the class cls##Handler, with is the handler
+/// for the response.
 ///
 #define FILLER(cls)                                                         \
-    struct cls##Filler                                                      \
+    struct cls##Filler : _BasicFiller                                       \
     {                                                                       \
       static void Fill(QVariantMap const& map, cls& response)               \
       {                                                                     \
@@ -123,36 +170,9 @@ namespace {
           }                                                                 \
         return _Fill(map, response);                                        \
       }                                                                     \
-                                                                            \
-    protected:                                                              \
-      static std::string _GetString(QVariantMap const& map,                 \
-                                    char const* key,                        \
-                                    char const* default_value)              \
-      {                                                                     \
-        if (!map.contains(key))                                             \
-          return default_value;                                             \
-        return _GetString(map, key);                                        \
-      }                                                                     \
-                                                                            \
-      static std::string _GetString(QVariantMap const& map, char const* key)\
-      {                                                                     \
-        if (!map.contains(key))                                             \
-          throw std::runtime_error("KeyError: " + std::string(key));        \
-        return map[key].toString().toStdString();                           \
-      }                                                                     \
-                                                                            \
-      static std::string _GetNonEmptyString(QVariantMap const& map,         \
-                                            char const* key)                \
-        {                                                                   \
-          std::string val{_GetString(map, key)};                            \
-          if (val.empty())                                                  \
-            throw std::runtime_error(                                       \
-                "ValueError: map[\"" + std::string(key) + "\"] is emtpy"    \
-            );                                                              \
-          return val;                                                       \
-        }                                                                   \
       static void _Fill(QVariantMap const&, cls&);                          \
     };                                                                      \
+    typedef RequestHandler<cls, cls##Filler> cls##Handler;                  \
     void cls##Filler::_Fill(QVariantMap const& map, cls& response)          \
 
 /////////////////////////////////////////////////////////////////////////////
@@ -160,38 +180,37 @@ namespace {
 
     FILLER(LoginResponse)
     {
-      response.token =    _GetNonEmptyString(map, "token");
-      response.fullname = _GetNonEmptyString(map, "fullname");
-      response.email =    _GetNonEmptyString(map, "email");
-      response.identity = _GetNonEmptyString(map, "identity");
+      response.token    =        _GetNonEmptyString(map, "token");
+      response.fullname =     _GetNonEmptyString(map, "fullname");
+      response.email    =        _GetNonEmptyString(map, "email");
+      response.identity =     _GetNonEmptyString(map, "identity");
     }
 
     FILLER(NetworksResponse)
     {
-      auto networks = map["networks"].toList();
-      auto it = networks.begin(), end = networks.end();
-      for (; it != end; ++it)
-        {
-          response.networks.push_back((*it).toString().toStdString());
-        }
+      response.networks =         _GetStringList(map, "networks");
+    }
+
+    FILLER(NetworkResponse)
+    {
+      response._id        =        _GetNonEmptyString(map, "_id");
+      response.name       =       _GetNonEmptyString(map, "name");
+      response.model      =      _GetNonEmptyString(map, "model");
+      response.root_block =         _GetString(map, "root_block");
+      response.descriptor =         _GetString(map, "descriptor");
+      response.devices    =        _GetStringList(map, "devices");
+      response.users      =          _GetStringList(map, "users");
+    }
+
+    FILLER(CreateDeviceResponse)
+    {
+      response.created_device_id = _GetNonEmptyString(map, "created_device_id");
+      response.passport          =          _GetNonEmptyString(map, "passport");
     }
 
 #undef FILLER
 
-///
-/// Typedef for specific request handler
-///
-#define HANDLER_TYPEDEF(cls)                                                 \
-    typedef RequestHandler<cls, cls##Filler> cls##Handler
-
-//////////////////////////////////////////////////////////////////////////////
-// Requests handlers defined here
-
-    HANDLER_TYPEDEF(LoginResponse);
-    HANDLER_TYPEDEF(NetworksResponse);
-
-#undef HANDLER_TYPEDEF
-}
+} // !ns anonymous
 
 //
 // ---------- contructors & descructors ---------------------------------------
@@ -234,6 +253,25 @@ void MetaClient::GetNetworks(NetworksCallback callback,
 {
   this->_Get("/networks", new NetworksResponseHandler(callback, errback));
 }
+
+void MetaClient::GetNetwork(std::string const& id,
+                           NetworkCallback callback,
+                           Errback errback)
+{
+  this->_Get("/network/" + id, new NetworkResponseHandler(callback, errback));
+}
+
+void MetaClient::CreateDevice(std::string const& name,
+                              std::string const& endpoint,
+                              CreateDeviceCallback callback,
+                              Errback errback)
+{
+  QVariantMap req;
+  req.insert("name", name.c_str());
+  req.insert("ip_address", endpoint.c_str());
+  this->_Post("/devices", req, new CreateDeviceResponseHandler(callback, errback));
+}
+
 
 void MetaClient::_Post(std::string const& url,
                        QVariantMap const& data,

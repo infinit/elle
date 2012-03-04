@@ -23,6 +23,8 @@
 # include <QVariantMap>
 # include <QVariantList>
 
+# include "plasma/metaclient/MetaClient.hh"
+
 namespace plasma
 {
   namespace watchdog
@@ -31,6 +33,7 @@ namespace plasma
     class Connection;
     class Client;
     class ClientActions;
+    class NetworkManager;
 
 //
 // ---------- classes ---------------------------------------------------------
@@ -51,12 +54,15 @@ namespace plasma
       typedef std::function<void(Connection&, Client&, QVariantMap const&)> Command;
       typedef std::unordered_map<std::string, Command> CommandMap;
 
+      typedef plasma::metaclient::MetaClient MetaClient;
+
     private:
-      QApplication&   _app;
-      ClientMap*      _clients;
-      CommandMap*     _commands;
-      ClientActions*  _actions;
-      Client*         _admin;
+      QApplication&       _app;
+      ClientMap*          _clients;
+      CommandMap*         _commands;
+      ClientActions*      _actions;
+      NetworkManager*     _networkManager;
+      MetaClient          _meta;
 
     public:
 
@@ -68,22 +74,33 @@ namespace plasma
       void token(QByteArray const& token);
       void token(QString const& token) { this->token(token.toAscii()); }
 
-      /// methods
+      ///
+      /// Connect to meta.
+      ///
+      MetaClient& meta() { return this->_meta; }
+      NetworkManager& networkManager() { return *this->_networkManager; }
+
+      /// Called from the LocalServer to add a new connection
       Client& RegisterConnection(ConnectionPtr& conn);
       void UnregisterConnection(ConnectionPtr& conn);
 
+      ///
+      /// Used by ClientActions to register callbacks. Any class may
+      /// use it, but only one hook per command is allowed.
+      ///
       void RegisterCommand(std::string const& id, Command cmd);
       void UnregisterCommand(std::string const& id);
       void UnregisterAllCommands();
+
+      /// Dispatch a command from a connection
       void ExecuteCommand(ConnectionPtr& conn, QVariantMap const& cmd);
 
+      ///
+      /// The manager is started from the class Application, but can
+      /// be stopped anywhere.
+      ///
       void Start(std::string const& watchdogId);
       void Stop();
-
-      void RefreshNetworks();
-
-    private:
-      void _OnNetworksUpdated();
     };
 
   }

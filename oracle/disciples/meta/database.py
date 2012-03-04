@@ -23,6 +23,8 @@ users.ensure_index(
     kwags={'unique': True}
 )
 
+def ObjectId(_id): return pymongo.objectid.ObjectId(_id)
+
 # functions
 def byId(collection, _id):
     """

@@ -31,6 +31,10 @@ namespace plasma
 // ---------- classes ---------------------------------------------------------
 //
 
+    ///
+    /// A local client connection. It provides a layer between raw data from
+    /// the socket and the client, which handles the packet.
+    ///
     class Connection : public QObject, private boost::noncopyable
     {
       Q_OBJECT
@@ -38,6 +42,9 @@ namespace plasma
     public:
       typedef std::unique_ptr<QLocalSocket> QLocalSocketPtr;
       typedef std::function<void(std::string const&)> Errback;
+
+      /// This is the way the connection gives back a network
+      /// packet.
       typedef std::function<void(QByteArray const&)> Cmdback;
 
     private:
@@ -50,6 +57,7 @@ namespace plasma
       ~Connection();
 
     public:
+      /// Gives to the connection the callback and errback.
       void Connect(Cmdback cmdback, Errback errback);
 
     private:

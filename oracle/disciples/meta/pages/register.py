@@ -62,14 +62,30 @@ class Register(Page):
             conf.INFINIT_AUTHORITY_PASSWORD
         )
 
-        self.registerUser(
+
+        user_id = self.registerUser(
             email=user['email'],
             fullname=user['fullname'],
             password=self.hashPassword(user['password']),
             identity=identity,
             identity_pub=identity_pub,
+            networks=[],
         )
-        return json.dumps({
-            'success': True,
-        })
+
+        network = {
+            'name': "private",
+            'model': 'slug',
+            'owner': user_id,
+            'users': [],
+            'devices': [],
+            'descriptor': None,
+            'root_block': None,
+            'root_address': None,
+        }
+        network_id = database.networks.save(network);
+        user = database.users.find_one({'_id': user_id})
+        print "save network:", network_id, "for user", user_id
+        user['networks'].append(network_id)
+        user = database.users.save(user)
+        return self.success()
 

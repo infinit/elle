@@ -46,14 +46,21 @@ Application::~Application()
 
 int Application::Exec()
 {
+  if (!this->_CheckInfinitHome())
+    return EXIT_FAILURE;
+
+#if 0
   this->_releaseUpdater.Start();
   this->connect(
     &this->_releaseUpdater, SIGNAL(releaseUpdated(bool)),
     this, SLOT(_OnReleaseUpdated(bool))
   );
+#else
 
-  if (!this->_CheckInfinitHome())
-    return EXIT_FAILURE;
+  emit _OnReleaseUpdated(true);
+
+#endif
+
   return this->exec();
 }
 
@@ -62,9 +69,9 @@ void Application::_OnReleaseUpdated(bool)
   this->_identityUpdater.Start();
   this->connect(
     &this->_identityUpdater,
-    SIGNAL(identityUpdated(std::string const&, std::string const&)),
+    SIGNAL(identityUpdated()),
     this,
-    SLOT(_OnIdentityUpdated(std::string const&, std::string const&))
+    SLOT(_OnIdentityUpdated())
   );
 }
 
@@ -86,8 +93,7 @@ bool Application::_CheckInfinitHome()
 
 
 /// XXX The following is ugly, do not read
-void Application::_OnIdentityUpdated(std::string const& token,
-                                     std::string const& identity)
+void Application::_OnIdentityUpdated()
 {
   QDir homeDirectory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
   QString watchdogId;
@@ -112,12 +118,11 @@ void Application::_OnIdentityUpdated(std::string const& token,
           QString token = this->_identityUpdater.api().token();
           QByteArray cmd = QString("{"
                 "\"command\":\"stop\","
-                "\"id\": \"" + watchdogId + "\""
+                "\"_id\": \"" + watchdogId + "\""
           "}\n").toAscii();
           conn.write(cmd);
           if (!conn.waitForBytesWritten(2000))
               throw std::runtime_error("Couldn't stop the old watchdog instance");
-
         }
       else
         {
@@ -142,7 +147,7 @@ void Application::_OnIdentityUpdated(std::string const& token,
       } while (++tries < 10);
 
       if (tries >= 10)
-        std::cerr << "Warning: The old watchdog instance does not stop !\n";
+          std::cerr << "Warning: The old watchdog instance does not stop !\n";
     }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -197,13 +202,13 @@ void Application::_OnIdentityUpdated(std::string const& token,
   // calling watchdog run command (which gives the meta token)
   QByteArray cmd = QString("{"
       "\"command\":\"run\","
-      "\"id\": \"" + watchdogId + "\","
-      "\"token\": \"" + QString(token.c_str()) + "\""
+      "\"_id\": \"" + watchdogId + "\","
+      "\"token\": \"" + QString(this->_identityUpdater.token().c_str()) + "\""
   "}\n").toAscii();
   conn.write(cmd);
   if (!conn.waitForBytesWritten(2000))
     throw std::runtime_error("Couldn't run the watchdog");
 
-  this->exit(EXIT_SUCCESS);
+  //this->exit(EXIT_SUCCESS);
 }
 
