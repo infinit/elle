@@ -110,19 +110,17 @@ namespace nucleus
     elle::Status        Quill<V>::Insert(const typename V::K&   key,
                                          V*                     value)
     {
-      typename Quill<V>::I*     inlet;
-
-      enterx(instance(inlet));
-
       // create an inlet.
-      inlet = new typename Quill<V>::I(key, value);
+      auto              inlet =
+        std::unique_ptr< typename Quill<V>::I >(
+          new typename Quill<V>::I(key, value));
 
       // add the inlet to the quill.
-      if (this->Insert(inlet) == elle::StatusError)
+      if (this->Insert(inlet.get()) == elle::StatusError)
         escape("unable to add the value to the quill");
 
-      // waive.
-      waive(inlet);
+      // release the tracking.
+      inlet.release();
 
       return elle::StatusOk;
     }
@@ -321,7 +319,7 @@ namespace nucleus
       NestLoad(inlet->value);
 
       // return the value.
-      value = inlet->_value;
+      value = inlet->value._object;
 
       return elle::StatusOk;
     }
@@ -381,7 +379,7 @@ namespace nucleus
       NestLoad(inlet->value);
 
       // return the value.
-      value = inlet->_value;
+      value = inlet->value._object;
 
       return elle::StatusOk;
     }
@@ -394,30 +392,29 @@ namespace nucleus
     elle::Status        Quill<V>::Split(Quill<V>*&              right)
     {
       elle::Natural32   size;
-      Quill<V>*         r;
-
-      enterx(instance(r));
 
       // initialize _size_ as being the future left quills' size.
       size =
         hole::Hole::Descriptor.extent * hole::Hole::Descriptor.contention;
 
       // allocate a new quill.
-      r = new Quill<V>(this->_load, this->_unload);
+      auto              r =
+        std::unique_ptr< Quill<V> >(
+          new Quill<V>(this->_load, this->_unload));
 
       // create the quill.
-      if (r->Create() == elle::StatusError)
+      if (r.get()->Create() == elle::StatusError)
         escape("unable to create the quill");
 
       // export inlets from the current seam into the new seam.
-      if (this->Export(r, size) == elle::StatusError)
+      if (this->Export(r.get(), size) == elle::StatusError)
         escape("unable to export inlets");
 
       // set the output right quill.
-      right = r;
+      right = r.get();
 
-      // waive the r variable.
-      waive(r);
+      // release the tracking.
+      r.release();
 
       return elle::StatusOk;
     }
@@ -629,23 +626,21 @@ namespace nucleus
       // iterator.
       for (i = 0; i < size; i++)
         {
-          Quill<V>::I*  inlet;
-
-          enterx(instance(inlet));
-
           // allocate an inlet.
-          inlet = new Quill<V>::I;
+          auto          inlet =
+            std::unique_ptr<Quill<V>::I>(
+              new Quill<V>::I);
 
           // extract the key and inlet.
-          if (archive.Extract(*inlet) == elle::StatusError)
+          if (archive.Extract(*inlet.get()) == elle::StatusError)
             escape("unable to extract the key/inlet tuple");
 
           // add the tuple to the quill.
-          if (this->Insert(inlet) == elle::StatusError)
+          if (this->Insert(inlet.get()) == elle::StatusError)
             escape("unable to add the key/tuple inlet to the quill");
 
-          // waive.
-          waive(inlet);
+          // release the tracking.
+          inlet.release();
         }
 
       return elle::StatusOk;

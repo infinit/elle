@@ -35,9 +35,6 @@ namespace nucleus
 
       type(type),
 
-      _parent(NULL),
-      _left(NULL),
-      _right(NULL),
       _footprint(*this)
     {
     }
@@ -67,9 +64,6 @@ namespace nucleus
 
       _load(load),
       _unload(unload),
-      _parent(NULL),
-      _left(NULL),
-      _right(NULL),
       _footprint(*this)
     {
     }
@@ -291,18 +285,6 @@ namespace nucleus
       if (this->unload.Dump(margin + 4) == elle::StatusError)
         escape("unable to dump the callback");
       */
-
-      // dump the parent link.
-      std::cout << alignment << elle::Dumpable::Shift
-                << "[_Parent] " << std::hex << this->_parent << std::endl;
-
-      // dump the left link.
-      std::cout << alignment << elle::Dumpable::Shift
-                << "[_Left] " << std::hex << this->_left << std::endl;
-
-      // dump the right link.
-      std::cout << alignment << elle::Dumpable::Shift
-                << "[_Right] " << std::hex << this->_right << std::endl;
 
       // dump the footprint.
       std::cout << alignment << elle::Dumpable::Shift

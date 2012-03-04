@@ -47,14 +47,31 @@ namespace nucleus
       //
       Handle();
       Handle(T*);
-      Handle(const Address);
+      Handle(const Address&);
+      Handle(const Handle<T>&);
       ~Handle();
 
       //
       // methods
       //
+      // XXX[rename Create into Update]
       elle::Status      Create(const Address&,
                                T*);
+
+      //
+      // interfaces
+      //
+
+      // object
+      declare(Handle<T>);
+      elle::Boolean     operator==(const Handle<T>&) const;
+
+      // dumpable
+      elle::Status      Dump(const elle::Natural32 = 0) const;
+
+      // archivable
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       //
       // attributes

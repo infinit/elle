@@ -153,23 +153,21 @@ namespace nucleus
         }               current;
       }                 mayor;
       N*                _current;
-      typename N::I*    inlet;
-
-      enterx(instance(inlet));
 
       // set the convenient _current alias.
       _current = nodule;
 
       // create an inlet here in order to be able to compute its footprint.
-      inlet = new typename N::I(key, value);
+      auto              inlet =
+        std::unique_ptr<typename N::I>(new typename N::I(key, value));
 
       // compute the inlet's footprint.
-      if (inlet->_footprint.Compute() == elle::StatusError)
+      if (inlet.get()->_footprint.Compute() == elle::StatusError)
         escape("unable to compute the inlet's footprint");
 
       // check if the future nodule's footprint---i.e should the inlet
       // be inserted---would exceed the extent.
-      if ((_current->_footprint.size + inlet->_footprint.size) >
+      if ((_current->_footprint.size + inlet.get()->_footprint.size) >
           hole::Hole::Descriptor.extent)
         {
           Seam<V>*      _parent;
@@ -209,19 +207,25 @@ namespace nucleus
           NestLoad(_current->right)
             {
               // update the old right nodule's neighbour links.
-              _current->_right->left = Address::Some;
-              _current->_right->_left = _right;
+              if (_current->right._object->left.Create(
+                    Address::Some,
+                    _right) == elle::StatusError)
+                escape("unable to update the handle");
             }
 
           // set the new right nodule's neighbour links.
-          _right->left = Address::Some;
-          _right->_left = _current;
-          _right->right = _current->right;
-          _right->_right = _current->_right;
+          if (_right->left.Create(Address::Some,
+                                  _current) == elle::StatusError)
+            escape("unable to update the handle");
+
+          if (_right->right.Create(_current->right.address, // XXX[use operator=]
+                                   _current->right._object) == elle::StatusError)
+            escape("unable to update the handle");
 
           // finally, update the current nodule's right neighbour link.
-          _current->right = Address::Some;
-          _current->_right = _right;
+          if (_current->right.Create(Address::Some,
+                                     _right) == elle::StatusError)
+            escape("unable to update the handle");
 
           // retrieve the current nodule's mayor key.
           if (_current->Mayor(mayor.current.temporary) == elle::StatusError)
@@ -230,21 +234,21 @@ namespace nucleus
           // insert the inlet depending on its key: if its key is lower than
           // the mayor, then it falls in the left nodule; otherwise in the
           // right.
-          if (inlet->key < mayor.current.temporary)
+          if (inlet.get()->key < mayor.current.temporary)
             {
               // insert the inlet to the left nodule.
-              if (_current->Insert(inlet) == elle::StatusError)
+              if (_current->Insert(inlet.get()) == elle::StatusError)
                 escape("unable to insert the inlet to the nodule");
             }
           else
             {
               // insert the inlet to the right nodule.
-              if (_right->Insert(inlet) == elle::StatusError)
+              if (_right->Insert(inlet.get()) == elle::StatusError)
                 escape("unable to insert the inlet to the nodule");
             }
 
-          // waive.
-          waive(inlet);
+          // release the tracking.
+          inlet.release();
 
           // load the root, just in case.
           NestLoad(this->root);
@@ -266,7 +270,7 @@ namespace nucleus
               NestLoad(_current->parent);
 
               // set the parent.
-              _parent = _current->_parent;
+              _parent = _current->parent._object;
 
               // retrieve the current nodule's new mayor key.
               if (_current->Mayor(mayor.current.recent) == elle::StatusError)
@@ -277,7 +281,7 @@ namespace nucleus
               if (mayor.current.recent != mayor.current.ancient)
                 {
                   // propagate the update to the parent nodules.
-                  if (_current->_parent->Propagate(
+                  if (_current->parent._object->Propagate(
                         mayor.current.ancient,
                         mayor.current.recent) == elle::StatusError)
                     escape("unable to update the parent nodule");
@@ -312,11 +316,11 @@ namespace nucleus
               //
 
               // insert the inlet into the nodule.
-              if (_current->Insert(inlet) == elle::StatusError)
+              if (_current->Insert(inlet.get()) == elle::StatusError)
                 escape("unable to insert the inlet to the nodule");
 
-              // waive.
-              waive(inlet);
+              // release the tracking..
+              inlet.release();
 
               // note that a nodule being empty in this case implies
               // that the nodule is the root. therefore, there is no
@@ -334,11 +338,11 @@ namespace nucleus
                 escape("unable to retrive the mayor");
 
               // insert the inlet to the nodule.
-              if (_current->Insert(inlet) == elle::StatusError)
+              if (_current->Insert(inlet.get()) == elle::StatusError)
                 escape("unable to insert the inlet to the nodule");
 
-              // waive.
-              waive(inlet);
+              // release the tracking.
+              inlet.release();
 
               // retrieve the nodule's new mayor key.
               if (_current->Mayor(mayor.current.recent) == elle::StatusError)
@@ -354,7 +358,7 @@ namespace nucleus
 
                   // propagate the change of mayor key throughout the
                   // hiearchy.
-                  if (_current->_parent->Propagate(
+                  if (_current->parent._object->Propagate(
                         mayor.current.ancient,
                         mayor.current.recent) == elle::StatusError)
                     escape("unable to update the parent nodule");
@@ -409,7 +413,7 @@ namespace nucleus
       if (_current->Mayor(mayor.current.ancient) == elle::StatusError)
         escape("unable to retrieve the nodule's mayor key");
 
-      // delete the inlet to the nodule.
+      // delete the inlet in the nodule.
       if (_current->Delete(key) == elle::StatusError)
         escape("unable to delete the inlet from the nodule");
 
@@ -450,22 +454,28 @@ namespace nucleus
               NestLoad(_current->left)
                 {
                   // update the left nodule's right neighbour.
-                  _current->_left->right = _current->right;
-                  _current->_left->_right = _current->_right;
+                  if (_current->left._object->right.Create(
+                        _current->right.address,
+                        _current->right._object) == elle::StatusError)
+                    escape("unable to update the handle");
+                  // XXX[use the =operator()
                 }
 
               // load the right neighbour, if possible.
               NestLoad(_current->right)
                 {
                   // update the right nodule's left neighbour.
-                  _current->_right->left = _current->left;
-                  _current->_right->_left = _current->_left;
+                  if (_current->right._object->left.Create(
+                        _current->left.address,
+                        _current->left._object) == elle::StatusError)
+                    escape("unable to update the handle");
+                  // XXX[use the =operator()
                 }
 
               // finally, delete the nodule from its parent by passing
               // the mayor i.e the key the parent seam uses to reference
               // the now-empty nodule.
-              if (this->Delete(_current->_parent,
+              if (this->Delete(_current->parent._object,
                                mayor.current.ancient) == elle::StatusError)
                 escape("unable to delete the nodule from its parent");
             }
@@ -481,7 +491,7 @@ namespace nucleus
               //
 
               // reset the root handle to null.
-              this->root = Handle::Null;
+              this->root = Handle< Nodule<V> >::Null;
 
               // reset the tree's height.
               this->height = 0;
@@ -508,7 +518,7 @@ namespace nucleus
           NestLoad(_current->left)
             {
               // set the _left alias.
-              _left = static_cast<N*>(_current->_left);
+              _left = static_cast<N*>(_current->left._object);
             }
           else
             {
@@ -520,7 +530,7 @@ namespace nucleus
           NestLoad(_current->right)
             {
               // set the _right alias.
-              _right = static_cast<N*>(_current->_right);
+              _right = static_cast<N*>(_current->right._object);
             }
           else
             {
@@ -533,7 +543,7 @@ namespace nucleus
 
           // operate depending of several configurations, ranging from
           // the easiest or more convenient to the less optimised.
-          if (_current->_parent == NULL) // XXX parent
+          if (_current->parent._object == NULL) // XXX[improve]
             {
               //
               // in this case, the nodule does not seem to have a parent i.e
@@ -553,7 +563,7 @@ namespace nucleus
             }
           else if ((_left != NULL) &&
                    (_left->_state == StateDirty) &&
-                   (_left->_parent == _current->_parent) && //XXX parent
+                   (_left->parent._object == _current->parent._object) && // XXX[improve] XXX[have not been loaded]
                    ((_left->_footprint.size +
                      _current->_footprint.size -
                      N::Footprint) <
@@ -572,7 +582,7 @@ namespace nucleus
             }
           else if ((_right != NULL) &&
                    (_right->_state == StateDirty) &&
-                   (_right->_parent == _current->_parent) && //XXX parent
+                   (_right->parent._object == _current->parent._object) && // XXX[improve] XXX[have not been loaded]
                    ((_current->_footprint.size -
                      N::Footprint +
                      _right->_footprint.size) <
@@ -585,7 +595,7 @@ namespace nucleus
               goto _merge_right;
             }
           else if ((_left != NULL) &&
-                   (_left->_parent == _current->_parent) && //XXX parent
+                   (_left->parent._object == _current->parent._object) && // XXX[improve] XXX[have not been loaded]
                    ((_left->_footprint.size +
                      _current->_footprint.size -
                      N::Footprint) <
@@ -621,20 +631,26 @@ namespace nucleus
               //
 
               // update the left nodule which now contains all the inlets.
-              if (_current->_left != NULL)
+              if (_current->left._object != NULL) // XXX[improve]
                 {
                   // update the left nodule's right neighbour.
-                  _current->_left->right = _current->right;
-                  _current->_left->_right = _current->_right;
+                  if (_current->left._object->right.Create(
+                        _current->right.address,
+                        _current->right._object) == elle::StatusError)
+                    escape("unable to update the handle");
+                  // XXX[use =operator()]
                 }
 
               // update the right nodule which should no longer reference
               // the current, now empty, nodule.
-              if (_current->_right != NULL)
+              if (_current->right._object != NULL)
                 {
                   // update the right nodule's left neighbour.
-                  _current->_right->left = _current->left;
-                  _current->_right->_left = _current->_left;
+                  if (_current->right._object->left.Create(
+                        _current->left.address,
+                        _current->left._object) == elle::StatusError)
+                    escape("unable to update the handle");
+                  // XXX[use =operator()]
                 }
 
               // load the parent nodule.
@@ -642,7 +658,7 @@ namespace nucleus
                 {
                   // delete the current nodule in its parent since the
                   // nodule is now empty.
-                  if (this->Delete(_current->_parent,
+                  if (this->Delete(_current->parent._object,
                                    mayor.current.ancient) == elle::StatusError)
                     escape("unable to delete the entry from the parent");
 
@@ -668,7 +684,7 @@ namespace nucleus
                       //
                       // thus propagation is actually required for ensuring
                       // the tree's consistency.
-                      if (_left->_parent->Propagate(
+                      if (_left->parent._object->Propagate(
                             mayor.left.ancient,
                             mayor.left.recent) == elle::StatusError)
                         escape("unable to update the parent nodule");
@@ -676,7 +692,7 @@ namespace nucleus
                 }
             }
           else if ((_right != NULL) &&
-                   (_right->_parent == _current->_parent) && //XXX parent
+                   (_right->parent._object == _current->parent._object) && // XXX[improve] XXX[have not been loaded]
                    ((_current->_footprint.size -
                      N::Footprint +
                      _right->_footprint.size) <
@@ -697,20 +713,26 @@ namespace nucleus
               //
 
               // update the left nodule which now contains all the inlets.
-              if (_current->_left != NULL)
+              if (_current->left._object != NULL) // XXX[improve]
                 {
                   // update the left nodule's right neighbour.
-                  _current->_left->right = _current->right;
-                  _current->_left->_right = _current->_right;
+                  if (_current->left._object->right.Create(
+                        _current->right.address,
+                        _current->right._object) == elle::StatusError)
+                    escape("unable to update the handle");
+                  // XXX[use =operator()]
                 }
 
               // update the right nodule which should no longer reference
               // the current, now empty, nodule.
-              if (_current->_right != NULL)
+              if (_current->right._object != NULL) // XXX[improve]
                 {
                   // update the right nodule's left neighbour.
-                  _current->_right->left = _current->left;
-                  _current->_right->_left = _current->_left;
+                  if (_current->right._object->left.Create(
+                        _current->left.address,
+                        _current->left._object) == elle::StatusError)
+                    escape("unable to update the handle");
+                  // XXX[use =operator()]
                 }
 
               // load the parent nodule.
@@ -718,7 +740,7 @@ namespace nucleus
                 {
                   // delete the current nodule in its parent since the
                   // nodule is now empty.
-                  if (this->Delete(_current->_parent,
+                  if (this->Delete(_current->parent._object,
                                    mayor.current.ancient) == elle::StatusError)
                     escape("unable to delete the entry from the parent");
 
@@ -767,7 +789,7 @@ namespace nucleus
 
               // propagate the change of mayor key throughout the
               // hiearchy.
-              if (_current->_parent->Propagate(
+              if (_current->parent._object->Propagate(
                     mayor.current.ancient,
                     mayor.current.recent) == elle::StatusError)
                 escape("unable to update the parent nodule");
@@ -783,10 +805,7 @@ namespace nucleus
     template <typename V>
     elle::Status        Porcupine<V>::Grow()
     {
-      Seam<V>*          seam;
       typename V::K     mayor;
-
-      enterx(instance(seam));
 
       // depending on the current height.
       if (this->height == 0)
@@ -795,29 +814,27 @@ namespace nucleus
           // if the tree does not exist, create a root nodule.
           //
 
-          Quill<V>*     root;
-
-          enterx(instance(root));
-
           // at first, allocate an initial root nodule which happens to be
           // a leaf since alone.
-          root = new Quill<V>(
-                   elle::Callback<>::Infer(&Porcupine::Load, this),
-                   elle::Callback<>::Infer(&Porcupine::Unload, this));
+          auto          root =
+            std::unique_ptr< Quill<V> >(
+              new Quill<V>(
+                elle::Callback<>::Infer(&Porcupine::Load, this),
+                elle::Callback<>::Infer(&Porcupine::Unload, this)));
 
           // create the quill.
-          if (root->Create() == elle::StatusError)
+          if (root.get()->Create() == elle::StatusError)
             escape("unable to create the quill");
 
           // create the root handle.
-          if (this->root.Create(Address::Some, root) == elle::StatusError)
+          if (this->root.Create(Address::Some, root.get()) == elle::StatusError)
             escape("unable to create the root handle");
 
           // waive the tracking.
-          waive(root);
+          root.release();
 
           // register the new block.
-          NestRegister(this->root);
+          // XXX NestRegister(this->root);
         }
       else
         {
@@ -835,30 +852,35 @@ namespace nucleus
             escape("unable to retrieve the mayor key");
 
           // allocate a new seam.
-          seam = new Seam<V>(
-                   elle::Callback<>::Infer(&Porcupine::Load, this),
-                   elle::Callback<>::Infer(&Porcupine::Unload, this));
+          auto                  seam =
+            std::unique_ptr< Seam<V> >(
+              new Seam<V>(
+                elle::Callback<>::Infer(&Porcupine::Load, this),
+                elle::Callback<>::Infer(&Porcupine::Unload, this)));
 
           // create the root seam.
-          if (seam->Create() == elle::StatusError)
+          if (seam.get()->Create() == elle::StatusError)
             escape("unable to create the seam");
 
           // add the current root nodule in the new root seam.
-          if (seam->Insert(mayor, this->root._object) == elle::StatusError)
+          if (seam.get()->Insert(mayor, this->root._object) == elle::StatusError)
             escape("unable to add the current root in the new root nodule");
 
           // create the handle.
-          if (handle.Create(Address::Some, seam) == elle::StatusError)
+          if (handle.Create(Address::Some, seam.get()) == elle::StatusError)
             escape("unable to create the handle");
 
-          // waive seam.
-          waive(seam);
+          // waive the tracking.
+          seam.release();
 
           // link the existing root to the new root.
           this->root._object->parent = handle;
 
           // set the new root.
-          this->root = handle;
+          if (this->root.Create(handle.address,
+                                handle._object) == elle::StatusError)
+            escape("unable to update the handle");
+          // XXX[use the =operator()]
         }
 
       // increment the height.
@@ -916,7 +938,7 @@ namespace nucleus
       NestLoad(this->root);
 
       // update the new root links.
-      this->root->parent = Handle::Null;
+      this->root._object->parent = Handle< Seam<V> >::Null;
 
       // decrease the tree's height.
       this->height--;

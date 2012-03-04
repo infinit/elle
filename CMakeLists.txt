@@ -149,12 +149,12 @@ target_link_libraries(8infinit
 )
 
 # XXX
-#ADD_EXECUTABLE(XXX
-#  XXX/Porcupine.cc
-#  XXX/XXX.cc
-#  XXX/Nest.cc
-#)
-#TARGET_LINK_LIBRARIES(XXX infinit elle nucleus lune infinit)
+ADD_EXECUTABLE(XXX
+  XXX/Porcupine.cc
+  XXX/XXX.cc
+  XXX/Nest.cc
+)
+TARGET_LINK_LIBRARIES(XXX infinit elle nucleus lune infinit)
 # XXX
 
 # configuration

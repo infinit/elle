@@ -23,9 +23,10 @@ namespace nucleus
 ///
 /// XXX
 ///
-#define NestRegister(_handle_)                                          \
-  if (Nest::Register(_handle._object) == elle::StatusError)             \
-    escape("unable to register the new block to the nest");
+#define NestRegister(_handle_)                                          
+
+    //  if (Nest::Register(_handle._object) == elle::StatusError)       
+    // escape("unable to register the new block to the nest");
 
 ///
 /// this macro-function makes it easier to load a block.

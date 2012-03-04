@@ -108,19 +108,17 @@ namespace nucleus
     elle::Status        Seam<V>::Insert(const typename V::K&    key,
                                         Nodule<V>*              nodule)
     {
-      typename Seam<V>::I*      inlet;
-
-      enterx(instance(inlet));
-
       // create an inlet.
-      inlet = new typename Seam<V>::I(key, nodule);
+      auto              inlet =
+        std::unique_ptr<typename Seam<V>::I>(
+          new typename Seam<V>::I(key, nodule));
 
       // add the inlet to the seam.
-      if (this->Insert(inlet) == elle::StatusError)
+      if (this->Insert(inlet.get()) == elle::StatusError)
         escape("unable to add the value to the seam");
 
       // waive.
-      waive(inlet);
+      inlet.release();
 
       return elle::StatusOk;
     }
@@ -147,9 +145,9 @@ namespace nucleus
       if (result.second == false)
         escape("unable to insert the inlet in the container");
 
-      // set the seam's parent link.
-      inlet->_value->parent = Address::Some;
-      inlet->_value->_parent = this;
+      // set the seam's parent handle.
+      if (inlet->value.Create(Address::Some, this) == elle::StatusError)
+        escape("unable to create the inlet's parent handle");
 
       // compute the inlet's footprint.
       if (inlet->_footprint.Compute() == elle::StatusError)
@@ -315,7 +313,7 @@ namespace nucleus
       NestLoad(inlet->value);
 
       // return the nodule.
-      nodule = inlet->_value;
+      nodule = inlet->value._object;
 
       return elle::StatusOk;
     }
@@ -372,7 +370,7 @@ namespace nucleus
       NestLoad(inlet->value);
 
       // return the nodule.
-      nodule = inlet->_value;
+      nodule = inlet->value._object;
 
       return elle::StatusOk;
     }
@@ -457,7 +455,7 @@ namespace nucleus
           NestLoad(this->parent);
 
           // progate the update.
-          if (this->_parent->Propagate(ancient, recent) == elle::StatusError)
+          if (this->parent._object->Propagate(ancient, recent) == elle::StatusError)
             escape("unable to propagate the update");
         }
 
@@ -472,30 +470,29 @@ namespace nucleus
     elle::Status        Seam<V>::Split(Seam<V>*&                right)
     {
       elle::Natural32   size;
-      Seam<V>*          r;
-
-      enterx(instance(r));
 
       // initialize _size_ as being the future left quills' size.
       size =
         hole::Hole::Descriptor.extent * hole::Hole::Descriptor.contention;
 
       // allocate a new seam.
-      r = new Seam<V>(this->_load, this->_unload);
+      auto              r =
+        std::unique_ptr< Seam<V> >(
+          new Seam<V>(this->_load, this->_unload));
 
       // create the seam.
-      if (r->Create() == elle::StatusError)
+      if (r.get()->Create() == elle::StatusError)
         escape("unable to create the seam");
 
       // export inlets from the current seam into the new seam.
-      if (this->Export(r, size) == elle::StatusError)
+      if (this->Export(r.get(), size) == elle::StatusError)
         escape("unable to export inlets");
 
       // set the output right seam.
-      right = r;
+      right = r.get();
 
-      // waive the r variable.
-      waive(r);
+      // release the tracking.
+      r.release();
 
       return elle::StatusOk;
     }
@@ -593,7 +590,7 @@ namespace nucleus
       NestLoad(inlet->value);
 
       // search in this nodule.
-      if (inlet->_value->Search(key, quill) == elle::StatusError)
+      if (inlet->value._object->Search(key, quill) == elle::StatusError)
         escape("unable to locate the quill for the given key");
 
       return elle::StatusOk;
@@ -624,7 +621,7 @@ namespace nucleus
           NestLoad(inlet->value);
 
           // retrieve the child's mauor key.
-          if (inlet->_value->Mayor(mayor) == elle::StatusError)
+          if (inlet->value._object->Mayor(mayor) == elle::StatusError)
             escape("unable to retrieve the mayor key");
 
           // compare the mayor key with the inlet's reference.
@@ -633,7 +630,7 @@ namespace nucleus
                    "reference");
 
           // trigger the check on the child nodule.
-          if (inlet->_value->Check() == elle::StatusError)
+          if (inlet->value._object->Check() == elle::StatusError)
             escape("unable to check the child nodule's consistency");
         }
 
@@ -734,23 +731,21 @@ namespace nucleus
       // iterator.
       for (i = 0; i < size; i++)
         {
-          Seam<V>::I*   inlet;
-
-          enterx(instance(inlet));
-
           // allocate an inlet.
-          inlet = new Seam<V>::I;
+          auto          inlet =
+            std::unique_ptr< Seam<V>::I >(
+              new Seam<V>::I);
 
           // extract the key and inlet.
-          if (archive.Extract(*inlet) == elle::StatusError)
+          if (archive.Extract(*inlet.get()) == elle::StatusError)
             escape("unable to extract the key/inlet tuple");
 
           // add the tuple to the seam.
-          if (this->Insert(inlet) == elle::StatusError)
+          if (this->Insert(inlet.get()) == elle::StatusError)
             escape("unable to add the key/tuple inlet to the seam");
 
-          // waive.
-          waive(inlet);
+          // release.
+          inlet.release();
         }
 
       return elle::StatusOk;

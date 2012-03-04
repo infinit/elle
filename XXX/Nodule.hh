@@ -19,6 +19,7 @@
 
 #include <nucleus/proton/ContentHashBlock.hh>
 #include <nucleus/proton/State.hh>
+#include <XXX/Handle.hh>
 
 namespace nucleus
 {
@@ -125,9 +126,9 @@ namespace nucleus
       // attributes
       //
       Type                      type;
-      Address                   parent;
-      Address                   left;
-      Address                   right;
+      Handle< Seam<V> >         parent;
+      Handle< Nodule<V> >       left;
+      Handle< Nodule<V> >       right;
 
       elle::Callback<
         elle::Status,
@@ -143,9 +144,6 @@ namespace nucleus
           const Nodule<V>*
           >
         >                       _unload;
-      Seam<V>*                  _parent;
-      Nodule*                   _left;
-      Nodule*                   _right;
       elle::Footprint           _footprint;
     };
 

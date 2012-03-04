@@ -16,15 +16,11 @@ namespace nucleus
   namespace proton
   {
 
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// XXX
-    ///
-    template <typename T>
-    const Handle<T>                     Handle::Null;
+///
+/// XXX
+///
+template <typename T>
+const Handle<T>                     Handle<T>::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -42,11 +38,22 @@ namespace nucleus
     ///
     /// XXX
     ///
-    /* XXX
     template <typename T>
     Handle<T>::Handle(T*                                        object):
-      XXX Address::Some
-    */
+      address(Address::Some), // XXX[???]
+      _object(object)
+    {
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename T>
+    Handle<T>::Handle(const Address&                            address):
+      address(address),
+      _object(NULL)
+    {
+    }
 
     /* XXX
 XXX
@@ -66,6 +73,19 @@ XXX
 - a noter que peut etre qu il serait utile de garder le handle dans chaque
   nodule pour eviter de recalculer.
     */
+
+    ///
+    /// the copy constructor.
+    //
+    template <typename T>
+    Handle<T>::Handle(const Handle<T>&                          element):
+      elle::Object(element),
+
+      address(element.address),
+      _object(element._object),
+      _placement(element._placement)
+    {
+    }
 
     ///
     /// the destructor.
@@ -97,6 +117,30 @@ XXX
     }
 
 //
+// ---------- object ----------------------------------------------------------
+//
+
+    ///
+    /// this operator compares two objects.
+    ///
+    template <typename T>
+    elle::Boolean       Handle<T>::operator==(const Handle<T>&  element) const
+    {
+      // check the address as this may actually be the same object.
+      if (this == &element)
+        return elle::StatusTrue;
+
+      // XXX
+
+      return elle::StatusTrue;
+    }
+
+    ///
+    /// this macro-function call generates the object.
+    ///
+    embed(Handle<T>, _(template <typename T>));
+
+//
 // ---------- dumpable --------------------------------------------------------
 //
 
@@ -104,8 +148,9 @@ XXX
     /// XXX
     ///
     template <typename T>
-    elle::Status        Handle<T>::Dump(const elle::Natural32   margin)
+    elle::Status        Handle<T>::Dump(const elle::Natural32) const
     {
+      /* XXX
       // XXX
 
       // dump the hiearchy.
@@ -124,6 +169,35 @@ XXX
                     << elle::Dumpable::Shift
                     << "[_Object] " << elle::none << std::endl;
         }
+      */
+
+      return elle::StatusOk;
+    }
+
+//
+// ---------- archivable ------------------------------------------------------
+//
+
+    ///
+    /// this method serializes the object.
+    ///
+    template <typename T>
+    elle::Status        Handle<T>::Serialize(elle::Archive&     archive) const
+    {
+      if (archive.Serialize(this->address) == elle::StatusError)
+        escape("unable to serialize the attribtues");
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// this method extracts the object.
+    ///
+    template <typename T>
+    elle::Status        Handle<T>::Extract(elle::Archive&       archive)
+    {
+      if (archive.Extract(this->address) == elle::StatusError)
+        escape("unable to extract the attribtues");
 
       return elle::StatusOk;
     }
