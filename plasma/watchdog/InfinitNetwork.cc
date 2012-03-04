@@ -34,6 +34,7 @@ InfinitNetwork::InfinitNetwork(meta::NetworkResponse const& response) :
             << " (" << this->_description._id << ").\n";
 
   QDir homeDirectory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
+  //if (!exists
   //if (!this->_process.start(homeDirectory.filePath()))
 }
 

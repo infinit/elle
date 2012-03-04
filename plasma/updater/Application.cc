@@ -104,7 +104,10 @@ void Application::_OnIdentityUpdated()
     {
       QFile f(homeDirectory.filePath("infinit.wtg"));
       if (f.open(QIODevice::ReadOnly))
-        watchdogId = QString{f.readAll()};
+        {
+          watchdogId = QString{f.readAll()};
+          f.close();
+        }
     }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -126,7 +129,7 @@ void Application::_OnIdentityUpdated()
         }
       else
         {
-          std::cerr << "Warning: Couldn't connect to the old watchdog instance\n";
+          std::cerr << "UPDATER: Warning: Couldn't connect to the old watchdog instance\n";
           watchdogId = "";
         }
     }
@@ -139,15 +142,15 @@ void Application::_OnIdentityUpdated()
       do {
           QLocalSocket conn;
           conn.connectToServer(WATCHDOG_SERVER_NAME);
-          if (conn.waitForConnected(2000))
+          if (!conn.waitForConnected(2000))
             break;
-          std::cerr << "Waiting for the old watchdog to be stopped ("
+          std::cerr << "UPDATER: Waiting for the old watchdog to be stopped ("
                     << tries << ")\n";
           ::sleep(1);
       } while (++tries < 10);
 
       if (tries >= 10)
-          std::cerr << "Warning: The old watchdog instance does not stop !\n";
+          std::cerr << "UPDATER: Warning: The old watchdog instance does not stop !\n";
     }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -157,7 +160,7 @@ void Application::_OnIdentityUpdated()
       QProcess p;
       if (!p.startDetached(watchdogPath))
         throw std::runtime_error("Cannot start the watchdog !");
-      std::cerr << "Process started\n";
+      std::cerr << "UPDATER: Process started\n";
       // XXX Cannot do that
       //if(!p.waitForStarted(2000))
       //  {
@@ -175,17 +178,17 @@ void Application::_OnIdentityUpdated()
   while (tries++ < 5)
     {
       conn.connectToServer(WATCHDOG_SERVER_NAME);
-      std::cerr << "Trying to connect to the watchdog\n";
+      std::cerr << "UPDATER: Trying to connect to the watchdog\n";
       if (conn.waitForConnected(2000))
         break;
-      std::cerr << "Retrying to connect (" << tries << ")\n";
+      std::cerr << "UPDATER: Retrying to connect (" << tries << ")\n";
       ::sleep(1);
     }
   if (!conn.isValid())
     throw std::runtime_error("Couldn't connect to the new watchdog instance");
 
 
-  std::cerr << "Connected to the watchdog\n";
+  std::cerr << "UPDATER: Connected to the watchdog\n";
 
   ///////////////////////////////////////////////////////////////////////////
   // Getting the new watchdog id
@@ -193,22 +196,33 @@ void Application::_OnIdentityUpdated()
   if (!homeDirectory.exists("infinit.wtg"))
     throw std::runtime_error("Couldn't find infinit watchdog id file");
   QFile f(homeDirectory.filePath("infinit.wtg"));
-  if (f.open(QIODevice::ReadOnly))
-    watchdogId = QString{f.readAll()};
-  else
-    throw std::runtime_error("Couldn't open infinit watchdog id file");
+  QString newWatchdogId;
+  tries = 0;
+    do {
+      if(tries > 0) ::sleep(1);
+      if (f.open(QIODevice::ReadOnly))
+        {
+          newWatchdogId = QString{f.readAll()};
+          f.close();
+          std::cerr << "UPDATER: Found new watchdog id "<< newWatchdogId.toStdString() << "\n";
+        }
+    } while (newWatchdogId == watchdogId && ++tries < 10);
+
+    if (newWatchdogId == watchdogId)
+      throw std::runtime_error("Couldn't open infinit watchdog id file");
 
   ///////////////////////////////////////////////////////////////////////////
   // calling watchdog run command (which gives the meta token)
   QByteArray cmd = QString("{"
       "\"command\":\"run\","
-      "\"_id\": \"" + watchdogId + "\","
+      "\"_id\": \"" + newWatchdogId + "\","
       "\"token\": \"" + QString(this->_identityUpdater.token().c_str()) + "\""
   "}\n").toAscii();
   conn.write(cmd);
   if (!conn.waitForBytesWritten(2000))
     throw std::runtime_error("Couldn't run the watchdog");
 
+  std::cerr << "UPDATER: Run command sent\n";
   //this->exit(EXIT_SUCCESS);
 }
 

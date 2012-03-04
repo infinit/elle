@@ -82,14 +82,14 @@ int Application::Exec()
 
   // Generate new watchdog id
   std::string watchdogId = randString(ASCII, 96);
-  std::cout << "New watchdog id: " << watchdogId << std::endl;
+  std::cout << "{WTG} New watchdog id: " << watchdogId << std::endl;
 
   // Saving watchdog id
   {
     QFile f(homeDirectory.filePath("infinit.wtg"));
     if (!f.open(QIODevice::WriteOnly | QIODevice::Truncate))
       {
-        std::cerr << "Cannot open file '"
+        std::cerr << "{WTG} Cannot open file '"
                   << f.fileName().toStdString()
                   << "'\n";
         return EXIT_FAILURE;
