@@ -51,6 +51,7 @@ PublicKey::PublicKey():
 PublicKey::PublicKey(const PublicKey& K) :
   Object(K), _key(nullptr)
 {
+  assert(K._key != nullptr);
   // re-create the public key by duplicate the internal numbers.
   if (this->Create(K._key) == StatusError)
     fail("unable to duplicate the public key");
@@ -79,11 +80,15 @@ PublicKey::~PublicKey()
 // ---------- methods ---------------------------------------------------------
 //
 
+#include "backtrace.cc"
+
 ///
 /// this method constructs a valid public key.
 ///
 Status PublicKey::Create(::EVP_PKEY const* key)
 {
+  if (key == nullptr)
+    std::cerr << nitro::Backtrace() << " >BITE\n";
   assert(key != nullptr);
   assert(this->_key == nullptr);
 
