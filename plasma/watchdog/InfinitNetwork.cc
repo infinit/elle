@@ -77,6 +77,7 @@ void InfinitNetwork::_Update()
 #include "nucleus/neutron/Genre.hh"
 #include "nucleus/neutron/Access.hh"
 #include "nucleus/proton/Address.hh"
+#include "backtrace.hh"
 
 void InfinitNetwork::_CreateNetworkRootBlock()
 {
@@ -88,6 +89,7 @@ void InfinitNetwork::_CreateNetworkRootBlock()
   auto genreDirectory = nucleus::neutron::GenreDirectory;
   auto access         = nucleus::neutron::Access::Null;
 
+  std::cerr << "This is an identity: "<<this->_manager.identity() <<"\n" ;
   if (identity.Restore(this->_manager.identity())       == e ||
       directory.Create(genreDirectory, identity.pair.K) == e ||
       directory.Seal(identity.pair.k, access)           == e ||
@@ -95,6 +97,9 @@ void InfinitNetwork::_CreateNetworkRootBlock()
     {
       throw std::runtime_error("Couldn't create the root block");
     }
+
+  nitro::Backtrace bt;
+  std::cerr << "BT: " << bt << std::endl;
 
   elle::Unique rootBlock;
   elle::Unique rootAddress;

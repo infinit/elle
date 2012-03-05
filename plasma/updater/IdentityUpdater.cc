@@ -35,6 +35,7 @@ IdentityUpdater::IdentityUpdater(QApplication& app) :
 //
 // ---------- methods  --------------------------------------------------------
 //
+Q_DECLARE_METATYPE(std::string)
 
 void IdentityUpdater::Start()
 {
@@ -113,7 +114,9 @@ void IdentityUpdater::_OnLogin(std::string const& password,
       else
         {
           std::cout << "Found a passport file.\n";
+          std::cout << "BITE<[";
           emit identityUpdated(true);
+          std::cout << "]>\n";
         }
     }
 
@@ -133,7 +136,13 @@ void IdentityUpdater::_OnError(meta::MetaClient::Error error,
       this->_loginDialog.setDisabled(false);
     }
   else
-    emit identityUpdated(false);
+    {
+      std::cout << "BITE<{";
+
+      emit identityUpdated(false);
+
+      std::cout << "}>\n";
+    }
 }
 
 void IdentityUpdater::_UpdatePassport()
@@ -158,7 +167,9 @@ void IdentityUpdater::_OnDeviceCreated(meta::CreateDeviceResponse const& res)
       f.write(res.passport.c_str());
       f.flush();
       f.close();
+      std::cout << "BITE<(";
       emit identityUpdated(true);
+      std::cout << ")>\n";
     }
   else
     throw std::runtime_error(

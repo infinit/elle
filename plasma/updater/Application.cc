@@ -95,6 +95,14 @@ bool Application::_CheckInfinitHome()
 /// XXX The following is ugly, do not read
 void Application::_OnIdentityUpdated(bool success)
 {
+  if (!success)
+    {
+      std::cerr << "Something failed ...\n";
+      this->exit(EXIT_FAILURE);
+      return;
+    }
+  else
+    std::cerr << "Starting the watchdog.\n";
   QDir homeDirectory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
   QString watchdogId;
 
@@ -193,8 +201,6 @@ void Application::_OnIdentityUpdated(bool success)
   ///////////////////////////////////////////////////////////////////////////
   // Getting the new watchdog id
   // When connected, the watchdog id file should exists
-  if (!homeDirectory.exists("infinit.wtg"))
-    throw std::runtime_error("Couldn't find infinit watchdog id file");
   QFile f(homeDirectory.filePath("infinit.wtg"));
   QString newWatchdogId;
   tries = 0;
@@ -216,7 +222,7 @@ void Application::_OnIdentityUpdated(bool success)
   QByteArray cmd = QString("{"
       "\"command\":\"run\","
       "\"_id\": \"" + newWatchdogId + "\","
-      "\"token\": \"" + QString(this->_identityUpdater.token().c_str()) + "\""
+      "\"token\": \"" + QString(this->_identityUpdater.token().c_str()) + "\","
       "\"identity\": \"" + QString(this->_identityUpdater.identity().c_str()) + "\""
   "}\n").toAscii();
   conn.write(cmd);

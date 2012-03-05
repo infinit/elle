@@ -104,7 +104,7 @@ namespace {
             if (this->errback != nullptr)
               this->errback(
                   MetaClient::Error::CallbackError,
-                  error.what()
+                  std::string("CallbackError: ") + error.what()
               );
           }
       }
