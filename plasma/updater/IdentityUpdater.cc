@@ -13,6 +13,7 @@
 //
 
 #include <iostream>
+#include <stdexcept>
 
 #include <QDir>
 
@@ -57,7 +58,7 @@ void IdentityUpdater::_DoLogin(std::string const& login, std::string const& pass
       using namespace std::placeholders;
       this->_api.Login(
           login, password,
-          std::bind(&IdentityUpdater::_OnLogin, this, _1),
+          std::bind(&IdentityUpdater::_OnLogin, this, password, _1),
           std::bind(&IdentityUpdater::_OnError, this, _1, _2)
       );
     }
@@ -65,46 +66,45 @@ void IdentityUpdater::_DoLogin(std::string const& login, std::string const& pass
   this->_loginDialog.show();
 }
 
-void IdentityUpdater::_OnLogin(plasma::metaclient::LoginResponse const& response)
+void IdentityUpdater::_OnLogin(std::string const& password,
+                               meta::LoginResponse const& response)
 {
   this->_loginDialog.setDisabled(false);
-  if (response.success)
+  if (!response.success)
     {
-      std::cout << "Login success: "
-                << response.fullname << ' '
-                << response.email << ' '
-                << response.token
-                << '\n';
-      this->_identity = response.identity;
-      this->_token = response.token;
-      this->_loginDialog.hide();
+      std::cerr << "Login error: " << response.error << '\n';
+      this->_loginDialog.SetErrorMessage(response.error);
+      return;
+    }
+  std::cout << "Login success: "
+            << response.fullname << ' '
+            << response.email << ' '
+            << response.token
+            << '\n';
 
-      QDir homeDirectory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
+  this->_identity = this->_DecryptIdentity(password, response.identity);
+  this->_token = response.token;
 
+  QDir homeDirectory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
+
+  // Create the file infinit.idy
+  if (!homeDirectory.exists("infinit.idy"))
+      this->_StoreIdentity(response.identity);
+
+  // Create the file infinit.dic
+    {
+      QFile f(homeDirectory.filePath("infinit.dic"));
+      if (f.open(QIODevice::WriteOnly | QIODevice::Truncate))
         {
-          QFile f(homeDirectory.filePath("infinit.idy"));
-          if (f.open(QIODevice::WriteOnly | QIODevice::Truncate))
-            {
-              f.write(response.identity.c_str());
-              f.close();
-            }
-          else
-            std::cerr << "Could not create 'infinit.idy'.\n";
+          f.write("0b000b00"); // XXX This is an empty dic,
+          f.close();
         }
+      else
+        std::cerr << "Could not create 'infinit.idy'.\n";
+    }
 
-        {
-          QFile f(homeDirectory.filePath("infinit.dic"));
-          if (f.open(QIODevice::WriteOnly | QIODevice::Truncate))
-            {
-              f.write("0b000b00"); // XXX This is an empty dic,
-              f.close();
-            }
-          else
-            std::cerr << "Could not create 'infinit.idy'.\n";
-        }
-
-
-
+  // Create the file infinit.ppt
+    {
       if (!homeDirectory.exists("infinit.ppt"))
         {
           std::cout << "Checking out a new passport.\n";
@@ -113,31 +113,35 @@ void IdentityUpdater::_OnLogin(plasma::metaclient::LoginResponse const& response
       else
         {
           std::cout << "Found a passport file.\n";
-          emit identityUpdated();
+          emit identityUpdated(true);
         }
     }
-  else
-    {
-      std::cerr << "Login error: " << response.error << '\n';
-      this->_loginDialog.SetErrorMessage(response.error);
-    }
+
+  this->_loginDialog.hide();
 }
 
-void IdentityUpdater::_OnError(plasma::metaclient::MetaClient::Error error,
+// XXX try to read infinit.idy and use password to decrypt it
+void IdentityUpdater::_OnError(meta::MetaClient::Error error,
                                std::string const& error_string)
 {
   std::cout << "ERROR: " << (int)error << ": " << error_string << "\n";
-  this->_loginDialog.SetErrorMessage(
-    "An error occured, please check your internet connection"
-  );
-  this->_loginDialog.setDisabled(false);
+  if (error == meta::MetaClient::Error::ConnectionFailure)
+    {
+      this->_loginDialog.SetErrorMessage(
+        "An error occured, please check your internet connection"
+      );
+      this->_loginDialog.setDisabled(false);
+    }
+  else
+    emit identityUpdated(false);
 }
 
 void IdentityUpdater::_UpdatePassport()
 {
   using namespace std::placeholders;
   this->_api.CreateDevice("default device name", "127.0.0.1",
-      std::bind(&IdentityUpdater::_OnDeviceCreated, this, _1)
+      std::bind(&IdentityUpdater::_OnDeviceCreated, this, _1),
+      std::bind(&IdentityUpdater::_OnError, this, _1, _2)
   );
 }
 
@@ -154,10 +158,45 @@ void IdentityUpdater::_OnDeviceCreated(meta::CreateDeviceResponse const& res)
       f.write(res.passport.c_str());
       f.flush();
       f.close();
-      emit identityUpdated();
+      emit identityUpdated(true);
     }
   else
-    std::cerr << "Could not write into '"
-              << homeDirectory.filePath("infinit.ppt").toStdString()
-              << "'.\n";
+    throw std::runtime_error(
+        "Could not write into '" +
+        homeDirectory.filePath("infinit.ppt").toStdString() +
+        "'.\n"
+    );
+}
+
+
+#include "lune/Identity.hh"
+
+std::string IdentityUpdater::_DecryptIdentity(std::string const& password,
+                                              std::string const& identityString)
+{
+  elle::Unique        unique;
+  lune::Identity      identity;
+
+  if (identity.Restore(identityString) == elle::StatusError ||
+      identity.Decrypt(password) == elle::StatusError ||
+      identity.Save(unique) == elle::StatusError)
+    {
+      show();
+      std::cerr << "Couldn't decrypt the identity file !\n"; // XXX
+    }
+
+  // TODO validate identity (with public part of the authority)
+  return unique;
+}
+
+void IdentityUpdater::_StoreIdentity(std::string const& identityString)
+{
+  lune::Identity        identity;
+
+  if (identity.Restore(identityString)  == elle::StatusError ||
+      identity.Store()                  == elle::StatusError)
+    {
+      show();
+      throw std::runtime_error("Cannot save the identity file.\n");
+    }
 }

@@ -53,6 +53,7 @@ class Network(Page):
             -> {
                 'success': True,
                 'updated_network_id': "id",
+                'descriptor' : "descriptor file", # only if root_block and root_address where given
             }
 
     Delete a network

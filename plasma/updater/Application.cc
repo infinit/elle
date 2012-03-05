@@ -69,9 +69,9 @@ void Application::_OnReleaseUpdated(bool)
   this->_identityUpdater.Start();
   this->connect(
     &this->_identityUpdater,
-    SIGNAL(identityUpdated()),
+    SIGNAL(identityUpdated(bool)),
     this,
-    SLOT(_OnIdentityUpdated())
+    SLOT(_OnIdentityUpdated(bool))
   );
 }
 
@@ -93,7 +93,7 @@ bool Application::_CheckInfinitHome()
 
 
 /// XXX The following is ugly, do not read
-void Application::_OnIdentityUpdated()
+void Application::_OnIdentityUpdated(bool success)
 {
   QDir homeDirectory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
   QString watchdogId;
@@ -217,6 +217,7 @@ void Application::_OnIdentityUpdated()
       "\"command\":\"run\","
       "\"_id\": \"" + newWatchdogId + "\","
       "\"token\": \"" + QString(this->_identityUpdater.token().c_str()) + "\""
+      "\"identity\": \"" + QString(this->_identityUpdater.identity().c_str()) + "\""
   "}\n").toAscii();
   conn.write(cmd);
   if (!conn.waitForBytesWritten(2000))

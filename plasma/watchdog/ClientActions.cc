@@ -83,10 +83,12 @@ void ClientActions::_OnRun(Connection& conn,
   std::cerr << "ClientActions::_OnRun()\n";
   CHECK_ID(args);
   QString token = args["token"].toString();
-  if (token.size() > 0)
+  QString identity = args["identity"].toString();
+  if (token.size() > 0 && identity.size() > 0)
     {
       std::cerr << "Running watchdog !\n";
       this->_manager.token(token);
+      this->_manager.identity(identity);
       this->_manager.networkManager().UpdateNetworks();
       UNREGISTER("run");
     }

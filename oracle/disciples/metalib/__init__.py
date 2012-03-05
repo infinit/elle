@@ -3,11 +3,7 @@
 """
 Forward imports of metalib
 """
-import base64
-
 import metalib as _meta
-def _b64to16(s):
-    return base64.b16encode(base64.b64decode(s, ('+', '-'))).lower()
 
 def check_root_block_signature(root_block, root_address, public_key):
     """Check wether or not the root block is valid.
@@ -27,12 +23,12 @@ def generate_identity(login, password, authority_file, authority_password):
         :param authority_file: The path to the authority file
         :param authority_password: Password to decrypt the authority file
         :rtype: A tuple of two string
-        :return: a pair of strings: the whole identity and the public part of the identity in hex
+        :return: a pair of strings: the whole identity and the public part of the identity
     """
     identity, identity_pub = _meta.generate_identity(
         login, password, authority_file, authority_password
     )
-    return (_b64to16(identity), _b64to16(identity_pub))
+    return (identity, identity_pub)
 
 
 def generate_network_descriptor(network_id, model, root_address, authority_file, authority_password):
@@ -58,5 +54,5 @@ def generate_passport(authority_file, authority_password):
         :rtype: String
         :return: The hex encoded passport
     """
-    return _b64to16(_meta.generate_passport(authority_file, authority_password))
+    return _meta.generate_passport(authority_file, authority_password)
 

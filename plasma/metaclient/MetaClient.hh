@@ -63,6 +63,11 @@ namespace plasma
       std::string             passport;
     };
 
+    struct UpdateNetworkResponse : Response
+    {
+      std::string             updated_network_id;
+      std::string             descriptor;
+    };
 
     ///
     /// Convenient interface to the meta server
@@ -77,6 +82,7 @@ namespace plasma
         ConnectionFailure,
         InvalidContent,
         ServerError,
+        CallbackError,
       };
 
       /// Callbacks for API calls
@@ -84,6 +90,7 @@ namespace plasma
       typedef std::function<void(NetworksResponse const&)> NetworksCallback;
       typedef std::function<void(NetworkResponse const&)> NetworkCallback;
       typedef std::function<void(CreateDeviceResponse const&)> CreateDeviceCallback;
+      typedef std::function<void(UpdateNetworkResponse const&)> UpdateNetworkCallback;
 
       typedef std::function<void(Error, std::string const&)> Errback;
     private:
@@ -119,9 +126,19 @@ namespace plasma
 
       void GetNetworks(NetworksCallback callback,
                        Errback errback = nullptr);
+
       void GetNetwork(std::string const& id,
                       NetworkCallback callback,
                       Errback errback = nullptr);
+
+      void UpdateNetwork(std::string const& id,
+                         std::string const* name,
+                         std::list<std::string> const* users,
+                         std::list<std::string> const* devices,
+                         std::string const* rootBlock,
+                         std::string const* rootAddress,
+                         UpdateNetworkCallback callback,
+                         Errback errback = nullptr);
       /// properties
       QByteArray const& token() const { return this->_token; }
       void token(QByteArray const& token) { this->_token = token; }

@@ -95,7 +95,18 @@ namespace {
           }
 
         // Calling the callback with the response
-        this->callback(response);
+        try
+          {
+            this->callback(response);
+          }
+        catch (std::exception const& error)
+          {
+            if (this->errback != nullptr)
+              this->errback(
+                  MetaClient::Error::CallbackError,
+                  error.what()
+              );
+          }
       }
 
       virtual void OnNetworkError(QNetworkReply::NetworkError)
@@ -208,6 +219,12 @@ namespace {
       response.passport          =          _GetNonEmptyString(map, "passport");
     }
 
+    FILLER(UpdateNetworkResponse)
+    {
+      response.updated_network_id = _GetNonEmptyString(map, "updated_network_id");
+      response.descriptor         =              _GetString(map, "desriptor", "");
+    }
+
 #undef FILLER
 
 } // !ns anonymous
@@ -272,6 +289,40 @@ void MetaClient::CreateDevice(std::string const& name,
   this->_Post("/devices", req, new CreateDeviceResponseHandler(callback, errback));
 }
 
+
+void MetaClient::UpdateNetwork(std::string const& id,
+                               std::string const* name,
+                               std::list<std::string> const* users,
+                               std::list<std::string> const* devices,
+                               std::string const* rootBlock,
+                               std::string const* rootAddress,
+                               UpdateNetworkCallback callback,
+                               Errback errback)
+{
+  assert((name != nullptr || users != nullptr || devices != nullptr) &&
+         "You have to give something to update !");
+  QVariantMap req;
+  if (name != nullptr)
+      req.insert("name", name->c_str());
+
+  assert(users == nullptr && "XXX TODO");
+  assert(devices == nullptr && "XXX TODO");
+
+  assert((rootBlock == nullptr && rootAddress == nullptr) ||
+         (rootBlock != nullptr && rootAddress != nullptr));
+  if (rootBlock != nullptr)
+    req.insert("root_block", rootBlock->c_str());
+  if (rootAddress != nullptr)
+    req.insert("root_address", rootAddress->c_str());
+  this->_Post("/network", req, new UpdateNetworkResponseHandler(callback, errback));
+}
+
+
+
+
+///
+/// -------- private methods --------------------------------------------------
+///
 
 void MetaClient::_Post(std::string const& url,
                        QVariantMap const& data,

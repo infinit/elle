@@ -81,7 +81,7 @@ int Application::Exec()
   QDir homeDirectory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
 
   // Generate new watchdog id
-  std::string watchdogId = randString(ASCII, 96);
+  std::string watchdogId = randString(ASCII, 42);
   std::cout << "{WTG} New watchdog id: " << watchdogId << std::endl;
 
   // Saving watchdog id

@@ -85,7 +85,10 @@ void NetworkManager::_OnNetworkUpdate(meta::NetworkResponse const& r)
   if (it == this->_networks.end())
     {
       auto res = this->_networks.insert(
-          NetworkMap::value_type(r._id, InfinitNetworkPtr(new InfinitNetwork(r)))
+          NetworkMap::value_type(
+            r._id,
+            InfinitNetworkPtr(new InfinitNetwork(this->_manager, r))
+          )
       );
       if (res.second == false)
         throw std::runtime_error("Out of memory");

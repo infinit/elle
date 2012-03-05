@@ -53,25 +53,29 @@ namespace plasma
       IdentityUpdater(QApplication& app);
 
       /// properties
-      std::string const&              token() const     { return _token; }
-      std::string const&              identity() const  { return _identity; }
-      plasma::metaclient::MetaClient& api()             { return _api; }
+      std::string const& token() const     { return _token; }
+      std::string const& identity() const  { return _identity; }
+      meta::MetaClient&  api()             { return _api; }
 
       /// methods
       void Start();
 
     private:
-      void _OnLogin(meta::LoginResponse const& response);
+      void _OnLogin(std::string const& password,
+                    meta::LoginResponse const& response);
       void _OnError(meta::MetaClient::Error error,
                     std::string const& error_string);
-      void _UpdatePassport();
       void _OnDeviceCreated(meta::CreateDeviceResponse const& res);
+      void _UpdatePassport();
+      std::string _DecryptIdentity(std::string const& password,
+                                   std::string const& identity);
+      void _StoreIdentity(std::string const& identityString);
 
     private slots:
       void _DoLogin(std::string const& login, std::string const& password);
 
     signals:
-      void identityUpdated();
+      void identityUpdated(bool);
     };
 
   }

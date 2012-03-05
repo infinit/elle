@@ -17,6 +17,7 @@
 
 # include <string>
 
+# include <QDir>
 # include <QProcess>
 
 # include "plasma/metaclient/MetaClient.hh"
@@ -26,6 +27,7 @@ namespace plasma
   namespace watchdog
   {
 
+      class Manager;
       namespace meta = ::plasma::metaclient;
 //
 // ---------- classes ---------------------------------------------------------
@@ -35,11 +37,21 @@ namespace plasma
     {
     private:
       meta::NetworkResponse   _description;
+      Manager&                _manager;
       QProcess                _process;
+      QDir                    _infinitHome;
+      QDir                    _home;
 
     public:
-      InfinitNetwork(meta::NetworkResponse const& response);
+      InfinitNetwork(Manager& manager, meta::NetworkResponse const& response);
       void Update(meta::NetworkResponse const& response);
+
+    private:
+      void _Update();
+      void _CreateNetworkRootBlock();
+      void _OnGotDescriptor(meta::UpdateNetworkResponse const& response);
+      void _OnGotDescriptorError(meta::MetaClient::Error error,
+                                 std::string const& reason);
     };
 
   }

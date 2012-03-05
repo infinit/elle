@@ -56,7 +56,7 @@ namespace plasma {
       bool _CheckInfinitHome();
     private slots:
       void _OnReleaseUpdated(bool);
-      void _OnIdentityUpdated();
+      void _OnIdentityUpdated(bool success);
 
     };
 

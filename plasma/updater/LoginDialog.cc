@@ -9,7 +9,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
     ui(new Ui::LoginDialog)
 {
     ui->setupUi(this);
-    this->connect(this, SIGNAL(accepted), this, SLOT(_OnAccepted));
+    this->connect(this, SIGNAL(accepted()), this, SLOT(_OnAccepted()));
 }
 
 LoginDialog::~LoginDialog()
