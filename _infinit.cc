@@ -111,6 +111,8 @@ elle::Status            Main(elle::Natural32                    argc,
 
     // assign the username.
     Infinit::User.assign(pw->pw_name);
+    // XXX[this will take the current user and therefore displays:
+           `enter your passphrase ...`]
   }
 #elif defined(INFINIT_WINDOWS)
   {
@@ -123,6 +125,8 @@ elle::Status            Main(elle::Natural32                    argc,
 
     // assign the username.
     Infinit::User.assign(username, length);
+    // XXX[this will take the current user and therefore displays:
+           `enter your passphrase ...`]
   }
 #else
 # error "unsupported platform"
