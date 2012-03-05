@@ -9,15 +9,20 @@ class LoginDialog : public QDialog
 {
     Q_OBJECT
 
+private:
+    Ui::LoginDialog *ui;
+
 public:
     explicit LoginDialog(QWidget *parent = 0);
     ~LoginDialog();
 
-    void GetLoginPassword(std::string& login, std::string& password);
     void SetErrorMessage(std::string const& error);
 
-private:
-    Ui::LoginDialog *ui;
+signals:
+    void doLogin(std::string const& login, std::string const& password);
+
+private slots:
+    void _OnAccepted();
 };
 
 #endif // LOGINDIALOG_HH

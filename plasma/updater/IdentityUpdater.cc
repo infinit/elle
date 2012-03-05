@@ -40,14 +40,12 @@ void IdentityUpdater::Start()
   std::cout << "IdentityUpdater::Start()\n";
   this->_loginDialog.show();
   this->connect(
-    &this->_loginDialog, SIGNAL(accepted()),
-    this, SLOT(_DoLogin())
+    &this->_loginDialog, SIGNAL(doLogin(std::string const&, std::string const&)),
+    this, SLOT(_DoLogin(std::string const&, std::string const&))
   );
 }
-void IdentityUpdater::_DoLogin()
+void IdentityUpdater::_DoLogin(std::string const& login, std::string const& password)
 {
-  std::string login, password;
-  this->_loginDialog.GetLoginPassword(login, password);
   if (!login.size() || !password.size())
     {
       this->_loginDialog.SetErrorMessage("Wrong login/password");
@@ -56,7 +54,6 @@ void IdentityUpdater::_DoLogin()
     }
 
     {
-      std::cout << "DO LOGIN CALL\n";
       using namespace std::placeholders;
       this->_api.Login(
           login, password,
@@ -94,6 +91,7 @@ void IdentityUpdater::_OnLogin(plasma::metaclient::LoginResponse const& response
           else
             std::cerr << "Could not create 'infinit.idy'.\n";
         }
+
         {
           QFile f(homeDirectory.filePath("infinit.dic"));
           if (f.open(QIODevice::WriteOnly | QIODevice::Truncate))

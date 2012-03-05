@@ -68,7 +68,7 @@ namespace plasma
       void _OnDeviceCreated(meta::CreateDeviceResponse const& res);
 
     private slots:
-      void _DoLogin();
+      void _DoLogin(std::string const& login, std::string const& password);
 
     signals:
       void identityUpdated();
