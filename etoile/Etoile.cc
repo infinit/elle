@@ -46,21 +46,22 @@ elle::Status          Etoile::Initialize()
   //
   // initialize the components.
   //
+  {
+    if (path::Path::Initialize() == elle::StatusError)
+      escape("unable to initialize the path");
 
-  if (path::Path::Initialize() == elle::StatusError)
-    escape("unable to initialize the path");
+    if (depot::Depot::Initialize() == elle::StatusError)
+      escape("unable to initialize the depot");
 
-  if (depot::Depot::Initialize() == elle::StatusError)
-    escape("unable to initialize the depot");
+    if (gear::Gear::Initialize() == elle::StatusError)
+      escape("unable to initialize the gear");
 
-  if (gear::Gear::Initialize() == elle::StatusError)
-    escape("unable to initialize the gear");
+    if (shrub::Shrub::Initialize() == elle::StatusError)
+      escape("unable to initialize the shrub");
 
-  if (shrub::Shrub::Initialize() == elle::StatusError)
-    escape("unable to initialize the shrub");
-
-  if (portal::Portal::Initialize() == elle::StatusError)
-    escape("unable to initialize the portal");
+    if (portal::Portal::Initialize() == elle::StatusError)
+      escape("unable to initialize the portal");
+  }
 
   //
   // generate a phrase randomly which will be used by applications to
@@ -91,20 +92,33 @@ elle::Status          Etoile::Initialize()
 ///
 elle::Status          Etoile::Clean()
 {
-  if (portal::Portal::Clean() == elle::StatusError)
-    escape("unable to clean the portal");
+  //
+  // delete the phrase.
+  //
+  {
+    if (Etoile::Phrase.Erase(Infinit::Network) == elle::StatusError)
+      escape("unable to erase the phrase");
+  }
 
-  if (shrub::Shrub::Clean() == elle::StatusError)
-    escape("unable to clean the shrub");
+  //
+  // clean the components.
+  //
+  {
+    if (portal::Portal::Clean() == elle::StatusError)
+      escape("unable to clean the portal");
 
-  if (gear::Gear::Clean() == elle::StatusError)
-    escape("unable to clean the gear");
+    if (shrub::Shrub::Clean() == elle::StatusError)
+      escape("unable to clean the shrub");
 
-  if (depot::Depot::Clean() == elle::StatusError)
-    escape("unable to clean the depot");
+    if (gear::Gear::Clean() == elle::StatusError)
+      escape("unable to clean the gear");
 
-  if (path::Path::Clean() == elle::StatusError)
-    escape("unable to clean the path");
+    if (depot::Depot::Clean() == elle::StatusError)
+      escape("unable to clean the depot");
+
+    if (path::Path::Clean() == elle::StatusError)
+      escape("unable to clean the path");
+  }
 
   return elle::StatusOk;
 }

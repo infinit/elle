@@ -584,7 +584,7 @@ namespace hole
               // this is required since no synchronisation mechanism is
               // present yet so the current machine may have missed some
               // versions when disconnected.
-              ///
+              //
               if (version == nucleus::Version::Last)
                 {
                   Neighbourhood::Scoutor        scoutor;

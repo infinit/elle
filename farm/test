@@ -1,0 +1,89 @@
+#!/usr/bin/env python3
+
+import distutils.dir_util
+import os
+import pipes
+import shutil
+import subprocess
+import tempfile
+import time
+
+BUILD = os.environ['DIR_BUILD']
+
+def run(cmd, stdin = b'', cwd = None):
+  print('Run: %s' % ' '.join(map(pipes.quote, cmd)))
+  p = subprocess.Popen(cmd,
+                       cwd = cwd,
+                       stdin = subprocess.PIPE)
+  p.stdin.write(stdin)
+  p.stdin.close()
+  p.wait()
+  assert p.returncode == 0
+
+def infinit(cmd, stdin = b'', cwd = None):
+  cmd[0] = '%s/%s' % (BUILD, cmd[0])
+  return run(cmd, stdin)
+
+
+class Network:
+
+  def __init__(self):
+    self.__root = tempfile.mkdtemp()
+    os.environ['INFINIT_HOME'] = self.__root
+    self.__cfg = '%s/.config/infinit' % self.__root
+    self.__mnt = '%s/mnt' % self.__root
+    distutils.dir_util.mkpath(self.__cfg)
+    distutils.dir_util.mkpath(self.__mnt)
+    shutil.copyfile('%s/oracle/infinit.auth' % BUILD, '%s/infinit.auth' % self.__cfg)
+    infinit(['satellites/user/8user', '-c', '-n', 'buildslave'],
+            stdin = b'\n\n')
+    infinit(['satellites/network/8network',
+             '-c', '-n', 'network', '-m', 'local', '-a', 'buildslave'],
+            stdin = b'\n\n')
+    infinit(['satellites/passport/8passport', '-c'],
+            stdin = b'\n')
+    for ext in ['dic', 'idy']:
+      shutil.copyfile('%s/users/buildslave/buildslave.%s' % (self.__cfg, ext),
+                      '%s/infinit.%s' % (self.__cfg, ext))
+    self.__infinit = None
+
+  @property
+  def mounted(self):
+    return self.__infinit is not None
+
+  @property
+  def mountpoint(self):
+    return self.__mnt
+
+  def mount(self):
+    assert not self.mounted
+    self.__infinit = subprocess.Popen(['%s/8infinit' % BUILD, '-n', 'network', '-m', self.__mnt],
+                                      stdin = subprocess.PIPE)
+    self.__infinit.stdin.write(b'\n')
+    self.__infinit.stdin.close()
+    while not os.path.exists('%s/networks/network/network.phr' % self.__cfg):
+      time.sleep(1)
+
+  def dismount(self):
+    assert self.mounted
+    self.__infinit.send_signal(15)
+    self.__infinit.wait()
+    while os.path.exists('%s/networks/network/network.phr' % self.__cfg):
+      time.sleep(1)
+    self.__infinit = None
+
+  def __del__(self):
+    import os, shutil
+    if self.mounted:
+      self.dismount()
+    shutil.rmtree(self.__root)
+
+def test_openssl():
+  network = Network()
+  network.mount()
+  run(['tar', '-xzf', '/home/buildslave/openssl-1.0.0g.tar.gz', '-C', network.mountpoint])
+  run(['./config'], cwd = '%s/openssl-1.0.0g' % network.mountpoint)
+  run(['make'], cwd = '%s/openssl-1.0.0g' % network.mountpoint)
+
+
+test_openssl()
