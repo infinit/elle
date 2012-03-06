@@ -25,7 +25,8 @@ namespace lune
 //
 
   ///
-  /// XXX
+  /// this class holds the set or subset of initial nodes required for
+  /// a hole implementation to initiate connections.
   ///
   class Set:
     public elle::Object,
