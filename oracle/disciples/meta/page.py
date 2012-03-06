@@ -77,8 +77,9 @@ class Page(object):
 
     def success(self, obj={}):
         assert(isinstance(obj, dict))
-        obj.setdefault('success', True)
-        return json.dumps(obj, default=str)
+        d = {'success': True}
+        d.update(obj)
+        return json.dumps(d, default=str)
 
 
     _data = None

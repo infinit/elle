@@ -299,22 +299,25 @@ void MetaClient::UpdateNetwork(std::string const& id,
                                UpdateNetworkCallback callback,
                                Errback errback)
 {
-  assert((name != nullptr || users != nullptr || devices != nullptr) &&
-         "You have to give something to update !");
   QVariantMap req;
+
+  assert(id.size() && "You have to give an id to update a network");
+  req.insert("id", id.c_str());
+
   if (name != nullptr)
       req.insert("name", name->c_str());
 
   assert(users == nullptr && "XXX TODO");
   assert(devices == nullptr && "XXX TODO");
 
-  assert((rootBlock == nullptr && rootAddress == nullptr) ||
-         (rootBlock != nullptr && rootAddress != nullptr));
+  assert(((rootBlock == nullptr && rootAddress == nullptr) ||
+          (rootBlock != nullptr && rootAddress != nullptr)) &&
+         "Give both rootBlock and rootAddress or none of them");
   if (rootBlock != nullptr)
     req.insert("root_block", rootBlock->c_str());
   if (rootAddress != nullptr)
     req.insert("root_address", rootAddress->c_str());
-  this->_Post("/network", req, new UpdateNetworkResponseHandler(callback, errback));
+  this->_Post("/network/" + id, req, new UpdateNetworkResponseHandler(callback, errback));
 }
 
 

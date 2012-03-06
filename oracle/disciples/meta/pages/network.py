@@ -65,6 +65,7 @@ class Network(Page):
     """
 
     def GET(self, id=None):
+        print "BIM"
         self.requireLoggedIn()
         if id is None:
             return self.success({'networks': self.user.get('networks', [])})
@@ -76,9 +77,15 @@ class Network(Page):
             network.pop('owner')
             return self.success(network)
 
-    def POST(self):
+    def POST(self, id=None):
         self.requireLoggedIn()
         network = self.data
+        if id is not None:
+            if '_id' in network and network['_id'] != id:
+                return self.error("Mismatch ids")
+            else:
+                self.data['_id'] = id
+
         if '_id' in network:
             action = "update"
         else:
@@ -94,6 +101,7 @@ class Network(Page):
         return action_func(network)
 
     def _create(self, network, network_model="slug"):
+        print "CREATE"
         if '_id' in network:
             return self.error("An id cannot be specified while creating a network")
         name = network.get('name', '').strip()
@@ -121,6 +129,7 @@ class Network(Page):
         })
 
     def _update(self, network):
+        print "UPDATE"
         id = database.ObjectId(network['_id'])
         if id not in self.user['networks']:
             print "user %s has no network %s in his networks" % (self.user['_id'], id), self.user['networks']
@@ -147,7 +156,7 @@ class Network(Page):
             try:
                 root_block = network['root_block']
                 root_address = network['root_address']
-                assert(network['descriptor'] is None)
+                assert(network.get('descriptor') is None)
                 is_valid = metalib.check_root_block_signature(
                     root_block,
                     root_address,
@@ -165,6 +174,7 @@ class Network(Page):
                     conf.INFINIT_AUTHORITY_FILE,
                     conf.INFINIT_AUTHORITY_PASSWORD,
                 )
+                print "CREATED DESCRIPTOR :", to_save['descriptor']
             except Exception, err:
                 traceback.print_exc()
                 return self.error("Unexpected error: " + str(err))
@@ -199,6 +209,7 @@ class Network(Page):
         }) is not None
 
     def DELETE(self, id):
+        print "Heeee"
         self.requireLoggedIn()
         try:
             networks = self.user['devices']

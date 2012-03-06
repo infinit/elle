@@ -192,7 +192,7 @@ std::string IdentityUpdater::_DecryptIdentity(std::string const& password,
 
   if (identity.Restore(identityString)  == elle::StatusError ||
       identity.Decrypt(password)        == elle::StatusError ||
-      identity.pair.k.Save(pair)        == elle::StatusError
+      identity.pair.Save(pair)          == elle::StatusError
       // || identity.Save(id)                 == elle::StatusError
       )
     {

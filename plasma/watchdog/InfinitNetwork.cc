@@ -127,10 +127,15 @@ void InfinitNetwork::_CreateNetworkRootBlock()
 
 void InfinitNetwork::_OnGotDescriptor(meta::UpdateNetworkResponse const& response)
 {
-  if (response.updated_network_id != this->_description._id)
-    {
-      throw std::runtime_error("mismatch ids...");
-    }
+  // XXX updated is none here, correct meta
+  //if (response.updated_network_id != this->_description._id)
+  //  {
+  //    throw std::runtime_error(
+  //        "mismatch ids... between updated '" +
+  //        response.updated_network_id + "' and the old one '" +
+  //        this->_description._id + "'"
+  //    );
+  //  }
   std::cout << "Got descriptor for " << this->_description.name
             <<  " (" << this->_description._id << ") :"
             << response.descriptor << std::endl;
