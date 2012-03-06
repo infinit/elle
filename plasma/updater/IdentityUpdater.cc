@@ -186,24 +186,23 @@ void IdentityUpdater::_OnDeviceCreated(meta::CreateDeviceResponse const& res)
 std::string IdentityUpdater::_DecryptIdentity(std::string const& password,
                                               std::string const& identityString)
 {
-  //elle::Unique        id;
-  elle::Unique        pair;
+  elle::Unique        id;
   lune::Identity      identity;
 
   if (identity.Restore(identityString)  == elle::StatusError ||
       identity.Decrypt(password)        == elle::StatusError ||
-      identity.pair.Save(pair)          == elle::StatusError
-      // || identity.Save(id)                 == elle::StatusError
+      identity.Clear()                  == elle::StatusError ||
+      identity.Save(id)                 == elle::StatusError
       )
     {
       show();
       std::cerr << "Couldn't decrypt the identity file !\n"; // XXX
     }
 
-  //std::cerr << "CRYPTED ID: " << identityString << "\n";
-  //std::cerr << "UNCRYPTED ID: " << unique << "\n";
+  std::cerr << "CRYPTED ID: " << identityString << "\n";
+  std::cerr << "UNCRYPTED ID: " << unique << "\n";
   //std::cerr << "UNCRYPTED Pair: " << pair << "\n";
-  return pair;
+  return id;
 }
 
 void IdentityUpdater::_StoreIdentity(std::string const& identityString)

@@ -91,8 +91,8 @@ void InfinitNetwork::_CreateNetworkRootBlock()
 
 
   std::cerr << "This is an identity: "<<this->_manager.identity() <<"\n" ;
+
   if (identity.Restore(this->_manager.identity())             == e ||
-      identity.pair.Restore(this->_manager.keyPair())         == e ||
       directory.Create(genreDirectory, identity.pair.K)       == e ||
       directory.Seal(identity.pair.k, access)                 == e ||
       directory.Bind(address)                                 == e)
