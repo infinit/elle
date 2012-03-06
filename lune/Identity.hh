@@ -44,6 +44,15 @@ namespace lune
     static const elle::String           Extension;
 
     //
+    // enumerations
+    //
+    enum Mode
+      {
+        ModeEncrypted,
+        ModeUnencrypted
+      };
+
+    //
     // constructors & destructors
     //
     Identity();
@@ -57,6 +66,8 @@ namespace lune
 
     elle::Status        Encrypt(const elle::String&);
     elle::Status        Decrypt(const elle::String&);
+
+    elle::Status        Clear();
 
     elle::Status        Seal(const Authority&);
     elle::Status        Validate(const Authority&) const;

@@ -119,6 +119,24 @@ namespace lune
   }
 
   ///
+  /// this method clears the identity i.e removes the cipher.
+  ///
+  /// this is required for the Serialize() method to consider the identity
+  /// in its unencrypted form.
+  ///
+  elle::Status          Identity::Clear()
+  {
+    if (this->cipher != nullptr)
+      {
+        delete this->cipher;
+
+        this->cipher == nullptr;
+      }
+
+    return elle::StatusOk;
+  }
+
+  ///
   /// this method seals the identity with the authority.
   ///
   elle::Status          Identity::Seal(const Authority&         authority)
@@ -207,14 +225,31 @@ namespace lune
   elle::Status          Identity::Serialize(elle::Archive&      archive) const
   {
     // check the cipher.
-    if (this->cipher == NULL)
-      escape("unable to serialize an unencrypted identity");
+    if (this->cipher != nullptr)
+      {
+        // serialize the attributes.
+        if (archive.Serialize(
+              static_cast<elle::Byte>(Identity::ModeEncrypted),
+              this->name,
+              *this->cipher,
+              this->signature) == elle::StatusError)
+          escape("unable to serialize the attributes");
+      }
+    else
+      {
+        //
+        // this is a special case where the identity is actually serialized
+        // in its unencrypted form.
+        //
 
-    // serialize the attributes.
-    if (archive.Serialize(this->name,
-                          *this->cipher,
-                          this->signature) == elle::StatusError)
-      escape("unable to serialize the attributes");
+        // serialize the attributes.
+        if (archive.Serialize(
+              static_cast<elle::Byte>(Identity::ModeUnencrypted),
+              this->name,
+              this->pair,
+              this->signature) == elle::StatusError)
+          escape("unable to serialize the attributes");
+      }
 
     return elle::StatusOk;
   }
@@ -224,14 +259,39 @@ namespace lune
   ///
   elle::Status          Identity::Extract(elle::Archive&        archive)
   {
+    elle::Byte          mode;
+
     // allocate the cipher.
     this->cipher = new elle::Cipher;
 
-    // extract the attributes.
-    if (archive.Extract(this->name,
-                        *this->cipher,
-                        this->signature) == elle::StatusError)
+    // extract the mode.
+    if (archive.Extract(mode) == elle::StatusError)
       escape("unable to extract the attributes");
+
+    // depending on the mode.
+    switch (static_cast<Identity::Mode>(mode))
+      {
+      case Identity::ModeEncrypted:
+        {
+          // extract the attributes.
+          if (archive.Extract(this->name,
+                              *this->cipher,
+                              this->signature) == elle::StatusError)
+            escape("unable to extract the attributes");
+
+          break;
+        }
+      case Identity::ModeUnencrypted:
+        {
+          // extract the attributes.
+          if (archive.Extract(this->name,
+                              this->pair,
+                              this->signature) == elle::StatusError)
+            escape("unable to extract the attributes");
+
+          break;
+        }
+      }
 
     return elle::StatusOk;
   }
