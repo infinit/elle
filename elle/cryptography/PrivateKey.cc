@@ -73,6 +73,11 @@ PrivateKey::~PrivateKey()
 
   if (this->_contexts.encrypt != nullptr)
     ::EVP_PKEY_CTX_free(this->_contexts.encrypt);
+
+  this->_key                = nullptr;
+  this->_contexts.decrypt  = nullptr;
+  this->_contexts.sign      = nullptr;
+  this->_contexts.encrypt   = nullptr;
 }
 
 //

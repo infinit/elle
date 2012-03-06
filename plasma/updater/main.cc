@@ -35,7 +35,6 @@ int     main(int ac, char* av[])
 
 static void _initAll()
 {
-  qRegisterMetaType<std::string>("std::string");
   if (elle::Elle::Initialize() == elle::StatusError ||
       lune::Lune::Initialize() == elle::StatusError)
     throw std::runtime_error("Couldn't initialize !");

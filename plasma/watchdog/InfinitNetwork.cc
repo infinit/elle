@@ -89,23 +89,27 @@ void InfinitNetwork::_CreateNetworkRootBlock()
   auto genreDirectory = nucleus::neutron::GenreDirectory;
   auto access         = nucleus::neutron::Access::Null;
 
+
   std::cerr << "This is an identity: "<<this->_manager.identity() <<"\n" ;
-  if (identity.Restore(this->_manager.identity())       == e ||
-      directory.Create(genreDirectory, identity.pair.K) == e ||
-      directory.Seal(identity.pair.k, access)           == e ||
-      directory.Bind(address)                           == e)
+  if (identity.Restore(this->_manager.identity())             == e ||
+      identity.pair.Restore(this->_manager.keyPair())         == e ||
+      directory.Create(genreDirectory, identity.pair.K)       == e ||
+      directory.Seal(identity.pair.k, access)                 == e ||
+      directory.Bind(address)                                 == e)
     {
       throw std::runtime_error("Couldn't create the root block");
     }
 
-  nitro::Backtrace bt;
-  std::cerr << "BT: " << bt << std::endl;
+  std::cerr << "YEAH ALL DONE \n";
 
   elle::Unique rootBlock;
   elle::Unique rootAddress;
 
   directory.Save(rootBlock);
   address.Save(rootAddress);
+
+  std::cerr << "root block"<<rootBlock<<" \n";
+  std::cerr << "root address"<<rootAddress<<" \n";
 
   using namespace std::placeholders;
   this->_manager.meta().UpdateNetwork(

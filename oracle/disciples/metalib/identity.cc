@@ -100,13 +100,15 @@ extern "C" PyObject* metalib_generate_identity(PyObject* self, PyObject* args)
       elle::String all, pub;
       bool res = (
           identity.Save(all) != elle::StatusError &&
-          identity.pair.k.Save(pub) != elle::StatusError
+          identity.pair.K.Save(pub) != elle::StatusError
       );
       // WARNING: restore state before setting exception !
       PyEval_RestoreThread(_save);
 
       if (res)
         {
+          std::cout << "all:"<<all<< " <- all\n";
+          std::cout << "pub:"<<pub<< " <- pub\n";
           ret = Py_BuildValue("(ss)", all.c_str(), pub.c_str());
         }
       else

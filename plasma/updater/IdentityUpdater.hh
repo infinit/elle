@@ -47,15 +47,17 @@ namespace plasma
       LoginDialog       _loginDialog;
       std::string       _token;
       std::string       _identity;
+      std::string       _keyPair;
 
     public:
       /// ctor & dtor
       IdentityUpdater(QApplication& app);
 
       /// properties
-      std::string const& token() const     { return _token; }
-      std::string const& identity() const  { return _identity; }
-      meta::MetaClient&  api()             { return _api; }
+      meta::MetaClient&  api()             { return this->_api; }
+      std::string const& identity() const  { return this->_identity; }
+      std::string const& keyPair() const   { return this->_keyPair; }
+      std::string const& token() const     { return this->_token; }
 
       /// methods
       void Start();

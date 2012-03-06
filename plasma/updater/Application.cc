@@ -219,11 +219,15 @@ void Application::_OnIdentityUpdated(bool success)
 
   ///////////////////////////////////////////////////////////////////////////
   // calling watchdog run command (which gives the meta token)
+  QString token(this->_identityUpdater.token().c_str());
+  QString identity(this->_identityUpdater.identity().c_str());
+  QString keyPair(this->_identityUpdater.keyPair().c_str());
   QByteArray cmd = QString("{"
-      "\"command\":\"run\","
-      "\"_id\": \"" + newWatchdogId + "\","
-      "\"token\": \"" + QString(this->_identityUpdater.token().c_str()) + "\","
-      "\"identity\": \"" + QString(this->_identityUpdater.identity().c_str()) + "\""
+      "\"command\":"  "\"run\""                       ","
+      "\"_id\":"      "\"" + newWatchdogId + "\""     ","
+      "\"token\":"    "\"" + token + "\""             ","
+      "\"identity\":" "\"" + identity + "\""          ","
+      "\"key_pair\":" "\"" + keyPair + "\""
   "}\n").toAscii();
   conn.write(cmd);
   if (!conn.waitForBytesWritten(2000))

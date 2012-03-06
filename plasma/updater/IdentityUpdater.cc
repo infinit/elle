@@ -35,7 +35,6 @@ IdentityUpdater::IdentityUpdater(QApplication& app) :
 //
 // ---------- methods  --------------------------------------------------------
 //
-Q_DECLARE_METATYPE(std::string)
 
 void IdentityUpdater::Start()
 {
@@ -83,7 +82,9 @@ void IdentityUpdater::_OnLogin(std::string const& password,
             << response.token
             << '\n';
 
-  this->_identity = this->_DecryptIdentity(password, response.identity);
+  this->_identity = response.identity;
+  this->_keyPair = this->_DecryptIdentity(password, response.identity);
+
   this->_token = response.token;
 
   QDir homeDirectory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
@@ -185,19 +186,24 @@ void IdentityUpdater::_OnDeviceCreated(meta::CreateDeviceResponse const& res)
 std::string IdentityUpdater::_DecryptIdentity(std::string const& password,
                                               std::string const& identityString)
 {
-  elle::Unique        unique;
+  //elle::Unique        id;
+  elle::Unique        pair;
   lune::Identity      identity;
 
-  if (identity.Restore(identityString) == elle::StatusError ||
-      identity.Decrypt(password) == elle::StatusError ||
-      identity.Save(unique) == elle::StatusError)
+  if (identity.Restore(identityString)  == elle::StatusError ||
+      identity.Decrypt(password)        == elle::StatusError ||
+      identity.pair.k.Save(pair)        == elle::StatusError
+      // || identity.Save(id)                 == elle::StatusError
+      )
     {
       show();
       std::cerr << "Couldn't decrypt the identity file !\n"; // XXX
     }
 
-  // TODO validate identity (with public part of the authority)
-  return unique;
+  //std::cerr << "CRYPTED ID: " << identityString << "\n";
+  //std::cerr << "UNCRYPTED ID: " << unique << "\n";
+  //std::cerr << "UNCRYPTED Pair: " << pair << "\n";
+  return pair;
 }
 
 void IdentityUpdater::_StoreIdentity(std::string const& identityString)
