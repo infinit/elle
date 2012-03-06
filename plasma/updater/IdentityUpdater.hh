@@ -47,7 +47,6 @@ namespace plasma
       LoginDialog       _loginDialog;
       std::string       _token;
       std::string       _identity;
-      std::string       _keyPair;
 
     public:
       /// ctor & dtor
@@ -56,7 +55,6 @@ namespace plasma
       /// properties
       meta::MetaClient&  api()             { return this->_api; }
       std::string const& identity() const  { return this->_identity; }
-      std::string const& keyPair() const   { return this->_keyPair; }
       std::string const& token() const     { return this->_token; }
 
       /// methods

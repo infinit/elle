@@ -82,8 +82,7 @@ void IdentityUpdater::_OnLogin(std::string const& password,
             << response.token
             << '\n';
 
-  this->_identity = response.identity;
-  this->_keyPair = this->_DecryptIdentity(password, response.identity);
+  this->_identity = this->_DecryptIdentity(password, response.identity);
 
   this->_token = response.token;
 

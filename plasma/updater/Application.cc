@@ -226,8 +226,7 @@ void Application::_OnIdentityUpdated(bool success)
       "\"command\":"  "\"run\""                       ","
       "\"_id\":"      "\"" + newWatchdogId + "\""     ","
       "\"token\":"    "\"" + token + "\""             ","
-      "\"identity\":" "\"" + identity + "\""          ","
-      "\"key_pair\":" "\"" + keyPair + "\""
+      "\"identity\":" "\"" + identity + "\""
   "}\n").toAscii();
   conn.write(cmd);
   if (!conn.waitForBytesWritten(2000))
