@@ -73,7 +73,7 @@ namespace elle
         if (this->Extract(archive) == StatusError)
           escape("unable to extract the archive");
 
-        return elle::StatusOk;
+        return StatusOk;
       }
 
       virtual Status    Store(const Path&                       path) const
@@ -93,7 +93,7 @@ namespace elle
                                      archive.size)) == StatusError)
           escape("unable to write the file's content");
 
-        return elle::StatusOk;
+        return StatusOk;
       }
 
       virtual Status    Erase(const Path&                       path) const
@@ -102,7 +102,7 @@ namespace elle
         if (File::Erase(path) == StatusError)
           escape("unable to erase the file");
 
-        return elle::StatusOk;
+        return StatusOk;
       }
 
       virtual Status    Exist(const Path&                       path) const
@@ -142,7 +142,7 @@ namespace elle
               *this) == StatusError)
           escape("unable to decode the object");
 
-        return elle::StatusOk;
+        return StatusOk;
       }
 
       virtual Status    Store(const Path&                       path) const
@@ -163,7 +163,7 @@ namespace elle
         if (File::Write(path, region) == StatusError)
           escape("unable to write the file's content");
 
-        return elle::StatusOk;
+        return StatusOk;
       }
 
       virtual Status    Erase(const Path&                       path) const
@@ -172,7 +172,7 @@ namespace elle
         if (File::Erase(path) == StatusError)
           escape("unable to erase the file");
 
-        return elle::StatusOk;
+        return StatusOk;
       }
 
       virtual Status    Exist(const Path&                       path) const
@@ -211,7 +211,7 @@ namespace elle
                            *this) == StatusError)
           escape("unable to decode the object");
 
-        return elle::StatusOk;
+        return StatusOk;
       }
 
       virtual Status    Store(const Path&                       path) const
@@ -232,7 +232,7 @@ namespace elle
         if (File::Write(path, region) == StatusError)
           escape("unable to write the file's content");
 
-        return elle::StatusOk;
+        return StatusOk;
       }
 
       virtual Status    Erase(const Path&                       path) const
@@ -241,7 +241,7 @@ namespace elle
         if (File::Erase(path) == StatusError)
           escape("unable to erase the file");
 
-        return elle::StatusOk;
+        return StatusOk;
       }
 
       virtual Status    Exist(const Path&                       path) const

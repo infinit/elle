@@ -60,7 +60,7 @@ namespace elle
           escape("unable to insert the selectoinoid in the container");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -96,7 +96,7 @@ namespace elle
       if (this->procedure.Dump(margin) == StatusError)
         escape("unable to dump the object");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

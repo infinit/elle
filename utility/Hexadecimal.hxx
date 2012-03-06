@@ -61,7 +61,7 @@ namespace elle
       if (Hexadecimal::Encode(archive, string) == StatusError)
         escape("unable to encode object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -81,7 +81,7 @@ namespace elle
       if (Hexadecimal::Encode(archive, string) == StatusError)
         escape("unable to encode object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -103,7 +103,7 @@ namespace elle
       if (Hexadecimal::Encode(archive, string) == StatusError)
         escape("unable to encode object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -127,7 +127,7 @@ namespace elle
       if (Hexadecimal::Encode(archive, string) == StatusError)
         escape("unable to encode object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -153,7 +153,7 @@ namespace elle
       if (Hexadecimal::Encode(archive, string) == StatusError)
         escape("unable to encode object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -182,7 +182,7 @@ namespace elle
       if (Hexadecimal::Encode(archive, string) == StatusError)
         escape("unable to encode object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -213,7 +213,7 @@ namespace elle
       if (Hexadecimal::Encode(archive, string) == StatusError)
         escape("unable to encode object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -246,7 +246,7 @@ namespace elle
       if (Hexadecimal::Encode(archive, string) == StatusError)
         escape("unable to encode object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -281,7 +281,7 @@ namespace elle
       if (Hexadecimal::Encode(archive, string) == StatusError)
         escape("unable to encode object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     //
@@ -317,7 +317,7 @@ namespace elle
       if (archive.Extract(parameter, parameters...) == StatusError)
         escape("unable to extract the object");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

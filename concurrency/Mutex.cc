@@ -69,7 +69,7 @@ namespace elle
       if (this->section.Dump(margin + 2) == StatusError)
         escape("unable to dump the section");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -130,9 +130,9 @@ namespace elle
     {
       // has the lock been acquired, return false.
       if (this->locked == true)
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -153,7 +153,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Locked] " << this->locked << std::endl;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

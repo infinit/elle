@@ -56,7 +56,7 @@ namespace elle
       if (Fiber::Register(Callback<>::Infer(&Report::Govern)) == StatusError)
         escape("unable to register the govern callback");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -70,7 +70,7 @@ namespace elle
       // reset the pointer.
       Report::Current = NULL;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -82,11 +82,11 @@ namespace elle
     {
       // verify the report's presence.
       if (Report::Current == NULL)
-        return elle::StatusFalse;
+        return StatusFalse;
 
       report = Report::Current;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -139,7 +139,7 @@ namespace elle
           }
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -284,7 +284,7 @@ namespace elle
                     << std::endl;
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -317,7 +317,7 @@ namespace elle
             escape("unable to serialize the entry");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -350,7 +350,7 @@ namespace elle
           this->container.push_front(entry);
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -365,7 +365,7 @@ namespace elle
       // return the size.
       size = sizeof (Report);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -376,7 +376,7 @@ namespace elle
       // allocate the object.
       object = new Report(*this);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///

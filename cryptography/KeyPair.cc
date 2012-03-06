@@ -96,7 +96,7 @@ namespace elle
       if (::EVP_PKEY_keygen_init(KeyPair::Contexts::Generate) <= 0)
         escape("unable to initialise the generation context");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -107,7 +107,7 @@ namespace elle
       // release the generation context.
       ::EVP_PKEY_CTX_free(KeyPair::Contexts::Generate);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -118,7 +118,7 @@ namespace elle
       if (this->Generate(KeyPair::Default::Length) == StatusError)
         escape("unable to generate the key pair");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -159,7 +159,7 @@ namespace elle
 
       assert(this->k.key() != nullptr);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -175,7 +175,7 @@ namespace elle
       assert(this->K.key() != nullptr);
       assert(this->k.key() != nullptr);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -227,7 +227,7 @@ namespace elle
       if (kp.k.Create(scope.key) == StatusError)
         escape("unable to create the private key");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -241,13 +241,13 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return StatusTrue;
 
       // compare the internal keys.
       if ((this->K != element.K) || (this->k != element.k))
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -276,7 +276,7 @@ namespace elle
       if (this->k.Dump(margin + 2) == StatusError)
         escape("unable to dump the public key");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -295,7 +295,7 @@ namespace elle
       if (archive.Serialize(this->K, this->k) == StatusError)
         escape("unable to serialize the internal keys");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -307,7 +307,7 @@ namespace elle
       if (archive.Extract(this->K, this->k) == StatusError)
         escape("unable to extract the internal keys");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -342,7 +342,7 @@ namespace elle
       if (key.Decrypt(cipher, *this) == StatusError)
         escape("unable to decrypt the keypair");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -378,7 +378,7 @@ namespace elle
       if (File::Write(path, region) == StatusError)
         escape("unable to write the file");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -390,7 +390,7 @@ namespace elle
       if (File::Erase(path) == StatusError)
         escape("unable to erase the file");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///

@@ -168,7 +168,7 @@ namespace elle
           // to the sender.
           report->Flush();
 
-          return elle::StatusOk;
+          return StatusOk;
         }
 
       // reply according to the output tag.
@@ -205,7 +205,7 @@ namespace elle
           }
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -257,7 +257,7 @@ namespace elle
       if (this->epilog.Dump(margin + 2) == StatusError)
         escape("unable to dump the callback");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

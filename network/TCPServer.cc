@@ -90,7 +90,7 @@ namespace elle
                         this, SLOT(_accept())) == false)
         escape("unable to connect the signal");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     //
@@ -126,7 +126,7 @@ namespace elle
       // clear the container.
       TCPServer::Porters.clear();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -171,7 +171,7 @@ namespace elle
       // stop tracking porter.
       porter.release();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -196,7 +196,7 @@ namespace elle
       // remove the entry from the container.
       TCPServer::Porters.erase(iterator);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -214,7 +214,7 @@ namespace elle
       // retrieve the porter.
       porter = iterator->second;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -232,10 +232,10 @@ namespace elle
           if (iterator != NULL)
             *iterator = i;
 
-          return elle::StatusTrue;
+          return StatusTrue;
         }
 
-      return elle::StatusFalse;
+      return StatusFalse;
     }
 
 //
@@ -267,7 +267,7 @@ namespace elle
       if (this->callback.Dump(margin + 2) == StatusError)
         escape("unable to dump the callback");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     //
@@ -296,7 +296,7 @@ namespace elle
             escape("unable to dump the porter");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -328,7 +328,7 @@ namespace elle
       // socket associated with the callback
       socket.release();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //

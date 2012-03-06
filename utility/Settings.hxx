@@ -83,7 +83,7 @@ namespace elle
         escape("unable to write the value '%s' for '%s' to the section '%s'",
                string.c_str(), name.c_str(), identifier.c_str());
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -112,7 +112,7 @@ namespace elle
         escape("unable to convert the value '%s' for '%s' to the section '%s'",
                string.c_str(), name.c_str(), identifier.c_str());
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -133,7 +133,7 @@ namespace elle
           // set the value with the default.
           value = D;
 
-          return elle::StatusOk;
+          return StatusOk;
         }
 
       // otherwise, read the item from the settings.
@@ -146,7 +146,7 @@ namespace elle
         escape("unable to convert the value '%s' for '%s' to the section '%s'",
                string.c_str(), name.c_str(), identifier.c_str());
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -175,7 +175,7 @@ namespace elle
         escape("unable to write the value '%s' for '%s' to the section '%s'",
                unique.c_str(), name.c_str(), identifier.c_str());
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -207,7 +207,7 @@ namespace elle
                "section '%s'",
                unique.c_str(), name.c_str(), identifier.c_str());
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -239,7 +239,7 @@ namespace elle
                    "section '%s'",
                    name.c_str(), identifier.c_str());
 
-          return elle::StatusOk;
+          return StatusOk;
         }
 
       // otherwise, read the item from the settings.
@@ -253,7 +253,7 @@ namespace elle
                "section '%s'",
                unique.c_str(), name.c_str(), identifier.c_str());
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //

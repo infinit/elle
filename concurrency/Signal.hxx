@@ -92,7 +92,7 @@ namespace elle
           escape("unable to insert the selectoinoid in the container");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -118,7 +118,7 @@ namespace elle
       // remove the functionoid from the container.
       this->container.erase(iterator);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -146,7 +146,7 @@ namespace elle
             }
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -173,7 +173,7 @@ namespace elle
       // clear the container.
       this->container.clear();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -193,7 +193,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Functionoids] " << this->container.size() << std::endl;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //

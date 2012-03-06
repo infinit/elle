@@ -31,7 +31,7 @@ namespace elle
       // set the line.
       this->line = line;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -56,7 +56,7 @@ namespace elle
                                AbstractSocket::ModeSynchronous) == StatusError)
         escape("unable to connect to the line");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -78,7 +78,7 @@ namespace elle
             Inputs<TagResponse>(response)) == StatusError)
         escape("unable to return the response");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

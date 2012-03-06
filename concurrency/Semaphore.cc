@@ -72,7 +72,7 @@ namespace elle
       if (this->section.Dump(margin + 2) == StatusError)
         escape("unable to dump the section");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -136,9 +136,9 @@ namespace elle
     {
       // are there enough resources to be acquired...
       if (this->available < n)
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -163,7 +163,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Available] " << std::dec << this->available << std::endl;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

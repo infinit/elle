@@ -42,7 +42,7 @@ namespace elle
         // add the object to the container.
         this->container.push_back(object);
 
-        return elle::StatusOk;
+        return StatusOk;
       }
 
       ///
@@ -60,11 +60,11 @@ namespace elle
               {
                 // remove the object from the container.
                 this->container.erase(it);
-                return elle::StatusOk;
+                return StatusOk;
               }
           }
 
-        return elle::StatusOk;
+        return StatusOk;
       }
 
 //
@@ -82,7 +82,7 @@ namespace elle
         std::cout << alignment << "[Bucket] "
                   << std::dec << this->container.size() << std::endl;
 
-        return elle::StatusOk;
+        return StatusOk;
       }
 
     }

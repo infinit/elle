@@ -55,13 +55,13 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return StatusTrue;
 
       // compare the regions.
       if (this->region != element.region)
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -102,7 +102,7 @@ namespace elle
               escape("unable to dump the region");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -118,7 +118,7 @@ namespace elle
       if (archive.Serialize(this->region) == StatusError)
         escape("unable to serialize the region");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -130,7 +130,7 @@ namespace elle
       if (archive.Extract(this->region) == StatusError)
         escape("unable to extract the region");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

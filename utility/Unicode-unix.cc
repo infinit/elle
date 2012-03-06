@@ -26,7 +26,7 @@ namespace elle
                     ssize_t *    output_size)
     {
       escape("XXX implement me with iconv_open/iconv/iconv_close");
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     Status Utf16To8(const wchar_t * input,
@@ -35,7 +35,7 @@ namespace elle
                     ssize_t *       output_size)
     {
       escape("XXX implement me with iconv_open/iconv/iconv_close");
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

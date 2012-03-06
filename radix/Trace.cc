@@ -82,7 +82,7 @@ namespace elle
       // retrieve the frame addresses.
       this->size = ::backtrace(this->frames, Trace::Capacity);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -203,7 +203,7 @@ namespace elle
       // release the symbols array.
       ::free(symbols);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -244,7 +244,7 @@ namespace elle
             escape("unable to create the directory");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -270,7 +270,7 @@ namespace elle
             escape("unable to remove the directory");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -331,7 +331,7 @@ namespace elle
       // close the file.
       ::close(fd);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -369,7 +369,7 @@ namespace elle
       // unlink the file.
       ::unlink(path);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -456,7 +456,7 @@ namespace elle
       // close the directory.
       ::closedir(dp);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

@@ -51,7 +51,7 @@ namespace elle
       else
         output.erase();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -129,9 +129,9 @@ namespace elle
     {
       // locate the assignment.
       if (this->Locate(name) != StatusTrue)
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -152,7 +152,7 @@ namespace elle
       // add the assignment to the container.
       this->assignments.push_back(assignment);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -175,7 +175,7 @@ namespace elle
       // return the value.
       value = assignment->value;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -197,7 +197,7 @@ namespace elle
       // update the assignment.
       assignment->value = value;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -221,7 +221,7 @@ namespace elle
       // delete the assignment.
       delete assignment;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -247,11 +247,11 @@ namespace elle
               if (iterator != NULL)
                 *iterator = i;
 
-              return elle::StatusTrue;
+              return StatusTrue;
             }
         }
 
-      return elle::StatusFalse;
+      return StatusFalse;
     }
 
     ///
@@ -271,7 +271,7 @@ namespace elle
       // add the section to the container.
       this->sections.push_back(section);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -289,7 +289,7 @@ namespace elle
       // retrieve the section.
       section = *iterator;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -313,7 +313,7 @@ namespace elle
       // delete the section.
       delete section;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -338,11 +338,11 @@ namespace elle
               if (iterator != NULL)
                 *iterator = i;
 
-              return elle::StatusTrue;
+              return StatusTrue;
             }
         }
 
-      return elle::StatusFalse;
+      return StatusFalse;
     }
 
     ///
@@ -356,7 +356,7 @@ namespace elle
 
       // check if the section exists.
       if (this->Locate(identifier) != StatusTrue)
-        return elle::StatusFalse;
+        return StatusFalse;
 
       // retrieve the section.
       if (this->Lookup(identifier, section) == StatusError)
@@ -364,9 +364,9 @@ namespace elle
 
       // check if the section exists.
       if (section->Locate(name) != StatusTrue)
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -404,7 +404,7 @@ namespace elle
             escape("unable to update the assignment");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -424,7 +424,7 @@ namespace elle
       if (section->Lookup(name, value) == StatusError)
         escape("unable to locate the assignment");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -476,7 +476,7 @@ namespace elle
             }
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -565,7 +565,7 @@ namespace elle
             escape("unable to add the setting to the section");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -614,7 +614,7 @@ namespace elle
       if (File::Write(path, region) == StatusError)
         escape("unable to write the file");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -626,7 +626,7 @@ namespace elle
       if (File::Erase(path) == StatusError)
         escape("unable to erase the file");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///

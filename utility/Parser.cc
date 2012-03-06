@@ -96,7 +96,7 @@ namespace elle
                     << "[Value] " << none << std::endl;
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -152,7 +152,7 @@ namespace elle
       // set the description.
       this->description = description;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -176,7 +176,7 @@ namespace elle
       // add the option to the vector of options.
       this->options.push_back(option);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -187,7 +187,7 @@ namespace elle
       // add the example.
       this->examples.push_back(example);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -208,11 +208,11 @@ namespace elle
               // set the pointer.
               option = this->options[i];
 
-              return elle::StatusTrue;
+              return StatusTrue;
             }
         }
 
-      return elle::StatusFalse;
+      return StatusFalse;
     }
 
     ///
@@ -233,11 +233,11 @@ namespace elle
               // set the pointer.
               option = this->options[i];
 
-              return elle::StatusTrue;
+              return StatusTrue;
             }
         }
 
-      return elle::StatusFalse;
+      return StatusFalse;
     }
 
     ///
@@ -412,7 +412,7 @@ namespace elle
             }
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -429,9 +429,9 @@ namespace elle
 
       // return true if the option has been activated.
       if (option->state == Parser::StateActivated)
-        return elle::StatusTrue;
+        return StatusTrue;
 
-      return elle::StatusFalse;
+      return StatusFalse;
     }
 
     ///
@@ -452,9 +452,9 @@ namespace elle
 
       // return true if an argument has been provided.
       if (option->value != NULL)
-        return elle::StatusTrue;
+        return StatusTrue;
 
-      return elle::StatusFalse;
+      return StatusFalse;
     }
 
     ///
@@ -619,7 +619,7 @@ namespace elle
                     << this->examples[i] << std::endl;
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

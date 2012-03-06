@@ -42,7 +42,7 @@ namespace elle
       // return the footprint's size.
       size = footprint.size;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -69,7 +69,7 @@ namespace elle
           new (this) T(*object);
         }
 
-      // return elle::StatusOk in order to avoid including Report, Status and Maid.
+      // return StatusOk in order to avoid including Report, Status and Maid.
       return (StatusOk);
     }
 

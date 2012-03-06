@@ -49,7 +49,7 @@ namespace elle
       if (this->timer.Start(Neighbour::Timeout) == StatusError)
         escape("unable to start the timer");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -60,7 +60,7 @@ namespace elle
       // update the name.
       this->name = name;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -72,7 +72,7 @@ namespace elle
       if (this->timer.Restart(Neighbour::Timeout) == StatusError)
         escape("unable to restart the timer");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -89,7 +89,7 @@ namespace elle
                             this->name) == StatusError)
         escape("unable to serialize the neighbour attributes");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -102,7 +102,7 @@ namespace elle
                           this->name) == StatusError)
         escape("unable to extract the neighbour attributes");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -126,7 +126,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Name] " << this->name << std::endl;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -142,7 +142,7 @@ namespace elle
       if (this->node->table.Remove(this->locus) == StatusError)
         escape("unable to remove the current neighbour");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

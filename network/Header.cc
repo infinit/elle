@@ -58,7 +58,7 @@ namespace elle
       this->tag = tag;
       this->size = size;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -95,7 +95,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Size] " << this->size << std::endl;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -114,7 +114,7 @@ namespace elle
                             this->size) == StatusError)
         escape("unable to serialize the header attributes");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -135,7 +135,7 @@ namespace elle
       if (Header::Name != name)
         escape("incorrect name event");
 
-      return elle::StatusOk;
+      return StatusOk;
 
     }
 

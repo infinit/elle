@@ -39,7 +39,7 @@ namespace elle
       value(new ::Json::Value)
     {
       // set a default value.
-      if (this->Set(element) == elle::StatusError)
+      if (this->Set(element) == StatusError)
         yield(_(), "unable to set a default value");
     }
 
@@ -66,7 +66,7 @@ namespace elle
       if (uniquable.Restore(unique) == StatusError)
         escape("unable to restore the uniquable");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <Format F>
@@ -82,7 +82,7 @@ namespace elle
       if (this->Set(unique) == StatusError)
         escape("unable to set the unique representation");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -103,7 +103,7 @@ namespace elle
       if (this->root.Get(target) == StatusError)
         escape("unable to retrieve the target value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -122,7 +122,7 @@ namespace elle
       if (node.Get(target) == StatusError)
         escape("unable to retrieve the target value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -150,7 +150,7 @@ namespace elle
       if (node.Get(target) == StatusError)
         escape("unable to retrieve the target value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -180,7 +180,7 @@ namespace elle
       if (node.Get(target) == StatusError)
         escape("unable to retrieve the target value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -212,7 +212,7 @@ namespace elle
       if (node.Get(target) == StatusError)
         escape("unable to retrieve the target value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -246,7 +246,7 @@ namespace elle
       if (node.Get(target) == StatusError)
         escape("unable to retrieve the target value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -282,7 +282,7 @@ namespace elle
       if (node.Get(target) == StatusError)
         escape("unable to retrieve the target value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -320,7 +320,7 @@ namespace elle
       if (node.Get(target) == StatusError)
         escape("unable to retrieve the target value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -360,7 +360,7 @@ namespace elle
       if (node.Get(target) == StatusError)
         escape("unable to retrieve the target value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -402,7 +402,7 @@ namespace elle
       if (node.Get(target) == StatusError)
         escape("unable to retrieve the target value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename X>
@@ -412,7 +412,7 @@ namespace elle
       if (this->root.Set(target) == StatusError)
         escape("unable to set the target value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -431,7 +431,7 @@ namespace elle
       if (node.Set(target) == StatusError)
         escape("unable to set the target value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -452,7 +452,7 @@ namespace elle
       if (node.Set(target) == StatusError)
         escape("unable to set the target value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -475,7 +475,7 @@ namespace elle
       if (node.Set(target) == StatusError)
         escape("unable to set the target value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -500,7 +500,7 @@ namespace elle
       if (node.Set(target) == StatusError)
         escape("unable to set the target value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -527,7 +527,7 @@ namespace elle
       if (node.Set(target) == StatusError)
         escape("unable to set the target value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -556,7 +556,7 @@ namespace elle
       if (node.Set(target) == StatusError)
         escape("unable to set the target value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -587,7 +587,7 @@ namespace elle
       if (node.Set(target) == StatusError)
         escape("unable to set the target value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -620,7 +620,7 @@ namespace elle
       if (node.Set(target) == StatusError)
         escape("unable to set the target value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -655,7 +655,7 @@ namespace elle
       if (node.Set(target) == StatusError)
         escape("unable to set the target value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1>
@@ -674,7 +674,7 @@ namespace elle
       if (this->root.Get(id1, node) == StatusError)
         escape("unable to retrieve the target node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -702,7 +702,7 @@ namespace elle
       if (base.Get(id2, node) == StatusError)
         escape("unable to retrieve the target node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -732,7 +732,7 @@ namespace elle
       if (base.Get(id3, node) == StatusError)
         escape("unable to retrieve the target node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -764,7 +764,7 @@ namespace elle
       if (base.Get(id4, node) == StatusError)
         escape("unable to retrieve the target node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -798,7 +798,7 @@ namespace elle
       if (base.Get(id5, node) == StatusError)
         escape("unable to retrieve the target node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -834,7 +834,7 @@ namespace elle
       if (base.Get(id6, node) == StatusError)
         escape("unable to retrieve the target node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -872,7 +872,7 @@ namespace elle
       if (base.Get(id7, node) == StatusError)
         escape("unable to retrieve the target node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -912,7 +912,7 @@ namespace elle
       if (base.Get(id8, node) == StatusError)
         escape("unable to retrieve the target node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -954,7 +954,7 @@ namespace elle
       if (base.Get(id9, node) == StatusError)
         escape("unable to retrieve the target node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1>
@@ -972,7 +972,7 @@ namespace elle
       if (node.Append(bulk) == StatusError)
         escape("unable to append the node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -992,7 +992,7 @@ namespace elle
       if (node.Append(bulk) == StatusError)
         escape("unable to append the node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1014,7 +1014,7 @@ namespace elle
       if (node.Append(bulk) == StatusError)
         escape("unable to append the node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1038,7 +1038,7 @@ namespace elle
       if (node.Append(bulk) == StatusError)
         escape("unable to append the node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1064,7 +1064,7 @@ namespace elle
       if (node.Append(bulk) == StatusError)
         escape("unable to append the node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1092,7 +1092,7 @@ namespace elle
       if (node.Append(bulk) == StatusError)
         escape("unable to append the node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1122,7 +1122,7 @@ namespace elle
       if (node.Append(bulk) == StatusError)
         escape("unable to append the node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1154,7 +1154,7 @@ namespace elle
       if (node.Append(bulk) == StatusError)
         escape("unable to append the node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1188,7 +1188,7 @@ namespace elle
       if (node.Append(bulk) == StatusError)
         escape("unable to append the node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1>
@@ -1200,7 +1200,7 @@ namespace elle
       if (this->root.Erase(id1) == StatusError)
         escape("unable to erase the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1219,7 +1219,7 @@ namespace elle
       if (node.Erase(id2) == StatusError)
         escape("unable to erase the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1240,7 +1240,7 @@ namespace elle
       if (node.Erase(id3) == StatusError)
         escape("unable to erase the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1263,7 +1263,7 @@ namespace elle
       if (node.Erase(id4) == StatusError)
         escape("unable to erase the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1288,7 +1288,7 @@ namespace elle
       if (node.Erase(id5) == StatusError)
         escape("unable to erase the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1315,7 +1315,7 @@ namespace elle
       if (node.Erase(id6) == StatusError)
         escape("unable to erase the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1344,7 +1344,7 @@ namespace elle
       if (node.Erase(id7) == StatusError)
         escape("unable to erase the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1375,7 +1375,7 @@ namespace elle
       if (node.Erase(id8) == StatusError)
         escape("unable to erase the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1408,7 +1408,7 @@ namespace elle
       if (node.Erase(id9) == StatusError)
         escape("unable to erase the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1>
@@ -1420,7 +1420,7 @@ namespace elle
       if (this->root.Clear(id1) == StatusError)
         escape("unable to clear the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1439,7 +1439,7 @@ namespace elle
       if (node.Clear(id2) == StatusError)
         escape("unable to clear the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1460,7 +1460,7 @@ namespace elle
       if (node.Clear(id3) == StatusError)
         escape("unable to clear the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1483,7 +1483,7 @@ namespace elle
       if (node.Clear(id4) == StatusError)
         escape("unable to clear the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1508,7 +1508,7 @@ namespace elle
       if (node.Clear(id5) == StatusError)
         escape("unable to clear the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1535,7 +1535,7 @@ namespace elle
       if (node.Clear(id6) == StatusError)
         escape("unable to clear the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1564,7 +1564,7 @@ namespace elle
       if (node.Clear(id7) == StatusError)
         escape("unable to clear the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1595,7 +1595,7 @@ namespace elle
       if (node.Clear(id8) == StatusError)
         escape("unable to clear the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1628,7 +1628,7 @@ namespace elle
       if (node.Clear(id9) == StatusError)
         escape("unable to clear the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1>
@@ -1641,7 +1641,7 @@ namespace elle
       if (this->root.Size(id1) == StatusError)
         escape("unable to size the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1661,7 +1661,7 @@ namespace elle
       if (node.Size(id2) == StatusError)
         escape("unable to size the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1683,7 +1683,7 @@ namespace elle
       if (node.Size(id3) == StatusError)
         escape("unable to size the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1707,7 +1707,7 @@ namespace elle
       if (node.Size(id4) == StatusError)
         escape("unable to size the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1733,7 +1733,7 @@ namespace elle
       if (node.Size(id5) == StatusError)
         escape("unable to size the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1761,7 +1761,7 @@ namespace elle
       if (node.Size(id6) == StatusError)
         escape("unable to size the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1791,7 +1791,7 @@ namespace elle
       if (node.Size(id7) == StatusError)
         escape("unable to size the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1823,7 +1823,7 @@ namespace elle
       if (node.Size(id8) == StatusError)
         escape("unable to size the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -1857,7 +1857,7 @@ namespace elle
       if (node.Size(id9) == StatusError)
         escape("unable to size the member");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

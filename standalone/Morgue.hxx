@@ -64,7 +64,7 @@ namespace elle
       // add the instance to the container.
       this->container.push_back(static_cast<Meta*>(instance));
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

@@ -54,7 +54,7 @@ namespace elle
       if (this->locus.Create(line) == StatusError)
         escape("unable to create the locus");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -70,7 +70,7 @@ namespace elle
                                               this)) == StatusError)
         escape("unable to listen for TCP connections");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -107,7 +107,7 @@ namespace elle
 
       elle::Program::Exit();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

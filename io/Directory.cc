@@ -142,7 +142,7 @@ namespace elle
       if (!QDir().mkpath(QString::fromStdString(path.string)))
         escape("failed to mkpath: %s", path.string.c_str());
 
-      return elle::StatusOk;
+      return StatusOk;
 
 #if 0
       // does the directory already exist.
@@ -165,7 +165,7 @@ namespace elle
 # error "unsupported platform"
 #endif
 
-      return elle::StatusOk;
+      return StatusOk;
 #endif
     }
 
@@ -181,7 +181,7 @@ namespace elle
       // remove the directory.
       ::rmdir(path.string.c_str());
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -193,13 +193,13 @@ namespace elle
 
       // does the path points to something.
       if (::stat(path.string.c_str(), &stat) != 0)
-        return elle::StatusFalse;
+        return StatusFalse;
 
       // does the path points to a directory.
       if (!S_ISDIR(stat.st_mode))
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -213,7 +213,7 @@ namespace elle
       if (!QDir().mkpath(QString::fromStdString(directory)))
         escape("failed to mkpath: %s", directory.c_str());
 
-      return elle::StatusOk;
+      return StatusOk;
 
 #if 0
       String            target(::strdup(path.string.c_str()));
@@ -245,7 +245,7 @@ namespace elle
             }
         }
 
-      return elle::StatusOk;
+      return StatusOk;
 #endif
     }
 
@@ -323,7 +323,7 @@ namespace elle
             escape("unhandled file system object type");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -348,7 +348,7 @@ namespace elle
             set.push_back(*it);
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

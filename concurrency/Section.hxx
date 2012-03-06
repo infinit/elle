@@ -159,7 +159,7 @@ namespace elle
       if (this->unlock.Dump(margin + 2) == StatusError)
         escape("unable to dump the closure");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

@@ -134,7 +134,7 @@ namespace elle
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
 
-        return elle::StatusOk;
+        return StatusOk;
       }
     };
 
@@ -246,7 +246,7 @@ namespace elle
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
 
-        return elle::StatusOk;
+        return StatusOk;
       }
     };
 
@@ -384,7 +384,7 @@ namespace elle
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
 
-        return elle::StatusOk;
+        return StatusOk;
       }
     };
 
@@ -548,7 +548,7 @@ namespace elle
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
 
-        return elle::StatusOk;
+        return StatusOk;
       }
     };
 
@@ -744,7 +744,7 @@ namespace elle
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
 
-        return elle::StatusOk;
+        return StatusOk;
       }
     };
 
@@ -976,7 +976,7 @@ namespace elle
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
 
-        return elle::StatusOk;
+        return StatusOk;
       }
     };
 
@@ -1252,7 +1252,7 @@ namespace elle
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
 
-        return elle::StatusOk;
+        return StatusOk;
       }
     };
 
@@ -1574,7 +1574,7 @@ namespace elle
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
 
-        return elle::StatusOk;
+        return StatusOk;
       }
     };
 
@@ -1946,7 +1946,7 @@ namespace elle
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
 
-        return elle::StatusOk;
+        return StatusOk;
       }
     };
 
@@ -2372,7 +2372,7 @@ namespace elle
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
 
-        return elle::StatusOk;
+        return StatusOk;
       }
     };
 

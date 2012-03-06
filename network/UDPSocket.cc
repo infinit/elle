@@ -83,7 +83,7 @@ namespace elle
             SLOT(_error(const QAbstractSocket::SocketError))) == false)
         escape("unable to connect to signal");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -118,7 +118,7 @@ namespace elle
             SLOT(_error(const QAbstractSocket::SocketError))) == false)
         escape("unable to connect to signal");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -136,7 +136,7 @@ namespace elle
             locus.port) != static_cast<qint64>(packet.size))
         escape(this->socket->errorString().toStdString().c_str());
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -164,7 +164,7 @@ namespace elle
 
       // check if there is data to be read.
       if (size == 0)
-        return elle::StatusOk;
+        return StatusOk;
 
       // set the locus as being an IP locus.
       if (locus.host.Create(Host::TypeIP) == StatusError)
@@ -185,7 +185,7 @@ namespace elle
       // set the raw's size.
       raw.size = size;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -205,7 +205,7 @@ namespace elle
       if (Socket::Dump(margin + 2) == StatusError)
         escape("unable to dump the socket");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -281,7 +281,7 @@ namespace elle
             log("an error occured while shipping the parcel");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //

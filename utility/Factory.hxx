@@ -45,7 +45,7 @@ namespace elle
       // allocate the object.
       meta = new T;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -77,7 +77,7 @@ namespace elle
           escape("unable to insert the generatoid into the container");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -100,7 +100,7 @@ namespace elle
             reinterpret_cast<Meta*&>(object)) == StatusError)
         escape("unable to allocate the object");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

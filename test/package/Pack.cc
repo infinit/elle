@@ -352,7 +352,7 @@ namespace elle
             }
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     Status              Pack::Verify(Archive&                   archive)
@@ -623,7 +623,7 @@ namespace elle
       if (Referee::List.empty() == false)
         escape("some elements remain in the referee's list");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

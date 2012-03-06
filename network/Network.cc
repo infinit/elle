@@ -49,7 +49,7 @@ namespace elle
       if (Session::Initialize() == StatusError)
         escape("unable to initialize the session");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -88,7 +88,7 @@ namespace elle
         Network::Procedures.clear();
       }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -105,7 +105,7 @@ namespace elle
       {
         // try to wake up a slot.
         if (Fiber::Awaken(parcel->header->event, parcel) == StatusTrue)
-            return elle::StatusOk;
+            return StatusOk;
       }
 
       //
@@ -134,7 +134,7 @@ namespace elle
                     "procedure");
               }
 
-            return elle::StatusOk;
+            return StatusOk;
           }
 
         // assign the new session.
@@ -150,7 +150,7 @@ namespace elle
           escape("unable to flush the session");
       }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -173,7 +173,7 @@ namespace elle
             escape("unable to dump the functionoid");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

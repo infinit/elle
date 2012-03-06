@@ -105,7 +105,7 @@ namespace elle
       // close the file.
       ::close(fd);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -153,7 +153,7 @@ namespace elle
       // close the file.
       ::close(fd);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 #elif defined(INFINIT_WINDOWS)
     ///
@@ -215,7 +215,7 @@ namespace elle
       // close the file.
       ::CloseHandle(fd);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -265,7 +265,7 @@ namespace elle
       // close the file.
       ::CloseHandle(fd);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 #else
 # error "unsupported platform"
@@ -283,7 +283,7 @@ namespace elle
       // unlink the file.
       ::unlink(path.string.c_str());
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -295,13 +295,13 @@ namespace elle
 
       // does the path points to something.
       if (::stat(path.string.c_str(), &stat) != 0)
-        return elle::StatusFalse;
+        return StatusFalse;
 
       // does the path points to a regular file.
       if (!S_ISREG(stat.st_mode))
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -342,7 +342,7 @@ namespace elle
             }
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

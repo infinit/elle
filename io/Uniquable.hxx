@@ -46,7 +46,7 @@ namespace elle
         if (Hexadecimal::Encode(*this, unique) == StatusError)
           escape("unable to encode the object in hexadecimal");
 
-        return elle::StatusOk;
+        return StatusOk;
       }
 
       Status            Restore(const Unique&                   unique)
@@ -55,7 +55,7 @@ namespace elle
         if (Hexadecimal::Decode(unique, *this) == StatusError)
           escape("unable to decode the hexadecimal unique");
 
-        return elle::StatusOk;
+        return StatusOk;
       }
     };
 
@@ -80,7 +80,7 @@ namespace elle
         if (Base64::Encode(*this, unique) == StatusError)
           escape("unable to encode the object in base64");
 
-        return elle::StatusOk;
+        return StatusOk;
       }
 
       Status            Restore(const Unique&                   unique)
@@ -89,7 +89,7 @@ namespace elle
         if (Base64::Decode(unique, *this) == StatusError)
           escape("unable to decode the base64 unique");
 
-        return elle::StatusOk;
+        return StatusOk;
       }
     };
 

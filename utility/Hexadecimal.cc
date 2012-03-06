@@ -45,7 +45,7 @@ namespace elle
       Natural32         i;
 
       if ((string.length() % 2) != 0)
-        return elle::StatusFalse;
+        return StatusFalse;
 
       // pass every character.
       for (i = 0; i < string.length(); i++)
@@ -53,13 +53,13 @@ namespace elle
           // verify the validity.
           if (::isalpha(string[i]) != 0)
             if (::islower(string[i]) == 0)
-            return elle::StatusFalse;
+            return StatusFalse;
 
           if (::isxdigit(string[i]) == 0)
-            return elle::StatusFalse;
+            return StatusFalse;
         }
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -82,7 +82,7 @@ namespace elle
           string.append(hexadecimal, 2);
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -114,7 +114,7 @@ namespace elle
 
       region.size = i;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

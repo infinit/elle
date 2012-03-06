@@ -92,7 +92,7 @@ Status PublicKey::Create(::EVP_PKEY const* key)
                    ::BN_dup(key->pkey.rsa->e)) == StatusError)
     escape("unable to create the public key");
 
-  return elle::StatusOk;
+  return StatusOk;
 }
 
 ///
@@ -182,7 +182,7 @@ Status PublicKey::Create(Large* n, Large* e)
 
   assert(this->_key != nullptr);
 
-  return elle::StatusOk;
+  return StatusOk;
 }
 
 ///
@@ -282,7 +282,7 @@ Status              PublicKey::Encrypt(const Plain&         plain,
       escape("unable to duplicate the archive's content");
   }
 
-  return elle::StatusOk;
+  return StatusOk;
 }
 
 ///
@@ -311,7 +311,7 @@ Status              PublicKey::Verify(const Signature&      signature,
         digest.region.size) <= 0)
     escape(::ERR_error_string(ERR_get_error(), nullptr));
 
-  return elle::StatusOk;
+  return StatusOk;
 }
 
 ///
@@ -408,7 +408,7 @@ Status              PublicKey::Decrypt(const Code&          code,
       escape("unable to decrypt the data with the secret key");
   }
 
-  return elle::StatusOk;
+  return StatusOk;
 }
 
 //
@@ -422,24 +422,24 @@ Boolean PublicKey::operator==(const PublicKey& element) const
 {
   // check the address as this may actually be the same object.
   if (this == &element)
-    return elle::StatusTrue;
+    return StatusTrue;
 
   // if one of the key is null....
   if ((this->_key == nullptr) || (element._key == nullptr))
     {
       // compare the addresses.
       if (this->_key != element._key)
-        return elle::StatusFalse;
+        return StatusFalse;
     }
   else
     {
       // compare the internal numbers.
       if ((::BN_cmp(this->_key->pkey.rsa->n, element._key->pkey.rsa->n) != 0) ||
           (::BN_cmp(this->_key->pkey.rsa->e, element._key->pkey.rsa->e) != 0))
-        return elle::StatusFalse;
+        return StatusFalse;
     }
 
-  return elle::StatusTrue;
+  return StatusTrue;
 }
 
 ///
@@ -475,7 +475,7 @@ Status              PublicKey::Dump(const Natural32         margin) const
                 << *this->_key->pkey.rsa->e << std::endl;
     }
 
-  return elle::StatusOk;
+  return StatusOk;
 }
 
 //
@@ -497,7 +497,7 @@ Status          PublicKey::Serialize(Archive&           archive) const
                         *this->_key->pkey.rsa->e) == StatusError)
     escape("unable to serialize the internal numbers");
 
-  return elle::StatusOk;
+  return StatusOk;
 }
 
 ///
@@ -533,6 +533,6 @@ Status          PublicKey::Extract(Archive&             archive)
                    ::BN_dup(&scope.e)) == StatusError)
     escape("unable to create the public key from the archive");
 
-  return elle::StatusOk;
+  return StatusOk;
 }
 

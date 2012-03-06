@@ -98,7 +98,7 @@ Status              PrivateKey::Create(const ::EVP_PKEY*    key)
 
   assert(this->_key != nullptr);
 
-  return elle::StatusOk;
+  return StatusOk;
 }
 
 ///
@@ -201,7 +201,7 @@ Status              PrivateKey::Create(Large*               n,
 
   assert(this->_key != nullptr);
 
-  return elle::StatusOk;
+  return StatusOk;
 }
 
 ///
@@ -286,7 +286,7 @@ Status              PrivateKey::Decrypt(const Code&         code,
       escape("unable to decrypt the data with the secret key");
   }
 
-  return elle::StatusOk;
+  return StatusOk;
 }
 
 ///
@@ -328,7 +328,7 @@ Status              PrivateKey::Sign(const Plain&           plain,
   // set the code size.
   signature.region.size = size;
 
-  return elle::StatusOk;
+  return StatusOk;
 }
 
 ///
@@ -431,7 +431,7 @@ Status              PrivateKey::Encrypt(const Plain&        plain,
       escape("unable to duplicate the archive's content");
   }
 
-  return elle::StatusOk;
+  return StatusOk;
 }
 
 ///
@@ -476,7 +476,7 @@ Status              PrivateKey::Derive(const Seed&          seed,
   if (K.Create(scope.key) == StatusError)
     escape("unable to create the public key");
 
-  return elle::StatusOk;
+  return StatusOk;
 }
 
 //
@@ -490,14 +490,14 @@ Boolean             PrivateKey::operator==(const PrivateKey& element) const
 {
   // check the address as this may actually be the same object.
   if (this == &element)
-    return elle::StatusTrue;
+    return StatusTrue;
 
   // if one of the key is null....
   if ((this->_key == nullptr) || (element._key == nullptr))
     {
       // compare the addresses.
       if (this->_key != element._key)
-        return elle::StatusFalse;
+        return StatusFalse;
     }
   else
     {
@@ -510,10 +510,10 @@ Boolean             PrivateKey::operator==(const PrivateKey& element) const
                     element._key->pkey.rsa->p) != 0) ||
           (::BN_cmp(this->_key->pkey.rsa->q,
                     element._key->pkey.rsa->q) != 0))
-        return elle::StatusFalse;
+        return StatusFalse;
     }
 
-  return elle::StatusTrue;
+  return StatusTrue;
 }
 
 ///
@@ -555,7 +555,7 @@ Status              PrivateKey::Dump(const Natural32        margin) const
                 << *this->_key->pkey.rsa->q << std::endl;
     }
 
-  return elle::StatusOk;
+  return StatusOk;
 }
 
 //
@@ -578,7 +578,7 @@ Status              PrivateKey::Serialize(Archive&          archive) const
                         *this->_key->pkey.rsa->iqmp) == StatusError)
     escape("unable to serialize the internal numbers");
 
-  return elle::StatusOk;
+  return StatusOk;
 }
 
 ///
@@ -635,6 +635,6 @@ Status              PrivateKey::Extract(Archive&            archive)
 
   assert(this->_key != nullptr);
 
-  return elle::StatusOk;
+  return StatusOk;
 }
 

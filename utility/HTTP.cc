@@ -116,7 +116,7 @@ namespace elle
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      return elle::StatusOk;
+      return StatusOk;
 
     _error:
       // clean up the session.
@@ -230,7 +230,7 @@ namespace elle
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      return elle::StatusOk;
+      return StatusOk;
 
     _error:
       // clean up the session.
@@ -362,7 +362,7 @@ namespace elle
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      return elle::StatusOk;
+      return StatusOk;
 
     _error:
       // clean up the session.
@@ -441,7 +441,7 @@ namespace elle
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      return elle::StatusOk;
+      return StatusOk;
 
     _error:
       // clean up the session.

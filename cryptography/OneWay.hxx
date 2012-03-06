@@ -59,7 +59,7 @@ namespace elle
       if (OneWay::Hash(archive, digest) == StatusError)
         escape("unable to hash the object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -79,7 +79,7 @@ namespace elle
       if (OneWay::Hash(archive, digest) == StatusError)
         escape("unable to hash the item's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -101,7 +101,7 @@ namespace elle
       if (OneWay::Hash(archive, digest) == StatusError)
         escape("unable to hash the item's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -125,7 +125,7 @@ namespace elle
       if (OneWay::Hash(archive, digest) == StatusError)
         escape("unable to hash the item's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -151,7 +151,7 @@ namespace elle
       if (OneWay::Hash(archive, digest) == StatusError)
         escape("unable to hash the item's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -179,7 +179,7 @@ namespace elle
       if (OneWay::Hash(archive, digest) == StatusError)
         escape("unable to hash the item's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -209,7 +209,7 @@ namespace elle
       if (OneWay::Hash(archive, digest) == StatusError)
         escape("unable to hash the item's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -241,7 +241,7 @@ namespace elle
       if (OneWay::Hash(archive, digest) == StatusError)
         escape("unable to hash the item's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -275,7 +275,7 @@ namespace elle
       if (OneWay::Hash(archive, digest) == StatusError)
         escape("unable to hash the item's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

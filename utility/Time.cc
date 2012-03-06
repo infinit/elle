@@ -53,7 +53,7 @@ namespace elle
       // gets the number of nanoseconds since Epoch UTC
       this->nanoseconds = ::QDateTime::currentMSecsSinceEpoch() * 1000000;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -64,7 +64,7 @@ namespace elle
       // set the time i.e in seconds.
       time = this->nanoseconds / 1000000000;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -74,7 +74,7 @@ namespace elle
     {
       this->nanoseconds = time * 1000000000;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -85,7 +85,7 @@ namespace elle
       // set the date/time.
       dt.setMSecsSinceEpoch(this->nanoseconds / 1000000);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -96,7 +96,7 @@ namespace elle
       // set the attributes.
       this->nanoseconds = dt.toMSecsSinceEpoch() * 1000000;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 #if defined(INFINIT_WINDOWS)
@@ -115,7 +115,7 @@ namespace elle
       ft.dwLowDateTime  = value.LowPart;
       ft.dwHighDateTime = value.HighPart;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -130,7 +130,7 @@ namespace elle
 
       this->nanoseconds = value.QuadPart * 100;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 #endif
 
@@ -144,9 +144,9 @@ namespace elle
     Boolean             Time::operator==(const Time&            element) const
     {
       if (this->nanoseconds != element.nanoseconds)
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -155,9 +155,9 @@ namespace elle
     Boolean             Time::operator<(const Time&             element) const
     {
       if (this->nanoseconds < element.nanoseconds)
-        return elle::StatusTrue;
+        return StatusTrue;
 
-      return elle::StatusFalse;
+      return StatusFalse;
     }
 
     ///
@@ -166,9 +166,9 @@ namespace elle
     Boolean             Time::operator>(const Time&             element) const
     {
       if (this->nanoseconds > element.nanoseconds)
-        return elle::StatusTrue;
+        return StatusTrue;
 
-      return elle::StatusFalse;
+      return StatusFalse;
     }
 
     ///
@@ -343,7 +343,7 @@ namespace elle
                 << "." << (this->nanoseconds % 1000)
                 << std::endl;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -359,7 +359,7 @@ namespace elle
       if (archive.Serialize(this->nanoseconds) == StatusError)
         escape("unable to serialize the attributes");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -371,7 +371,7 @@ namespace elle
       if (archive.Extract(this->nanoseconds) == StatusError)
         escape("unable to extract the attributes");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

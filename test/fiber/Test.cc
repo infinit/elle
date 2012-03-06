@@ -61,7 +61,7 @@ namespace elle
 
       printf("[Fiber4] End\n");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -98,7 +98,7 @@ namespace elle
       if (Program::Exit() == StatusError)
         escape("unable to exit from the program");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -128,7 +128,7 @@ namespace elle
 
       printf("[Fiber2] End\n");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -158,7 +158,7 @@ namespace elle
 
       printf("[Fiber1] End\n");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -222,7 +222,7 @@ namespace elle
       if (Elle::Clean() == StatusError)
         escape("unable to clean the library");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

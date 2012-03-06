@@ -46,7 +46,7 @@ namespace elle
       if (Fiber::Register(Callback<>::Infer(&Session::Govern)) == StatusError)
         escape("unable to register the govern callback");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -56,7 +56,7 @@ namespace elle
     {
       // nothing to do.
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -67,7 +67,7 @@ namespace elle
       // return the current session.
       session = Session::Current;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -78,7 +78,7 @@ namespace elle
       // set the current session.
       Session::Current = session;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -90,7 +90,7 @@ namespace elle
       // clear the locuser.
       Session::Current = NULL;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -145,7 +145,7 @@ namespace elle
           }
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -176,7 +176,7 @@ namespace elle
       this->locus = locus;
       this->event = event;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -207,7 +207,7 @@ namespace elle
       if (this->event.Dump(margin + 2) == StatusError)
         escape("unable to dump the event");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

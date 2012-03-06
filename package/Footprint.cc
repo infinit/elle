@@ -122,7 +122,7 @@ namespace elle
       // set the state as consistent.
       this->state = Footprint::StateConsistent;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -140,7 +140,7 @@ namespace elle
       std::cout << alignment << "[Footprint] "
                 << std::dec << this->size << std::endl;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -155,7 +155,7 @@ namespace elle
       // return the size.
       size = sizeof (Footprint);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -166,7 +166,7 @@ namespace elle
       // allocate the object.
       object = new Footprint(*this);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -192,13 +192,13 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return StatusTrue;
 
       // compare the attribute.
       if (this->size != element.size)
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -221,7 +221,7 @@ namespace elle
       // add the footprint.
       this->size += Footprint::Meta + 0;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -232,7 +232,7 @@ namespace elle
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Natural8);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -243,7 +243,7 @@ namespace elle
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Natural8);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -254,7 +254,7 @@ namespace elle
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Natural64);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -265,7 +265,7 @@ namespace elle
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Integer8);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -276,7 +276,7 @@ namespace elle
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Integer16);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -287,7 +287,7 @@ namespace elle
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Integer32);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -298,7 +298,7 @@ namespace elle
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Integer64);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -309,7 +309,7 @@ namespace elle
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Natural8);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -320,7 +320,7 @@ namespace elle
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Natural16);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -331,7 +331,7 @@ namespace elle
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Natural32);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -342,7 +342,7 @@ namespace elle
       // add the footprint.
       this->size += Footprint::Meta + sizeof (Natural64);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -353,7 +353,7 @@ namespace elle
       // add the footprint.
       this->size += Footprint::Meta + BN_num_bytes(&element);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -364,7 +364,7 @@ namespace elle
       // add the footprint.
       this->size += Footprint::Meta + element.length();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -375,7 +375,7 @@ namespace elle
       // add the footprint.
       this->size += Footprint::Meta + element.size;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -386,7 +386,7 @@ namespace elle
       // add the footprint.
       this->size += Footprint::Meta + element.size;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///

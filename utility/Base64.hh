@@ -100,7 +100,7 @@ namespace elle
         if (region.Detach() == StatusError)
           escape("unable to detach the region's data");
 
-        return elle::StatusOk;
+        return StatusOk;
       }
 
       //

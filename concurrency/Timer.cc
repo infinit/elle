@@ -73,7 +73,7 @@ namespace elle
                         this, SLOT(_timeout())) == false)
         escape("unable to connect the timeout signal");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -84,7 +84,7 @@ namespace elle
       // start the timer.
       this->timer->start(duration);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -95,7 +95,7 @@ namespace elle
       // stop the timer.
       this->timer->stop();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -106,7 +106,7 @@ namespace elle
       // restart the timer.
       this->timer->start(duration);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -123,7 +123,7 @@ namespace elle
       if (this->signal.timeout.Emit() == StatusError)
         escape("unable to emit the signal");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -151,7 +151,7 @@ namespace elle
       if (this->signal.timeout.Dump(margin + 2) == StatusError)
         escape("unable to dump the signal");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //

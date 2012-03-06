@@ -36,7 +36,7 @@ namespace elle
       // assign the string.
       this->string = string;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -50,13 +50,13 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return StatusTrue;
 
       // compare the internal.
       if (this->string != element.string)
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -78,7 +78,7 @@ namespace elle
       std::cout << alignment << "[Pattern] "
                 << this->string << std::endl;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

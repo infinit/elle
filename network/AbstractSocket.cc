@@ -133,7 +133,7 @@ namespace elle
             escape("unable to dump the timer");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }
