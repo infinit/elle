@@ -46,7 +46,7 @@ namespace elle
       // allocate a new program.
       program = new Program;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -58,7 +58,7 @@ namespace elle
       if (program != NULL)
         delete program;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -87,7 +87,7 @@ namespace elle
 # error "unsupported platform"
 #endif
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -98,7 +98,7 @@ namespace elle
       // exit the core application.
       program->core->exit();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -114,7 +114,7 @@ namespace elle
       // process the events.
       program->core->exec();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -158,7 +158,7 @@ namespace elle
       // register the socket notifier.
       dispatcher->registerSocketNotifier(&broker.notifier);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -174,7 +174,7 @@ namespace elle
       // unregister the socket notifier.
       dispatcher->unregisterSocketNotifier(&broker.notifier);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 #elif defined(INFINIT_WINDOWS)
     // nothing

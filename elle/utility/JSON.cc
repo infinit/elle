@@ -257,7 +257,7 @@ namespace elle
       // return the type.
       type = static_cast<enum JSON::Node::Type>(this->value->type());
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -271,7 +271,7 @@ namespace elle
       if (this->Recycle(&node) == StatusError)
         escape("unable to recycle the object");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -284,7 +284,7 @@ namespace elle
         escape("invalid type: node's(%u) expected(%u)",
                this->value->type(), ::Json::nullValue);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -300,7 +300,7 @@ namespace elle
       // return the value.
       element = this->value->asBool();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -316,7 +316,7 @@ namespace elle
       // return the value.
       element = this->value->asInt();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -332,7 +332,7 @@ namespace elle
       // return the value.
       element = this->value->asInt();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -348,7 +348,7 @@ namespace elle
       // return the value.
       element = this->value->asInt();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -364,7 +364,7 @@ namespace elle
       // return the value.
       element = this->value->asInt();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -380,7 +380,7 @@ namespace elle
       // return the value.
       element = this->value->asUInt();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -396,7 +396,7 @@ namespace elle
       // return the value.
       element = this->value->asUInt();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -412,7 +412,7 @@ namespace elle
       // return the value.
       element = this->value->asUInt();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -428,7 +428,7 @@ namespace elle
       // return the value.
       element = this->value->asUInt();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -444,7 +444,7 @@ namespace elle
       // return the value.
       element = this->value->asDouble();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -460,7 +460,7 @@ namespace elle
       // return the value.
       element = this->value->asString();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -485,7 +485,7 @@ namespace elle
       if (node.Wrap(&(*this->value)[index]) == StatusError)
         escape("unable to wrap the value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -508,7 +508,7 @@ namespace elle
       if (node.Wrap(&(*this->value)[key]) == StatusError)
         escape("unable to wrap the value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -520,7 +520,7 @@ namespace elle
       if (node.Wrap(this->value) == StatusError)
         escape("unable to wrap the value");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -531,7 +531,7 @@ namespace elle
       // set the value.
       *this->value = ::Json::Value(::Json::nullValue);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -542,7 +542,7 @@ namespace elle
       // set the value.
       *this->value = ::Json::Value(element);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -553,7 +553,7 @@ namespace elle
       // set the value.
       *this->value = ::Json::Value(element);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -564,7 +564,7 @@ namespace elle
       // set the value.
       *this->value = ::Json::Value(element);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -575,7 +575,7 @@ namespace elle
       // set the value.
       *this->value = ::Json::Value(element);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -586,7 +586,7 @@ namespace elle
       // set the value.
       *this->value = ::Json::Value(static_cast< ::Json::Int >(element));
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -597,7 +597,7 @@ namespace elle
       // set the value.
       *this->value = ::Json::Value(element);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -608,7 +608,7 @@ namespace elle
       // set the value.
       *this->value = ::Json::Value(element);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -619,7 +619,7 @@ namespace elle
       // set the value.
       *this->value = ::Json::Value(element);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -630,7 +630,7 @@ namespace elle
       // set the value.
       *this->value = ::Json::Value(static_cast< ::Json::UInt >(element));
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -641,7 +641,7 @@ namespace elle
       // set the value.
       *this->value = ::Json::Value(element);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -652,7 +652,7 @@ namespace elle
       // set the value.
       *this->value = ::Json::Value(element);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -671,7 +671,7 @@ namespace elle
       // set the value.
       (*this->value)[index] = *node.value;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -690,7 +690,7 @@ namespace elle
       // set the value.
       (*this->value)[key] = *node.value;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -701,7 +701,7 @@ namespace elle
       // set the value.
       *this->value = node.value;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -725,7 +725,7 @@ namespace elle
           this->value->append(*(*scoutor).value);
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -740,7 +740,7 @@ namespace elle
       // erase the member.
       this->value->removeMember(key);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -756,7 +756,7 @@ namespace elle
       // clear the elements.
       this->value->clear();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -771,7 +771,7 @@ namespace elle
       // return the number of elements.
       size = this->value->size();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -782,13 +782,13 @@ namespace elle
     {
       // check the type.
       if (this->value->type() != ::Json::arrayValue)
-        return elle::StatusFalse;
+        return StatusFalse;
 
       // check if the index is valid.
       if (this->value->isValidIndex(index) == false)
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -799,13 +799,13 @@ namespace elle
     {
       // check the type.
       if (this->value->type() != ::Json::objectValue)
-        return elle::StatusFalse;
+        return StatusFalse;
 
       // check if the key is valid.
       if (this->value->isMember(key) == false)
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -816,9 +816,9 @@ namespace elle
     {
       // compare the values.
       if (*this->value != *element.value)
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -933,7 +933,7 @@ namespace elle
           }
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -949,7 +949,7 @@ namespace elle
       if (this->root.Append(bulk) == StatusError)
         escape("unable to append the root node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -961,7 +961,7 @@ namespace elle
       if (this->root.Clear() == StatusError)
         escape("unable to clear the root node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -973,7 +973,7 @@ namespace elle
       if (this->root.Size(size) == StatusError)
         escape("unable to size the root node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -984,9 +984,9 @@ namespace elle
     {
       // compare the root node.
       if (this->root != element.root)
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -1007,7 +1007,7 @@ namespace elle
       if (this->root.Dump(margin + 2) == StatusError)
         escape("unable to dump the root node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -1029,7 +1029,7 @@ namespace elle
       // return the string-based JSON document.
       string = stream.str();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -1045,7 +1045,7 @@ namespace elle
       if (reader.parse(string, *document.root.value) == false)
         escape(reader.getFormatedErrorMessages().c_str());
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

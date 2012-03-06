@@ -98,7 +98,7 @@ namespace elle
         if (bucket->Add(object) == StatusError)
           escape("unable to add the object to the bucket");
 
-        return elle::StatusOk;
+        return StatusOk;
       }
 
       ///
@@ -130,7 +130,7 @@ namespace elle
             this->container.erase(it);
             delete bucket;
           }
-        return elle::StatusOk;
+        return StatusOk;
       }
 
       ///
@@ -140,7 +140,7 @@ namespace elle
       Status            Timeline<T>::Clear()
       {
         this->container.clear();
-        return elle::StatusOk;
+        return StatusOk;
       }
 
 //
@@ -170,7 +170,7 @@ namespace elle
             if (it->second->Dump(margin + 2) == StatusError)
               escape("unable to dump the bucket");
           }
-        return elle::StatusOk;
+        return StatusOk;
       }
 
     }

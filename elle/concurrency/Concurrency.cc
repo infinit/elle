@@ -36,7 +36,7 @@ namespace elle
       if (Fiber::Initialize() == StatusError)
         escape("unable to initialize the fiber system");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -52,7 +52,7 @@ namespace elle
       if (Program::Clean() == StatusError)
         escape("unable to clean the program");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

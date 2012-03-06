@@ -72,7 +72,7 @@ namespace elle
       if (this->section.Dump(margin + 2) == StatusError)
         escape("unable to dump the section");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -201,7 +201,7 @@ namespace elle
     {
       // has the lock been acquired, return false.
       if (this->locked == true)
-        return elle::StatusFalse;
+        return StatusFalse;
 
       // then, depending on the mode.
       switch (mode)
@@ -219,7 +219,7 @@ namespace elle
           {
             // check the number of readers and return false if some remain.
             if (this->readers != 0)
-              return elle::StatusFalse;
+              return StatusFalse;
 
             //
             // otherwise, return true.
@@ -234,7 +234,7 @@ namespace elle
           }
         }
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -259,7 +259,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Readers] " << std::dec << this->readers << std::endl;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

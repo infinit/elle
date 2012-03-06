@@ -45,12 +45,6 @@ namespace lune
   elle::Pattern                 Lune::Configuration;
 
   ///
-  /// this variable contains the pattern-based path to the log
-  /// file.
-  ///
-  elle::Pattern                 Lune::Log;
-
-  ///
   /// this variable contains the pattern-based path to the user identity file.
   ///
   elle::Pattern                 Lune::Identity;
@@ -102,10 +96,22 @@ namespace lune
   elle::Pattern                 Lune::Network::Descriptor;
 
   ///
+  /// this variable holds the pattern of the path leading to a given
+  /// network set of initial nodes.
+  ///
+  elle::Pattern                 Lune::Network::Set;
+
+  ///
   /// this variable contains the pattern-based path to the network-specific
   /// phrase file.
   ///
   elle::Pattern                 Lune::Network::Phrase;
+
+  ///
+  /// this variable contains the pattern-based path to the network-specific
+  /// log file.
+  ///
+  elle::Pattern                 Lune::Network::Log;
 
   ///
   /// this variable holds the pattern of the path leading to a given
@@ -204,14 +210,6 @@ namespace lune
             Configuration::Extension) == elle::StatusError)
         escape("unable to create the pattern");
 
-      // create the log path pattern.
-      if (Lune::Log.Create(
-            home +
-            elle::System::Path::Separator +
-            "infinit" +
-            Log::Extension) == elle::StatusError)
-        escape("unable to create the pattern");
-
       // create the identity path pattern.
       if (Lune::Identity.Create(
             home +
@@ -296,6 +294,18 @@ namespace lune
             Descriptor::Extension) == elle::StatusError)
         escape("unable to create the pattern");
 
+      // create the set path pattern.
+      if (Lune::Network::Set.Create(
+            home +
+            elle::System::Path::Separator +
+            "networks" +
+            elle::System::Path::Separator +
+            "%NETWORK%" +
+            elle::System::Path::Separator +
+            "%NETWORK%" +
+            Set::Extension) == elle::StatusError)
+        escape("unable to create the pattern");
+
       // create the phrase path pattern.
       if (Lune::Network::Phrase.Create(
             home +
@@ -306,6 +316,18 @@ namespace lune
             elle::System::Path::Separator +
             "%NETWORK%" +
             Phrase::Extension) == elle::StatusError)
+        escape("unable to create the pattern");
+
+      // create the log path pattern.
+      if (Lune::Network::Log.Create(
+            home +
+            elle::System::Path::Separator +
+            "networks" +
+            elle::System::Path::Separator +
+            "%NETWORK%" +
+            elle::System::Path::Separator +
+            "%NETWORK%" +
+            Log::Extension) == elle::StatusError)
         escape("unable to create the pattern");
 
       // create the reserve path pattern.
@@ -417,15 +439,6 @@ namespace lune
             "%ADDRESS%" +
             nucleus::History::Extension) == elle::StatusError)
         escape("unable to create the pattern");
-    }
-
-    //
-    // setup the log mechanism
-    //
-    {
-      // setup the log.
-      if (elle::Log::Setup(Lune::Log.string) == elle::StatusError)
-        escape("unable to set up the log system");
     }
 
     return elle::StatusOk;

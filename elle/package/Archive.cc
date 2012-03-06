@@ -127,7 +127,7 @@ namespace elle
       // set the mode.
       this->mode = Archive::ModeSerialization;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -157,7 +157,7 @@ namespace elle
       // set the control: in this case, the ownership is acquired.
       this->control = Archive::ControlAcquired;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -184,7 +184,7 @@ namespace elle
       // region.
       this->control = Archive::ControlWrapped;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -196,7 +196,7 @@ namespace elle
     ///
     Status              Archive::Serialize()
     {
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -204,7 +204,7 @@ namespace elle
     ///
     Status              Archive::Extract()
     {
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -229,7 +229,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -247,7 +247,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -275,7 +275,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -293,7 +293,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -311,7 +311,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -329,7 +329,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -347,7 +347,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -365,7 +365,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -383,7 +383,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -401,7 +401,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -419,7 +419,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -444,7 +444,7 @@ namespace elle
       if (this->Store(region) == StatusError)
         escape("unable to store the region");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -462,7 +462,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -483,7 +483,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -500,7 +500,7 @@ namespace elle
                              element.size)) == StatusError)
         escape("unable to store the region");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -537,7 +537,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -571,7 +571,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -592,7 +592,7 @@ namespace elle
       // return the character.
       element = string[0];
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -626,7 +626,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -661,7 +661,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -696,7 +696,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -731,7 +731,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -766,7 +766,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -804,7 +804,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -839,7 +839,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -874,7 +874,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -909,7 +909,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -929,7 +929,7 @@ namespace elle
       // load directly the bignum from the buffer.
       ::BN_bin2bn(region.contents, region.size, &element);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -963,7 +963,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -1003,7 +1003,7 @@ namespace elle
                             ref.size) == StatusError)
         escape("unable to prepare the buffer");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -1029,7 +1029,7 @@ namespace elle
       if (region.Detach() == StatusError)
         escape("unable to detach the region");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -1056,7 +1056,7 @@ namespace elle
       // setting back the original offset.
       this->offset = offset;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -1300,7 +1300,7 @@ namespace elle
             }
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -1315,7 +1315,7 @@ namespace elle
       // return the size.
       size = sizeof (Archive);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -1326,7 +1326,7 @@ namespace elle
       // allocate the object.
       object = new Archive(*this);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -1352,19 +1352,19 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return StatusTrue;
 
       // check the attributes.
       if ((this->mode != element.mode) ||
           (this->offset != element.offset))
-        return elle::StatusFalse;
+        return StatusFalse;
 
       // finally, compare the buffers.
       if ((this->size != element.size) ||
           (::memcmp(this->contents, element.contents, this->size) != 0))
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -1392,7 +1392,7 @@ namespace elle
                 << static_cast<Void*>(element.contents) << " :: "
                 << element.size << "/" << element.capacity << std::endl;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

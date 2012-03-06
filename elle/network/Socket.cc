@@ -59,7 +59,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Type] " << std::dec << this->type << std::endl;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -75,7 +75,7 @@ namespace elle
       if (Network::Dispatch(parcel) == StatusError)
         log("an error occured while dispatching a message");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

@@ -39,7 +39,7 @@ namespace elle
       if (this->Complete(piece.name, piece.value) == StatusError)
         escape("unable to resolve the piece");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -58,7 +58,7 @@ namespace elle
       if (this->Complete(pieces...) == StatusError)
         escape("unable to resolve the additional pieces");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

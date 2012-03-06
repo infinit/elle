@@ -19,7 +19,7 @@ using namespace elle;
 
 Status fiber2()
 {
-  return elle::StatusOk;
+  return StatusOk;
 }
 
 Status fiber1()
@@ -29,7 +29,7 @@ Status fiber1()
 
   Fiber::Spawn(closure);
   log_here;
-  return elle::StatusOk;
+  return StatusOk;
 }
 
 ucontext_t auc,buc,mainuc;

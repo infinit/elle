@@ -70,7 +70,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Scheme] " << this->scheme << std::endl;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

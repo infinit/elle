@@ -71,7 +71,7 @@ namespace elle
       if (this->Write(packet) == StatusError)
         escape("unable to write the packet");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -125,7 +125,7 @@ namespace elle
       if (outputs.Extract(*parcel->data) == StatusError)
         escape("unable to extract the arguments");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -150,7 +150,7 @@ namespace elle
       if (this->Receive(event, outputs) == StatusError)
         escape("unable to receive the outputs");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -173,7 +173,7 @@ namespace elle
       if (this->Send(inputs, session->event) == StatusError)
         escape("unable to send the reply");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

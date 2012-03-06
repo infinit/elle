@@ -48,7 +48,7 @@ namespace elle
       // allocate the morgue.
       Morgue::Current = new Morgue;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -60,7 +60,7 @@ namespace elle
       if (Morgue::Current != NULL)
         delete Morgue::Current;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -70,11 +70,11 @@ namespace elle
     {
       // verify the morgue's presence.
       if (Morgue::Current == NULL)
-        return elle::StatusFalse;
+        return StatusFalse;
 
       morgue = Morgue::Current;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
 //
@@ -127,7 +127,7 @@ namespace elle
           this->container.pop_front();
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -157,7 +157,7 @@ namespace elle
                     << "[Instance] " << std::hex << instance << std::endl;
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

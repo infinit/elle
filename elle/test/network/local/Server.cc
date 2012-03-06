@@ -31,7 +31,7 @@ namespace elle
       // set the line.
       this->line = line;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -47,7 +47,7 @@ namespace elle
                                                 this)) == StatusError)
         escape("unable to listen for local connections");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -77,7 +77,7 @@ namespace elle
 
       elle::Program::Exit();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

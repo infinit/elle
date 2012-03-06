@@ -102,7 +102,7 @@ namespace elle
             escape("unable to dump the data");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

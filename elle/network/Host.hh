@@ -88,6 +88,8 @@ namespace elle
       Status            Create(const Type);
       Status            Create(const String&);
 
+      Status            Convert(String&) const;
+
       //
       // interfaces
       //

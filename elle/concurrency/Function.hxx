@@ -118,7 +118,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift << "[Handler] "
                 << std::hex << this->handler << std::endl;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //

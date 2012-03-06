@@ -142,7 +142,7 @@ namespace elle
       this->contents = const_cast<Byte*>(contents);
       this->size = size;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -163,7 +163,7 @@ namespace elle
       this->size = size;
       this->capacity = size;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -189,7 +189,7 @@ namespace elle
       this->size = 0;
       this->capacity = capacity;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -217,7 +217,7 @@ namespace elle
       this->size = size;
       this->capacity = size;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -252,7 +252,7 @@ namespace elle
         {
           // if there is enough space, just leave.
           if (size <= this->capacity)
-            return elle::StatusOk;
+            return StatusOk;
 
           // otherwise, enlarge the buffer's capacity.
           this->capacity = size;
@@ -270,7 +270,7 @@ namespace elle
 #endif
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -291,7 +291,7 @@ namespace elle
       if (this->Write(this->size, contents, size) == StatusError)
         escape("unable to append the data");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -309,7 +309,7 @@ namespace elle
       // copy the data.
       ::memcpy(contents, this->contents + offset, size);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -331,7 +331,7 @@ namespace elle
       if ((offset + size) > this->size)
         this->size = offset + size;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -347,7 +347,7 @@ namespace elle
       // activate the option.
       this->options = Region::OptionDetach;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -409,7 +409,7 @@ namespace elle
           std::cout << std::endl;
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -424,7 +424,7 @@ namespace elle
       // return the size.
       size = sizeof (Region);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -435,7 +435,7 @@ namespace elle
       // allocate the object.
       object = new Region(*this);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -445,17 +445,17 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return StatusTrue;
 
       // check the size.
       if (this->size != element.size)
-        return elle::StatusFalse;
+        return StatusFalse;
 
       // check the content.
       if (::memcmp(this->contents, element.contents, element.size) == 0)
-        return elle::StatusTrue;
+        return StatusTrue;
 
-      return elle::StatusFalse;
+      return StatusFalse;
     }
 
     ///
@@ -465,17 +465,17 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return StatusTrue;
 
       // check the size.
       if (this->size != element.size)
-        return elle::StatusFalse;
+        return StatusFalse;
 
       // check the content.
       if (::memcmp(this->contents, element.contents, element.size) < 0)
-        return elle::StatusTrue;
+        return StatusTrue;
 
-      return elle::StatusFalse;
+      return StatusFalse;
     }
 
     ///

@@ -90,7 +90,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift << "[Handler] "
                 << std::hex << this->handler << std::endl;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -203,7 +203,7 @@ namespace elle
       if (this->shell->Dump(margin) == StatusError)
         escape("unable to dump the shell");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //

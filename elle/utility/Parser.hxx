@@ -96,7 +96,7 @@ namespace elle
         escape("unable to convert the argument '%s' for the option '%s'",
                option->value->c_str(), name.c_str());
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -130,7 +130,7 @@ namespace elle
           value = D;
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -168,7 +168,7 @@ namespace elle
         escape("unable to restore the object '%s' for the option '%s'",
                option->value->c_str(), name.c_str());
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -213,7 +213,7 @@ namespace elle
                    unique.c_str(), name.c_str());
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //

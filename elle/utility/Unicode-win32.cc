@@ -51,7 +51,7 @@ namespace elle
       if (nchars != *output_size)
         escape("failed to convert string");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     Status Utf16To8(const wchar_t * input,
@@ -88,7 +88,7 @@ namespace elle
       if (nchars != *output_size)
         escape("failed to convert string");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

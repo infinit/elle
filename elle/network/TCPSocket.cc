@@ -99,7 +99,7 @@ namespace elle
             SLOT(_error(const QAbstractSocket::SocketError))) == false)
         escape("unable to connect to signal");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -138,7 +138,7 @@ namespace elle
       // set the socket as being connected.
       this->state = AbstractSocket::StateConnected;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -187,7 +187,7 @@ namespace elle
           }
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -197,7 +197,7 @@ namespace elle
     {
       // disconnect the socket from the server.
       this->socket->disconnectFromHost();
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -224,7 +224,7 @@ namespace elle
       // flush to start sending data immediately.
       this->socket->flush();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -247,7 +247,7 @@ namespace elle
 
         // check if there is data to be read.
         if (size == 0)
-          return elle::StatusOk;
+          return StatusOk;
 
         // adjust the buffer.
         if (this->buffer == NULL)
@@ -277,7 +277,7 @@ namespace elle
         this->buffer->size = this->buffer->size + size;
       }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -399,7 +399,7 @@ namespace elle
           }
       }
 
-      return elle::StatusOk;
+      return StatusOk;
 
     _disconnect:
       // purge the errors message.
@@ -408,7 +408,7 @@ namespace elle
       // disconnect the socket.
       this->Disconnect();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -435,7 +435,7 @@ namespace elle
       if (locus.Create(host, port) == StatusError)
         escape("unable to create the locus");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -464,7 +464,7 @@ namespace elle
       if (locus.Dump(margin + 2) == StatusError)
         escape("unable to dump the locus");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -498,7 +498,7 @@ namespace elle
             log("an error occured while shipping the parcel");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -520,7 +520,7 @@ namespace elle
           if (this->Disconnect() == StatusError)
             escape("unable to disconnect the socket");
         }
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //

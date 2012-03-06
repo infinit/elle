@@ -35,7 +35,7 @@ namespace elle
       if (Meta::Initialize() == StatusError)
         escape("unable to initialize the meta class");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -47,7 +47,7 @@ namespace elle
       if (Meta::Clean() == StatusError)
         escape("unable to clean the meta class");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

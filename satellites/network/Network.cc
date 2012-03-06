@@ -158,10 +158,6 @@ namespace satellite
       if (descriptor.Seal(authority) == elle::StatusError)
         escape("unable to seal the descriptor");
 
-      // push the attributes.
-      if (descriptor.Push() == elle::StatusError)
-        escape("unable to push the descriptor's attributes");
-
       // store the descriptor.
       if (descriptor.Store(name) == elle::StatusError)
         escape("unable to store the descriptor file");
@@ -304,10 +300,6 @@ namespace satellite
       // load the descriptor.
       if (descriptor.Load(name) == elle::StatusError)
         escape("unable to load the descriptor");
-
-      // pull the attributes.
-      if (descriptor.Pull() == elle::StatusError)
-        escape("unable to pull the descriptor's attributes");
 
       // validate the descriptor.
       if (descriptor.Validate(Infinit::Authority) == elle::StatusError)

@@ -83,7 +83,7 @@ namespace elle
           if (closure.Call() == StatusError)
             escape("an error occured in the fiber");
 
-          return elle::StatusOk;
+          return StatusOk;
         }
 
       //
@@ -159,7 +159,7 @@ namespace elle
       // XXX Why not return the _CheckCurrentFiber() value ??
       Fiber::_CheckCurrentFiber();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 
@@ -179,7 +179,7 @@ namespace elle
       data = std::static_pointer_cast<T>(Fiber::Current->data);
       // XXX Reset fiber data ?
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -202,7 +202,7 @@ namespace elle
       data = std::static_pointer_cast<T>(Fiber::Current->data);
       // XXX Reset fiber data ?
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -216,7 +216,7 @@ namespace elle
 
       // check if there are blocked fibers.
       if (Fiber::Waiting.empty() == true)
-        return elle::StatusFalse;
+        return StatusFalse;
 
       // set the boolean to false meaning that no fiber has been woken up.
       awaken = false;
@@ -245,9 +245,9 @@ namespace elle
 
       // return true if at least one fiber has been awaken.
       if (awaken == true)
-        return elle::StatusTrue;
+        return StatusTrue;
 
-      return elle::StatusFalse;
+      return StatusFalse;
     }
 
     ///
@@ -261,7 +261,7 @@ namespace elle
 
       // check if there are blocked fibers.
       if (Fiber::Waiting.empty() == true)
-        return elle::StatusFalse;
+        return StatusFalse;
 
       // set the boolean to false meaning that no fiber has been woken up.
       awaken = false;
@@ -289,9 +289,9 @@ namespace elle
 
       // return true if at least one fiber has been awaken.
       if (awaken == true)
-        return elle::StatusTrue;
+        return StatusTrue;
 
-      return elle::StatusFalse;
+      return StatusFalse;
     }
 
   }

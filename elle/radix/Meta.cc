@@ -77,7 +77,7 @@ namespace elle
             escape("unable to enable the meta logging");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -103,7 +103,7 @@ namespace elle
 #endif
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -114,7 +114,7 @@ namespace elle
       // set the state.
       Meta::Debug::State = true;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -125,7 +125,7 @@ namespace elle
       // set the state.
       Meta::Debug::State = false;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -142,12 +142,12 @@ namespace elle
         {
 #if defined(INFINIT_LINUX)
           // show the traces.
-          if (Trace::Show(margin + 2) == elle::StatusError)
+          if (Trace::Show(margin + 2) == StatusError)
             escape("unable to show the traces");
 #endif
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //

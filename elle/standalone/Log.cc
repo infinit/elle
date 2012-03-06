@@ -50,7 +50,7 @@ namespace elle
     {
       // nothing to do.
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -62,7 +62,7 @@ namespace elle
       if (Log::Current != NULL)
         delete Log::Current;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -74,7 +74,7 @@ namespace elle
       // allocate the log for the initial thread/fiber.
       Log::Current = new Log(path);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -86,11 +86,11 @@ namespace elle
     {
       // verify the log's presence.
       if (Log::Current == NULL)
-        return elle::StatusFalse;
+        return StatusFalse;
 
       log = Log::Current;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
 //

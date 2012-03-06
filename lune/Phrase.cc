@@ -128,7 +128,7 @@ namespace lune
 //
 
   ///
-  /// this method loads the user's local map.
+  /// this method loads the phrase.
   ///
   elle::Status          Phrase::Load(const elle::String&        network)
   {
@@ -158,7 +158,7 @@ namespace lune
   }
 
   ///
-  /// this method stores the user's local map.
+  /// this method stores the phrase.
   ///
   elle::Status          Phrase::Store(const elle::String&       network) const
   {

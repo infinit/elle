@@ -10,6 +10,7 @@ add_library(lune
   Lune.cc
   Passport.cc
   Phrase.cc
+  Set.cc
 )
 
 add_definitions(-fPIC)

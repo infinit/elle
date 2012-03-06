@@ -115,7 +115,7 @@ namespace elle
                             Fiber::Program->context) == StatusError)
         escape("unable to initialize the epth library");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -182,7 +182,7 @@ namespace elle
         delete Fiber::Program;
       }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -218,7 +218,7 @@ namespace elle
       if (Fiber::Wait(*Fiber::Current->timer) == StatusError)
         escape("unable to wait for the resource");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -241,7 +241,7 @@ namespace elle
       if (Fiber::Sleep(0) == StatusError)
         escape("an error occured while sleeping");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -264,7 +264,7 @@ namespace elle
       // store in the container.
       Fiber::Phases.push_back(callback);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -284,7 +284,7 @@ namespace elle
             escape("an error occured in the callback");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -317,7 +317,7 @@ namespace elle
 
       // if there is not fibers, return.
       if (Fiber::Waiting.empty() == true)
-        return elle::StatusOk;
+        return StatusOk;
 
       // We are now scheduling
       Guard             guard(Fiber::IsScheduling, false);
@@ -372,7 +372,7 @@ namespace elle
             iterator++;
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -402,7 +402,7 @@ namespace elle
       // initialize the context's memory.
       ::memset(&fiber->context, 0x0, sizeof (fiber->context));
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -433,7 +433,7 @@ namespace elle
           delete fiber;
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -444,12 +444,12 @@ namespace elle
       // ignore the program fiber which is special as it is
       // used as the root fiber.
       if (fiber == Fiber::Program)
-        return elle::StatusOk;
+        return StatusOk;
 
       // push the fiber.
       Fiber::Waiting.push_front(fiber);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -462,7 +462,7 @@ namespace elle
       // ignore the program fiber which is special as it is
       // used as the root fiber.
       if (fiber == Fiber::Program)
-        return elle::StatusOk;
+        return StatusOk;
 
       // iterate over the container.
       for (iterator = Fiber::Waiting.begin();
@@ -479,7 +479,7 @@ namespace elle
               // return since a fiber cannot be waiting for another
               // event or resource hence cannot be located twice in
               // the containers.
-              return elle::StatusOk;
+              return StatusOk;
             }
         }
 
@@ -504,10 +504,10 @@ namespace elle
           if ((fiber->state == Fiber::StateSuspended) &&
               (fiber->type == Fiber::TypeEvent) &&
               (*fiber->event == event))
-            return elle::StatusTrue;
+            return StatusTrue;
         }
 
-      return elle::StatusFalse;
+      return StatusFalse;
     }
 
     ///
@@ -528,10 +528,10 @@ namespace elle
           if ((fiber->state == Fiber::StateSuspended) &&
               (fiber->type == Fiber::TypeResource) &&
               (fiber->resource == resource))
-            return elle::StatusTrue;
+            return StatusTrue;
         }
 
-      return elle::StatusFalse;
+      return StatusFalse;
     }
 
     ///
@@ -594,7 +594,7 @@ namespace elle
           }
       }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -647,7 +647,7 @@ namespace elle
 ///      if (this->frame->Create(size) == StatusError)
 ///        escape("unable to create the frame");
 ///
-///      return elle::StatusOk;
+///      return StatusOk;
 ///    }
 ///=======
 ///>>>>>>> d261c92ccfe6fe027aca1abd7bdb4b854f43de22
@@ -672,7 +672,7 @@ namespace elle
       // reset the pointer.
       this->timer = NULL;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -756,7 +756,7 @@ namespace elle
                     << none << std::endl;
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     Status              Fiber::_CheckCurrentFiber()
@@ -817,7 +817,7 @@ namespace elle
       if (!Fiber::IsScheduling)
         Schedule();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     Status Fiber::_PrepareWait()
@@ -829,7 +829,7 @@ namespace elle
       // set the fiber has been suspended.
       Fiber::Current->state = Fiber::StateSuspended;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     Status Fiber::_DoWait()
@@ -854,7 +854,7 @@ namespace elle
       // XXX                                        ^^^^^^^^^^^ ?
         escape("unable to switch back to the program thread");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     Status Fiber::Wait(const Event& event)

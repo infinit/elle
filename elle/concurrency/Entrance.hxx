@@ -73,7 +73,7 @@ namespace elle
       if (this->timer.Dump(margin + 2) == StatusError)
         escape("unable to dump the timer");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -93,7 +93,7 @@ namespace elle
       if (this->closure.Call() == StatusError)
         escape("an error occured in the closure");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

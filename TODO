@@ -1,4 +1,5 @@
 - bugs:
+ - Infinit segfault sometimes with slug, at the startup.
  - Broker: select() == 0
  - regler ca en passant a un nouveau core: asio
 

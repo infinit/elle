@@ -166,7 +166,7 @@ namespace elle
         if (clear.Detach() == StatusError)
           escape("unable to detach the clear's data");
 
-        return elle::StatusOk;
+        return StatusOk;
       }
 
       Status            Sign(const Archive&             archive,

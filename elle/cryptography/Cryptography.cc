@@ -51,7 +51,7 @@ namespace elle
       if (KeyPair::Initialize() == StatusError)
         escape("unable to initialize the key pair generation context");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -82,7 +82,7 @@ namespace elle
       // release the extra data.
       ::CRYPTO_cleanup_all_ex_data();
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

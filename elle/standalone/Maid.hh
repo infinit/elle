@@ -138,7 +138,7 @@ namespace elle
     /// the system has been designed with intrusion in mind
     /// such that the developer only has to specify the
     /// variables to track in the  macro-function. then,
-    /// whenever the function leaves the scope through a return elle::StatusOk,
+    /// whenever the function leaves the scope through a return StatusOk,
     /// escape() etc. the pointers are released if necessary.
     ///
     /// note that since pointers are considered as requiring
@@ -167,7 +167,7 @@ namespace elle
     ///
     ///   [...]
     ///
-    ///   return elle::StatusOk;
+    ///   return StatusOk;
     /// }
     ///
     /// noteworthy is that non-pointer variables can also
@@ -197,7 +197,7 @@ namespace elle
     ///
     ///   untrack(context);
     ///
-    ///   return elle::StatusOk;
+    ///   return StatusOk;
     /// }
     ///
     class Maid

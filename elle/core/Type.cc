@@ -70,7 +70,7 @@ namespace elle
       else
         output = "false";
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -87,7 +87,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -104,7 +104,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -121,7 +121,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -138,7 +138,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -155,7 +155,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -172,7 +172,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -189,7 +189,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -206,7 +206,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -223,7 +223,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -240,7 +240,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -261,9 +261,9 @@ namespace elle
                (input == "Off") || (input == "off"))
         output = false;
       else
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -281,10 +281,10 @@ namespace elle
       /*
       // check the stream.
       if (!stream || !stream.eof())
-        return elle::StatusFalse;
+        return StatusFalse;
       */
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -300,9 +300,9 @@ namespace elle
 
       // check the stream.
       if (!stream || !stream.eof())
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -318,9 +318,9 @@ namespace elle
 
       // check the stream.
       if (!stream || !stream.eof())
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -336,9 +336,9 @@ namespace elle
 
       // check the stream.
       if (!stream || !stream.eof())
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -354,9 +354,9 @@ namespace elle
 
       // check the stream.
       if (!stream || !stream.eof())
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -372,9 +372,9 @@ namespace elle
 
       // check the stream.
       if (!stream || !stream.eof())
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -390,9 +390,9 @@ namespace elle
 
       // check the stream.
       if (!stream || !stream.eof())
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -408,9 +408,9 @@ namespace elle
 
       // check the stream.
       if (!stream || !stream.eof())
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -426,9 +426,9 @@ namespace elle
 
       // check the stream.
       if (!stream || !stream.eof())
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -444,9 +444,9 @@ namespace elle
 
       // check the stream.
       if (!stream || !stream.eof())
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
   }

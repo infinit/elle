@@ -138,7 +138,7 @@ namespace elle
       // copy.
       output = input;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -159,7 +159,7 @@ namespace elle
       if (Variable::Convert(string, output) == StatusError)
         escape("unable to convert the string into the output");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

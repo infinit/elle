@@ -59,13 +59,15 @@ namespace lune
   elle::Status          Identity::Create(const elle::String&    name,
                                          const elle::KeyPair&   pair)
   {
+    assert(pair.k.key() != nullptr);
+    assert(pair.K.key() != nullptr);
+
     // set the name.
     this->name = name;
 
-    assert(pair.k.key() != nullptr);
-    assert(pair.K.key() != nullptr);
     // set the key pair.
     this->pair = pair;
+
     assert(this->pair.k.key() != nullptr);
     assert(this->pair.K.key() != nullptr);
 
@@ -129,7 +131,7 @@ namespace lune
       {
         delete this->cipher;
 
-        this->cipher == nullptr;
+        this->cipher = nullptr;
       }
 
     return elle::StatusOk;

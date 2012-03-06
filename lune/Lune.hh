@@ -53,7 +53,6 @@ namespace lune
     static elle::Pattern        Passport;
 
     static elle::Pattern        Configuration;
-    static elle::Pattern        Log;
 
     static elle::Pattern        Identity;
     static elle::Pattern        Dictionary;
@@ -73,7 +72,9 @@ namespace lune
     {
       static elle::Pattern      Root;
       static elle::Pattern      Descriptor;
+      static elle::Pattern      Set;
       static elle::Pattern      Phrase;
+      static elle::Pattern      Log;
 
       struct                    Reserve
       {
@@ -111,5 +112,6 @@ namespace lune
 #include <lune/Log.hh>
 #include <lune/Passport.hh>
 #include <lune/Phrase.hh>
+#include <lune/Set.hh>
 
 #endif

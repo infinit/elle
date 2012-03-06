@@ -122,112 +122,6 @@ namespace lune
     return elle::StatusOk;
   }
 
-  ///
-  /// this method synchronises the in-memory descriptor so as to
-  /// be stored.
-  ///
-  elle::Status          Descriptor::Push()
-  {
-    //
-    // update the settings with the parameters.
-    //
-
-    if (elle::Settings::Set(
-          "general", "name",
-          this->name) == elle::StatusError)
-      escape("unable to update the parameter");
-
-    if (elle::Settings::Set(
-          "general", "model",
-          this->model) == elle::StatusError)
-      escape("unable to update the parameter");
-
-    if (elle::Settings::Set(
-          "general", "root",
-          this->root) == elle::StatusError)
-      escape("unable to update the parameter");
-
-    if (elle::Settings::Set(
-          "general", "history",
-          this->history) == elle::StatusError)
-      escape("unable to update the parameter");
-
-    if (elle::Settings::Set(
-          "general", "extent",
-          this->extent) == elle::StatusError)
-      escape("unable to update the parameter");
-
-    if (elle::Settings::Set(
-          "general", "contention",
-          this->contention) == elle::StatusError)
-      escape("unable to update the parameter");
-
-    if (elle::Settings::Set(
-          "general", "balancing",
-          this->balancing) == elle::StatusError)
-      escape("unable to update the parameter");
-
-    if (elle::Settings::Set(
-          "general", "signature",
-          this->signature) == elle::StatusError)
-      escape("unable to update the parameter");
-
-    return elle::StatusOk;
-  }
-
-  ///
-  /// this method updates the in-memory parameters according to the
-  /// associated settings.
-  ///
-  elle::Status          Descriptor::Pull()
-  {
-    //
-    // retrieve the parameters from the settings.
-    //
-
-    if (elle::Settings::Get(
-          "general", "name",
-          this->name) == elle::StatusError)
-      escape("unable to retrieve the parameter");
-
-    if (elle::Settings::Get(
-          "general", "model",
-          this->model) == elle::StatusError)
-      escape("unable to retrieve the parameter");
-
-    if (elle::Settings::Get(
-          "general", "root",
-          this->root) == elle::StatusError)
-      escape("unable to retrieve the parameter");
-
-    if (elle::Settings::Get(
-          "general", "history",
-          this->history) == elle::StatusError)
-      escape("unable to retrieve the parameter");
-
-    if (elle::Settings::Get(
-          "general", "extent",
-          this->extent) == elle::StatusError)
-      escape("unable to retrieve the parameter");
-
-    if (elle::Settings::Get(
-          "general", "contention",
-          this->contention) == elle::StatusError)
-      escape("unable to retrieve the parameter");
-
-    if (elle::Settings::Get(
-          "general", "balancing",
-          this->balancing) == elle::StatusError)
-      escape("unable to retrieve the parameter");
-
-    if (elle::Settings::Get(
-          "general", "signature",
-          this->signature) == elle::StatusError)
-      escape("unable to retrieve the parameter");
-
-    return elle::StatusOk;
-  }
-
 //
 // ---------- object ----------------------------------------------------------
 //
@@ -253,9 +147,74 @@ namespace lune
 
     std::cout << alignment << "[Descriptor]" << std::endl;
 
-    // dump the parent settings.
-    if (elle::Settings::Dump(margin + 2) == elle::StatusError)
-      escape("unable to dump the settings");
+    std::cout << alignment << elle::Dumpable::Shift << "[Name] "
+              << this->name << std::endl;
+
+    if (this->model.Dump(margin + 2) == elle::StatusError)
+      escape("unable to dump the model");
+
+    std::cout << alignment << elle::Dumpable::Shift << "[Root] " << std::endl;
+
+    if (this->root.Dump(margin + 4) == elle::StatusError)
+      escape("unable to dump the address");
+
+    std::cout << alignment << elle::Dumpable::Shift << "[History] "
+              << static_cast<elle::Natural32>(this->history) << std::endl;
+
+    std::cout << alignment << elle::Dumpable::Shift << "[Extent] "
+              << this->extent << std::endl;
+
+    std::cout << alignment << elle::Dumpable::Shift << "[Contention] "
+              << this->contention << std::endl;
+
+    std::cout << alignment << elle::Dumpable::Shift << "[Balancing] "
+              << this->balancing << std::endl;
+
+    if (this->signature.Dump(margin + 2) == elle::StatusError)
+      escape("unable to dump the signature");
+
+    return elle::StatusOk;
+  }
+
+//
+// ---------- archivable ------------------------------------------------------
+//
+
+  ///
+  /// this method serializes the object.
+  ///
+  elle::Status          Descriptor::Serialize(elle::Archive&    archive) const
+  {
+    // serialize the attributes.
+    if (archive.Serialize(
+          this->name,
+          this->model,
+          this->root,
+          this->history,
+          this->extent,
+          this->contention,
+          this->balancing,
+          this->signature) == elle::StatusError)
+      escape("unable to serialize the attributes");
+
+    return elle::StatusOk;
+  }
+
+  ///
+  /// this method extracts the object.
+  ///
+  elle::Status          Descriptor::Extract(elle::Archive&      archive)
+  {
+    // extract the attributes.
+    if (archive.Extract(this->name,
+                        this->model,
+                        this->root,
+                        this->history,
+                        this->extent,
+                        this->contention,
+                        this->balancing,
+                        this->signature) == elle::StatusError)
+      escape("unable to extract the attributes");
 
     return elle::StatusOk;
   }
@@ -270,6 +229,7 @@ namespace lune
   elle::Status          Descriptor::Load(const elle::String&    name)
   {
     elle::Path          path;
+    elle::Region        region;
 
     // create the path.
     if (path.Create(Lune::Network::Descriptor) == elle::StatusError)
@@ -279,9 +239,16 @@ namespace lune
     if (path.Complete(elle::Piece("%NETWORK%", name)) == elle::StatusError)
       escape("unable to complete the path");
 
-    // call the setting's method.
-    if (elle::Settings::Load(path) == elle::StatusError)
-      escape("unable to load the settings");
+    // read the file's content.
+    if (elle::File::Read(path, region) == elle::StatusError)
+      escape("unable to read the file's content");
+
+    // decode and extract the object.
+    if (elle::Hexadecimal::Decode(
+          elle::String(reinterpret_cast<char*>(region.contents),
+                       region.size),
+          *this) == elle::StatusError)
+      escape("unable to decode the object");
 
     return elle::StatusOk;
   }
@@ -292,6 +259,8 @@ namespace lune
   elle::Status          Descriptor::Store(const elle::String&   name) const
   {
     elle::Path          path;
+    elle::Region        region;
+    elle::String        string;
 
     // create the path.
     if (path.Create(Lune::Network::Descriptor) == elle::StatusError)
@@ -301,9 +270,18 @@ namespace lune
     if (path.Complete(elle::Piece("%NETWORK%", name)) == elle::StatusError)
       escape("unable to complete the path");
 
-    // call the setting's method.
-    if (elle::Settings::Store(path) == elle::StatusError)
-      escape("unable to store the settings");
+    // encode in hexadecimal.
+    if (elle::Hexadecimal::Encode(*this, string) == elle::StatusError)
+      escape("unable to encode the object in hexadecimal");
+
+    // wrap the string.
+    if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
+                    string.length()) == elle::StatusError)
+      escape("unable to wrap the string in a region");
+
+    // write the file's content.
+    if (elle::File::Write(path, region) == elle::StatusError)
+      escape("unable to write the file's content");
 
     return elle::StatusOk;
   }

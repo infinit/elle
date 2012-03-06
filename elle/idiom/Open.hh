@@ -131,7 +131,7 @@
                                                                         \
     size = sizeof (_type_);                                             \
                                                                         \
-    return elle::StatusOk;                                              \
+    return elle::radix::StatusOk;                                       \
   }                                                                     \
                                                                         \
   _template_                                                            \
@@ -142,7 +142,7 @@
   {                                                                     \
     object = new _type_(*this);                                         \
                                                                         \
-    return elle::StatusOk;                                              \
+    return elle::radix::StatusOk;                                       \
   }
 
 //
@@ -157,7 +157,7 @@
     {                                                                   \
       elle::standalone::Log*    _log_;                                  \
       std::ostringstream        _tmp_;                                  \
-      elle::Character           _message_[1024];                        \
+      elle::core::Character     _message_[1024];                        \
                                                                         \
       _tmp_ << __FILE__ << ":" << __LINE__ << " # " << __FUNCTION__;    \
                                                                         \
@@ -170,7 +170,7 @@
           elle::radix::StatusTrue)                                      \
         _log_->Record(_location_,                                       \
                       _time_,                                           \
-                      elle::String(_message_));                         \
+                      elle::core::String(_message_));                   \
       else                                                              \
         {                                                               \
           std::cerr << _message_                                        \
@@ -197,7 +197,7 @@
     {                                                                   \
       elle::standalone::Report* _report_;                               \
       std::ostringstream        _tmp_;                                  \
-      elle::Character           _message_[1024];                        \
+      elle::core::Character     _message_[1024];                        \
                                                                         \
       _tmp_ << __FILE__ << ":" << __LINE__ << " # " << __FUNCTION__;    \
                                                                         \
@@ -210,7 +210,7 @@
           elle::radix::StatusTrue)                                      \
         _report_->Record(_location_,                                    \
                          _time_,                                        \
-                         elle::String(_message_));                      \
+                         elle::core::String(_message_));                \
       else                                                              \
         {                                                               \
           std::cerr << _message_                                        \
@@ -234,53 +234,6 @@
         _report_->Record(_r_);                                          \
     } while (false)
 
-
-/*
-///
-/// this macro-function is used for successfully returning from
-/// a normal method or function.
-///
-#define leave()                                                         \
-  do                                                                    \
-    {                                                                   \
-      release();                                                        \
-                                                                        \
-      return (elle::radix::StatusOk);                                   \
-    } while (false)
-
-///
-/// this macro-function just returns StatusTrue.
-///
-#define true()                                                          \
-  do                                                                    \
-    {                                                                   \
-      release();                                                        \
-                                                                        \
-      return (elle::radix::StatusTrue);                                 \
-    } while (false)
-
-///
-/// this macro-function just returns StatusFalse.
-///
-#define false()                                                         \
-  do                                                                    \
-    {                                                                   \
-      release();                                                        \
-                                                                        \
-      return (elle::radix::StatusFalse);                                \
-    } while (false)
-
-///
-/// this macro-function just returns StatusFalse.
-///
-#define false()                                                         \
-  do                                                                    \
-    {                                                                   \
-      release();                                                        \
-                                                                        \
-      return (elle::radix::StatusFalse);                                \
-    } while (false)
-*/
 ///
 /// this macro-function indicates that an error occured
 /// and returns StatusError.
@@ -290,7 +243,6 @@
     {                                                                   \
       report(_format_, ##__VA_ARGS__);                                  \
                                                                         \
-      /*release();*/                                                       \
       return (elle::radix::StatusError);                                \
     } while (false)
 
@@ -302,8 +254,6 @@
   do                                                                    \
     {                                                                   \
       log(_format_, ##__VA_ARGS__);                                     \
-                                                                        \
-      /*release();*/                                                        \
                                                                         \
       return (elle::radix::StatusFalse);                                \
     } while (false)                                                     \
@@ -321,8 +271,6 @@
   do                                                                    \
     {                                                                   \
       log(_format_, ##__VA_ARGS__);                                     \
-                                                                        \
-      /*release();*/                                                        \
                                                                         \
       return _return_;                                                  \
     } while (false)
@@ -419,104 +367,6 @@
             log("unable to register the instance for burial");          \
         }                                                               \
     } while (false)
-
-//
-// ---------- maid ------------------------------------------------------------
-//
-
-///
-/// this macro function allocates memory within the current scope through
-/// the use of alloca() before creating a Garrison of Guards.
-///
-/*
-#define enter()                                                         \
-  elle::standalone::Maid::Garrison* _maid_ = NULL                       \
-
-#define enterx(...)                                                     \
-  elle::standalone::Maid::Garrison* _maid_ =                            \
-    elle::standalone::Maid::Install(                                    \
-      static_cast<elle::core::Void*>(                                   \
-        alloca(sizeof (elle::standalone::Maid::Garrison))),             \
-      ##__VA_ARGS__)
-
-///
-/// this macro wraps a local non-pointer variable by creating a pointer
-/// of the same type. this pointer will then be used by the Maid though
-/// the developer has to specifically inform the system regarding
-/// when to start and stop tracking the variable through the track()
-/// and untrack() macro-functions.
-///
-#define wrap(_name_)                                                    \
-  decltype(_name_)*     _ ## _name_ ## _
-
-///
-/// this macro function emulates a slab tracking but for local
-/// non-pointed variables.
-///
-#define local(_name_, _function_)                                       \
-  slab(_ ## _name_ ## _, _function_)
-
-///
-/// this macro-function starts the tracking by setting it to the
-/// variable's address.
-///
-#define track(_name_)                                                   \
-  _ ## _name_ ## _ = &_name_
-
-///
-/// unlike the previous one, this macro-function sets the pointer
-/// to NULL, hence stopping the tracking process.
-///
-#define untrack(_name_)                                                 \
-  _ ## _name_ ## _ = NULL
-
-///
-/// this macro-function is similar to the previous one but in the
-/// general case of pointers.
-///
-#define waive(_pointer_)                                                \
-  _pointer_ = NULL
-
-///
-/// this macro-function creates a guard for class instances which will
-/// then be relased through the delete statement.
-///
-#define instance(_pointer_)                                             \
-  elle::standalone::Maid::Monitor(                                      \
-    static_cast<elle::core::Void*>(                                     \
-      alloca(                                                           \
-        sizeof (elle::standalone::Maid::Instance<elle::core::Void*>))), \
-    _pointer_)
-
-///
-/// this macro-function creates a guard for slab i.e memory-based variables
-/// allocated via specific functions such as malloc(), RSA_new() etc.
-///
-#define slab(_pointer_, _function_)                                     \
-  elle::standalone::Maid::Monitor(                                      \
-    static_cast<elle::core::Void*>(                                     \
-      alloca(                                                           \
-        sizeof (elle::standalone::Maid::Slab<                           \
-                  elle::core::Void*,                                    \
-                  elle::core::Void (*)(elle::core::Void*)>))),          \
-    _pointer_, _function_)
-*/
-
-///
-/// this macro-function releases the guarded objects cf Maid.
-///
-/*
-//#define release()                                                       \
-//  do                                                                    \
-//    {                                                                   \
-//      if (_maid_ != NULL)                                               \
-//        {                                                               \
-//          delete _maid_;                                                \
-//                                                                        \
-//          _maid_ = NULL;                                                \
-//        }                                                               \
-//    } while (false)
-*/
 
 //
 //

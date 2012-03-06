@@ -44,7 +44,7 @@ namespace elle
       if (this->timer.Start(Node::Rate) == StatusError)
         escape("unable to start the timer");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -77,7 +77,7 @@ namespace elle
           this->container.push_back(neighbour);
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -95,7 +95,7 @@ namespace elle
       if ((*iterator)->Refresh() == StatusError)
         escape("unable to refresh the node");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -115,7 +115,7 @@ namespace elle
       // remove the element from the list.
       this->container.erase(iterator);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -131,7 +131,7 @@ namespace elle
         {
           // if the locus is found, return.
           if ((*iterator)->locus == locus)
-            return elle::StatusOk;
+            return StatusOk;
         }
 
       escape("unable to locate the given neighbour");
@@ -155,7 +155,7 @@ namespace elle
             escape("unable to update the table");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -184,7 +184,7 @@ namespace elle
             escape("unable to serialize the neighbour");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -215,7 +215,7 @@ namespace elle
           this->container.push_back(neighbour);
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -241,7 +241,7 @@ namespace elle
             escape("unable to dump the neighbour");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -276,7 +276,7 @@ namespace elle
               escape("unable to send a probe");
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

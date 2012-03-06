@@ -105,7 +105,7 @@ namespace elle
       if (archive.Store(element) == StatusError)
         escape("unable to store the element");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -134,7 +134,7 @@ namespace elle
       if (archive.Load(element) == StatusError)
         escape("unable to load the element");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -196,7 +196,7 @@ namespace elle
       if (this->Serialize(parameters...) == StatusError)
         escape("unable to serialize the additional parameters");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -233,7 +233,7 @@ namespace elle
       if (this->Extract(parameters...) == StatusError)
         escape("unable to extract the additional items");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -260,7 +260,7 @@ namespace elle
           new (this) T(*object);
         }
 
-      // return elle::StatusOk in order to avoid including Report, Status and Maid.
+      // return StatusOk in order to avoid including Report, Status and Maid.
       return (StatusOk);
     }
 
@@ -281,7 +281,7 @@ namespace elle
       std::cout << alignment << "[" << core::Type<T>::Name << "] "
                 << element << std::endl;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

@@ -54,9 +54,9 @@ namespace elle
       // compare the attributes.
       if ((this->unit != element.unit) ||
           (this->value != element.value))
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -84,7 +84,7 @@ namespace elle
                 << std::nouppercase << std::dec 
                 << this->value << std::endl;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -101,7 +101,7 @@ namespace elle
                             this->value) == StatusError)
         escape("unable to serialize the attributes");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -114,7 +114,7 @@ namespace elle
                           this->value) == StatusError)
         escape("unable to extract the attributes");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

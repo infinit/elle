@@ -64,7 +64,7 @@ namespace elle
       if (archive.Extract(parameter, parameters...) == StatusError)
         escape("unable to extract the items");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     //
@@ -95,7 +95,7 @@ namespace elle
       if (this->Sign(archive, signature) == StatusError)
         escape("unable to sign the object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -117,7 +117,7 @@ namespace elle
       if (this->Sign(archive, signature) == StatusError)
         escape("unable to sign the objects' archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -141,7 +141,7 @@ namespace elle
       if (this->Sign(archive, signature) == StatusError)
         escape("unable to sign the objects' archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -167,7 +167,7 @@ namespace elle
       if (this->Sign(archive, signature) == StatusError)
         escape("unable to sign the objects' archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -195,7 +195,7 @@ namespace elle
       if (this->Sign(archive, signature) == StatusError)
         escape("unable to sign the objects' archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -225,7 +225,7 @@ namespace elle
       if (this->Sign(archive, signature) == StatusError)
         escape("unable to sign the objects' archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -257,7 +257,7 @@ namespace elle
       if (this->Sign(archive, signature) == StatusError)
         escape("unable to sign the objects' archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -291,7 +291,7 @@ namespace elle
       if (this->Sign(archive, signature) == StatusError)
         escape("unable to sign the objects' archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -327,7 +327,7 @@ namespace elle
       if (this->Sign(archive, signature) == StatusError)
         escape("unable to sign the objects' archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     //
@@ -360,7 +360,7 @@ namespace elle
       if (this->Encrypt(archive, code) == StatusError)
         escape("unable to encrypt the object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -380,7 +380,7 @@ namespace elle
       if (this->Encrypt(archive, code) == StatusError)
         escape("unable to encrypt the object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -402,7 +402,7 @@ namespace elle
       if (this->Encrypt(archive, code) == StatusError)
         escape("unable to encrypt the object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -426,7 +426,7 @@ namespace elle
       if (this->Encrypt(archive, code) == StatusError)
         escape("unable to encrypt the object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -452,7 +452,7 @@ namespace elle
       if (this->Encrypt(archive, code) == StatusError)
         escape("unable to encrypt the object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -480,7 +480,7 @@ namespace elle
       if (this->Encrypt(archive, code) == StatusError)
         escape("unable to encrypt the object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -510,7 +510,7 @@ namespace elle
       if (this->Encrypt(archive, code) == StatusError)
         escape("unable to encrypt the object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -542,7 +542,7 @@ namespace elle
       if (this->Encrypt(archive, code) == StatusError)
         escape("unable to encrypt the object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -576,7 +576,7 @@ namespace elle
       if (this->Encrypt(archive, code) == StatusError)
         escape("unable to encrypt the object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

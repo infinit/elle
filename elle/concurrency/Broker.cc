@@ -71,7 +71,7 @@ namespace elle
 # error "unsupported platform"
 #endif
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -93,7 +93,7 @@ namespace elle
 # error "unsupported platform"
 #endif
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -118,7 +118,7 @@ namespace elle
 # error "unsupported platform"
 #endif
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //

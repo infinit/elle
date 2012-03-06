@@ -35,7 +35,7 @@ namespace elle
       this->host = host;
       this->port = port;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -76,7 +76,7 @@ namespace elle
                                              this->table)) == StatusError)
         escape("unable to send the probe");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -107,7 +107,7 @@ namespace elle
       if (this->table.Merge(table) == StatusError)
         escape("unable to update the table");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

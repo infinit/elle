@@ -55,6 +55,7 @@ namespace hole
     // static attributes
     //
     static lune::Descriptor     Descriptor;
+    static lune::Set            Set;
     static lune::Passport       Passport;
 
     static Holeable*            Implementation;

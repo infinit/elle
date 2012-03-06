@@ -30,7 +30,7 @@ namespace elle
     {
       ::gettimeofday(&this->start, NULL);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -40,7 +40,7 @@ namespace elle
     {
       ::gettimeofday(&this->stop, NULL);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -60,7 +60,7 @@ namespace elle
 
       std::cout << mseconds << " ms";
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

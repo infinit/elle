@@ -81,7 +81,7 @@ namespace elle
       if (this->arguments.Dump(margin + 2) == StatusError)
         escape("unable to dump the arguments");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -162,7 +162,7 @@ namespace elle
       if (this->arguments.Dump(margin + 2) == StatusError)
         escape("unable to dump the arguments");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //

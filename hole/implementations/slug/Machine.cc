@@ -129,40 +129,26 @@ namespace hole
         // retrieve information from the descriptor.
         //
         {
-          elle::String          string;
           std::istringstream    stream;
-          elle::String          element;
+          auto                  iterator = Hole::Set.loci.begin();
+          auto                  end = Hole::Set.loci.end();
 
           // retrieve the machine's listening port.
-          if (Hole::Descriptor.Get(
-                "slug", "port",
+          if (Infinit::Configuration.Get(
+                "hole", "slug.port",
                 this->port,
                 Machine::Default::Port) == elle::StatusError)
             escape("unable to retrieve the slug's local port from the "
                    "network descriptor");
 
-          // retrieve the hosts' loci.
-          if (Hole::Descriptor.Get("slug", "hosts",
-                                   string,
-                                   elle::String("")) == elle::StatusError)
-            escape("unable to retrieve the slug's host address from the "
-                   "network descriptor");
-
-          // set up the stream.
-          stream.str(string);
-
-          // for every locus in the list.
-          while (std::getline(stream, element, ' '))
+          // for every locus in the set.
+          for (; iterator != end; ++iterator)
             {
-              // build the host locus.
-              if (locus.Create(element) == elle::StatusError)
-                escape("unable to create the host locus");
-
               // allocate the host.
-              auto      host = std::unique_ptr<Host>(new Host);
+              auto              host = std::unique_ptr<Host>(new Host);
 
               // create the host.
-              if (host->Create(locus) == elle::StatusError)
+              if (host->Create(*iterator) == elle::StatusError)
                 escape("unable to create the host");
 
               // subscribe to the signal.

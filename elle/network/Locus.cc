@@ -70,7 +70,7 @@ namespace elle
         static_cast<Port>(::strtoul(string.substr(separator + 1).c_str(),
                                     NULL, 0));
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -82,7 +82,7 @@ namespace elle
       this->host = host;
       this->port = port;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -96,14 +96,14 @@ namespace elle
     {
       // check the locus as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return StatusTrue;
 
       // compare the internal values.
       if ((this->host != element.host) ||
           (this->port != element.port))
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -113,21 +113,21 @@ namespace elle
     {
       // check the locus as this may actually be the same object.
       if (this == &element)
-        return elle::StatusFalse;
+        return StatusFalse;
 
       // compare the host.
       if (this->host < element.host)
-        return elle::StatusTrue;
+        return StatusTrue;
       else if (this->host > element.host)
-        return elle::StatusFalse;
+        return StatusFalse;
 
       // compare the port.
       if (this->port < element.port)
-        return elle::StatusTrue;
+        return StatusTrue;
       else if (this->port > element.port)
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusFalse;
+      return StatusFalse;
     }
 
     ///
@@ -157,7 +157,7 @@ namespace elle
                             this->port) == StatusError)
         escape("unable to serialize the locus attributes");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -170,7 +170,7 @@ namespace elle
                           this->port) == StatusError)
         escape("unable to extract the locus attributes");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -192,7 +192,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift << "[Port] "
                 << std::dec << this->port << std::endl;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

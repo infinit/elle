@@ -127,7 +127,7 @@ namespace elle
       // hand over the object pointer.
       object = static_cast<U*>(this->object);
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -179,7 +179,7 @@ namespace elle
                     << "[Object] " << none << std::endl;
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -201,7 +201,7 @@ namespace elle
                             *this->object) == StatusError)
         escape("unable to serialize the derivable");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -230,7 +230,7 @@ namespace elle
       if (archive.Extract(*this->object) == StatusError)
         escape("unable to extract the object");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

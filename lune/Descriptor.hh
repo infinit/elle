@@ -36,7 +36,8 @@ namespace lune
   /// role of identifier.
   ///
   class Descriptor:
-    public elle::Settings
+    public elle::Object,
+    public virtual elle::Fileable<elle::FormatCustom>
   {
   public:
     //
@@ -63,9 +64,6 @@ namespace lune
     elle::Status        Seal(const Authority&);
     elle::Status        Validate(const Authority&) const;
 
-    elle::Status        Push();
-    elle::Status        Pull();
-
     //
     // interfaces
     //
@@ -75,6 +73,10 @@ namespace lune
 
     // dumpable
     elle::Status        Dump(const elle::Natural32 = 0) const;
+
+    // archivable
+    elle::Status        Serialize(elle::Archive&) const;
+    elle::Status        Extract(elle::Archive&);
 
     // fileable
     elle::Status        Load(const elle::String&);

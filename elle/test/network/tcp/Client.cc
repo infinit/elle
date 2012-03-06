@@ -32,7 +32,7 @@ namespace elle
       if (this->locus.Create(line) == StatusError)
         escape("unable to create the locus");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -56,7 +56,7 @@ namespace elle
       if (this->socket.Connect(this->locus) == StatusError)
         escape("unable to connect to the bridge");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -78,7 +78,7 @@ namespace elle
             Inputs<TagResponse>(response)) == StatusError)
         escape("unable to return the response");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

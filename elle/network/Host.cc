@@ -78,7 +78,7 @@ namespace elle
           container.push_back(host);
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -127,7 +127,7 @@ namespace elle
           }
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -142,7 +142,17 @@ namespace elle
       if (this->location.setAddress(string.c_str()) == false)
         escape("unable to set the location");
 
-      return elle::StatusOk;
+      return StatusOk;
+    }
+
+    ///
+    /// this method converts a host into a human-readable string.
+    ///
+    Status              Host::Convert(String&                   string) const
+    {
+      string = this->location.toString().toStdString();
+
+      return StatusOk;
     }
 
 //
@@ -156,14 +166,14 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return StatusTrue;
 
       // compare the internal values.
       if ((this->type != element.type) ||
           (this->location != element.location))
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -173,13 +183,13 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusFalse;
+        return StatusFalse;
 
       // compare the type
       if (this->type < element.type)
-        return elle::StatusTrue;
+        return StatusTrue;
       else if (this->type > element.type)
-        return elle::StatusFalse;
+        return StatusFalse;
       else
         {
           ::QString     first;
@@ -191,12 +201,12 @@ namespace elle
 
           // compare the string.
           if (first < second)
-            return elle::StatusTrue;
+            return StatusTrue;
           else if (first > second)
-            return elle::StatusFalse;
+            return StatusFalse;
         }
 
-      return elle::StatusFalse;
+      return StatusFalse;
     }
 
     ///
@@ -228,7 +238,7 @@ namespace elle
                             host) == StatusError)
         escape("unable to serialize the host");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -249,7 +259,7 @@ namespace elle
       // set the location.
       this->location.setAddress(host.c_str());
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -271,7 +281,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift << "[Location] "
                 << this->location.toString().toStdString() << std::endl;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

@@ -51,13 +51,13 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return StatusTrue;
 
       // compare the internal.
       if ((this->name != element.name) || (this->value != element.value))
-        return elle::StatusFalse;
+        return StatusFalse;
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -82,7 +82,7 @@ namespace elle
                 << this->value
                 << std::endl;
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

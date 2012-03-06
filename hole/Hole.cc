@@ -33,6 +33,11 @@ namespace hole
   lune::Descriptor              Hole::Descriptor;
 
   ///
+  /// this variable contains the network set of initial nodes.
+  ///
+  lune::Set                     Hole::Set;
+
+  ///
   /// this variable contains the device passport.
   ///
   lune::Passport                Hole::Passport;
@@ -70,14 +75,20 @@ namespace hole
       if (Hole::Descriptor.Load(Infinit::Network) == elle::StatusError)
         escape("unable to load the descriptor");
 
-      // pull the attributes.
-      if (Hole::Descriptor.Pull() == elle::StatusError)
-        escape("unable to pull the descriptor's attributes");
-
       // validate the descriptor.
       if (Hole::Descriptor.Validate(Infinit::Authority) == elle::StatusError)
         escape("unable to validate the descriptor");
     }
+
+    //
+    // retrieve the set, if present.
+    //
+    if (Hole::Set.Exist(Infinit::Network) == elle::StatusTrue)
+      {
+        // load the set.
+        if (Hole::Set.Load(Infinit::Network) == elle::StatusError)
+          escape("unable to load the set");
+      }
 
     //
     // retrieve the passport.

@@ -74,18 +74,16 @@ namespace hole
       ///
       elle::Status      Machine::Launch()
       {
-        elle::String    string;
         elle::Locus     locus;
 
-        // retrieve the server's locus.
-        if (Hole::Descriptor.Get("remote", "server",
-                                 string) == elle::StatusError)
-          escape("unable to retrieve the server's locus from the "
-                 "network descriptor");
+        // check the number of loci in the set: it should be one for
+        // this implementation.
+        if (Hole::Set.loci.size() != 1)
+          escape("there should be a single locus in the network's set (%u)",
+                 Hole::Set.loci.size());
 
-        // build the host locus.
-        if (locus.Create(string) == elle::StatusError)
-          escape("unable to create the host locus");
+        // retrieve the locus.
+        locus = *Hole::Set.loci.begin();
 
         // try to connect to the server's host.
         {

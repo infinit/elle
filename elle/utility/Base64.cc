@@ -54,10 +54,10 @@ namespace elle
               (string[i] != '+') &&
               (string[i] != '-') &&
               (string[i] != '='))
-            return elle::StatusFalse;
+            return StatusFalse;
         }
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -114,7 +114,7 @@ namespace elle
             string += '=';
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -178,7 +178,7 @@ namespace elle
             region.contents[region.size++] = static_cast<Byte>(out[k]);
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

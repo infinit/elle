@@ -168,6 +168,22 @@ elle::Status            Main(elle::Natural32                    argc,
   if (horizon::Horizon::Initialize() == elle::StatusError)
     escape("unable to initialize the horizon");
 
+  //
+  // setup the log mechanism.
+  //
+  {
+    elle::Path          path;
+
+    // complete the path.
+    if (path.Complete(elle::Piece("%NETWORK%",
+                                  Infinit::Network)) == elle::StatusError)
+      escape("unable to complete the path");
+
+    // setup the log.
+    if (elle::Log::Setup(path.string) == elle::StatusError)
+      escape("unable to set up the log system");
+  }
+
   // launch the program.
   if (elle::Program::Launch() == elle::StatusError)
     escape("an error occured while processing events");

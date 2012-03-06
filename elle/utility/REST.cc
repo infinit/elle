@@ -51,7 +51,7 @@ namespace elle
       if (JSON::Decode(content, response) == StatusError)
         escape("unable to decode the response");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -79,7 +79,7 @@ namespace elle
       if (JSON::Decode(content, response) == StatusError)
         escape("unable to decode the response");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -107,7 +107,7 @@ namespace elle
       if (JSON::Decode(content, response) == StatusError)
         escape("unable to decode the response");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -128,7 +128,7 @@ namespace elle
       if (JSON::Decode(content, response) == StatusError)
         escape("unable to decode the response");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

@@ -40,7 +40,7 @@ namespace elle
       if (Morgue::Initialize() == StatusError)
         escape("unable to initialize the morgue");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -60,7 +60,7 @@ namespace elle
       if (Report::Clean() == StatusError)
         escape("unable to clean the report");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

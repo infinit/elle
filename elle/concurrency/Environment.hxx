@@ -38,7 +38,7 @@ namespace elle
       this->container.push_back(
         Environment::Value(name, static_cast<Meta*>(value)));
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -64,7 +64,7 @@ namespace elle
               // remove the item
               this->container.erase(iterator);
 
-              return elle::StatusOk;
+              return StatusOk;
             }
         }
 

@@ -88,7 +88,7 @@ namespace elle
       if (this->arguments.Call(callback) == StatusError)
         escape("unable to serialize the arguments");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -125,7 +125,7 @@ namespace elle
       if (this->arguments.Dump() == StatusError)
         escape("unable to dump the arguments");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 //
@@ -198,7 +198,7 @@ namespace elle
       if (this->arguments.Call(callback) == StatusError)
         escape("unable to extract the arguments");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
 
@@ -224,7 +224,7 @@ namespace elle
       if (this->arguments.Dump() == StatusError)
         escape("unable to dump the arguments");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

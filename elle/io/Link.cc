@@ -77,7 +77,7 @@ namespace elle
 # error "unsupported platform"
 #endif
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -92,7 +92,7 @@ namespace elle
       // unlink the link.
       ::unlink(path.string.c_str());
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     ///
@@ -105,20 +105,20 @@ namespace elle
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // does the path points to something.
       if (::lstat(path.string.c_str(), &stat) != 0)
-        return elle::StatusFalse;
+        return StatusFalse;
 
       // does the path points to a regular file.
       if (!S_ISLNK(stat.st_mode))
-        return elle::StatusFalse;
+        return StatusFalse;
 #elif defined(INFINIT_WINDOWS)
       // does the path points to something.
       if (::stat(path.string.c_str(), &stat) != 0)
-        return elle::StatusFalse;
+        return StatusFalse;
 #else
 # error "unsupported platform"
 #endif
 
-      return elle::StatusTrue;
+      return StatusTrue;
     }
 
     ///
@@ -159,7 +159,7 @@ namespace elle
             }
         }
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }
