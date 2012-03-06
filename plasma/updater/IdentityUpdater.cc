@@ -178,14 +178,21 @@ std::string IdentityUpdater::_DecryptIdentity(std::string const& password,
   lune::Identity      identity;
 
   if (identity.Restore(identityString) == elle::StatusError ||
-      identity.Decrypt(password) == elle::StatusError ||
-      identity.Save(unique) == elle::StatusError)
+      identity.Decrypt(password) == elle::StatusError)
     {
       show();
       std::cerr << "Couldn't decrypt the identity file !\n"; // XXX
     }
 
+  if (identity.Clear() == elle::StatusError ||
+      identity.Save(unique) == elle::StatusError)
+    {
+      show();
+      std::cerr << "Couldn't clear and save the identity!\n"; // XXX
+    }
+
   // TODO validate identity (with public part of the authority)
+
   return unique;
 }
 
