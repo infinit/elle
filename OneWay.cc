@@ -71,7 +71,7 @@ namespace elle
       if (::EVP_MD_CTX_cleanup(&context) <= 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }

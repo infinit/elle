@@ -144,7 +144,7 @@ namespace elle
         if (clear.Detach() == StatusError)
           escape("unable to detach the region");
 
-        return elle::StatusOk;
+        return StatusOk;
       }
 
       //

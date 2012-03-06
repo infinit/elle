@@ -63,7 +63,7 @@ namespace elle
       if (this->Encrypt(archive, cipher) == StatusError)
         escape("unable to encrypt the object's archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -83,7 +83,7 @@ namespace elle
       if (this->Encrypt(archive, cipher) == StatusError)
         escape("unable to encrypt the objects' archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -105,7 +105,7 @@ namespace elle
       if (this->Encrypt(archive, cipher) == StatusError)
         escape("unable to encrypt the objects' archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -129,7 +129,7 @@ namespace elle
       if (this->Encrypt(archive, cipher) == StatusError)
         escape("unable to encrypt the objects' archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -155,7 +155,7 @@ namespace elle
       if (this->Encrypt(archive, cipher) == StatusError)
         escape("unable to encrypt the objects' archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -183,7 +183,7 @@ namespace elle
       if (this->Encrypt(archive, cipher) == StatusError)
         escape("unable to encrypt the objects' archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -213,7 +213,7 @@ namespace elle
       if (this->Encrypt(archive, cipher) == StatusError)
         escape("unable to encrypt the objects' archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -245,7 +245,7 @@ namespace elle
       if (this->Encrypt(archive, cipher) == StatusError)
         escape("unable to encrypt the objects' archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     template <typename T1,
@@ -279,7 +279,7 @@ namespace elle
       if (this->Encrypt(archive, cipher) == StatusError)
         escape("unable to encrypt the objects' archive");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
     //
@@ -307,7 +307,7 @@ namespace elle
       if (archive.Extract(parameter, parameters...) == StatusError)
         escape("unable to extract the object");
 
-      return elle::StatusOk;
+      return StatusOk;
     }
 
   }
