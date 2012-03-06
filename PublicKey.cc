@@ -51,7 +51,6 @@ PublicKey::PublicKey():
 PublicKey::PublicKey(const PublicKey& K) :
   Object(K), _key(nullptr)
 {
-  assert(K._key != nullptr);
   // re-create the public key by duplicate the internal numbers.
   if (this->Create(K._key) == StatusError)
     fail("unable to duplicate the public key");
