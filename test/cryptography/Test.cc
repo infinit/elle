@@ -224,6 +224,7 @@ namespace elle
               }
             case Test::TypeRotation:
               {
+                /* XXX
                 Seed            seed;
                 KeyPair         initial;
                 Natural32       rotations;
@@ -296,6 +297,7 @@ namespace elle
                 // with the initial.
                 if ((initial.K != K) || (initial.k != k))
                   escape("the keys differ from the initial");
+                */
 
                 break;
               }
