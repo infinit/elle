@@ -63,8 +63,6 @@ namespace elle
         Byte*           buffer;
         Natural32       i;
 
-        enterx(slab(buffer, ::free));
-
         // allocate a buffer.
         if ((buffer = (Byte*)::malloc(size)) == NULL)
           escape("unable to allocate memory");
@@ -78,9 +76,6 @@ namespace elle
         // assign the buffer to the region.
         if (region.Acquire(buffer, size) == StatusError)
           escape("unable to assign the buffer to the region");
-
-        // since included in the region.
-        waive(buffer);
 
         return StatusOk;
       }

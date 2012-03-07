@@ -35,8 +35,6 @@ namespace elle
     {
       Element*          element;
 
-      enterx(instance(element));
-
       element = new Element;
 
       element->type = type;
@@ -49,8 +47,6 @@ namespace elle
       element->size = size;
 
       Referee::List.push_back(element);
-
-      waive(element);
 
       return StatusOk;
     }
