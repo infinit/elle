@@ -47,6 +47,8 @@ namespace horizon
     ///
     /// this class contains everything related to FUSE.
     ///
+    /// note that this implementation is based on FUSE4x.
+    ///
     class FUSE
     {
     public:
