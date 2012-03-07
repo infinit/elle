@@ -40,7 +40,7 @@ class Client(object):
 
     def post(self, url, params={}, token=None):
         url = self._server + url.lstrip('/')
-        body = urllib.quote_plus(json.dumps(params))
+        body = urllib.quote(json.dumps(params))
         client = httplib2.Http()
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',

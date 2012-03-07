@@ -3,6 +3,7 @@
 import web
 import hashlib
 import json
+import traceback
 import urllib
 
 from meta import conf
@@ -87,8 +88,11 @@ class Page(object):
     def data(self):
         if self._data is None:
             try:
-                self._data = json.loads(urllib.unquote(web.data()))
+                data = web.data()
+                data = urllib.unquote(data)
+                self._data = json.loads(data)
             except:
-                print "Cannot decode", web.data()
+                traceback.print_exc()
+                print "Cannot decode", data, web.data()
                 raise ValueError("Wrong post data")
         return self._data
