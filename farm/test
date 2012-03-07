@@ -98,7 +98,7 @@ for test in [
 for test in [
   'network-local',
   'network-tcp',
-  'network-udp',
+#  'network-udp',
   ]:
   b = '%s/elle/test/%s/test-%s' % (BUILD, test.replace('-', '/'), test)
   server = subprocess.Popen([b, 'server', 'sucemoncul'])
