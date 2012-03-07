@@ -47,6 +47,7 @@ namespace plasma
       void Update(meta::NetworkResponse const& response);
 
     private:
+      void _PrepareDirectory();
       void _Update();
       void _CreateNetworkRootBlock();
       void _OnGotDescriptor(meta::UpdateNetworkResponse const& response);

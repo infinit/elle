@@ -45,7 +45,8 @@ void IdentityUpdater::Start()
     this, SLOT(_DoLogin(std::string const&, std::string const&))
   );
 }
-void IdentityUpdater::_DoLogin(std::string const& login, std::string const& password)
+void IdentityUpdater::_DoLogin(std::string const& login,
+                               std::string const& password)
 {
   if (!login.size() || !password.size())
     {
@@ -56,6 +57,7 @@ void IdentityUpdater::_DoLogin(std::string const& login, std::string const& pass
 
     {
       using namespace std::placeholders;
+      std::cout << "LOGIN NOW !\n";
       this->_api.Login(
           login, password,
           std::bind(&IdentityUpdater::_OnLogin, this, password, _1),
@@ -135,13 +137,15 @@ void IdentityUpdater::_OnError(meta::MetaClient::Error error,
       );
       this->_loginDialog.setDisabled(false);
     }
+  else if (error == meta::MetaClient::Error::ServerError)
+    {
+      this->_loginDialog.SetErrorMessage(error_string);
+      this->_loginDialog.setDisabled(false);
+    }
   else
     {
-      std::cout << "BITE<{";
-
+      std::cerr << "Got a very unexpected error: " << error_string << "\n";
       emit identityUpdated(false);
-
-      std::cout << "}>\n";
     }
 }
 

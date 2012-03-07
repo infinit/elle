@@ -30,8 +30,8 @@ using namespace plasma::watchdog;
 
 InfinitNetwork::InfinitNetwork(Manager& manager,
                                meta::NetworkResponse const& response) :
-  _manager(manager),
   _description(response),
+  _manager(manager),
   _process(),
   _infinitHome(),
   _home()
@@ -66,12 +66,40 @@ void InfinitNetwork::_Update()
   QString descriptionFilename = this->_description.name.c_str() + QString(".dsc");
   if (!this->_home.exists(descriptionFilename))
     {
-      this->_CreateNetworkRootBlock();
+      if (!this->_description.descriptor.size())
+        return this->_CreateNetworkRootBlock();
+      this->_PrepareDirectory();
     }
 }
 
+void InfinitNetwork::_OnGotDescriptor(meta::UpdateNetworkResponse const& response)
+{
+  // XXX updated is none here, correct meta
+  if (response.updated_network_id != this->_description._id)
+    {
+      throw std::runtime_error(
+          "mismatch ids... between updated '" +
+          response.updated_network_id + "' and the old one '" +
+          this->_description._id + "'"
+      );
+    }
+  std::cout << "Got descriptor for " << this->_description.name
+            <<  " (" << this->_description._id << ") :"
+            << response.descriptor << std::endl;
+  this->_PrepareDirectory();
+}
+
+void InfinitNetwork::_OnGotDescriptorError(meta::MetaClient::Error error, std::string const& err)
+{
+  std::cerr << "Got error while getting network descriptor: " << err << ".\n";
+}
+
+
+
+
 /// XXX should be in a library
 
+#include "lune/Descriptor.hh"
 #include "lune/Identity.hh"
 #include "nucleus/neutron/Object.hh"
 #include "nucleus/neutron/Genre.hh"
@@ -88,9 +116,6 @@ void InfinitNetwork::_CreateNetworkRootBlock()
   auto genreDirectory = nucleus::neutron::GenreDirectory;
   auto access         = nucleus::neutron::Access::Null;
 
-
-  std::cerr << "This is an identity: "<<this->_manager.identity() <<"\n" ;
-
   if (identity.Restore(this->_manager.identity())             == e ||
       directory.Create(genreDirectory, identity.pair.K)       == e ||
       directory.Seal(identity.pair.k, access)                 == e ||
@@ -99,27 +124,11 @@ void InfinitNetwork::_CreateNetworkRootBlock()
       throw std::runtime_error("Couldn't create the root block");
     }
 
-  std::cerr << "YEAH ALL DONE \n";
-
   elle::Unique rootBlock;
   elle::Unique rootAddress;
 
   directory.Save(rootBlock);
   address.Save(rootAddress);
-
-  std::cerr << "root block: "<< rootBlock<<" \n";
-  std::cerr << "root address: "<< rootAddress<<" \n";
-
-  nucleus::neutron::Object o;
-  if (o.Restore(rootBlock) == e)
-    {
-      throw std::runtime_error("bite");
-    }
-
-  elle::Unique rootBlock2;
-  o.Save(rootBlock2);
-  std::cerr << "IDENTIQUE root block: "<< rootBlock2<<" \n";
-
 
   using namespace std::placeholders;
   this->_manager.meta().UpdateNetwork(
@@ -134,24 +143,19 @@ void InfinitNetwork::_CreateNetworkRootBlock()
   );
 }
 
-
-void InfinitNetwork::_OnGotDescriptor(meta::UpdateNetworkResponse const& response)
+void InfinitNetwork::_PrepareDirectory()
 {
-  // XXX updated is none here, correct meta
-  //if (response.updated_network_id != this->_description._id)
-  //  {
-  //    throw std::runtime_error(
-  //        "mismatch ids... between updated '" +
-  //        response.updated_network_id + "' and the old one '" +
-  //        this->_description._id + "'"
-  //    );
-  //  }
-  std::cout << "Got descriptor for " << this->_description.name
-            <<  " (" << this->_description._id << ") :"
-            << response.descriptor << std::endl;
+  nucleus::neutron::Object directory;
+  nucleus::proton::Address address;
+
+  lune::Descriptor descriptor;
+
+  auto e = elle::StatusError;
+  if (descriptor.Restore(this->_description.descriptor) == e ||
+      descriptor.Save(this->_description.name)          == e)
+    {
+      throw std::runtime_error("Couldn't save the descriptor");
+    }
 }
 
-void InfinitNetwork::_OnGotDescriptorError(meta::MetaClient::Error error, std::string const& err)
-{
-  std::cerr << "Got error while getting network descriptor: " << err << ".\n";
-}
+
