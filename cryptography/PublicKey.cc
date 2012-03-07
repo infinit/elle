@@ -79,15 +79,11 @@ PublicKey::~PublicKey()
 // ---------- methods ---------------------------------------------------------
 //
 
-#include "backtrace.cc"
-
 ///
 /// this method constructs a valid public key.
 ///
 Status PublicKey::Create(::EVP_PKEY const* key)
 {
-  if (key == nullptr)
-    std::cerr << nitro::Backtrace() << " >BITE\n";
   assert(key != nullptr);
   assert(this->_key == nullptr);
 
