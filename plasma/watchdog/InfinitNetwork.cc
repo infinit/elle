@@ -88,19 +88,38 @@ void InfinitNetwork::_CreateNetworkRootBlock()
   auto genreDirectory = nucleus::neutron::GenreDirectory;
   auto access         = nucleus::neutron::Access::Null;
 
-  if (identity.Restore(this->_manager.identity())       == e ||
-      directory.Create(genreDirectory, identity.pair.K) == e ||
-      directory.Seal(identity.pair.k, access)           == e ||
-      directory.Bind(address)                           == e)
+
+  std::cerr << "This is an identity: "<<this->_manager.identity() <<"\n" ;
+
+  if (identity.Restore(this->_manager.identity())             == e ||
+      directory.Create(genreDirectory, identity.pair.K)       == e ||
+      directory.Seal(identity.pair.k, access)                 == e ||
+      directory.Bind(address)                                 == e)
     {
       throw std::runtime_error("Couldn't create the root block");
     }
+
+  std::cerr << "YEAH ALL DONE \n";
 
   elle::Unique rootBlock;
   elle::Unique rootAddress;
 
   directory.Save(rootBlock);
   address.Save(rootAddress);
+
+  std::cerr << "root block: "<< rootBlock<<" \n";
+  std::cerr << "root address: "<< rootAddress<<" \n";
+
+  nucleus::neutron::Object o;
+  if (o.Restore(rootBlock) == e)
+    {
+      throw std::runtime_error("bite");
+    }
+
+  elle::Unique rootBlock2;
+  o.Save(rootBlock2);
+  std::cerr << "IDENTIQUE root block: "<< rootBlock2<<" \n";
+
 
   using namespace std::placeholders;
   this->_manager.meta().UpdateNetwork(
@@ -118,10 +137,15 @@ void InfinitNetwork::_CreateNetworkRootBlock()
 
 void InfinitNetwork::_OnGotDescriptor(meta::UpdateNetworkResponse const& response)
 {
-  if (response.updated_network_id != this->_description._id)
-    {
-      throw std::runtime_error("mismatch ids...");
-    }
+  // XXX updated is none here, correct meta
+  //if (response.updated_network_id != this->_description._id)
+  //  {
+  //    throw std::runtime_error(
+  //        "mismatch ids... between updated '" +
+  //        response.updated_network_id + "' and the old one '" +
+  //        this->_description._id + "'"
+  //    );
+  //  }
   std::cout << "Got descriptor for " << this->_description.name
             <<  " (" << this->_description._id << ") :"
             << response.descriptor << std::endl;

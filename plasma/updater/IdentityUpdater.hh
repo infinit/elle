@@ -53,9 +53,9 @@ namespace plasma
       IdentityUpdater(QApplication& app);
 
       /// properties
-      std::string const& token() const     { return _token; }
-      std::string const& identity() const  { return _identity; }
-      meta::MetaClient&  api()             { return _api; }
+      meta::MetaClient&  api()             { return this->_api; }
+      std::string const& identity() const  { return this->_identity; }
+      std::string const& token() const     { return this->_token; }
 
       /// methods
       void Start();

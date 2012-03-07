@@ -83,6 +83,7 @@ void IdentityUpdater::_OnLogin(std::string const& password,
             << '\n';
 
   this->_identity = this->_DecryptIdentity(password, response.identity);
+
   this->_token = response.token;
 
   QDir homeDirectory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
@@ -113,7 +114,9 @@ void IdentityUpdater::_OnLogin(std::string const& password,
       else
         {
           std::cout << "Found a passport file.\n";
+          std::cout << "BITE<[";
           emit identityUpdated(true);
+          std::cout << "]>\n";
         }
     }
 
@@ -133,7 +136,13 @@ void IdentityUpdater::_OnError(meta::MetaClient::Error error,
       this->_loginDialog.setDisabled(false);
     }
   else
-    emit identityUpdated(false);
+    {
+      std::cout << "BITE<{";
+
+      emit identityUpdated(false);
+
+      std::cout << "}>\n";
+    }
 }
 
 void IdentityUpdater::_UpdatePassport()
@@ -158,7 +167,9 @@ void IdentityUpdater::_OnDeviceCreated(meta::CreateDeviceResponse const& res)
       f.write(res.passport.c_str());
       f.flush();
       f.close();
+      std::cout << "BITE<(";
       emit identityUpdated(true);
+      std::cout << ")>\n";
     }
   else
     throw std::runtime_error(
@@ -174,26 +185,23 @@ void IdentityUpdater::_OnDeviceCreated(meta::CreateDeviceResponse const& res)
 std::string IdentityUpdater::_DecryptIdentity(std::string const& password,
                                               std::string const& identityString)
 {
-  elle::Unique        unique;
+  elle::Unique        id;
   lune::Identity      identity;
 
-  if (identity.Restore(identityString) == elle::StatusError ||
-      identity.Decrypt(password) == elle::StatusError)
+  if (identity.Restore(identityString)  == elle::StatusError ||
+      identity.Decrypt(password)        == elle::StatusError ||
+      identity.Clear()                  == elle::StatusError ||
+      identity.Save(id)                 == elle::StatusError
+      )
     {
       show();
       std::cerr << "Couldn't decrypt the identity file !\n"; // XXX
     }
 
-  if (identity.Clear() == elle::StatusError ||
-      identity.Save(unique) == elle::StatusError)
-    {
-      show();
-      std::cerr << "Couldn't clear and save the identity!\n"; // XXX
-    }
-
-  // TODO validate identity (with public part of the authority)
-
-  return unique;
+  std::cerr << "CRYPTED ID: " << identityString << "\n";
+  std::cerr << "UNCRYPTED ID: " << id << "\n";
+  //std::cerr << "UNCRYPTED Pair: " << pair << "\n";
+  return id;
 }
 
 void IdentityUpdater::_StoreIdentity(std::string const& identityString)

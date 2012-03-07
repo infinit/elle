@@ -59,13 +59,11 @@ namespace lune
   elle::Status          Identity::Create(const elle::String&    name,
                                          const elle::KeyPair&   pair)
   {
+    // One does not simply ...
     assert(pair.k.key() != nullptr);
     assert(pair.K.key() != nullptr);
 
-    // set the name.
     this->name = name;
-
-    // set the key pair.
     this->pair = pair;
 
     assert(this->pair.k.key() != nullptr);
@@ -318,10 +316,9 @@ namespace lune
       escape("unable to read the file's content");
 
     // decode and extract the object.
-    if (elle::Hexadecimal::Decode(
-          elle::String(reinterpret_cast<char*>(region.contents),
-                       region.size),
-          *this) == elle::StatusError)
+    elle::String data(reinterpret_cast<char const*>(region.contents),
+                      region.size);
+    if (elle::Hexadecimal::Decode(data, *this) == elle::StatusError)
       escape("unable to decode the object");
 
     return elle::StatusOk;

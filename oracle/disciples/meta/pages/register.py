@@ -62,6 +62,8 @@ class Register(Page):
             conf.INFINIT_AUTHORITY_PASSWORD
         )
 
+        print "BUILT ID:", identity
+        print "BUILT PUB ID:", identity_pub
 
         user_id = self.registerUser(
             email=user['email'],
