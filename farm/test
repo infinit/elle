@@ -86,5 +86,12 @@ def test_openssl():
   run(['./config'], cwd = '%s/openssl-1.0.0g' % network.mountpoint)
   run(['make'], cwd = '%s/openssl-1.0.0g' % network.mountpoint)
 
+for test in ['cryptography',
+             'fiber',
+             'network-local',
+             'network-tcp',
+             'network-udp',
+             'package']:
+  run(['%s/elle/test/%s/test-%s' % (BUILD, test.replace('-', '/'), test)])
 
 test_openssl()
