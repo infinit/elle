@@ -62,6 +62,7 @@ namespace {
 
       virtual void OnReply(QByteArray const& data)
       {
+        std::cerr << "Got reply !\n";
         QJson::Parser parser;
         bool ok;
 
@@ -74,6 +75,8 @@ namespace {
                   MetaClient::Error::InvalidContent,
                   "Cannot parse json data"
               );
+            else
+              std::cerr << "Cannot parse json data\n";
             return;
           }
 
@@ -92,6 +95,15 @@ namespace {
               );
             else
               std::cerr << "Missing errback (" << error.what() << ")\n";
+            return;
+          }
+
+        if (!response.success && this->errback != nullptr)
+          {
+            return this->errback(
+                MetaClient::Error::ServerError,
+                response.error
+            );
           }
 
         // Calling the callback with the response
@@ -106,10 +118,12 @@ namespace {
                   MetaClient::Error::CallbackError,
                   std::string("CallbackError: ") + error.what()
               );
+            else
+              std::cerr << "Callback thrown: " << error.what() << std::endl;
           }
       }
 
-      virtual void OnNetworkError(QNetworkReply::NetworkError)
+      virtual void OnNetworkError(QNetworkReply::NetworkError err)
       {
         // XXX fine grained network errors
         if (this->errback != nullptr)
@@ -170,6 +184,7 @@ namespace {
     {                                                                       \
       static void Fill(QVariantMap const& map, cls& response)               \
       {                                                                     \
+        std::cerr << "FILL " # cls << "\n";                                 \
         if (map.contains("success"))                                        \
           {                                                                 \
             response.success = map["success"].toBool();                     \
@@ -191,6 +206,7 @@ namespace {
 
     FILLER(LoginResponse)
     {
+      std::cerr << "FILL LoginResponse\n";
       response.token    =        _GetNonEmptyString(map, "token");
       response.fullname =     _GetNonEmptyString(map, "fullname");
       response.email    =        _GetNonEmptyString(map, "email");
@@ -199,11 +215,13 @@ namespace {
 
     FILLER(NetworksResponse)
     {
+      std::cerr << "FILL NetworksResponse\n";
       response.networks =         _GetStringList(map, "networks");
     }
 
     FILLER(NetworkResponse)
     {
+      std::cerr << "FILL NetworkResponse\n";
       response._id        =        _GetNonEmptyString(map, "_id");
       response.name       =       _GetNonEmptyString(map, "name");
       response.model      =      _GetNonEmptyString(map, "model");
@@ -215,14 +233,16 @@ namespace {
 
     FILLER(CreateDeviceResponse)
     {
+      std::cerr << "FILL CreateDeviceResponse\n";
       response.created_device_id = _GetNonEmptyString(map, "created_device_id");
       response.passport          =          _GetNonEmptyString(map, "passport");
     }
 
     FILLER(UpdateNetworkResponse)
     {
+      std::cerr << "FILL UpdateNetworkResponse\n";
       response.updated_network_id = _GetNonEmptyString(map, "updated_network_id");
-      response.descriptor         =              _GetString(map, "desriptor", "");
+      response.descriptor         =  _GetNonEmptyString(map, "descriptor");//           _GetString(map, "descriptor", "");
     }
 
 #undef FILLER
@@ -338,6 +358,7 @@ void MetaClient::_Post(std::string const& url,
   if (this->_token.size() > 0)
     request.setRawHeader("Authorization", this->_token);
   request.setRawHeader("Content-Type", "application/json");
+  std::cout << "POST " << uri.toStdString() << "\n";
   auto reply = this->_network.post(request, json);
   if (reply != nullptr)
     {
