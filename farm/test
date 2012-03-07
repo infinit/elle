@@ -86,12 +86,24 @@ def test_openssl():
   run(['./config'], cwd = '%s/openssl-1.0.0g' % network.mountpoint)
   run(['make'], cwd = '%s/openssl-1.0.0g' % network.mountpoint)
 
-for test in ['cryptography',
-             'fiber',
-             'network-local',
-             'network-tcp',
-             'network-udp',
-             'package']:
+for test in [
+  'cryptography',
+  'fiber',
+  'package',
+  ]:
   run(['%s/elle/test/%s/test-%s' % (BUILD, test.replace('-', '/'), test)])
+
+for test in [
+  'network-local',
+  'network-tcp',
+  'network-udp',
+  ]:
+  b = '%s/elle/test/%s/test-%s' % (BUILD, test.replace('-', '/'), test)
+  server = subprocess.Popen([b, 'server', 'sucemoncul'])
+  client = subprocess.Popen([b, 'client', 'sucemoncul'])
+  server.wait()
+  client.wait()
+  assert server.returncode == 0
+  assert client.returncode == 0
 
 test_openssl()
