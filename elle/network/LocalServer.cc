@@ -56,6 +56,10 @@ namespace elle
       // if there is a server, release it.
       if (this->server != NULL)
         this->server->deleteLater();
+
+      // remove the necessary files that could make subsequent calls to
+      // listen() to fail.
+      ::QLocalServer::removeServer(::QString(this->name.c_str()));
     }
 
 //
@@ -76,6 +80,10 @@ namespace elle
 
       // allocate a new server.
       this->server = new ::QLocalServer;
+
+      // remove the necessary files that could make subsequent calls to
+      // listen() to fail.
+      ::QLocalServer::removeServer(::QString(this->name.c_str()));
 
       // start listening.
       if (this->server->listen(this->name.c_str()) == false)

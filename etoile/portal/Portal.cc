@@ -512,8 +512,6 @@ namespace etoile
     {
       // nothing to do.
 
-      // XXX clean localserver
-
       return elle::StatusOk;
     }
 
