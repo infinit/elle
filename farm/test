@@ -6,13 +6,15 @@ import os
 import pipes
 import shutil
 import subprocess
+import sys
 import tempfile
 import time
 
 BUILD = os.environ['DIR_BUILD']
 
 def run(cmd, stdin = b'', cwd = None):
-  print('Run: %s' % ' '.join(map(pipes.quote, cmd)))
+  print('Run: %s' % ' '.join(map(pipes.quote, cmd)), file = sys.stderr)
+  sys.stderr.flush()
   p = subprocess.Popen(cmd,
                        cwd = cwd,
                        stdin = subprocess.PIPE)
