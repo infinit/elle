@@ -49,9 +49,6 @@ namespace elle
     {
       uint8_t           temporary[256];
 
-      // initialise the random generator.
-      ::srand(::time(NULL)); 
-
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       {
         int             fd = -1;
@@ -288,7 +285,13 @@ namespace elle
 
       // generate characters.
       for (i = 0; i < length; i++)
-        value[i] = alphabet[::rand() % alphabet.length()];
+        {
+          unsigned char c;
+
+          ::RAND_bytes(&c, 1);
+
+          value[i] = alphabet[c % alphabet.length()];
+        }
 
       return StatusOk;
     }
