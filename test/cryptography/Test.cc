@@ -46,9 +46,6 @@ namespace elle
       SecretKey*        sk;
       Natural32         i;
 
-      enterx(instance(kp),
-            instance(sk));
-
       // init the library.
       if (Elle::Initialize() == StatusError)
         escape("unable to initialize the Elle library");
@@ -304,10 +301,6 @@ namespace elle
               }
             }
         }
-
-      // stop tracking.
-      waive(kp);
-      waive(sk);
 
       // delete the current keys.
       delete kp;

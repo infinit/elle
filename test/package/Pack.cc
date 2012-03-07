@@ -263,8 +263,6 @@ namespace elle
                 void*           buffer;
                 Natural32       size;
 
-                enterx(slab(buffer, ::free));
-
                 if (Generator::Create(value) == StatusError)
                   escape("unable to create a large");
 
@@ -287,8 +285,6 @@ namespace elle
                     escape("unable to push the element into the referee");
 
                 free(buffer);
-
-                waive(buffer);
 
                 break;
               }
@@ -539,8 +535,6 @@ namespace elle
                 Natural32       s;
                 void*           buffer;
 
-                enterx(slab(buffer, ::free));
-
                 if (archive.Extract(value) == StatusError)
                   escape("unable to extract the element");
 
@@ -561,8 +555,6 @@ namespace elle
                          "referee");
 
                 ::free(buffer);
-
-                waive(buffer);
 
                 break;
               }
