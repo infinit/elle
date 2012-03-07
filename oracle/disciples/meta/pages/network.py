@@ -84,7 +84,7 @@ class Network(Page):
             if '_id' in network and network['_id'] != id:
                 return self.error("Mismatch ids")
             else:
-                self.data['_id'] = id
+                network['_id'] = id
 
         if '_id' in network:
             action = "update"
@@ -162,6 +162,7 @@ class Network(Page):
                     root_address,
                     self.user['identity_pub']
                 )
+                print "IS VALID: ", is_valid
                 if not is_valid:
                     return self.error("The root block was not properly signed")
 
@@ -169,9 +170,9 @@ class Network(Page):
 
                 to_save['descriptor'] = metalib.generate_network_descriptor(
                     str(id),
-                    network['model'],
-                    root,
-                    conf.INFINIT_AUTHORITY_FILE,
+                    to_save.get('model', 'slug'),
+                    root_address,
+                    conf.INFINIT_AUTHORITY_PATH,
                     conf.INFINIT_AUTHORITY_PASSWORD,
                 )
                 print "CREATED DESCRIPTOR :", to_save['descriptor']
@@ -180,9 +181,16 @@ class Network(Page):
                 return self.error("Unexpected error: " + str(err))
 
         id = database.networks.save(to_save)
-        return self.success({
+        res = {
             'updated_network_id': id
-        })
+        }
+        if 'descriptor' in to_save:
+            res['descriptor'] = to_save['descriptor']
+            print "SENDING DESCRIPTOR", res['descriptor']
+        else:
+            print "DO NOT SEND THE DESCRIPTOR"
+
+        return self.success(res)
 
     def _checkName(self, name):
         return bool(name)

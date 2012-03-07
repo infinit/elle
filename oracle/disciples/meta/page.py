@@ -87,7 +87,7 @@ class Page(object):
     def data(self):
         if self._data is None:
             try:
-                self._data = json.loads(urllib.unquote_plus(web.data()))
+                self._data = json.loads(urllib.unquote(web.data()))
             except:
                 print "Cannot decode", web.data()
                 raise ValueError("Wrong post data")

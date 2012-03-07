@@ -221,7 +221,6 @@ void Application::_OnIdentityUpdated(bool success)
   // calling watchdog run command (which gives the meta token)
   QString token(this->_identityUpdater.token().c_str());
   QString identity(this->_identityUpdater.identity().c_str());
-  QString keyPair(this->_identityUpdater.keyPair().c_str());
   QByteArray cmd = QString("{"
       "\"command\":"  "\"run\""                       ","
       "\"_id\":"      "\"" + newWatchdogId + "\""     ","

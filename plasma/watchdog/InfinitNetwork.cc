@@ -77,7 +77,6 @@ void InfinitNetwork::_Update()
 #include "nucleus/neutron/Genre.hh"
 #include "nucleus/neutron/Access.hh"
 #include "nucleus/proton/Address.hh"
-#include "backtrace.hh"
 
 void InfinitNetwork::_CreateNetworkRootBlock()
 {
@@ -108,8 +107,19 @@ void InfinitNetwork::_CreateNetworkRootBlock()
   directory.Save(rootBlock);
   address.Save(rootAddress);
 
-  std::cerr << "root block"<<rootBlock<<" \n";
-  std::cerr << "root address"<<rootAddress<<" \n";
+  std::cerr << "root block: "<< rootBlock<<" \n";
+  std::cerr << "root address: "<< rootAddress<<" \n";
+
+  nucleus::neutron::Object o;
+  if (o.Restore(rootBlock) == e)
+    {
+      throw std::runtime_error("bite");
+    }
+
+  elle::Unique rootBlock2;
+  o.Save(rootBlock2);
+  std::cerr << "IDENTIQUE root block: "<< rootBlock2<<" \n";
+
 
   using namespace std::placeholders;
   this->_manager.meta().UpdateNetwork(

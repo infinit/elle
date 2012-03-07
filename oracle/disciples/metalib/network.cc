@@ -117,6 +117,9 @@ extern "C" PyObject* metalib_generate_network_descriptor(PyObject* self, PyObjec
     {
       // WARNING: restore state before setting exception !
       PyEval_RestoreThread(_save);
+      std::cout << "############################################################\n";
+      show();
+      std::cout << "############################################################\n";
       char const* error_string = err.what();
       PyErr_SetString(metalib_MetaError, error_string);
     }
@@ -133,16 +136,21 @@ static bool check_root_block_signature(elle::Unique const& root_block,
   nucleus::Address      address;
   elle::PublicKey       K;
 
+  std::cerr << "GOT pub key: " << public_key << "\n"
+            << "GOT root block: " << root_block << "\n"
+            << "GOT root address: " << root_address << "\n";
+
   if (K.Restore(public_key) != elle::StatusOk)
     throw std::runtime_error("Unable to restore public key");
 
-  if (address.Restore(root_address) != elle::StatusOk)
+  if (address.Restore(root_address) == elle::StatusError)
     throw std::runtime_error("Unable to restore root address");
 
-  if (directory.Restore(root_block) != elle::StatusOk)
-    throw std::runtime_error("Unable to restore root block");
+  if (directory.Restore(root_block) == elle::StatusError)
+    throw std::runtime_error("Unable to restore root block: <" + root_block + ">");
 
-  if (directory.Validate(address) != elle::StatusOk)
+  auto access = nucleus::neutron::Access::Null;
+  if (directory.Validate(address, access) != elle::StatusOk)
     return false;
 
   if (directory.owner.K != K)
@@ -185,6 +193,9 @@ extern "C" PyObject* metalib_check_root_block_signature(PyObject* self, PyObject
     {
       // WARNING: restore state before setting exception !
       PyEval_RestoreThread(_save);
+      std::cout << "############################################################\n";
+      show();
+      std::cout << "############################################################\n";
       char const* error_string = err.what();
       PyErr_SetString(metalib_MetaError, error_string);
     }

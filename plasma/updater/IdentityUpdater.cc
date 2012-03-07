@@ -199,7 +199,7 @@ std::string IdentityUpdater::_DecryptIdentity(std::string const& password,
     }
 
   std::cerr << "CRYPTED ID: " << identityString << "\n";
-  std::cerr << "UNCRYPTED ID: " << unique << "\n";
+  std::cerr << "UNCRYPTED ID: " << id << "\n";
   //std::cerr << "UNCRYPTED Pair: " << pair << "\n";
   return id;
 }

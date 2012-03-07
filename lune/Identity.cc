@@ -130,7 +130,7 @@ namespace lune
       {
         delete this->cipher;
 
-        this->cipher == nullptr;
+        this->cipher = nullptr;
       }
 
     return elle::StatusOk;
