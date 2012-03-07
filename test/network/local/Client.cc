@@ -78,6 +78,8 @@ namespace elle
             Inputs<TagResponse>(response)) == StatusError)
         escape("unable to return the response");
 
+      elle::Program::Exit();
+
       return StatusOk;
     }
 
