@@ -75,6 +75,10 @@ namespace lune
     // attributes
     //
     hole::Label         label;
+
+    // XXX[temporary: mongodb id]
+    elle::String        id;
+
     elle::Signature     signature;
   };
 

@@ -34,10 +34,12 @@ namespace lune
   ///
   /// this method creates a passport.
   ///
-  elle::Status          Passport::Create(const hole::Label&     label)
+  elle::Status          Passport::Create(const hole::Label&     label,
+                                         const elle::String&    id)
   {
     // set the attributes.
     this->label = label;
+    this->id = id;
 
     return elle::StatusOk;
   }
@@ -49,6 +51,7 @@ namespace lune
   {
     // sign the pair with the authority.
     if (authority.k->Sign(this->label,
+                          this->id,
                           this->signature) == elle::StatusError)
       escape("unable to sign the pair with the authority");
 
@@ -63,6 +66,7 @@ namespace lune
   {
     // verify the signature.
     if (authority.K.Verify(this->signature,
+                           this->id,
                            this->label) == elle::StatusError)
       escape("unable to verify the signature");
 
@@ -95,6 +99,10 @@ namespace lune
     if (this->label.Dump(margin + 2) == elle::StatusError)
       escape("unable to dump the label");
 
+    // dump the id.
+    std::cout << alignment << elle::Dumpable::Shift << "[Id] "
+              << this->id << std::endl;
+
     // dump the signature.
     if (this->signature.Dump(margin + 2) == elle::StatusError)
       escape("unable to dump the signature");
@@ -113,6 +121,7 @@ namespace lune
   {
     // serialize the attributes.
     if (archive.Serialize(this->label,
+                          this->id,
                           this->signature) == elle::StatusError)
       escape("unable to serialize the attributes");
 
@@ -126,6 +135,7 @@ namespace lune
   {
     // extract the attributes.
     if (archive.Extract(this->label,
+                        this->id,
                         this->signature) == elle::StatusError)
       escape("unable to extract the attributes");
 
