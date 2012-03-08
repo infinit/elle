@@ -1218,8 +1218,7 @@ namespace horizon
 
       // test if a trait has been found.
       if (trait == NULL)
-        error("unable to locate this attribute",
-              -ENOATTR);
+        return (-ENOATTR);
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)

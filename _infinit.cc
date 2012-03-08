@@ -40,18 +40,6 @@ elle::Status            Main(elle::Natural32                    argc,
   if (elle::Program::Setup() == elle::StatusError)
     escape("unable to set up the program");
 
-  // initialize the nucleus library.
-  if (nucleus::Nucleus::Initialize() == elle::StatusError)
-    escape("unable to initialize Nucleus");
-
-  // initialize the Lune library.
-  if (lune::Lune::Initialize() == elle::StatusError)
-    escape("unable to initialize Lune");
-
-  // initialize Infinit.
-  if (Infinit::Initialize() == elle::StatusError)
-    escape("unable to initialize Infinit");
-
   // allocate a new parser.
   Infinit::Parser = new elle::Parser(argc, argv);
 
@@ -152,6 +140,18 @@ elle::Status            Main(elle::Natural32                    argc,
       escape("unable to retrieve the mount point");
     }
 
+  // initialize the nucleus library.
+  if (nucleus::Nucleus::Initialize() == elle::StatusError)
+    escape("unable to initialize Nucleus");
+
+  // initialize the Lune library.
+  if (lune::Lune::Initialize() == elle::StatusError)
+    escape("unable to initialize Lune");
+
+  // initialize Infinit.
+  if (Infinit::Initialize() == elle::StatusError)
+    escape("unable to initialize Infinit");
+
   // initialize the Hole library.
   if (hole::Hole::Initialize() == elle::StatusError)
     escape("unable to initialize Hole");
@@ -167,22 +167,6 @@ elle::Status            Main(elle::Natural32                    argc,
   // initialize the horizon.
   if (horizon::Horizon::Initialize() == elle::StatusError)
     escape("unable to initialize the horizon");
-
-  //
-  // setup the log mechanism.
-  //
-  {
-    elle::Path          path;
-
-    // complete the path.
-    if (path.Complete(elle::Piece("%NETWORK%",
-                                  Infinit::Network)) == elle::StatusError)
-      escape("unable to complete the path");
-
-    // setup the log.
-    if (elle::Log::Setup(path.string) == elle::StatusError)
-      escape("unable to set up the log system");
-  }
 
   // launch the program.
   if (elle::Program::Launch() == elle::StatusError)

@@ -1,3 +1,7 @@
+- register/auth
+ - creer le login/pass localement et envoyer le hash a meta
+ - ensuite auth via HTTPS
+
 - bugs:
  - Infinit segfault sometimes with slug, at the startup.
  - Broker: select() == 0

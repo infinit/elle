@@ -316,8 +316,9 @@ namespace lune
       escape("unable to read the file's content");
 
     // decode and extract the object.
-    elle::String data(reinterpret_cast<char const*>(region.contents),
-                      region.size);
+    elle::String        data(reinterpret_cast<char const*>(region.contents),
+                             region.size);
+
     if (elle::Hexadecimal::Decode(data, *this) == elle::StatusError)
       escape("unable to decode the object");
 

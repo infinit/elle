@@ -14,6 +14,8 @@
 
 #include <lune/Lune.hh>
 
+#include <Infinit.hh>
+
 namespace lune
 {
 
@@ -439,6 +441,26 @@ namespace lune
             "%ADDRESS%" +
             nucleus::History::Extension) == elle::StatusError)
         escape("unable to create the pattern");
+    }
+
+    //
+    // setup the log mechanism.
+    //
+    {
+      elle::Path          path;
+
+      // create the path.
+      if (path.Create(Lune::Network::Log) == elle::StatusError)
+        escape("unable to create the path");
+
+      // complete the path.
+      if (path.Complete(elle::Piece("%NETWORK%",
+                                    Infinit::Network)) == elle::StatusError)
+        escape("unable to complete the path");
+
+      // setup the log.
+      if (elle::Log::Setup(path.string) == elle::StatusError)
+        escape("unable to set up the log system");
     }
 
     return elle::StatusOk;
