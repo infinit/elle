@@ -51,8 +51,11 @@ namespace plasma
       void _Update();
       void _CreateNetworkRootBlock();
       void _OnGotDescriptor(meta::UpdateNetworkResponse const& response);
-      void _OnGotDescriptorError(meta::MetaClient::Error error,
-                                 std::string const& reason);
+      void _OnAnyError(meta::MetaClient::Error error,
+                       std::string const& reason);
+      void _RegisterDevice();
+      void _OnDeviceRegistered(meta::UpdateNetworkResponse const& response);
+      void _OnNetworkNodes(meta::NetworkNodesResponse const& response);
     };
 
   }

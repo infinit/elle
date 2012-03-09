@@ -32,7 +32,8 @@
 // ---------- functions  ------------------------------------------------------
 //
 
-static lune::Passport create_passport(elle::String const& authority_file,
+static lune::Passport create_passport(elle::String const& id,
+                                      elle::String const& authority_file,
                                       elle::String const& authority_password)
 {
   lune::Authority     authority;
@@ -66,7 +67,7 @@ static lune::Passport create_passport(elle::String const& authority_file,
       throw std::runtime_error("unable to create a label");
 
     // create the passport.
-    if (passport.Create(label) == elle::StatusError)
+    if (passport.Create(label, id) == elle::StatusError)
       throw std::runtime_error("unable to create the passport");
 
     // seal the passport.
@@ -80,19 +81,20 @@ static lune::Passport create_passport(elle::String const& authority_file,
 extern "C" PyObject* metalib_generate_passport(PyObject* self, PyObject* args)
 {
   PyObject* ret = nullptr;
-  char const* authority_file = nullptr,
+  char const* id = nullptr,
+            * authority_file = nullptr,
             * authority_password = nullptr;
-  if (!PyArg_ParseTuple(args, "ss:generate_passport",
-                        &authority_file, &authority_password))
+  if (!PyArg_ParseTuple(args, "sss:generate_passport",
+                        &id, &authority_file, &authority_password))
     return nullptr;
-  if (!authority_file || !authority_password)
+  if (!id || !authority_file || !authority_password)
     return nullptr;
 
   Py_BEGIN_ALLOW_THREADS;
 
   try
     {
-      auto passport = create_passport(authority_file, authority_password);
+      auto passport = create_passport(id, authority_file, authority_password);
       elle::String passport_string;
       if (passport.Save(passport_string) != elle::StatusError)
         {

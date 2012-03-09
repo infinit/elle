@@ -24,6 +24,7 @@ class Application(object):
         '/device/(.+)', 'Device',
         '/devices', 'Device',
         '/network/(.+)', 'Network',
+        '/network/(.+)/(.+)', 'Network',
         '/networks', 'Network',
     )
 

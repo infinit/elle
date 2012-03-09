@@ -41,7 +41,7 @@ InfinitNetwork::InfinitNetwork(Manager& manager,
 
   this->_infinitHome = QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY);
   this->_home = QDir(this->_infinitHome.filePath(
-      QString("networks") + this->_description.name.c_str()
+      QString("networks/") + this->_description.name.c_str()
   ));
   //if (!this->_process.start(homeDirectory.filePath()))
   this->_Update();
@@ -59,19 +59,6 @@ void InfinitNetwork::Update(meta::NetworkResponse const& response)
 }
 
 
-void InfinitNetwork::_Update()
-{
-  if (!this->_home.exists() && !this->_home.mkpath("."))
-      throw std::runtime_error("Cannot create network home");
-  QString descriptionFilename = this->_description.name.c_str() + QString(".dsc");
-  if (!this->_home.exists(descriptionFilename))
-    {
-      if (!this->_description.descriptor.size())
-        return this->_CreateNetworkRootBlock();
-      this->_PrepareDirectory();
-    }
-}
-
 void InfinitNetwork::_OnGotDescriptor(meta::UpdateNetworkResponse const& response)
 {
   // XXX updated is none here, correct meta
@@ -86,12 +73,18 @@ void InfinitNetwork::_OnGotDescriptor(meta::UpdateNetworkResponse const& respons
   std::cout << "Got descriptor for " << this->_description.name
             <<  " (" << this->_description._id << ") :"
             << response.descriptor << std::endl;
-  this->_PrepareDirectory();
+
+  this->_description.root_block = response.root_block;
+  this->_description.descriptor = response.descriptor;
+
+  this->_RegisterDevice();
 }
 
-void InfinitNetwork::_OnGotDescriptorError(meta::MetaClient::Error error, std::string const& err)
+void InfinitNetwork::_OnAnyError(meta::MetaClient::Error error, std::string const& err)
 {
-  std::cerr << "Got error while getting network descriptor: " << err << ".\n";
+  std::cerr << "Got error while creating the network '" << this->_description.name
+            << "' (" << this->_description._id << ")"
+            << ": " << err << " (" <<(int)error<<").\n";
 }
 
 
@@ -101,6 +94,8 @@ void InfinitNetwork::_OnGotDescriptorError(meta::MetaClient::Error error, std::s
 
 #include "lune/Descriptor.hh"
 #include "lune/Identity.hh"
+#include "lune/Passport.hh"
+#include "lune/Set.hh"
 #include "nucleus/neutron/Object.hh"
 #include "nucleus/neutron/Genre.hh"
 #include "nucleus/neutron/Access.hh"
@@ -124,8 +119,8 @@ void InfinitNetwork::_CreateNetworkRootBlock()
       throw std::runtime_error("Couldn't create the root block");
     }
 
-  elle::Unique rootBlock;
-  elle::Unique rootAddress;
+  elle::Unique              rootBlock;
+  elle::Unique              rootAddress;
 
   directory.Save(rootBlock);
   address.Save(rootAddress);
@@ -139,23 +134,115 @@ void InfinitNetwork::_CreateNetworkRootBlock()
       &rootBlock,
       &rootAddress,
       std::bind(&InfinitNetwork::_OnGotDescriptor, this, _1),
-      std::bind(&InfinitNetwork::_OnGotDescriptorError, this, _1, _2)
+      std::bind(&InfinitNetwork::_OnAnyError, this, _1, _2)
   );
 }
 
 void InfinitNetwork::_PrepareDirectory()
 {
-  nucleus::neutron::Object directory;
-  nucleus::proton::Address address;
+
+  assert(this->_description.root_block.size());
+  assert(this->_description.descriptor.size());
 
   lune::Descriptor descriptor;
 
   auto e = elle::StatusError;
   if (descriptor.Restore(this->_description.descriptor) == e ||
-      descriptor.Save(this->_description.name)          == e)
+      descriptor.Store(this->_description.name)          == e)
     {
+      show();
       throw std::runtime_error("Couldn't save the descriptor");
     }
+
+  nucleus::proton::Network  network;
+  nucleus::neutron::Object directory;
+
+  if (network.Create(this->_description.name)          == e ||
+      directory.Restore(this->_description.root_block) == e ||
+      directory.Store(network, descriptor.root)        == e)
+    {
+      show();
+      throw std::runtime_error("Couldn't store the root block");
+    }
+
+  std::cerr << "Root block stored\n";
+}
+
+void InfinitNetwork::_Update()
+{
+  if (!this->_home.exists() && !this->_home.mkpath("."))
+      throw std::runtime_error("Cannot create network home");
+  QString descriptionFilename = this->_description.name.c_str() + QString(".dsc");
+  if (!this->_home.exists(descriptionFilename))
+    {
+      if (!this->_description.descriptor.size())
+        return this->_CreateNetworkRootBlock();
+      else
+        {
+          std::cerr << "Already has a nice descriptor : " << this->_description.descriptor << "\n";
+          this->_PrepareDirectory();
+        }
+    }
+
+  using namespace std::placeholders;
+  this->_manager.meta().GetNetworkNodes(
+      this->_description._id,
+      std::bind(&InfinitNetwork::_OnNetworkNodes, this, _1)
+  );
+
 }
 
 
+void InfinitNetwork::_RegisterDevice()
+{
+  lune::Passport passport;
+
+  if (passport.Load() == elle::StatusError)
+    throw std::runtime_error("Couldn't load the passport file :'(");
+
+  auto it = std::find(
+      this->_description.devices.begin(),
+      this->_description.devices.end(),
+      passport.id
+  );
+
+  if (it == this->_description.devices.end())
+    {
+      using namespace std::placeholders;
+
+      this->_description.devices.push_back(passport.id);
+      this->_manager.meta().UpdateNetwork(
+          this->_description._id,
+          nullptr,
+          nullptr,
+          &this->_description.devices,
+          nullptr,
+          nullptr,
+          std::bind(&InfinitNetwork::_OnDeviceRegistered, this, _1),
+          std::bind(&InfinitNetwork::_OnAnyError, this, _1, _2)
+      );
+    }
+  else
+    this->_PrepareDirectory();
+}
+
+void InfinitNetwork::_OnDeviceRegistered(meta::UpdateNetworkResponse const& response)
+{
+  this->_PrepareDirectory();
+}
+
+void InfinitNetwork::_OnNetworkNodes(meta::NetworkNodesResponse const& response)
+{
+  lune::Set locusSet;
+  auto it =  response.nodes.begin(),
+       end = response.nodes.end();
+  for (; it != end; ++it)
+    {
+      elle::network::Locus locus;
+
+      locus.Create(*it);
+      locusSet.Add(locus); // XXX
+    }
+
+  locusSet.Store(this->_description.name);
+}

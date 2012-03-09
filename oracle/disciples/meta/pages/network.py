@@ -30,6 +30,14 @@ class Network(Page):
                 'descriptor': "base64 string of descriptor",
             }
 
+    Return connected nodes of a network
+        GET /network/id1/nodes
+            -> {
+                'success': True,
+                'network_id': 'id1',
+                'nodes': [ "ip:port", "ip2:port", ...],
+            }
+
     Create a new network
         POST /network {
             'name': 'pretty name', # required
@@ -54,6 +62,8 @@ class Network(Page):
                 'success': True,
                 'updated_network_id': "id",
                 'descriptor' : "descriptor file", # only if root_block and root_address where given
+                'root_block': "base64 root block", # only if root_block and root_address where given
+
             }
 
     Delete a network
@@ -64,11 +74,24 @@ class Network(Page):
             }
     """
 
-    def GET(self, id=None):
-        print "BIM"
+    def GET(self, id=None, _type=None):
         self.requireLoggedIn()
         if id is None:
             return self.success({'networks': self.user.get('networks', [])})
+        elif _type == "nodes":
+            network = database.byId(database.networks, id)
+            res = {
+                "network_id": id,
+                "nodes": [],
+            }
+            for device_id in network['devices']:
+                device = database.byId(database.devices, device_id)
+                if device:
+                    res['nodes'].append(device['ip'] + ':' + device['port'])
+                else:
+                    print "No more device_id", device['_id']
+
+            return self.success(res)
         else:
             network = database.networks.find_one({
                 '_id': pymongo.objectid.ObjectId(id),
@@ -101,7 +124,6 @@ class Network(Page):
         return action_func(network)
 
     def _create(self, network, network_model="slug"):
-        print "CREATE"
         if '_id' in network:
             return self.error("An id cannot be specified while creating a network")
         name = network.get('name', '').strip()
@@ -162,11 +184,11 @@ class Network(Page):
                     root_address,
                     self.user['identity_pub']
                 )
-                print "IS VALID: ", is_valid
                 if not is_valid:
                     return self.error("The root block was not properly signed")
 
-                to_save['root_block'] = network['root_block']
+                to_save['root_block'] = root_block
+                to_save['root_address'] = root_address
 
                 to_save['descriptor'] = metalib.generate_network_descriptor(
                     str(id),
@@ -175,7 +197,6 @@ class Network(Page):
                     conf.INFINIT_AUTHORITY_PATH,
                     conf.INFINIT_AUTHORITY_PASSWORD,
                 )
-                print "CREATED DESCRIPTOR :", to_save['descriptor']
             except Exception, err:
                 traceback.print_exc()
                 return self.error("Unexpected error: " + str(err))
@@ -186,14 +207,13 @@ class Network(Page):
         }
         if 'descriptor' in to_save:
             res['descriptor'] = to_save['descriptor']
-            print "SENDING DESCRIPTOR", res['descriptor']
-        else:
-            print "DO NOT SEND THE DESCRIPTOR"
+            res['root_block'] = to_save['root_block']
 
         return self.success(res)
 
     def _checkName(self, name):
         return bool(name)
+
     def _checkDevice(self, device_id):
         """
         device_id is not empty and belongs to the user
@@ -217,7 +237,6 @@ class Network(Page):
         }) is not None
 
     def DELETE(self, id):
-        print "Heeee"
         self.requireLoggedIn()
         try:
             networks = self.user['devices']

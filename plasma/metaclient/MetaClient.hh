@@ -52,6 +52,7 @@ namespace plasma
       std::string              name;
       std::string              model;
       std::string              root_block;
+      std::string              root_address;
       std::string              descriptor;
       std::list<std::string>   devices;
       std::list<std::string>   users;
@@ -67,6 +68,14 @@ namespace plasma
     {
       std::string             updated_network_id;
       std::string             descriptor;
+      std::string             root_block;
+      std::string             root_address;
+    };
+
+    struct NetworkNodesResponse : Response
+    {
+      std::string             network_id;
+      std::list<std::string>  nodes;
     };
 
     ///
@@ -91,6 +100,7 @@ namespace plasma
       typedef std::function<void(NetworkResponse const&)> NetworkCallback;
       typedef std::function<void(CreateDeviceResponse const&)> CreateDeviceCallback;
       typedef std::function<void(UpdateNetworkResponse const&)> UpdateNetworkCallback;
+      typedef std::function<void(NetworkNodesResponse const&)> NetworkNodesCallback;
 
       typedef std::function<void(Error, std::string const&)> Errback;
     private:
@@ -139,6 +149,11 @@ namespace plasma
                          std::string const* rootAddress,
                          UpdateNetworkCallback callback,
                          Errback errback = nullptr);
+
+      void GetNetworkNodes(std::string const& id,
+                           NetworkNodesCallback cb,
+                           Errback errback = nullptr);
+
       /// properties
       QByteArray const& token() const { return this->_token; }
       void token(QByteArray const& token) { this->_token = token; }

@@ -13,6 +13,7 @@
 //
 
 #include <cassert>
+#include <sstream>
 #include <iostream>
 #include <stdexcept>
 
@@ -125,9 +126,12 @@ namespace {
 
       virtual void OnNetworkError(QNetworkReply::NetworkError err)
       {
+        std::stringstream ss;
+        ss << (int) err;
+
         // XXX fine grained network errors
         if (this->errback != nullptr)
-          this->errback(MetaClient::Error::ConnectionFailure, "Network error");
+          this->errback(MetaClient::Error::ConnectionFailure, "Network error: " + ss.str());
       }
     };
 
@@ -206,7 +210,6 @@ namespace {
 
     FILLER(LoginResponse)
     {
-      std::cerr << "FILL LoginResponse\n";
       response.token    =        _GetNonEmptyString(map, "token");
       response.fullname =     _GetNonEmptyString(map, "fullname");
       response.email    =        _GetNonEmptyString(map, "email");
@@ -215,34 +218,39 @@ namespace {
 
     FILLER(NetworksResponse)
     {
-      std::cerr << "FILL NetworksResponse\n";
       response.networks =         _GetStringList(map, "networks");
     }
 
     FILLER(NetworkResponse)
     {
-      std::cerr << "FILL NetworkResponse\n";
-      response._id        =        _GetNonEmptyString(map, "_id");
-      response.name       =       _GetNonEmptyString(map, "name");
-      response.model      =      _GetNonEmptyString(map, "model");
-      response.root_block =         _GetString(map, "root_block");
-      response.descriptor =         _GetString(map, "descriptor");
-      response.devices    =        _GetStringList(map, "devices");
-      response.users      =          _GetStringList(map, "users");
+      response._id          =      _GetNonEmptyString(map, "_id");
+      response.name         =     _GetNonEmptyString(map, "name");
+      response.model        =    _GetNonEmptyString(map, "model");
+      response.root_block   =       _GetString(map, "root_block");
+      response.descriptor   =       _GetString(map, "descriptor");
+      response.devices      =      _GetStringList(map, "devices");
+      response.users        =        _GetStringList(map, "users");
     }
 
     FILLER(CreateDeviceResponse)
     {
-      std::cerr << "FILL CreateDeviceResponse\n";
       response.created_device_id = _GetNonEmptyString(map, "created_device_id");
       response.passport          =          _GetNonEmptyString(map, "passport");
     }
 
     FILLER(UpdateNetworkResponse)
     {
-      std::cerr << "FILL UpdateNetworkResponse\n";
       response.updated_network_id = _GetNonEmptyString(map, "updated_network_id");
-      response.descriptor         =  _GetNonEmptyString(map, "descriptor");//           _GetString(map, "descriptor", "");
+      response.descriptor         =             _GetString(map, "descriptor");
+      response.root_block         =             _GetString(map, "root_block");
+      response.root_address       =           _GetString(map, "root_address");
+    }
+
+
+    FILLER(NetworkNodesResponse)
+    {
+      response.network_id         =   _GetNonEmptyString(map, "_id");
+      response.nodes              =     _GetStringList(map, "nodes");
     }
 
 #undef FILLER
@@ -341,6 +349,15 @@ void MetaClient::UpdateNetwork(std::string const& id,
 }
 
 
+void MetaClient::GetNetworkNodes(std::string const& id,
+                                 NetworkNodesCallback callback,
+                                 Errback errback)
+{
+  this->_Get(
+      "/network/" + id + "/nodes",
+      new NetworkNodesResponseHandler(callback, errback)
+  );
+}
 
 
 ///

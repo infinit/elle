@@ -21,14 +21,16 @@ class Device(Page):
             -> {
                 '_id': "id",
                 'name': "pretty name",
-                'ip_address': 'address',
+                'ip': 'address',
+                'port': 1912 # this is a number
                 'passport': "passport string",
             }
 
     Create a new device
         POST /device {
             'name': 'pretty name', # required
-            'ip_address': 'address', # required
+            'ip': 'address', # required
+            'port': port, # required
         }
             -> {
                 'success': True,
@@ -40,7 +42,8 @@ class Device(Page):
         POST /device {
             '_id': "id",
             'name': 'pretty name', # optional
-            'ip_address': 'address', # optional
+            'ip': 'address', # optional
+            'port': port, #optional
         }
             -> {
                 'success': True,
@@ -76,42 +79,43 @@ class Device(Page):
         else:
             func = self._create
 
-        return self.success(func(device))
+        return func(device)
 
     def _create(self, device):
         name = device.get('name', '').strip()
         if not name:
-            return {
-                'success': False,
-                'error': "You have to provide a valid device name",
-            }
-        ip_address = device.get('ip_address', '').strip()
-        if not ip_address:
-            return {
-                'success': False,
-                'error': "You have to provide a valid device ip address",
-            }
+            return self.error("You have to provide a valid device name")
+        ip = device.get('ip', '').strip()
+        if not ip:
+            return self.error("You have to provide a valid device ip address")
+        port = int(device.get('port', 0))
+        if not port:
+            return self.error("You have to provide a valid port")
 
-        passport = metalib.generate_passport(
+        device = {
+            'name': name,
+            'ip': ip,
+            'port': port,
+            'owner': self.user['_id'],
+        }
+
+        id = database.devices.insert(device)
+        assert id is not None
+
+        device['passport'] = metalib.generate_passport(
+            id,
             conf.INFINIT_AUTHORITY_PATH,
             conf.INFINIT_AUTHORITY_PASSWORD
         )
-        device = {
-            'name': name,
-            'ip_address': ip_address,
-            'owner': self.user['_id'],
-            'passport': passport,
-        }
-        id = database.devices.insert(device)
-        assert id is not None
+        database.devices.save(device)
+
         # XXX check unique device ?
         self.user.setdefault('devices', []).append(str(id))
         database.users.save(self.user)
-        return {
-            'success': True,
+        return self.success({
             'created_device_id': str(id),
             'passport': passport,
-        }
+        })
 
     def _update(self, device):
         assert '_id' in device
@@ -124,24 +128,17 @@ class Device(Page):
         if 'name' in device:
             name = device['name'].strip()
             if not name:
-                return {
-                    'success': False,
-                    'error': "You have to provide a valid device name",
-                }
+                return self.error("You have to provide a valid device name")
             to_save['name'] = name
-        if 'ip_address' in device:
-            ip_address = device['ip_address'].strip()
-            if not ip_address:
-                return {
-                    'success': False,
-                    'error': "You have to provide a valid device ip_address",
-                }
-            to_save['ip_address'] = ip_address
+        if 'ip' in device:
+            ip = device['ip'].strip()
+            if not ip:
+                return self.error("You have to provide a valid device ip address")
+            to_save['ip'] = ip_address
+        if 'port' in device:
+            to_save['port'] = int(device['port'])
         id = database.devices.save(to_save)
-        return {
-            'success': True,
-            'updated_device_id': str(id),
-        }
+        return self.success({'updated_device_id': str(id)})
 
     def DELETE(self, id):
         self.requireLoggedIn()

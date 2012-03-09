@@ -116,9 +116,7 @@ void IdentityUpdater::_OnLogin(std::string const& password,
       else
         {
           std::cout << "Found a passport file.\n";
-          std::cout << "BITE<[";
           emit identityUpdated(true);
-          std::cout << "]>\n";
         }
     }
 
@@ -149,14 +147,6 @@ void IdentityUpdater::_OnError(meta::MetaClient::Error error,
     }
 }
 
-void IdentityUpdater::_UpdatePassport()
-{
-  using namespace std::placeholders;
-  this->_api.CreateDevice("default device name", "127.0.0.1",
-      std::bind(&IdentityUpdater::_OnDeviceCreated, this, _1),
-      std::bind(&IdentityUpdater::_OnError, this, _1, _2)
-  );
-}
 
 void IdentityUpdater::_OnDeviceCreated(meta::CreateDeviceResponse const& res)
 {
@@ -171,9 +161,7 @@ void IdentityUpdater::_OnDeviceCreated(meta::CreateDeviceResponse const& res)
       f.write(res.passport.c_str());
       f.flush();
       f.close();
-      std::cout << "BITE<(";
       emit identityUpdated(true);
-      std::cout << ")>\n";
     }
   else
     throw std::runtime_error(
@@ -185,6 +173,7 @@ void IdentityUpdater::_OnDeviceCreated(meta::CreateDeviceResponse const& res)
 
 
 #include "lune/Identity.hh"
+#include "elle/network/Host.hh"
 
 std::string IdentityUpdater::_DecryptIdentity(std::string const& password,
                                               std::string const& identityString)
@@ -218,4 +207,24 @@ void IdentityUpdater::_StoreIdentity(std::string const& identityString)
       show();
       throw std::runtime_error("Cannot save the identity file.\n");
     }
+}
+
+void IdentityUpdater::_UpdatePassport()
+{
+  elle::network::Host::Container hosts;
+
+  if (elle::network::Host::Hosts(hosts) == elle::StatusError)
+    throw std::runtime_error("Couldn't retreive host list");
+
+  if (!hosts.size())
+    throw std::runtime_error("No usable host found !");
+
+  std::string host;
+  hosts[0].Convert(host);
+
+  using namespace std::placeholders;
+  this->_api.CreateDevice("default device name", host,
+      std::bind(&IdentityUpdater::_OnDeviceCreated, this, _1),
+      std::bind(&IdentityUpdater::_OnError, this, _1, _2)
+  );
 }
