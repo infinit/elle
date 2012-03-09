@@ -41,6 +41,7 @@ namespace lune
     //
     // types
     //
+    // XXX use std::set<elle::Locus> !
     typedef std::vector<elle::Locus>    Container;
 
     //

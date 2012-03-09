@@ -46,7 +46,8 @@ namespace lune
     //
     // methods
     //
-    elle::Status        Create(const hole::Label&);
+    elle::Status        Create(const hole::Label& label,
+                               const elle::String& id);
 
     elle::Status        Seal(const Authority&);
     elle::Status        Validate(const Authority&) const;

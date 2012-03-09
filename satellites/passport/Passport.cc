@@ -87,8 +87,8 @@ namespace satellite
       if (label.Create(region) == elle::StatusError)
         escape("unable to create a label");
 
-      // create the passport.
-      if (passport.Create(label) == elle::StatusError)
+      // create the passport. // XXX passport need an id
+      if (passport.Create(label, "BIET <- THis Is An Id") == elle::StatusError)
         escape("unable to create the passport");
 
       // seal the passport.
