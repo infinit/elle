@@ -78,6 +78,11 @@ namespace satellite
     {
       hole::Label               label;
       elle::Region              region;
+      elle::String              id;
+
+      // generate a random string.
+      if (elle::Random::Generate(id) == elle::StatusError)
+        escape("unable to generate a random string");
 
       // generate a random region.
       if (elle::Random::Generate(region) == elle::StatusError)
@@ -87,8 +92,8 @@ namespace satellite
       if (label.Create(region) == elle::StatusError)
         escape("unable to create a label");
 
-      // create the passport. // XXX passport need an id
-      if (passport.Create(label, "BIET <- THis Is An Id") == elle::StatusError)
+      // create the passport.
+      if (passport.Create(label, id) == elle::StatusError)
         escape("unable to create the passport");
 
       // seal the passport.

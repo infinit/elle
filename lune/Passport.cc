@@ -66,8 +66,8 @@ namespace lune
   {
     // verify the signature.
     if (authority.K.Verify(this->signature,
-                           this->id,
-                           this->label) == elle::StatusError)
+                           this->label,
+                           this->id) == elle::StatusError)
       escape("unable to verify the signature");
 
     return elle::StatusOk;
