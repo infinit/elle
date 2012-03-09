@@ -63,7 +63,6 @@ namespace {
 
       virtual void OnReply(QByteArray const& data)
       {
-        std::cerr << "Got reply !\n";
         QJson::Parser parser;
         bool ok;
 
@@ -188,7 +187,6 @@ namespace {
     {                                                                       \
       static void Fill(QVariantMap const& map, cls& response)               \
       {                                                                     \
-        std::cerr << "FILL " # cls << "\n";                                 \
         if (map.contains("success"))                                        \
           {                                                                 \
             response.success = map["success"].toBool();                     \
@@ -241,16 +239,16 @@ namespace {
     FILLER(UpdateNetworkResponse)
     {
       response.updated_network_id = _GetNonEmptyString(map, "updated_network_id");
-      response.descriptor         =             _GetString(map, "descriptor");
-      response.root_block         =             _GetString(map, "root_block");
-      response.root_address       =           _GetString(map, "root_address");
+      response.descriptor         =             _GetString(map, "descriptor", "");
+      response.root_block         =             _GetString(map, "root_block", "");
+      response.root_address       =           _GetString(map, "root_address", "");
     }
 
 
     FILLER(NetworkNodesResponse)
     {
-      response.network_id         =   _GetNonEmptyString(map, "_id");
-      response.nodes              =     _GetStringList(map, "nodes");
+      response.network_id         =   _GetNonEmptyString(map, "network_id");
+      response.nodes              =            _GetStringList(map, "nodes");
     }
 
 #undef FILLER
@@ -308,12 +306,16 @@ void MetaClient::GetNetwork(std::string const& id,
 
 void MetaClient::CreateDevice(std::string const& name,
                               std::string const& endpoint,
+                              short port,
                               CreateDeviceCallback callback,
                               Errback errback)
 {
   QVariantMap req;
   req.insert("name", name.c_str());
-  req.insert("ip_address", endpoint.c_str());
+  req.insert("ip", endpoint.c_str());
+  std::stringstream ss;
+  ss << port;
+  req.insert("port", ss.str().c_str());
   this->_Post("/devices", req, new CreateDeviceResponseHandler(callback, errback));
 }
 
@@ -336,7 +338,17 @@ void MetaClient::UpdateNetwork(std::string const& id,
       req.insert("name", name->c_str());
 
   assert(users == nullptr && "XXX TODO");
-  assert(devices == nullptr && "XXX TODO");
+
+  if (devices != nullptr)
+    {
+      QVariantList l;
+
+      auto it = devices->begin(),
+           end = devices->end();
+      for (; it != end; ++it)
+        l.append(QString(it->c_str()));
+      req.insert("devices", l);
+    }
 
   assert(((rootBlock == nullptr && rootAddress == nullptr) ||
           (rootBlock != nullptr && rootAddress != nullptr)) &&

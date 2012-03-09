@@ -49,17 +49,11 @@ int Application::Exec()
   if (!this->_CheckInfinitHome())
     return EXIT_FAILURE;
 
-#if 0
   this->_releaseUpdater.Start();
   this->connect(
     &this->_releaseUpdater, SIGNAL(releaseUpdated(bool)),
     this, SLOT(_OnReleaseUpdated(bool))
   );
-#else
-
-  emit _OnReleaseUpdated(true);
-
-#endif
 
   return this->exec();
 }

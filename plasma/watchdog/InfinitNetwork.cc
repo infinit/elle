@@ -30,6 +30,7 @@ using namespace plasma::watchdog;
 
 InfinitNetwork::InfinitNetwork(Manager& manager,
                                meta::NetworkResponse const& response) :
+  QObject(),
   _description(response),
   _manager(manager),
   _process(),
@@ -59,37 +60,6 @@ void InfinitNetwork::Update(meta::NetworkResponse const& response)
 }
 
 
-void InfinitNetwork::_OnGotDescriptor(meta::UpdateNetworkResponse const& response)
-{
-  // XXX updated is none here, correct meta
-  if (response.updated_network_id != this->_description._id)
-    {
-      throw std::runtime_error(
-          "mismatch ids... between updated '" +
-          response.updated_network_id + "' and the old one '" +
-          this->_description._id + "'"
-      );
-    }
-  std::cout << "Got descriptor for " << this->_description.name
-            <<  " (" << this->_description._id << ") :"
-            << response.descriptor << std::endl;
-
-  this->_description.root_block = response.root_block;
-  this->_description.descriptor = response.descriptor;
-
-  this->_RegisterDevice();
-}
-
-void InfinitNetwork::_OnAnyError(meta::MetaClient::Error error, std::string const& err)
-{
-  std::cerr << "Got error while creating the network '" << this->_description.name
-            << "' (" << this->_description._id << ")"
-            << ": " << err << " (" <<(int)error<<").\n";
-}
-
-
-
-
 /// XXX should be in a library
 
 #include "lune/Descriptor.hh"
@@ -101,8 +71,33 @@ void InfinitNetwork::_OnAnyError(meta::MetaClient::Error error, std::string cons
 #include "nucleus/neutron/Access.hh"
 #include "nucleus/proton/Address.hh"
 
+#define LOG() std::cerr << "{WTG} " << "InfinitNetwork::" << __FUNCTION__ << "(id=" \
+                        << this->_description._id << "): "
+
+void InfinitNetwork::_Update()
+{
+  LOG() << "Starting infinit network update\n";
+  if (!this->_home.exists() && !this->_home.mkpath("."))
+      throw std::runtime_error("Cannot create network home");
+  QString descriptionFilename = this->_description.name.c_str() + QString(".dsc");
+  if (!this->_home.exists(descriptionFilename))
+    {
+      if (!this->_description.descriptor.size())
+        return this->_CreateNetworkRootBlock();
+      else
+        {
+          std::cerr << "Already has a nice descriptor : " << this->_description.descriptor << "\n";
+          this->_PrepareDirectory();
+        }
+    }
+  else
+    this->_RegisterDevice();
+}
+
+/// Called when the network does not have any descriptor
 void InfinitNetwork::_CreateNetworkRootBlock()
 {
+  LOG() << "Creating the network descriptor\n";
   lune::Identity                identity;
   nucleus::neutron::Object      directory;
   nucleus::proton::Address      address;
@@ -138,8 +133,10 @@ void InfinitNetwork::_CreateNetworkRootBlock()
   );
 }
 
+/// Prepare the network directory, store root block and network descriptor
 void InfinitNetwork::_PrepareDirectory()
 {
+  LOG() << "Dumping root block\n";
 
   assert(this->_description.root_block.size());
   assert(this->_description.descriptor.size());
@@ -165,40 +162,23 @@ void InfinitNetwork::_PrepareDirectory()
       throw std::runtime_error("Couldn't store the root block");
     }
 
-  std::cerr << "Root block stored\n";
-}
+  LOG() << "Root block stored\n";
 
-void InfinitNetwork::_Update()
-{
-  if (!this->_home.exists() && !this->_home.mkpath("."))
-      throw std::runtime_error("Cannot create network home");
-  QString descriptionFilename = this->_description.name.c_str() + QString(".dsc");
-  if (!this->_home.exists(descriptionFilename))
-    {
-      if (!this->_description.descriptor.size())
-        return this->_CreateNetworkRootBlock();
-      else
-        {
-          std::cerr << "Already has a nice descriptor : " << this->_description.descriptor << "\n";
-          this->_PrepareDirectory();
-        }
-    }
-
-  using namespace std::placeholders;
-  this->_manager.meta().GetNetworkNodes(
-      this->_description._id,
-      std::bind(&InfinitNetwork::_OnNetworkNodes, this, _1)
-  );
-
+  this->_RegisterDevice();
 }
 
 
+/// Append the local device to the network
 void InfinitNetwork::_RegisterDevice()
 {
+  LOG() << "Check if the device is registered for this network\n";
   lune::Passport passport;
 
   if (passport.Load() == elle::StatusError)
-    throw std::runtime_error("Couldn't load the passport file :'(");
+    {
+      show();
+      throw std::runtime_error("Couldn't load the passport file :'(");
+    }
 
   auto it = std::find(
       this->_description.devices.begin(),
@@ -208,6 +188,7 @@ void InfinitNetwork::_RegisterDevice()
 
   if (it == this->_description.devices.end())
     {
+      LOG() << "Registering device for this network\n";
       using namespace std::placeholders;
 
       this->_description.devices.push_back(passport.id);
@@ -223,26 +204,128 @@ void InfinitNetwork::_RegisterDevice()
       );
     }
   else
-    this->_PrepareDirectory();
+    {
+      using namespace std::placeholders;
+      this->_manager.meta().GetNetworkNodes(
+          this->_description._id,
+          std::bind(&InfinitNetwork::_OnNetworkNodes, this, _1),
+          std::bind(&InfinitNetwork::_OnAnyError, this, _1, _2)
+      );
+    }
 }
 
 void InfinitNetwork::_OnDeviceRegistered(meta::UpdateNetworkResponse const& response)
 {
-  this->_PrepareDirectory();
+  LOG() << "Device successfully registered\n";
+  assert(response.updated_network_id == this->_description._id);
+  using namespace std::placeholders;
+  this->_manager.meta().GetNetworkNodes(
+      this->_description._id,
+      std::bind(&InfinitNetwork::_OnNetworkNodes, this, _1),
+      std::bind(&InfinitNetwork::_OnAnyError, this, _1, _2)
+  );
 }
 
+/// Update the network nodes set when everything is good
 void InfinitNetwork::_OnNetworkNodes(meta::NetworkNodesResponse const& response)
 {
+  LOG() << "Got network nodes :\n";
   lune::Set locusSet;
   auto it =  response.nodes.begin(),
        end = response.nodes.end();
   for (; it != end; ++it)
     {
+      LOG() << "\t\t * " << *it << "\n";
       elle::network::Locus locus;
 
-      locus.Create(*it);
-      locusSet.Add(locus); // XXX
+      if (locus.Create(*it) == elle::StatusError)
+        throw std::runtime_error("Cannot create locus from string '" + *it + "'");
+      if (locusSet.Add(locus) == elle::StatusError)
+        {
+          LOG() << "Cannot add locus '" << *it << "' to the set (ignored)\n";
+        }
     }
 
-  locusSet.Store(this->_description.name);
+  if (locusSet.Store(this->_description.name) == elle::StatusError)
+    throw std::runtime_error("Cannot store the locus set");
+  this->_StartProcess();
+
+}
+void InfinitNetwork::_OnGotDescriptor(meta::UpdateNetworkResponse const& response)
+{
+  LOG() << "Got network descriptor\n";
+  // XXX updated is none here, correct meta
+  if (response.updated_network_id != this->_description._id)
+    {
+      throw std::runtime_error(
+          "mismatch ids... between updated '" +
+          response.updated_network_id + "' and the old one '" +
+          this->_description._id + "'"
+      );
+    }
+  std::cout << "Got descriptor for " << this->_description.name
+            <<  " (" << this->_description._id << ") :"
+            << response.descriptor << std::endl;
+
+  this->_description.root_block = response.root_block;
+  this->_description.descriptor = response.descriptor;
+
+  this->_PrepareDirectory();
+}
+
+void InfinitNetwork::_OnAnyError(meta::MetaClient::Error error, std::string const& err)
+{
+  LOG() << "Got error while creating the network '" << this->_description.name
+        << ": " << err << " (" <<(int)error<<").\n";
+}
+
+void InfinitNetwork::_StartProcess()
+{
+  LOG() << "Starting process\n";
+  QDir mnt(
+      this->_infinitHome.filePath(
+          QString::fromStdString(
+            "networks/" + this->_description.name + "/mnt"
+          )
+      )
+  );
+  if (!mnt.exists() && !mnt.mkpath("."))
+    throw std::runtime_error(
+        "Cannot create the mount directory '" + mnt.path().toStdString() + "'"
+    );
+
+  QStringList arguments;
+  arguments << "-n" << this->_description.name.c_str()
+            << "-m" << mnt.path();
+
+  this->_process.start(
+      this->_infinitHome.filePath("binaries/8infinit"),
+      arguments
+  );
+
+  this->connect(
+      &this->_process, SIGNAL(started()),
+      this, SLOT(_OnProcessStarted())
+  );
+
+  this->connect(
+      &this->_process, SIGNAL(error(QProcess::ProcessError)),
+      this, SLOT(_OnProcessError(QProcess::ProcessError))
+  );
+}
+
+
+
+//
+// ---------- slots ------------------------------------------------------------
+//
+
+void InfinitNetwork::_OnProcessStarted()
+{
+  LOG() << "Process successfully started!\n";
+}
+
+void InfinitNetwork::_OnProcessError(QProcess::ProcessError error)
+{
+  LOG() << "Process has an error\n";
 }

@@ -23,8 +23,8 @@ class Application(object):
         '/register', 'Register',
         '/device/(.+)', 'Device',
         '/devices', 'Device',
-        '/network/(.+)', 'Network',
         '/network/(.+)/(.+)', 'Network',
+        '/network/(.+)', 'Network',
         '/networks', 'Network',
     )
 

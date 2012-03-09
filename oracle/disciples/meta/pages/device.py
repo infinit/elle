@@ -114,7 +114,7 @@ class Device(Page):
         database.users.save(self.user)
         return self.success({
             'created_device_id': str(id),
-            'passport': passport,
+            'passport': device['passport']
         })
 
     def _update(self, device):

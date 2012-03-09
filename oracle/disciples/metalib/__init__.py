@@ -46,7 +46,7 @@ def generate_network_descriptor(network_id, model, root_address, authority_file,
         network_id, model, root_address, authority_file, authority_password
     )
 
-def generate_passport(authority_file, authority_password):
+def generate_passport(device_id, authority_file, authority_password):
     """Generate a passport.
 
         :param authority_file: The path to the authority file
@@ -54,5 +54,5 @@ def generate_passport(authority_file, authority_password):
         :rtype: String
         :return: The hex encoded passport
     """
-    return _meta.generate_passport(authority_file, authority_password)
+    return _meta.generate_passport(str(device_id), authority_file, authority_password)
 

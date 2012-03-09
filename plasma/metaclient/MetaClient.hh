@@ -131,6 +131,7 @@ namespace plasma
 
       void CreateDevice(std::string const& name,
                         std::string const& endpoint,
+                        short port,
                         CreateDeviceCallback callback,
                         Errback errback = nullptr);
 

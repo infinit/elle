@@ -33,8 +33,10 @@ namespace plasma
 // ---------- classes ---------------------------------------------------------
 //
 
-    class InfinitNetwork
+    class InfinitNetwork : QObject
     {
+      Q_OBJECT
+
     private:
       meta::NetworkResponse   _description;
       Manager&                _manager;
@@ -56,6 +58,11 @@ namespace plasma
       void _RegisterDevice();
       void _OnDeviceRegistered(meta::UpdateNetworkResponse const& response);
       void _OnNetworkNodes(meta::NetworkNodesResponse const& response);
+      void _StartProcess();
+
+    private slots:
+      void _OnProcessStarted();
+      void _OnProcessError(QProcess::ProcessError error);
     };
 
   }

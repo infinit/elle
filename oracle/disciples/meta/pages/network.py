@@ -87,7 +87,7 @@ class Network(Page):
             for device_id in network['devices']:
                 device = database.byId(database.devices, device_id)
                 if device:
-                    res['nodes'].append(device['ip'] + ':' + device['port'])
+                    res['nodes'].append(device['ip'] + ':' + str(device['port']))
                 else:
                     print "No more device_id", device['_id']
 
@@ -220,7 +220,7 @@ class Network(Page):
         """
         if not device_id:
             return False
-        return device_id in self.user.devices
+        return device_id in self.user['devices']
 
     def _checkUser(self, user_id):
         """

@@ -148,32 +148,26 @@ void IdentityUpdater::_OnError(meta::MetaClient::Error error,
 }
 
 
+
+
+#include "lune/Identity.hh"
+#include "lune/Passport.hh"
+#include "elle/network/Host.hh"
+
 void IdentityUpdater::_OnDeviceCreated(meta::CreateDeviceResponse const& res)
 {
   std::cout << "Created device " << res.created_device_id
             << " with passport: " << res.passport << "\n";
 
-  QDir homeDirectory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
+  lune::Passport passport;
 
-  QFile f(homeDirectory.filePath("infinit.ppt"));
-  if (f.open(QIODevice::WriteOnly | QIODevice::WriteOnly))
-    {
-      f.write(res.passport.c_str());
-      f.flush();
-      f.close();
-      emit identityUpdated(true);
-    }
-  else
-    throw std::runtime_error(
-        "Could not write into '" +
-        homeDirectory.filePath("infinit.ppt").toStdString() +
-        "'.\n"
-    );
+  if (passport.Restore(res.passport) == elle::StatusError)
+    throw std::runtime_error("Cannot load the passport");
+  if (passport.Store() == elle::StatusError)
+    throw std::runtime_error("Cannot save the passport");
+
+  emit identityUpdated(true);
 }
-
-
-#include "lune/Identity.hh"
-#include "elle/network/Host.hh"
 
 std::string IdentityUpdater::_DecryptIdentity(std::string const& password,
                                               std::string const& identityString)
@@ -191,9 +185,6 @@ std::string IdentityUpdater::_DecryptIdentity(std::string const& password,
       std::cerr << "Couldn't decrypt the identity file !\n"; // XXX
     }
 
-  std::cerr << "CRYPTED ID: " << identityString << "\n";
-  std::cerr << "UNCRYPTED ID: " << id << "\n";
-  //std::cerr << "UNCRYPTED Pair: " << pair << "\n";
   return id;
 }
 
@@ -222,8 +213,11 @@ void IdentityUpdater::_UpdatePassport()
   std::string host;
   hosts[0].Convert(host);
 
+  std::cout << "Registering host: '" << host << "'\n";
+
+  // XXX should be done in infinit instance
   using namespace std::placeholders;
-  this->_api.CreateDevice("default device name", host,
+  this->_api.CreateDevice("default device name", host, 1912,
       std::bind(&IdentityUpdater::_OnDeviceCreated, this, _1),
       std::bind(&IdentityUpdater::_OnError, this, _1, _2)
   );
