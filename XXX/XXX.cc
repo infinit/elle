@@ -42,17 +42,27 @@ int main(int argc, char** argv)
 
   const int n = 90000;
 
+  std::vector<elle::String> v(n);
+
   for (int i = 0; i < n; i++)
     {
       char name[1024];
+      elle::Natural64 n;
 
       memset(name, 0x0, sizeof (name));
 
-      sprintf(name, "%u", i);
+      elle::Random::Generate(n);
 
-      printf("-------------> %s\n", name);
+      sprintf(name, "%llu", n);
 
-      if (p->Add(name, new nucleus::Catalog) == elle::StatusError)
+      v[i] = elle::String(name);
+    }
+
+  for (int i = 0; i < n; i++)
+    {
+      printf("-------------> %s\n", v[i].c_str());
+
+      if (p->Add(v[i], new nucleus::Catalog) == elle::StatusError)
         fail("XXX");
     }
 
@@ -64,16 +74,10 @@ int main(int argc, char** argv)
   for (int i = 0; i < n; i++)
     {
       nucleus::Catalog* c;
-      char name[1024];
 
-      memset(name, 0x0, sizeof (name));
+      printf("-------------= %s\n", v[i].c_str());
 
-      sprintf(name, "%u", i);
-
-      printf("-------------= %s\n", name);
-      //p->Dump();
-
-      if (p->Locate(name, c) == elle::StatusError)
+      if (p->Locate(v[i], c) == elle::StatusError)
         fail("XXX");
     }
 
@@ -84,16 +88,9 @@ int main(int argc, char** argv)
 
   for (int i = 0; i < n; i++)
     {
-      char name[1024];
+      printf("-------------< %s\n", v[i].c_str());
 
-      memset(name, 0x0, sizeof (name));
-
-      sprintf(name, "%u", i);
-
-      printf("-------------< %s\n", name);
-      // p->Dump();
-
-      if (p->Remove(name) == elle::StatusError)
+      if (p->Remove(v[i]) == elle::StatusError)
         fail("XXX");
     }
 

@@ -249,6 +249,7 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Type] " << std::dec << this->type << std::endl;
 
+      /* XXX
       // dump the parent.
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Parent]" << std::endl;
@@ -269,6 +270,7 @@ namespace nucleus
 
       if (this->right.Dump(margin + 4) == elle::StatusError)
         escape("unable to dump the right");
+      */
 
       /* XXX
       // dump the load callback.

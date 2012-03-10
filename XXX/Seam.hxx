@@ -145,9 +145,14 @@ namespace nucleus
       if (result.second == false)
         escape("unable to insert the inlet in the container");
 
+      // XXX make sure it is loaded
+
       // set the seam's parent handle.
-      if (inlet->value.Create(Address::Some, this) == elle::StatusError)
+      if (inlet->value._object->parent.Create(Address::Some,
+                                              this) == elle::StatusError)
         escape("unable to create the inlet's parent handle");
+
+      // XXX unload
 
       // compute the inlet's footprint.
       if (inlet->_footprint.Compute() == elle::StatusError)
@@ -449,13 +454,14 @@ namespace nucleus
       // finally, propagate the update should have the mayor key changed
       // and if a parent nodule exists.
       if ((recent != ancient) &&
-          (this->parent != Address::Null))
+          (this->parent != Handle< Seam<V> >::Null))
         {
           // load the parent nodule.
           NestLoad(this->parent);
 
           // progate the update.
-          if (this->parent._object->Propagate(ancient, recent) == elle::StatusError)
+          if (this->parent._object->Propagate(ancient,
+                                              recent) == elle::StatusError)
             escape("unable to propagate the update");
         }
 

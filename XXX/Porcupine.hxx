@@ -219,7 +219,8 @@ namespace nucleus
             escape("unable to update the handle");
 
           if (_right->right.Create(_current->right.address, // XXX[use operator=]
-                                   _current->right._object) == elle::StatusError)
+                                   _current->right._object) ==
+              elle::StatusError)
             escape("unable to update the handle");
 
           // finally, update the current nodule's right neighbour link.
@@ -351,7 +352,7 @@ namespace nucleus
               // finally, update the parent nodule, should the mayor key have
               // changed.
               if ((mayor.current.recent != mayor.current.ancient) &&
-                  (_current->parent != Address::Null))
+                  (_current->parent != Handle< Seam<V> >::Null))
                 {
                   // load the parent nodule.
                   NestLoad(_current->parent);
@@ -428,7 +429,7 @@ namespace nucleus
           //
 
           // if a parent exists...
-          if (_current->parent != Address::Null)
+          if (_current->parent != Handle< Seam<V> >::Null)
             {
               //
               // a parent nodule seems to exist: delete the nodule from
@@ -782,7 +783,7 @@ namespace nucleus
           // finally, update the parent nodule, should the mayor key have
           // changed.
           if ((mayor.current.recent != mayor.current.ancient) &&
-              (_current->parent != Address::Null))
+              (_current->parent != Handle< Seam<V> >::Null))
             {
               // load the parent nodule.
               NestLoad(_current->parent);
@@ -827,7 +828,8 @@ namespace nucleus
             escape("unable to create the quill");
 
           // create the root handle.
-          if (this->root.Create(Address::Some, root.get()) == elle::StatusError)
+          if (this->root.Create(Address::Some,
+                                root.get()) == elle::StatusError)
             escape("unable to create the root handle");
 
           // waive the tracking.
@@ -863,7 +865,8 @@ namespace nucleus
             escape("unable to create the seam");
 
           // add the current root nodule in the new root seam.
-          if (seam.get()->Insert(mayor, this->root._object) == elle::StatusError)
+          if (seam.get()->Insert(mayor,
+                                 this->root._object) == elle::StatusError)
             escape("unable to add the current root in the new root nodule");
 
           // create the handle.
@@ -880,7 +883,7 @@ namespace nucleus
           if (this->root.Create(handle.address,
                                 handle._object) == elle::StatusError)
             escape("unable to update the handle");
-          // XXX[use the =operator()]
+          // XXX[use the =operator() for nodules i.e = does not work here]
         }
 
       // increment the height.

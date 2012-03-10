@@ -93,9 +93,7 @@ XXX
     template <typename T>
     Handle<T>::~Handle()
     {
-      // delete the object, if present.
-      if (this->_object != NULL)
-        delete this->_object;
+      // do nothing.
     }
 
 //
@@ -130,6 +128,13 @@ XXX
       if (this == &element)
         return elle::StatusTrue;
 
+      // compare the objects.
+      if ((this->_object != nullptr) || (element._object != nullptr))
+        {
+          if (this->_object != element._object)
+            return elle::StatusFalse;
+        }
+
       // XXX
 
       return elle::StatusTrue;
@@ -148,12 +153,17 @@ XXX
     /// XXX
     ///
     template <typename T>
-    elle::Status        Handle<T>::Dump(const elle::Natural32) const
+    elle::Status        Handle<T>::Dump(const elle::Natural32   margin) const
     {
-      /* XXX
-      // XXX
+      elle::String      alignment(margin, ' ');
 
-      // dump the hiearchy.
+      std::cout << alignment << "[Handle]" << std::endl;
+
+      // dump the address.
+      if (this->address.Dump(margin + 2) == elle::StatusError)
+        escape("unable to dump the address");
+
+      // dump the object.
       if (this->_object != NULL)
         {
           // dump the hierarchy, if present.
@@ -169,7 +179,10 @@ XXX
                     << elle::Dumpable::Shift
                     << "[_Object] " << elle::none << std::endl;
         }
-      */
+
+      // dump the placement.
+      std::cout << alignment << elle::Dumpable::Shift
+                << "[Placement] " << std::dec << this->_placement << std::endl;
 
       return elle::StatusOk;
     }
