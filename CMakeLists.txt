@@ -153,6 +153,8 @@ ADD_EXECUTABLE(XXX
   XXX/Porcupine.cc
   XXX/XXX.cc
   XXX/Nest.cc
+  XXX/Handle.cc
+  XXX/Placement.cc
 )
 TARGET_LINK_LIBRARIES(XXX infinit elle nucleus lune infinit)
 # XXX

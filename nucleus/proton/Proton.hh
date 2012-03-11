@@ -51,6 +51,7 @@ namespace nucleus
 #include <nucleus/proton/Block.hh>
 #include <nucleus/proton/ContentHashBlock.hh>
 #include <nucleus/proton/Family.hh>
+#include <XXX/Handle.hh>
 #include <nucleus/proton/History.hh>
 #include <nucleus/proton/ImmutableBlock.hh>
 #include <nucleus/proton/ImprintBlock.hh>

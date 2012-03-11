@@ -1,3 +1,8 @@
+- large files:
+ - trouver les unload
+ - scoper les handles pour etre sur qu'ils sont unloaded lors d'une erreur
+ - en profiter pour nommer proprement via les scopes
+
 - register/auth
  - creer le login/pass localement et envoyer le hash a meta
  - ensuite auth via HTTPS

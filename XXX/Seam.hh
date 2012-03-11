@@ -92,20 +92,6 @@ namespace nucleus
       // constructors & destructors
       //
       Seam();
-      Seam(const elle::Callback<
-             elle::Status,
-             elle::Parameters<
-               const Address&,
-               Nodule<V>*&
-               >
-             >&,
-           const elle::Callback<
-             elle::Status,
-             elle::Parameters<
-               const Address&,
-               const Nodule<V>*
-               >
-             >&);
       ~Seam();
 
       //

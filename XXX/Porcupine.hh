@@ -132,7 +132,7 @@ namespace nucleus
       elle::Status              Search(const typename V::K&,
                                        Quill<V>*&);
 
-      elle::Status              Check() const;
+      elle::Status              Check();
 
       elle::Status              Load(const Address&,
                                      Nodule<V>*&);
@@ -151,7 +151,7 @@ namespace nucleus
       //
       elle::Natural32           height;
 
-      Handle< Nodule<V> >       root;
+      Handle                    root;
     };
 
     ///

@@ -14,30 +14,56 @@
 
 #include <XXX/Nest.hh>
 
-namespace nucleus
+using namespace nucleus::proton;
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+///
+/// XXX
+///
+elle::Callback<
+  elle::Status,
+  elle::Parameters<
+    Handle&
+    >
+  >                                     Nest::Load;
+
+///
+/// XXX
+///
+elle::Callback<
+  elle::Status,
+  elle::Parameters<
+    Handle&
+    >
+  >                                     Nest::Unload;
+
+//
+// ---------- methods ---------------------------------------------------------
+//
+
+///
+/// XXX
+///
+elle::Status            Nest::Setup(
+  const elle::Callback<
+    elle::Status,
+    elle::Parameters<
+      Handle&
+      >
+    >&                                                          load,
+  const elle::Callback<
+    elle::Status,
+    elle::Parameters<
+      Handle&
+      >
+    >&                                                          unload)
 {
-  namespace proton
-  {
+  // set the callbacks.
+  Nest::Load = load;
+  Nest::Unload = unload;
 
-//
-// ---------- static methods --------------------------------------------------
-//
-
-    ///
-    /// XXX
-    ///
-    elle::Status        Nest::Register(Block*                   block)
-    {
-      // XXX here we register the block with an in-memory placement and no
-      //     address
-
-      // XXX loaded blocks on the other hand will be placed in memory
-      //     with their original address so that future retrieval of this
-      //     address are catched by the nest in order to return the newly
-      //     modified version.
-
-      return elle::StatusOk;
-    }
-
-  }
+  return elle::StatusOk;
 }

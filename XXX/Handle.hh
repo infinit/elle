@@ -18,6 +18,7 @@
 #include <elle/Elle.hh>
 
 #include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Block.hh>
 #include <XXX/Placement.hh>
 
 namespace nucleus
@@ -26,13 +27,34 @@ namespace nucleus
   {
 
 //
+// ---------- forward declarations --------------------------------------------
+//
+
+    ///
+    /// this class needs forward declaration to prevent conflicts.
+    ///
+    template <typename V>
+    class Nodule;
+
+    ///
+    /// this class needs forward declaration to prevent conflicts.
+    ///
+    template <typename... T>
+    class Seam;
+
+    ///
+    /// this class needs forward declaration to prevent conflicts.
+    ///
+    template <typename... T>
+    class Quill;
+
+//
 // ---------- classes ---------------------------------------------------------
 //
 
     ///
     /// XXX
     ///
-    template <typename T>
     class Handle:
       public elle::Object
     {
@@ -46,9 +68,9 @@ namespace nucleus
       // constructors & destructors
       //
       Handle();
-      Handle(T*);
+      Handle(Block*);
       Handle(const Address&);
-      Handle(const Handle<T>&);
+      Handle(const Handle&);
       ~Handle();
 
       //
@@ -56,15 +78,18 @@ namespace nucleus
       //
       // XXX[rename Create into Update]
       elle::Status      Create(const Address&,
-                               T*);
+                               Block*);
+
+      template <typename T>
+      elle::Status      Use(T*&);
 
       //
       // interfaces
       //
 
       // object
-      declare(Handle<T>);
-      elle::Boolean     operator==(const Handle<T>&) const;
+      declare(Handle);
+      elle::Boolean     operator==(const Handle&) const;
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
@@ -78,8 +103,11 @@ namespace nucleus
       //
       Address           address;
 
-      T*                _object;
+      Block*            _block;
+
       Placement         _placement;
+
+      Block* _XXX;
     };
 
   }

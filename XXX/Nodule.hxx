@@ -39,35 +39,6 @@ namespace nucleus
     {
     }
 
-    ///
-    /// specific constructor.
-    ///
-    template <typename V>
-    Nodule<V>::Nodule(const Type                                type,
-                      const elle::Callback<
-                        elle::Status,
-                        elle::Parameters<
-                          const Address&,
-                          Nodule<V>*&
-                          >
-                        >&                                      load,
-                      const elle::Callback<
-                        elle::Status,
-                        elle::Parameters<
-                          const Address&,
-                          const Nodule<V>*
-                          >
-                        >&                                      unload):
-      ContentHashBlock(type == TypeSeam ? V::S : V::Q),
-
-      type(type),
-
-      _load(load),
-      _unload(unload),
-      _footprint(*this)
-    {
-    }
-
 //
 // ---------- methods ---------------------------------------------------------
 //
@@ -270,22 +241,6 @@ namespace nucleus
 
       if (this->right.Dump(margin + 4) == elle::StatusError)
         escape("unable to dump the right");
-      */
-
-      /* XXX
-      // dump the load callback.
-      std::cout << alignment << elle::Dumpable::Shift
-                << "[Load]" << std::endl;
-
-      if (this->load.Dump(margin + 4) == elle::StatusError)
-        escape("unable to dump the callback");
-
-      // dump the unload callback.
-      std::cout << alignment << elle::Dumpable::Shift
-                << "[Unload]" << std::endl;
-
-      if (this->unload.Dump(margin + 4) == elle::StatusError)
-        escape("unable to dump the callback");
       */
 
       // dump the footprint.

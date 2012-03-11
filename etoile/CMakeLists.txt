@@ -50,6 +50,8 @@ ADD_LIBRARY(etoile
   shrub/Shrub.cc
   shrub/Riffle.cc
 
+  nest/Nest.cc
+
   Etoile.cc
 )
 

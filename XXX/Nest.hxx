@@ -31,21 +31,21 @@ namespace nucleus
 ///
 /// this macro-function makes it easier to load a block.
 ///
+/// XXX do not use this macro-function in an implicit scope i.e if, for etc.
+///
 #define NestLoad(_handle_)                                              \
-  if (_handle_.address != Address::Null)                                \
+  if ((_handle_).address != Address::Null)                              \
     {                                                                   \
-      if (_handle_._object == NULL)                                     \
-        {                                                               \
-          printf("NEST LOAD\n");                                        \
-        }                                                               \
-    }                                                                   \
-  if (_handle_._object != NULL)
+      if (Nest::Load.Call((_handle_)) == elle::StatusError)             \
+        escape("unable to load the handle's block");                    \
+    }
 
 ///
 /// this macro-function makes it easier to unload a block.
 ///
 #define NestUnload(_handle_)                                            \
-  printf("NEST UNLOAD\n");
+  if (Nest::Unload.Call((_handle_)) == elle::StatusError)               \
+    escape("unable to unload the handle's block");
 
   }
 }

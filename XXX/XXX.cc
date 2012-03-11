@@ -10,11 +10,13 @@
 
 #include <Infinit.hh>
 #include <elle/Elle.hh>
+#include <etoile/Etoile.hh>
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 #include <hole/Hole.hh>
 
 #include <XXX/Porcupine.hh>
+#include <XXX/Nest.hh>
 
 int main(int argc, char** argv)
 {
@@ -40,22 +42,21 @@ int main(int argc, char** argv)
   nucleus::Porcupine<nucleus::Catalog>* p =
     new nucleus::Porcupine<nucleus::Catalog>;
 
-  const int n = 90000;
+  nucleus::Nest::Setup(
+    elle::Callback<>::Infer(&etoile::Nest::Load),
+    elle::Callback<>::Infer(&etoile::Nest::Unload));
+
+  const int n = 50000;
 
   std::vector<elle::String> v(n);
 
   for (int i = 0; i < n; i++)
     {
-      char name[1024];
-      elle::Natural64 n;
+      elle::String s;
 
-      memset(name, 0x0, sizeof (name));
+      elle::Random::Generate(s, 16);
 
-      elle::Random::Generate(n);
-
-      sprintf(name, "%llu", n);
-
-      v[i] = elle::String(name);
+      v[i] = s;
     }
 
   for (int i = 0; i < n; i++)

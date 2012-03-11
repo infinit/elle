@@ -17,6 +17,7 @@
 
 #include <elle/Elle.hh>
 
+#include <nucleus/proton/ContentHashBlock.hh>
 #include <nucleus/proton/State.hh>
 
 #include <nucleus/neutron/Offset.hh>
@@ -42,7 +43,7 @@ namespace nucleus
     /// Catalog for directories, Data for files etc.
     ///
     class Catalog:
-      public elle::Object
+      public proton::ContentHashBlock
     {
     public:
       //

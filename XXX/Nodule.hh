@@ -71,21 +71,6 @@ namespace nucleus
       // constructors & destructors
       //
       Nodule(const Type);
-      Nodule(const Type,
-             const elle::Callback<
-               elle::Status,
-               elle::Parameters<
-                 const Address&,
-                 Nodule<V>*&
-                 >
-               >&,
-             const elle::Callback<
-               elle::Status,
-               elle::Parameters<
-                 const Address&,
-                 const Nodule<V>*
-                 >
-               >&);
 
       //
       // methods
@@ -126,24 +111,10 @@ namespace nucleus
       // attributes
       //
       Type                      type;
-      Handle< Seam<V> >         parent;
-      Handle< Nodule<V> >       left;
-      Handle< Nodule<V> >       right;
+      Handle                    parent;
+      Handle                    left;
+      Handle                    right;
 
-      elle::Callback<
-        elle::Status,
-        elle::Parameters<
-          const Address&,
-          Nodule<V>*&
-          >
-        >                       _load;
-      elle::Callback<
-        elle::Status,
-        elle::Parameters<
-          const Address&,
-          const Nodule<V>*
-          >
-        >                       _unload;
       elle::Footprint           _footprint;
     };
 

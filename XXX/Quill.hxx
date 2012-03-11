@@ -39,28 +39,6 @@ namespace nucleus
     }
 
     ///
-    /// specific constructor.
-    ///
-    template <typename V>
-    Quill<V>::Quill(const elle::Callback<
-                      elle::Status,
-                      elle::Parameters<
-                        const Address&,
-                        Nodule<V>*&
-                        >
-                      >&                                        load,
-                    const elle::Callback<
-                      elle::Status,
-                      elle::Parameters<
-                        const Address&,
-                        const Nodule<V>*
-                        >
-                      >&                                        unload):
-      Nodule<V>(Nodule<V>::TypeQuill, load, unload)
-    {
-    }
-
-    ///
     /// destructor.
     ///
     template <typename V>
@@ -319,7 +297,8 @@ namespace nucleus
       NestLoad(inlet->value);
 
       // return the value.
-      value = inlet->value._object;
+      if (inlet->value.Use(value) == elle::StatusError)
+        escape("unable to use the inlet's value");
 
       return elle::StatusOk;
     }
@@ -379,7 +358,8 @@ namespace nucleus
       NestLoad(inlet->value);
 
       // return the value.
-      value = inlet->value._object;
+      if (inlet->value.Use(value) == elle::StatusError)
+        escape("unable to use the inlet's value");
 
       return elle::StatusOk;
     }
@@ -399,8 +379,7 @@ namespace nucleus
 
       // allocate a new quill.
       auto              r =
-        std::unique_ptr< Quill<V> >(
-          new Quill<V>(this->_load, this->_unload));
+        std::unique_ptr< Quill<V> >(new Quill<V>);
 
       // create the quill.
       if (r.get()->Create() == elle::StatusError)
