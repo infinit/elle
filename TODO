@@ -1,3 +1,5 @@
+cp: /Users/mycure/PROJECTS/infinit-new/dependencies/platforms/macosx64/work/man/man3/X509_VERIFY_PARAM_set_trust.3: could not copy extended attributes to ./infinit-new/dependencies/platforms/macosx64/work/man/man3/X509_VERIFY_PARAM_set_trust.3: No such file or directory
+
 - register/auth
  - creer le login/pass localement et envoyer le hash a meta
  - ensuite auth via HTTPS

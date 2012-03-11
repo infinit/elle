@@ -253,7 +253,8 @@ namespace horizon
     elle::Status        OPENDIR(EVENT* e)
     {
       printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX SLEEP\n");
-      elle::Fiber::Sleep(1000);
+      //elle::Fiber::Sleep(1000);
+      printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX SLEEP\n");
 
       e->result = FUSE::Operations.opendir(e->path, e->fi);
 
@@ -328,6 +329,7 @@ namespace horizon
     {
       int               res;
 
+      /* XXX
       ::pthread_mutex_lock(&MUTEX);
       {
         pthread_mutex_t mutex;
@@ -348,6 +350,13 @@ namespace horizon
         // le unlock avant le lock bloquant!
 
         ::pthread_mutex_lock(&mutex);
+      }
+      ::pthread_mutex_unlock(&MUTEX);
+      */
+
+      ::pthread_mutex_lock(&MUTEX);
+      {
+        res = FUSE::Operations.statfs(path, statvfs);
       }
       ::pthread_mutex_unlock(&MUTEX);
 
@@ -399,6 +408,7 @@ namespace horizon
     {
       int               res;
 
+      /* XXX
       ::pthread_mutex_lock(&MUTEX);
       {
         pthread_mutex_t mutex;
@@ -422,6 +432,13 @@ namespace horizon
         ::pthread_mutex_lock(&mutex);
       }
       ::pthread_mutex_unlock(&MUTEX);
+      */
+
+      ::pthread_mutex_lock(&MUTEX);
+      {
+        res = FUSE::Operations.utimens(path, ts);
+      }
+      ::pthread_mutex_unlock(&MUTEX);
 
       return (res);
     }
@@ -434,6 +451,7 @@ namespace horizon
     {
       int               res;
 
+      /* XXX
       ::pthread_mutex_lock(&MUTEX);
       {
         pthread_mutex_t mutex;
@@ -456,6 +474,13 @@ namespace horizon
         printf("BLOCKING %p\n", &mutex);
         ::pthread_mutex_lock(&mutex);
         printf("UNBLOCKED %p\n", &mutex);
+      }
+      ::pthread_mutex_unlock(&MUTEX);
+      */
+
+      ::pthread_mutex_lock(&MUTEX);
+      {
+        res = FUSE::Operations.opendir(path, info);
       }
       ::pthread_mutex_unlock(&MUTEX);
 
