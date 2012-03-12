@@ -121,6 +121,7 @@ for f in 8infinit                               \
     satellites/dictionary/8dictionary           \
     satellites/access/8access                   \
     plasma/updater/8updater                     \
+    plasma/installer/8installer                 \
     plasma/watchdog/8watchdog
 do
     dst="$DIR_INSTALL_CLIENT_BIN/$(basename $f)"
