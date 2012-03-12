@@ -12,6 +12,8 @@ import time
 
 BUILD = os.environ['DIR_BUILD']
 
+os.environ['INFINIT_RANDOM_SOURCE'] = '/dev/urandom'
+
 def run(cmd, stdin = b'', cwd = None):
   print('Run: %s' % ' '.join(map(pipes.quote, cmd)), file = sys.stderr)
   sys.stderr.flush()
