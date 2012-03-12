@@ -95,14 +95,22 @@ for test in [
   ]:
   run(['%s/elle/test/%s/test-%s' % (BUILD, test.replace('-', '/'), test)])
 
-for test in [
-  'network-local',
-  'network-tcp',
+import time
+
+for test, args in [
+  ('network-local', ['sucemoncul']),
+  ('network-tcp', ['127.0.0.1:6666']),
 #  'network-udp',
   ]:
   b = '%s/elle/test/%s/test-%s' % (BUILD, test.replace('-', '/'), test)
-  server = subprocess.Popen([b, 'server', 'sucemoncul'])
-  client = subprocess.Popen([b, 'client', 'sucemoncul'])
+  cmd_server = [b, 'server'] + args
+  cmd_client = [b, 'client'] + args
+  print('Run: %s' % ' '.join(map(pipes.quote, cmd_server)), file = sys.stderr)
+  print('Run: %s' % ' '.join(map(pipes.quote, cmd_client)), file = sys.stderr)
+  sys.stderr.flush()
+  server = subprocess.Popen(cmd_server)
+  time.sleep(1)
+  client = subprocess.Popen(cmd_client)
   server.wait()
   client.wait()
   assert server.returncode == 0
