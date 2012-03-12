@@ -42,6 +42,22 @@ namespace elle
 // ---------- static methods --------------------------------------------------
 //
 
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
+    /** The path to read random data from.
+     *
+     * Enable for instance tests to override the random data source,
+     * so as to use /dev/urandom and avoid /dev/random enthropy
+     * starvation.
+     */
+    static const char*  random_source()
+    {
+      if (char* env = getenv("INFINIT_RANDOM_SOURCE"))
+        return env;
+      else
+        return "/dev/random";
+    }
+#endif
+
     ///
     /// this method initializes the random system.
     ///
@@ -54,7 +70,8 @@ namespace elle
         int             fd = -1;
 
         // get some random data.
-        if ((fd = ::open("/dev/random", O_RDONLY)) == -1)
+        static const char* source = random_source();
+        if ((fd = ::open(source, O_RDONLY)) == -1)
           escape(::strerror(errno));
 
         // read random data.
