@@ -123,6 +123,8 @@ do
     patchelf --set-rpath '$ORIGIN/../lib' "$dst"
 done
 
+echo "Prepare the manifest"
+${DIR_SOURCE}/farm/make_manifest "${DIR_INSTALL_CLIENT}" $major $minor $rev
 
 
 DIR_INSTALL_SERVER="$DIR_INSTALL/server"
