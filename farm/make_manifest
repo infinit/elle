@@ -36,7 +36,7 @@ if __name__ == '__main__':
             EXE_TAGS.append(
                 EXE_TAG % ("lib/" + binary, md5)
             )
-    with open(os.path.join(dest_dir, "release.xml"), "w") as f:
+    with open(os.path.join(dest_dir, "manifest.xml"), "w") as f:
         f.write(XML % {
             'major': major, 'minor': minor, 'rev': rev,
             'executables': '\n'.join(EXE_TAGS)
