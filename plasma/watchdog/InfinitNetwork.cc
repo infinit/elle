@@ -299,7 +299,7 @@ void InfinitNetwork::_StartProcess()
             << "-m" << mnt.path();
 
   this->_process.start(
-      this->_infinitHome.filePath("binaries/8infinit"),
+      this->_infinitHome.filePath("bin/8infinit"),
       arguments
   );
 

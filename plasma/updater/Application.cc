@@ -73,7 +73,8 @@ bool Application::_CheckInfinitHome()
 {
   QDir home_directory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
   if ((!home_directory.exists() && !home_directory.mkpath(".")) ||
-      (!home_directory.exists("binaries") && !home_directory.mkpath("binaries")) ||
+      (!home_directory.exists("bin") && !home_directory.mkpath("bin")) ||
+      (!home_directory.exists("lib") && !home_directory.mkpath("lib")) ||
       (!home_directory.exists("networks") && !home_directory.mkpath("networks")))
     {
       std::cerr << "Failed to prepare infinit home '"
