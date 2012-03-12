@@ -7,7 +7,7 @@ MYSELF="$0"
 error ()
 {
     for line; do
-	echo "$MYSELF: $1" 1>&2
+        echo "$MYSELF: $1" 1>&2
     done
 }
 
@@ -57,6 +57,7 @@ ship_libs ()
         case "$lib" in
             (\
              /lib64/ld-linux-x86-64.so.2|\
+             /lib/ld-linux-x86-64.so.2|\
              libICE.so.6|\
              libSM.so.6|\
              libX11.so.6|\
@@ -65,17 +66,23 @@ ship_libs ()
              libXext.so.6|\
              libXrandr.so.2|\
              libXrender.so.1|\
+             libbz2.so.1.0|\
              libc.so.6|\
+             libcrypto.so.1.0.0|\
              libdl.so.2|\
+             libffi.so.5|\
              libfontconfig.so.1|\
              libfreetype.so.6|\
              libfuse.so.2|\
              libgcc_s.so.1|\
              libglib-2.0.so.0|\
+             libgobject-2.0.so.0|\
              libgthread-2.0.so.0|\
              libm.so.6|\
+             libpcre.so.1|\
              libpthread.so.0|\
              librt.so.1|\
+             libssl.so.1.0.0|\
              libstdc++.so.6|\
              libuuid.so.1|\
              libxcb.so.1|\
@@ -90,6 +97,7 @@ ship_libs ()
              libbz2.so.1|\
              libexpat.so.1|\
              libncurses.so.5|\
+             libncursesw.so.5|\
              libpng15.so.15|\
              libpth.so.20|\
              libqjson.so.0|\
