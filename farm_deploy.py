@@ -31,6 +31,12 @@ parser.add_argument(
     action='store_true',
     default=False,
 )
+parser.add_argument(
+    '--download-only', '-d',
+    help="Only download matching archives",
+    action='store_true',
+    default=False
+)
 
 
 def getHash(tb):
@@ -177,6 +183,7 @@ if __name__ == '__main__':
                 if not data:
                     break
                 f.write(data)
-        deployTarball(t)
+        if not args.download_only:
+            deployTarball(t)
 
 
