@@ -155,6 +155,7 @@ for f in                                                \
     $(list troll -name '*.py')                          \
     meta-server                                         \
     meta-tests                                          \
+    creosus-server                                      \
     production-meta-server.sh                           \
     production-creosus-server.sh
 do
