@@ -621,9 +621,6 @@ namespace nucleus
       // retrieve the initial quill footprint.
       Quill<V>::Footprint = quill._footprint.size;
 
-      // XXX
-      printf("Quill Initial Footprint: %u\n", Quill<V>::Footprint);
-
       // register the quills to the nucleus' factory.
       {
         // register the catalog-specific quill.

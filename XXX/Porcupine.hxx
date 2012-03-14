@@ -1109,9 +1109,6 @@ namespace nucleus
 
       Ambit< Nodule<V> >        root(this->root);
 
-      // XXX
-      root.Dump();
-
       // load the root nodule.
       if (root.Load() == elle::StatusError)
         escape("unable to load the root block");
@@ -1151,6 +1148,10 @@ namespace nucleus
           if (root()->Check() == elle::StatusError)
             escape("unable to check the root nodule's consistency");
         }
+
+      // unload the root nodule.
+      if (root.Unload() == elle::StatusError)
+        escape("unable to unload the root block");
 
       return elle::StatusOk;
     }

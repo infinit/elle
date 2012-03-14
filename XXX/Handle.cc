@@ -35,7 +35,7 @@ const Handle                     Handle::Null;
 ///
 Handle::Handle():
   _block(nullptr),
-  _XXX(_block)
+  _XXX(nullptr)
 {
 }
 
@@ -44,8 +44,8 @@ Handle::Handle():
 ///
 Handle::Handle(Block*                                           block):
   address(Address::Some),
-  _block(block),
-  _XXX(_block)
+  _block(nullptr), // XXX
+  _XXX(block)
 {
 }
 
@@ -55,7 +55,7 @@ Handle::Handle(Block*                                           block):
 Handle::Handle(const Address&                                   address):
   address(address),
   _block(nullptr),
-  _XXX(_block)
+  _XXX(nullptr)
 {
 }
 
@@ -67,8 +67,8 @@ Handle::Handle(const Handle&                                    element):
 
   _placement(element._placement),
   address(element.address),
-  _block(element._block),
-  _XXX(_block)
+  _block(nullptr),
+  _XXX(element._XXX)
 {
 }
 
@@ -113,14 +113,22 @@ elle::Boolean           Handle::operator==(const Handle&        element) const
   if (this == &element)
     return elle::StatusTrue;
 
+  // XXX[ca c'est faux: si le deuxieme est pas loade, il sera null!]
+  /* XXX
   // compare the objects.
   if ((this->_block != nullptr) || (element._block != nullptr))
     {
       if (this->_block != element._block)
         return elle::StatusFalse;
     }
+  */
 
   // XXX
+  if ((this->_XXX != nullptr) || (element._XXX != nullptr))
+    {
+      if (this->_XXX != element._XXX)
+        return elle::StatusFalse;
+    }
 
   return elle::StatusTrue;
 }
@@ -166,6 +174,10 @@ elle::Status            Handle::Dump(const elle::Natural32      margin) const
       std::cout << alignment << elle::Dumpable::Shift
                 << "[_Block] " << elle::none << std::endl;
     }
+
+  // XXX
+  std::cout << alignment << elle::Dumpable::Shift
+            << "[_XXX] " << std::hex << this->_XXX << std::endl;
 
   return elle::StatusOk;
 }

@@ -47,6 +47,7 @@ int main(int argc, char** argv)
 
   std::vector<elle::String> v(n);
 
+  /* XXX
   for (int i = 0; i < n; i++)
     {
       elle::String s;
@@ -55,13 +56,28 @@ int main(int argc, char** argv)
 
       v[i] = s;
     }
+  */
+  for (int i = 0; i < n; i++)
+    {
+      char buffer[128];
+
+      sprintf(buffer, "%d", i);
+
+      elle::Digest digest;
+
+      elle::OneWay::Hash(elle::Region((elle::Byte*)buffer, strlen(buffer)),
+                         digest);
+
+      elle::String s;
+
+      elle::Hexadecimal::Encode(digest.region, s);
+
+      v[i] = s.substr(0, 16);
+    }
 
   for (int i = 0; i < n; i++)
     {
-      // XXX
-      p->Dump();
-
-      printf("-------------> %s\n", v[i].c_str());
+      printf("[%u] -------------> %s\n", i, v[i].c_str());
 
       if (p->Add(v[i], new nucleus::Catalog) == elle::StatusError)
         fail("XXX");
@@ -79,12 +95,9 @@ int main(int argc, char** argv)
     {
       nucleus::Handle   h;
 
-      printf("-------------= %s\n", v[i].c_str());
+      printf("[%u] -------------> %s\n", i, v[i].c_str());
 
       if (p->Locate(v[i], h) == elle::StatusError)
-        fail("XXX");
-
-      if (h.Unload() == elle::StatusError)
         fail("XXX");
     }
 
@@ -95,7 +108,7 @@ int main(int argc, char** argv)
 
   for (int i = 0; i < n; i++)
     {
-      printf("-------------< %s\n", v[i].c_str());
+      printf("[%u] -------------> %s\n", i, v[i].c_str());
 
       if (p->Remove(v[i]) == elle::StatusError)
         fail("XXX");

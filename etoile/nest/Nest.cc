@@ -78,7 +78,7 @@ elle::Status            Nest::Register(nucleus::Handle&         handle)
 ///
 elle::Status            Nest::Load(nucleus::Handle&             handle)
 {
-  // XXX printf("etoile::nest::Nest::Load()\n");
+  //printf("etoile::nest::Nest::Load() :: %p [%p]\n", handle._block, handle._XXX);
 
   // XXX si deja loade, rien a faire (c'est possible)
   // XXX si placement=null & address=null -> error (auquel cas il faudrait rajouter des if (address != null) avant de loader)
@@ -90,7 +90,6 @@ elle::Status            Nest::Load(nucleus::Handle&             handle)
 
   // XXX
   handle._block = handle._XXX;
-  handle._XXX = nullptr;
 
   return elle::StatusOk;
 }
@@ -100,14 +99,13 @@ elle::Status            Nest::Load(nucleus::Handle&             handle)
 ///
 elle::Status            Nest::Unload(nucleus::Handle&             handle)
 {
-  // XXX printf("etoile::nest::Nest::Unload()\n");
+  //printf("etoile::nest::Nest::Unload() :: %p [%p]\n", handle._block, handle._XXX);
 
   // XXX assert placement!=null
 
   // XXX set state as unloaded
 
   // XXX
-  handle._XXX = handle._block;
   handle._block = nullptr;
 
   return elle::StatusOk;
