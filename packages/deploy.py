@@ -16,7 +16,7 @@ parser.add_argument(
     action="append"
 )
 parser.add_argument(
-    '--last', '-l',
+    '--last',
     help="Install the last tarball in the results",
     action='store_true',
     default=False
@@ -40,6 +40,26 @@ parser.add_argument(
     action='store_true',
     default=False
 )
+
+parser.add_argument(
+    '--local',
+    help="Use local builds",
+    action='store_true',
+    default=False
+)
+parser.add_argument(
+    '--local-client',
+    help="Use local client builds",
+    action='store_true',
+    default=False
+)
+parser.add_argument(
+    '--local-server',
+    help="Use local server builds",
+    action='store_true',
+    default=False
+)
+
 
 def dumpReleases(releases):
     for hash, tarballs in releases.items():
@@ -108,11 +128,7 @@ def yesno(s, default=False):
 #        raise Exception("Unknown tarball type!")
 #    os.system('rm -rf "%s"' % tarball)
 
-
-
-if __name__ == '__main__':
-    args = parser.parse_args()
-
+def getFarmBuild(args):
     if args.last:
         tarballs = libpkg.farm.getLastTarballs(args.match)
     else:
@@ -142,6 +158,19 @@ if __name__ == '__main__':
         sys.exit(1)
 
     build = libpkg.FarmBuild(to_install, releases[to_install])
+
+
+if __name__ == '__main__':
+    args = parser.parse_args()
+
+    if args.local:
+        args.local_client = True
+        args.local_server = True
+    if args.local_client or args.local_server:
+        build = libpkg.LocalBuild(os.path.join(os.path.dirname(__file__), '../build'))
+    else:
+        build = getFarmBuild(args)
+
 
     print("Selected build (", build.hash, "):")
     print("\t- Server build:", build.has_server)

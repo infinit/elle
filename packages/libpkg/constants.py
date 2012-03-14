@@ -1,5 +1,12 @@
 # -*- encoding: utf-8 -*-
 
+import os
+
+PREPARE_LOCAL_BUILD_SCRIPT = os.path.abspath(os.path.join(
+    os.path.dirname(__file__),
+    "prepare_local_build.sh"
+))
+
 FARM_URI = 'https://farm.infinit.io'
 FARM_USER = 'farm'
 FARM_PASSWORD = 'iegh_aJ2'
@@ -25,6 +32,8 @@ class Platforms:
     """Platforms list"""
 
     LINUX = 1
+    MACOSX = 2
+    WINDOWS = 3
 
     @classmethod
     def toString(cls, platform):

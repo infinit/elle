@@ -2,6 +2,7 @@
 
 from libpkg import farm
 from libpkg.farmbuild import FarmBuild
+from libpkg.localbuild import LocalBuild
 
 from libpkg.packagers import debian
 
