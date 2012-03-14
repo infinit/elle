@@ -60,6 +60,17 @@ namespace nucleus
     {
     public:
       //
+      // enumerations
+      //
+      /* XXX[new or existing]
+      enum Status
+        {
+          StatusLoaded,
+          StatusUnloaded
+        };
+      */
+
+      //
       // constants
       //
       static const Handle               Null;
@@ -76,12 +87,8 @@ namespace nucleus
       //
       // methods
       //
-      // XXX[rename Create into Update]
-      elle::Status      Create(const Address&,
-                               Block*);
-
-      template <typename T>
-      elle::Status      Use(T*&);
+      elle::Status      Load();
+      elle::Status      Unload();
 
       //
       // interfaces
@@ -101,22 +108,15 @@ namespace nucleus
       //
       // attributes
       //
-      Address           address;
-
-      Block*            _block;
-
       Placement         _placement;
+
+      Address           address;
+      Block*            _block;
 
       Block* _XXX;
     };
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
-
-#include <XXX/Handle.hxx>
 
 #endif

@@ -16,6 +16,9 @@
 //
 
 #include <nucleus/Nucleus.hh>
+#include <XXX/Handle.hh>
+
+#include <map>
 
 namespace etoile
 {

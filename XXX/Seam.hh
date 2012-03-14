@@ -82,12 +82,6 @@ namespace nucleus
         typedef typename Container::reverse_iterator            Backward;
       };
 
-      struct                                                    Scoutor
-      {
-        typedef typename Container::const_iterator              Forward;
-        typedef typename Container::const_reverse_iterator      Backward;
-      };
-
       //
       // constructors & destructors
       //
@@ -114,14 +108,14 @@ namespace nucleus
       elle::Status              Lookup(const typename V::K&,
                                        I*&);
       elle::Status              Lookup(const typename V::K&,
-                                       Nodule<V>*&);
+                                       Handle&);
 
       elle::Status              Locate(const typename V::K&,
                                        typename Iterator::Forward&);
       elle::Status              Locate(const typename V::K&,
                                        I*&);
       elle::Status              Locate(const typename V::K&,
-                                       Nodule<V>*&);
+                                       Handle&);
 
       elle::Status              Update(const typename V::K&,
                                        const typename V::K&);
@@ -139,7 +133,7 @@ namespace nucleus
       elle::Status              Mayor(typename V::K&) const;
       elle::Status              Maiden(typename V::K&) const;
       elle::Status              Search(const typename V::K&,
-                                       Quill<V>*&);
+                                       Handle&);
       elle::Status              Check() const;
 
       // dumpable

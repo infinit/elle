@@ -16,7 +16,6 @@
 #include <hole/Hole.hh>
 
 #include <XXX/Porcupine.hh>
-#include <XXX/Nest.hh>
 
 int main(int argc, char** argv)
 {
@@ -37,14 +36,12 @@ int main(int argc, char** argv)
   expose();
 
   // XXX
-  nucleus::Porcupine<>::Initialize();
+  nucleus::Porcupine<>::Initialize(
+    elle::Callback<>::Infer(&etoile::Nest::Load),
+    elle::Callback<>::Infer(&etoile::Nest::Unload));
 
   nucleus::Porcupine<nucleus::Catalog>* p =
     new nucleus::Porcupine<nucleus::Catalog>;
-
-  nucleus::Nest::Setup(
-    elle::Callback<>::Infer(&etoile::Nest::Load),
-    elle::Callback<>::Infer(&etoile::Nest::Unload));
 
   const int n = 50000;
 
@@ -61,9 +58,15 @@ int main(int argc, char** argv)
 
   for (int i = 0; i < n; i++)
     {
+      // XXX
+      p->Dump();
+
       printf("-------------> %s\n", v[i].c_str());
 
       if (p->Add(v[i], new nucleus::Catalog) == elle::StatusError)
+        fail("XXX");
+
+      if (p->Check() == elle::StatusError)
         fail("XXX");
     }
 
@@ -74,11 +77,14 @@ int main(int argc, char** argv)
 
   for (int i = 0; i < n; i++)
     {
-      nucleus::Catalog* c;
+      nucleus::Handle   h;
 
       printf("-------------= %s\n", v[i].c_str());
 
-      if (p->Locate(v[i], c) == elle::StatusError)
+      if (p->Locate(v[i], h) == elle::StatusError)
+        fail("XXX");
+
+      if (h.Unload() == elle::StatusError)
         fail("XXX");
     }
 

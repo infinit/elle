@@ -114,7 +114,7 @@ namespace nucleus
                                     V*);
       elle::Status              Exist(const typename V::K&);
       elle::Status              Locate(const typename V::K&,
-                                       V*&);
+                                       Handle&);
       elle::Status              Remove(const typename V::K&);
 
       template <typename N,
@@ -130,7 +130,7 @@ namespace nucleus
       elle::Status              Shrink();
 
       elle::Status              Search(const typename V::K&,
-                                       Quill<V>*&);
+                                       Handle&);
 
       elle::Status              Check();
 
@@ -165,8 +165,38 @@ namespace nucleus
       //
       // static methods
       //
-      static elle::Status       Initialize();
+      static elle::Status       Initialize(
+        const elle::Callback<
+          elle::Status,
+          elle::Parameters<
+            Handle&
+            >
+          >&,
+        const elle::Callback<
+          elle::Status,
+          elle::Parameters<
+            Handle&
+            >
+          >&);
       static elle::Status       Clean();
+
+      //
+      // static attributes
+      //
+      static
+      elle::Callback<
+        elle::Status,
+        elle::Parameters<
+          Handle&
+          >
+        >                       Load;
+      static
+      elle::Callback<
+        elle::Status,
+        elle::Parameters<
+          Handle&
+          >
+        >                       Unload;
     };
 
   }

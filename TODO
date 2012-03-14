@@ -1,7 +1,20 @@
+- replacer les attributs _* dans nucleus en *.
+- mettre le Infinit::Configuration dans Hole::Configuration du coup.
+- prevoir pour que plusieurs users puissent se logguer: lien symbolique cree par updater.
+
 - large files:
+ - gerer un compteur pour le nombre de Load/Unload i.e ne pas virer un block qui vient d'etre unload.
+ - virer les Lookup/Locate qui retourne un Nodule charge, c'est pas normal en fait.
+ - placer les Unload() i.e virer le Unload automatic
+ - operator comparaison entre handle
+ - register les nouveaux blocs
+ - ajouter un status (created or not)
+ - pour pouvoir mettre les blocs non crees dans une liste pour future deletion
  - trouver les unload
  - scoper les handles pour etre sur qu'ils sont unloaded lors d'une erreur
  - en profiter pour nommer proprement via les scopes
+ - test: on unload les blocs sur disque, on supprime tout et on verifie qu'il n'en reste aucun.
+ - pour cela le unregister d'un block (nouvellement cree un non) doit le supprimer du nest.
 
 - register/auth
  - creer le login/pass localement et envoyer le hash a meta

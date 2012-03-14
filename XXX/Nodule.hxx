@@ -59,6 +59,7 @@ namespace nucleus
     {
       T*                                left = static_cast<T*>(this);
       elle::Natural32                   footprint;
+      auto                              end = left->container.end();
       typename T::Iterator::Forward     i;
       typename T::Iterator::Forward     j;
 
@@ -68,9 +69,7 @@ namespace nucleus
       // go through the left nodule's entries until the future size is reached
       // after which all the remaining entries will be moved to the right
       // nodule.
-      for (i = left->container.begin();
-           i != left->container.end();
-           i++)
+      for (i = left->container.begin(); i != end; ++i)
         {
           typename T::I*                inlet = i->second;
 
@@ -94,7 +93,7 @@ namespace nucleus
 
       // go through the remaining entries in order to move them to
       // the right nodule.
-      for (j = i; j != left->container.end(); j++)
+      for (j = i; j != end; ++j)
         {
           typename T::I*                inlet = j->second;
 
@@ -108,7 +107,7 @@ namespace nucleus
         }
 
       // remove the right entries from the left nodule.
-      left->container.erase(i, left->container.end());
+      left->container.erase(i, end);
 
       // set the nodules' states.
       left->_state = StateDirty;
@@ -135,6 +134,7 @@ namespace nucleus
     {
       T*                                left = static_cast<T*>(this);
       elle::Natural32                   footprint;
+      auto                              rend = right->container.rend();
       typename T::Iterator::Backward    i;
       typename T::Iterator::Backward    j;
 
@@ -144,9 +144,7 @@ namespace nucleus
       // go through the right nodule's entries until the future size is reached
       // after which all the remaining entries will be moved to the left
       // nodule.
-      for (i = right->container.rbegin();
-           i != right->container.rend();
-           i++)
+      for (i = right->container.rbegin(); i != rend; ++i)
         {
           typename T::I*                inlet = i->second;
 
@@ -170,7 +168,7 @@ namespace nucleus
 
       // go through the remaining entries in order to move them to
       // the left nodule.
-      for (j = i; j != right->container.rend(); j++)
+      for (j = i; j != rend; ++j)
         {
           typename T::I*                inlet = j->second;
 

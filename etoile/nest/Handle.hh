@@ -38,7 +38,7 @@ namespace etoile
       //
       // enumerations
       //
-      enum Nature
+      enum Nature // XXX
         {
           NatureNew,
           NatureExisting

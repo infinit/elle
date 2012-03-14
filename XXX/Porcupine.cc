@@ -20,14 +20,54 @@ namespace nucleus
   {
 
 //
+// ---------- definitions -----------------------------------------------------
+//
+
+///
+/// XXX
+///
+elle::Callback<
+  elle::Status,
+  elle::Parameters<
+    Handle&
+    >
+  >                                     Porcupine<>::Load;
+
+///
+/// XXX
+///
+elle::Callback<
+  elle::Status,
+  elle::Parameters<
+    Handle&
+    >
+  >                                     Porcupine<>::Unload;
+
+//
 // ---------- static methods --------------------------------------------------
 //
 
     ///
     /// this method initializes the porcupine.
     ///
-    elle::Status        Porcupine<>::Initialize()
+    elle::Status        Porcupine<>::Initialize(
+      const elle::Callback<
+        elle::Status,
+        elle::Parameters<
+          Handle&
+        >
+      >&                                                        load,
+      const elle::Callback<
+        elle::Status,
+        elle::Parameters<
+          Handle&
+        >
+      >&                                                        unload)
     {
+      // set the callbacks.
+      Porcupine<>::Load = load;
+      Porcupine<>::Unload = unload;
+
       //
       // catalog-specific initialization.
       //

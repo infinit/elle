@@ -152,7 +152,6 @@ target_link_libraries(8infinit
 ADD_EXECUTABLE(XXX
   XXX/Porcupine.cc
   XXX/XXX.cc
-  XXX/Nest.cc
   XXX/Handle.cc
   XXX/Placement.cc
 )

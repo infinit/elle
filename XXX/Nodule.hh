@@ -93,7 +93,7 @@ namespace nucleus
       virtual elle::Status      Mayor(typename V::K&) const = 0;
       virtual elle::Status      Maiden(typename V::K&) const = 0;
       virtual elle::Status      Search(const typename V::K&,
-                                       Quill<V>*&) = 0;
+                                       Handle&) = 0;
       virtual elle::Status      Check() const = 0;
 
       //

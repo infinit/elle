@@ -13,6 +13,7 @@
 //
 
 #include <XXX/Handle.hh>
+#include <XXX/Porcupine.hh>
 
 using namespace nucleus::proton;
 
@@ -33,7 +34,8 @@ const Handle                     Handle::Null;
 /// default constructor.
 ///
 Handle::Handle():
-  _block(nullptr)
+  _block(nullptr),
+  _XXX(_block)
 {
 }
 
@@ -41,8 +43,9 @@ Handle::Handle():
 /// XXX
 ///
 Handle::Handle(Block*                                           block):
-address(Address::Some), // XXX[???]
-_block(block) // XXX
+  address(Address::Some),
+  _block(block),
+  _XXX(_block)
 {
 }
 
@@ -50,29 +53,11 @@ _block(block) // XXX
 /// XXX
 ///
 Handle::Handle(const Address&                                   address):
-address(address),
-_block(nullptr)
+  address(address),
+  _block(nullptr),
+  _XXX(_block)
 {
 }
-
-/* XXX
-   XXX
-   - on load un block.
-   - on veut loader son frere gauche, on load a partir de l addresse.
-   - le nest regarde si il a un mapping entre cette adresse et un block
-   deja loade mais qui a ete modifie. si cest le cas, le mapping nous donne
-   le placement du block et on le recupere.
-   - sinon on recupere a partir de hole.
-
-   - en soit on a 3 cas:
-   - si le handle a un pointer, on l utilise.
-   - si le handle a un placement, on recupere le block du nest
-   - sinon, on prend l address, et on load a partir du nest (mais le
-   mapping pourrait nous retourner un block deja loade)
-
-   - a noter que peut etre qu il serait utile de garder le handle dans chaque
-   nodule pour eviter de recalculer.
-*/
 
 ///
 /// the copy constructor.
@@ -80,9 +65,10 @@ _block(nullptr)
 Handle::Handle(const Handle&                                    element):
   elle::Object(element),
 
+  _placement(element._placement),
   address(element.address),
   _block(element._block),
-  _placement(element._placement)
+  _XXX(_block)
 {
 }
 
@@ -101,14 +87,17 @@ Handle::~Handle()
 ///
 /// XXX
 ///
-elle::Status        Handle::Create(const Address&               address,
-                                   Block*                       block)
+elle::Status            Handle::Load()
 {
-  // set the attributes.
-  this->address = address;
-  this->_block = block;
+  return (Porcupine<>::Load.Call(*this));
+}
 
-  return elle::StatusOk;
+///
+/// XXX
+///
+elle::Status            Handle::Unload()
+{
+  return (Porcupine<>::Unload.Call(*this));
 }
 
 //
@@ -118,7 +107,7 @@ elle::Status        Handle::Create(const Address&               address,
 ///
 /// this operator compares two objects.
 ///
-elle::Boolean       Handle::operator==(const Handle&            element) const
+elle::Boolean           Handle::operator==(const Handle&        element) const
 {
   // check the address as this may actually be the same object.
   if (this == &element)
@@ -148,11 +137,15 @@ embed(Handle, _());
 ///
 /// XXX
 ///
-elle::Status        Handle::Dump(const elle::Natural32          margin) const
+elle::Status            Handle::Dump(const elle::Natural32      margin) const
 {
-  elle::String      alignment(margin, ' ');
+  elle::String          alignment(margin, ' ');
 
   std::cout << alignment << "[Handle]" << std::endl;
+
+  // dump the placement.
+  if (this->_placement.Dump(margin + 2) == elle::StatusError)
+    escape("unable to dump the placement");
 
   // dump the address.
   if (this->address.Dump(margin + 2) == elle::StatusError)
@@ -171,13 +164,8 @@ elle::Status        Handle::Dump(const elle::Natural32          margin) const
   else
     {
       std::cout << alignment << elle::Dumpable::Shift
-                << elle::Dumpable::Shift
                 << "[_Block] " << elle::none << std::endl;
     }
-
-  // dump the placement.
-  if (this->_placement.Dump(margin + 2) == elle::StatusError)
-    escape("unable to dump the placement");
 
   return elle::StatusOk;
 }
@@ -189,7 +177,7 @@ elle::Status        Handle::Dump(const elle::Natural32          margin) const
 ///
 /// this method serializes the object.
 ///
-elle::Status        Handle::Serialize(elle::Archive&            archive) const
+elle::Status            Handle::Serialize(elle::Archive&        archive) const
 {
   if (archive.Serialize(this->address) == elle::StatusError)
     escape("unable to serialize the attribtues");
@@ -200,7 +188,7 @@ elle::Status        Handle::Serialize(elle::Archive&            archive) const
 ///
 /// this method extracts the object.
 ///
-elle::Status        Handle::Extract(elle::Archive&              archive)
+elle::Status            Handle::Extract(elle::Archive&          archive)
 {
   if (archive.Extract(this->address) == elle::StatusError)
     escape("unable to extract the attribtues");
