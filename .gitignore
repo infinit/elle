@@ -9,3 +9,4 @@ work
 *.swp
 releases/
 *.so
+__pycache__
