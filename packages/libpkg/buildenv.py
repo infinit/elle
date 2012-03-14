@@ -15,7 +15,7 @@ class BuildEnv:
 
     """
 
-    def __init__(self, platform, architecture):
+    def __init__(self, architecture, platform):
         self.platform = platform
         self.architecture = architecture
 

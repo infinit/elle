@@ -9,7 +9,7 @@ import os
 import sys
 import libpkg
 
-parser = argparse.ArgumentParser(description="Deploy infinit")
+parser = argparse.ArgumentParser(description="Deploy infinit packages")
 parser.add_argument(
     "--match", '-m',
     help="filter with a simple pattern",
@@ -21,7 +21,6 @@ parser.add_argument(
     action='store_true',
     default=False
 )
-
 parser.add_argument(
     '--print', '-p',
     help="Only print matching releases",
@@ -34,13 +33,6 @@ parser.add_argument(
     action='store_true',
     default=False,
 )
-parser.add_argument(
-    '--download-only', '-d',
-    help="Only download matching archives",
-    action='store_true',
-    default=False
-)
-
 parser.add_argument(
     '--local',
     help="Use local builds",
@@ -157,7 +149,7 @@ def getFarmBuild(args):
     if not to_install:
         sys.exit(1)
 
-    build = libpkg.FarmBuild(to_install, releases[to_install])
+    return libpkg.FarmBuild(to_install, releases[to_install])
 
 
 if __name__ == '__main__':

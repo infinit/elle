@@ -58,19 +58,24 @@ ship_libs ()
             (\
              /lib64/ld-linux-x86-64.so.2|\
              /lib/ld-linux-x86-64.so.2|\
+             /lib/ld-linux.so.2|\
              libICE.so.6|\
              libSM.so.6|\
              libX11.so.6|\
              libXau.so.6|\
              libXdmcp.so.6|\
              libXext.so.6|\
+             libXi.so.6|\
              libXrandr.so.2|\
              libXrender.so.1|\
+             libXt.so.6|\
+             libaudio.so.2|\
              libbz2.so.1.0|\
              libc.so.6|\
              libcrypto.so.1.0.0|\
              libdl.so.2|\
              libffi.so.5|\
+             libffi.so.6|\
              libfontconfig.so.1|\
              libfreetype.so.6|\
              libfuse.so.2|\
@@ -80,13 +85,16 @@ ship_libs ()
              libgthread-2.0.so.0|\
              libm.so.6|\
              libpcre.so.1|\
+             libpcre.so.3|\
              libpthread.so.0|\
              librt.so.1|\
              libssl.so.1.0.0|\
              libstdc++.so.6|\
+             libtinfo.so.5|\
              libuuid.so.1|\
              libxcb.so.1|\
-             linux-vdso.so.1\
+             linux-vdso.so.1|\
+             linux-gate.so.1\
              )
                 ;;
             (\
@@ -99,6 +107,7 @@ ship_libs ()
              libncurses.so.5|\
              libncursesw.so.5|\
              libpng15.so.15|\
+             libpng12.so.0|\
              libpth.so.20|\
              libqjson.so.0|\
              libreadline.so.6|\

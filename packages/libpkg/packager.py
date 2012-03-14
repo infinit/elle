@@ -91,7 +91,7 @@ class Packager:
         return packages
 
     ##
-    ## To be implemented
+    ## To be implemented in subclasses
     ##
     @property
     def name(self):
@@ -105,7 +105,7 @@ class Packager:
 
     @property
     def is_available(self):
-        """Check wether or not the packager will work on this system."""
+        """Check wether or not the packager should work on this system."""
         raise NotImplemented()
 
     @property

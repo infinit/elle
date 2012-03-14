@@ -18,7 +18,7 @@ Priority: optional
 Architecture: %(architecture)s
 Essential: no
 Depends: libqt4-core (>= 4:4.7), libqt4-network, libqt4-xml, libqt4-gui,
-         libssl (>= 1.0.0), libfuse2, libqjson0
+         libssl1.0.0, libfuse2, libqjson0, libreadline5
 Maintainer: Infinit.io <debian@infinit.io>
 Description: Provide a secure, distributed and cross-platform filesystem.
 """
@@ -30,7 +30,9 @@ Description: Provide a secure, distributed and cross-platform filesystem.
     def package_extension(self): return 'deb'
 
     @property
-    def is_available(self): return os.system('which dpkg') == 0
+    def is_available(self):
+        # XXX and patchelf
+        return os.system('which dpkg') == 0
 
     @property
     def compatible_platforms(self):
@@ -45,7 +47,9 @@ Description: Provide a secure, distributed and cross-platform filesystem.
         try:
             pkgdir = os.path.join(tempdir, 'pkg')
             shutil.copytree(build_env.directory, pkgdir)
-            print('pkg =', pkgdir)
+            # XXX copy only what is needed
+            os.system('rm -rf "%s"/lib' % pkgdir)
+            os.system('rm -f "%s"/manifest.xml' % pkgdir)
             debian_dir = os.path.join(pkgdir, 'DEBIAN')
             os.mkdir(debian_dir)
             with open(os.path.join(debian_dir, "control"), 'w') as f:
