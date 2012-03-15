@@ -100,6 +100,7 @@ class Packager:
             assert os.path.isfile(path)
             packages.append(Package(
                 kind=self.name,
+                file=res,
                 path=path,
                 architecture=architecture,
                 platform=platform,
