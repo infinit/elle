@@ -37,6 +37,8 @@ int main(int argc, char** argv)
 
   // XXX
   nucleus::Porcupine<>::Initialize(
+    elle::Callback<>::Infer(&etoile::Nest::Attach),
+    elle::Callback<>::Infer(&etoile::Nest::Detach),
     elle::Callback<>::Infer(&etoile::Nest::Load),
     elle::Callback<>::Infer(&etoile::Nest::Unload));
 
@@ -47,7 +49,6 @@ int main(int argc, char** argv)
 
   std::vector<elle::String> v(n);
 
-  /* XXX
   for (int i = 0; i < n; i++)
     {
       elle::String s;
@@ -56,7 +57,7 @@ int main(int argc, char** argv)
 
       v[i] = s;
     }
-  */
+  /*
   for (int i = 0; i < n; i++)
     {
       char buffer[128];
@@ -74,6 +75,7 @@ int main(int argc, char** argv)
 
       v[i] = s.substr(0, 16);
     }
+  */
 
   for (int i = 0; i < n; i++)
     {
@@ -95,7 +97,7 @@ int main(int argc, char** argv)
     {
       nucleus::Handle   h;
 
-      printf("[%u] -------------> %s\n", i, v[i].c_str());
+      printf("[%u] -------------= %s\n", i, v[i].c_str());
 
       if (p->Locate(v[i], h) == elle::StatusError)
         fail("XXX");
@@ -108,7 +110,7 @@ int main(int argc, char** argv)
 
   for (int i = 0; i < n; i++)
     {
-      printf("[%u] -------------> %s\n", i, v[i].c_str());
+      printf("[%u] -------------< %s\n", i, v[i].c_str());
 
       if (p->Remove(v[i]) == elle::StatusError)
         fail("XXX");

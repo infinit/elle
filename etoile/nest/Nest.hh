@@ -18,6 +18,8 @@
 #include <nucleus/Nucleus.hh>
 #include <XXX/Handle.hh>
 
+#include <etoile/nest/Pod.hh>
+
 #include <map>
 
 namespace etoile
@@ -29,13 +31,32 @@ namespace etoile
 // ---------- classes ---------------------------------------------------------
 //
 
-/* XXX
-   recup block via placement
-    - load classique de memoire
-    - load via disque: placement represente le nom du fichier
-    - load via adresse: le block recherche est peut etre deja dans le nest,
-        et a deja peut etre ete modifie -> meme handle/_block
- */
+    /* XXX
+
+1) on cree un quill, seam ou catalog
+
+ -> aucune addresse
+ -> on genere un handle avec un placement
+
+2) on load un quill, seam ou catalog: addresse
+
+ -> on a une addresse
+ -> le nest fait une recherche sur addresse
+ -> nous retourne un placement (soit existant soit nouveau)
+
+3) on load un quill, seam ou catalog: placement
+
+ -> c'est direct!
+
+4) on unload un quill, sean ou catalog
+
+ -> puisqu'il a ete loade, il doit avoir un placement
+
+placement: nouveau
+address: existant ET non-loaded
+placement & address: existant ET loaded
+
+     */
 
     ///
     /// XXX
@@ -48,27 +69,37 @@ namespace etoile
       //
       struct P
       {
-        typedef std::map<const nucleus::Placement,
-                         nucleus::Handle*>              Container;
-        typedef typename Container::iterator            Iterator;
-        typedef typename Container::const_iterator      Scoutor;
+        typedef std::map<const nucleus::Placement, Pod*>        Container;
+        typedef typename Container::iterator                    Iterator;
       };
 
       struct A
       {
-        typedef std::map<const nucleus::Address,
-                         nucleus::Handle*>              Container;
-        typedef typename Container::iterator            Iterator;
-        typedef typename Container::const_iterator      Scoutor;
+        typedef std::map<const nucleus::Address, Pod*>          Container;
+        typedef typename Container::iterator                    Iterator;
       };
 
       //
       // static methods
       //
-      static elle::Status       Register(nucleus::Handle&);
-
+      static elle::Status       Attach(nucleus::Block*,
+                                       nucleus::Handle&);
+      static elle::Status       Detach(nucleus::Handle&);
       static elle::Status       Load(nucleus::Handle&);
       static elle::Status       Unload(nucleus::Handle&);
+
+      static elle::Status       Exist(const nucleus::Placement&);
+      static elle::Status       Exist(const nucleus::Address&);
+      static elle::Status       Add(const nucleus::Placement&,
+                                    Pod*);
+      static elle::Status       Add(const nucleus::Address&,
+                                    Pod*);
+      static elle::Status       Retrieve(const nucleus::Placement&,
+                                         Pod*&);
+      static elle::Status       Retrieve(const nucleus::Address&,
+                                         Pod*&);
+      static elle::Status       Remove(const nucleus::Placement&);
+      static elle::Status       Retrieve(const nucleus::Address&);
 
       //
       // static attributes

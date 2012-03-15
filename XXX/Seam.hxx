@@ -132,7 +132,7 @@ namespace nucleus
       assert(child() != nullptr);
 
       // set the child nodule's parent handle.
-      child()->parent = Handle(this);
+      // child()->parent = Handle(this); // XXX[impossible]
 
       // unload the child nodule.
       if (child.Unload() == elle::StatusError)

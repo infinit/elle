@@ -65,7 +65,7 @@ namespace nucleus
       assert(leaf() != nullptr);
 
       // insert the key/value tuple in the given quill.
-      if (this->Insert(leaf(), key, value) == elle::StatusError)
+      if (this->Insert(leaf(), key, value) == elle::StatusError) // XXX[ici tenter un this->Insert<Quill>(handle, key, value)
         escape("unable to insert the key/value tuple");
 
       // unload the block.
@@ -230,7 +230,12 @@ namespace nucleus
       if ((_current->_footprint.size + inlet.get()->_footprint.size) >
           hole::Hole::Descriptor.extent)
         {
-          N*            _right;
+          struct
+          {
+            Handle              right;
+            Handle              parent;
+          }                     handle;
+          N*                    _right;
 
           // first, retrieve the mayor key of the current nodule.
           if (_current->Mayor(mayor.current.ancient) == elle::StatusError)
@@ -248,6 +253,11 @@ namespace nucleus
           if (_current->Split(_right) == elle::StatusError)
             escape("unable to split the nodule");
 
+          // attach the block to the porcupine.
+          if (Porcupine<>::Attach.Call(_right,
+                                       handle.right) == elle::StatusError)
+            escape("unable to attach the block");
+
           //
           // update the nodule's previous right neighbour.
           //
@@ -263,6 +273,14 @@ namespace nucleus
           //
 
           Ambit<N>              right(_current->right);
+          Ambit<N>              newright(handle.right);
+
+          // load the new right nodule.
+          if (newright.Load() == elle::StatusError) // XXX[faire le unload]
+            escape("unable to load the block");
+
+          // at this point, the new right nodule must have been loaded.
+          assert(newright() != nullptr);
 
           // load the right nodule, if possible.
           if (right.Load() == elle::StatusError)
@@ -270,14 +288,14 @@ namespace nucleus
 
           // update the old right nodule's neighbour links, if required.
           if (right() != nullptr)
-            right()->left = Handle(_right);
+            right()->left = newright.handle;
 
           // set the new right nodule's neighbour links.
-          _right->left = Handle(_current);
-          _right->right = _current->right;
+          //newright()->left = Handle(_current); // XXX[pas bon, on ne fait pas le lien avec le placement]
+          newright()->right = _current->right;
 
           // finally, update the current nodule's right neighbour link.
-          _current->right = Handle(_right);
+          _current->right = newright.handle;
 
           // unload the right nodule.
           if (right.Unload() == elle::StatusError)
@@ -299,7 +317,7 @@ namespace nucleus
           else
             {
               // insert the inlet to the right nodule.
-              if (_right->Insert(inlet.get()) == elle::StatusError)
+              if (newright()->Insert(inlet.get()) == elle::StatusError)
                 escape("unable to insert the inlet to the nodule");
             }
 
@@ -307,7 +325,6 @@ namespace nucleus
           inlet.release();
 
           Ambit< Nodule<V> >    root(this->root);
-          Handle                handle;
 
           // load the root nodule, if possible.
           if (root.Load() == elle::StatusError)
@@ -331,7 +348,7 @@ namespace nucleus
               assert(newroot() != nullptr);
 
               // set the parent handle from the new root.
-              handle = newroot.handle;
+              handle.parent = newroot.handle;
 
               // unload the new root nodule.
               if (newroot.Unload() == elle::StatusError)
@@ -349,7 +366,7 @@ namespace nucleus
               assert(parent() != nullptr);
 
               // set the handle from the parent's.
-              handle = parent.handle;
+              handle.parent = parent.handle;
 
               // retrieve the current nodule's new mayor key.
               if (_current->Mayor(mayor.current.recent) == elle::StatusError)
@@ -375,7 +392,7 @@ namespace nucleus
           if (root.Unload() == elle::StatusError)
             escape("unable to unload the block");
 
-          Ambit< Seam<V> >      parent(handle);
+          Ambit< Seam<V> >      parent(handle.parent);
 
           // load the selected parent seam.
           if (parent.Load() == elle::StatusError)
@@ -385,17 +402,21 @@ namespace nucleus
           assert(parent() != nullptr);
 
           // retrieve the right nodule's mayor key.
-          if (_right->Mayor(mayor.right.recent) == elle::StatusError)
+          if (newright()->Mayor(mayor.right.recent) == elle::StatusError)
             escape("unable to retrieve the mayor key");
 
           // insert the right nodule in its new parent.
           if (this->Insert(parent(),
                            mayor.right.recent,
-                           _right) == elle::StatusError)
+                           newright()) == elle::StatusError)
             escape("unable to insert the right nodule to its parent");
 
           // unload the selected parent seam.
           if (parent.Unload() == elle::StatusError)
+            escape("unable to unload the block");
+
+          // unload the new right nodule.
+          if (newright.Unload() == elle::StatusError)
             escape("unable to unload the block");
         }
       else
@@ -753,6 +774,10 @@ namespace nucleus
               if (right() != nullptr)
                 right()->left = _current->left;
 
+              // at this point, _current is empty and unreferenced.
+              // therefore, detach the block from the porcupine.
+              // XXX if (Porcupine<>::Detach( ... here pass the _current's handle.
+
               // in this case, the parent nodule must exist and
               // have been loaded.
               assert(parent() != nullptr);
@@ -939,15 +964,13 @@ namespace nucleus
           if (root.get()->Create() == elle::StatusError)
             escape("unable to create the quill");
 
-          // create the root handle.
-          this->root = Handle(root.get());
+          // attach the block to the porcupine.
+          if (Porcupine<>::Attach.Call(root.get(),
+                                       this->root) == elle::StatusError)
+            escape("unable to attach the block");
 
           // waive the tracking.
           root.release();
-
-          // register the new block.
-          // XXX NestRegister(this->root);
-          // XXX unload? ou plutot besoin de faire load pour l'utiliser proprement apres register.
         }
       else
         {
@@ -981,11 +1004,13 @@ namespace nucleus
                                     root()) == elle::StatusError)
             escape("unable to add the current root in the new root nodule");
 
-          // link the existing root to its new parent i.e the new root.
-          root()->parent = Handle(newroot.get());
+          // attach the block to the porcupine.
+          if (Porcupine<>::Attach.Call(newroot.get(),
+                                       this->root) == elle::StatusError)
+            escape("unable to attach the block");
 
-          // set the new root.
-          this->root = root()->parent;
+          // link the existing root to its new parent i.e the new root.
+          root()->parent = this->root;
 
           // at this point the new root must have no parent.
           assert(newroot.get()->parent == Handle::Null);
@@ -1046,10 +1071,13 @@ namespace nucleus
       // set the new root nodule.
       this->root = inlet->value;
 
-      // delete the root.
-      delete root();
+      // unload the root nodule.
+      if (root.Unload() == elle::StatusError)
+        escape("unable to unload the root block");
 
-      // XXX[unregister the block]
+      // detach the block from the porcupine.
+      if (Porcupine<>::Detach.Call(root.handle) == elle::StatusError)
+        escape("unable to detach the block from the porcupine");
 
       Ambit< Seam<V> >          newroot(this->root);
 

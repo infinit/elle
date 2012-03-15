@@ -32,7 +32,14 @@ namespace nucleus
       //
       // constants
       //
-      static const Placement    Null;
+      static const elle::Natural64      Zero;
+
+      static const Placement            Null;
+
+      //
+      // static attribute
+      //
+      static elle::Natural64            Counter;
 
       //
       // constructors & destructors
@@ -46,6 +53,11 @@ namespace nucleus
       // object
       declare(Placement);
       elle::Boolean             operator==(const Placement&) const;
+      elle::Boolean             operator<(const Placement&) const;
+
+      // archivable
+      elle::Status              Serialize(elle::Archive&) const;
+      elle::Status              Extract(elle::Archive&);
 
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;
@@ -53,7 +65,12 @@ namespace nucleus
       //
       // attributes
       //
-      elle::Natural64           number;
+      elle::Natural64           value;
+
+      //
+      // static methods
+      //
+      static elle::Status       Generate(Placement&);
     };
 
   }

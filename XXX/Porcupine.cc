@@ -29,6 +29,27 @@ namespace nucleus
 elle::Callback<
   elle::Status,
   elle::Parameters<
+    Block*,
+    Handle&
+    >
+  >                                     Porcupine<>::Attach;
+
+///
+/// XXX
+///
+elle::Callback<
+  elle::Status,
+  elle::Parameters<
+    Handle&
+    >
+  >                                     Porcupine<>::Detach;
+
+///
+/// XXX
+///
+elle::Callback<
+  elle::Status,
+  elle::Parameters<
     Handle&
     >
   >                                     Porcupine<>::Load;
@@ -54,6 +75,19 @@ elle::Callback<
       const elle::Callback<
         elle::Status,
         elle::Parameters<
+          Block*,
+          Handle&
+        >
+      >&                                                        attach,
+      const elle::Callback<
+        elle::Status,
+        elle::Parameters<
+          Handle&
+        >
+      >&                                                        detach,
+      const elle::Callback<
+        elle::Status,
+        elle::Parameters<
           Handle&
         >
       >&                                                        load,
@@ -65,6 +99,8 @@ elle::Callback<
       >&                                                        unload)
     {
       // set the callbacks.
+      Porcupine<>::Attach = attach;
+      Porcupine<>::Detach = detach;
       Porcupine<>::Load = load;
       Porcupine<>::Unload = unload;
 

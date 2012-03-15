@@ -134,11 +134,6 @@ namespace nucleus
 
       elle::Status              Check();
 
-      elle::Status              Load(const Address&,
-                                     Nodule<V>*&);
-      elle::Status              Unload(const Address&,
-                                       const Nodule<V>*);
-
       //
       // interfaces
       //
@@ -169,6 +164,19 @@ namespace nucleus
         const elle::Callback<
           elle::Status,
           elle::Parameters<
+            Block*,
+            Handle&
+            >
+          >&,
+        const elle::Callback<
+          elle::Status,
+          elle::Parameters<
+            Handle&
+            >
+          >&,
+        const elle::Callback<
+          elle::Status,
+          elle::Parameters<
             Handle&
             >
           >&,
@@ -183,6 +191,21 @@ namespace nucleus
       //
       // static attributes
       //
+      static
+      elle::Callback<
+        elle::Status,
+        elle::Parameters<
+          Block*,
+          Handle&
+          >
+        >                       Attach;
+      static
+      elle::Callback<
+        elle::Status,
+        elle::Parameters<
+          Handle&
+          >
+        >                       Detach;
       static
       elle::Callback<
         elle::Status,

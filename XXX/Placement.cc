@@ -21,19 +21,30 @@ using namespace nucleus::proton;
 //
 
 ///
-/// XXX
+/// this variable holds the current placement counter.
 ///
-const Placement                 Placement::Null;
+const elle::Natural64               Placement::Zero = 0;
+
+///
+/// this variable defines an unused hence null Placement.
+///
+const Placement                     Placement::Null;
+
+///
+/// this variable holds the current placement counter.
+///
+elle::Natural64                     Placement::Counter =
+  Placement::Zero + 1;
 
 //
 // ---------- constructors & destructors --------------------------------------
 //
 
 ///
-/// XXX
+/// default constructor.
 ///
 Placement::Placement():
-  number(0)
+  value(Placement::Zero)
 {
 }
 
@@ -42,19 +53,28 @@ Placement::Placement():
 //
 
 ///
-/// this operator compares two objects.
+/// this method check if two placements match.
 ///
-elle::Boolean       Placement::operator==(const Placement&  element) const
+elle::Boolean       Placement::operator==(const Placement& element)
+  const
 {
-  // check the placement as this may actually be the same object.
+  // check the address as this may actually be the same object.
   if (this == &element)
     return elle::StatusTrue;
 
-  // compare the numbers.
-  if (this->number != element.number)
+  // compare the placement.
+  if (this->value != element.value)
     return elle::StatusFalse;
 
   return elle::StatusTrue;
+}
+
+///
+/// this operator compares two placements.
+///
+elle::Boolean       Placement::operator<(const Placement&   element) const
+{
+  return (this->value < element.value);
 }
 
 ///
@@ -63,18 +83,61 @@ elle::Boolean       Placement::operator==(const Placement&  element) const
 embed(Placement, _());
 
 //
+// ---------- archivable ------------------------------------------------------
+//
+
+///
+/// this method serializes the placement.
+///
+elle::Status        Placement::Serialize(elle::Archive&     archive) const
+{
+  // serialize the attributes.
+  if (archive.Serialize(this->value) == elle::StatusError)
+    escape("unable to serialize the placement attributes");
+
+  return elle::StatusOk;
+};
+
+///
+/// this method extracts the placement.
+///
+elle::Status        Placement::Extract(elle::Archive&       archive)
+{
+  // extract the attributes.
+  if (archive.Extract(this->value) == elle::StatusError)
+    escape("unable to extract the placement attributes");
+
+  return elle::StatusOk;
+};
+
+//
 // ---------- dumpable --------------------------------------------------------
 //
 
 ///
-/// XXX
+/// this method dumps an placement.
 ///
-elle::Status        Placement::Dump(const elle::Natural32       margin) const
+elle::Status        Placement::Dump(const elle::Natural32   margin) const
 {
   elle::String      alignment(margin, ' ');
 
   std::cout << alignment << "[Placement] "
-            << std::dec << this->number << std::endl;
+            << std::dec << this->value << std::endl;
+
+  return elle::StatusOk;
+}
+
+//
+// ---------- static methods --------------------------------------------------
+//
+
+///
+/// this method generates a new unique placement.
+///
+elle::Status        Placement::Generate(Placement&              placement)
+{
+  // increments the counter.
+  placement.value = Placement::Counter++;
 
   return elle::StatusOk;
 }

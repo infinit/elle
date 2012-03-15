@@ -14,6 +14,9 @@
  - en profiter pour nommer proprement via les scopes
  - test: on unload les blocs sur disque, on supprime tout et on verifie qu'il n'en reste aucun.
  - pour cela le unregister d'un block (nouvellement cree un non) doit le supprimer du nest.
+ - comparer les perfs avec l'implem de Novembre (avec le meme XXX.cc)
+ - utiliser le mode transparent un maximum en fait.
+ - les blocs temporaires qui auront ete publies preventivements mais qui auront ete modifies apres: il faut supprimer les anciens publies lorsque l'on save le dernier.
 
 - register/auth
  - creer le login/pass localement et envoyer le hash a meta

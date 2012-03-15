@@ -55,6 +55,9 @@ namespace nucleus
     ///
     /// XXX
     ///
+    /// XXX placement(version inline), address(version offline) et
+    ///     block(version inline chargee en RAM)
+    ///
     class Handle:
       public elle::Object
     {
@@ -62,13 +65,11 @@ namespace nucleus
       //
       // enumerations
       //
-      /* XXX[new or existing]
-      enum Status
+      enum State
         {
-          StatusLoaded,
-          StatusUnloaded
+          StateUnloaded,
+          StateLoaded
         };
-      */
 
       //
       // constants
@@ -79,7 +80,7 @@ namespace nucleus
       // constructors & destructors
       //
       Handle();
-      Handle(Block*);
+      Handle(Placement&);
       Handle(const Address&);
       Handle(const Handle&);
       ~Handle();
@@ -108,12 +109,10 @@ namespace nucleus
       //
       // attributes
       //
+      State             state;
       Placement         _placement;
-
       Address           address;
       Block*            _block;
-
-      Block* _XXX;
     };
 
   }

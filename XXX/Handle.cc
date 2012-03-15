@@ -34,18 +34,19 @@ const Handle                     Handle::Null;
 /// default constructor.
 ///
 Handle::Handle():
-  _block(nullptr),
-  _XXX(nullptr)
+  state(StateUnloaded),
+  _block(nullptr)
 {
 }
 
 ///
 /// XXX
 ///
-Handle::Handle(Block*                                           block):
+Handle::Handle(Placement&                                       placement):
+  state(StateUnloaded),
+  _placement(placement),
   address(Address::Some),
-  _block(nullptr), // XXX
-  _XXX(block)
+  _block(nullptr)
 {
 }
 
@@ -53,22 +54,25 @@ Handle::Handle(Block*                                           block):
 /// XXX
 ///
 Handle::Handle(const Address&                                   address):
+  state(StateUnloaded),
   address(address),
-  _block(nullptr),
-  _XXX(nullptr)
+  _block(nullptr)
 {
 }
 
 ///
 /// the copy constructor.
-//
+///
+/// note that the block is not retrieved from the element in order
+/// to force the cloned handle to be loaded before being used.
+///
 Handle::Handle(const Handle&                                    element):
   elle::Object(element),
 
+  state(StateUnloaded),
   _placement(element._placement),
   address(element.address),
-  _block(nullptr),
-  _XXX(element._XXX)
+  _block(nullptr)
 {
 }
 
@@ -89,6 +93,11 @@ Handle::~Handle()
 ///
 elle::Status            Handle::Load()
 {
+  if (this->state == Handle::StateLoaded)
+    escape("unable to load an already loaded block");
+
+  assert(this->_block == nullptr);
+
   return (Porcupine<>::Load.Call(*this));
 }
 
@@ -97,6 +106,11 @@ elle::Status            Handle::Load()
 ///
 elle::Status            Handle::Unload()
 {
+  if (this->state == Handle::StateUnloaded)
+    escape("unable to unloaded an already unloaded block");
+
+  assert(this->_block != nullptr);
+
   return (Porcupine<>::Unload.Call(*this));
 }
 
@@ -113,20 +127,52 @@ elle::Boolean           Handle::operator==(const Handle&        element) const
   if (this == &element)
     return elle::StatusTrue;
 
-  // XXX[ca c'est faux: si le deuxieme est pas loade, il sera null!]
-  /* XXX
-  // compare the objects.
-  if ((this->_block != nullptr) || (element._block != nullptr))
+  // compare the placements, if possible.
+  if ((this->_placement != Placement::Null) &&
+      (element._placement != Placement::Null))
     {
-      if (this->_block != element._block)
+      //
+      // in this case, both handles reference blocks which have been
+      // retrieved from the network.
+      //
+      // however, that does not necessarily mean that the blocks have
+      // been loaded in main memory. therefore, the block addresses
+      // cannot be used for comparing the blocks.
+      //
+      // thus, the placements are compared as representing unique
+      // identifiers.
+      //
+
+      if (this->_placement != element._placement)
         return elle::StatusFalse;
     }
-  */
-
-  // XXX
-  if ((this->_XXX != nullptr) || (element._XXX != nullptr))
+  else
     {
-      if (this->_XXX != element._XXX)
+      //
+      // otherwise, one of the two handles has not been retrieved from
+      // the network.
+      //
+      // if both blocks have been created, they would both have had
+      // a placement. as a result, one or more of the handles represent
+      // a block which resides on the network storage layer.
+      //
+      // since a created block would have a special address (i.e
+      // Address::Some) which would differ from normal addresses,
+      // one can rely on the address field for comparing the handles.
+      //
+      // in other words, addresses could be null in which case,
+      // if both are, they would be equal and everything would be fine.
+      //
+      // if both addresses are set to 'some', then, the handles would
+      // represent created blocks in which case both would have a placement
+      // and we would not be discussing in the branch of the condition.
+      //
+      // finally, if one handle is null or 'some' and the other one is
+      // not, then, the comparison will result in handles being different
+      // which they are.
+      //
+
+      if (this->address != element.address)
         return elle::StatusFalse;
     }
 
@@ -160,7 +206,7 @@ elle::Status            Handle::Dump(const elle::Natural32      margin) const
     escape("unable to dump the address");
 
   // dump the block.
-  if (this->_block != NULL)
+  if (this->_block != nullptr)
     {
       // dump the hierarchy, if present.
       std::cout << alignment << elle::Dumpable::Shift
@@ -174,10 +220,6 @@ elle::Status            Handle::Dump(const elle::Natural32      margin) const
       std::cout << alignment << elle::Dumpable::Shift
                 << "[_Block] " << elle::none << std::endl;
     }
-
-  // XXX
-  std::cout << alignment << elle::Dumpable::Shift
-            << "[_XXX] " << std::hex << this->_XXX << std::endl;
 
   return elle::StatusOk;
 }

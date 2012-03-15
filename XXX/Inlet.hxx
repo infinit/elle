@@ -38,7 +38,7 @@ namespace nucleus
     Inlet<V, T>::Inlet(const typename V::K&                     key,
                        T*                                       object):
       key(key),
-      value(object),
+      // XXX value(object), // XXX[impossible]
 
       _footprint(*this)
     {

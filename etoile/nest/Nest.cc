@@ -14,6 +14,8 @@
 
 #include <etoile/nest/Nest.hh>
 
+#include <Infinit.hh>
+
 using namespace etoile::nest;
 
 //
@@ -37,48 +39,76 @@ Nest::A::Container      Nest::Addresses;
 ///
 /// XXX
 ///
-elle::Status            Nest::Register(nucleus::Handle&         handle)
+elle::Status            Nest::Attach(nucleus::Block*            block,
+                                     nucleus::Handle&           handle)
 {
-  // XXX printf("etoile::nest::Nest::Register()\n");
+  std::pair<Nest::P::Iterator, elle::Boolean>   result;
+  nucleus::Placement                            placement;
 
-  // XXX assert: placement==null
+  // debug.
+  if (Infinit::Configuration.etoile.debug == true)
+        printf("[etoile] nest::Nest::Attachh()\n");
+
+  // make sure placement is null.
+  assert(handle.placement == nucleus::Placement::Null);
+
+  // generate a placement.
+  if (nucleus::Placement::Generate(placement) == elle::StatusError)
+    escape("unable to generate a unique placement");
+
+  // create a new selectionoid.
+  auto                                          pod =
+    std::unique_ptr<Pod>(new Pod(Pod::NatureVolatile, block));
+
+  // insert the selectionoid in the container.
+  result =
+    Nest::Placements.insert(
+      std::pair<const nucleus::Placement, Pod*>(handle._placement, pod.get()));
+
+  // check if the insertion was successful.
+  if (result.second == false)
+    escape("unable to insert the pod in the container");
+
+  // release track.
+  pod.release();
+
+  // return a handle.
+  handle = nucleus::Handle(placement);
+
+  return elle::StatusOk;
+}
+
+///
+/// XXX
+///
+elle::Status            Nest::Detach(nucleus::Handle&           handle)
+{
+  // debug.
+  if (Infinit::Configuration.etoile.debug == true)
+        printf("[etoile] nest::Nest::Detach()\n");
+
+  // make sure placement is non-null.
+  assert(handle.placement != nucleus::Placement::Null);
 
   // XXX ajoute dans placement container
 
   return elle::StatusOk;
 }
 
-/* XXX
-   XXX
-   - on load un block.
-   - on veut loader son frere gauche, on load a partir de l addresse.
-   - le nest regarde si il a un mapping entre cette adresse et un block
-   deja loade mais qui a ete modifie. si cest le cas, le mapping nous donne
-   le placement du block et on le recupere.
-   - sinon on recupere a partir de hole.
-
-   - en soit on a 3 cas:
-   - si le handle a un pointer, on l utilise.
-   - si le handle a un placement, on recupere le block du nest
-   - sinon, on prend l address, et on load a partir du nest (mais le
-   mapping pourrait nous retourner un block deja loade)
-
-   - a noter que peut etre qu il serait utile de garder le handle dans chaque
-   nodule pour eviter de recalculer.
-*/
-
-// XXX
-/* XXX
-   if (this->handle.status == Handle::StatusLoaded)
-   ;
-*/
-
 ///
 /// XXX
 ///
 elle::Status            Nest::Load(nucleus::Handle&             handle)
 {
-  //printf("etoile::nest::Nest::Load() :: %p [%p]\n", handle._block, handle._XXX);
+  // debug.
+  if (Infinit::Configuration.etoile.debug == true)
+        printf("[etoile] nest::Nest::Load()\n");
+
+  // make sure the given handle is valid.
+  assert((handle.placement != nucleus::Placement::Null) ||
+         (handle.address != nucleus::Address::Null));
+  assert(!((handle.placement != nucleus::Placement::Null) &&
+           (handle.address != nucleus::Address::Null)));
 
   // XXX si deja loade, rien a faire (c'est possible)
   // XXX si placement=null & address=null -> error (auquel cas il faudrait rajouter des if (address != null) avant de loader)
@@ -88,9 +118,6 @@ elle::Status            Nest::Load(nucleus::Handle&             handle)
 
   // XXX set state as loaded
 
-  // XXX
-  handle._block = handle._XXX;
-
   return elle::StatusOk;
 }
 
@@ -99,14 +126,13 @@ elle::Status            Nest::Load(nucleus::Handle&             handle)
 ///
 elle::Status            Nest::Unload(nucleus::Handle&             handle)
 {
-  //printf("etoile::nest::Nest::Unload() :: %p [%p]\n", handle._block, handle._XXX);
+  // debug.
+  if (Infinit::Configuration.etoile.debug == true)
+        printf("[etoile] nest::Nest::Unload()\n");
 
   // XXX assert placement!=null
 
   // XXX set state as unloaded
-
-  // XXX
-  handle._block = nullptr;
 
   return elle::StatusOk;
 }

@@ -58,10 +58,11 @@ Ambit<T>::~Ambit()
     case Ambit<T>::ModeAutomatic:
     case Ambit<T>::ModeTransparent:
       {
-        /* XXX
-        if (this->handle.Unload() == elle::StatusError)
-          log("an error occured while unloading the handle");
-        */
+        if (this->handle.state == Handle::StateLoaded)
+          {
+            if (this->handle.Unload() == elle::StatusError)
+              log("an error occured while unloading the handle");
+          }
 
         break;
       }
