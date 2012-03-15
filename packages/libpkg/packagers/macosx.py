@@ -6,14 +6,14 @@ import shutil
 from libpkg import constants
 from libpkg import tools
 from libpkg.buildenv import BuildEnv
-from libpkg.packager import Packager
+from libpkg.packager import Packager as BasePackager
 
-class Packager(Packager):
+class Packager(BasePackager):
     """MacOSX dmg packager.
     """
 
     def __init__(self, built_architectures, built_platforms):
-        Packager.__init__(
+        BasePackager.__init__(
             self, "macosx", 'dmg',
             built_architectures, built_platforms
         )
@@ -36,7 +36,7 @@ class Packager(Packager):
             pkgdir = os.path.join(tempdir, 'pkg')
             os.mkdir(pkgdir)
             shutil.copyfile(
-                os.path.join(build_env.directory, 'bin', '8updater')
+                os.path.join(build_env.directory, 'bin', '8updater'),
                 os.path.join(pkgdir, 'infinit'),
             )
             params = {

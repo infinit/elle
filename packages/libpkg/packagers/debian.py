@@ -6,9 +6,9 @@ import shutil
 from libpkg import constants
 from libpkg import tools
 from libpkg.buildenv import BuildEnv
-from libpkg.packager import Packager
+from libpkg.packager import Packager as BasePackager
 
-class Packager(Packager):
+class Packager(BasePackager):
     """Debian packager.
     """
     _control_template = """
@@ -25,7 +25,7 @@ Description: Provide a secure, distributed and cross-platform filesystem.
 """
 
     def __init__(self, built_architectures, built_platforms):
-        Packager.__init__(
+        BasePackager.__init__(
             self, "Archlinux", 'pkg.tar.xz',
             built_architectures, built_platforms
         )
