@@ -24,7 +24,7 @@ class Packager:
         return self._name
 
     @property
-    def package_extension(self):
+    def extension(self):
         """Returns the package file extension."""
         return self._extension
     @property
@@ -104,17 +104,17 @@ class Packager:
     @property
     def is_available(self):
         """Check wether or not the packager should work on this system."""
-        raise NotImplemented()
+        return True
 
     @property
     def compatible_platforms(self):
         """Return the list of platforms that would be packaged."""
-        raise NotImplemented()
+        return self.built_platforms
 
     @property
     def compatible_architectures(self):
         """Return the list of architectures that would be packaged."""
-        raise NotImplemented()
+        return self.built_architectures
 
     def buildClientPackage(self, build_env, dest_dir):
         """Effectively build the package from the build env. Returns the

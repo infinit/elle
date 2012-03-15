@@ -28,11 +28,12 @@ source=()
 sha1sums=()
 
 build() {
+echo "bite"
 }
 
 package() {
-  cp %(updater_bin)s $pkgdir/infinit
-  chmod +x $pkgdir/infinit
+  cp "%(updater_bin)s" "$pkgdir"/infinit
+  chmod +x "$pkgdir"/infinit
 }
 """
 
@@ -50,10 +51,6 @@ package() {
     def compatible_platforms(self):
         return [constants.Platforms.LINUX]
 
-    @property
-    def compatible_architectures(self):
-        return self.built_architectures
-
     def buildClientPackage(self, build_env, dest_dir):
         tempdir = BuildEnv.makeTemporaryDirectory()
         try:
@@ -67,11 +64,12 @@ package() {
                 'updater_bin': os.path.join(build_env.directory, 'bin', '8updater'),
                 'version_name': build_env.build.infos['version_name'],
                 'version': build_env.build.infos['version'],
+                'extension': self.extension,
             }
             with open(os.path.join(pkgdir, "PKGBUILD"), 'w') as f:
                 f.write(self._PKGBUILD_template % params)
             os.system('cd "%s" && makepkg -s' % pkgdir)
-            filename = "infinit-%(version_name)s-%(version)s-%(architecture)s.pkg.tar.xz" % params
+            filename = "infinit-%(version_name)s-%(version)s-%(architecture)s.%(extension)s" % params
             shutil.copyfile(
                 os.path.join(pkgdir, filename),
                 os.path.join(dest_dir, filename)

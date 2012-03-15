@@ -38,10 +38,6 @@ Description: Provide a secure, distributed and cross-platform filesystem.
     def compatible_platforms(self):
         return [constants.Platforms.LINUX]
 
-    @property
-    def compatible_architectures(self):
-        return self.built_architectures
-
     def buildClientPackage(self, build_env, dest_dir):
         tempdir = BuildEnv.makeTemporaryDirectory()
         try:

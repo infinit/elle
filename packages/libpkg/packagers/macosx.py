@@ -26,10 +26,6 @@ class Packager(BasePackager):
     def compatible_platforms(self):
         return [constants.Platforms.MACOSX]
 
-    @property
-    def compatible_architectures(self):
-        return self.built_architectures
-
     def buildClientPackage(self, build_env, dest_dir):
         tempdir = BuildEnv.makeTemporaryDirectory()
         try:
