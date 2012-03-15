@@ -24,11 +24,11 @@ Maintainer: Infinit.io <debian@infinit.io>
 Description: Provide a secure, distributed and cross-platform filesystem.
 """
 
-    @property
-    def name(self): return "Debian"
-
-    @property
-    def package_extension(self): return 'deb'
+    def __init__(self, built_architectures, built_platforms):
+        Packager.__init__(
+            self, "Archlinux", 'pkg.tar.xz',
+            built_architectures, built_platforms
+        )
 
     @property
     def is_available(self):

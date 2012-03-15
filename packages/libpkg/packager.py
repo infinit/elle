@@ -8,13 +8,25 @@ from libpkg import constants
 class Packager:
     """Base class for every packager"""
 
-    def __init__(self, built_architectures, built_platforms):
+    def __init__(self, name, extension, built_architectures, built_platforms):
+        self._name = name
+        self._extension = extension
         self._built_architectures = built_architectures
         self._built_platforms = built_platforms
 
     ##
     ## Generic methods
     ##
+
+    @property
+    def name(self):
+        """The name of the packager."""
+        return self._name
+
+    @property
+    def package_extension(self):
+        """Returns the package file extension."""
+        return self._extension
     @property
     def built_architectures(self):
         """Architectures in which the packager might be involved."""
@@ -90,15 +102,6 @@ class Packager:
     ##
     ## To be implemented in subclasses
     ##
-    @property
-    def name(self):
-        """The name of the packager."""
-        raise NotImplemented()
-
-    @property
-    def package_extension(self):
-        """Returns the package file extension."""
-        raise NotImplemented()
 
     @property
     def is_available(self):
