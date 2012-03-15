@@ -67,7 +67,6 @@ class FarmBuild(Build):
 
             with tarfile.open(t) as archive:
                 archive.extractall(self._dir)
-            print('Temp env:', self._dir)
             self._release_dir = os.path.join(self._dir, self._tarball[:-4])
             assert os.path.isdir(self._release_dir)
 

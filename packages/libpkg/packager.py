@@ -93,10 +93,8 @@ class Packager:
                 )
                 continue
             res = self.buildClientPackage(build_env, dest_dir)
-            if res is not None:
-                assert isinstance(res, str) #the filename was changed by the packager
-                path = res
-            packages.append(path)
+            assert res is not None
+            packages.append(res)
         return packages
 
     ##

@@ -26,7 +26,7 @@ Description: Provide a secure, distributed and cross-platform filesystem.
 
     def __init__(self, built_architectures, built_platforms):
         BasePackager.__init__(
-            self, "Archlinux", 'pkg.tar.xz',
+            self, "Debian", 'deb',
             built_architectures, built_platforms
         )
 

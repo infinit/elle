@@ -14,7 +14,7 @@ class Packager(BasePackager):
 
     def __init__(self, built_architectures, built_platforms):
         BasePackager.__init__(
-            self, "macosx", 'dmg',
+            self, "MacOSX", 'dmg',
             built_architectures, built_platforms
         )
 
