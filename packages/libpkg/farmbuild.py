@@ -12,7 +12,7 @@ class FarmBuild(Build):
     """Manipulate builds from the buildfarm
     """
 
-    def __init__(self, infos, tarballs):
+    def __init__(self, infos, hash, tarballs):
         Build.__init__(self, infos)
         self._hash = hash
         self._tarballs = tarballs
