@@ -151,6 +151,14 @@ def getFarmBuild(infos, args):
 
     return libpkg.FarmBuild(infos, to_install, releases[to_install])
 
+def preparePackages(build, packagers):
+    packages = []
+    if build.has_client:
+        for packager in packagers:
+            packages.extend(
+                packager.buildClientPackages(build)
+            )
+    return packages
 
 if __name__ == '__main__':
     args = parser.parse_args()
@@ -192,12 +200,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     with build:
-        packages = []
-        if build.has_client:
-            for packager in packagers:
-                packages.extend(
-                    packager.buildClientPackages(build)
-                )
+        packages = preparePackages(build, packagers)
 
     print()
     print("Built packages:")
