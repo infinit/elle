@@ -5,7 +5,9 @@ from libpkg.farmbuild import FarmBuild
 from libpkg.localbuild import LocalBuild
 
 from libpkg.packagers import debian
+from libpkg.packagers import archlinux
 
 PACKAGERS = [
-    debian.Packager
+    debian.Packager,
+    archlinux.Packager,
 ]

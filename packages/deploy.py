@@ -120,7 +120,7 @@ def yesno(s, default=False):
 #        raise Exception("Unknown tarball type!")
 #    os.system('rm -rf "%s"' % tarball)
 
-def getFarmBuild(args):
+def getFarmBuild(infos, args):
     if args.last:
         tarballs = libpkg.farm.getLastTarballs(args.match)
     else:
@@ -149,19 +149,24 @@ def getFarmBuild(args):
     if not to_install:
         sys.exit(1)
 
-    return libpkg.FarmBuild(to_install, releases[to_install])
+    return libpkg.FarmBuild(infos, to_install, releases[to_install])
 
 
 if __name__ == '__main__':
     args = parser.parse_args()
 
+    infos = {
+        'version': '0.2',
+        'version_name': 'alpha'
+    }
+
     if args.local:
         args.local_client = True
         args.local_server = True
     if args.local_client or args.local_server:
-        build = libpkg.LocalBuild(os.path.join(os.path.dirname(__file__), '../build'))
+        build = libpkg.LocalBuild(infos, os.path.join(os.path.dirname(__file__), '../build'))
     else:
-        build = getFarmBuild(args)
+        build = getFarmBuild(infos, args)
 
 
     print("Selected build (", build.hash, "):")
@@ -178,6 +183,10 @@ if __name__ == '__main__':
         print("\t-", packager.name,':', packager.status)
         if packager.is_available:
             packagers.append(packager)
+
+    if not packagers:
+        print("No packager available")
+        sys.exit(1)
 
     if not (args.yes or yesno("Proceed ?", True)):
         sys.exit(1)

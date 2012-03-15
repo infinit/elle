@@ -6,11 +6,13 @@
 import os
 
 from libpkg import constants
+from libpkg import tools
 from libpkg.build import Build
 from libpkg.buildenv import BuildEnv
 
 class LocalBuild(Build):
-    def __init__(self, build_dir):
+    def __init__(self, infos, build_dir):
+        Build.__init__(self, infos)
         self._build_dir = build_dir
         self._hash = 'HEAD'
         self._dir_to_platform = {
@@ -30,6 +32,10 @@ class LocalBuild(Build):
             'win64': constants.Architectures.AMD64,
         }
         self._environments = None
+
+    @property
+    def is_available(self):
+        return tools.which('patchelf') is not None
 
     @property
     def hash(self):
@@ -56,8 +62,8 @@ class LocalBuild(Build):
         )
 
     class ClientEnv(BuildEnv):
-        def __init__(self, architecture, platform, build_dir):
-            BuildEnv.__init__(self, architecture, platform)
+        def __init__(self, build, architecture, platform, build_dir):
+            BuildEnv.__init__(self, build, architecture, platform)
             self._dir = self.makeTemporaryDirectory()
             res = os.system('"%(script)s" "%(build_dir)s" "%(dest_dir)s"' % {
                 'script': constants.PREPARE_LOCAL_BUILD_SCRIPT,
@@ -85,7 +91,7 @@ class LocalBuild(Build):
             for d in os.listdir(self._build_dir):
                 if self._dir_to_arch[d] == architecture and self._dir_to_platform[d] == platform:
                     path = os.path.join(self._build_dir, d)
-                    env = self.ClientEnv(architecture, platform, path)
+                    env = self.ClientEnv(self, architecture, platform, path)
                     break
             assert env is not None
             self._environments[(architecture, platform)] = env

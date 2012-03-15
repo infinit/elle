@@ -12,14 +12,17 @@ class FarmBuild(Build):
     """Manipulate builds from the buildfarm
     """
 
-    def __init__(self, hash, tarballs):
+    def __init__(self, infos, tarballs):
+        Build.__init__(self, infos)
         self._hash = hash
         self._tarballs = tarballs
         self._environments = None
 
     @property
-    def hash(self):
-        return self._hash
+    def is_available(self): return True
+
+    @property
+    def hash(self): return self._hash
 
     @property
     def has_client(self):
@@ -42,8 +45,8 @@ class FarmBuild(Build):
         )
 
     class ClientEnv(BuildEnv):
-        def __init__(self, architecture, platform, tarball):
-            BuildEnv.__init__(self, architecture, platform)
+        def __init__(self, build, architecture, platform, tarball):
+            BuildEnv.__init__(self, build, architecture, platform)
             self._tarball = tarball
             self._release_dir = None
             self._dir = self.makeTemporaryDirectory()
@@ -87,7 +90,7 @@ class FarmBuild(Build):
                 if farm.isClientTarball(t) and \
                    farm.getTarballArchitecture(t) == architecture and \
                    farm.getTarballPlatform(t) == platform:
-                    env = self.ClientEnv(architecture, platform, t)
+                    env = self.ClientEnv(self, architecture, platform, t)
                     break
             assert env is not None
             self._environments[(architecture, platform)] = env

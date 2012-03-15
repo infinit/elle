@@ -80,13 +80,10 @@ class Packager:
                     ")"
                 )
                 continue
-            filename = (
-                'infinit-client-' +
-                constants.Architectures.toString(architecture).lower() +
-                '.' + self.package_extension
-            )
-            path = os.path.join(dest_dir, filename)
-            self.buildClientPackage(build_env, path)
+            res = self.buildClientPackage(build_env, dest_dir)
+            if res is not None:
+                assert isinstance(res, str) #the filename was changed by the packager
+                path = res
             packages.append(path)
         return packages
 

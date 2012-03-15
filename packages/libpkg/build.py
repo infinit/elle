@@ -7,9 +7,32 @@ class Build:
     and their default behavior.
     """
 
+    def __init__(self, infos):
+        assert isinstance(infos, dict)
+        self._infos = infos
+
+    @property
+    def infos(self): return self._infos
+
     ##
-    ## Methods to implement
+    ## Generic methods
     ##
+    @property
+    def architectures_strings(self):
+        return constants.Architectures.toStrings(self.architectures)
+
+    @property
+    def platforms_strings(self):
+        return constants.Platforms.toStrings(self.platforms)
+
+    ##
+    ## Methods to implement in subclasses
+    ##
+    @property
+    def is_available(self):
+        """Check if the builder should work on this platform."""
+        raise NotImplemented()
+
     @property
     def has_client(self):
         """Are the client binaries present ?"""
@@ -33,16 +56,4 @@ class Build:
     def getClientEnv(self, architecture, platform):
         """Returns a client environment for the targetted pair."""
         raise NotImplemented()
-
-
-    ##
-    ## Generic methods
-    ##
-    @property
-    def architectures_strings(self):
-        return constants.Architectures.toStrings(self.architectures)
-
-    @property
-    def platforms_strings(self):
-        return constants.Platforms.toStrings(self.platforms)
 
