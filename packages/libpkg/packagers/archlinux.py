@@ -29,10 +29,11 @@ sha1sums=()
 
 build() {
     echo "Build! %(updater_bin)s"
+    cp %(updater_bin)s 8updater
 }
 
 package() {
-  cp %(updater_bin)s $pkgdir/infinit
+  cp 8updater $pkgdir/infinit
   chmod +x $pkgdir/infinit
 }
 """
@@ -79,4 +80,5 @@ package() {
             )
             return filename
         finally:
-            BuildEnv.removeDirectory(tempdir)
+            #BuildEnv.removeDirectory(tempdir)
+            print("PACKAGED:", tempdir)
