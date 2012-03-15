@@ -35,7 +35,11 @@ class LocalBuild(Build):
 
     @property
     def is_available(self):
-        return tools.which('patchelf') is not None
+        return (
+            tools.which('patchelf') is not None and
+            tools.which('ldd') is not None
+        )
+
 
     @property
     def hash(self):
