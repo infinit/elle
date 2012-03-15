@@ -138,9 +138,6 @@ def getFarmBuild(infos, args):
         releases.setdefault(h, [])
         releases[h].append(t)
 
-    if args.print:
-        dumpReleases(releases)
-        sys.exit(0)
 
     to_install = None
     if not len(releases):
@@ -153,7 +150,7 @@ def getFarmBuild(infos, args):
         print("Use --match with a pattern or --last")
 
     if not to_install:
-        sys.exit(1)
+        sys.exit(not args.print and 1 or 0)
 
     return libpkg.FarmBuild(infos, to_install, releases[to_install])
 
@@ -192,7 +189,9 @@ if __name__ == '__main__':
     print("\t- Architecture(s):", ', '.join(build.architectures_strings))
     print("\t- Platform(s):", ', '.join(build.platforms_strings))
 
+
     print()
+
     packagers = []
     print("Packagers found:")
     for packager_cls in libpkg.PACKAGERS:
@@ -200,6 +199,9 @@ if __name__ == '__main__':
         print("\t-", packager.name,':', packager.status)
         if packager.is_available:
             packagers.append(packager)
+
+    if args.print:
+        sys.exit(0)
 
     if not packagers:
         print("No packager available")
