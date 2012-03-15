@@ -51,6 +51,12 @@ parser.add_argument(
     action='store_true',
     default=False
 )
+parser.add_argument(
+    '--dest-dir', '-d',
+    help="Set destination directory for built packages",
+    action='store',
+    default='.'
+)
 
 
 def dumpReleases(releases):
@@ -151,12 +157,15 @@ def getFarmBuild(infos, args):
 
     return libpkg.FarmBuild(infos, to_install, releases[to_install])
 
-def preparePackages(build, packagers):
+def preparePackages(args, build, packagers):
+    if not os.path.exists(args.dest_dir):
+        os.mkdir(args.dest_dir)
+    assert os.path.isdir(args.dest_dir)
     packages = []
     if build.has_client:
         for packager in packagers:
             packages.extend(
-                packager.buildClientPackages(build)
+                packager.buildClientPackages(build, args.dest_dir)
             )
     return packages
 
@@ -200,7 +209,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     with build:
-        packages = preparePackages(build, packagers)
+        packages = preparePackages(args, build, packagers)
 
     print()
     print("Built packages:")
