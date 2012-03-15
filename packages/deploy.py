@@ -104,27 +104,31 @@ def yesno(s, default=False):
 #    os.system('ssh oracle@infinit.im "%s"' % cmd)
 #
 #
-#def deployTarball(tarball):
-#    print("Deploying", tarball)
-#    if 'x86_64' in tarball:
-#        arch = '64'
-#    else:
-#        arch = '32'
-#
-#    if 'linux' in tarball:
-#        platform = 'linux'
-#    else:
-#        raise Exception("CHECK FOR OTHER PLATFORM")
-#
-#    if tarball.startswith("infinit-client"):
-#        deployClientTarball(tarball, platform, arch)
-#    elif tarball.startswith("infinit-server"):
-#        assert 'x86_64' in tarball
-#        assert 'linux' in tarball
-#        deployServerTarball(tarball)
-#    else:
-#        raise Exception("Unknown tarball type!")
-#    os.system('rm -rf "%s"' % tarball)
+def deployTarball(tarball):
+    print("Deploying", tarball)
+    if 'x86_64' in tarball:
+        arch = '64'
+    else:
+        arch = '32'
+
+    if 'linux' in tarball:
+        platform = 'linux'
+    else:
+        raise Exception("CHECK FOR OTHER PLATFORM")
+
+    if tarball.startswith("infinit-server"):
+        assert 'x86_64' in tarball
+        assert 'linux' in tarball
+        deployServerTarball(tarball)
+    if tarball.startswith("infinit-client"):
+        deployClientTarball(tarball, platform, arch)
+    else:
+        raise Exception("Unknown tarball type!")
+    os.system('rm -rf "%s"' % tarball)
+
+def deployPackage(path):
+    if path.endswith('.tbz'):
+        deployTarball(path)
 
 def getFarmBuild(infos, args):
     if args.last:
@@ -188,6 +192,7 @@ if __name__ == '__main__':
     print("\t- Client build:", build.has_client)
     print("\t- Architecture(s):", ', '.join(build.architectures_strings))
     print("\t- Platform(s):", ', '.join(build.platforms_strings))
+    print("\t- Status:", build.is_available and "Working" or "Not working")
 
 
     print()
@@ -218,3 +223,10 @@ if __name__ == '__main__':
     for package in packages:
         print('\t-', package)
 
+    if not (args.yes or yesno("Deploy these packages ?", True)):
+        sys.exit(1)
+
+    #for package in packages:
+    #    path = os.path.join(args.dest_dir, package)
+    #    print("Deploying `%s':" % path)
+    #    deployPackage(path)

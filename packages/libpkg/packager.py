@@ -4,6 +4,7 @@ import itertools
 import os
 
 from libpkg import constants
+from libpkg.package import Package
 
 class Packager:
     """Base class for every packager"""
@@ -94,7 +95,15 @@ class Packager:
                 continue
             res = self.buildClientPackage(build_env, dest_dir)
             assert res is not None
-            packages.append(res)
+            assert isinstance(res, str)
+            path = os.path.join(dest_dir, res)
+            assert os.path.isfile(path)
+            packages.append(Package(
+                kind=self.name,
+                path=path,
+                architecture=architecture,
+                platform=platform,
+            ))
         return packages
 
     ##
