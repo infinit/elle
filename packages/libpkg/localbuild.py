@@ -52,13 +52,13 @@ class LocalBuild(Build):
     @property
     def architectures(self):
         return list(
-            set(self._dir_to_arch[d] for d in os.listdir(self._build_dir))
+            set(self._dir_to_arch[d] for d in os.listdir(self._build_dir) if d in self._dir_to_arch)
         )
 
     @property
     def platforms(self):
         return list(
-            set(self._dir_to_platform[d] for d in os.listdir(self._build_dir))
+            set(self._dir_to_platform[d] for d in os.listdir(self._build_dir) if d in self._dir_to_platform)
         )
 
     class ClientEnv(BuildEnv):
@@ -89,6 +89,8 @@ class LocalBuild(Build):
         env = self._environments.get((architecture, platform))
         if env is None:
             for d in os.listdir(self._build_dir):
+                if d not in self._dir_to_arch:
+                    continue
                 if self._dir_to_arch[d] == architecture and self._dir_to_platform[d] == platform:
                     path = os.path.join(self._build_dir, d)
                     env = self.ClientEnv(self, architecture, platform, path)
@@ -102,7 +104,9 @@ class LocalBuild(Build):
             (
                 self._dir_to_arch[d] == architecture and
                 self._dir_to_platform[d] == platform
-            ) for d in os.listdir(self._build_dir)
+            )
+            for d in os.listdir(self._build_dir)
+            if d in self._dir_to_arch
         )
 
     def __enter__(self):
