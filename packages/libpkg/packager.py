@@ -121,13 +121,14 @@ class Packager:
                 ))
         if build_server:
             build_env = build.getServerEnv()
+            architecture = build.infos['server_architecture']
+            platform = build.infos['server_platform']
             if build_env is None:
                 print(
                     "Warning: cannot prepare " + self.name +
-                    " package for (" +
-                    constants.Architectures.toString(self.infos['server_architecture']) + ", " +
-                    constants.Platforms.toString(self.infos['server_platform']) +
-                    ")"
+                    " package for " +
+                    constants.Platforms.toString(platform) + '-' +
+                    constants.Architectures.toString(architecture)
                 )
             else:
                 print(
