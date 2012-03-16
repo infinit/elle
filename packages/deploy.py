@@ -89,58 +89,54 @@ def yesno(s, default=False):
             return False
 
 
-#def deployClientTarball(tarball, platform, arch):
-#    os.system('scp %s oracle@infinit.im:www/infinit.im/downloads' % tarball)
-#    cmd = ' && '.join([
-#        "cd www/infinit.im/downloads",
-#        "mkdir -p %(dir)s",
-#        "tar --extract --file=%(tarball)s --strip-components=1 --directory=%(dir)s",
-#        "rm %(tarball)s",
-#        "chmod -R a+rX %(dir)s",
-#    ]) % {
-#        'dir': platform + arch,
-#        'tarball': tarball,
-#    }
-#    os.system('ssh oracle@infinit.im "%s"' % cmd)
-#
-#def deployServerTarball(tarball):
-#    os.system('scp  %s oracle@infinit.im:www/infinit.im/' % tarball)
-#    cmd = ' && '.join([
-#        "cd www/infinit.im",
-#        "tar --extract --file=%(tarball)s --strip-components=1 --directory=.",
-#        "rm %(tarball)s",
-#    ]) % {
-#        'tarball': tarball,
-#    }
-#    os.system('ssh oracle@infinit.im "%s"' % cmd)
-#
-#
+def deployClientTarball(package):
+    os.system('scp "%s" oracle@infinit.im:www/infinit.im/downloads' % package.path)
+
+    dir_ = {
+        libpkg.constants.Platforms.LINUX: 'linux',
+        libpkg.constants.Platforms.MACOSX: 'macosx',
+        libpkg.constants.Platforms.WINDOWS: 'win',
+    }[package.platform] + {
+        libpkg.constants.Architectures.I386: '32',
+        libpkg.constants.Architectures.AMD64: '64',
+    }[package.architecture]
+
+    cmd = ' && '.join([
+        "cd www/infinit.im/downloads",
+        "mkdir -p %(dir)s",
+        "tar --extract --file=%(tarball)s --strip-components=1 --directory=%(dir)s",
+        "rm %(tarball)s",
+        "chmod -R a+rX %(dir)s",
+    ]) % {
+        'dir': dir_,
+        'tarball': package.file_,
+    }
+    os.system('ssh oracle@infinit.im "%s"' % cmd)
+
+def deployServerTarball(package):
+    os.system('scp  %s oracle@infinit.im:www/infinit.im/' % package.path)
+    cmd = ' && '.join([
+        "cd www/infinit.im",
+        "tar --extract --file=%(tarball)s --strip-components=1 --directory=.",
+        "rm %(tarball)s",
+    ]) % {
+        'tarball': package.file_,
+    }
+    os.system('ssh oracle@infinit.im "%s"' % cmd)
+
+
 def deployTarball(package):
-    if 'x86_64' in tarball:
-        arch = '64'
+    assert package.type_ in ('client', 'server')
+    if package.type_ == 'server':
+        deployServerTarball(package)
     else:
-        arch = '32'
-
-    if 'linux' in tarball:
-        platform = 'linux'
-    else:
-        raise Exception("CHECK FOR OTHER PLATFORM")
-
-    if tarball.startswith("infinit-server"):
-        assert 'x86_64' in tarball
-        assert 'linux' in tarball
-        deployServerTarball(tarball)
-    if tarball.startswith("infinit-client"):
-        deployClientTarball(tarball, platform, arch)
-    else:
-        raise Exception("Unknown tarball type!")
-    os.system('rm -rf "%s"' % tarball)
+        deployClientTarball(package)
 
 def deployPackage(package):
     if package.kind == 'Archive':
         deployTarball(package)
     else:
-        print("not handled deployment", package)
+        os.system('scp "%s" oracle@infinit.im:www/infinit.im/downloads' % package.path)
 
 def getFarmBuild(infos, args):
     if args.last:
@@ -255,6 +251,5 @@ if __name__ == '__main__':
         sys.exit(1)
 
     for package in packages:
-        path = os.path.join(args.dest_dir, package)
-        print("Deploying `%s':" % path)
-        deployPackage(path)
+        print("Deploying `%s':" % package.path)
+        deployPackage(package)

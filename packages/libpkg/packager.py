@@ -113,10 +113,11 @@ class Packager:
                 assert os.path.isfile(path)
                 packages.append(Package(
                     kind=self.name,
-                    file=res,
+                    file_=res,
                     path=path,
                     architecture=architecture,
                     platform=platform,
+                    type_='client'
                 ))
         if build_server:
             build_env = build.getServerEnv()
@@ -158,10 +159,11 @@ class Packager:
                     assert os.path.isfile(path)
                     packages.append(Package(
                         kind=self.name,
-                        file=res,
+                        file_=res,
                         path=path,
                         architecture=build_env.architecture,
                         platform=build_env.platform,
+                        type_='server'
                     ))
         return packages
 
