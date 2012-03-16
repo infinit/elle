@@ -22,6 +22,10 @@ class Register(creosus.Page):
             lambda f: f['password'] == f['password_confirmation'],
             "Passwords didn't match"
         ),
+        form.validators.Validator(
+            lambda f: f['activation_code'] == 'bite',
+            "Invalid activation code"
+        ),
     ])
 
     @troll.view.exposeWhen('subscribe')
