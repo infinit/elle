@@ -73,7 +73,7 @@ class Packager:
     def available_architectures_strings(self):
         return constants.Architectures.toStrings(self.available_architectures)
 
-    def buildClientPackages(self, build, dest_dir='.'):
+    def buildPackages(self, build, dest_dir='.', build_client=False, build_server=False):
         """Try to package the client binaries with specified build. Returns the
         list for package files.
         """
@@ -82,30 +82,90 @@ class Packager:
             self.available_platforms
         )
         packages = []
-        for architecture, platform in pairs:
-            build_env = build.getClientEnv(architecture, platform)
+
+        if build_client:
+            for architecture, platform in pairs:
+                build_env = build.getClientEnv(architecture, platform)
+                if build_env is None:
+                    print(
+                        "Warning: cannot prepare " + self.name +
+                        " package for (" +
+                        constants.Architectures.toString(architecture) + ", " +
+                        constants.Platforms.toString(platform) +
+                        ")"
+                    )
+                    continue
+                print(
+                    "* Prepare", self.name, "client package for",
+                    constants.Platforms.toString(platform) + '-' +
+                    constants.Architectures.toString(architecture)
+                )
+                build_env.prepare()
+                print(
+                    "* Build", self.name, "client package for",
+                    constants.Platforms.toString(platform) + '-' +
+                    constants.Architectures.toString(architecture)
+                )
+                res = self.buildClientPackage(build_env, dest_dir)
+                assert res is not None
+                assert isinstance(res, str)
+                path = os.path.join(dest_dir, res)
+                assert os.path.isfile(path)
+                packages.append(Package(
+                    kind=self.name,
+                    file=res,
+                    path=path,
+                    architecture=architecture,
+                    platform=platform,
+                ))
+        if build_server:
+            build_env = build.getServerEnv()
             if build_env is None:
                 print(
                     "Warning: cannot prepare " + self.name +
                     " package for (" +
-                    constants.Architectures.toString(architecture) + ", " +
-                    constants.Platforms.toString(platform) +
+                    constants.Architectures.toString(self.infos['server_architecture']) + ", " +
+                    constants.Platforms.toString(self.infos['server_platform']) +
                     ")"
                 )
-                continue
-            res = self.buildClientPackage(build_env, dest_dir)
-            assert res is not None
-            assert isinstance(res, str)
-            path = os.path.join(dest_dir, res)
-            assert os.path.isfile(path)
-            packages.append(Package(
-                kind=self.name,
-                file=res,
-                path=path,
-                architecture=architecture,
-                platform=platform,
-            ))
+            else:
+                print(
+                    "* Prepare", self.name, "server package for",
+                    constants.Platforms.toString(platform) + '-' +
+                    constants.Architectures.toString(architecture)
+                )
+                build_env.prepare()
+                try:
+                    print(
+                        "* Build", self.name, "server package for",
+                        constants.Platforms.toString(platform) + '-' +
+                        constants.Architectures.toString(architecture)
+                    )
+                    res = self.buildServerPackage(build_env, dest_dir)
+                except:
+                    print(
+                        "Warning: Cannot make " + self.name +
+                        " server packages for (" +
+                        constants.Architectures.toString(build_env.architecture) + ", " +
+                        constants.Platforms.toString(build_env.platform) +
+                        ")"
+                    )
+                else:
+                    assert res is not None
+                    assert isinstance(res, str)
+                    assert res.startswith('infinit-server')
+                    path = os.path.join(dest_dir, res)
+                    assert os.path.isfile(path)
+                    packages.append(Package(
+                        kind=self.name,
+                        file=res,
+                        path=path,
+                        architecture=build_env.architecture,
+                        platform=build_env.platform,
+                    ))
         return packages
+
+
 
     ##
     ## To be implemented in subclasses
@@ -131,3 +191,9 @@ class Packager:
         name of the package file.
         """
         raise NotImplemented()
+
+    def buildServerPackage(self, build_env, dest_dir):
+        """Effectively build the package from the build env. Returns the
+        name of the package file.
+        """
+        raise NotImplemented

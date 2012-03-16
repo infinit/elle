@@ -65,43 +65,52 @@ class LocalBuild(Build):
             set(self._dir_to_platform[d] for d in os.listdir(self._build_dir) if d in self._dir_to_platform)
         )
 
-    class ClientEnv(BuildEnv):
-        def __init__(self, build, architecture, platform, build_dir):
+    class Env(BuildEnv):
+        def __init__(self, build, architecture, platform, build_dir, type_):
             BuildEnv.__init__(self, build, architecture, platform)
+            self._build_dir = build_dir
+            self._dir = None
+            assert type_ in ('client', 'server')
+            self._type = type_
+
+        def prepare(self):
+            if self._dir is not None:
+                return
             self._dir = self.makeTemporaryDirectory()
             res = os.system('"%(script)s" "%(build_dir)s" "%(dest_dir)s"' % {
                 'script': constants.PREPARE_LOCAL_BUILD_SCRIPT,
-                'build_dir': build_dir,
+                'build_dir': self._build_dir,
                 'dest_dir': self._dir,
             })
             if res != 0:
                 raise Exception("Cannot create the install dir of `%s'" % build_dir)
-            self._release_dir = os.path.join(self._dir, 'client')
+            self._release_dir = os.path.join(self._dir, self._type)
             assert(os.path.isdir(self._release_dir))
 
         @property
         def directory(self): return self._release_dir
 
-        def cleanup(self):
-            self.removeDirectory(self._dir)
+        @property
+        def is_client(self): return self._type == 'client'
 
-    def getClientEnv(self, architecture, platform):
+        @property
+        def is_server(self): return self._type == 'server'
+
+        def cleanup(self):
+            if self._dir is not None:
+                self.removeDirectory(self._dir)
+
+    def prepareEnvList(self, architecture, platform):
         """Returns a client environment for the targetted combination."""
-        assert architecture in self.architectures
-        assert platform in self.platforms
-        assert self._environments is not None # can only be called in a with clause
-        env = self._environments.get((architecture, platform))
-        if env is None:
-            for d in os.listdir(self._build_dir):
-                if d not in self._dir_to_arch:
-                    continue
-                if self._dir_to_arch[d] == architecture and self._dir_to_platform[d] == platform:
-                    path = os.path.join(self._build_dir, d)
-                    env = self.ClientEnv(self, architecture, platform, path)
-                    break
-            assert env is not None
-            self._environments[(architecture, platform)] = env
-        return env
+        envlist = []
+        for d in os.listdir(self._build_dir):
+            if d not in self._dir_to_arch:
+                continue
+            if self._dir_to_arch[d] == architecture and self._dir_to_platform[d] == platform:
+                path = os.path.join(self._build_dir, d)
+                envlist.append(self.Env(self, architecture, platform, path, 'client'))
+                envlist.append(self.Env(self, architecture, platform, path, 'server'))
+        return envlist
 
     def hasClientBuild(self, arch, platform):
         return any(
@@ -112,13 +121,3 @@ class LocalBuild(Build):
             for d in os.listdir(self._build_dir)
             if d in self._dir_to_arch
         )
-
-    def __enter__(self):
-        """Enters in a 'with' clause"""
-        self._environments = {}
-
-    def __exit__(self, type, value, traceback):
-        """exits the 'with' clause"""
-        for env in self._environments.values():
-            env.cleanup()
-        self._environments = None

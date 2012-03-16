@@ -29,6 +29,10 @@ class BuildEnv:
         """Remove tempary files."""
         raise NotImplemented()
 
+    def prepare(self):
+        """Prepare the environment (may be called multiple times)."""
+        raise NotImplemented()
+
     ##
     ## Tools
     ##

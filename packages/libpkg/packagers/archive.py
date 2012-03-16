@@ -36,3 +36,19 @@ class Packager(BasePackager):
         with tarfile.open(path, "w:bz2") as tar:
             tar.add(build_env.directory, arcname='client')
         return filename
+
+    def buildServerPackage(self, build_env, dest_dir):
+        params = {
+            'architecture': {
+                constants.Architectures.AMD64: 'x86_64',
+                constants.Architectures.I386: 'i386',
+            }[build_env.architecture],
+            'version_name': build_env.build.infos['version_name'],
+            'version': build_env.build.infos['version'],
+            'extension': self.extension,
+        }
+        filename = "infinit-server-%(version_name)s-%(version)s-%(architecture)s.%(extension)s" % params
+        path = os.path.join(dest_dir, filename)
+        with tarfile.open(path, "w:bz2") as tar:
+            tar.add(build_env.directory, arcname='server')
+        return filename

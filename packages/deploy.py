@@ -22,7 +22,7 @@ parser.add_argument(
     default=False
 )
 parser.add_argument(
-    '--print', '-p',
+    '--print',
     help="Only print matching releases",
     action='store_true',
     default=False
@@ -40,14 +40,14 @@ parser.add_argument(
     default=False
 )
 parser.add_argument(
-    '--local-client',
-    help="Use local client builds",
+    '--only-client',
+    help="Use only client builds",
     action='store_true',
     default=False
 )
 parser.add_argument(
-    '--local-server',
-    help="Use local server builds",
+    '--only-server',
+    help="Use only server builds",
     action='store_true',
     default=False
 )
@@ -56,6 +56,17 @@ parser.add_argument(
     help="Set destination directory for built packages",
     action='store',
     default='.'
+)
+parser.add_argument(
+    '--package', '-p',
+    help="Add a package type (in %s)" % ', '.join(p(None,None).name.lower() for p in libpkg.PACKAGERS),
+    action='append',
+)
+parser.add_argument(
+    '--all-packages', '-a',
+    help="Add all package types",
+    action='store_true',
+    default=False
 )
 
 
@@ -104,8 +115,7 @@ def yesno(s, default=False):
 #    os.system('ssh oracle@infinit.im "%s"' % cmd)
 #
 #
-def deployTarball(tarball):
-    print("Deploying", tarball)
+def deployTarball(package):
     if 'x86_64' in tarball:
         arch = '64'
     else:
@@ -126,9 +136,11 @@ def deployTarball(tarball):
         raise Exception("Unknown tarball type!")
     os.system('rm -rf "%s"' % tarball)
 
-def deployPackage(path):
-    if path.endswith('.tbz'):
-        deployTarball(path)
+def deployPackage(package):
+    if package.kind == 'Archive':
+        deployTarball(package)
+    else:
+        print("not handled deployment", package)
 
 def getFarmBuild(infos, args):
     if args.last:
@@ -158,16 +170,16 @@ def getFarmBuild(infos, args):
 
     return libpkg.FarmBuild(infos, to_install, releases[to_install])
 
-def preparePackages(args, build, packagers):
+def preparePackages(args, build, packagers, build_client, build_server):
     if not os.path.exists(args.dest_dir):
         os.mkdir(args.dest_dir)
     assert os.path.isdir(args.dest_dir)
     packages = []
-    if build.has_client:
-        for packager in packagers:
-            packages.extend(
-                packager.buildClientPackages(build, args.dest_dir)
-            )
+    for packager in packagers:
+        packages.extend(
+            packager.buildPackages(build, args.dest_dir, build_client, build_server)
+        )
+
     return packages
 
 if __name__ == '__main__':
@@ -175,21 +187,22 @@ if __name__ == '__main__':
 
     infos = {
         'version': '0.2',
-        'version_name': 'alpha'
+        'version_name': 'alpha',
+        'server_architecture': libpkg.constants.Architectures.AMD64,
+        'server_platform': libpkg.constants.Platforms.LINUX,
     }
 
     if args.local:
-        args.local_client = True
-        args.local_server = True
-    if args.local_client or args.local_server:
         build = libpkg.LocalBuild(infos, os.path.join(os.path.dirname(__file__), '../build'))
     else:
         build = getFarmBuild(infos, args)
 
+    build_client = build.has_client and not args.only_server
+    build_server = build.has_server and not args.only_client
 
     print("Selected build (", build.hash, "):")
-    print("\t- Server build:", build.has_server)
-    print("\t- Client build:", build.has_client)
+    print("\t- Server build:", build_server)
+    print("\t- Client build:", build_client)
     print("\t- Architecture(s):", ', '.join(build.architectures_strings))
     print("\t- Platform(s):", ', '.join(build.platforms_strings))
     print("\t- Status:", build.is_available and "Working" or "Not working")
@@ -198,35 +211,50 @@ if __name__ == '__main__':
     print()
 
     packagers = []
+    selected_packages = list(s.lower() for s in (args.package or []))
     print("Packagers found:")
     for packager_cls in libpkg.PACKAGERS:
         packager = packager_cls(build.architectures, build.platforms)
-        print("\t-", packager.name,':', packager.status)
+        used = False
         if packager.is_available:
-            packagers.append(packager)
+            if args.all_packages or packager.name.lower() in selected_packages:
+                packagers.append(packager)
+                used = True
+        print("\t-", packager.name,':', packager.status, (not used and "(Not used)" or "(Selected)"))
+
+    print()
+    print(len(packagers), "packager(s) selected.")
 
     if args.print:
         sys.exit(0)
 
     if not packagers:
-        print("No packager available")
+        if not args.all_packages:
+            print("Use --all-packages or specify one or more package type with --package")
+        else:
+            print("No packager available")
         sys.exit(1)
 
     if not (args.yes or yesno("Proceed ?", True)):
         sys.exit(1)
 
     with build:
-        packages = preparePackages(args, build, packagers)
+        packages = preparePackages(args, build, packagers, build_client, build_server)
+
+    if not packages:
+        print("No packages built.")
+        sys.exit(0)
 
     print()
     print("Built packages:")
     for package in packages:
         print('\t-', package)
 
+
     if not (args.yes or yesno("Deploy these packages ?", True)):
         sys.exit(1)
 
-    #for package in packages:
-    #    path = os.path.join(args.dest_dir, package)
-    #    print("Deploying `%s':" % path)
-    #    deployPackage(path)
+    for package in packages:
+        path = os.path.join(args.dest_dir, package)
+        print("Deploying `%s':" % path)
+        deployPackage(path)

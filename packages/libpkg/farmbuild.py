@@ -44,11 +44,16 @@ class FarmBuild(Build):
             set(farm.getTarballPlatform(t) for t in self._tarballs)
         )
 
-    class ClientEnv(BuildEnv):
+    class Env(BuildEnv):
         def __init__(self, build, architecture, platform, tarball):
             BuildEnv.__init__(self, build, architecture, platform)
             self._tarball = tarball
             self._release_dir = None
+            self._dir = None
+
+        def prepare(self):
+            if self._dir is not None:
+                return
             self._dir = self.makeTemporaryDirectory()
             dl = farm.downloadTarball(self._tarball)
             t = os.path.join(self._dir, self._tarball)
@@ -60,57 +65,44 @@ class FarmBuild(Build):
                     if not data:
                         break
                     size += len(data)
-                    print('\r * %s: %.2f' % (self._tarball, float(size) / (1024.0 * 1024.0)), 'MB', end='')
+                    print('\r - %s: %.2f' % (self._tarball, float(size) / (1024.0 * 1024.0)), 'MB', end='')
                     sys.stdout.flush()
                     f.write(data)
             print()
 
+
+            print(' -', self._tarball + ": extracting")
             with tarfile.open(t) as archive:
                 archive.extractall(self._dir)
             self._release_dir = os.path.join(self._dir, self._tarball[:-4])
             assert os.path.isdir(self._release_dir)
+
+        def cleanup(self):
+            if self._dir is not None:
+                self.removeDirectory(self._dir)
+
+        @property
+        def is_client(self):
+            return 'infinit-client' in self._tarball
+
+        @property
+        def is_server(self):
+            return 'infinit-server' in self._tarball
 
         @property
         def directory(self):
             assert self._release_dir is not None
             return self._release_dir
 
-        def cleanup(self):
-            self.removeDirectory(self._dir)
 
-    def getClientEnv(self, architecture, platform):
-        """Returns a client environment for the targetted combination."""
-        assert architecture in self.architectures
-        assert platform in self.platforms
-        assert self._environments is not None # can only be called in a with clause
-        env = self._environments.get((architecture, platform))
-        if env is None:
-            for t in self._tarballs:
-                if farm.isClientTarball(t) and \
-                   farm.getTarballArchitecture(t) == architecture and \
-                   farm.getTarballPlatform(t) == platform:
-                    env = self.ClientEnv(self, architecture, platform, t)
-                    break
-            assert env is not None
-            self._environments[(architecture, platform)] = env
-        return env
+    def prepareEnvList(self, architecture, platform):
+        envlist = []
+        for t in self._tarballs:
+            if farm.getTarballArchitecture(t) == architecture and \
+               farm.getTarballPlatform(t) == platform:
+                envlist.append(self.Env(self, architecture, platform, t))
+        return envlist
 
     def hasClientBuild(self, arch, platform):
-        return any(
-            (
-                farm.isClientTarball(t) and
-                farm.getTarballArchitecture(t) == architecture and
-                farm.getTarballPlatform(t) == platform
-            ) for t in self._tarballs
-        )
-
-    def __enter__(self):
-        """Enters in a 'with' clause"""
-        self._environments = {}
-
-    def __exit__(self, type, value, traceback):
-        """exits the 'with' clause"""
-        for env in self._environments.values():
-            env.cleanup()
-        self._environments = None
+        return any(farm.isClientTarball(t) for t in self._getEnvList(arch, platform))
 
