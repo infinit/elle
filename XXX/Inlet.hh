@@ -59,9 +59,7 @@ namespace nucleus
       //
       Inlet();
       Inlet(const typename V::K&,
-            T*);
-      Inlet(const typename V::K&,
-            const Address&);
+            Handle&);
 
       //
       // interfaces

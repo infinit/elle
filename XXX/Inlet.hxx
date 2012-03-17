@@ -36,23 +36,9 @@ namespace nucleus
     template <typename V,
               typename T>
     Inlet<V, T>::Inlet(const typename V::K&                     key,
-                       T*                                       object):
+                       Handle&                                  value):
       key(key),
-      // XXX value(object), // XXX[impossible]
-
-      _footprint(*this)
-    {
-    }
-
-    ///
-    /// address-specific constructor.
-    ///
-    template <typename V,
-              typename T>
-    Inlet<V, T>::Inlet(const typename V::K&                     key,
-                       const Address&                           address):
-      key(key),
-      value(address),
+      value(value),
 
       _footprint(*this)
     {

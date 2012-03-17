@@ -15,6 +15,8 @@
 #include <XXX/Handle.hh>
 #include <XXX/Porcupine.hh>
 
+#include <Infinit.hh>
+
 using namespace nucleus::proton;
 
 //
@@ -35,18 +37,20 @@ const Handle                     Handle::Null;
 ///
 Handle::Handle():
   state(StateUnloaded),
-  _block(nullptr)
+  block(nullptr)
 {
 }
 
 ///
-/// XXX
+/// XXX on met address to some pour que le fingerprint nous sorte une
+///     addresse de taille commune i.e 20 octets environ. avec null on
+///     aurait 1.
 ///
 Handle::Handle(Placement&                                       placement):
   state(StateUnloaded),
-  _placement(placement),
+  placement(placement),
   address(Address::Some),
-  _block(nullptr)
+  block(nullptr)
 {
 }
 
@@ -56,7 +60,7 @@ Handle::Handle(Placement&                                       placement):
 Handle::Handle(const Address&                                   address):
   state(StateUnloaded),
   address(address),
-  _block(nullptr)
+  block(nullptr)
 {
 }
 
@@ -70,18 +74,10 @@ Handle::Handle(const Handle&                                    element):
   elle::Object(element),
 
   state(StateUnloaded),
-  _placement(element._placement),
+  placement(element.placement),
   address(element.address),
-  _block(nullptr)
+  block(nullptr)
 {
-}
-
-///
-/// the destructor.
-///
-Handle::~Handle()
-{
-  // do nothing.
 }
 
 //
@@ -93,12 +89,21 @@ Handle::~Handle()
 ///
 elle::Status            Handle::Load()
 {
+  // debug.
+  if (Infinit::Configuration.nucleus.debug == true)
+    printf("[nucleus] proton::Handle::Load()\n");
+
   if (this->state == Handle::StateLoaded)
     escape("unable to load an already loaded block");
 
-  assert(this->_block == nullptr);
+  assert(this->block == nullptr);
 
-  return (Porcupine<>::Load.Call(*this));
+  if (Porcupine<>::Load.Call(*this) == elle::StatusError)
+    escape("unable to load the block");
+
+  this->state = Handle::StateLoaded;
+
+  return elle::StatusOk;
 }
 
 ///
@@ -106,12 +111,21 @@ elle::Status            Handle::Load()
 ///
 elle::Status            Handle::Unload()
 {
+  // debug.
+  if (Infinit::Configuration.nucleus.debug == true)
+    printf("[nucleus] proton::Handle::Unload()\n");
+
   if (this->state == Handle::StateUnloaded)
-    escape("unable to unloaded an already unloaded block");
+    escape("unable to unload an already unloaded block");
 
-  assert(this->_block != nullptr);
+  assert(this->block != nullptr);
 
-  return (Porcupine<>::Unload.Call(*this));
+  if (Porcupine<>::Unload.Call(*this) == elle::StatusError)
+    escape("unable to unload the block");
+
+  this->state = Handle::StateUnloaded;
+
+  return elle::StatusOk;
 }
 
 //
@@ -128,8 +142,8 @@ elle::Boolean           Handle::operator==(const Handle&        element) const
     return elle::StatusTrue;
 
   // compare the placements, if possible.
-  if ((this->_placement != Placement::Null) &&
-      (element._placement != Placement::Null))
+  if ((this->placement != Placement::Null) &&
+      (element.placement != Placement::Null))
     {
       //
       // in this case, both handles reference blocks which have been
@@ -143,7 +157,7 @@ elle::Boolean           Handle::operator==(const Handle&        element) const
       // identifiers.
       //
 
-      if (this->_placement != element._placement)
+      if (this->placement != element.placement)
         return elle::StatusFalse;
     }
   else
@@ -197,8 +211,12 @@ elle::Status            Handle::Dump(const elle::Natural32      margin) const
 
   std::cout << alignment << "[Handle]" << std::endl;
 
+  // dump the state.
+  std::cout << alignment << elle::Dumpable::Shift
+            << "[State] " << std::dec << this->state << std::endl;
+
   // dump the placement.
-  if (this->_placement.Dump(margin + 2) == elle::StatusError)
+  if (this->placement.Dump(margin + 2) == elle::StatusError)
     escape("unable to dump the placement");
 
   // dump the address.
@@ -206,19 +224,19 @@ elle::Status            Handle::Dump(const elle::Natural32      margin) const
     escape("unable to dump the address");
 
   // dump the block.
-  if (this->_block != nullptr)
+  if (this->block != nullptr)
     {
       // dump the hierarchy, if present.
       std::cout << alignment << elle::Dumpable::Shift
-                << "[_Block]" << std::endl;
+                << "[Block]" << std::endl;
 
-      if (this->_block->Dump(margin + 4) == elle::StatusError)
+      if (this->block->Dump(margin + 4) == elle::StatusError)
         escape("unable to dump the nodule");
     }
   else
     {
       std::cout << alignment << elle::Dumpable::Shift
-                << "[_Block] " << elle::none << std::endl;
+                << "[Block] " << elle::none << std::endl;
     }
 
   return elle::StatusOk;

@@ -79,28 +79,6 @@ namespace nucleus
     }
 
     ///
-    /// this method inserts the given nodule in the seam.
-    ///
-    template <typename V>
-    elle::Status        Seam<V>::Insert(const typename V::K&    key,
-                                        Nodule<V>*              nodule)
-    {
-      // create an inlet.
-      auto              inlet =
-        std::unique_ptr<typename Seam<V>::I>(
-          new typename Seam<V>::I(key, nodule));
-
-      // add the inlet to the seam.
-      if (this->Insert(inlet.get()) == elle::StatusError)
-        escape("unable to add the value to the seam");
-
-      // waive.
-      inlet.release();
-
-      return elle::StatusOk;
-    }
-
-    ///
     /// this method inserts the given inlet in the seam.
     ///
     template <typename V>
@@ -122,22 +100,6 @@ namespace nucleus
       if (result.second == false)
         escape("unable to insert the inlet in the container");
 
-      Ambit< Nodule<V> >        child(inlet->value);
-
-      // load the child nodule.
-      if (child.Load() == elle::StatusError)
-        escape("unable to load the block");
-
-      // the child nodule must have been loaded.
-      assert(child() != nullptr);
-
-      // set the child nodule's parent handle.
-      // child()->parent = Handle(this); // XXX[impossible]
-
-      // unload the child nodule.
-      if (child.Unload() == elle::StatusError)
-        escape("unable to unload the block");
-
       // compute the inlet's footprint.
       if (inlet->_footprint.Compute() == elle::StatusError)
         escape("unable to compute the inlet's footprint");
@@ -147,6 +109,28 @@ namespace nucleus
 
       // set the state.
       this->_state = StateDirty;
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// this method inserts the given nodule in the seam.
+    ///
+    template <typename V>
+    elle::Status        Seam<V>::Insert(const typename V::K&    key,
+                                        Handle&                 value)
+    {
+      // create an inlet.
+      auto              inlet =
+        std::unique_ptr<typename Seam<V>::I>(
+          new typename Seam<V>::I(key, value));
+
+      // add the inlet to the seam.
+      if (this->Insert(inlet.get()) == elle::StatusError)
+        escape("unable to add the value to the seam");
+
+      // waive.
+      inlet.release();
 
       return elle::StatusOk;
     }
@@ -178,25 +162,6 @@ namespace nucleus
 
       // set the state.
       this->_state = StateDirty;
-
-      return elle::StatusOk;
-    }
-
-    ///
-    /// this method deletes the given nodule from the seam.
-    ///
-    template <typename V>
-    elle::Status        Seam<V>::Delete(Nodule<V>*              nodule)
-    {
-      typename Seam<V>::Iterator::Forward       iterator;
-
-      // locate the inlet for the given nodule.
-      if (this->Locate(nodule, iterator) == elle::StatusError)
-        escape("unable to locate the given nodule");
-
-      // delete the entry associated with the given iterator.
-      if (this->Delete(iterator) == elle::StatusError)
-        escape("unable to delete the entry associated with the iterator");
 
       return elle::StatusOk;
     }

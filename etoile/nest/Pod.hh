@@ -18,6 +18,9 @@
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
 
+#include <XXX/Placement.hh>
+#include <XXX/Handle.hh>
+
 namespace etoile
 {
   namespace nest
@@ -41,7 +44,7 @@ namespace etoile
         {
           NatureUnknown,
           NatureVolatile,
-          NaturePersistent
+          NaturePersistent,
           NatureOrphan
         };
 
@@ -65,7 +68,8 @@ namespace etoile
       // methods
       //
 
-      // XXX
+      elle::Status              Load(nucleus::Handle&);
+      elle::Status              Unload(nucleus::Handle&);
 
       //
       // interfaces
@@ -74,7 +78,8 @@ namespace etoile
       // object
       declare(Pod);
 
-      // XXX
+      // dumpable
+      elle::Status              Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes

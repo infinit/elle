@@ -83,7 +83,6 @@ namespace nucleus
       Handle(Placement&);
       Handle(const Address&);
       Handle(const Handle&);
-      ~Handle();
 
       //
       // methods
@@ -110,9 +109,9 @@ namespace nucleus
       // attributes
       //
       State             state;
-      Placement         _placement;
+      Placement         placement;
       Address           address;
-      Block*            _block;
+      Block*            block;
     };
 
   }

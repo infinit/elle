@@ -79,28 +79,6 @@ namespace nucleus
     }
 
     ///
-    /// this method inserts a value in the quill.
-    ///
-    template <typename V>
-    elle::Status        Quill<V>::Insert(const typename V::K&   key,
-                                         V*                     value)
-    {
-      // create an inlet.
-      auto              inlet =
-        std::unique_ptr< typename Quill<V>::I >(
-          new typename Quill<V>::I(key, value));
-
-      // add the inlet to the quill.
-      if (this->Insert(inlet.get()) == elle::StatusError)
-        escape("unable to add the value to the quill");
-
-      // release the tracking.
-      inlet.release();
-
-      return elle::StatusOk;
-    }
-
-    ///
     /// this method inserts an inlet in the quill.
     ///
     template <typename V>
@@ -136,6 +114,28 @@ namespace nucleus
     }
 
     ///
+    /// this method inserts a value in the quill.
+    ///
+    template <typename V>
+    elle::Status        Quill<V>::Insert(const typename V::K&   key,
+                                         Handle&                value)
+    {
+      // create an inlet.
+      auto              inlet =
+        std::unique_ptr< typename Quill<V>::I >(
+          new typename Quill<V>::I(key, value));
+
+      // add the inlet to the quill.
+      if (this->Insert(inlet.get()) == elle::StatusError)
+        escape("unable to add the value to the quill");
+
+      // release the tracking.
+      inlet.release();
+
+      return elle::StatusOk;
+    }
+
+    ///
     /// this method deletes an entry from the quill, given an iterator.
     ///
     template <typename V>
@@ -162,25 +162,6 @@ namespace nucleus
 
       // set the state.
       this->_state = StateDirty;
-
-      return elle::StatusOk;
-    }
-
-    ///
-    /// this method deletes a value from the quill.
-    ///
-    template <typename V>
-    elle::Status        Quill<V>::Delete(V*                     value)
-    {
-      typename Quill<V>::Iterator::Forward      iterator;
-
-      // locate the inlet for the given value.
-      if (this->Locate(value, iterator) == elle::StatusError)
-        escape("unable to locate the given nodule");
-
-      // delete the entry associated with the given iterator.
-      if (this->Delete(iterator) == elle::StatusError)
-        escape("unable to delete the entry associated with the iterator");
 
       return elle::StatusOk;
     }

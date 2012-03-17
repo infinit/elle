@@ -117,13 +117,12 @@ namespace nucleus
                                        Handle&);
       elle::Status              Remove(const typename V::K&);
 
-      template <typename N,
-                typename W>
-      elle::Status              Insert(N*,
-                                       const typename V::K&,
-                                       W*);
       template <typename N>
-      elle::Status              Delete(N*,
+      elle::Status              Insert(Handle&,
+                                       const typename V::K&,
+                                       Handle&);
+      template <typename N>
+      elle::Status              Delete(Handle&,
                                        const typename V::K&);
 
       elle::Status              Grow();

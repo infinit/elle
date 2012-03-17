@@ -31,33 +31,6 @@ namespace etoile
 // ---------- classes ---------------------------------------------------------
 //
 
-    /* XXX
-
-1) on cree un quill, seam ou catalog
-
- -> aucune addresse
- -> on genere un handle avec un placement
-
-2) on load un quill, seam ou catalog: addresse
-
- -> on a une addresse
- -> le nest fait une recherche sur addresse
- -> nous retourne un placement (soit existant soit nouveau)
-
-3) on load un quill, seam ou catalog: placement
-
- -> c'est direct!
-
-4) on unload un quill, sean ou catalog
-
- -> puisqu'il a ete loade, il doit avoir un placement
-
-placement: nouveau
-address: existant ET non-loaded
-placement & address: existant ET loaded
-
-     */
-
     ///
     /// XXX
     ///
@@ -82,24 +55,27 @@ placement & address: existant ET loaded
       //
       // static methods
       //
+      static elle::Status       Exist(const nucleus::Placement&);
+      static elle::Status       Exist(const nucleus::Address&);
+      static elle::Status       Insert(const nucleus::Placement&,
+                                       Pod*);
+      static elle::Status       Insert(const nucleus::Placement&,
+                                       const nucleus::Address&,
+                                       Pod*);
+      static elle::Status       Retrieve(const nucleus::Placement&,
+                                         Pod*&);
+      static elle::Status       Retrieve(const nucleus::Address&,
+                                         Pod*&);
+      static elle::Status       Delete(const nucleus::Placement&);
+      static elle::Status       Delete(const nucleus::Address&);
+
       static elle::Status       Attach(nucleus::Block*,
                                        nucleus::Handle&);
       static elle::Status       Detach(nucleus::Handle&);
       static elle::Status       Load(nucleus::Handle&);
       static elle::Status       Unload(nucleus::Handle&);
 
-      static elle::Status       Exist(const nucleus::Placement&);
-      static elle::Status       Exist(const nucleus::Address&);
-      static elle::Status       Add(const nucleus::Placement&,
-                                    Pod*);
-      static elle::Status       Add(const nucleus::Address&,
-                                    Pod*);
-      static elle::Status       Retrieve(const nucleus::Placement&,
-                                         Pod*&);
-      static elle::Status       Retrieve(const nucleus::Address&,
-                                         Pod*&);
-      static elle::Status       Remove(const nucleus::Placement&);
-      static elle::Status       Retrieve(const nucleus::Address&);
+      static elle::Status       Show(const elle::Natural32 = 0);
 
       //
       // static attributes

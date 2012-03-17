@@ -93,12 +93,12 @@ namespace nucleus
       //
       elle::Status              Create();
 
-      elle::Status              Insert(const typename V::K&,
-                                       Nodule<V>*);
       elle::Status              Insert(I*);
+      elle::Status              Insert(const typename V::K&,
+                                       Handle&);
 
       elle::Status              Delete(typename Iterator::Forward&);
-      elle::Status              Delete(Nodule<V>*);
+      elle::Status              Delete(Handle&);
       elle::Status              Delete(const typename V::K&);
 
       elle::Status              Exist(const typename V::K&);
