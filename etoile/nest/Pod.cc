@@ -71,6 +71,15 @@ Pod::Pod(const Pod&                                             element):
 {
 }
 
+///
+/// XXX
+///
+Pod::~Pod()
+{
+  if (this->block != nullptr)
+    delete this->block;
+}
+
 //
 // ---------- methods ---------------------------------------------------------
 //

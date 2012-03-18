@@ -323,6 +323,32 @@ namespace nucleus
     }
 
     ///
+    /// XXX
+    ///
+    /// there is nothing to do in this case since quills
+    /// reference values i.e data objects.
+    ///
+    /// these data objects do not reference the parent
+    /// nodule. therefore, there is nothing to update
+    /// at this point.
+    ///
+    template <typename V>
+    elle::Status        Quill<V>::Link(I*                       inlet,
+                                       Handle&                  parent)
+    {
+      return elle::StatusOk;
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status        Quill<V>::Link(Handle&                  parent)
+    {
+      return elle::StatusOk;
+    }
+
+    ///
     /// this method splits the current quill and returns in the given
     /// _right_ variable the newly created quill.
     ///
@@ -391,6 +417,28 @@ namespace nucleus
       return elle::StatusOk;
     }
 
+    ///
+    /// this method checks the quill's consistency.
+    ///
+    template <typename V>
+    elle::Status        Quill<V>::Check(const Handle&) const
+    {
+      auto              iterator = this->container.begin();
+      auto              end = this->container.end();
+
+      // go through the container.
+      for (; iterator != end; ++iterator)
+        {
+          Quill<V>::I*  inlet = iterator->second;
+
+          // check the key.
+          if (inlet->key != iterator->first)
+            escape("invalid key");
+        }
+
+      return elle::StatusOk;
+    }
+
 //
 // ---------- nodule ----------------------------------------------------------
 //
@@ -442,19 +490,49 @@ namespace nucleus
     /// this method checks the quill's consistency.
     ///
     template <typename V>
-    elle::Status        Quill<V>::Check() const
+    elle::Status        Quill<V>::Check(const Handle&           parent,
+                                        const Handle&           current) const
     {
+      // check the parent handle.
+      if (this->parent != parent)
+        escape("the parent handle is invalid");
+
+      // XXX[load left/right & check]
+
+      if (this->Check(current) == elle::StatusError)
+        escape("unable to check the seam consistency");
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// this method traverses the quill.
+    ///
+    template <typename V>
+    elle::Status        Quill<V>::Traverse(const elle::Natural32 margin)
+    {
+      elle::String      alignment(margin, ' ');
       auto              iterator = this->container.begin();
       auto              end = this->container.end();
+
+      std::cout << alignment << "[Quill] " << this << std::endl;
+
+      // dump the parent nodule.
+      if (Nodule<V>::Dump(margin + 2) == elle::StatusError)
+        escape("unable to dump the parent nodule");
+
+      // dump the inlets.
+      std::cout << alignment << elle::Dumpable::Shift
+                << "[Inlets] " << this->container.size() << std::endl;
 
       // go through the container.
       for (; iterator != end; ++iterator)
         {
           Quill<V>::I*  inlet = iterator->second;
 
-          // check the key.
-          if (inlet->key != iterator->first)
-            escape("invalid key");
+          // dump the inlet.
+          if (inlet->Dump(margin + 4) == elle::StatusError)
+            escape("unable to dump the inlet");
         }
 
       return elle::StatusOk;

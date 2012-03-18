@@ -263,21 +263,8 @@ namespace nucleus
       if (this->Lookup(key, inlet) == elle::StatusError)
         escape("unable to locate the inlet");
 
-      Ambit< Nodule<V> >        child(inlet->value);
-
-      // load the child nodule.
-      if (child.Load() == elle::StatusError)
-        escape("unable to load the block");
-
-      // the child nodule must have been loaded.
-      assert(child() != nullptr);
-
       // return the nodule's handle.
-      handle = child.handle;
-
-      // unload the child nodule.
-      if (child.Unload() == elle::StatusError)
-        escape("unable to unload the block");
+      handle = inlet->value;
 
       return elle::StatusOk;
     }
@@ -330,7 +317,23 @@ namespace nucleus
       if (this->Locate(key, inlet) == elle::StatusError)
         escape("unable to locate the inlet associated with the given key");
 
-      Ambit< Nodule<V> >        child(inlet->value);
+      // return the nodule's handle.
+      handle = inlet->value;
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// XXX
+    ///
+    /// since seams reference sub-seams/quills, these must be
+    /// updated so as to reference the parent seam.
+    ///
+    template <typename V>
+    elle::Status        Seam<V>::Link(I*                        inlet,
+                                      Handle&                   parent)
+    {
+      Ambit< Seam<V> >  child(inlet->value);
 
       // load the child nodule.
       if (child.Load() == elle::StatusError)
@@ -339,12 +342,42 @@ namespace nucleus
       // the child nodule must have been loaded.
       assert(child() != nullptr);
 
-      // return the nodule's handle.
-      handle = child.handle;
+      // set the child nodule's parent handle.
+      child()->parent = parent;
 
       // unload the child nodule.
       if (child.Unload() == elle::StatusError)
         escape("unable to unload the block");
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status        Seam<V>::Link(Handle&                   parent)
+    {
+      auto              iterator = this->container.begin();
+      auto              end = this->container.end();
+
+      // go through the inlets.
+      for (; iterator != end; ++iterator)
+        {
+          Seam<V>::I*           inlet = iterator->second;
+          Ambit< Nodule<V> >    child(inlet->value);
+
+          // load the value block.
+          if (child.Load() == elle::StatusError)
+            escape("unable to load the block");
+
+          // update the parent link.
+          child()->parent = parent;
+
+          // unload the value block.
+          if (child.Unload() == elle::StatusError)
+            escape("unable to unload the block");
+        }
 
       return elle::StatusOk;
     }
@@ -516,6 +549,55 @@ namespace nucleus
       return elle::StatusOk;
     }
 
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status        Seam<V>::Check(const Handle&            current) const
+    {
+      auto              iterator = this->container.begin();
+      auto              end = this->container.end();
+
+      // go through the inlets.
+      for (; iterator != end; ++iterator)
+        {
+          Seam<V>::I*           inlet = iterator->second;
+          typename V::K         mayor;
+
+          // check the key.
+          if (inlet->key != iterator->first)
+            escape("invalid key");
+
+          Ambit< Nodule<V> >    child(inlet->value);
+
+          // load the value block.
+          if (child.Load() == elle::StatusError)
+            escape("unable to load the block");
+
+          // the child nodule must have been loaded.
+          assert(child() != nullptr);
+
+          // retrieve the child's mauor key.
+          if (child()->Mayor(mayor) == elle::StatusError)
+            escape("unable to retrieve the mayor key");
+
+          // compare the mayor key with the inlet's reference.
+          if (inlet->key != mayor)
+            escape("the child nodule's mayor key differs from its "
+                   "reference");
+
+          // trigger the check on the child nodule.
+          if (child()->Check(current,
+                             inlet->value) == elle::StatusError)
+            escape("unable to check the child nodule's consistency");
+
+          // unload the value block.
+          if (child.Unload() == elle::StatusError)
+            escape("unable to unload the block");
+        }
+
+      return elle::StatusOk;
+    }
 //
 // ---------- nodule ----------------------------------------------------------
 //
@@ -607,22 +689,51 @@ namespace nucleus
     /// nodules' mayor key is the one being referenced in the inlets.
     ///
     template <typename V>
-    elle::Status        Seam<V>::Check() const
+    elle::Status        Seam<V>::Check(const Handle&            parent,
+                                       const Handle&            current) const
     {
+      // check the parent handle.
+      if (this->parent != parent)
+        escape("the parent handle is invalid");
+
+      // XXX[load left/right & check]
+
+      if (this->Check(current) == elle::StatusError)
+        escape("unable to check the seam consistency");
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// this method traverses the seam.
+    ///
+    template <typename V>
+    elle::Status        Seam<V>::Traverse(const elle::Natural32 margin)
+    {
+      elle::String      alignment(margin, ' ');
       auto              iterator = this->container.begin();
       auto              end = this->container.end();
+
+      std::cout << alignment << "[Seam] " << this << std::endl;
+
+      // dump the parent nodule.
+      if (Nodule<V>::Dump(margin + 2) == elle::StatusError)
+        escape("unable to dump the parent nodule");
+
+      // dump the inlets.
+      std::cout << alignment << elle::Dumpable::Shift
+                << "[Inlets] " << this->container.size() << std::endl;
 
       // go through the inlets.
       for (; iterator != end; ++iterator)
         {
           Seam<V>::I*           inlet = iterator->second;
-          typename V::K         mayor;
-
-          // check the key.
-          if (inlet->key != iterator->first)
-            escape("invalid key");
 
           Ambit< Nodule<V> >    child(inlet->value);
+
+          // dump the inlet.
+          if (inlet->Dump(margin + 4) == elle::StatusError)
+            escape("unable to dump the inlet");
 
           // load the value block.
           if (child.Load() == elle::StatusError)
@@ -631,17 +742,8 @@ namespace nucleus
           // the child nodule must have been loaded.
           assert(child() != nullptr);
 
-          // retrieve the child's mauor key.
-          if (child()->Mayor(mayor) == elle::StatusError)
-            escape("unable to retrieve the mayor key");
-
-          // compare the mayor key with the inlet's reference.
-          if (inlet->key != mayor)
-            escape("the child nodule's mayor key differs from its "
-                   "reference");
-
-          // trigger the check on the child nodule.
-          if (child()->Check() == elle::StatusError)
+          // traverse the child.
+          if (child()->Traverse(margin + 6) == elle::StatusError)
             escape("unable to check the child nodule's consistency");
 
           // unload the value block.

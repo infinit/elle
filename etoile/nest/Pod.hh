@@ -63,6 +63,7 @@ namespace etoile
       Pod(const nucleus::Placement&,
           const nucleus::Address&);
       Pod(const Pod&);
+      ~Pod();
 
       //
       // methods

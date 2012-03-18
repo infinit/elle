@@ -3,6 +3,7 @@
 - prevoir pour que plusieurs users puissent se logguer: lien symbolique cree par updater.
 
 - large files:
+ - passer en const Handle quand possible.
  - remplacer les Insert(key, value) par Insert(key, handle) et partout avec des handle
  - lorsque l'arbre est vide, on devrait avoir le handle root qui pointe vers une valeur unique: de cette maniere pour un directory on aurait Object qui contient Porcupine qui ne contient qu'un handle qui pointe vers un autre block: les entrees du directory.
  - dans Delete par exemple, plutot que de comparer le right() a nullptr, tester le right Handle avec Handle::Null; en plus ca limite les load comme ca. faire ca de maniere generale pour comparer davantage les handles et limiter les loads.

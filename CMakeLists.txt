@@ -155,7 +155,7 @@ ADD_EXECUTABLE(XXX
   XXX/Handle.cc
   XXX/Placement.cc
 )
-TARGET_LINK_LIBRARIES(XXX infinit elle nucleus lune infinit)
+TARGET_LINK_LIBRARIES(XXX infinit elle etoile nucleus lune infinit)
 # XXX
 
 # configuration

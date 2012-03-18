@@ -82,13 +82,13 @@ int main(int argc, char** argv)
     {
       printf("[%u] -------------> %s\n", i, v[i].c_str());
 
-      etoile::Nest::Show();
-      printf("SHOW OVER\n");
+      Handle value;
 
-      if (p->Add(v[i], new nucleus::Catalog) == elle::StatusError)
-        fail("XXX");
+      if (nucleus::Porcupine<>::Attach.Call(new nucleus::Catalog,
+                                            value) == elle::StatusError)
+        fail("unable to attach the value");
 
-      if (p->Check() == elle::StatusError)
+      if (p->Add(v[i], value) == elle::StatusError)
         fail("XXX");
     }
 
@@ -105,6 +105,9 @@ int main(int argc, char** argv)
 
       if (p->Locate(v[i], h) == elle::StatusError)
         fail("XXX");
+
+      if (nucleus::Porcupine<>::Detach.Call(h) == elle::StatusError)
+        fail("unable to detach the value");
     }
 
   if (p->Check() == elle::StatusError)
@@ -118,12 +121,17 @@ int main(int argc, char** argv)
 
       if (p->Remove(v[i]) == elle::StatusError)
         fail("XXX");
+
+      //if (p->Check() == elle::StatusError)
+      //fail("XXX");
     }
 
   if (p->Check() == elle::StatusError)
     fail("XXX");
 
   p->Dump();
+
+  etoile::Nest::Show();
 
   delete p;
 

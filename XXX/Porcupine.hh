@@ -111,7 +111,7 @@ namespace nucleus
       // methods
       //
       elle::Status              Add(const typename V::K&,
-                                    V*);
+                                    Handle&);
       elle::Status              Exist(const typename V::K&);
       elle::Status              Locate(const typename V::K&,
                                        Handle&);
@@ -132,6 +132,7 @@ namespace nucleus
                                        Handle&);
 
       elle::Status              Check();
+      elle::Status              Traverse(const elle::Natural32 = 0);
 
       //
       // interfaces

@@ -288,6 +288,9 @@ namespace nucleus
       // cast the type.
       this->type = static_cast<Nodule<V>::Type>(type);
 
+      // XXX[ne devrait-t-on pas calculer le footprint? ou juste que c'est
+      //     toujours calcule au dernier moment?]
+
       return elle::StatusOk;
     }
 

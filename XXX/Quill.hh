@@ -116,8 +116,14 @@ namespace nucleus
       elle::Status              Locate(const typename V::K&,
                                        Handle&);
 
+      elle::Status              Link(I*,
+                                     Handle&);
+      elle::Status              Link(Handle&);
+
       elle::Status              Split(Quill<V>*&);
       elle::Status              Merge(Quill<V>*);
+
+      elle::Status              Check(const Handle&) const;
 
       //
       // interfaces
@@ -128,7 +134,9 @@ namespace nucleus
       elle::Status              Maiden(typename V::K&) const;
       elle::Status              Search(const typename V::K&,
                                        Handle&);
-      elle::Status              Check() const;
+      elle::Status              Check(const Handle&,
+                                      const Handle&) const;
+      elle::Status              Traverse(const elle::Natural32 = 0);
 
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;

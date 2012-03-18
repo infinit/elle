@@ -268,6 +268,12 @@ elle::Status            Nest::Detach(nucleus::Handle&           handle)
   // update the pod's nature.
   pod->nature = Pod::NatureOrphan;
 
+  if (pod->counter == 0)
+    {
+      if (Nest::Delete(pod->placement) == elle::StatusError)
+        escape("unable to delete the pod");
+    }
+
   return elle::StatusOk;
 }
 
@@ -328,6 +334,13 @@ elle::Status            Nest::Unload(nucleus::Handle&             handle)
 
   if (pod->Unload(handle) == elle::StatusError)
     escape("unable to unload the pod");
+
+  if ((pod->nature == Pod::NatureOrphan) &&
+      (pod->counter == 0))
+    {
+      if (Nest::Delete(pod->placement) == elle::StatusError)
+        escape("unable to delete the pod");
+    }
 
   return elle::StatusOk;
 }
