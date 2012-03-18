@@ -94,8 +94,8 @@ namespace nucleus
       virtual elle::Status      Maiden(typename V::K&) const = 0;
       virtual elle::Status      Search(const typename V::K&,
                                        Handle&) = 0;
-      virtual elle::Status      Check(const Handle&,
-                                      const Handle&) const = 0;
+      virtual elle::Status      Check(Handle&,
+                                      Handle&) const = 0;
       virtual elle::Status      Traverse(const elle::Natural32 = 0) = 0;
 
       //

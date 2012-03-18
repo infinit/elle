@@ -2,25 +2,8 @@
 - mettre le Infinit::Configuration dans Hole::Configuration du coup.
 - prevoir pour que plusieurs users puissent se logguer: lien symbolique cree par updater.
 
-- large files:
- - passer en const Handle quand possible.
- - remplacer les Insert(key, value) par Insert(key, handle) et partout avec des handle
+- porcupine
  - lorsque l'arbre est vide, on devrait avoir le handle root qui pointe vers une valeur unique: de cette maniere pour un directory on aurait Object qui contient Porcupine qui ne contient qu'un handle qui pointe vers un autre block: les entrees du directory.
- - dans Delete par exemple, plutot que de comparer le right() a nullptr, tester le right Handle avec Handle::Null; en plus ca limite les load comme ca. faire ca de maniere generale pour comparer davantage les handles et limiter les loads.
- - remplacer les Load() puis check != nullptr par un truc qui teste le handle != null puis, en transparent, load/update/unload
- - gerer un compteur pour le nombre de Load/Unload i.e ne pas virer un block qui vient d'etre unload.
- - operator comparaison entre handle
- - register les nouveaux blocs
- - ajouter un status (created or not)
- - pour pouvoir mettre les blocs non crees dans une liste pour future deletion
- - trouver les unload
- - scoper les handles pour etre sur qu'ils sont unloaded lors d'une erreur
- - en profiter pour nommer proprement via les scopes
- - test: on unload les blocs sur disque, on supprime tout et on verifie qu'il n'en reste aucun.
- - pour cela le unregister d'un block (nouvellement cree un non) doit le supprimer du nest.
- - comparer les perfs avec l'implem de Novembre (avec le meme XXX.cc)
- - utiliser le mode transparent un maximum en fait.
- - les blocs temporaires qui auront ete publies preventivements mais qui auront ete modifies apres: il faut supprimer les anciens publies lorsque l'on save le dernier.
  - renommer attributs _* and * (meme dans nucleus)
 
 - register/auth

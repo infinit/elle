@@ -421,7 +421,7 @@ namespace nucleus
     /// this method checks the quill's consistency.
     ///
     template <typename V>
-    elle::Status        Quill<V>::Check(const Handle&) const
+    elle::Status        Quill<V>::Check(Handle&) const
     {
       auto              iterator = this->container.begin();
       auto              end = this->container.end();
@@ -490,8 +490,8 @@ namespace nucleus
     /// this method checks the quill's consistency.
     ///
     template <typename V>
-    elle::Status        Quill<V>::Check(const Handle&           parent,
-                                        const Handle&           current) const
+    elle::Status        Quill<V>::Check(Handle&                 parent,
+                                        Handle&                 current) const
     {
       // check the parent handle.
       if (this->parent != parent)

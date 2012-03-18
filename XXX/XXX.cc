@@ -49,7 +49,6 @@ int main(int argc, char** argv)
 
   std::vector<elle::String> v(n);
 
-  /* XXX
   for (int i = 0; i < n; i++)
     {
       elle::String s;
@@ -58,8 +57,8 @@ int main(int argc, char** argv)
 
       v[i] = s;
     }
-  */
 
+  /* XXX
   for (int i = 0; i < n; i++)
     {
       char buffer[128];
@@ -77,6 +76,7 @@ int main(int argc, char** argv)
 
       v[i] = s.substr(0, 16);
     }
+  */
 
   for (int i = 0; i < n; i++)
     {

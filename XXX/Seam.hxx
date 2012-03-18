@@ -553,7 +553,7 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    elle::Status        Seam<V>::Check(const Handle&            current) const
+    elle::Status        Seam<V>::Check(Handle&                  current) const
     {
       auto              iterator = this->container.begin();
       auto              end = this->container.end();
@@ -689,8 +689,8 @@ namespace nucleus
     /// nodules' mayor key is the one being referenced in the inlets.
     ///
     template <typename V>
-    elle::Status        Seam<V>::Check(const Handle&            parent,
-                                       const Handle&            current) const
+    elle::Status        Seam<V>::Check(Handle&                  parent,
+                                       Handle&                  current) const
     {
       // check the parent handle.
       if (this->parent != parent)

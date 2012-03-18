@@ -1261,13 +1261,14 @@ namespace nucleus
       if (this->root != Handle::Null)
         {
           Ambit< Nodule<V> >    root(this->root);
+          Handle                null = Handle::Null;
 
           // load the root nodule.
           if (root.Load() == elle::StatusError)
             escape("unable to load the root block");
 
           // trigger the check method on the root nodule.
-          if (root()->Check(Handle::Null,
+          if (root()->Check(null,
                             this->root) == elle::StatusError)
             escape("unable to check the root nodule's consistency");
 
