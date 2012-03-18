@@ -35,7 +35,7 @@ namespace nucleus
 
       type(type),
 
-      _footprint(*this)
+      footprint(*this)
     {
     }
 
@@ -84,11 +84,11 @@ namespace nucleus
           // note however that another check is performed in order to make
           // sure that adding this inlet will not make the nodule too large.
           if ((footprint +
-               inlet->_footprint.size) > hole::Hole::Descriptor.extent)
+               inlet->footprint.size) > hole::Hole::Descriptor.extent)
             break;
 
           // add the inlet's footprint to the footprint.
-          footprint += inlet->_footprint.size;
+          footprint += inlet->footprint.size;
         }
 
       // go through the remaining entries in order to move them to
@@ -99,7 +99,7 @@ namespace nucleus
 
           // substract the inlet's footprint from the current nodule since
           // it is getting moved to the right one.
-          left->_footprint.size -= inlet->_footprint.size;
+          left->footprint.size -= inlet->footprint.size;
 
           // insert the inlet into the right nodule.
           if (right->Insert(inlet) == elle::StatusError)
@@ -110,12 +110,12 @@ namespace nucleus
       left->container.erase(i, end);
 
       // set the nodules' states.
-      left->_state = StateDirty;
-      right->_state = StateDirty;
+      left->state = StateDirty;
+      right->state = StateDirty;
 
       // set both nodules' footprint as consistent.
-      left->_footprint.state = elle::Footprint::StateConsistent;
-      right->_footprint.state = elle::Footprint::StateConsistent;
+      left->footprint.state = elle::Footprint::StateConsistent;
+      right->footprint.state = elle::Footprint::StateConsistent;
 
       return elle::StatusOk;
     }
@@ -159,11 +159,11 @@ namespace nucleus
           // note however that another check is performed in order to make
           // sure that adding this inlet will not make the nodule too large.
           if ((footprint +
-               inlet->_footprint.size) > hole::Hole::Descriptor.extent)
+               inlet->footprint.size) > hole::Hole::Descriptor.extent)
             break;
 
           // add the inlet's footprint to the footprint.
-          footprint += inlet->_footprint.size;
+          footprint += inlet->footprint.size;
         }
 
       // go through the remaining entries in order to move them to
@@ -174,7 +174,7 @@ namespace nucleus
 
           // substract the inlet's footprint from the current nodule since
           // it is getting moved to the left one.
-          right->_footprint.size -= inlet->_footprint.size;
+          right->footprint.size -= inlet->footprint.size;
 
           // insert the inlet into the left nodule.
           if (left->Insert(inlet) == elle::StatusError)
@@ -185,12 +185,12 @@ namespace nucleus
       right->container.erase(right->container.begin(), i.base());
 
       // set the nodules' states.
-      left->_state = StateDirty;
-      right->_state = StateDirty;
+      left->state = StateDirty;
+      right->state = StateDirty;
 
       // set both nodules' footprint as consistent.
-      left->_footprint.state = elle::Footprint::StateConsistent;
-      right->_footprint.state = elle::Footprint::StateConsistent;
+      left->footprint.state = elle::Footprint::StateConsistent;
+      right->footprint.state = elle::Footprint::StateConsistent;
 
       return elle::StatusOk;
     }
@@ -241,9 +241,9 @@ namespace nucleus
 
       // dump the footprint.
       std::cout << alignment << elle::Dumpable::Shift
-                << "[_Footprint]" << std::endl;
+                << "[Footprint]" << std::endl;
 
-      if (this->_footprint.Dump(margin + 4) == elle::StatusError)
+      if (this->footprint.Dump(margin + 4) == elle::StatusError)
         escape("unable to dump the footprint");
 
       return elle::StatusOk;

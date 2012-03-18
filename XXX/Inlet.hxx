@@ -26,7 +26,7 @@ namespace nucleus
     template <typename V,
               typename T>
     Inlet<V, T>::Inlet():
-      _footprint(*this)
+      footprint(*this)
     {
     }
 
@@ -40,7 +40,7 @@ namespace nucleus
       key(key),
       value(value),
 
-      _footprint(*this)
+      footprint(*this)
     {
     }
 
@@ -70,9 +70,9 @@ namespace nucleus
 
       // dump the footprint.
       std::cout << alignment << elle::Dumpable::Shift
-                << "[_Footprint]" << std::endl;
+                << "[Footprint]" << std::endl;
 
-      if (this->_footprint.Dump(margin + 4) == elle::StatusError)
+      if (this->footprint.Dump(margin + 4) == elle::StatusError)
         escape("unable to dump the footprint");
 
       return elle::StatusOk;

@@ -1,28 +1,29 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       etoile
+// project       nucleus
 //
 // license       infinit
 //
 // author        julien quintard   [fri jun 17 13:10:45 2011]
 //
 
-#ifndef ETOILE_GEAR_TRANSCRIPT_HH
-#define ETOILE_GEAR_TRANSCRIPT_HH
+#ifndef NUCLEUS_PROTON_TRANSCRIPT_HH
+#define NUCLEUS_PROTON_TRANSCRIPT_HH
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
 #include <elle/Elle.hh>
-#include <nucleus/Nucleus.hh>
 
-#include <etoile/gear/Action.hh>
+#include <nucleus/proton/Action.hh>
+#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Block.hh>
 
-namespace etoile
+namespace nucleus
 {
-  namespace gear
+  namespace proton
   {
 
 //
@@ -41,7 +42,7 @@ namespace etoile
       //
       // types
       //
-      typedef std::list<Action*>                Container;
+      typedef std::vector<Action*>              Container;
       typedef Container::iterator               Iterator;
       typedef Container::const_iterator         Scoutor;
 
@@ -53,9 +54,9 @@ namespace etoile
       //
       // methods
       //
-      elle::Status      Push(const nucleus::Address&,
-                             const nucleus::Block*);
-      elle::Status      Wipe(const nucleus::Address&);
+      elle::Status      Push(const Address&,
+                             const Block*);
+      elle::Status      Wipe(const Address&);
 
       elle::Status      Clear(const Action::Type);
       elle::Status      Flush();

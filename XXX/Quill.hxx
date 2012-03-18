@@ -70,10 +70,10 @@ namespace nucleus
     elle::Status        Quill<V>::Create()
     {
       // initialize the footprint.
-      this->_footprint.size = Quill<V>::Footprint;
+      this->footprint.size = Quill<V>::Footprint;
 
       // set the state.
-      this->_state = StateDirty;
+      this->state = StateDirty;
 
       return elle::StatusOk;
     }
@@ -101,14 +101,14 @@ namespace nucleus
         escape("unable to insert the inlet in the container");
 
       // compute the inlet's footprint.
-      if (inlet->_footprint.Compute() == elle::StatusError)
+      if (inlet->footprint.Compute() == elle::StatusError)
         escape("unable to compute the inlet's footprint");
 
       // add the inlet footprint to the quill's.
-      this->_footprint.size += inlet->_footprint.size;
+      this->footprint.size += inlet->footprint.size;
 
       // set the state.
-      this->_state = StateDirty;
+      this->state = StateDirty;
 
       return elle::StatusOk;
     }
@@ -148,11 +148,11 @@ namespace nucleus
       inlet = iterator->second;
 
       // compute the inlet's footprint.
-      if (inlet->_footprint.Compute() == elle::StatusError)
+      if (inlet->footprint.Compute() == elle::StatusError)
         escape("unable to compute the inlet's footprint");
 
       // substract the inlet footprint to the quill's.
-      this->_footprint.size -= inlet->_footprint.size;
+      this->footprint.size -= inlet->footprint.size;
 
       // delete the inlet.
       delete inlet;
@@ -161,7 +161,7 @@ namespace nucleus
       this->container.erase(iterator);
 
       // set the state.
-      this->_state = StateDirty;
+      this->state = StateDirty;
 
       return elle::StatusOk;
     }
@@ -421,7 +421,8 @@ namespace nucleus
     /// this method checks the quill's consistency.
     ///
     template <typename V>
-    elle::Status        Quill<V>::Check(Handle&) const
+    elle::Status        Quill<V>::Check(Handle&,
+                                        const Pins              pins)
     {
       auto              iterator = this->container.begin();
       auto              end = this->container.end();
@@ -430,10 +431,40 @@ namespace nucleus
       for (; iterator != end; ++iterator)
         {
           Quill<V>::I*  inlet = iterator->second;
+          Ambit<V>      child(inlet->value);
 
-          // check the key.
-          if (inlet->key != iterator->first)
-            escape("invalid key");
+          // load the value block.
+          if (child.Load() == elle::StatusError)
+            escape("unable to load the block");
+
+          // the child block must have been loaded.
+          assert(child() != nullptr);
+
+          // check the address, if required.
+          if (pins & PinAddress)
+            {
+              Address   address;
+
+              // bind the child block.
+              if (child()->Bind(address) == elle::StatusError)
+                escape("unable to bind the block");
+
+              // compare the addresses.
+              if (inlet->value.address != address)
+                escape("invalid address");
+            }
+
+          // check the keys, if required.
+          if (pins & PinKey)
+            {
+              // check the key.
+              if (inlet->key != iterator->first)
+                escape("invalid key");
+            }
+
+          // unload the value block.
+          if (child.Unload() == elle::StatusError)
+            escape("unable to unload the block");
         }
 
       return elle::StatusOk;
@@ -491,15 +522,50 @@ namespace nucleus
     ///
     template <typename V>
     elle::Status        Quill<V>::Check(Handle&                 parent,
-                                        Handle&                 current) const
+                                        Handle&                 current,
+                                        const Pins              pins)
     {
-      // check the parent handle.
-      if (this->parent != parent)
-        escape("the parent handle is invalid");
+      // check the parent handle, if required.
+      if (pins & PinParent)
+        {
+          if (this->parent != parent)
+            escape("the parent handle is invalid");
+        }
 
-      // XXX[load left/right & check]
+      // check the neighbours, if required.
+      if (pins & PinNeighbours)
+        {
+          if (this->left != Handle::Null)
+            {
+              Ambit< Quill<V> >  left(this->left);
 
-      if (this->Check(current) == elle::StatusError)
+              if (left.Load() == elle::StatusError)
+                escape("unable to load the nodule");
+
+              if (left()->right != current)
+                escape("the neighbour link differs");
+
+              if (left.Unload() == elle::StatusError)
+                escape("unable to unload the nodule");
+            }
+
+          if (this->right != Handle::Null)
+            {
+              Ambit< Quill<V> >  right(this->right);
+
+              if (right.Load() == elle::StatusError)
+                escape("unable to load the nodule");
+
+              if (right()->left != current)
+                escape("the neighbour link differs");
+
+              if (right.Unload() == elle::StatusError)
+                escape("unable to unload the nodule");
+            }
+        }
+
+      if (this->Check(current,
+                      pins) == elle::StatusError)
         escape("unable to check the seam consistency");
 
       return elle::StatusOk;
@@ -534,6 +600,54 @@ namespace nucleus
           if (inlet->Dump(margin + 4) == elle::StatusError)
             escape("unable to dump the inlet");
         }
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status        Quill<V>::Seal(Address&                 address)
+    {
+      auto              iterator = this->container.begin();
+      auto              end = this->container.end();
+
+      // go through the container.
+      for (; iterator != end; ++iterator)
+        {
+          Quill<V>::I*          inlet = iterator->second;
+          Ambit<V>              child(inlet->value);
+
+          // ignore blocks which have not been created or modified.
+          //
+          // such blocks can easily be identified since they have a
+          // non-null placement.
+          if (child.handle.placement == Placement::Null)
+            continue;
+
+          // load the value block.
+          if (child.Load() == elle::StatusError)
+            escape("unable to load the block");
+
+          // the child block must have been loaded.
+          assert(child() != nullptr);
+
+          // bind the child block.
+          if (child()->Bind(inlet->value.address) == elle::StatusError)
+            escape("unable to bind the block");
+
+          // unload the value block.
+          if (child.Unload() == elle::StatusError)
+            escape("unable to unload the block");
+        }
+
+      // once the value addresses have been computed and recorded,
+      // the current quill can, in turn, be bound.
+      //
+      // this address is then returned to the caller.
+      if (this->Bind(address) == elle::StatusError)
+        escape("unable to bind the block");
 
       return elle::StatusOk;
     }
@@ -674,11 +788,11 @@ namespace nucleus
 
       // compute the initial footprint from which the Insert(), Delete()
       // methods will work in order to adjust it.
-      if (quill._footprint.Compute() == elle::StatusError)
+      if (quill.footprint.Compute() == elle::StatusError)
         escape("unable to compute the footprint");
 
       // retrieve the initial quill footprint.
-      Quill<V>::Footprint = quill._footprint.size;
+      Quill<V>::Footprint = quill.footprint.size;
 
       // register the quills to the nucleus' factory.
       {

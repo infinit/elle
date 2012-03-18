@@ -18,7 +18,6 @@
 #include <elle/Elle.hh>
 
 #include <nucleus/proton/ContentHashBlock.hh>
-#include <nucleus/proton/State.hh>
 
 #include <nucleus/neutron/Offset.hh>
 #include <nucleus/neutron/Range.hh>
@@ -58,11 +57,6 @@ namespace nucleus
       static const Component                    Q;
 
       //
-      // constructors & destructors
-      //
-      Catalog();
-
-      //
       // methods
       //
       elle::Status      Add(Entry*);
@@ -94,8 +88,6 @@ namespace nucleus
       //
       // attributes
       //
-      proton::State     _state;
-
       Range<Entry>      range;
     };
 

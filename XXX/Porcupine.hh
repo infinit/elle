@@ -19,8 +19,9 @@
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
-#include <XXX/Nodule.hh>
 #include <XXX/Handle.hh>
+#include <XXX/Pins.hh>
+#include <nucleus/proton/Transcript.hh>
 
 namespace nucleus
 {
@@ -131,8 +132,10 @@ namespace nucleus
       elle::Status              Search(const typename V::K&,
                                        Handle&);
 
-      elle::Status              Check();
+      elle::Status              Check(const Pins = PinAll);
       elle::Status              Traverse(const elle::Natural32 = 0);
+
+      elle::Status              Seal();
 
       //
       // interfaces
@@ -147,6 +150,8 @@ namespace nucleus
       elle::Natural32           height;
 
       Handle                    root;
+
+      Transcript                transcript;
     };
 
     ///

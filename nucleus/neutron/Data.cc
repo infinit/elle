@@ -20,18 +20,6 @@ namespace nucleus
   {
 
 //
-// ---------- constructors & destructors --------------------------------------
-//
-
-    ///
-    /// default constructor.
-    ///
-    Data::Data():
-      _state(proton::StateClean)
-    {
-    }
-
-//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -56,7 +44,7 @@ namespace nucleus
         escape("unable to write the data");
 
       // set the data as dirty.
-      this->_state = proton::StateDirty;
+      this->state = proton::StateDirty;
 
       return elle::StatusOk;
     }
@@ -112,7 +100,7 @@ namespace nucleus
       this->region.size = size;
 
       // set the data as dirty.
-      this->_state = proton::StateDirty;
+      this->state = proton::StateDirty;
 
       return elle::StatusOk;
     }
@@ -150,9 +138,9 @@ namespace nucleus
 
       std::cout << alignment << "[Data]" << std::endl;
 
-      // dump the state.
-      std::cout << alignment << elle::Dumpable::Shift << "[_State] "
-                << this->_state << std::endl;
+      // dump the parent class.
+      if (proton::ContentHashBlock::Dump(margin + 2) == elle::StatusError)
+        escape("unable to dump the underlying block");
 
       // dump the region attribute.
       if (this->region.Dump(margin + 2) == elle::StatusError)
@@ -170,6 +158,10 @@ namespace nucleus
     ///
     elle::Status        Data::Serialize(elle::Archive&          archive) const
     {
+      // call the parent class.
+      if (proton::ContentHashBlock::Serialize(archive) == elle::StatusError)
+        escape("unable to serialize the underlying physical block");
+
       // serialize the internal region.
       if (archive.Serialize(this->region) == elle::StatusError)
         escape("unable to serialize the internal region");
@@ -182,6 +174,10 @@ namespace nucleus
     ///
     elle::Status        Data::Extract(elle::Archive&            archive)
     {
+      // call the parent class.
+      if (proton::ContentHashBlock::Extract(archive) == elle::StatusError)
+        escape("unable to extract the underyling physical block");
+
       // extract the region.
       if (archive.Extract(this->region) == elle::StatusError)
         escape("unable to extract the region");

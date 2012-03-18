@@ -4,7 +4,7 @@
 
 - porcupine
  - lorsque l'arbre est vide, on devrait avoir le handle root qui pointe vers une valeur unique: de cette maniere pour un directory on aurait Object qui contient Porcupine qui ne contient qu'un handle qui pointe vers un autre block: les entrees du directory.
- - renommer attributs _* and * (meme dans nucleus)
+ - verifier que lorsque l'on seal, on ne seale que les blocs qui en ont besoin
 
 - register/auth
  - creer le login/pass localement et envoyer le hash a meta

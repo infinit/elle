@@ -78,7 +78,7 @@ namespace nucleus
       typename V::K             key;
       Handle                    value;
 
-      elle::Footprint           _footprint;
+      elle::Footprint           footprint;
     };
 
   }

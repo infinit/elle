@@ -86,7 +86,7 @@ namespace nucleus
 
         elle::Signature         signature;
 
-        neutron::Subject        _subject;
+        neutron::Subject        subject;
       }                         owner;
     };
 

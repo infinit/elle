@@ -62,6 +62,8 @@ Pod::Pod(const nucleus::Placement&                              placement,
 /// XXX
 ///
 Pod::Pod(const Pod&                                             element):
+  elle::Object(element),
+
   nature(element.nature),
   state(element.state),
   placement(element.placement),

@@ -16,6 +16,7 @@
 #include <hole/Hole.hh>
 
 #include <XXX/Porcupine.hh>
+#include <XXX/Pins.hh>
 
 int main(int argc, char** argv)
 {
@@ -92,7 +93,9 @@ int main(int argc, char** argv)
         fail("XXX");
     }
 
-  if (p->Check() == elle::StatusError)
+  if (p->Check(nucleus::PinParent |
+               nucleus::PinNeighbours |
+               nucleus::PinKey) == elle::StatusError)
     fail("XXX");
 
   //p->Dump();
@@ -105,29 +108,34 @@ int main(int argc, char** argv)
 
       if (p->Locate(v[i], h) == elle::StatusError)
         fail("XXX");
-
-      if (nucleus::Porcupine<>::Detach.Call(h) == elle::StatusError)
-        fail("unable to detach the value");
     }
 
-  if (p->Check() == elle::StatusError)
+  if (p->Check(nucleus::PinParent |
+               nucleus::PinNeighbours |
+               nucleus::PinKey) == elle::StatusError)
     fail("XXX");
 
-  //p->Dump();
+  if (p->Seal() == elle::StatusError)
+    fail("unable to seal the porcupine");
+
+  if (p->Check(nucleus::PinAll) == elle::StatusError)
+    fail("XXX");
 
   for (int i = 0; i < n; i++)
     {
+      nucleus::Handle   h;
+
       printf("[%u] -------------< %s\n", i, v[i].c_str());
+
+      if (p->Locate(v[i], h) == elle::StatusError)
+        fail("XXX");
 
       if (p->Remove(v[i]) == elle::StatusError)
         fail("XXX");
 
-      //if (p->Check() == elle::StatusError)
-      //fail("XXX");
+      if (nucleus::Porcupine<>::Detach.Call(h) == elle::StatusError)
+        fail("unable to detach the value");
     }
-
-  if (p->Check() == elle::StatusError)
-    fail("XXX");
 
   p->Dump();
 

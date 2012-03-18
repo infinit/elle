@@ -16,6 +16,7 @@
 //
 
 #include <XXX/Ambit.hh>
+#include <XXX/Nodule.hh>
 
 #include <hole/Hole.hh>
 
@@ -199,12 +200,12 @@ namespace nucleus
         std::unique_ptr<typename N::I>(new typename N::I(key, value));
 
       // compute the inlet's footprint.
-      if (inlet.get()->_footprint.Compute() == elle::StatusError)
+      if (inlet.get()->footprint.Compute() == elle::StatusError)
         escape("unable to compute the inlet's footprint");
 
       // check if the future nodule's footprint---i.e should the inlet
       // be inserted---would exceed the extent.
-      if ((current()->_footprint.size + inlet.get()->_footprint.size) >
+      if ((current()->footprint.size + inlet.get()->footprint.size) >
           hole::Hole::Descriptor.extent)
         {
           struct
@@ -643,7 +644,7 @@ namespace nucleus
           if (Porcupine<>::Detach.Call(current.handle) == elle::StatusError)
             escape("unable to detach the block from the porcupine");
         }
-      else if (current()->_footprint.size <
+      else if (current()->footprint.size <
                (hole::Hole::Descriptor.extent *
                 hole::Hole::Descriptor.balancing))
         {
@@ -715,10 +716,10 @@ namespace nucleus
                 escape("unable to shrink the tree");
             }
           else if ((left() != nullptr) &&
-                   (left()->_state == StateDirty) &&
+                   (left()->state == StateDirty) &&
                    (left()->parent == current()->parent) &&
-                   ((left()->_footprint.size +
-                     current()->_footprint.size -
+                   ((left()->footprint.size +
+                     current()->footprint.size -
                      N::Footprint) <
                     hole::Hole::Descriptor.extent))
             {
@@ -734,11 +735,11 @@ namespace nucleus
               goto _merge_left;
             }
           else if ((right() != nullptr) &&
-                   (right()->_state == StateDirty) &&
+                   (right()->state == StateDirty) &&
                    (right()->parent == current()->parent) &&
-                   ((current()->_footprint.size -
+                   ((current()->footprint.size -
                      N::Footprint +
-                     right()->_footprint.size) <
+                     right()->footprint.size) <
                     hole::Hole::Descriptor.extent))
             {
               //
@@ -749,8 +750,8 @@ namespace nucleus
             }
           else if ((left() != nullptr) &&
                    (left()->parent == current()->parent) &&
-                   ((left()->_footprint.size +
-                     current()->_footprint.size -
+                   ((left()->footprint.size +
+                     current()->footprint.size -
                      N::Footprint) <
                     hole::Hole::Descriptor.extent))
             {
@@ -866,9 +867,9 @@ namespace nucleus
             }
           else if ((right() != nullptr) &&
                    (right()->parent == current()->parent) &&
-                   ((current()->_footprint.size -
+                   ((current()->footprint.size -
                      N::Footprint +
-                     right()->_footprint.size) <
+                     right()->footprint.size) <
                     hole::Hole::Descriptor.extent))
             {
               //
@@ -1255,7 +1256,7 @@ namespace nucleus
     /// mayor key.
     ///
     template <typename V>
-    elle::Status        Porcupine<V>::Check()
+    elle::Status        Porcupine<V>::Check(const Pins          pins)
     {
       // proceed if there is a root block.
       if (this->root != Handle::Null)
@@ -1269,7 +1270,8 @@ namespace nucleus
 
           // trigger the check method on the root nodule.
           if (root()->Check(null,
-                            this->root) == elle::StatusError)
+                            this->root,
+                            pins) == elle::StatusError)
             escape("unable to check the root nodule's consistency");
 
           // unload the root nodule.
@@ -1328,6 +1330,48 @@ namespace nucleus
       return elle::StatusOk;
     }
 
+    ///
+    /// this method goes through the porcupine in order to seal the
+    /// blocks having been either created or modified.
+    ///
+    /// once complete, the porcupine should be consistent so for its
+    /// constituent blocks to be stored.
+    ///
+    template <typename V>
+    elle::Status        Porcupine<V>::Seal()
+    {
+      // ignore empty trees.
+      if (this->root == Handle::Null)
+        return elle::StatusOk;
+
+      // process the root nodule only if it has been created or modified.
+      //
+      // such a nodule can easily be identified through its placement
+      // which should be non-null.
+      if (this->root.placement == Placement::Null)
+        return elle::StatusOk;
+
+      Ambit< Nodule<V> >        root(this->root);
+      Address                   address;
+
+      // load the root nodule.
+      if (root.Load() == elle::StatusError)
+        escape("unable to load the root block");
+
+      // seal the root nodule.
+      if (root()->Seal(address) == elle::StatusError)
+        escape("unable to seal the root nodule");
+
+      // unload the root nodule.
+      if (root.Unload() == elle::StatusError)
+        escape("unable to unload the root block");
+
+      // update the root handle's address.
+      this->root.address = address;
+
+      return elle::StatusOk;
+    }
+
 //
 // ---------- dumpable --------------------------------------------------------
 //
@@ -1353,6 +1397,10 @@ namespace nucleus
 
       if (this->root.Dump(margin + 4) == elle::StatusError)
         escape("unable to dump the handle");
+
+      // dump the transcript.
+      if (this->transcript.Dump(margin + 4) == elle::StatusError)
+        escape("unable to dump the transcript");
 
       return elle::StatusOk;
     }

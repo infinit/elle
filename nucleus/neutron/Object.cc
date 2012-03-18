@@ -35,12 +35,12 @@ namespace nucleus
       // the attributes below are initialized in the constructor body
       // because they belong to a sub-structure.
       //
-      this->meta._state = proton::StateClean;
+      this->meta.state = proton::StateClean;
       this->meta.owner.permissions = PermissionNone;
       this->meta.genre = GenreUnknown;
       this->meta.version = 0;
 
-      this->data._state = proton::StateClean;
+      this->data.state = proton::StateClean;
       this->data.size = 0;
       this->data.version = 0;
     }
@@ -140,10 +140,10 @@ namespace nucleus
       }
 
       // mark the section as dirty.
-      this->data._state = proton::StateDirty;
+      this->data.state = proton::StateDirty;
 
       // mark the block as dirty.
-      this->_state = proton::StateDirty;
+      this->state = proton::StateDirty;
 
       return elle::StatusOk;
     }
@@ -165,19 +165,19 @@ namespace nucleus
       this->meta.owner.permissions = permissions;
 
       // mark the section as dirty.
-      this->meta._state = proton::StateDirty;
+      this->meta.state = proton::StateDirty;
 
       // re-compute the owner's access record. just like this->owner.subject,
       // this attribute is not mandatory but has been introduced in order
       // to simplify access control management.
-      if (this->meta.owner._record.Update(
-            this->owner._subject,
+      if (this->meta.owner.record.Update(
+            this->owner.subject,
             this->meta.owner.permissions,
             this->meta.owner.token) == elle::StatusError)
         escape("unable to create the owner access record");
 
       // set the the block as dirty.
-      this->_state = proton::StateDirty;
+      this->state = proton::StateDirty;
 
       return elle::StatusOk;
     }
@@ -189,7 +189,7 @@ namespace nucleus
                                      const Access&              access)
     {
       // re-sign the data if required.
-      if (this->data._state == proton::StateDirty)
+      if (this->data.state == proton::StateDirty)
         {
           // increase the data version.
           this->data.version += 1;
@@ -207,11 +207,11 @@ namespace nucleus
             escape("unable to sign the data archive");
 
           // mark the section as consistent.
-          this->data._state = proton::StateConsistent;
+          this->data.state = proton::StateConsistent;
         }
 
       // re-sign the meta data if required.
-      if (this->meta._state == proton::StateDirty)
+      if (this->meta.state == proton::StateDirty)
         {
           // increase the meta version.
           this->meta.version += 1;
@@ -273,14 +273,14 @@ namespace nucleus
             }
 
           // mark the section as consistent.
-          this->meta._state = proton::StateConsistent;
+          this->meta.state = proton::StateConsistent;
         }
 
       // set the mutable block's version.
       this->version = this->meta.version + this->data.version;
 
       // set the block as consistent.
-      this->_state = proton::StateConsistent;
+      this->state = proton::StateConsistent;
 
       return elle::StatusOk;
     }
@@ -533,7 +533,7 @@ namespace nucleus
         escape("unable to dump the meta signature");
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
-                << "[_State] " << std::dec << this->meta._state << std::endl;
+                << "[State] " << std::dec << this->meta.state << std::endl;
 
       // dump the data part.
       std::cout << alignment << elle::Dumpable::Shift << "[Data]" << std::endl;
@@ -560,7 +560,7 @@ namespace nucleus
         escape("unable to dump the data signature");
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
-                << "[_State] " << std::dec << this->data._state << std::endl;
+                << "[State] " << std::dec << this->data.state << std::endl;
 
       return elle::StatusOk;
     }
@@ -641,8 +641,8 @@ namespace nucleus
         escape("unable to extract the data part");
 
       // compute the owner record.
-      if (this->meta.owner._record.Update(
-            this->owner._subject,
+      if (this->meta.owner.record.Update(
+            this->owner.subject,
             this->meta.owner.permissions,
             this->meta.owner.token) == elle::StatusError)
         escape("unable to create the owner access record");

@@ -21,6 +21,7 @@
 #include <nucleus/proton/Block.hh>
 #include <XXX/Nodule.hh>
 #include <XXX/Inlet.hh>
+#include <XXX/Pins.hh>
 
 #include <elle/idiom/Close.hh>
 # include <map>
@@ -123,7 +124,8 @@ namespace nucleus
       elle::Status              Split(Quill<V>*&);
       elle::Status              Merge(Quill<V>*);
 
-      elle::Status              Check(Handle&) const;
+      elle::Status              Check(Handle&,
+                                      const Pins);
 
       //
       // interfaces
@@ -135,8 +137,10 @@ namespace nucleus
       elle::Status              Search(const typename V::K&,
                                        Handle&);
       elle::Status              Check(Handle&,
-                                      Handle&) const;
+                                      Handle&,
+                                      const Pins = PinAll);
       elle::Status              Traverse(const elle::Natural32 = 0);
+      elle::Status              Seal(Address&);
 
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;

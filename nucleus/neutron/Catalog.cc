@@ -36,18 +36,6 @@ namespace nucleus
     const Component                     Catalog::Q = ComponentQuillCatalog;
 
 //
-// ---------- constructors & destructors --------------------------------------
-//
-
-    ///
-    /// default constructor.
-    ///
-    Catalog::Catalog():
-      _state(proton::StateClean)
-    {
-    }
-
-//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -65,7 +53,7 @@ namespace nucleus
         escape("unable to add the entry in the range");
 
       // range the object as dirty.
-      this->_state = proton::StateDirty;
+      this->state = proton::StateDirty;
 
       return elle::StatusOk;
     }
@@ -150,7 +138,7 @@ namespace nucleus
         escape("unable to remove the entry");
 
       // range the object as dirty.
-      this->_state = proton::StateDirty;
+      this->state = proton::StateDirty;
 
       return elle::StatusOk;
     }
@@ -183,7 +171,7 @@ namespace nucleus
       entry->name = to;
 
       // range the object as dirty.
-      this->_state = proton::StateDirty;
+      this->state = proton::StateDirty;
 
       return elle::StatusOk;
     }
@@ -222,9 +210,9 @@ namespace nucleus
 
       std::cout << alignment << "[Catalog]" << std::endl;
 
-      // dump the state.
-      std::cout << alignment << elle::Dumpable::Shift << "[_State] "
-                << this->_state << std::endl;
+      // dump the parent class.
+      if (proton::ContentHashBlock::Dump(margin + 2) == elle::StatusError)
+        escape("unable to dump the underlying block");
 
       // dump the range.
       if (this->range.Dump(margin + 2) == elle::StatusError)
@@ -242,6 +230,10 @@ namespace nucleus
     ///
     elle::Status        Catalog::Serialize(elle::Archive&       archive) const
     {
+      // call the parent class.
+      if (proton::ContentHashBlock::Serialize(archive) == elle::StatusError)
+        escape("unable to serialize the underlying physical block");
+
       // serialize the range.
       if (archive.Serialize(this->range) == elle::StatusError)
         escape("unable to serialize the range");
@@ -254,6 +246,10 @@ namespace nucleus
     ///
     elle::Status        Catalog::Extract(elle::Archive&         archive)
     {
+      // call the parent class.
+      if (proton::ContentHashBlock::Extract(archive) == elle::StatusError)
+        escape("unable to extract the underyling physical block");
+
       // extract the range.
       if (archive.Extract(this->range) == elle::StatusError)
         escape("unable to extract the range");

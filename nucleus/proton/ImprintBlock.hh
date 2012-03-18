@@ -93,7 +93,7 @@ namespace nucleus
       {
         elle::PublicKey         K;
 
-        neutron::Subject        _subject;
+        neutron::Subject        subject;
       }                         owner;
     };
 

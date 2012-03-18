@@ -16,9 +16,9 @@
 //
 
 #include <elle/Elle.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <etoile/gear/Nature.hh>
-#include <etoile/gear/Transcript.hh>
 #include <etoile/gear/Operation.hh>
 
 namespace etoile
@@ -87,12 +87,12 @@ namespace etoile
       //
       // attributes
       //
-      Nature            nature;
+      Nature                    nature;
 
-      State             state;
-      Operation         operation;
+      State                     state;
+      Operation                 operation;
 
-      Transcript        transcript;
+      nucleus::Transcript       transcript;
     };
 
   }

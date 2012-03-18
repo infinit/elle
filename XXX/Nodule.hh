@@ -18,8 +18,10 @@
 #include <elle/Elle.hh>
 
 #include <nucleus/proton/ContentHashBlock.hh>
+#include <nucleus/proton/Address.hh>
 #include <nucleus/proton/State.hh>
 #include <XXX/Handle.hh>
+#include <XXX/Pins.hh>
 
 namespace nucleus
 {
@@ -95,8 +97,10 @@ namespace nucleus
       virtual elle::Status      Search(const typename V::K&,
                                        Handle&) = 0;
       virtual elle::Status      Check(Handle&,
-                                      Handle&) const = 0;
+                                      Handle&,
+                                      const Pins = PinNone) = 0;
       virtual elle::Status      Traverse(const elle::Natural32 = 0) = 0;
+      virtual elle::Status      Seal(Address&) = 0;
 
       //
       // interfaces
@@ -117,7 +121,7 @@ namespace nucleus
       Handle                    left;
       Handle                    right;
 
-      elle::Footprint           _footprint;
+      elle::Footprint           footprint;
     };
 
   }

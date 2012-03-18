@@ -17,7 +17,7 @@
 
 #include <elle/Elle.hh>
 
-#include <nucleus/proton/State.hh>
+#include <nucleus/proton/ContentHashBlock.hh>
 
 #include <nucleus/neutron/Offset.hh>
 #include <nucleus/neutron/Size.hh>
@@ -39,14 +39,9 @@ namespace nucleus
     /// Catalog for directories, Data for files etc.
     ///
     class Reference:
-      public elle::Object
+      public proton::ContentHashBlock
     {
     public:
-      //
-      // constructors & destructors
-      //
-      Reference();
-
       //
       // methods
       //
@@ -72,8 +67,6 @@ namespace nucleus
       //
       // attributes
       //
-      proton::State     _state;
-
       elle::String      target;
     };
 
