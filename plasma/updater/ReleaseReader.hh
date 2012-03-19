@@ -45,9 +45,10 @@ namespace plasma {
         };
 
       public:
-        Type        type;
+        Type    type;
         QString relpath;
         QString md5sum;
+        size_t  size;
       };
 
     public:

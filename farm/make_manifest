@@ -12,30 +12,23 @@ XML = """<?xml version="1.0" encoding="UTF-8"?>
 if __name__ == '__main__':
     dest_dir, major, minor, rev = sys.argv[1:]
     assert os.path.isdir(dest_dir)
-    bin_dir = os.path.join(dest_dir, "bin")
-    lib_dir = os.path.join(dest_dir, "lib")
-    assert os.path.isdir(bin_dir)
-    binaries = os.listdir(bin_dir)
-    EXE_TAG = """\t<executable path="%s" md5sum="%s" />"""
+
+    EXE_TAG = """\t<executable path="%s" size="%d" md5sum="%s" />"""
     EXE_TAGS = []
+
     isexecutable = lambda f: os.access(f, os.X_OK) and not os.path.isdir(f)
-    for binary in binaries:
-        fpath = os.path.join(bin_dir, binary)
-        if isexecutable(fpath):
-            with open(fpath) as f:
-                md5 = hashlib.md5(f.read()).hexdigest()
-            EXE_TAGS.append(
-                EXE_TAG % ("bin/" + binary, md5)
-            )
-    libraries = os.listdir(lib_dir)
-    for binary in libraries:
-        fpath = os.path.join(lib_dir, binary)
-        if isexecutable(fpath):
-            with open(fpath) as f:
-                md5 = hashlib.md5(f.read()).hexdigest()
-            EXE_TAGS.append(
-                EXE_TAG % ("lib/" + binary, md5)
-            )
+    for dir_ in ['bin', 'lib']:
+        bin_dir = os.path.join(dest_dir, dir_)
+        assert os.path.isdir(bin_dir)
+        binaries = os.listdir(bin_dir)
+        for binary in binaries:
+            fpath = os.path.join(bin_dir, binary)
+            if isexecutable(fpath):
+                with open(fpath) as f:
+                    md5 = hashlib.md5(f.read()).hexdigest()
+                EXE_TAGS.append(
+                    EXE_TAG % (dir_ + '/' + binary, os.path.getsize(fpath), md5)
+                )
     with open(os.path.join(dest_dir, "manifest.xml"), "w") as f:
         f.write(XML % {
             'major': major, 'minor': minor, 'rev': rev,

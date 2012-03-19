@@ -33,8 +33,12 @@ using namespace plasma::updater;
 
 ReleaseUpdater::ReleaseUpdater(QApplication& app) :
   _networkManager(&app),
+  _updateDialog(),
   _hasList(false),
-  _releaseReader()
+  _toUpdate(),
+  _infinitHome(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY)),
+  _totalDownloadSize(0),
+  _downloadedSize(0)
 {
   this->connect(
       &this->_networkManager,
@@ -53,6 +57,9 @@ ReleaseUpdater::~ReleaseUpdater()
 void ReleaseUpdater::Start()
 {
   std::cout << "Checking out " << INFINIT_RELEASE_URI << std::endl;
+  assert(_infinitHome.exists());
+
+  this->_updateDialog.show();
 
   auto reply = this->_networkManager.get(
       QNetworkRequest(QUrl(INFINIT_RELEASE_URI))
@@ -62,8 +69,18 @@ void ReleaseUpdater::Start()
       reply, SIGNAL(error(QNetworkReply::NetworkError)),
       this, SLOT(_OnDownloadError(QNetworkReply::NetworkError))
   );
+
+  this->connect(
+      &this->_updateDialog, SIGNAL(cancelled()),
+      this, SLOT(_OnCancelled())
+  );
 }
 
+void ReleaseUpdater::_OnCancelled()
+{
+  std::cerr << "Cancelled !\n";
+  emit releaseUpdated(false);
+}
 
 void ReleaseUpdater::_OnDownloadFinished(QNetworkReply* reply)
 {
@@ -89,7 +106,7 @@ void ReleaseUpdater::_OnDownloadFinished(QNetworkReply* reply)
 
   if (success)
     {
-      if (this->_releaseReader.files.size() > 0)
+      if (this->_toUpdate.size() > 0)
         {
           this->_DownloadNextResource();
         }
@@ -102,40 +119,30 @@ void ReleaseUpdater::_OnDownloadFinished(QNetworkReply* reply)
 
   if (isDone || !success)
     {
+      this->_updateDialog.hide();
       emit releaseUpdated(success);
     }
 }
 
 void ReleaseUpdater::_DownloadNextResource()
 {
-  assert(this->_releaseReader.files.size() > 0);
-  auto& file = this->_releaseReader.files.back();
+  assert(this->_toUpdate.size() > 0);
+  auto& file = this->_toUpdate.back();
   QString uri = (INFINIT_BASE_URL "/") + file.relpath;
 
-  QDir home_directory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
-  QFile dest_file(home_directory.filePath(file.relpath));
-  if (dest_file.open(QIODevice::ReadOnly))
-    {
-      QByteArray fileData = dest_file.readAll();
-      auto array = QCryptographicHash::hash(fileData, QCryptographicHash::Md5).toHex();
-      std::string hex(array.data(), array.length());
-      if (file.md5sum.toStdString() == hex)
-        {
-          std::cout << "The binary " << dest_file.fileName().toStdString()
-                    << " is up to date !\n";
-          this->_releaseReader.files.pop_back();
-          emit _OnDownloadFinished(nullptr);
-          return;
-        }
-    }
 
   std::cout << "Checking out " << uri.toStdString() << std::endl;
+  this->_updateDialog.setStatus("Downloading " + file.relpath.toStdString() + " ...");
   auto reply = this->_networkManager.get(
       QNetworkRequest(QUrl(uri))
   );
   this->connect(
       reply, SIGNAL(error(QNetworkReply::NetworkError)),
       this, SLOT(_OnDownloadError(QNetworkReply::NetworkError))
+  );
+  this->connect(
+      reply, SIGNAL(downloadProgress(qint64,qint64)),
+      this, SLOT(_OnDownloadProgress(qint64, qint64))
   );
 }
 
@@ -145,13 +152,26 @@ void ReleaseUpdater::_OnDownloadError(QNetworkReply::NetworkError error)
   //emit releaseUpdated(false);
 }
 
+void ReleaseUpdater::_OnDownloadProgress(qint64 read, qint64 total)
+{
+  if (read <= 0 || total <= 0)
+    {
+      this->_updateDialog.setProgress(0);
+      return;
+    }
+  assert(this->_totalDownloadSize != 0);
+  this->_updateDialog.setProgress(
+      float(this->_downloadedSize + read) * 100.0f / float(this->_totalDownloadSize)
+  );
+}
+
 bool ReleaseUpdater::_ProcessResource(QNetworkReply& reply)
 {
   assert(this->_hasList);
-  assert(this->_releaseReader.files.size() > 0);
+  assert(this->_toUpdate.size() > 0);
   QDir home_directory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
   assert(home_directory.exists());
-  auto& src_file = this->_releaseReader.files.back();
+  auto& src_file = this->_toUpdate.back();
   std::cout << "Just downloaded " << src_file.relpath.toStdString() << std::endl;
   QFile dest_file(home_directory.filePath(src_file.relpath));
   if (!dest_file.open(QIODevice::WriteOnly | QIODevice::Truncate))
@@ -165,18 +185,46 @@ bool ReleaseUpdater::_ProcessResource(QNetworkReply& reply)
     dest_file.setPermissions(QFile::ExeOwner | QFile::ReadOwner | QFile::WriteOwner);
   else
     dest_file.setPermissions(QFile::ReadOwner | QFile::WriteOwner);
-  this->_releaseReader.files.pop_back();
+  this->_downloadedSize += src_file.size;
+  this->_toUpdate.pop_back();
   return true;
 }
 
 bool ReleaseUpdater::_ProcessResourceList(QNetworkReply& reply)
 {
   assert(!this->_hasList);
-  if (!this->_releaseReader.Feed(reply.readAll()))
+  assert(this->_totalDownloadSize == 0);
+  ReleaseReader releaseReader;
+
+  if (!releaseReader.Feed(reply.readAll()))
     {
       std::cerr << "Failed to read release description file\n";
       return false;
     }
   this->_hasList = true;
+
+  auto it = releaseReader.files.begin(),
+       end = releaseReader.files.end();
+  for (; it != end; ++it)
+    {
+      QFile dest_file(this->_infinitHome.filePath(it->relpath));
+      if (dest_file.open(QIODevice::ReadOnly))
+        {
+          QByteArray fileData = dest_file.readAll();
+          auto array = QCryptographicHash::hash(
+              fileData, QCryptographicHash::Md5
+          ).toHex();
+          std::string hex(array.data(), array.length());
+          if (it->md5sum.toStdString() == hex)
+            {
+              std::cout << "The binary " << dest_file.fileName().toStdString()
+                        << " is up to date !\n";
+              continue;
+            }
+        }
+      this->_toUpdate.push_back(*it);
+      _totalDownloadSize += it->size;
+    }
+
   return true;
 }

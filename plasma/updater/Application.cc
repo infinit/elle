@@ -33,7 +33,8 @@ using namespace plasma::updater;
 Application::Application(int& ac, char** av) :
   QApplication(ac, av, true),
   _releaseUpdater(*this),
-  _identityUpdater(*this)
+  _identityUpdater(*this),
+  _licenseDialog()
 {}
 
 Application::~Application()
@@ -46,27 +47,62 @@ Application::~Application()
 
 int Application::Exec()
 {
+  QDir home_directory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
+  if (!home_directory.exists())
+    {
+      this->_licenseDialog.show();
+      this->connect(
+          &this->_licenseDialog, SIGNAL(accepted()),
+          this, SLOT(_StartUpdate())
+      );
+      this->connect(
+          &this->_licenseDialog, SIGNAL(cancelled()),
+          this, SLOT(_CancelUpdate())
+      );
+    }
+  else
+    {
+      std::cerr << "Infinit home already exists !\n";
+      this->_StartUpdate();
+    }
+
+  return this->exec();
+}
+
+void Application::_StartUpdate()
+{
+  this->_licenseDialog.hide();
   if (!this->_CheckInfinitHome())
-    return EXIT_FAILURE;
+    this->exit(EXIT_FAILURE);
 
   this->_releaseUpdater.Start();
   this->connect(
     &this->_releaseUpdater, SIGNAL(releaseUpdated(bool)),
     this, SLOT(_OnReleaseUpdated(bool))
   );
-
-  return this->exec();
 }
 
-void Application::_OnReleaseUpdated(bool)
+void Application::_CancelUpdate()
 {
-  this->_identityUpdater.Start();
-  this->connect(
-    &this->_identityUpdater,
-    SIGNAL(identityUpdated(bool)),
-    this,
-    SLOT(_OnIdentityUpdated(bool))
-  );
+  std::cerr << "Update cancelled\n";
+  this->exit(EXIT_FAILURE);
+}
+
+void Application::_OnReleaseUpdated(bool success)
+{
+  if (!success)
+    {
+      std::cerr << "Release was not updated correctly\n";
+      this->exit(EXIT_FAILURE);
+    }
+  else
+    {
+      this->connect(
+          &this->_identityUpdater, SIGNAL(identityUpdated(bool)),
+          this, SLOT(_OnIdentityUpdated(bool))
+      );
+      this->_identityUpdater.Start();
+    }
 }
 
 bool Application::_CheckInfinitHome()

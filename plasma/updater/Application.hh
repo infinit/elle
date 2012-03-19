@@ -22,6 +22,7 @@
 
 #include "IdentityUpdater.hh"
 #include "ReleaseUpdater.hh"
+#include "LicenseDialog.hh"
 
 namespace plasma {
   namespace updater {
@@ -43,6 +44,7 @@ namespace plasma {
     private:
       ReleaseUpdater  _releaseUpdater;
       IdentityUpdater _identityUpdater;
+      LicenseDialog   _licenseDialog;
 
     public:
       /// ctor & dtor
@@ -55,6 +57,8 @@ namespace plasma {
     private:
       bool _CheckInfinitHome();
     private slots:
+      void _StartUpdate();
+      void _CancelUpdate();
       void _OnReleaseUpdated(bool);
       void _OnIdentityUpdated(bool success);
 

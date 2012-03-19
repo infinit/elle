@@ -13,6 +13,8 @@ set(updater_moc_hdrs
   ReleaseUpdater.hh
   LoginDialog.hh
   IdentityUpdater.hh
+  LicenseDialog.hh
+  UpdateDialog.hh
 )
 
 QT4_WRAP_CPP(updater_moc_srcs ${updater_moc_hdrs})
