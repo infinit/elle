@@ -13,7 +13,7 @@
 #include "value.h"
 #include "parse_error.h"
 
-//#define BOOST_SPIRIT_THREADSAFE  // uncomment for multithreaded use, requires linking to boost.thread
+#define BOOST_SPIRIT_THREADSAFE  // uncomment for multithreaded use, requires linking to boost.thread
 
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
