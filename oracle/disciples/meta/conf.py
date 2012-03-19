@@ -2,6 +2,7 @@
 """
 All constants goes here
 """
+import os
 
 DEBUG = True
 ENCODING = 'utf-8'
@@ -10,6 +11,10 @@ SESSION_COOKIE_NAME = 'SESSIONID'
 SESSION_TOKEN_NAME = 'token'
 SESSION_HEADER_NAME = 'Authorization'
 
-INFINIT_AUTHORITY_PATH = "../infinit.auth"
+INFINIT_AUTHORITY_PATH = os.path.join(
+    os.path.abspath(os.path.dirname(__file__)),
+    "../../infinit.auth"
+)
+
 INFINIT_AUTHORITY_PASSWORD = ""
 
