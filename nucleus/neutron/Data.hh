@@ -44,6 +44,10 @@ namespace nucleus
       //
       // methods
       //
+
+      // XXX[to remove]
+      elle::Status Create() { elle::StatusOk; }
+
       elle::Status      Write(const Offset&,
                               const elle::Region&);
       elle::Status      Read(const Offset&,

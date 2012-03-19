@@ -17,7 +17,6 @@
 
 #include <elle/Elle.hh>
 
-#include <nucleus/proton/ContentHashBlock.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/State.hh>
 #include <XXX/Handle.hh>
@@ -57,7 +56,7 @@ namespace nucleus
     ///
     template <typename V>
     class Nodule:
-      public ContentHashBlock
+      public elle::Object
     {
     public:
       //
@@ -84,11 +83,6 @@ namespace nucleus
       elle::Status              Import(T*,
                                        const elle::Natural32 = 0);
 
-      template <typename T>
-      elle::Status              Split(T*&);
-      template <typename T>
-      elle::Status              Merge(T*);
-
       //
       // virtual methods
       //
@@ -100,7 +94,7 @@ namespace nucleus
                                       Handle&,
                                       const Pins = PinNone) = 0;
       virtual elle::Status      Traverse(const elle::Natural32 = 0) = 0;
-      virtual elle::Status      Seal(Address&) = 0;
+      virtual elle::Status      Seal() = 0;
 
       //
       // interfaces
@@ -120,7 +114,7 @@ namespace nucleus
       Handle                    parent;
       Handle                    left;
       Handle                    right;
-
+      State                     state;
       elle::Footprint           footprint;
     };
 

@@ -333,7 +333,7 @@ namespace nucleus
     elle::Status        Seam<V>::Link(I*                        inlet,
                                       Handle&                   parent)
     {
-      Ambit< Seam<V> >  child(inlet->value);
+      Ambit< Contents< Seam<V> > >      child(inlet->value);
 
       // load the child nodule.
       if (child.Load() == elle::StatusError)
@@ -364,8 +364,8 @@ namespace nucleus
       // go through the inlets.
       for (; iterator != end; ++iterator)
         {
-          Seam<V>::I*           inlet = iterator->second;
-          Ambit< Nodule<V> >    child(inlet->value);
+          Seam<V>::I*                           inlet = iterator->second;
+          Ambit< Contents< Nodule<V> > >        child(inlet->value);
 
           // load the value block.
           if (child.Load() == elle::StatusError)
@@ -458,7 +458,7 @@ namespace nucleus
       if ((recent != ancient) &&
           (this->parent != Handle::Null))
         {
-          Ambit< Seam<V> >      parent(this->parent);
+          Ambit< Contents< Seam<V> > >  parent(this->parent);
 
           // load the parent nodule.
           if (parent.Load() == elle::StatusError)
@@ -481,43 +481,10 @@ namespace nucleus
     }
 
     ///
-    /// this method splits the current seam and returns a newly allocated
-    /// seam i.e _right_.
-    ///
-    template <typename V>
-    elle::Status        Seam<V>::Split(Seam<V>*&                right)
-    {
-      elle::Natural32   size;
-
-      // initialize _size_ as being the future left quills' size.
-      size =
-        hole::Hole::Descriptor.extent * hole::Hole::Descriptor.contention;
-
-      // allocate a new seam.
-      auto              r =
-        std::unique_ptr< Seam<V> >(new Seam<V>);
-
-      // create the seam.
-      if (r.get()->Create() == elle::StatusError)
-        escape("unable to create the seam");
-
-      // export inlets from the current seam into the new seam.
-      if (this->Export(r.get(), size) == elle::StatusError)
-        escape("unable to export inlets");
-
-      // set the output right seam.
-      right = r.get();
-
-      // release the tracking.
-      r.release();
-
-      return elle::StatusOk;
-    }
-
-    ///
     /// this method takes the given seam and merges its inlets with the
     /// current one.
     ///
+    /// XXX[a virer et mettre direct dans Porcupine, comme Split]
     template <typename V>
     elle::Status        Seam<V>::Merge(Seam<V>*                 seam)
     {
@@ -562,10 +529,9 @@ namespace nucleus
       // go through the inlets.
       for (; iterator != end; ++iterator)
         {
-          Seam<V>::I*           inlet = iterator->second;
-          typename V::K         mayor;
-
-          Ambit< Nodule<V> >    child(inlet->value);
+          Seam<V>::I*                           inlet = iterator->second;
+          Ambit< Contents< Nodule<V> > >        child(inlet->value);
+          typename V::K                         mayor;
 
           // load the value block.
           if (child.Load() == elle::StatusError)
@@ -580,7 +546,7 @@ namespace nucleus
               Address   address;
 
               // bind the child block.
-              if (child()->Bind(address) == elle::StatusError)
+              if (child->Bind(address) == elle::StatusError)
                 escape("unable to bind the block");
 
               // compare the addresses.
@@ -684,7 +650,7 @@ namespace nucleus
       //
       handle = inlet->value;
 
-      Ambit< Nodule<V> >                        child(inlet->value);
+      Ambit< Contents< Nodule<V> > >            child(inlet->value);
 
       // load the child nodule.
       if (child.Load() == elle::StatusError)
@@ -725,7 +691,7 @@ namespace nucleus
         {
           if (this->left != Handle::Null)
             {
-              Ambit< Seam<V> >  left(this->left);
+              Ambit< Contents< Seam<V> > >      left(this->left);
 
               if (left.Load() == elle::StatusError)
                 escape("unable to load the nodule");
@@ -739,7 +705,7 @@ namespace nucleus
 
           if (this->right != Handle::Null)
             {
-              Ambit< Seam<V> >  right(this->right);
+              Ambit< Contents< Seam<V> > >      right(this->right);
 
               if (right.Load() == elle::StatusError)
                 escape("unable to load the nodule");
@@ -782,8 +748,8 @@ namespace nucleus
       // go through the inlets.
       for (; iterator != end; ++iterator)
         {
-          Seam<V>::I*           inlet = iterator->second;
-          Ambit< Nodule<V> >    child(inlet->value);
+          Seam<V>::I*                           inlet = iterator->second;
+          Ambit< Contents< Nodule<V> > >        child(inlet->value);
 
           // dump the inlet.
           if (inlet->Dump(margin + 4) == elle::StatusError)
@@ -812,7 +778,7 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    elle::Status        Seam<V>::Seal(Address&                  address)
+    elle::Status        Seam<V>::Seal()
     {
       auto              iterator = this->container.begin();
       auto              end = this->container.end();
@@ -820,8 +786,9 @@ namespace nucleus
       // go through the container.
       for (; iterator != end; ++iterator)
         {
-          Seam<V>::I*           inlet = iterator->second;
-          Ambit< Nodule<V> >    child(inlet->value);
+          Seam<V>::I*                           inlet = iterator->second;
+          Ambit< Contents< Nodule<V> > >        child(inlet->value);
+          Address                               address;
 
           // ignore nodules which have not been created or modified.
           //
@@ -838,20 +805,21 @@ namespace nucleus
           assert(child() != nullptr);
 
           // seal the child.
-          if (child()->Seal(inlet->value.address) == elle::StatusError)
+          if (child()->Seal() == elle::StatusError)
             escape("unable to seal the child nodule");
+
+          // once the value addresses have been computed and recorded,
+          // the contents can, in turn, be bound.
+          if (child->Bind(address) == elle::StatusError)
+            escape("unable to bind the block");
 
           // unload the value block.
           if (child.Unload() == elle::StatusError)
             escape("unable to unload the block");
-        }
 
-      // once the nodule's addresses have been computed and recorded,
-      // the current seam can, in turn, be bound.
-      //
-      // this address is then returned to the caller.
-      if (this->Bind(address) == elle::StatusError)
-        escape("unable to bind the block");
+          // update the child handle's address.
+          inlet->value.address = address;
+        }
 
       return elle::StatusOk;
     }

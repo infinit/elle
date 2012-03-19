@@ -135,6 +135,9 @@ namespace nucleus
       elle::Status              Check(const Pins = PinAll);
       elle::Status              Traverse(const elle::Natural32 = 0);
 
+      elle::Status              Encrypt(const elle::SecretKey&);
+      elle::Status              Decrypt(const elle::SecretKey&);
+
       elle::Status              Seal();
 
       //
@@ -162,6 +165,16 @@ namespace nucleus
     class Porcupine<>
     {
     public:
+      //
+      // constants
+      //
+      struct                                    Default
+      {
+        static const elle::Natural32            Length;
+
+        static elle::SecretKey                  Secret;
+      };
+
       //
       // static methods
       //

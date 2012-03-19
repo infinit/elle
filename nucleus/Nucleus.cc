@@ -48,6 +48,7 @@ namespace nucleus
           (neutron::ComponentObject) == elle::StatusError)
         escape("unable to register the factory product");
 
+      /* XXX
       if (Nucleus::Factory.Register< neutron::Contents<neutron::Data> >
           (neutron::ComponentData) == elle::StatusError)
         escape("unable to register the factory product");
@@ -59,6 +60,7 @@ namespace nucleus
       if (Nucleus::Factory.Register< neutron::Contents<neutron::Reference> >
           (neutron::ComponentReference) == elle::StatusError)
         escape("unable to register the factory product");
+      */
 
       if (Nucleus::Factory.Register< neutron::Access >
           (neutron::ComponentAccess) == elle::StatusError)

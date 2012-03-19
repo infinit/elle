@@ -349,40 +349,6 @@ namespace nucleus
     }
 
     ///
-    /// this method splits the current quill and returns in the given
-    /// _right_ variable the newly created quill.
-    ///
-    template <typename V>
-    elle::Status        Quill<V>::Split(Quill<V>*&              right)
-    {
-      elle::Natural32   size;
-
-      // initialize _size_ as being the future left quills' size.
-      size =
-        hole::Hole::Descriptor.extent * hole::Hole::Descriptor.contention;
-
-      // allocate a new quill.
-      auto              r =
-        std::unique_ptr< Quill<V> >(new Quill<V>);
-
-      // create the quill.
-      if (r.get()->Create() == elle::StatusError)
-        escape("unable to create the quill");
-
-      // export inlets from the current seam into the new seam.
-      if (this->Export(r.get(), size) == elle::StatusError)
-        escape("unable to export inlets");
-
-      // set the output right quill.
-      right = r.get();
-
-      // release the tracking.
-      r.release();
-
-      return elle::StatusOk;
-    }
-
-    ///
     /// this method takes the current quill and the given one and merges
     /// them into a single one i.e the current one.
     ///
@@ -430,8 +396,8 @@ namespace nucleus
       // go through the container.
       for (; iterator != end; ++iterator)
         {
-          Quill<V>::I*  inlet = iterator->second;
-          Ambit<V>      child(inlet->value);
+          Quill<V>::I*          inlet = iterator->second;
+          Ambit< Contents<V> >  child(inlet->value);
 
           // load the value block.
           if (child.Load() == elle::StatusError)
@@ -446,7 +412,7 @@ namespace nucleus
               Address   address;
 
               // bind the child block.
-              if (child()->Bind(address) == elle::StatusError)
+              if (child->Bind(address) == elle::StatusError)
                 escape("unable to bind the block");
 
               // compare the addresses.
@@ -537,7 +503,7 @@ namespace nucleus
         {
           if (this->left != Handle::Null)
             {
-              Ambit< Quill<V> >  left(this->left);
+              Ambit< Contents< Quill<V> > >     left(this->left);
 
               if (left.Load() == elle::StatusError)
                 escape("unable to load the nodule");
@@ -551,7 +517,7 @@ namespace nucleus
 
           if (this->right != Handle::Null)
             {
-              Ambit< Quill<V> >  right(this->right);
+              Ambit< Contents< Quill<V> > >     right(this->right);
 
               if (right.Load() == elle::StatusError)
                 escape("unable to load the nodule");
@@ -608,7 +574,7 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    elle::Status        Quill<V>::Seal(Address&                 address)
+    elle::Status        Quill<V>::Seal()
     {
       auto              iterator = this->container.begin();
       auto              end = this->container.end();
@@ -617,7 +583,8 @@ namespace nucleus
       for (; iterator != end; ++iterator)
         {
           Quill<V>::I*          inlet = iterator->second;
-          Ambit<V>              child(inlet->value);
+          Ambit< Contents<V> >  child(inlet->value);
+          Address               address;
 
           // ignore blocks which have not been created or modified.
           //
@@ -634,20 +601,16 @@ namespace nucleus
           assert(child() != nullptr);
 
           // bind the child block.
-          if (child()->Bind(inlet->value.address) == elle::StatusError)
+          if (child->Bind(address) == elle::StatusError)
             escape("unable to bind the block");
 
           // unload the value block.
           if (child.Unload() == elle::StatusError)
             escape("unable to unload the block");
-        }
 
-      // once the value addresses have been computed and recorded,
-      // the current quill can, in turn, be bound.
-      //
-      // this address is then returned to the caller.
-      if (this->Bind(address) == elle::StatusError)
-        escape("unable to bind the block");
+          // update the child handle's address.
+          inlet->value.address = address;
+        }
 
       return elle::StatusOk;
     }

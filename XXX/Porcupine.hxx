@@ -18,6 +18,8 @@
 #include <XXX/Ambit.hh>
 #include <XXX/Nodule.hh>
 
+#include <nucleus/proton/Contents.hh>
+
 #include <hole/Hole.hh>
 
 namespace nucleus
@@ -69,7 +71,7 @@ namespace nucleus
     template <typename V>
     elle::Status        Porcupine<V>::Exist(const typename V::K& key)
     {
-      Handle                    handle;
+      Handle                            handle;
 
       // search for the quill responsible for the given key.
       if (this->Search(key, handle) == elle::StatusError)
@@ -78,7 +80,7 @@ namespace nucleus
           return elle::StatusFalse;
         }
 
-      Ambit< Quill<V> >         leaf(handle);
+      Ambit< Contents< Quill<V> > >     leaf(handle);
 
       // load the block.
       if (leaf.Load() == elle::StatusError) 
@@ -114,13 +116,13 @@ namespace nucleus
     elle::Status        Porcupine<V>::Locate(const typename V::K& key,
                                              Handle&            value)
     {
-      Handle                    handle;
+      Handle                            handle;
 
       // search for the quill responsible for the given key.
       if (this->Search(key, handle) == elle::StatusError)
         escape("unable to locate a quill for this key");
 
-      Ambit< Quill<V> >         leaf(handle);
+      Ambit< Contents< Quill<V> > >     leaf(handle);
 
       // load the block.
       if (leaf.Load() == elle::StatusError)
@@ -177,16 +179,16 @@ namespace nucleus
       {
         struct
         {
-          typename V::K recent;
-        }               right;
+          typename V::K         recent;
+        }                       right;
         struct
         {
-          typename V::K ancient;
-          typename V::K temporary;
-          typename V::K recent;
-        }               current;
-      }                 mayor;
-      Ambit<N>          current(nodule);
+          typename V::K         ancient;
+          typename V::K         temporary;
+          typename V::K         recent;
+        }                       current;
+      }                         mayor;
+      Ambit< Contents<N> >      current(nodule);
 
       // load the current block.
       if (current.Load() == elle::StatusError)
@@ -213,7 +215,6 @@ namespace nucleus
             Handle              right;
             Handle              parent;
           }                     handle;
-          N*                    _right;
 
           // first, retrieve the mayor key of the current nodule.
           if (current()->Mayor(mayor.current.ancient) == elle::StatusError)
@@ -226,15 +227,40 @@ namespace nucleus
           //
           // thus, the nodule is split first, then the inlet will be inserted.
           //
+          elle::Natural32       size;
 
-          // split the nodule.
-          if (current()->Split(_right) == elle::StatusError)
-            escape("unable to split the nodule");
+          // initialize _size_ as being the future left nodule' size.
+          size =
+            hole::Hole::Descriptor.extent * hole::Hole::Descriptor.contention;
+
+          // allocate a new nodule.
+          auto                  contents =
+            std::unique_ptr< Contents<N> >(new Contents<N>);
+
+          // create the contents.
+          if (contents.get()->Create() == elle::StatusError)
+            escape("unable to create the contents");
 
           // attach the block to the porcupine.
-          if (Porcupine<>::Attach.Call(_right,
+          if (Porcupine<>::Attach.Call(contents.get(),
                                        handle.right) == elle::StatusError)
             escape("unable to attach the block");
+
+          // release the tracking.
+          contents.release();
+
+          Ambit< Contents<N> >  newright(handle.right);
+
+          // load the new right nodule.
+          if (newright.Load() == elle::StatusError)
+            escape("unable to load the block");
+
+          // at this point, the new right nodule must have been loaded.
+          assert(newright() != nullptr);
+
+          // export inlets from the current seam into the new seam.
+          if (current()->Export(newright(), size) == elle::StatusError)
+            escape("unable to export inlets");
 
           //
           // update the nodule's previous right neighbour.
@@ -250,19 +276,10 @@ namespace nucleus
           //   [current nodule]->right = [new right nodule]
           //
 
-          Ambit<N>              newright(handle.right);
-
-          // load the new right nodule.
-          if (newright.Load() == elle::StatusError)
-            escape("unable to load the block");
-
-          // at this point, the new right nodule must have been loaded.
-          assert(newright() != nullptr);
-
           // update the old right nodule's neighbour links, if required.
           if (current()->right != Handle::Null)
             {
-              Ambit<N>          right(current()->right);
+              Ambit< Contents<N> >      right(current()->right);
 
               // load the right nodule, if possible.
               if (right.Load() == elle::StatusError)
@@ -351,7 +368,7 @@ namespace nucleus
               // changed.
               if (mayor.current.recent != mayor.current.ancient)
                 {
-                  Ambit< Seam<V> >      parent(current()->parent);
+                  Ambit< Contents< Seam<V> > >  parent(current()->parent);
 
                   // load the parent block, if possible.
                   if (parent.Load() == elle::StatusError)
@@ -458,7 +475,7 @@ namespace nucleus
               if ((mayor.current.recent != mayor.current.ancient) &&
                   (current()->parent != Handle::Null))
                 {
-                  Ambit< Seam<V> >      parent(current()->parent);
+                  Ambit< Contents< Seam<V> > >  parent(current()->parent);
 
                   // load the parent seam.
                   if (parent.Load() == elle::StatusError)
@@ -509,21 +526,21 @@ namespace nucleus
       {
         struct
         {
-          typename V::K ancient;
-          typename V::K recent;
-        }               left;
+          typename V::K         ancient;
+          typename V::K         recent;
+        }                       left;
         struct
         {
-          typename V::K ancient;
-          typename V::K recent;
-        }               current;
+          typename V::K         ancient;
+          typename V::K         recent;
+        }                       current;
         struct
         {
-          typename V::K ancient;
-          typename V::K recent;
-        }               right;
-      }                 mayor;
-      Ambit<N>          current(nodule);
+          typename V::K         ancient;
+          typename V::K         recent;
+        }                       right;
+      }                         mayor;
+      Ambit< Contents<N> >      current(nodule);
 
       // load the current block.
       if (current.Load() == elle::StatusError)
@@ -573,7 +590,7 @@ namespace nucleus
               // update the left nodule's right neighbour, if required.
               if (current()->left != Handle::Null)
                 {
-                  Ambit<N>              left(current()->left);
+                  Ambit< Contents<N> >  left(current()->left);
 
                   // load the left nodule.
                   if (left.Load() == elle::StatusError)
@@ -593,7 +610,7 @@ namespace nucleus
               // update the right nodule's left neighbour.
               if (current()->right != Handle::Null)
                 {
-                  Ambit<N>              right(current()->right);
+                  Ambit< Contents<N> >  right(current()->right);
 
                   // load the right nodule.
                   if (right.Load() == elle::StatusError)
@@ -667,9 +684,9 @@ namespace nucleus
           // for merging i.e is present, is in a correct state and has
           // enough available space.
           //
-          Ambit<N>              left(current()->left);
-          Ambit<N>              right(current()->right);
-          Ambit< Seam<V> >      parent(current()->parent);
+          Ambit< Contents<N> >          left(current()->left);
+          Ambit< Contents<N> >          right(current()->right);
+          Ambit< Contents< Seam<V> > >  parent(current()->parent);
 
           // load the nodule, if present.
           if (left.handle != Handle::Null)
@@ -836,7 +853,7 @@ namespace nucleus
               //
               if (left()->parent != Handle::Null)
                 {
-                  Ambit< Seam<V> >      newparent(left()->parent);
+                  Ambit< Contents< Seam<V> > >  newparent(left()->parent);
 
                   if (newparent.Load() == elle::StatusError)
                     escape("unable to load the block");
@@ -975,7 +992,7 @@ namespace nucleus
           if ((mayor.current.recent != mayor.current.ancient) &&
               (current()->parent != Handle::Null))
             {
-              Ambit< Seam<V> >  parent(current()->parent);
+              Ambit< Contents< Seam<V> > >      parent(current()->parent);
 
               // load the nodule.
               if (parent.Load() == elle::StatusError)
@@ -1021,21 +1038,22 @@ namespace nucleus
 
           // at first, allocate an initial root nodule which happens to be
           // a leaf since alone.
-          auto                  root =
-            std::unique_ptr< Quill<V> >(new Quill<V>);
+          auto                  contents =
+            std::unique_ptr< Contents< Quill<V> > >(
+              new Contents< Quill<V> >);
           Handle                handle;
 
-          // create the quill.
-          if (root.get()->Create() == elle::StatusError)
-            escape("unable to create the quill");
+          // create the contents.
+          if (contents.get()->Create() == elle::StatusError)
+            escape("unable to create the contents");
 
           // attach the block to the porcupine.
-          if (Porcupine<>::Attach.Call(root.get(),
+          if (Porcupine<>::Attach.Call(contents.get(),
                                        handle) == elle::StatusError)
             escape("unable to attach the block");
 
           // waive the tracking.
-          root.release();
+          contents.release();
 
           // assign the new root handle.
           this->root = handle;
@@ -1057,7 +1075,7 @@ namespace nucleus
           // variable is going to change.
           handle.root = this->root;
 
-          Ambit< Nodule<V> >    root(handle.root);
+          Ambit< Contents< Nodule<V> > >        root(handle.root);
 
           // load the root nodule.
           if (root.Load() == elle::StatusError)
@@ -1071,25 +1089,35 @@ namespace nucleus
             escape("unable to retrieve the mayor key");
 
           // allocate a new root seam.
-          auto                  newroot =
-            std::unique_ptr< Seam<V> >(new Seam<V>);
+          auto                  contents =
+            std::unique_ptr< Contents< Seam<V> > >(
+              new Contents< Seam<V> >);
 
-          // create the root seam.
-          if (newroot.get()->Create() == elle::StatusError)
-            escape("unable to create the seam");
-
-          // add the current root nodule in the new root seam.
-          if (newroot.get()->Insert(mayor,
-                                    root.handle) == elle::StatusError)
-            escape("unable to add the current root in the new root nodule");
+          // create the root contents.
+          if (contents.get()->Create() == elle::StatusError)
+            escape("unable to create the contents");
 
           // attach the block to the porcupine.
-          if (Porcupine<>::Attach.Call(newroot.get(),
+          if (Porcupine<>::Attach.Call(contents.get(),
                                        handle.newroot) == elle::StatusError)
             escape("unable to attach the block");
 
+          // waive the tracking.
+          contents.release();
+
+          Ambit< Contents< Seam<V> > >  newroot(handle.newroot);
+
+          // load the newroot.
+          if (newroot.Load() == elle::StatusError)
+            escape("unable to load the block");
+
+          // add the current root nodule in the new root seam.
+          if (newroot()->Insert(mayor,
+                                root.handle) == elle::StatusError)
+            escape("unable to add the current root in the new root nodule");
+
           // assign the new root handle.
-          this->root = handle.newroot;
+          this->root = newroot.handle;
 
           // link the existing root to its new parent i.e the new root.
           //
@@ -1102,10 +1130,11 @@ namespace nucleus
             escape("unable to unload the root block");
 
           // at this point the new root must have no parent.
-          assert(newroot.get()->parent == Handle::Null);
+          assert(newroot()->parent == Handle::Null);
 
-          // waive the tracking.
-          newroot.release();
+          // unload the newroot.
+          if (newroot.Unload() == elle::StatusError)
+            escape("unable to unload the block");
         }
 
       // increment the height.
@@ -1121,8 +1150,8 @@ namespace nucleus
     template <typename V>
     elle::Status        Porcupine<V>::Shrink()
     {
-      typename V::K             maiden;
-      typename Seam<V>::I*      inlet;
+      typename V::K                     maiden;
+      typename Seam<V>::I*              inlet;
 
       // if the tree is empty or has a root nodule only, ignore this step.
       if (this->height <= 1)
@@ -1135,9 +1164,9 @@ namespace nucleus
 
       struct
       {
-        Handle                  root; // XXX
-        Handle                  newroot;
-      }                         handle;
+        Handle                          root;
+        Handle                          newroot;
+      }                                 handle;
 
       // copy the current root handle so that no ambit reference
       // _this->root_ since this variable is going to change.
@@ -1146,7 +1175,7 @@ namespace nucleus
       // note that since the Shrink() method proceeds only for trees
       // with a two-level heigh and more, the root nodule cannot be anything
       // but a seam.
-      Ambit< Seam<V> >          root(handle.root);
+      Ambit< Contents< Seam<V> > >      root(handle.root);
 
       // load the root nodule.
       if (root.Load() == elle::StatusError)
@@ -1174,7 +1203,7 @@ namespace nucleus
       if (root.Unload() == elle::StatusError)
         escape("unable to unload the root block");
 
-      Ambit< Seam<V> >          newroot(this->root);
+      Ambit< Contents< Seam<V> > >      newroot(this->root);
 
       // load the root nodule.
       if (newroot.Load() == elle::StatusError)
@@ -1230,7 +1259,7 @@ namespace nucleus
       //
       handle = this->root;
 
-      Ambit< Nodule<V> >        root(this->root);
+      Ambit< Contents< Nodule<V> > >    root(this->root);
 
       // load the root nodule.
       if (root.Load() == elle::StatusError)
@@ -1261,8 +1290,8 @@ namespace nucleus
       // proceed if there is a root block.
       if (this->root != Handle::Null)
         {
-          Ambit< Nodule<V> >    root(this->root);
-          Handle                null = Handle::Null;
+          Ambit< Contents< Nodule<V> > >        root(this->root);
+          Handle                                null = Handle::Null;
 
           // load the root nodule.
           if (root.Load() == elle::StatusError)
@@ -1299,7 +1328,7 @@ namespace nucleus
       // proceed if there is a root block.
       if (this->root != Handle::Null)
         {
-          Ambit< Nodule<V> >    root(this->root);
+          Ambit< Contents< Nodule<V> > >        root(this->root);
 
           // dump the handle.
           if (this->root.Dump(margin + 4) == elle::StatusError)
@@ -1351,16 +1380,21 @@ namespace nucleus
       if (this->root.placement == Placement::Null)
         return elle::StatusOk;
 
-      Ambit< Nodule<V> >        root(this->root);
-      Address                   address;
+      Ambit< Contents< Nodule<V> > >    root(this->root);
+      Address                           address;
 
       // load the root nodule.
       if (root.Load() == elle::StatusError)
         escape("unable to load the root block");
 
       // seal the root nodule.
-      if (root()->Seal(address) == elle::StatusError)
+      if (root()->Seal() == elle::StatusError)
         escape("unable to seal the root nodule");
+
+      // once the value addresses have been computed and recorded,
+      // the contents can, in turn, be bound.
+      if (root->Bind(address) == elle::StatusError)
+        escape("unable to bind the block");
 
       // unload the root nodule.
       if (root.Unload() == elle::StatusError)
@@ -1368,6 +1402,59 @@ namespace nucleus
 
       // update the root handle's address.
       this->root.address = address;
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status        Porcupine<V>::Encrypt(const elle::SecretKey& key)
+    {
+      // ignore empty trees.
+      if (this->root == Handle::Null)
+        return elle::StatusOk;
+
+      // process the root nodule only if it has been created or modified.
+      //
+      // such a nodule can easily be identified through its placement
+      // which should be non-null.
+      if (this->root.placement == Placement::Null)
+        return elle::StatusOk;
+
+      Ambit< Contents< Nodule<V> > >    root(this->root);
+      Address                           address;
+
+      // load the root nodule.
+      if (root.Load() == elle::StatusError)
+        escape("unable to load the root block");
+
+      // set the secret key the root contents.
+      if (root->Encrypt(key) == elle::StatusError)
+        escape("unable to bind the block");
+
+      // encrypt the root contents.
+      if (root->Encrypt(key) == elle::StatusError)
+        escape("unable to bind the block");
+
+      // unload the root nodule.
+      if (root.Unload() == elle::StatusError)
+        escape("unable to unload the root block");
+
+      // update the root handle's address.
+      this->root.address = address;
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status        Porcupine<V>::Encrypt(const elle::SecretKey& key)
+    {
+      // XXX
 
       return elle::StatusOk;
     }

@@ -127,7 +127,6 @@ namespace nucleus
       elle::Status              Propagate(const typename V::K&,
                                           const typename V::K&);
 
-      elle::Status              Split(Seam<V>*&);
       elle::Status              Merge(Seam<V>*);
 
       elle::Status              Check(Handle&,
@@ -146,7 +145,7 @@ namespace nucleus
                                       Handle&,
                                       const Pins = PinAll);
       elle::Status              Traverse(const elle::Natural32 = 0);
-      elle::Status              Seal(Address&);
+      elle::Status              Seal();
 
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;

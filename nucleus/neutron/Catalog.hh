@@ -59,6 +59,10 @@ namespace nucleus
       //
       // methods
       //
+
+      // XXX[to remove]
+      elle::Status Create() { elle::StatusOk; }
+
       elle::Status      Add(Entry*);
       elle::Status      Exist(const elle::String&) const;
       elle::Status      Lookup(const elle::String&,

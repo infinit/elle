@@ -208,7 +208,7 @@ namespace etoile
             }
 
           // generate a secret key.
-          if (key.Generate() == elle::StatusError)
+          if (key.Generate() == elle::StatusError) // XXX[should provide a len]
             escape("unable to generate the secret key");
 
           // encrypt the contents.

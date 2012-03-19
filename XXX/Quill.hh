@@ -121,7 +121,6 @@ namespace nucleus
                                      Handle&);
       elle::Status              Link(Handle&);
 
-      elle::Status              Split(Quill<V>*&);
       elle::Status              Merge(Quill<V>*);
 
       elle::Status              Check(Handle&,
@@ -140,7 +139,7 @@ namespace nucleus
                                       Handle&,
                                       const Pins = PinAll);
       elle::Status              Traverse(const elle::Natural32 = 0);
-      elle::Status              Seal(Address&);
+      elle::Status              Seal();
 
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;

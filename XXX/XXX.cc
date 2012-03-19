@@ -115,6 +115,14 @@ int main(int argc, char** argv)
                nucleus::PinKey) == elle::StatusError)
     fail("XXX");
 
+  elle::SecretKey sk;
+
+  if (sk.Generate(128) == elle::StatusError)
+    fail("XXX");
+
+  if (p->Encrypt(sk) == elle::StatusError)
+    fail("XXX");
+
   if (p->Seal() == elle::StatusError)
     fail("unable to seal the porcupine");
 

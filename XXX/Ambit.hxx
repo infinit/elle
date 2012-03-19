@@ -105,9 +105,18 @@ elle::Status    Ambit<T>::Unload()
 /// XXX
 ///
 template <typename T>
-T*              Ambit<T>::operator()()
+T*                  Ambit<T>::operator->()
 {
   return (static_cast<T*>(this->handle.block));
+}
+
+///
+/// XXX
+///
+template <typename T>
+typename T::C*      Ambit<T>::operator()()
+{
+  return (static_cast<T*>(this->handle.block)->content);
 }
 
 //

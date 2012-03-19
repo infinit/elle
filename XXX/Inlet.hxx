@@ -11,6 +11,12 @@
 #ifndef NUCLEUS_PROTON_INLET_HXX
 #define NUCLEUS_PROTON_INLET_HXX
 
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <XXX/Porcupine.hh>
+
 namespace nucleus
 {
   namespace proton
@@ -23,15 +29,22 @@ namespace nucleus
     ///
     /// default constructor.
     ///
+    /// note that the default secret is used so as to represent a
+    /// valid secret key for the footprint computation.
+    ///
     template <typename V,
               typename T>
     Inlet<V, T>::Inlet():
-      footprint(*this)
+      footprint(*this),
+      secret(Porcupine<>::Default::Secret)
     {
     }
 
     ///
     /// object-specific constructor.
+    ///
+    /// note that the default secret is used so as to represent a
+    /// valid secret key for the footprint computation.
     ///
     template <typename V,
               typename T>
@@ -39,7 +52,7 @@ namespace nucleus
                        Handle&                                  value):
       key(key),
       value(value),
-
+      secret(Porcupine<>::Default::Secret),
       footprint(*this)
     {
     }
@@ -67,6 +80,10 @@ namespace nucleus
       // dump the value.
       if (this->value.Dump(margin + 2) == elle::StatusError)
         escape("unable to dump the value");
+
+      // dump the secret.
+      if (this->secret.Dump(margin + 2) == elle::StatusError)
+        escape("unable to dump the secret");
 
       // dump the footprint.
       std::cout << alignment << elle::Dumpable::Shift

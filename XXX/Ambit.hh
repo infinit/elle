@@ -32,7 +32,7 @@ namespace nucleus
     ///
     /// XXX
     ///
-    template <typename T = Block>
+    template <typename T>
     class Ambit:
       public elle::Entity
     {
@@ -63,7 +63,8 @@ namespace nucleus
       //
       // operators
       //
-      T*                operator()();
+      T*                operator->();
+      typename T::C*    operator()();
 
       //
       // interfaces

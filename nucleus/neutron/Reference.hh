@@ -45,6 +45,10 @@ namespace nucleus
       //
       // methods
       //
+
+      // XXX[to remove]
+      elle::Status Create() { elle::StatusOk; }
+
       elle::Status      Bind(const elle::String&);
       elle::Status      Resolve(elle::String&) const;
 

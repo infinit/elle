@@ -31,10 +31,8 @@ namespace nucleus
     ///
     template <typename V>
     Nodule<V>::Nodule(const Type                                type):
-      ContentHashBlock(type == TypeSeam ? V::S : V::Q),
-
       type(type),
-
+      state(StateClean),
       footprint(*this)
     {
     }
@@ -209,10 +207,6 @@ namespace nucleus
       elle::String              alignment(margin, ' ');
 
       std::cout << alignment << "[Nodule]" << std::endl;
-
-      // dump the parent.
-      if (ContentHashBlock::Dump(margin + 2) == elle::StatusError)
-        escape("unable to dump the content hash block");
 
       // dump the type.
       std::cout << alignment << elle::Dumpable::Shift

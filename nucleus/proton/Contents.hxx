@@ -8,27 +8,31 @@
 // author        julien quintard   [sun jan 31 21:15:18 2010]
 //
 
-#ifndef NUCLEUS_NEUTRON_CONTENTS_HXX
-#define NUCLEUS_NEUTRON_CONTENTS_HXX
+#ifndef NUCLEUS_PROTON_CONTENTS_HXX
+#define NUCLEUS_PROTON_CONTENTS_HXX
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <nucleus/neutron/Data.hh>
+/* XXX
+#include <nucleus/proton/Data.hh>
 #include <nucleus/neutron/Catalog.hh>
 #include <nucleus/neutron/Reference.hh>
+*/
+
 #include <nucleus/neutron/Component.hh>
 
 namespace nucleus
 {
-  namespace neutron
+  namespace proton
   {
 
 //
 // ---------- types -----------------------------------------------------------
 //
 
+/* XXX[to remove, somehow]
     ///
     /// this base template allows for specialized-template.
     ///
@@ -56,6 +60,7 @@ namespace nucleus
     ContentsDeclare(Data);
     ContentsDeclare(Catalog);
     ContentsDeclare(Reference);
+*/
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -66,7 +71,7 @@ namespace nucleus
     ///
     template <typename T>
     Contents<T>::Contents():
-      proton::ContentHashBlock(ContentsMap<T>::Component),
+      // XXX proton::ContentHashBlock(ContentsMap<T>::Component),
 
       content(NULL),
       cipher(NULL)
@@ -189,6 +194,10 @@ namespace nucleus
       // allocate the block.
       this->content = new T;
 
+      // create the content.
+      if (this->content->Create() == elle::StatusError)
+        escape("unable to create the content");
+
       return elle::StatusOk;
     }
 
@@ -277,9 +286,11 @@ namespace nucleus
       if (proton::ContentHashBlock::Extract(archive) == elle::StatusError)
         escape("unable to extract the underlying CHB");
 
+      /* XXX[to remove]
       // compare the component.
       if (this->component != ContentsMap<T>::Component)
         escape("the archive does not seem to contain a content");
+      */
 
       // allocate a new cipher.
       this->cipher = new elle::Cipher;
