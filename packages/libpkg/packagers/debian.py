@@ -54,7 +54,7 @@ Description: Provide a secure, distributed and cross-platform filesystem.
                     constants.Architectures.I386: 'i386',
                 }[build_env.architecture],
                 'version_name': build_env.build.infos['version_name'],
-                'version': build_env.buid.infos['version'],
+                'version': build_env.build.infos['version'],
             }
             with open(os.path.join(debian_dir, "control"), 'w') as f:
                 f.write(self._control_template % params)
