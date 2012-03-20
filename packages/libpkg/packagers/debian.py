@@ -17,6 +17,7 @@ Version: 1.0
 Section: otherosfs
 Priority: optional
 Architecture: %(architecture)s
+Installed-Size: %(installed_size)d
 Essential: no
 Depends: libqt4-core (>= 4:4.7), libqt4-network, libqt4-xml, libqt4-gui,
          libssl1.0.0, libfuse2, libqjson0, libreadline5
@@ -42,10 +43,13 @@ Description: Provide a secure, distributed and cross-platform filesystem.
         tempdir = BuildEnv.makeTemporaryDirectory()
         try:
             pkgdir = os.path.join(tempdir, 'pkg')
-            shutil.copytree(build_env.directory, pkgdir)
-            # XXX copy only what is needed
-            os.system('rm -rf "%s"/lib' % pkgdir)
-            os.system('rm -f "%s"/manifest.xml' % pkgdir)
+            os.mkdir(pkgdir)
+            pkgbindir = os.path.join(pkgdir, 'bin')
+            os.mkdir(pkgbindir)
+            shutil.copy(
+                os.path.join(build_env.directory, 'bin/8updater'),
+                os.path.join(pkgbindir, 'infinit')
+            )
             debian_dir = os.path.join(pkgdir, 'DEBIAN')
             os.mkdir(debian_dir)
             params = {
@@ -55,6 +59,7 @@ Description: Provide a secure, distributed and cross-platform filesystem.
                 }[build_env.architecture],
                 'version_name': build_env.build.infos['version_name'],
                 'version': build_env.build.infos['version'],
+                'installed_size': os.path.getsize(os.path.join(pkgbindir, 'infinit')) / 1024,
             }
             with open(os.path.join(debian_dir, "control"), 'w') as f:
                 f.write(self._control_template % params)
