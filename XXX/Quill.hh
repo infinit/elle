@@ -86,7 +86,15 @@ namespace nucleus
       //
       // constructors & destructors
       //
-      Quill();
+
+      // XXX[virer le constructeur vide du coup]
+      Contents< Quill<V> >& contents;
+      Quill(Contents< Quill<V> >& contents):
+        Nodule<V>(Nodule<V>::TypeQuill),
+        contents(contents)
+      {}
+
+      // XXX Quill();
       ~Quill();
 
       //

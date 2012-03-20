@@ -125,6 +125,9 @@ int main(int argc, char** argv)
   if (sk.Generate(128) == elle::StatusError)
     fail("XXX");
 
+  // XXX
+  sk.Dump();
+
   if (p->Encrypt(sk) == elle::StatusError)
     fail("XXX");
 

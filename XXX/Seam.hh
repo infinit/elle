@@ -86,7 +86,15 @@ namespace nucleus
       //
       // constructors & destructors
       //
-      Seam();
+
+      // XXX[virer le constructeur vide du coup]
+      Contents< Seam<V> >& contents;
+      Seam(Contents< Seam<V> >& contents):
+        Nodule<V>(Nodule<V>::TypeSeam),
+        contents(contents)
+      {}
+
+      // XXX Seam();
       ~Seam();
 
       //

@@ -21,9 +21,9 @@ using namespace nucleus::proton;
 //
 
 ///
-/// XXX in bits
+/// XXX in bytes
 ///
-const elle::Natural32                   Porcupine<>::Default::Length = 128;
+const elle::Natural32                   Porcupine<>::Default::Length = 16;
 
 ///
 /// XXX
@@ -115,12 +115,15 @@ elle::Status        Porcupine<>::Initialize(
   Porcupine<>::Load = load;
   Porcupine<>::Unload = unload;
 
-  // initialize the default key.
+  // initialize the default secret key.
   //
   // this is required for nodules' footprint to be computed properly.
-  if (Porcupine<>::Default::Secret.Generate(
-        Porcupine<>::Default::Length) == elle::StatusError)
+  if (Porcupine<>::Default::Secret.Create(
+        elle::String(Porcupine<>::Default::Length, 'B')) == elle::StatusError)
     escape("unable to generate the default key");
+
+  // XXX
+  Porcupine<>::Default::Secret.Dump();
 
   //
   // catalog-specific initialization.

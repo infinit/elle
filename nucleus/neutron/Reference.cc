@@ -60,15 +60,6 @@ namespace nucleus
     }
 
 //
-// ---------- object ----------------------------------------------------------
-//
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Reference, _());
-
-//
 // ---------- dumpable --------------------------------------------------------
 //
 
@@ -80,10 +71,6 @@ namespace nucleus
       elle::String      alignment(margin, ' ');
 
       std::cout << alignment << "[Reference] " << std::endl;
-
-      // dump the parent class.
-      if (proton::ContentHashBlock::Dump(margin + 2) == elle::StatusError)
-        escape("unable to dump the underlying block");
 
       // dump the target.
       std::cout << alignment << elle::Dumpable::Shift << "[Target] "
@@ -101,10 +88,6 @@ namespace nucleus
     ///
     elle::Status        Reference::Serialize(elle::Archive&     archive) const
     {
-      // call the parent class.
-      if (proton::ContentHashBlock::Serialize(archive) == elle::StatusError)
-        escape("unable to serialize the underlying physical block");
-
       // serialize the target.
       if (archive.Serialize(this->target) == elle::StatusError)
         escape("unable to serialize the target");
@@ -117,10 +100,6 @@ namespace nucleus
     ///
     elle::Status        Reference::Extract(elle::Archive&       archive)
     {
-      // call the parent class.
-      if (proton::ContentHashBlock::Extract(archive) == elle::StatusError)
-        escape("unable to extract the underyling physical block");
-
       // extract the target.
       if (archive.Extract(this->target) == elle::StatusError)
         escape("unable to extract the target");

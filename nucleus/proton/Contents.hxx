@@ -151,7 +151,7 @@ namespace nucleus
         delete this->content;
 
       // allocate a new block.
-      this->content = new T;
+      this->content = new T(*this);
 
       // decrypt the cipher.
       if (key.Decrypt(*this->cipher, clear) == elle::StatusError)
@@ -192,7 +192,7 @@ namespace nucleus
     elle::Status        Contents<T>::Create()
     {
       // allocate the block.
-      this->content = new T;
+      this->content = new T(*this);
 
       // create the content.
       if (this->content->Create() == elle::StatusError)

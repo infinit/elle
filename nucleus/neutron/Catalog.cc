@@ -189,15 +189,6 @@ namespace nucleus
     }
 
 //
-// ---------- object ----------------------------------------------------------
-//
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Catalog, _());
-
-//
 // ---------- dumpable --------------------------------------------------------
 //
 
@@ -209,10 +200,6 @@ namespace nucleus
       elle::String      alignment(margin, ' ');
 
       std::cout << alignment << "[Catalog]" << std::endl;
-
-      // dump the parent class.
-      if (proton::ContentHashBlock::Dump(margin + 2) == elle::StatusError)
-        escape("unable to dump the underlying block");
 
       // dump the range.
       if (this->range.Dump(margin + 2) == elle::StatusError)
@@ -230,10 +217,6 @@ namespace nucleus
     ///
     elle::Status        Catalog::Serialize(elle::Archive&       archive) const
     {
-      // call the parent class.
-      if (proton::ContentHashBlock::Serialize(archive) == elle::StatusError)
-        escape("unable to serialize the underlying physical block");
-
       // serialize the range.
       if (archive.Serialize(this->range) == elle::StatusError)
         escape("unable to serialize the range");
@@ -246,10 +229,6 @@ namespace nucleus
     ///
     elle::Status        Catalog::Extract(elle::Archive&         archive)
     {
-      // call the parent class.
-      if (proton::ContentHashBlock::Extract(archive) == elle::StatusError)
-        escape("unable to extract the underyling physical block");
-
       // extract the range.
       if (archive.Extract(this->range) == elle::StatusError)
         escape("unable to extract the range");

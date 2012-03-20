@@ -31,11 +31,13 @@ namespace nucleus
     ///
     /// default constructor.
     ///
+    /* XXX
     template <typename V>
     Quill<V>::Quill():
       Nodule<V>(Nodule<V>::TypeQuill)
     {
     }
+    */
 
     ///
     /// destructor.
@@ -814,22 +816,28 @@ namespace nucleus
     template <typename V>
     elle::Status        Quill<V>::Initialize()
     {
-      Quill<V>          quill;
+      Contents< Quill<V> >      contents;
+
+      // create the contents.
+      if (contents.Create() == elle::StatusError)
+        escape("unable to create the contents");
 
       // compute the initial footprint from which the Insert(), Delete()
       // methods will work in order to adjust it.
-      if (quill.footprint.Compute() == elle::StatusError)
+      if (contents.content->footprint.Compute() == elle::StatusError)
         escape("unable to compute the footprint");
 
       // retrieve the initial quill footprint.
-      Quill<V>::Footprint = quill.footprint.size;
+      Quill<V>::Footprint = contents.content->footprint.size;
 
       // register the quills to the nucleus' factory.
       {
+        /* XXX[i.e Contents<>]
         // register the catalog-specific quill.
         if (Nucleus::Factory.Register< proton::Quill<neutron::Catalog> >
             (neutron::ComponentQuillCatalog) == elle::StatusError)
           escape("unable to register the factory product");
+        */
 
         // XXX
       }

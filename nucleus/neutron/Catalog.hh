@@ -17,7 +17,8 @@
 
 #include <elle/Elle.hh>
 
-#include <nucleus/proton/ContentHashBlock.hh>
+#include <nucleus/proton/Contents.hh>
+#include <nucleus/proton/State.hh>
 
 #include <nucleus/neutron/Offset.hh>
 #include <nucleus/neutron/Range.hh>
@@ -42,7 +43,7 @@ namespace nucleus
     /// Catalog for directories, Data for files etc.
     ///
     class Catalog:
-      public proton::ContentHashBlock
+      public elle::Object
     {
     public:
       //
@@ -55,6 +56,14 @@ namespace nucleus
       //
       static const Component                    S;
       static const Component                    Q;
+
+      //
+      // constructors & destructors
+      //
+
+      // XXX
+      proton::Contents<Catalog>& contents;
+      Catalog(proton::Contents<Catalog>& contents): contents(contents) {}
 
       //
       // methods
@@ -79,9 +88,6 @@ namespace nucleus
       // interfaces
       //
 
-      // object
-      declare(Catalog);
-
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
@@ -92,6 +98,7 @@ namespace nucleus
       //
       // attributes
       //
+      proton::State     state;
       Range<Entry>      range;
     };
 

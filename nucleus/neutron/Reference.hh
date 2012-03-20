@@ -17,7 +17,8 @@
 
 #include <elle/Elle.hh>
 
-#include <nucleus/proton/ContentHashBlock.hh>
+#include <nucleus/proton/Contents.hh>
+#include <nucleus/proton/State.hh>
 
 #include <nucleus/neutron/Offset.hh>
 #include <nucleus/neutron/Size.hh>
@@ -39,9 +40,17 @@ namespace nucleus
     /// Catalog for directories, Data for files etc.
     ///
     class Reference:
-      public proton::ContentHashBlock
+      public elle::Object
     {
     public:
+      //
+      // constructors & destructors
+      //
+
+      // XXX
+      proton::Contents<Reference>& contents;
+      Reference(proton::Contents<Reference>& contents): contents(contents) {}
+
       //
       // methods
       //
@@ -58,9 +67,6 @@ namespace nucleus
       // interfaces
       //
 
-      // object
-      declare(Reference);
-
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
@@ -71,6 +77,7 @@ namespace nucleus
       //
       // attributes
       //
+      proton::State     state;
       elle::String      target;
     };
 

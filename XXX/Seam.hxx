@@ -31,11 +31,13 @@ namespace nucleus
     ///
     /// default constructor.
     ///
+    /* XXX
     template <typename V>
     Seam<V>::Seam():
       Nodule<V>(Nodule<V>::TypeSeam)
     {
     }
+    */
 
     ///
     /// destructor.
@@ -847,51 +849,51 @@ namespace nucleus
       // XXX seales les left/right aussi. peut etre dans le sens: j'ai ete
       // XXX modifie, alors je vais modifie mon adresse chez mes voisins.
       // XXX car c'est dur pour l'autre de le savoir sinon.
-       // XXX pareil pour parent.
+      // XXX pareil pour parent.
 
-       // go through the container.
-       for (; iterator != end; ++iterator)
-         {
-           Seam<V>::I*                           inlet = iterator->second;
-           Ambit< Contents< Nodule<V> > >        child(inlet->value);
-           Address                               address;
+      // go through the container.
+      for (; iterator != end; ++iterator)
+        {
+          Seam<V>::I*                           inlet = iterator->second;
+          Ambit< Contents< Nodule<V> > >        child(inlet->value);
+          Address                               address;
 
-           // ignore nodules which have not been created or modified.
-           //
-           // such nodules can easily be identified since they have a
-           // non-null placement.
-           if (child.handle.placement == Placement::Null)
-             continue;
+          // ignore nodules which have not been created or modified.
+          //
+          // such nodules can easily be identified since they have a
+          // non-null placement.
+          if (child.handle.placement == Placement::Null)
+            continue;
 
-           // load the value block.
-           if (child.Load() == elle::StatusError)
-             escape("unable to load the block");
+          // load the value block.
+          if (child.Load() == elle::StatusError)
+            escape("unable to load the block");
 
-           // the child nodule must have been loaded.
-           assert(child() != nullptr);
+          // the child nodule must have been loaded.
+          assert(child() != nullptr);
 
-           // seal the child.
-           if (child()->Seal() == elle::StatusError)
-             escape("unable to seal the child nodule");
+          // seal the child.
+          if (child()->Seal() == elle::StatusError)
+            escape("unable to seal the child nodule");
 
-           // once the value addresses have been computed and recorded,
-           // the contents can, in turn, be bound.
-           if (child->Bind(address) == elle::StatusError)
-             escape("unable to bind the block");
+          // once the value addresses have been computed and recorded,
+          // the contents can, in turn, be bound.
+          if (child->Bind(address) == elle::StatusError)
+            escape("unable to bind the block");
 
-           // then, update the child's neighbours, if required.
-           // XXX
+          // then, update the child's neighbours, if required.
+          // XXX
 
-           // XXX on ne pourra pas update child()->parent car il faudrait
-           // donner l'adresse du noeud courant, et ca on ne l'a pas encore.
+          // XXX on ne pourra pas update child()->parent car il faudrait
+          // donner l'adresse du noeud courant, et ca on ne l'a pas encore.
 
-           // unload the value block.
-           if (child.Unload() == elle::StatusError)
-             escape("unable to unload the block");
+          // unload the value block.
+          if (child.Unload() == elle::StatusError)
+            escape("unable to unload the block");
 
-           // update the child handle's address.
-           inlet->value.address = address;
-         }
+          // update the child handle's address.
+          inlet->value.address = address;
+        }
 
       return elle::StatusOk;
     }
@@ -1028,22 +1030,28 @@ namespace nucleus
     template <typename V>
     elle::Status        Seam<V>::Initialize()
     {
-      Seam<V>           seam;
+      Contents< Seam<V> >       contents;
+
+      // create the contents.
+      if (contents.Create() == elle::StatusError)
+        escape("unable to create the contents");
 
       // compute the initial footprint from which the Insert(), Delete()
       // methods will work in order to adjust it.
-      if (seam.footprint.Compute() == elle::StatusError)
+      if (contents.content->footprint.Compute() == elle::StatusError)
         escape("unable to compute the footprint");
 
       // retrieve the initial seam footprint.
-      Seam<V>::Footprint = seam.footprint.size;
+      Seam<V>::Footprint = contents.content->footprint.size;
 
       // register the seams to the nucleus' factory.
       {
+        /* XXX[i.e Contents<>]
         // register the catalog-specific seam.
         if (Nucleus::Factory.Register< proton::Seam<neutron::Catalog> >
             (neutron::ComponentSeamCatalog) == elle::StatusError)
           escape("unable to register the factory product");
+        */
 
         // XXX
       }

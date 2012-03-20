@@ -117,15 +117,6 @@ namespace nucleus
     }
 
 //
-// ---------- object ----------------------------------------------------------
-//
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Data, _());
-
-//
 // ---------- dumpable --------------------------------------------------------
 //
 
@@ -137,10 +128,6 @@ namespace nucleus
       elle::String      alignment(margin, ' ');
 
       std::cout << alignment << "[Data]" << std::endl;
-
-      // dump the parent class.
-      if (proton::ContentHashBlock::Dump(margin + 2) == elle::StatusError)
-        escape("unable to dump the underlying block");
 
       // dump the region attribute.
       if (this->region.Dump(margin + 2) == elle::StatusError)
@@ -158,10 +145,6 @@ namespace nucleus
     ///
     elle::Status        Data::Serialize(elle::Archive&          archive) const
     {
-      // call the parent class.
-      if (proton::ContentHashBlock::Serialize(archive) == elle::StatusError)
-        escape("unable to serialize the underlying physical block");
-
       // serialize the internal region.
       if (archive.Serialize(this->region) == elle::StatusError)
         escape("unable to serialize the internal region");
@@ -174,10 +157,6 @@ namespace nucleus
     ///
     elle::Status        Data::Extract(elle::Archive&            archive)
     {
-      // call the parent class.
-      if (proton::ContentHashBlock::Extract(archive) == elle::StatusError)
-        escape("unable to extract the underyling physical block");
-
       // extract the region.
       if (archive.Extract(this->region) == elle::StatusError)
         escape("unable to extract the region");
