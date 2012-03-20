@@ -1424,26 +1424,25 @@ namespace nucleus
         return elle::StatusOk;
 
       Ambit< Contents< Nodule<V> > >    root(this->root);
-      Address                           address;
 
       // load the root nodule.
       if (root.Load() == elle::StatusError)
         escape("unable to load the root block");
 
-      // set the secret key the root contents.
-      if (root->Encrypt(key) == elle::StatusError)
-        escape("unable to bind the block");
+      // set the secret key.
+      this->root.secret = key;
 
-      // encrypt the root contents.
-      if (root->Encrypt(key) == elle::StatusError)
-        escape("unable to bind the block");
+      // traverse the tree.
+      if (root()->Encrypt(key) == elle::StatusError)
+        escape("unable to encrypt the root block");
+
+      // finally, actually encrypt the contents.
+      if (root->Encrypt(this->root.secret) == elle::StatusError)
+        escape("unable to encrypt the contents");
 
       // unload the root nodule.
       if (root.Unload() == elle::StatusError)
         escape("unable to unload the root block");
-
-      // update the root handle's address.
-      this->root.address = address;
 
       return elle::StatusOk;
     }
@@ -1452,7 +1451,7 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    elle::Status        Porcupine<V>::Encrypt(const elle::SecretKey& key)
+    elle::Status        Porcupine<V>::Decrypt(const elle::SecretKey& key)
     {
       // XXX
 

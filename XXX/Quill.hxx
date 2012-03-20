@@ -501,6 +501,8 @@ namespace nucleus
       // check the neighbours, if required.
       if (pins & PinNeighbours)
         {
+          // XXX checker les addresses aussi
+
           if (this->left != Handle::Null)
             {
               Ambit< Contents< Quill<V> > >     left(this->left);
@@ -574,10 +576,75 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
+    elle::Status        Quill<V>::Encrypt(const elle::SecretKey& key)
+    {
+      auto              iterator = this->container.begin();
+      auto              end = this->container.end();
+
+      // go through the container.
+      for (; iterator != end; ++iterator)
+        {
+          Quill<V>::I*          inlet = iterator->second;
+          Ambit< Contents<V> >  child(inlet->value);
+
+          // ignore blocks which have not been created or modified.
+          //
+          // such blocks can easily be identified since they have a
+          // non-null placement.
+          if (child.handle.placement == Placement::Null)
+            continue;
+
+          // load the value block.
+          if (child.Load() == elle::StatusError)
+            escape("unable to load the block");
+
+          // the child block must have been loaded.
+          assert(child() != nullptr);
+
+          // set the secret.
+          child.handle.secret = key;
+
+          // traverse the tree down to the value blocks by encrypting them
+          // as well.
+          if (child->Encrypt(key) == elle::StatusError)
+            escape("unable to encrypt the block");
+
+          // finally, actually encrypt the quill contents.
+          if (child->Encrypt(child.handle.secret) == elle::StatusError)
+            escape("unable to encrypt the contents");
+
+          // unload the value block.
+          if (child.Unload() == elle::StatusError)
+            escape("unable to unload the block");
+        }
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status        Quill<V>::Decrypt(const elle::SecretKey& key)
+    {
+      // XXX
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
     elle::Status        Quill<V>::Seal()
     {
       auto              iterator = this->container.begin();
       auto              end = this->container.end();
+
+      // XXX seales les left/right aussi. peut etre dans le sens: j'ai ete
+      // XXX modifie, alors je vais modifie mon adresse chez mes voisins.
+      // XXX car c'est dur pour l'autre de le savoir sinon.
+      // XXX pareil pour parent.
 
       // go through the container.
       for (; iterator != end; ++iterator)

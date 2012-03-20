@@ -78,8 +78,6 @@ namespace nucleus
       typename V::K             key;
       Handle                    value;
 
-      elle::SecretKey           secret;
-
       elle::Footprint           footprint;
     };
 

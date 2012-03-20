@@ -98,6 +98,9 @@ namespace nucleus
     /// the request from the top. likewise, a key is said to be the maiden
     /// key if it is the only one remaining in a nodule.
     ///
+    /// XXX attention V doit etre un type qui peut se mettre dans Contents.
+    /// XXX et les handles Add()ed doivent representer des Contents aussi.
+    ///
     template <typename V>
     class Porcupine<V>:
       public elle::Object

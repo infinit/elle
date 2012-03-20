@@ -110,9 +110,8 @@ namespace nucleus
       //
       State             state;
       Placement         placement;
-      Address&          address;
-      elle::SecretKey&  secret;
-
+      Address           address;
+      elle::SecretKey   secret;
       Block*            block;
     };
 

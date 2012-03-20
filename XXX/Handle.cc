@@ -35,8 +35,12 @@ const Handle                     Handle::Null;
 ///
 /// default constructor.
 ///
+/// note that the default secret is used so as to represent a
+/// valid secret key for the footprint computation.
+///
 Handle::Handle():
   state(StateUnloaded),
+  secret(Porcupine<>::Default::Secret),
   block(nullptr)
 {
 }
@@ -46,10 +50,14 @@ Handle::Handle():
 ///     addresse de taille commune i.e 20 octets environ. avec null on
 ///     aurait 1.
 ///
+    /// note that the default secret is used so as to represent a
+    /// valid secret key for the footprint computation.
+    ///
 Handle::Handle(Placement&                                       placement):
   state(StateUnloaded),
   placement(placement),
   address(Address::Some),
+  secret(Porcupine<>::Default::Secret),
   block(nullptr)
 {
 }
@@ -57,9 +65,13 @@ Handle::Handle(Placement&                                       placement):
 ///
 /// XXX
 ///
+    /// note that the default secret is used so as to represent a
+    /// valid secret key for the footprint computation.
+    ///
 Handle::Handle(const Address&                                   address):
   state(StateUnloaded),
   address(address),
+  secret(Porcupine<>::Default::Secret),
   block(nullptr)
 {
 }
@@ -76,6 +88,7 @@ Handle::Handle(const Handle&                                    element):
   state(StateUnloaded),
   placement(element.placement),
   address(element.address),
+  secret(element.secret),
   block(nullptr)
 {
 }
@@ -223,6 +236,10 @@ elle::Status            Handle::Dump(const elle::Natural32      margin) const
   if (this->address.Dump(margin + 2) == elle::StatusError)
     escape("unable to dump the address");
 
+  // dump the secret.
+  if (this->secret.Dump(margin + 2) == elle::StatusError)
+    escape("unable to dump the secret");
+
   // dump the block.
   if (this->block != nullptr)
     {
@@ -251,7 +268,8 @@ elle::Status            Handle::Dump(const elle::Natural32      margin) const
 ///
 elle::Status            Handle::Serialize(elle::Archive&        archive) const
 {
-  if (archive.Serialize(this->address) == elle::StatusError)
+  if (archive.Serialize(this->address,
+                        this->secret) == elle::StatusError)
     escape("unable to serialize the attribtues");
 
   return elle::StatusOk;
@@ -262,7 +280,8 @@ elle::Status            Handle::Serialize(elle::Archive&        archive) const
 ///
 elle::Status            Handle::Extract(elle::Archive&          archive)
 {
-  if (archive.Extract(this->address) == elle::StatusError)
+  if (archive.Extract(this->address,
+                      this->secret) == elle::StatusError)
     escape("unable to extract the attribtues");
 
   return elle::StatusOk;

@@ -689,6 +689,8 @@ namespace nucleus
       // check the neighbours, if required.
       if (pins & PinNeighbours)
         {
+          // XXX checker les addresses aussi
+
           if (this->left != Handle::Null)
             {
               Ambit< Contents< Seam<V> > >      left(this->left);
@@ -778,7 +780,7 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    elle::Status        Seam<V>::Seal()
+    elle::Status        Seam<V>::Encrypt(const elle::SecretKey& key)
     {
       auto              iterator = this->container.begin();
       auto              end = this->container.end();
@@ -788,7 +790,6 @@ namespace nucleus
         {
           Seam<V>::I*                           inlet = iterator->second;
           Ambit< Contents< Nodule<V> > >        child(inlet->value);
-          Address                               address;
 
           // ignore nodules which have not been created or modified.
           //
@@ -804,22 +805,93 @@ namespace nucleus
           // the child nodule must have been loaded.
           assert(child() != nullptr);
 
-          // seal the child.
-          if (child()->Seal() == elle::StatusError)
-            escape("unable to seal the child nodule");
+          // set the secret key.
+          child.handle.secret = key;
 
-          // once the value addresses have been computed and recorded,
-          // the contents can, in turn, be bound.
-          if (child->Bind(address) == elle::StatusError)
-            escape("unable to bind the block");
+          // traverse the tree.
+          if (child()->Encrypt(key) == elle::StatusError)
+            escape("unable to encrypt the child nodule");
+
+          // finally, actually encrypt the seam contents.
+          if (child->Encrypt(child.handle.secret) == elle::StatusError)
+            escape("unable to encrypt the contents");
 
           // unload the value block.
           if (child.Unload() == elle::StatusError)
             escape("unable to unload the block");
-
-          // update the child handle's address.
-          inlet->value.address = address;
         }
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status        Seam<V>::Decrypt(const elle::SecretKey& key)
+    {
+      // XXX
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status        Seam<V>::Seal()
+    {
+      auto              iterator = this->container.begin();
+      auto              end = this->container.end();
+
+      // XXX seales les left/right aussi. peut etre dans le sens: j'ai ete
+      // XXX modifie, alors je vais modifie mon adresse chez mes voisins.
+      // XXX car c'est dur pour l'autre de le savoir sinon.
+       // XXX pareil pour parent.
+
+       // go through the container.
+       for (; iterator != end; ++iterator)
+         {
+           Seam<V>::I*                           inlet = iterator->second;
+           Ambit< Contents< Nodule<V> > >        child(inlet->value);
+           Address                               address;
+
+           // ignore nodules which have not been created or modified.
+           //
+           // such nodules can easily be identified since they have a
+           // non-null placement.
+           if (child.handle.placement == Placement::Null)
+             continue;
+
+           // load the value block.
+           if (child.Load() == elle::StatusError)
+             escape("unable to load the block");
+
+           // the child nodule must have been loaded.
+           assert(child() != nullptr);
+
+           // seal the child.
+           if (child()->Seal() == elle::StatusError)
+             escape("unable to seal the child nodule");
+
+           // once the value addresses have been computed and recorded,
+           // the contents can, in turn, be bound.
+           if (child->Bind(address) == elle::StatusError)
+             escape("unable to bind the block");
+
+           // then, update the child's neighbours, if required.
+           // XXX
+
+           // XXX on ne pourra pas update child()->parent car il faudrait
+           // donner l'adresse du noeud courant, et ca on ne l'a pas encore.
+
+           // unload the value block.
+           if (child.Unload() == elle::StatusError)
+             escape("unable to unload the block");
+
+           // update the child handle's address.
+           inlet->value.address = address;
+         }
 
       return elle::StatusOk;
     }

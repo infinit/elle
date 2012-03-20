@@ -46,7 +46,7 @@ int main(int argc, char** argv)
   nucleus::Porcupine<nucleus::Catalog>* p =
     new nucleus::Porcupine<nucleus::Catalog>;
 
-  const int n = 50000;
+  const int n = 10;
 
   std::vector<elle::String> v(n);
 
@@ -84,9 +84,14 @@ int main(int argc, char** argv)
       printf("[%u] -------------> %s\n", i, v[i].c_str());
 
       Handle value;
+      nucleus::Contents< nucleus::Catalog >*    contents =
+        new nucleus::Contents<nucleus::Catalog>;
 
-      if (nucleus::Porcupine<>::Attach.Call(new nucleus::Catalog,
-                                            value) == elle::StatusError)
+      contents->Create();
+
+      if (nucleus::Porcupine<>::Attach.Call(
+            contents,
+            value) == elle::StatusError)
         fail("unable to attach the value");
 
       if (p->Add(v[i], value) == elle::StatusError)
@@ -128,6 +133,8 @@ int main(int argc, char** argv)
 
   if (p->Check(nucleus::PinAll) == elle::StatusError)
     fail("XXX");
+
+  p->Traverse();
 
   for (int i = 0; i < n; i++)
     {
