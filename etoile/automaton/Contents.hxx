@@ -121,7 +121,7 @@ namespace etoile
           return elle::StatusOk;
 
         // if the contents has not changed, do nothing.
-        if (context.contents->content->state == nucleus::StateClean)
+        if (context.contents->state == nucleus::StateClean)
           return elle::StatusOk;
       }
 
@@ -220,7 +220,7 @@ namespace etoile
             escape("unable to bind the contents");
 
           // set the content as consistent.
-          context.contents->content->state = nucleus::StateConsistent;
+          context.contents->state = nucleus::StateConsistent;
 
           // update the object.
           if (context.object.Update(

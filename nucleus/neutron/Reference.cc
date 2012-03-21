@@ -20,8 +20,30 @@ namespace nucleus
   {
 
 //
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Reference::Reference(proton::Contents<Reference>&           contents):
+      contents(contents)
+    {
+    }
+
+//
 // ---------- methods ---------------------------------------------------------
 //
+
+    ///
+    /// this method creates the data.
+    ///
+    elle::Status        Reference::Create()
+    {
+      this->contents.state = proton::StateDirty;
+
+      return elle::StatusOk;
+    }
 
     ///
     /// this method sets the target way.
@@ -32,7 +54,7 @@ namespace nucleus
       this->target = target;
 
       // set the reference as dirty.
-      this->state = proton::StateDirty;
+      this->contents.state = proton::StateDirty;
 
       return elle::StatusOk;
     }

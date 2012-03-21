@@ -36,8 +36,30 @@ namespace nucleus
     const Component                     Catalog::Q = ComponentQuillCatalog;
 
 //
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Catalog::Catalog(proton::Contents<Catalog>&                 contents):
+      contents(contents)
+    {
+    }
+
+//
 // ---------- methods ---------------------------------------------------------
 //
+
+    ///
+    /// this method creates the catalog.
+    ///
+    elle::Status        Catalog::Create()
+    {
+      this->contents.state = proton::StateDirty;
+
+      return elle::StatusOk;
+    }
 
     ///
     /// this method adds the given entry to the catalog.
@@ -53,7 +75,7 @@ namespace nucleus
         escape("unable to add the entry in the range");
 
       // range the object as dirty.
-      this->state = proton::StateDirty;
+      this->contents.state = proton::StateDirty;
 
       return elle::StatusOk;
     }
@@ -138,7 +160,7 @@ namespace nucleus
         escape("unable to remove the entry");
 
       // range the object as dirty.
-      this->state = proton::StateDirty;
+      this->contents.state = proton::StateDirty;
 
       return elle::StatusOk;
     }
@@ -171,7 +193,7 @@ namespace nucleus
       entry->name = to;
 
       // range the object as dirty.
-      this->state = proton::StateDirty;
+      this->contents.state = proton::StateDirty;
 
       return elle::StatusOk;
     }

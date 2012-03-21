@@ -18,7 +18,6 @@
 #include <elle/Elle.hh>
 
 #include <nucleus/proton/Contents.hh>
-#include <nucleus/proton/State.hh>
 
 #include <nucleus/neutron/Offset.hh>
 #include <nucleus/neutron/Range.hh>
@@ -60,17 +59,13 @@ namespace nucleus
       //
       // constructors & destructors
       //
-
-      // XXX
-      proton::Contents<Catalog>& contents;
-      Catalog(proton::Contents<Catalog>& contents): contents(contents) {}
+      Catalog(proton::Contents<Catalog>&);
 
       //
       // methods
       //
 
-      // XXX[to remove]
-      elle::Status Create() { elle::StatusOk; }
+      elle::Status      Create();
 
       elle::Status      Add(Entry*);
       elle::Status      Exist(const elle::String&) const;
@@ -98,8 +93,9 @@ namespace nucleus
       //
       // attributes
       //
-      proton::State     state;
-      Range<Entry>      range;
+      proton::Contents<Catalog>&        contents;
+
+      Range<Entry>                      range;
     };
 
   }

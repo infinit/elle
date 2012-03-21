@@ -90,10 +90,10 @@ namespace nucleus
         }
 
       // the block must have been loaded i.e by Search().
-      assert(leaf() != nullptr);
+      assert(leaf.nodule() != nullptr);
 
       // check whether a value exist for this key.
-      if (leaf()->Exist(key) == elle::StatusFalse)
+      if (leaf.nodule()->Exist(key) == elle::StatusFalse)
         {
           purge();
           return elle::StatusFalse;
@@ -129,10 +129,10 @@ namespace nucleus
         escape("unable to load the block");
 
       // the block must have been loaded i.e by Search().
-      assert(leaf() != nullptr);
+      assert(leaf.nodule() != nullptr);
 
       // locate the value within the quill.
-      if (leaf()->Locate(key, value) == elle::StatusError)
+      if (leaf.nodule()->Locate(key, value) == elle::StatusError)
         escape("unable to locate the value");
 
       // unload the block.
@@ -195,7 +195,7 @@ namespace nucleus
         escape("unable to load the block");
 
       // make sure the current block has been loaded.
-      assert(current() != nullptr);
+      assert(current.nodule() != nullptr);
 
       // create an inlet here in order to be able to compute its footprint.
       auto              inlet =
@@ -207,7 +207,7 @@ namespace nucleus
 
       // check if the future nodule's footprint---i.e should the inlet
       // be inserted---would exceed the extent.
-      if ((current()->footprint.size + inlet.get()->footprint.size) >
+      if ((current.nodule()->footprint.size + inlet.get()->footprint.size) >
           hole::Hole::Descriptor.extent)
         {
           struct
@@ -217,7 +217,7 @@ namespace nucleus
           }                     handle;
 
           // first, retrieve the mayor key of the current nodule.
-          if (current()->Mayor(mayor.current.ancient) == elle::StatusError)
+          if (current.nodule()->Mayor(mayor.current.ancient) == elle::StatusError)
             escape("unable to retrive the mayor");
 
           //
@@ -256,10 +256,10 @@ namespace nucleus
             escape("unable to load the block");
 
           // at this point, the new right nodule must have been loaded.
-          assert(newright() != nullptr);
+          assert(newright.nodule() != nullptr);
 
           // export inlets from the current seam into the new seam.
-          if (current()->Export(newright(), size) == elle::StatusError)
+          if (current.nodule()->Export(newright.nodule(), size) == elle::StatusError)
             escape("unable to export inlets");
 
           //
@@ -277,19 +277,19 @@ namespace nucleus
           //
 
           // update the old right nodule's neighbour links, if required.
-          if (current()->right != Handle::Null)
+          if (current.nodule()->right != Handle::Null)
             {
-              Ambit< Contents<N> >      right(current()->right);
+              Ambit< Contents<N> >      right(current.nodule()->right);
 
               // load the right nodule, if possible.
               if (right.Load() == elle::StatusError)
                 escape("unable to load the block");
 
               // make sure the block got loaded.
-              assert(right() != nullptr);
+              assert(right.nodule() != nullptr);
 
               // upadte the right nodule.
-              right()->left = newright.handle;
+              right.nodule()->left = newright.handle;
 
               // unload the right nodule.
               if (right.Unload() == elle::StatusError)
@@ -297,14 +297,14 @@ namespace nucleus
             }
 
           // set the new right nodule's neighbour links.
-          newright()->left = current.handle;
-          newright()->right = current()->right;
+          newright.nodule()->left = current.handle;
+          newright.nodule()->right = current.nodule()->right;
 
           // finally, update the current nodule's right neighbour link.
-          current()->right = newright.handle;
+          current.nodule()->right = newright.handle;
 
           // retrieve the current nodule's mayor key.
-          if (current()->Mayor(mayor.current.temporary) == elle::StatusError)
+          if (current.nodule()->Mayor(mayor.current.temporary) == elle::StatusError)
             escape("unable to retrieve the mayor key");
 
           // insert the inlet depending on its key: if its key is lower than
@@ -313,7 +313,7 @@ namespace nucleus
           if (inlet.get()->key < mayor.current.temporary)
             {
               // insert the inlet to the left nodule.
-              if (current()->Insert(inlet.get()) == elle::StatusError)
+              if (current.nodule()->Insert(inlet.get()) == elle::StatusError)
                 escape("unable to insert the inlet to the nodule");
 
               // the new child nodule, referenced through the inserted inlet,
@@ -323,14 +323,14 @@ namespace nucleus
               // note however that should _current_ be a quill, the Link()
               // method would do nothing since the insert inlet referenced
               // a data value which obviously does not embed a parent link.
-              if (current()->Link(inlet.get(),
+              if (current.nodule()->Link(inlet.get(),
                                   current.handle) == elle::StatusError)
                 escape("unable to update the parent link");
             }
           else
             {
               // insert the inlet to the right nodule.
-              if (newright()->Insert(inlet.get()) == elle::StatusError)
+              if (newright.nodule()->Insert(inlet.get()) == elle::StatusError)
                 escape("unable to insert the inlet to the nodule");
             }
 
@@ -340,7 +340,7 @@ namespace nucleus
           // now that some child nodules have been migrated to the _newright_,
           // these nodules need to be updated in order to reference their
           // new parent i.e the _newright_.
-          if (newright()->Link(newright.handle) == elle::StatusError)
+          if (newright.nodule()->Link(newright.handle) == elle::StatusError)
             escape("unable to update the child nodules so as to "
                    "reference their new parent");
 
@@ -358,27 +358,27 @@ namespace nucleus
           else
             {
               // set the handle from the parent's.
-              handle.parent = current()->parent;
+              handle.parent = current.nodule()->parent;
 
               // retrieve the current nodule's new mayor key.
-              if (current()->Mayor(mayor.current.recent) == elle::StatusError)
+              if (current.nodule()->Mayor(mayor.current.recent) == elle::StatusError)
                 escape("unable to retrive the mayor");
 
               // then, update the parent nodule, should the mayor key have
               // changed.
               if (mayor.current.recent != mayor.current.ancient)
                 {
-                  Ambit< Contents< Seam<V> > >  parent(current()->parent);
+                  Ambit< Contents< Seam<V> > >  parent(current.nodule()->parent);
 
                   // load the parent block, if possible.
                   if (parent.Load() == elle::StatusError)
                     escape("unable to load the parent block");
 
                   // make sure the nodule gets loaded.
-                  assert(parent() != nullptr);
+                  assert(parent.nodule() != nullptr);
 
                   // propagate the update to the parent nodules.
-                  if (parent()->Propagate(
+                  if (parent.nodule()->Propagate(
                         mayor.current.ancient,
                         mayor.current.recent) == elle::StatusError)
                     escape("unable to update the parent nodule");
@@ -393,7 +393,7 @@ namespace nucleus
           assert(handle.parent != Handle::Null);
 
           // retrieve the right nodule's mayor key.
-          if (newright()->Mayor(mayor.right.recent) == elle::StatusError)
+          if (newright.nodule()->Mayor(mayor.right.recent) == elle::StatusError)
             escape("unable to retrieve the mayor key");
 
           // insert the right nodule in its new parent.
@@ -417,19 +417,19 @@ namespace nucleus
           //
 
           // is the container empty...
-          if (current()->container.empty() == true)
+          if (current.nodule()->container.empty() == true)
             {
               //
               // the nodule is empty: insert the inlet.
               //
 
               // insert the inlet into the nodule.
-              if (current()->Insert(inlet.get()) == elle::StatusError)
+              if (current.nodule()->Insert(inlet.get()) == elle::StatusError)
                 escape("unable to insert the inlet to the nodule");
 
               // update the nodule referenced by the inlet so as to link
               // its new parent nodule.
-              if (current()->Link(inlet.get(),
+              if (current.nodule()->Link(inlet.get(),
                                   current.handle) == elle::StatusError)
                 escape("unable to link the inlet's value to its "
                        "parent nodule");
@@ -449,16 +449,16 @@ namespace nucleus
               //
 
               // retrieve the current nodule's mayor key.
-              if (current()->Mayor(mayor.current.ancient) == elle::StatusError)
+              if (current.nodule()->Mayor(mayor.current.ancient) == elle::StatusError)
                 escape("unable to retrive the mayor");
 
               // insert the inlet to the nodule.
-              if (current()->Insert(inlet.get()) == elle::StatusError)
+              if (current.nodule()->Insert(inlet.get()) == elle::StatusError)
                 escape("unable to insert the inlet to the nodule");
 
               // update the nodule referenced by the inlet so as to link
               // its parent nodule.
-              if (current()->Link(inlet.get(),
+              if (current.nodule()->Link(inlet.get(),
                                   current.handle) == elle::StatusError)
                 escape("unable to link the inlet's value to its "
                        "parent nodule");
@@ -467,26 +467,26 @@ namespace nucleus
               inlet.release();
 
               // retrieve the nodule's new mayor key.
-              if (current()->Mayor(mayor.current.recent) == elle::StatusError)
+              if (current.nodule()->Mayor(mayor.current.recent) == elle::StatusError)
                 escape("unable to retrive the mayor");
 
               // finally, update the parent nodule, should the mayor key have
               // changed.
               if ((mayor.current.recent != mayor.current.ancient) &&
-                  (current()->parent != Handle::Null))
+                  (current.nodule()->parent != Handle::Null))
                 {
-                  Ambit< Contents< Seam<V> > >  parent(current()->parent);
+                  Ambit< Contents< Seam<V> > >  parent(current.nodule()->parent);
 
                   // load the parent seam.
                   if (parent.Load() == elle::StatusError)
                     escape("unable to load the parent block");
 
                   // make sure the nodule gets loaded.
-                  assert(parent() != nullptr);
+                  assert(parent.nodule() != nullptr);
 
                   // propagate the change of mayor key throughout the
                   // hiearchy.
-                  if (parent()->Propagate(
+                  if (parent.nodule()->Propagate(
                         mayor.current.ancient,
                         mayor.current.recent) == elle::StatusError)
                     escape("unable to update the parent nodule");
@@ -547,18 +547,18 @@ namespace nucleus
         escape("unable to load the block");
 
       // make sure the current block has been loaded.
-      assert(current() != nullptr);
+      assert(current.nodule() != nullptr);
 
       // retrieve the nodule's mayor.
-      if (current()->Mayor(mayor.current.ancient) == elle::StatusError)
+      if (current.nodule()->Mayor(mayor.current.ancient) == elle::StatusError)
         escape("unable to retrieve the nodule's mayor key");
 
       // delete the inlet in the nodule.
-      if (current()->Delete(key) == elle::StatusError)
+      if (current.nodule()->Delete(key) == elle::StatusError)
         escape("unable to delete the inlet from the nodule");
 
       // operate depending on the state of the nodule.
-      if (current()->container.empty() == true)
+      if (current.nodule()->container.empty() == true)
         {
           //
           // if the nodule became empty, it can be removed as well.
@@ -568,7 +568,7 @@ namespace nucleus
           //
 
           // if a parent exists...
-          if (current()->parent != Handle::Null)
+          if (current.nodule()->parent != Handle::Null)
             {
               //
               // a parent nodule seems to exist: delete the nodule from
@@ -588,19 +588,19 @@ namespace nucleus
               //
 
               // update the left nodule's right neighbour, if required.
-              if (current()->left != Handle::Null)
+              if (current.nodule()->left != Handle::Null)
                 {
-                  Ambit< Contents<N> >  left(current()->left);
+                  Ambit< Contents<N> >  left(current.nodule()->left);
 
                   // load the left nodule.
                   if (left.Load() == elle::StatusError)
                     escape("unable to load the block");
 
                   // make sure the block got loaded.
-                  assert(left() != nullptr);
+                  assert(left.nodule() != nullptr);
 
                   // update the link.
-                  left()->right = current()->right;
+                  left.nodule()->right = current.nodule()->right;
 
                   // unload the left nodule.
                   if (left.Unload() == elle::StatusError)
@@ -608,19 +608,19 @@ namespace nucleus
                 }
 
               // update the right nodule's left neighbour.
-              if (current()->right != Handle::Null)
+              if (current.nodule()->right != Handle::Null)
                 {
-                  Ambit< Contents<N> >  right(current()->right);
+                  Ambit< Contents<N> >  right(current.nodule()->right);
 
                   // load the right nodule.
                   if (right.Load() == elle::StatusError)
                     escape("unable to load the block");
 
                   // make sure the block got loaed.
-                  assert(right() != nullptr);
+                  assert(right.nodule() != nullptr);
 
                   // update the link.
-                  right()->left = current()->left;
+                  right.nodule()->left = current.nodule()->left;
 
                   // unload the right nodule.
                   if (right.Unload() == elle::StatusError)
@@ -631,7 +631,7 @@ namespace nucleus
               // the mayor i.e the key the parent seam uses to reference
               // the now-empty nodule.
               if (this->Delete< Seam<V> >(
-                    current()->parent,
+                    current.nodule()->parent,
                     mayor.current.ancient) == elle::StatusError)
                 escape("unable to delete the nodule from its parent");
             }
@@ -661,7 +661,7 @@ namespace nucleus
           if (Porcupine<>::Detach.Call(current.handle) == elle::StatusError)
             escape("unable to detach the block from the porcupine");
         }
-      else if (current()->footprint.size <
+      else if (current.nodule()->footprint.size <
                (hole::Hole::Descriptor.extent *
                 hole::Hole::Descriptor.balancing))
         {
@@ -684,9 +684,9 @@ namespace nucleus
           // for merging i.e is present, is in a correct state and has
           // enough available space.
           //
-          Ambit< Contents<N> >          left(current()->left);
-          Ambit< Contents<N> >          right(current()->right);
-          Ambit< Contents< Seam<V> > >  parent(current()->parent);
+          Ambit< Contents<N> >          left(current.nodule()->left);
+          Ambit< Contents<N> >          right(current.nodule()->right);
+          Ambit< Contents< Seam<V> > >  parent(current.nodule()->parent);
 
           // load the nodule, if present.
           if (left.handle != Handle::Null)
@@ -714,7 +714,7 @@ namespace nucleus
           //
           // note that the pointer can be compared because the block
           // has been loaded, if present.
-          if (parent() != nullptr)
+          if (parent.nodule() != nullptr)
             {
               //
               // in this case, the nodule does not seem to have a parent i.e
@@ -732,11 +732,11 @@ namespace nucleus
               if (this->Shrink() == elle::StatusError)
                 escape("unable to shrink the tree");
             }
-          else if ((left() != nullptr) &&
-                   (left()->state == StateDirty) &&
-                   (left()->parent == current()->parent) &&
-                   ((left()->footprint.size +
-                     current()->footprint.size -
+          else if ((left.nodule() != nullptr) &&
+                   (left.nodule()->state == StateDirty) &&
+                   (left.nodule()->parent == current.nodule()->parent) &&
+                   ((left.nodule()->footprint.size +
+                     current.nodule()->footprint.size -
                      N::Footprint) <
                     hole::Hole::Descriptor.extent))
             {
@@ -751,12 +751,12 @@ namespace nucleus
               //
               goto _merge_left;
             }
-          else if ((right() != nullptr) &&
-                   (right()->state == StateDirty) &&
-                   (right()->parent == current()->parent) &&
-                   ((current()->footprint.size -
+          else if ((right.nodule() != nullptr) &&
+                   (right.nodule()->state == StateDirty) &&
+                   (right.nodule()->parent == current.nodule()->parent) &&
+                   ((current.nodule()->footprint.size -
                      N::Footprint +
-                     right()->footprint.size) <
+                     right.nodule()->footprint.size) <
                     hole::Hole::Descriptor.extent))
             {
               //
@@ -765,10 +765,10 @@ namespace nucleus
               //
               goto _merge_right;
             }
-          else if ((left() != nullptr) &&
-                   (left()->parent == current()->parent) &&
-                   ((left()->footprint.size +
-                     current()->footprint.size -
+          else if ((left.nodule() != nullptr) &&
+                   (left.nodule()->parent == current.nodule()->parent) &&
+                   ((left.nodule()->footprint.size +
+                     current.nodule()->footprint.size -
                      N::Footprint) <
                     hole::Hole::Descriptor.extent))
             {
@@ -785,23 +785,23 @@ namespace nucleus
             _merge_left:
 
               // retrieve the left mayor key.
-              if (left()->Mayor(
+              if (left.nodule()->Mayor(
                     mayor.left.ancient) == elle::StatusError)
                 escape("unable to retrieve the mayor key");
 
               // merge the nodule.
-              if (left()->Merge(current()) == elle::StatusError)
+              if (left.nodule()->Merge(current.nodule()) == elle::StatusError)
                 escape("unable to merge the nodules");
 
               // now that the inlets have been merged into _left_,
               // the child nodules need to be updated in order to reference
               // their new parent i.e the _left_.
-              if (left()->Link(left.handle) == elle::StatusError)
+              if (left.nodule()->Link(left.handle) == elle::StatusError)
                 escape("unable to update the child nodules so as to "
                        "reference their new parent");
 
               // retrieve the left mayor key.
-              if (left()->Mayor(
+              if (left.nodule()->Mayor(
                     mayor.left.recent) == elle::StatusError)
                 escape("unable to retrieve the mayor key");
 
@@ -810,15 +810,15 @@ namespace nucleus
               //
 
               // update the left nodule's right neighbour.
-              left()->right = current()->right;
+              left.nodule()->right = current.nodule()->right;
 
               // update the right nodule which should no longer reference
               // the current, now empty, nodule.
               //
               // note that the pointer can be compared because the block
               // has been loaded, if present.
-              if (right() != nullptr)
-                right()->left = current()->left;
+              if (right.nodule() != nullptr)
+                right.nodule()->left = current.nodule()->left;
 
               // at this point, current is empty and unreferenced.
               // therefore, detach the block from the porcupine.
@@ -831,7 +831,7 @@ namespace nucleus
 
               // in this case, the parent nodule must exist and
               // have been loaded.
-              assert(parent() != nullptr);
+              assert(parent.nodule() != nullptr);
 
               // delete the current nodule in its parent since the
               // nodule is now empty.
@@ -851,15 +851,15 @@ namespace nucleus
               // the _left_ nodule to become the new root; in which case
               // this nodule would no longer have a parent.
               //
-              if (left()->parent != Handle::Null)
+              if (left.nodule()->parent != Handle::Null)
                 {
-                  Ambit< Contents< Seam<V> > >  newparent(left()->parent);
+                  Ambit< Contents< Seam<V> > >  newparent(left.nodule()->parent);
 
                   if (newparent.Load() == elle::StatusError)
                     escape("unable to load the block");
 
                   // make sure the nodule gets loaded.
-                  assert(newparent() != nullptr);
+                  assert(newparent.nodule() != nullptr);
 
                   // update the parent so that the left nodule gets
                   // referenced with the proper key.
@@ -872,7 +872,7 @@ namespace nucleus
                   //
                   // thus propagation is actually required for ensuring
                   // the tree's consistency.
-                  if (newparent()->Propagate(
+                  if (newparent.nodule()->Propagate(
                         mayor.left.ancient,
                         mayor.left.recent) == elle::StatusError)
                     escape("unable to update the parent nodule");
@@ -882,11 +882,11 @@ namespace nucleus
                     escape("unable to unload the block");
                 }
             }
-          else if ((right() != nullptr) &&
-                   (right()->parent == current()->parent) &&
-                   ((current()->footprint.size -
+          else if ((right.nodule() != nullptr) &&
+                   (right.nodule()->parent == current.nodule()->parent) &&
+                   ((current.nodule()->footprint.size -
                      N::Footprint +
-                     right()->footprint.size) <
+                     right.nodule()->footprint.size) <
                     hole::Hole::Descriptor.extent))
             {
               //
@@ -896,13 +896,13 @@ namespace nucleus
             _merge_right:
 
               // merge the nodule.
-              if (right()->Merge(current()) == elle::StatusError)
+              if (right.nodule()->Merge(current.nodule()) == elle::StatusError)
                 escape("unable to merge the nodules");
 
               // now that the inlets have been merged into _right_,
               // the child nodules need to be updated in order to reference
               // their new parent i.e the _right_.
-              if (right()->Link(right.handle) == elle::StatusError)
+              if (right.nodule()->Link(right.handle) == elle::StatusError)
                 escape("unable to update the child nodules so as to "
                        "reference their new parent");
 
@@ -914,12 +914,12 @@ namespace nucleus
               //
               // note that the pointer can be compared because the block
               // has been loaded, if present.
-              if (left() != nullptr)
-                left()->right = current()->right;
+              if (left.nodule() != nullptr)
+                left.nodule()->right = current.nodule()->right;
 
               // update the right nodule which should no longer reference
               // the current, now empty, nodule.
-              right()->left = current()->left;
+              right.nodule()->left = current.nodule()->left;
 
               // at this point, current is empty and unreferenced.
               // therefore, detach the block from the porcupine.
@@ -932,7 +932,7 @@ namespace nucleus
 
               // in this case, the parent nodule must exist and have
               // been loaded.
-              assert(parent() != nullptr);
+              assert(parent.nodule() != nullptr);
 
               // delete the current nodule in its parent since the
               // nodule is now empty.
@@ -984,26 +984,26 @@ namespace nucleus
         _normal:
 
           // retrieve the nodule's new mayor.
-          if (current()->Mayor(mayor.current.recent) == elle::StatusError)
+          if (current.nodule()->Mayor(mayor.current.recent) == elle::StatusError)
             escape("unable to retrieve the nodule's mayor key");
 
           // finally, update the parent nodule, should the mayor key have
           // changed.
           if ((mayor.current.recent != mayor.current.ancient) &&
-              (current()->parent != Handle::Null))
+              (current.nodule()->parent != Handle::Null))
             {
-              Ambit< Contents< Seam<V> > >      parent(current()->parent);
+              Ambit< Contents< Seam<V> > >      parent(current.nodule()->parent);
 
               // load the nodule.
               if (parent.Load() == elle::StatusError)
                 escape("unable to load the block");
 
               // make sure the nodule gets loaded.
-              assert(parent() != nullptr);
+              assert(parent.nodule() != nullptr);
 
               // propagate the change of mayor key throughout the
               // hiearchy.
-              if (parent()->Propagate(
+              if (parent.nodule()->Propagate(
                     mayor.current.ancient,
                     mayor.current.recent) == elle::StatusError)
                 escape("unable to update the parent nodule");
@@ -1082,10 +1082,10 @@ namespace nucleus
             escape("unable to load the root block");
 
           // make sure the block gets loaded.
-          assert(root() != nullptr);
+          assert(root.nodule() != nullptr);
 
           // retrieve the current root's mayor key.
-          if (root()->Mayor(mayor) == elle::StatusError)
+          if (root.nodule()->Mayor(mayor) == elle::StatusError)
             escape("unable to retrieve the mayor key");
 
           // allocate a new root seam.
@@ -1112,7 +1112,7 @@ namespace nucleus
             escape("unable to load the block");
 
           // add the current root nodule in the new root seam.
-          if (newroot()->Insert(mayor,
+          if (newroot.nodule()->Insert(mayor,
                                 root.handle) == elle::StatusError)
             escape("unable to add the current root in the new root nodule");
 
@@ -1123,14 +1123,14 @@ namespace nucleus
           //
           // note that this is done manually rather than by calling the
           // Link() method.
-          root()->parent = this->root;
+          root.nodule()->parent = this->root;
 
           // unload the root nodule.
           if (root.Unload() == elle::StatusError)
             escape("unable to unload the root block");
 
           // at this point the new root must have no parent.
-          assert(newroot()->parent == Handle::Null);
+          assert(newroot.nodule()->parent == Handle::Null);
 
           // unload the newroot.
           if (newroot.Unload() == elle::StatusError)
@@ -1182,14 +1182,14 @@ namespace nucleus
         escape("unable to load the root block");
 
       // make sure the block gets loaded.
-      assert(root() != nullptr);
+      assert(root.nodule() != nullptr);
 
       // retrieve the maiden key.
-      if (root()->Maiden(maiden) == elle::StatusError)
+      if (root.nodule()->Maiden(maiden) == elle::StatusError)
         escape("unable to retrieve the maiden key");
 
       // retrieve the inlet associated with the given key.
-      if (root()->Locate(maiden, inlet) == elle::StatusError)
+      if (root.nodule()->Locate(maiden, inlet) == elle::StatusError)
         escape("unable to retrieve the nodule");
 
       // set the new root nodule.
@@ -1210,10 +1210,10 @@ namespace nucleus
         escape("unable to load the root block");
 
       // make sure the block gets loaded.
-      assert(newroot() != nullptr);
+      assert(newroot.nodule() != nullptr);
 
       // update the new root links.
-      newroot()->parent = Handle::Null;
+      newroot.nodule()->parent = Handle::Null;
 
       // unload the root nodule.
       if (newroot.Unload() == elle::StatusError)
@@ -1266,10 +1266,10 @@ namespace nucleus
         escape("unable to load the root block");
 
       // make sure the block gets loaded.
-      assert(root() != nullptr);
+      assert(root.nodule() != nullptr);
 
       // trigger the search method on the root nodule.
-      if (root()->Search(key, handle) == elle::StatusError)
+      if (root.nodule()->Search(key, handle) == elle::StatusError)
         escape("unable to locate the quill for this key");
 
       // unload the root nodule.
@@ -1298,7 +1298,7 @@ namespace nucleus
             escape("unable to load the root block");
 
           // trigger the check method on the root nodule.
-          if (root()->Check(null,
+          if (root.nodule()->Check(null,
                             this->root,
                             pins) == elle::StatusError)
             escape("unable to check the root nodule's consistency");
@@ -1343,7 +1343,7 @@ namespace nucleus
             escape("unable to load the root block");
 
           // traverse the nodule.
-          if (root()->Traverse(margin + 4) == elle::StatusError)
+          if (root.nodule()->Traverse(margin + 4) == elle::StatusError)
             escape("unable to traverse the nodule");
 
           // unload the root nodule.
@@ -1367,7 +1367,7 @@ namespace nucleus
     /// constituent blocks to be stored.
     ///
     template <typename V>
-    elle::Status        Porcupine<V>::Seal()
+    elle::Status        Porcupine<V>::Seal(const elle::SecretKey&       secret)
     {
       // ignore empty trees.
       if (this->root == Handle::Null)
@@ -1381,79 +1381,30 @@ namespace nucleus
         return elle::StatusOk;
 
       Ambit< Contents< Nodule<V> > >    root(this->root);
-      Address                           address;
-
-      // load the root nodule.
-      if (root.Load() == elle::StatusError)
-        escape("unable to load the root block");
-
-      // seal the root nodule.
-      if (root()->Seal() == elle::StatusError)
-        escape("unable to seal the root nodule");
-
-      // once the value addresses have been computed and recorded,
-      // the contents can, in turn, be bound.
-      if (root->Bind(address) == elle::StatusError)
-        escape("unable to bind the block");
-
-      // unload the root nodule.
-      if (root.Unload() == elle::StatusError)
-        escape("unable to unload the root block");
-
-      // update the root handle's address.
-      this->root.address = address;
-
-      return elle::StatusOk;
-    }
-
-    ///
-    /// XXX
-    ///
-    template <typename V>
-    elle::Status        Porcupine<V>::Encrypt(const elle::SecretKey& key)
-    {
-      // ignore empty trees.
-      if (this->root == Handle::Null)
-        return elle::StatusOk;
-
-      // process the root nodule only if it has been created or modified.
-      //
-      // such a nodule can easily be identified through its placement
-      // which should be non-null.
-      if (this->root.placement == Placement::Null)
-        return elle::StatusOk;
-
-      Ambit< Contents< Nodule<V> > >    root(this->root);
+      Address                           newaddress;
 
       // load the root nodule.
       if (root.Load() == elle::StatusError)
         escape("unable to load the root block");
 
       // set the secret key.
-      this->root.secret = key;
+      this->root.secret = secret;
 
-      // traverse the tree.
-      if (root()->Encrypt(key) == elle::StatusError)
-        escape("unable to encrypt the root block");
+      // seal the root nodule.
+      if (root.nodule()->Seal(this->root.secret,
+                              newaddress) == elle::StatusError)
+        escape("unable to seal the root nodule");
 
-      // finally, actually encrypt the contents.
-      if (root->Encrypt(this->root.secret) == elle::StatusError)
-        escape("unable to encrypt the contents");
+      // is the root nodule dirty.
+      if (root.nodule()->state == StateDirty)
+        {
+          // set the new child address.
+          this->root.address = newaddress;
+        }
 
       // unload the root nodule.
       if (root.Unload() == elle::StatusError)
         escape("unable to unload the root block");
-
-      return elle::StatusOk;
-    }
-
-    ///
-    /// XXX
-    ///
-    template <typename V>
-    elle::Status        Porcupine<V>::Decrypt(const elle::SecretKey& key)
-    {
-      // XXX
 
       return elle::StatusOk;
     }

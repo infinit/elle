@@ -75,7 +75,7 @@ namespace nucleus
       this->footprint.size = Quill<V>::Footprint;
 
       // set the state.
-      this->state = StateDirty;
+      this->contents()->state = StateDirty;
 
       return elle::StatusOk;
     }
@@ -110,7 +110,7 @@ namespace nucleus
       this->footprint.size += inlet->footprint.size;
 
       // set the state.
-      this->state = StateDirty;
+      this->contents()->state = StateDirty;
 
       return elle::StatusOk;
     }
@@ -163,7 +163,7 @@ namespace nucleus
       this->container.erase(iterator);
 
       // set the state.
-      this->state = StateDirty;
+      this->contents()->state = StateDirty;
 
       return elle::StatusOk;
     }
@@ -335,8 +335,8 @@ namespace nucleus
     /// at this point.
     ///
     template <typename V>
-    elle::Status        Quill<V>::Link(I*                       inlet,
-                                       Handle&                  parent)
+    elle::Status        Quill<V>::Link(I*,
+                                       Handle&)
     {
       return elle::StatusOk;
     }
@@ -345,7 +345,7 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    elle::Status        Quill<V>::Link(Handle&                  parent)
+    elle::Status        Quill<V>::Link(Handle&)
     {
       return elle::StatusOk;
     }
@@ -399,22 +399,22 @@ namespace nucleus
       for (; iterator != end; ++iterator)
         {
           Quill<V>::I*          inlet = iterator->second;
-          Ambit< Contents<V> >  child(inlet->value);
+          Ambit< Contents<V> >  value(inlet->value);
 
           // load the value block.
-          if (child.Load() == elle::StatusError)
+          if (value.Load() == elle::StatusError)
             escape("unable to load the block");
 
-          // the child block must have been loaded.
-          assert(child() != nullptr);
+          // the value block must have been loaded.
+          assert(value.content() != nullptr);
 
           // check the address, if required.
           if (pins & PinAddress)
             {
               Address   address;
 
-              // bind the child block.
-              if (child->Bind(address) == elle::StatusError)
+              // bind the value block.
+              if (value.contents()->Bind(address) == elle::StatusError)
                 escape("unable to bind the block");
 
               // compare the addresses.
@@ -431,7 +431,7 @@ namespace nucleus
             }
 
           // unload the value block.
-          if (child.Unload() == elle::StatusError)
+          if (value.Unload() == elle::StatusError)
             escape("unable to unload the block");
         }
 
@@ -512,7 +512,7 @@ namespace nucleus
               if (left.Load() == elle::StatusError)
                 escape("unable to load the nodule");
 
-              if (left()->right != current)
+              if (left.nodule()->right != current)
                 escape("the neighbour link differs");
 
               if (left.Unload() == elle::StatusError)
@@ -526,7 +526,7 @@ namespace nucleus
               if (right.Load() == elle::StatusError)
                 escape("unable to load the nodule");
 
-              if (right()->left != current)
+              if (right.nodule()->left != current)
                 escape("the neighbour link differs");
 
               if (right.Unload() == elle::StatusError)
@@ -536,7 +536,7 @@ namespace nucleus
 
       if (this->Check(current,
                       pins) == elle::StatusError)
-        escape("unable to check the seam consistency");
+        escape("unable to check the quill consistency");
 
       return elle::StatusOk;
     }
@@ -578,7 +578,8 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    elle::Status        Quill<V>::Encrypt(const elle::SecretKey& key)
+    elle::Status        Quill<V>::Seal(const elle::SecretKey&   secret,
+                                       Address&                 address)
     {
       auto              iterator = this->container.begin();
       auto              end = this->container.end();
@@ -587,98 +588,91 @@ namespace nucleus
       for (; iterator != end; ++iterator)
         {
           Quill<V>::I*          inlet = iterator->second;
-          Ambit< Contents<V> >  child(inlet->value);
+          Ambit< Contents<V> >  value(inlet->value);
 
           // ignore blocks which have not been created or modified.
           //
           // such blocks can easily be identified since they have a
           // non-null placement.
-          if (child.handle.placement == Placement::Null)
+          if (value.handle.placement == Placement::Null)
             continue;
 
           // load the value block.
-          if (child.Load() == elle::StatusError)
+          if (value.Load() == elle::StatusError)
             escape("unable to load the block");
 
-          // the child block must have been loaded.
-          assert(child() != nullptr);
+          // the value block must have been loaded.
+          assert(value.content() != nullptr);
+
+          // besides, look at the value state to see whether the
+          // value has been modified i.e has a dirty state. if
+          // not, the block has probably been loaded but never
+          // modified.
+          if (value.contents()->state == StateClean)
+            continue;
+
+          //
+          // at this point, the value has been modified.
+          //
 
           // set the secret.
-          child.handle.secret = key;
+          inlet->value.secret = secret;
 
-          // traverse the tree down to the value blocks by encrypting them
-          // as well.
-          if (child->Encrypt(key) == elle::StatusError)
+          // encrypt the value contents.
+          if (value.contents()->Encrypt(inlet->value.secret) == elle::StatusError)
             escape("unable to encrypt the block");
 
-          // finally, actually encrypt the quill contents.
-          if (child->Encrypt(child.handle.secret) == elle::StatusError)
-            escape("unable to encrypt the contents");
-
-          // unload the value block.
-          if (child.Unload() == elle::StatusError)
-            escape("unable to unload the block");
-        }
-
-      return elle::StatusOk;
-    }
-
-    ///
-    /// XXX
-    ///
-    template <typename V>
-    elle::Status        Quill<V>::Decrypt(const elle::SecretKey& key)
-    {
-      // XXX
-
-      return elle::StatusOk;
-    }
-
-    ///
-    /// XXX
-    ///
-    template <typename V>
-    elle::Status        Quill<V>::Seal()
-    {
-      auto              iterator = this->container.begin();
-      auto              end = this->container.end();
-
-      // XXX seales les left/right aussi. peut etre dans le sens: j'ai ete
-      // XXX modifie, alors je vais modifie mon adresse chez mes voisins.
-      // XXX car c'est dur pour l'autre de le savoir sinon.
-      // XXX pareil pour parent.
-
-      // go through the container.
-      for (; iterator != end; ++iterator)
-        {
-          Quill<V>::I*          inlet = iterator->second;
-          Ambit< Contents<V> >  child(inlet->value);
-          Address               address;
-
-          // ignore blocks which have not been created or modified.
-          //
-          // such blocks can easily be identified since they have a
-          // non-null placement.
-          if (child.handle.placement == Placement::Null)
-            continue;
-
-          // load the value block.
-          if (child.Load() == elle::StatusError)
-            escape("unable to load the block");
-
-          // the child block must have been loaded.
-          assert(child() != nullptr);
-
-          // bind the child block.
-          if (child->Bind(address) == elle::StatusError)
+          // bind the value block.
+          if (value.contents()->Bind(inlet->value.address) == elle::StatusError)
             escape("unable to bind the block");
 
           // unload the value block.
-          if (child.Unload() == elle::StatusError)
+          if (value.Unload() == elle::StatusError)
             escape("unable to unload the block");
 
-          // update the child handle's address.
-          inlet->value.address = address;
+          // set the quill as dirty i.e the nodule has been
+          // modified and therefore needs sealing as well.
+          this->contents()->state = StateDirty;
+        }
+
+      // has the nodule been modified?
+      if (this->contents()->state == StateDirty)
+        {
+          //
+          // if so, the nodule needs to be encrypted with the new key
+          // and bound so as to compute the new block address.
+          //
+          // this address will then be used to update the parent and
+          // neighbour nodes.
+          //
+
+          // encrypt the seam itself with the secret.
+          if (this->contents()->Encrypt(secret) == elle::StatusError)
+            escape("unable to encrypt the seam contents");
+
+          // once the child addresses have been computed and recorded,
+          // the seam contents can, in turn, be bound.
+          if (this->contents()->Bind(address) == elle::StatusError)
+            escape("unable to bind the block");
+
+          //
+          // this address can then be updated for the parent and neighbour
+          // nodes.
+          //
+
+          // update the parent link.
+          // XXX IMPOSSIBLE: pour connaitre son adresse, le parent doit etre
+          //     sealed mais pour etre sealed son fils doit etre sealed: cycle!
+
+          // set the quill as clean.
+          this->contents()->state = StateClean;
+        }
+      else
+        {
+          //
+          // otherwise, the nodule has not been updated since it was
+          // loaded and can be thus ignored.
+          //
         }
 
       return elle::StatusOk;

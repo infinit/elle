@@ -88,10 +88,11 @@ namespace nucleus
       //
 
       // XXX[virer le constructeur vide du coup]
-      Contents< Seam<V> >& contents;
+      Contents< Seam<V> >* contents() { return &this->_contents; }
+      Contents< Seam<V> >& _contents;
       Seam(Contents< Seam<V> >& contents):
         Nodule<V>(Nodule<V>::TypeSeam),
-        contents(contents)
+        _contents(contents)
       {}
 
       // XXX Seam();
@@ -153,9 +154,8 @@ namespace nucleus
                                       Handle&,
                                       const Pins = PinAll);
       elle::Status              Traverse(const elle::Natural32 = 0);
-      elle::Status              Encrypt(const elle::SecretKey&);
-      elle::Status              Decrypt(const elle::SecretKey&);
-      elle::Status              Seal();
+      elle::Status              Seal(const elle::SecretKey&,
+                                     Address&);
 
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;

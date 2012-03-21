@@ -125,14 +125,12 @@ int main(int argc, char** argv)
   if (sk.Generate(128) == elle::StatusError)
     fail("XXX");
 
-  // XXX
-  sk.Dump();
+  //p->Traverse();
 
-  if (p->Encrypt(sk) == elle::StatusError)
-    fail("XXX");
-
-  if (p->Seal() == elle::StatusError)
+  if (p->Seal(sk) == elle::StatusError)
     fail("unable to seal the porcupine");
+
+  //p->Traverse();
 
   if (p->Check(nucleus::PinAll) == elle::StatusError)
     fail("XXX");

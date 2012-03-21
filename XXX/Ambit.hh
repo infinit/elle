@@ -61,10 +61,12 @@ namespace nucleus
       elle::Status      Unload();
 
       //
-      // operators
+      // accessors
       //
-      T*                operator->();
-      typename T::C*    operator()();
+      T*                contents();
+
+      typename T::C*    nodule();
+      typename T::C*    content();
 
       //
       // interfaces

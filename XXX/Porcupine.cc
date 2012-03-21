@@ -122,9 +122,6 @@ elle::Status        Porcupine<>::Initialize(
         elle::String(Porcupine<>::Default::Length, 'B')) == elle::StatusError)
     escape("unable to generate the default key");
 
-  // XXX
-  Porcupine<>::Default::Secret.Dump();
-
   //
   // catalog-specific initialization.
   //

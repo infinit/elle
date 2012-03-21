@@ -3,12 +3,13 @@
 - prevoir pour que plusieurs users puissent se logguer: lien symbolique cree par updater.
 
 - porcupine
+ - dechiffrer automatiquement un block recupere du reseau i.e dans Nest::Load.
  - utiliser Encipher/Decipher pour distinguer de Encrypt/Decrypt de Contents
  - du coup, nodule ne derive plus CHB mais Object
- - lorsque l'on veut seal, il faut d'abord encrypt: on pick une clef, et donc a chaque fois qu'on a une adresse, on a une clef aussi. on fait une passe Encrypt(), on enregistre la clef puis on chiffre. on fait une passe Seal() pour bind l'adresse. ensuite lors du Serialize(), on prend la version chiffree i.e *this->cipher. ATTENTION: ca implique que la clef soit prise en compte dans le calcul du footprint. il faut donc une clef Some
  - lorsque l'arbre est vide, on devrait avoir le handle root qui pointe vers une valeur unique: de cette maniere pour un directory on aurait Object qui contient Porcupine qui ne contient qu'un handle qui pointe vers un autre block: les entrees du directory => faire ca avec une union { Porcupine; Handle; }. meme si ca complique pas mal le code, c'est vriament necessaire, surtout pour les petits directories. voire faire l'union dans porcupine avec un mode qui nous dit ou en en est et lors d'un Add etc. ca le prend en compte: soit ca va chopper le Quill, soit ca Grow() pour faire le Search.
  - verifier que lorsque l'on seal, on ne seale que les blocs qui en ont besoin
  - ajouter le nombre d'entrees par repertoire, et le propager up to the root
+ - si on garde sur disque les blocs non chiffres, alors il faut les supprimer si on quitte Infinit.
 
 - register/auth
  - creer le login/pass localement et envoyer le hash a meta

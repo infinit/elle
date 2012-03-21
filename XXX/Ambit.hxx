@@ -98,14 +98,14 @@ elle::Status    Ambit<T>::Unload()
 }
 
 //
-// ---------- operators -------------------------------------------------------
+// ---------- accessors -------------------------------------------------------
 //
 
 ///
 /// XXX
 ///
 template <typename T>
-T*                  Ambit<T>::operator->()
+T*                  Ambit<T>::contents()
 {
   return (static_cast<T*>(this->handle.block));
 }
@@ -114,7 +114,16 @@ T*                  Ambit<T>::operator->()
 /// XXX
 ///
 template <typename T>
-typename T::C*      Ambit<T>::operator()()
+typename T::C*      Ambit<T>::nodule()
+{
+  return (static_cast<T*>(this->handle.block)->content);
+}
+
+///
+/// XXX
+///
+template <typename T>
+typename T::C*      Ambit<T>::content()
 {
   return (static_cast<T*>(this->handle.block)->content);
 }

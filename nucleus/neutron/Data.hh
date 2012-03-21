@@ -18,7 +18,6 @@
 #include <elle/Elle.hh>
 
 #include <nucleus/proton/Contents.hh>
-#include <nucleus/proton/State.hh>
 
 #include <nucleus/neutron/Offset.hh>
 
@@ -45,17 +44,13 @@ namespace nucleus
       //
       // constructors & destructors
       //
-
-      // XXX
-      proton::Contents<Data>& contents;
-      Data(proton::Contents<Data>& contents): contents(contents) {}
+      Data(proton::Contents<Data>&);
 
       //
       // methods
       //
 
-      // XXX[to remove]
-      elle::Status Create() { elle::StatusOk; }
+      elle::Status      Create();
 
       elle::Status      Write(const Offset&,
                               const elle::Region&);
@@ -80,8 +75,9 @@ namespace nucleus
       //
       // attributes
       //
-      proton::State     state;
-      elle::Region      region;
+      proton::Contents<Data>&           contents;
+
+      elle::Region                      region;
     };
 
   }

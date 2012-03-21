@@ -20,8 +20,30 @@ namespace nucleus
   {
 
 //
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Data::Data(proton::Contents<Data>&                          contents):
+      contents(contents)
+    {
+    }
+
+//
 // ---------- methods ---------------------------------------------------------
 //
+
+    ///
+    /// this method creates the data.
+    ///
+    elle::Status        Data::Create()
+    {
+      this->contents.state = proton::StateDirty;
+
+      return elle::StatusOk;
+    }
 
     ///
     /// this method updates a segment of the data object.
@@ -44,7 +66,7 @@ namespace nucleus
         escape("unable to write the data");
 
       // set the data as dirty.
-      this->state = proton::StateDirty;
+      this->contents.state = proton::StateDirty;
 
       return elle::StatusOk;
     }
@@ -100,7 +122,7 @@ namespace nucleus
       this->region.size = size;
 
       // set the data as dirty.
-      this->state = proton::StateDirty;
+      this->contents.state = proton::StateDirty;
 
       return elle::StatusOk;
     }

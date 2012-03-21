@@ -18,7 +18,6 @@
 #include <elle/Elle.hh>
 
 #include <nucleus/proton/Contents.hh>
-#include <nucleus/proton/State.hh>
 
 #include <nucleus/neutron/Offset.hh>
 #include <nucleus/neutron/Size.hh>
@@ -46,17 +45,12 @@ namespace nucleus
       //
       // constructors & destructors
       //
-
-      // XXX
-      proton::Contents<Reference>& contents;
-      Reference(proton::Contents<Reference>& contents): contents(contents) {}
+      Reference(proton::Contents<Reference>&);
 
       //
       // methods
       //
-
-      // XXX[to remove]
-      elle::Status Create() { elle::StatusOk; }
+      elle::Status      Create();
 
       elle::Status      Bind(const elle::String&);
       elle::Status      Resolve(elle::String&) const;
@@ -77,8 +71,9 @@ namespace nucleus
       //
       // attributes
       //
-      proton::State     state;
-      elle::String      target;
+      proton::Contents<Reference>&      contents;
+
+      elle::String                      target;
     };
 
   }
