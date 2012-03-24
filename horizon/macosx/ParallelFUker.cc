@@ -25,6 +25,9 @@
 # include <pth.h>
 #include <elle/idiom/Open.hh>
 
+// XXX
+#define printf(_arguments_...) { printf(_arguments_); fflush(stdout); }
+
 namespace horizon
 {
   namespace macosx
@@ -84,7 +87,7 @@ namespace horizon
           "horizon",
 
           "-s", // XXX
-          "-d", // XXX
+          //"-d", // XXX
 
           //
           // this option does not register FUSE as a daemon but
@@ -234,31 +237,48 @@ namespace horizon
 
     elle::Status        STATFS(EVENT* e)
     {
-      e->result = FUSE::Operations.statfs(e->path, e->statvfs);
+      // XXX copier args
+      *e->result = FUSE::Operations.statfs(e->path, e->statvfs);
 
-      ::pthread_mutex_unlock(&e->mutex);
+      ::pthread_mutex_unlock(e->mutex);
 
       return (elle::StatusOk);
     }
 
     elle::Status        UTIMENS(EVENT* e)
     {
-      e->result = FUSE::Operations.utimens(e->path, e->ts);
+      *e->result = FUSE::Operations.utimens(e->path, e->ts);
 
-      ::pthread_mutex_unlock(&e->mutex);
+      // XXX copier args
+      ::pthread_mutex_unlock(e->mutex);
 
       return (elle::StatusOk);
     }
 
+    /// XXX si on bloque la fibre dans cette fonction, le flow reviendra a l'appelant et donc retournera dans la boucle evenementiel et Qt se chargera de detruire EVENT* e donc on perd son contenu. il faut donc copier les champs qui nous interessent.
     elle::Status        OPENDIR(EVENT* e)
     {
+      char* path = e->path;
+      fuse_file_info* fi = e->fi;
+      pthread_mutex_t* mutex = e->mutex;
+      int* result = e->result;
+
+      printf("MUTEX %p\n", mutex);
+
+      printf("path: %p\n", path);
+      printf("path: %s\n", path);
+
       printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX SLEEP\n");
       elle::Fiber::Sleep(1000);
+      printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX /SLEEP\n");
 
-      e->result = FUSE::Operations.opendir(e->path, e->fi);
+      printf("path: %p\n", path);
+      printf("path: %s\n", path);
 
-      printf("UNBLOCKING %p\n", &e->mutex);
-      ::pthread_mutex_unlock(&e->mutex);
+      *result = FUSE::Operations.opendir(path, fi);
+
+      printf("UNBLOCKING %p\n", mutex);
+      ::pthread_mutex_unlock(mutex);
 
       return (elle::StatusOk);
     }
@@ -436,6 +456,8 @@ namespace horizon
 
       ::pthread_mutex_lock(&MUTEX);
       {
+        // XXX res = FUSE::Operations.opendir(path, info);
+
         pthread_mutex_t mutex;
         EVENT* e = new EVENT(mutex, res);
 

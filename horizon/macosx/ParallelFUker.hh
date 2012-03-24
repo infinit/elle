@@ -47,8 +47,8 @@ namespace horizon
       EVENT(pthread_mutex_t& mutex,
             int& result):
         QEvent(::QEvent::User),
-        mutex(mutex),
-        result(result)
+        mutex(&mutex),
+        result(&result)
       {
       }
 
@@ -82,8 +82,8 @@ namespace horizon
       char* source;
       char* target;
 
-      pthread_mutex_t& mutex;
-      int& result;
+      pthread_mutex_t* mutex;
+      int* result;
     };
 
     /// XXX
