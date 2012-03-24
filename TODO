@@ -10,6 +10,7 @@
  - verifier que lorsque l'on seal, on ne seale que les blocs qui en ont besoin
  - ajouter le nombre d'entrees par repertoire, et le propager up to the root
  - si on garde sur disque les blocs non chiffres, alors il faut les supprimer si on quitte Infinit.
+ - faire une methode avec callback genre Fill qui appelle le callback pour chaque value
 
 - register/auth
  - creer le login/pass localement et envoyer le hash a meta
