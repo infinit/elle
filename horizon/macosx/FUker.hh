@@ -50,6 +50,14 @@ namespace horizon
     /// the broker is responsible for converting the spawn thread-based
     /// FUSE upcalls into events for the main event loop.
     ///
+    /// the way to do this is to inject an event into the event loop by
+    /// passing the upcall argument through the Event instance. then,
+    /// the upcall-specific thread blocks on a semaphore because it must
+    /// not return befor the event has been treated. once the event treated,
+    /// i.e through the Broker, the semaphore is unlocked, enabling the
+    /// thread to resume and terminate by returning to the kernel the
+    /// result of the operation.
+    ///
     class FUker:
       public elle::Entity
     {

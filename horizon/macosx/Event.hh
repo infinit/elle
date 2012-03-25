@@ -40,23 +40,20 @@ namespace horizon
 //
 
     ///
-    /// XXX
+    /// this class represents a FUSE event i.e upcall and is used for
+    /// transmitting the arguments from the FUSE upcall-specific thread
+    /// to the handler launched by the event loop.
     ///
     class Event:
       public QEvent
     {
     public:
-      Event(boost::interprocess::interprocess_semaphore* semaphore,
-            int* result):
-        QEvent(::QEvent::User),
-        semaphore(semaphore),
-        result(result)
-      {
-      }
-      // XXX set to nul all attributes
-
+      //
+      // enumerations
+      //
       enum Operation
         {
+          OperationUnknown,
           OperationStatfs,
           OperationGetattr,
           OperationFgetattr,
@@ -86,31 +83,40 @@ namespace horizon
           OperationUnlink
         };
 
-      int operation;
+      //
+      // constructors & destructors
+      //
+      Event(boost::interprocess::interprocess_semaphore*,
+            int*);
 
-      const char* path;
-      struct statvfs* statvfs;
-      struct stat* stat;
-      struct fuse_file_info* info;
-      struct timespec ts[2];
-      void* buffer;
-      fuse_fill_dir_t filler;
-      off_t offset;
-      mode_t mode;
-      int mask;
-      uid_t uid;
-      gid_t gid;
-      const char* name;
-      char* value;
-      size_t size;
-      int flags;
-      uint32_t position;
-      char* list;
-      const char* source;
-      const char* target;
+      //
+      // attributes
+      //
+      Operation                 operation;
 
-      boost::interprocess::interprocess_semaphore* semaphore;
-      int* result;
+      const char*               path;
+      struct ::statvfs*         statvfs;
+      struct ::stat*            stat;
+      struct ::fuse_file_info*  info;
+      struct ::timespec         ts[2];
+      void*                     buffer;
+      ::fuse_fill_dir_t         filler;
+      off_t                     offset;
+      mode_t                    mode;
+      int                       mask;
+      uid_t                     uid;
+      gid_t                     gid;
+      const char*               name;
+      char*                     value;
+      size_t                    size;
+      int                       flags;
+      uint32_t                  position;
+      char*                     list;
+      const char*               source;
+      const char*               target;
+
+      boost::interprocess::interprocess_semaphore*      semaphore;
+      int*                                              result;
     };
 
   }

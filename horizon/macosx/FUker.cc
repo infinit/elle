@@ -17,9 +17,11 @@
 #include <hole/Hole.hh>
 
 #include <elle/idiom/Close.hh>
+# include <boost/interprocess/sync/interprocess_semaphore.hpp>
 # include <QCoreApplication>
 # include <pthread.h>
-# include <boost/interprocess/sync/interprocess_semaphore.hpp>
+# include <sys/param.h>
+# include <sys/mount.h>
 #include <elle/idiom/Open.hh>
 
 namespace horizon
@@ -32,29 +34,28 @@ namespace horizon
 //
 
     ///
-    /// XXX
+    /// this agent represents the broker which is responsible for receiving
+    /// the events once posted to the event loop so as to treat them.
     ///
     Broker*                     FUker::Agent = nullptr;
 
     ///
-    /// XXX
+    /// this is the identifier of the thread which is spawn so as to start
+    /// FUSE.
+    ///
+    /// note that creating a specific thread is required because the call
+    /// to fuse_main() never returns.
     ///
     ::pthread_t                 FUker::Thread;
-
-//
-// ---------- XXX -------------------------------------------------------------
-//
-
-    // XXX virer la class Broker dans elle
-
-    // XXX faire un bench avant et apres (avec le nouveu systeme)
 
 //
 // ---------- static methods --------------------------------------------------
 //
 
     ///
-    /// XXX
+    /// this method represents the entry point of the FUSE-specific thread.
+    ///
+    /// this method is responsible for starting FUSE.
     ///
     void*               FUker::Setup(void*)
     {
@@ -197,11 +198,17 @@ namespace horizon
             NULL) != 0)
         log(::strerror(errno));
 
+      // now that FUSE has stopped, make sure the program is exiting.
+      if (elle::Program::Exit() == elle::StatusError)
+        log("unable to exit the program");
+
       return (NULL);
     }
 
     ///
-    /// XXX
+    /// this method initializes the FUker by allocating a broker
+    /// for handling the posted events along with creating a specific
+    /// thread for FUSE.
     ///
     elle::Status        FUker::Initialize()
     {
@@ -216,11 +223,14 @@ namespace horizon
     }
 
     ///
-    /// XXX
+    /// this method cleans the FUker by making sure FUSE exits.
     ///
     elle::Status        FUker::Clean()
     {
-      // XXX stop FUSE thread + join (taking care to umount perhaps by sending a signal)
+      // unmount the file system.
+      //
+      // this operation will normally make FUSE exit.
+      ::unmount(Infinit::Mountpoint.c_str(), MNT_FORCE);
 
       return elle::StatusOk;
     }
@@ -230,8 +240,22 @@ namespace horizon
 //
 
     ///
-    /// this method returns general information on the file system.
+    /// the callbacks below are triggered by FUSE whenever a kernel event
+    /// occurs.
     ///
+    /// note that every one of the callbacks run in a specific thread.
+    ///
+    /// the purpose of the code is to create an event, inject it in
+    /// the event loop so that the Broker can treat it in a fiber and
+    /// possible block.
+    ///
+    /// since the thread must not return until the event is treated,
+    /// the following relies on a semaphore by blocking on it. once
+    /// the event handled, the semaphore is unlocked, in which case
+    /// the thread is resumed and can terminate by returning the
+    /// result of the upcall.
+    ///
+
     int                         FUker::Statfs(const char*       path,
                                               struct ::statvfs* statvfs)
     {
@@ -255,10 +279,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method returns general-purpose information on the file system
-    /// object identified by _path_.
-    ///
     int                         FUker::Getattr(const char*      path,
                                                struct ::stat*   stat)
     {
@@ -282,10 +302,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method returns general-purpose information on the file system
-    /// object identified by _path_.
-    ///
     int                         FUker::Fgetattr(const char*              path,
                                                 struct ::stat*           stat,
                                                 struct ::fuse_file_info* info)
@@ -311,9 +327,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method changes the access and modification time of the object.
-    ///
     int                         FUker::Utimens(const char*      path,
                                                const struct ::timespec ts[2])
     {
@@ -338,9 +351,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method opens the directory _path_.
-    ///
     int                         FUker::Opendir(const char*              path,
                                                struct ::fuse_file_info* info)
     {
@@ -364,9 +374,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method reads the directory entries.
-    ///
     int                         FUker::Readdir(const char*              path,
                                                void*                    buffer,
                                                ::fuse_fill_dir_t        filler,
@@ -396,9 +403,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method closes the directory _path_.
-    ///
     int                         FUker::Releasedir(const char*              path,
                                                   struct ::fuse_file_info* info)
     {
@@ -422,9 +426,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method creates a directory.
-    ///
     int                         FUker::Mkdir(const char*        path,
                                              mode_t             mode)
     {
@@ -448,9 +449,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method removes a directory.
-    ///
     int                         FUker::Rmdir(const char*        path)
     {
       boost::interprocess::interprocess_semaphore     semaphore(0);
@@ -472,10 +470,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method checks if the current user has the permission to access
-    /// the object _path_ for the operations _mask_.
-    ///
     int                         FUker::Access(const char*       path,
                                               int               mask)
     {
@@ -499,9 +493,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method modifies the permissions on the object.
-    ///
     int                         FUker::Chmod(const char*        path,
                                              mode_t             mode)
     {
@@ -525,9 +516,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method modifies the owner of a given object.
-    ///
     int                         FUker::Chown(const char*        path,
                                              uid_t              uid,
                                              gid_t              gid)
@@ -554,11 +542,6 @@ namespace horizon
     }
 
 #if defined(HAVE_SETXATTR)
-    ///
-    /// this method sets an extended attribute value.
-    ///
-    /// note that the flags are ignored!
-    ///
     int                         FUker::Setxattr(const char*     path,
                                                 const char*     name,
                                                 const char*     value,
@@ -590,9 +573,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method returns the attribute associated with the given object.
-    ///
     int                         FUker::Getxattr(const char*     path,
                                                 const char*     name,
                                                 char*           value,
@@ -622,9 +602,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method returns the list of attribute names.
-    ///
     int                         FUker::Listxattr(const char*    path,
                                                  char*          list,
                                                  size_t         size)
@@ -650,9 +627,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method removes an attribute.
-    ///
     int                         FUker::Removexattr(const char*  path,
                                                    const char*  name)
     {
@@ -677,9 +651,6 @@ namespace horizon
     }
 #endif
 
-    ///
-    /// this method creates a symbolic link.
-    ///
     int                         FUker::Symlink(const char*      target,
                                                const char*      source)
     {
@@ -703,9 +674,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method returns the target path pointed by the symbolic link.
-    ///
     int                         FUker::Readlink(const char*     path,
                                                 char*           buffer,
                                                 size_t          size)
@@ -731,9 +699,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method creates a new file and opens it.
-    ///
     int                         FUker::Create(const char*              path,
                                               mode_t                   mode,
                                               struct ::fuse_file_info* info)
@@ -759,9 +724,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method opens a file.
-    ///
     int                         FUker::Open(const char*              path,
                                             struct ::fuse_file_info* info)
     {
@@ -785,9 +747,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method writes data to a file.
-    ///
     int                         FUker::Write(const char*              path,
                                              const char*              buffer,
                                              size_t                   size,
@@ -817,9 +776,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method reads data from a file.
-    ///
     int                         FUker::Read(const char*              path,
                                             char*                    buffer,
                                             size_t                   size,
@@ -849,9 +805,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method modifies the size of a file.
-    ///
     int                         FUker::Truncate(const char*     path,
                                                 off_t           size)
     {
@@ -875,9 +828,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method modifies the size of an opened file.
-    ///
     int                         FUker::Ftruncate(const char*              path,
                                                  off_t                    size,
                                                  struct ::fuse_file_info* info)
@@ -903,9 +853,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method closes a file.
-    ///
     int                         FUker::Release(const char*              path,
                                                struct ::fuse_file_info* info)
     {
@@ -929,9 +876,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method renames a file.
-    ///
     int                         FUker::Rename(const char*       source,
                                               const char*       target)
     {
@@ -955,9 +899,6 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method removes an existing file.
-    ///
     int                         FUker::Unlink(const char*       path)
     {
       boost::interprocess::interprocess_semaphore     semaphore(0);

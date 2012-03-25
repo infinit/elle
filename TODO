@@ -1,7 +1,9 @@
 - IMPORTANT:
- - commenter/clean horizon/macosx
- - faire en sorte que ca umount automatiquement avec le thread fuse
+ - bencher avec parallel contre sans
+ - commenter/clean horizon/macosx (explication generale required)
+ - faire en sorte que ca umount automatiquement avec le thread fuse: ameliorer cela car parfois ca plante si on est en train de faire des operations.
  - quand on copier infinit-new, il n'arrive pas a copier les attributs
+ - virer Broker dans elle: plus necessaire
 
 general:
  - mettre le Infinit::Configuration dans Hole::Configuration du coup.

@@ -29,7 +29,11 @@ namespace horizon
 //
 
     ///
-    /// XXX
+    /// this class has been introduced for treating the events having been
+    /// injected by the FUker.
+    ///
+    /// the event() slot is called whenever an event is posted. the idea is
+    /// to start a fiber so that the processing of the event can be blocked.
     ///
     class Broker:
       public ::QObject

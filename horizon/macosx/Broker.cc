@@ -22,11 +22,17 @@ using namespace horizon::macosx;
 //
 
 ///
-/// XXX
+/// this slot is called whenever an event is posted.
+///
+/// if the event is valid, accept it. then create a fiber so that the
+/// method can block and resume later.
 ///
 bool            Broker::event(QEvent*                           qevent)
 {
-  Event*        event = static_cast<Event*>(qevent); // XXX tenter un proto avec EVENT
+  Event*        event;
+
+  if ((event = dynamic_cast<Event*>(qevent)) == nullptr)
+    return false;
 
   switch(event->operation)
     {
@@ -381,6 +387,11 @@ bool            Broker::event(QEvent*                           qevent)
 
         break;
       }
+    default:
+      {
+        yield(_(true), "unknown event operation '%u'\n",
+              event->operation);
+      }
     }
 
   return true;
@@ -391,7 +402,20 @@ bool            Broker::event(QEvent*                           qevent)
 //
 
 ///
-/// XXX si on bloque la fibre dans cette fonction, le flow reviendra a l'appelant et donc retournera dans la boucle evenementiel et Qt se chargera de detruire EVENT* e donc on perd son contenu. il faut donc copier les champs qui nous interessent.
+/// the callbacks below are all launched within a fiber in order for them
+/// to block.
+///
+/// noteworthy is that, if the fiber blocks, the execution flow returns
+/// to the event() method and then to the event loop.
+///
+/// as a result, the Event instance would be deleted. therefore, all
+/// the callback below must *duplicate* the arguments required to treat
+/// the event.
+///
+/// finally, every callback unlocks, through a semaphore, the FUSE
+/// thread which had been spawn for treating the upcall. this way, the
+/// upcall-specific thread is resumed so as to return its result to
+/// the kernel.
 ///
 
 elle::Status            Broker::Statfs(Event*                   event)

@@ -14,6 +14,7 @@ ADD_LIBRARY(macosx
   Broker.cc
   Crib.cc
   Crux.cc
+  Event.cc
   FUker.cc
   FUSE.cc
   Handle.cc

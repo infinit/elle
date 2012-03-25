@@ -76,5 +76,7 @@ namespace horizon
 #include <horizon/macosx/Event.hh>
 #include <horizon/macosx/FUSE.hh>
 #include <horizon/macosx/FUker.hh>
+#include <horizon/macosx/Handle.hh>
+#include <horizon/macosx/Janitor.hh>
 
 #endif
