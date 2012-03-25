@@ -31,30 +31,18 @@ namespace horizon
       // initialize the Linux implementation.
       if (linux::Linux::Initialize() == elle::StatusError)
         escape("unable to initialize the Linux implementation");
-
-      // set up the Linux implementation.
-      if (linux::Linux::Setup() == elle::StatusError)
-        escape("unable to set up the Linux implementation");
     }
 #elif defined(INFINIT_MACOSX)
     {
       // initialize the MacOS X implementation.
       if (macosx::MacOSX::Initialize() == elle::StatusError)
         escape("unable to initialize the MacOS X implementation");
-
-      // set up the MacOS X implementation.
-      if (macosx::MacOSX::Setup() == elle::StatusError)
-        escape("unable to set up the MacOS X implementation");
     }
 #elif defined(INFINIT_WINDOWS)
     {
       // initialize the Windows implementation.
       if (windows::Windows::Initialize() == elle::StatusError)
         escape("unable to initialize the Windows implementation");
-
-      // set up the Windows implementation.
-      if (windows::Windows::Setup() == elle::StatusError)
-        escape("unable to set up the Windows implementation");
     }
 #else
 # error "unsupported platform"

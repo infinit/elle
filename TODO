@@ -1,6 +1,12 @@
-- replacer les attributs _* dans nucleus en *.
-- mettre le Infinit::Configuration dans Hole::Configuration du coup.
-- prevoir pour que plusieurs users puissent se logguer: lien symbolique cree par updater.
+- IMPORTANT:
+ - commenter/clean horizon/macosx
+ - faire en sorte que ca umount automatiquement avec le thread fuse
+ - quand on copier infinit-new, il n'arrive pas a copier les attributs
+
+general:
+ - mettre le Infinit::Configuration dans Hole::Configuration du coup.
+ - prevoir pour que plusieurs users puissent se logguer: lien symbolique cree par updater.
+ - dans Crux, si le fichier owner c'est le user en cours, utiliser son UID
 
 - porcupine
  - dechiffrer automatiquement un block recupere du reseau i.e dans Nest::Load.

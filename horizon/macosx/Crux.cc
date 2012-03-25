@@ -21,9 +21,6 @@
 #include <agent/Agent.hh>
 #include <etoile/Etoile.hh>
 
-// XXX
-#define printf(_arguments_...) { printf(_arguments_); fflush(stdout); }
-
 namespace horizon
 {
   namespace macosx
@@ -373,24 +370,15 @@ namespace horizon
     int                 Crux::Opendir(const char*               path,
                                       struct ::fuse_file_info*  info)
     {
-      printf("HERE\n");
-      printf("OK: %p\n", path);
-      printf("OK: %s\n", path);
-      printf("HERE\n");
-
       etoile::gear::Identifier  identifier;
       etoile::path::Way         way(path);
       etoile::path::Chemin      chemin;
-
-      printf("HERE\n");
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, %p)\n",
                __FUNCTION__,
                path, info);
-
-      printf("HERE\n");
 
       // resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)

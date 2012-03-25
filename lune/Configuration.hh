@@ -81,14 +81,6 @@ namespace lune
       struct                                    Horizon
       {
         static const elle::Boolean              Debug;
-
-#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
-        static const elle::Natural32            FUker;
-#elif defined(INFINIT_WINDOWS)
-        // XXX
-#else
-# error "unsupported platform"
-#endif
       };
 
       struct                                    Satellites
@@ -164,14 +156,6 @@ namespace lune
     struct
     {
       elle::Boolean             debug;
-
-#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
-      elle::Natural32           fuker;
-#elif defined(INFINIT_WINDOWS)
-      // XXX
-#else
-# error "unsupported platform"
-#endif
     }                           horizon;
 
     struct

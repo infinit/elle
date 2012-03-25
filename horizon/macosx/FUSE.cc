@@ -14,9 +14,6 @@
 
 #include <horizon/macosx/FUSE.hh>
 #include <horizon/macosx/Crux.hh>
-#include <horizon/macosx/InterlacedFUker.hh>
-#include <horizon/macosx/ParallelFUker.hh>
-#include <horizon/macosx/SequentialFUker.hh>
 
 #include <Infinit.hh>
 
@@ -35,11 +32,6 @@ namespace horizon
     elle::String                        FUSE::Mountpoint;
 
     ///
-    /// the FUSE-Broker i.e FUker.
-    ///
-    FUker*                              FUSE::Fuker = NULL;
-
-    ///
     /// this structure contains the function pointers to the FUSE
     /// implementation routines located in the crux.
     ///
@@ -53,61 +45,18 @@ namespace horizon
     /// this method initializes the FUSE component.
     ///
     elle::Status        FUSE::Initialize(
+                          const elle::String&                   mountpoint,
                           const struct ::fuse_operations&       operations)
-    {
-      // set the fuse operations.
-      FUSE::Operations = operations;
-
-      //
-      // allocate the FUker according to the configuration
-      //
-      {
-        // according to the configuration...
-        switch (Infinit::Configuration.horizon.fuker)
-          {
-          case FUker::TypeSequential:
-            {
-              // allocate the sequential FUker.
-              FUSE::Fuker = new SequentialFUker;
-
-              break;
-            }
-          case FUker::TypeInterlaced:
-            {
-              // allocate the interlaced FUker.
-              FUSE::Fuker = new InterlacedFUker;
-
-              break;
-            }
-          case FUker::TypeParallel:
-            {
-              // allocate the parallel FUker.
-              FUSE::Fuker = new ParallelFUker;
-
-              break;
-            }
-          default:
-            {
-              escape("unknown fuker '%u'",
-                     Infinit::Configuration.horizon.fuker);
-            }
-          }
-      }
-
-      return elle::StatusOk;
-    }
-
-    ///
-    /// this methods sets up the FUSE module.
-    ///
-    elle::Status        FUSE::Setup(const elle::String&         mountpoint)
     {
       // set the mountpoint.
       FUSE::Mountpoint = mountpoint;
 
-      // set up the FUker.
-      if (FUSE::Fuker->Setup() == elle::StatusError)
-        escape("unable to set up the FUker");
+      // set the fuse operations.
+      FUSE::Operations = operations;
+
+      // initialize the FUker.
+      if (FUker::Initialize() == elle::StatusError)
+        escape("unable to initialize the FUker");
 
       return elle::StatusOk;
     }
@@ -117,8 +66,9 @@ namespace horizon
     ///
     elle::Status        FUSE::Clean()
     {
-      // delete the FUker.
-      delete FUSE::Fuker;
+      // clean the FUker.
+      if (FUker::Clean() == elle::StatusError)
+        escape("unable to clean the FUker");
 
       return elle::StatusOk;
     }

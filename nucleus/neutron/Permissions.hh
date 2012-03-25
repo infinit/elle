@@ -43,8 +43,8 @@ namespace nucleus
     /// the read permission as well.
     ///
     const Permissions           PermissionNone = 0;
-    const Permissions           PermissionRead = (1 << 1);
-    const Permissions           PermissionWrite = PermissionRead | (1 << 2);
+    const Permissions           PermissionRead = (1 << 0);
+    const Permissions           PermissionWrite = PermissionRead | (1 << 1);
 
   }
 }

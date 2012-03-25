@@ -138,21 +138,10 @@ namespace horizon
         operations.flag_nullpath_ok = 1;
 
         // initialize FUSE.
-        if (FUSE::Initialize(operations) == elle::StatusError)
+        if (FUSE::Initialize(Infinit::Mountpoint,
+                             operations) == elle::StatusError)
           escape("unable to initialize FUSE");
       }
-
-      return elle::StatusOk;
-    }
-
-    ///
-    /// this method sets up the MacOS X implementation.
-    ///
-    elle::Status        MacOSX::Setup()
-    {
-      // set up FUSE.
-      if (FUSE::Setup(Infinit::Mountpoint) == elle::StatusError)
-        escape("unable to set up FUSE");
 
       return elle::StatusOk;
     }

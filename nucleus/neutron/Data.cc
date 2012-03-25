@@ -14,6 +14,8 @@
 
 #include <nucleus/neutron/Data.hh>
 
+#include <nucleus/proton/Contents.hh>
+
 namespace nucleus
 {
   namespace neutron

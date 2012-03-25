@@ -12,10 +12,28 @@
 #define HORIZON_MACOSX_FUKER_HH
 
 //
+// ---------- macros ----------------------------------------------------------
+//
+
+#ifndef FUSE_USE_VERSION
+# define FUSE_USE_VERSION               26
+#endif
+
+//
 // ---------- includes --------------------------------------------------------
 //
 
 #include <elle/Elle.hh>
+
+#include <horizon/macosx/Broker.hh>
+
+#include <elle/idiom/Close.hh>
+# define _GNU_SOURCE
+# include <fuse.h>
+# if defined(HAVE_SETXATTR)
+#  include <sys/xattr.h>
+# endif
+#include <elle/idiom/Open.hh>
 
 namespace horizon
 {
@@ -27,36 +45,122 @@ namespace horizon
 //
 
     ///
-    /// this class abstract the notion of FUSE-Broker i.e FUker.
+    /// this class abstracts the notion of FUSE-Broker i.e FUker.
     ///
-    /// FUkers have been introduced in order to merge the FUSE-specific
-    /// event loop with Elle's. this way all the events are processed by
-    /// a single event loop, Elle's.
-    ///
-    /// this is accomplished by implementing a broker for the FUSE events.
-    /// whenever data is available on the FUSE special device, the broker
-    /// triggers an event which makes the FUker read the data and handle the
-    /// event. the rest of the time, nothing FUSE-related happens so that
-    /// other Elle-specific events can be treated.
+    /// the broker is responsible for converting the spawn thread-based
+    /// FUSE upcalls into events for the main event loop.
     ///
     class FUker:
       public elle::Entity
     {
     public:
       //
-      // enumerations
+      // static methods
       //
-      enum
-        {
-          TypeSequential,
-          TypeInterlaced,
-          TypeParallel
-        };
+      static void*              Setup(void*);
+
+      static elle::Status       Initialize();
+      static elle::Status       Clean();
 
       //
-      // methods
+      // static attributes
       //
-      virtual elle::Status      Setup() = 0;
+      static Broker*            Agent;
+      static ::pthread_t        Thread;
+
+      //
+      // callbacks
+      //
+
+      // general purpose
+      static int        Statfs(const char*,
+                               struct ::statvfs*);
+      static int        Getattr(const char*,
+                                struct ::stat*);
+      static int        Fgetattr(const char*,
+                                 struct ::stat*,
+                                 struct ::fuse_file_info*);
+      static int        Utimens(const char*,
+                                const struct ::timespec[2]);
+
+      // directory
+      static int        Opendir(const char*,
+                                struct ::fuse_file_info*);
+      static int        Readdir(const char*,
+                                void*,
+                                ::fuse_fill_dir_t,
+                                off_t,
+                                struct ::fuse_file_info*);
+      static int        Releasedir(const char*,
+                                   struct ::fuse_file_info*);
+      static int        Mkdir(const char*,
+                              mode_t);
+      static int        Rmdir(const char*);
+
+      // access
+      static int        Access(const char*,
+                               int);
+      static int        Chmod(const char*,
+                              mode_t);
+      static int        Chown(const char*,
+                              uid_t,
+                              gid_t);
+
+#if defined(HAVE_SETXATTR)
+      // attribute
+      static int        Setxattr(const char*,
+                                 const char*,
+                                 const char*,
+                                 size_t,
+                                 int,
+                                 uint32_t);
+      static int        Getxattr(const char*,
+                                 const char*,
+                                 char*,
+                                 size_t,
+                                 uint32_t);
+      static int        Listxattr(const char*,
+                                  char*,
+                                  size_t);
+      static int        Removexattr(const char*,
+                                    const char*);
+#endif
+
+      // link
+      static int        Symlink(const char*,
+                                const char*);
+      static int        Readlink(const char*,
+                                 char*,
+                                 size_t);
+
+      // file
+      static int        Create(const char*,
+                               mode_t,
+                               struct ::fuse_file_info*);
+      static int        Open(const char*,
+                             struct ::fuse_file_info*);
+      static int        Write(const char*,
+                              const char*,
+                              size_t,
+                              off_t,
+                              struct ::fuse_file_info*);
+      static int        Read(const char*,
+                             char*,
+                             size_t,
+                             off_t,
+                             struct ::fuse_file_info*);
+      static int        Truncate(const char*,
+                                 off_t);
+      static int        Ftruncate(const char*,
+                                  off_t,
+                                  struct ::fuse_file_info*);
+      static int        Release(const char*,
+                                struct ::fuse_file_info*);
+
+      // objects
+      static int        Rename(const char*,
+                               const char*);
+      static int        Unlink(const char*);
     };
 
   }

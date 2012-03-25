@@ -15,12 +15,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-/* XXX
-#include <nucleus/proton/Data.hh>
+#include <nucleus/neutron/Data.hh>
 #include <nucleus/neutron/Catalog.hh>
 #include <nucleus/neutron/Reference.hh>
-*/
-
 #include <nucleus/neutron/Component.hh>
 
 namespace nucleus
@@ -32,7 +29,6 @@ namespace nucleus
 // ---------- types -----------------------------------------------------------
 //
 
-/* XXX[to remove, somehow]
     ///
     /// this base template allows for specialized-template.
     ///
@@ -45,22 +41,21 @@ namespace nucleus
     /// this macro-function associates a component to a content type
     /// such as ComponentData with the Data class.
     ///
-#define ContentsDeclare(_type_)                                         \
+#define ContentsDeclare(_type_, _component_)                            \
   template <>                                                           \
   struct ContentsMap<_type_>                                            \
   {                                                                     \
-    static const enum Component         Component =                     \
-      Component ## _type_;                                              \
+    static const enum neutron::Component        Component =             \
+      neutron::Component ## _component_;                                \
   };
 
     ///
     /// these macro-function calls actually generate the specialized-templates
     /// for content type.
     ///
-    ContentsDeclare(Data);
-    ContentsDeclare(Catalog);
-    ContentsDeclare(Reference);
-*/
+    ContentsDeclare(neutron::Data, Data);
+    ContentsDeclare(neutron::Catalog, Catalog);
+    ContentsDeclare(neutron::Reference, Reference);
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -71,7 +66,7 @@ namespace nucleus
     ///
     template <typename T>
     Contents<T>::Contents():
-      // XXX proton::ContentHashBlock(ContentsMap<T>::Component),
+      proton::ContentHashBlock(ContentsMap<T>::Component),
 
       content(NULL),
       cipher(NULL)

@@ -17,13 +17,23 @@
 
 #include <elle/Elle.hh>
 
-#include <nucleus/proton/Contents.hh>
-
 #include <nucleus/neutron/Offset.hh>
 #include <nucleus/neutron/Size.hh>
 
 namespace nucleus
 {
+  namespace proton
+  {
+
+//
+// ---------- forward declarations --------------------------------------------
+//
+
+    template <typename T>
+    class Contents;
+
+  }
+
   namespace neutron
   {
 
