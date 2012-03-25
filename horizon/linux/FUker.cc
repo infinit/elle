@@ -12,7 +12,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <horizon/macosx/FUSE.hh>
+#include <horizon/linux/FUSE.hh>
 
 #include <hole/Hole.hh>
 
@@ -28,7 +28,7 @@
 
 namespace horizon
 {
-  namespace macosx
+  namespace linux
   {
 
 //
@@ -71,14 +71,8 @@ namespace horizon
       // for example the -d option could be used instead of -f in order
       // to activate the debug mode.
       //
-      // note that compared to the Linux implementation, the MacOS X
-      // FUSE does not support the -o large_read and -o big_writes
-      // options.
-      //
       elle::String      ofsname("-ofsname=" +
                                 hole::Hole::Descriptor.name);
-      elle::String      ovolname("-ovolname=" +
-                                 hole::Hole::Descriptor.name);
       const char*       arguments[] =
         {
           "horizon",
@@ -92,12 +86,24 @@ namespace horizon
           //
           // this option indicates the name of the file system type.
           //
-          "-ofstypename=infinit",
+          "-osubtype=infinit",
 
           //
           // this option disables remote file locking.
           //
           "-ono_remote_lock",
+
+          //
+          // this option indicates the kernel to perform reads
+          // through large chunks.
+          //
+          "-olarge_read",
+
+          //
+          // this option indicates the kernel to perform writes
+          // through big writes.
+          //
+          "-obig_writes",
 
           //
           // this option activates the in-kernel caching based on
@@ -106,38 +112,15 @@ namespace horizon
           "-oauto_cache",
 
           //
-          // this options activates the MacOS X ACLs which are set through
-          // extended attributes.
+          // this option indicates the kernel to always forward the I/Os
+          // to the filesystem.
           //
-          "-oextended_security",
-
-          //
-          // this option forbids the access to and creation of .DS_Store files
-          // along with any ._* file.
-          //
-          "-onoappledouble",
-
-          //
-          // these options activate the custom volume icon.
-          //
-          // note that Apple icon (icns) files can be generated
-          // with the _makeicns_ binary.
-          //
-          // XXX[we should put this file as an output of the
-          //     compilation/installation process]
-          //
-          "-omodules=volicon",
-          "-oiconpath=../../temporary/nazi.icns",
+          "-odirect_io",
 
           //
           // this option specifies the name of the file system instance.
           //
           ofsname.c_str(),
-
-          //
-          // this option provides a user-friendly name for the MacOS X volume.
-          //
-          ovolname.c_str(),
 
           //
           // and finally, the mountpoint.

@@ -27,11 +27,6 @@ namespace horizon
 //
 
     ///
-    /// the FUSE mountpoint.
-    ///
-    elle::String                        FUSE::Mountpoint;
-
-    ///
     /// this structure contains the function pointers to the FUSE
     /// implementation routines located in the crux.
     ///
@@ -45,12 +40,8 @@ namespace horizon
     /// this method initializes the FUSE component.
     ///
     elle::Status        FUSE::Initialize(
-                          const elle::String&                   mountpoint,
                           const struct ::fuse_operations&       operations)
     {
-      // set the mountpoint.
-      FUSE::Mountpoint = mountpoint;
-
       // set the fuse operations.
       FUSE::Operations = operations;
 

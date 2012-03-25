@@ -18,7 +18,6 @@
 
 #include <elle/Elle.hh>
 #include <agent/Agent.hh>
-#include <Infinit.hh>
 
 namespace horizon
 {
@@ -138,8 +137,7 @@ namespace horizon
         operations.flag_nullpath_ok = 1;
 
         // initialize FUSE.
-        if (FUSE::Initialize(Infinit::Mountpoint,
-                             operations) == elle::StatusError)
+        if (FUSE::Initialize(operations) == elle::StatusError)
           escape("unable to initialize FUSE");
       }
 

@@ -55,15 +55,12 @@ namespace horizon
       //
       // static methods
       //
-      static elle::Status       Initialize(const elle::String&,
-                                           const struct ::fuse_operations&);
+      static elle::Status       Initialize(const struct ::fuse_operations&);
       static elle::Status       Clean();
 
       //
       // static attributes
       //
-      static elle::String               Mountpoint;
-
       static struct ::fuse_operations   Operations;
     };
 

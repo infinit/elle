@@ -12,10 +12,10 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <horizon/macosx/Broker.hh>
-#include <horizon/macosx/FUSE.hh>
+#include <horizon/linux/Broker.hh>
+#include <horizon/linux/FUSE.hh>
 
-using namespace horizon::macosx;
+using namespace horizon::linux;
 
 //
 // ---------- slots -----------------------------------------------------------

@@ -15,6 +15,8 @@
 #include <satellites/diary/unix/Record.hh>
 #include <satellites/diary/unix/Upcall.hh>
 
+#include <Infinit.hh>
+
 #if defined(INFINIT_LINUX)
 # include <horizon/linux/FUSE.hh>
 #elif defined(INFINIT_MACOSX)
@@ -1470,11 +1472,13 @@ namespace satellite
         Record::Operations.flag_nullpath_ok = 0;
       }
 
+      // set the mountpoint.
+      Infinit::Mountpoint = mountpoint;
+
 #if defined(INFINIT_LINUX)
       {
         // initialize FUSE.
         if (horizon::linux::FUSE::Initialize(
-              mountpoint,
               Record::Operations) == elle::StatusError)
           escape("unable to initialize FUSE");
       }
@@ -1482,7 +1486,6 @@ namespace satellite
       {
         // initialize FUSE.
         if (horizon::macosx::FUSE::Initialize(
-              mountpoint,
               Record::Operations) == elle::StatusError)
           escape("unable to initialize FUSE");
       }
