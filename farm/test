@@ -84,11 +84,14 @@ class Network:
     shutil.rmtree(self.__root)
 
 def test_openssl():
+  start = time.time()
   network = Network()
   network.mount()
   run(['tar', '-xzf', '/home/buildslave/openssl-1.0.0g.tar.gz', '-C', network.mountpoint])
   run(['./config'], cwd = '%s/openssl-1.0.0g' % network.mountpoint)
   run(['make'], cwd = '%s/openssl-1.0.0g' % network.mountpoint)
+  end = time.time()
+  print('OpenSSL compilation time: %ss' % (end - start))
 
 for test in [
   'cryptography',
