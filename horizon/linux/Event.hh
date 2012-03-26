@@ -23,10 +23,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/Elle.hh>
+
 #include <elle/idiom/Close.hh>
 # include <QEvent>
 # include <boost/interprocess/sync/interprocess_semaphore.hpp>
-# define _GNU_SOURCE
 # include <fuse.h>
 #include <elle/idiom/Open.hh>
 
@@ -110,7 +111,6 @@ namespace horizon
       char*                     value;
       size_t                    size;
       int                       flags;
-      uint32_t                  position;
       char*                     list;
       const char*               source;
       const char*               target;

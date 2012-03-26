@@ -24,5 +24,4 @@ ADD_LIBRARY(macosx
   ${macosx_MOCS}
 )
 
-# XXX[is pthread necessary?]
-TARGET_LINK_LIBRARIES(macosx etoile fuse4x)
+TARGET_LINK_LIBRARIES(macosx etoile fuse4x pthread)

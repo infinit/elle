@@ -23,6 +23,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/Elle.hh>
+
 #include <elle/idiom/Close.hh>
 # include <QEvent>
 # include <boost/interprocess/sync/interprocess_semaphore.hpp>

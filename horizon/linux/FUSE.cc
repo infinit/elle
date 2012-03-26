@@ -14,9 +14,7 @@
 
 #include <horizon/linux/FUSE.hh>
 #include <horizon/linux/Crux.hh>
-#include <horizon/linux/InterlacedFUker.hh>
-#include <horizon/linux/ParallelFUker.hh>
-#include <horizon/linux/SequentialFUker.hh>
+#include <horizon/linux/FUker.hh>
 
 #include <Infinit.hh>
 

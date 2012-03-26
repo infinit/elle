@@ -9,7 +9,7 @@
 //
 
 #ifndef HORIZON_LINUX_JANITOR_HH
-#define HORIZON_LINUX_JANOTIR_HH
+#define HORIZON_LINUX_JANITOR_HH
 
 //
 // ---------- includes --------------------------------------------------------

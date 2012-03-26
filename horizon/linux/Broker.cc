@@ -594,11 +594,10 @@ elle::Status            Broker::Setxattr(Event*                 event)
   const char*                                   value = event->value;
   size_t                                        size = event->size;
   int                                           flags = event->flags;
-  uint32_t                                      position = event->position;
   boost::interprocess::interprocess_semaphore*  semaphore = event->semaphore;
   int*                                          result = event->result;
 
-  *result = FUSE::Operations.setxattr(path, name, value, size, flags, position);
+  *result = FUSE::Operations.setxattr(path, name, value, size, flags);
 
   semaphore->post();
 
@@ -611,11 +610,10 @@ elle::Status            Broker::Getxattr(Event*                 event)
   const char*                                   name = event->name;
   char*                                         value = event->value;
   size_t                                        size = event->size;
-  uint32_t                                      position = event->position;
   boost::interprocess::interprocess_semaphore*  semaphore = event->semaphore;
   int*                                          result = event->result;
 
-  *result = FUSE::Operations.getxattr(path, name, value, size, position);
+  *result = FUSE::Operations.getxattr(path, name, value, size);
 
   semaphore->post();
 

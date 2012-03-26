@@ -28,10 +28,9 @@
 #include <horizon/linux/Broker.hh>
 
 #include <elle/idiom/Close.hh>
-# define _GNU_SOURCE
 # include <fuse.h>
 # if defined(HAVE_SETXATTR)
-#  include <sys/xattr.h>
+#  include <attr/xattr.h>
 # endif
 #include <elle/idiom/Open.hh>
 
@@ -120,13 +119,11 @@ namespace horizon
                                  const char*,
                                  const char*,
                                  size_t,
-                                 int,
-                                 uint32_t);
+                                 int);
       static int        Getxattr(const char*,
                                  const char*,
                                  char*,
-                                 size_t,
-                                 uint32_t);
+                                 size_t);
       static int        Listxattr(const char*,
                                   char*,
                                   size_t);

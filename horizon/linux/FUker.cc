@@ -215,7 +215,7 @@ namespace horizon
       // unmount the file system.
       //
       // this operation will normally make FUSE exit.
-      ::unmount(Infinit::Mountpoint.c_str(), MNT_FORCE);
+      ::umount2(Infinit::Mountpoint.c_str(), MNT_FORCE);
 
       return elle::StatusOk;
     }
@@ -531,8 +531,7 @@ namespace horizon
                                                 const char*     name,
                                                 const char*     value,
                                                 size_t          size,
-                                                int             flags,
-                                                uint32_t        position)
+                                                int             flags)
     {
       boost::interprocess::interprocess_semaphore     semaphore(0);
       Event*                                          event;
@@ -547,7 +546,6 @@ namespace horizon
       event->value = const_cast<char*>(value);
       event->size = size;
       event->flags = flags;
-      event->position = position;
 
       // post the event.
       ::QCoreApplication::postEvent(FUker::Agent, event);
@@ -561,8 +559,7 @@ namespace horizon
     int                         FUker::Getxattr(const char*     path,
                                                 const char*     name,
                                                 char*           value,
-                                                size_t          size,
-                                                uint32_t        position)
+                                                size_t          size)
     {
       boost::interprocess::interprocess_semaphore     semaphore(0);
       Event*                                          event;
@@ -576,7 +573,6 @@ namespace horizon
       event->name = name;
       event->value = value;
       event->size = size;
-      event->position = position;
 
       // post the event.
       ::QCoreApplication::postEvent(FUker::Agent, event);
