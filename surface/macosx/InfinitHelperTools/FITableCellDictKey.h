@@ -19,6 +19,6 @@
 + (id)tableCellDictKeyWithColumnIdentifer:(id)arg1 rowIndex:(long long)arg2;
 - (id)initWithColumnIdentifier:(id)arg1 rowIndex:(long long)arg2;
 - (unsigned long long)hash;
-- (BOOL)isEqualToDictKey:(FITableCellDictKey *)arg1;
+- (BOOL)hasSameColumnIdentifier:(id)arg1 andRowIndex:(long long)arg2;
 - (BOOL)isEqual:(id)arg1;
 @end

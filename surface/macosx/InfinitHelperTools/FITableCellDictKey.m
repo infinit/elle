@@ -15,20 +15,22 @@
 
 + (id)tableCellDictKeyWithColumnIdentifer:(id)arg1 rowIndex:(long long)arg2
 {
-    static NSMutableDictionary *items = nil;
+    static NSMutableSet *items = nil;
     
     if (items == nil) {
-        items = [[NSMutableDictionary alloc] init];
+        items = [[NSMutableSet alloc] init];
     }
     
-    unsigned long long tempHash = arg2 * [arg1 hash];
-    id item = [items objectForKey:[NSNumber numberWithUnsignedLongLong:tempHash]];
-    if ( item == nil)
+    id item = [[FITableCellDictKey alloc] initWithColumnIdentifier:arg1 rowIndex:arg2];
+    id memberItem = [items member:item];
+    if (memberItem == nil)
     {
-        item = [[FITableCellDictKey alloc] initWithColumnIdentifier:arg1 rowIndex:arg2];
-        [items setObject:[NSNumber numberWithUnsignedLongLong:[item hash]] forKey:item];
+        [items addObject:item];
     }
-    
+    else
+    {
+        item = memberItem;
+    }
     return item;
 }
 
@@ -47,15 +49,12 @@
     return rowIndex ^ [columnIdentifier hash];
 }
 
-- (BOOL)isEqualToDictKey:(FITableCellDictKey *)arg1
+- (BOOL)hasSameColumnIdentifier:(id)arg1 andRowIndex:(long long)arg2
 {
-    if (self == arg1)
-        return YES;
-    
-    if (rowIndex != [arg1 rowIndex])
+    if (rowIndex != arg2)
         return NO;
     
-    if (![columnIdentifier isEqual:[arg1 columnIdentifier]])
+    if (![columnIdentifier isEqual:arg1])
         return NO;
     
     return YES;
@@ -67,7 +66,7 @@
         return YES;
     if (!arg1 || ![arg1 isKindOfClass:[self class]])
         return NO;
-    return [self isEqualToDictKey:arg1];
+    return [self hasSameColumnIdentifier:[arg1 columnIdentifier] andRowIndex:[arg1 rowIndex]];
 }
 
 @end
