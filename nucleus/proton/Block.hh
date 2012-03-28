@@ -38,7 +38,7 @@ namespace nucleus
     ///
     /// note that every block is identified by an address.
     ///
-    /// the _state attribute indicates whether the block has
+    /// the state attribute indicates whether the block has
     /// been modified. therefore, this indicator is never serialized.
     ///
     /// the reader will notice that only the Erase() method is provided
@@ -90,11 +90,11 @@ namespace nucleus
       //
       // attributes
       //
-      Network                   network; // XXX seems to be always empty??? it should not!
+      Network                   network; // XXX seems to be always empty??? it should not! must be added to the constructor.
       Family                    family;
       neutron::Component        component;
 
-      State                     _state;
+      State                     state;
     };
 
   }

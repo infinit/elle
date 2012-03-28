@@ -16,7 +16,7 @@
 #include <horizon/linux/Linux.hh>
 #include <horizon/linux/Janitor.hh>
 #include <horizon/linux/Handle.hh>
-#include <horizon/macosx/Crib.hh>
+#include <horizon/linux/Crib.hh>
 
 #include <agent/Agent.hh>
 #include <etoile/Etoile.hh>

@@ -46,7 +46,7 @@ namespace nucleus
         escape("unable to update the record");
 
       // set the block as dirty.
-      this->_state = proton::StateDirty;
+      this->state = proton::StateDirty;
 
       return elle::StatusOk;
     }

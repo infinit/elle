@@ -55,7 +55,6 @@ namespace etoile
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/gear/Action.hh>
 #include <etoile/gear/Actor.hh>
 #include <etoile/gear/Chronicle.hh>
 #include <etoile/gear/Context.hh>
@@ -68,6 +67,5 @@ namespace etoile
 #include <etoile/gear/Operation.hh>
 #include <etoile/gear/Scope.hh>
 #include <etoile/gear/Transaction.hh>
-#include <etoile/gear/Transcript.hh>
 
 #endif

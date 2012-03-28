@@ -22,14 +22,56 @@ namespace nucleus
   namespace proton
   {
 
-//
-// ---------- types -----------------------------------------------------------
-//
-
     ///
     /// XXX
     ///
-    typedef elle::Natural32     Placement;
+    class Placement:
+      public elle::Object
+    {
+    public:
+      //
+      // constants
+      //
+      static const elle::Natural64      Zero;
+
+      static const Placement            Null;
+
+      //
+      // static attribute
+      //
+      static elle::Natural64            Counter;
+
+      //
+      // constructors & destructors
+      //
+      Placement();
+
+      //
+      // interfaces
+      //
+
+      // object
+      declare(Placement);
+      elle::Boolean             operator==(const Placement&) const;
+      elle::Boolean             operator<(const Placement&) const;
+
+      // archivable
+      elle::Status              Serialize(elle::Archive&) const;
+      elle::Status              Extract(elle::Archive&);
+
+      // dumpable
+      elle::Status              Dump(const elle::Natural32 = 0) const;
+
+      //
+      // attributes
+      //
+      elle::Natural64           value;
+
+      //
+      // static methods
+      //
+      static elle::Status       Generate(Placement&);
+    };
 
   }
 }

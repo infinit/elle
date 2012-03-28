@@ -142,7 +142,7 @@ namespace package
       ~CodingStandard();
 
       //
-      // getters & setters
+      // accessors
       //
     public:
       /*

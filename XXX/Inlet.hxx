@@ -26,7 +26,7 @@ namespace nucleus
     template <typename V,
               typename T>
     Inlet<V, T>::Inlet():
-      _footprint(*this)
+      footprint(*this)
     {
     }
 
@@ -36,25 +36,10 @@ namespace nucleus
     template <typename V,
               typename T>
     Inlet<V, T>::Inlet(const typename V::K&                     key,
-                       T*                                       object):
+                       Handle&                                  value):
       key(key),
-      value(object),
-
-      _footprint(*this)
-    {
-    }
-
-    ///
-    /// address-specific constructor.
-    ///
-    template <typename V,
-              typename T>
-    Inlet<V, T>::Inlet(const typename V::K&                     key,
-                       const Address&                           address):
-      key(key),
-      value(address),
-
-      _footprint(*this)
+      value(value),
+      footprint(*this)
     {
     }
 
@@ -76,8 +61,7 @@ namespace nucleus
 
       // dump the key.
       std::cout << alignment << elle::Dumpable::Shift
-                << "[Key] " << std::dec << this->key << std::endl;
-      // XXX remove std::dec
+                << "[Key] " << this->key << std::endl;
 
       // dump the value.
       if (this->value.Dump(margin + 2) == elle::StatusError)
@@ -85,9 +69,9 @@ namespace nucleus
 
       // dump the footprint.
       std::cout << alignment << elle::Dumpable::Shift
-                << "[_Footprint]" << std::endl;
+                << "[Footprint]" << std::endl;
 
-      if (this->_footprint.Dump(margin + 4) == elle::StatusError)
+      if (this->footprint.Dump(margin + 4) == elle::StatusError)
         escape("unable to dump the footprint");
 
       return elle::StatusOk;

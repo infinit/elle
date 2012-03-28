@@ -46,7 +46,7 @@ namespace etoile
         escape("unable to retrieve the object block");
 
       // compute the base in order to seal the block's original state.
-      if (context.object._base.Create(context.object) == elle::StatusError)
+      if (context.object.base.Create(context.object) == elle::StatusError)
         escape("unable to compute the base");
 
       // set the context's state.
@@ -136,7 +136,7 @@ namespace etoile
         escape("unable to close the access");
 
       // if the object has been modified i.e is dirty.
-      if (context.object._state == nucleus::StateDirty)
+      if (context.object.state == nucleus::StateDirty)
         {
           // seal the object, depending on the presence of a referenced
           // access block.

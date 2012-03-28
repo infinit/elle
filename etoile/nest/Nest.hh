@@ -11,6 +11,17 @@
 #ifndef ETOILE_NEST_NEST_HH
 #define ETOILE_NEST_NEST_HH
 
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <nucleus/Nucleus.hh>
+#include <XXX/Handle.hh>
+
+#include <etoile/nest/Pod.hh>
+
+#include <map>
+
 namespace etoile
 {
   namespace nest
@@ -23,24 +34,55 @@ namespace etoile
     ///
     /// XXX
     ///
-    /* XXX
     class Nest
     {
     public:
       //
+      // types
+      //
+      struct P
+      {
+        typedef std::map<const nucleus::Placement, Pod*>        Container;
+        typedef typename Container::iterator                    Iterator;
+      };
+
+      struct A
+      {
+        typedef std::map<const nucleus::Address, Pod*>          Container;
+        typedef typename Container::iterator                    Iterator;
+      };
+
+      //
       // static methods
       //
-      static elle::Status       Load(const nucleus::Address&,
-                                     nucleus::Block&);
-      static elle::Status       Load(const Placement&,
-                                     nucleus::Block&);
+      static elle::Status       Exist(const nucleus::Placement&);
+      static elle::Status       Exist(const nucleus::Address&);
+      static elle::Status       Insert(const nucleus::Placement&,
+                                       Pod*);
+      static elle::Status       Insert(const nucleus::Placement&,
+                                       const nucleus::Address&,
+                                       Pod*);
+      static elle::Status       Retrieve(const nucleus::Placement&,
+                                         Pod*&);
+      static elle::Status       Retrieve(const nucleus::Address&,
+                                         Pod*&);
+      static elle::Status       Delete(const nucleus::Placement&);
+      static elle::Status       Delete(const nucleus::Address&);
 
-      static elle::Status       Unload(const nucleus::Address&,
-                                       const nucleus::Block&);
-      static elle::Status       Unload(const Placement&,
-                                       const nucleus::Block&);
+      static elle::Status       Attach(nucleus::Block*,
+                                       nucleus::Handle&);
+      static elle::Status       Detach(nucleus::Handle&);
+      static elle::Status       Load(nucleus::Handle&);
+      static elle::Status       Unload(nucleus::Handle&);
+
+      static elle::Status       Show(const elle::Natural32 = 0);
+
+      //
+      // static attributes
+      //
+      static P::Container       Placements;
+      static A::Container       Addresses;
     };
-    */
 
   }
 }

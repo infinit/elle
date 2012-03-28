@@ -5,6 +5,7 @@ add_definitions(-fPIC)
 ADD_LIBRARY(nucleus
   Nucleus.cc
 
+  proton/Action.cc
   proton/Address.cc
   proton/Base.cc
   proton/Block.cc
@@ -20,6 +21,7 @@ ADD_LIBRARY(nucleus
   proton/Proton.cc
   proton/PublicKeyBlock.cc
   proton/Stamp.cc
+  proton/Transcript.cc
   proton/Version.cc
 
   neutron/Access.cc

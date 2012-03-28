@@ -37,28 +37,28 @@ namespace elle
               const Tag E>
     Status              Network::Register(const Procedure<I, O, E>& procedure)
     {
-      Selectionoid< Procedure<I, O, E> >*       selectionoid;
       std::pair<Network::Iterator, Boolean>     result;
-
 
       // check if this tag has already been recorded.
       if (Network::Procedures.find(I) != Network::Procedures.end())
         escape("this tag seems to have already been recorded");
 
       // create a new selectionoid.
-      selectionoid = new Selectionoid< Procedure<I, O, E> >(procedure);
+      auto                                      selectionoid =
+        std::unique_ptr< Selectionoid< Procedure<I, O, E> > >(
+          new Selectionoid< Procedure<I, O, E> >(procedure));
 
       // insert the selectionoid in the container.
-      result = Network::Procedures.insert(
-        std::pair<const Tag, Network::Functionoid*>(I, selectionoid)
-      );
+      result =
+        Network::Procedures.insert(
+          std::pair<const Tag, Network::Functionoid*>(I, selectionoid.get()));
 
       // check if the insertion was successful.
       if (result.second == false)
-        {
-          delete selectionoid;
-          escape("unable to insert the selectoinoid in the container");
-        }
+        escape("unable to insert the selectoinoid in the container");
+
+      // release tracking.
+      selectionoid.release();
 
       return StatusOk;
     }

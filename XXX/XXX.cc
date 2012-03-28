@@ -10,11 +10,13 @@
 
 #include <Infinit.hh>
 #include <elle/Elle.hh>
+#include <etoile/Etoile.hh>
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 #include <hole/Hole.hh>
 
 #include <XXX/Porcupine.hh>
+#include <XXX/Pins.hh>
 
 int main(int argc, char** argv)
 {
@@ -35,69 +37,125 @@ int main(int argc, char** argv)
   expose();
 
   // XXX
-  nucleus::Porcupine<>::Initialize();
+  nucleus::Porcupine<>::Initialize(
+    elle::Callback<>::Infer(&etoile::Nest::Attach),
+    elle::Callback<>::Infer(&etoile::Nest::Detach),
+    elle::Callback<>::Infer(&etoile::Nest::Load),
+    elle::Callback<>::Infer(&etoile::Nest::Unload));
 
   nucleus::Porcupine<nucleus::Catalog>* p =
     new nucleus::Porcupine<nucleus::Catalog>;
 
-  const int n = 90000;
+  const int n = 10;
 
   std::vector<elle::String> v(n);
 
   for (int i = 0; i < n; i++)
     {
-      char name[1024];
-      elle::Natural64 n;
+      elle::String s;
 
-      memset(name, 0x0, sizeof (name));
+      elle::Random::Generate(s, 16);
 
-      elle::Random::Generate(n);
-
-      sprintf(name, "%llu", n);
-
-      v[i] = elle::String(name);
+      v[i] = s;
     }
+
+  /* XXX
+  for (int i = 0; i < n; i++)
+    {
+      char buffer[128];
+
+      sprintf(buffer, "%d", i);
+
+      elle::Digest digest;
+
+      elle::OneWay::Hash(elle::Region((elle::Byte*)buffer, strlen(buffer)),
+                         digest);
+
+      elle::String s;
+
+      elle::Hexadecimal::Encode(digest.region, s);
+
+      v[i] = s.substr(0, 16);
+    }
+  */
 
   for (int i = 0; i < n; i++)
     {
-      printf("-------------> %s\n", v[i].c_str());
+      printf("[%u] -------------> %s\n", i, v[i].c_str());
 
-      if (p->Add(v[i], new nucleus::Catalog) == elle::StatusError)
+      Handle value;
+      nucleus::Contents< nucleus::Catalog >*    contents =
+        new nucleus::Contents<nucleus::Catalog>;
+
+      contents->Create();
+
+      if (nucleus::Porcupine<>::Attach.Call(
+            contents,
+            value) == elle::StatusError)
+        fail("unable to attach the value");
+
+      if (p->Add(v[i], value) == elle::StatusError)
         fail("XXX");
     }
 
-  if (p->Check() == elle::StatusError)
+  if (p->Check(nucleus::PinParent |
+               nucleus::PinNeighbours |
+               nucleus::PinKey) == elle::StatusError)
     fail("XXX");
 
   //p->Dump();
 
   for (int i = 0; i < n; i++)
     {
-      nucleus::Catalog* c;
+      nucleus::Handle   h;
 
-      printf("-------------= %s\n", v[i].c_str());
+      printf("[%u] -------------= %s\n", i, v[i].c_str());
 
-      if (p->Locate(v[i], c) == elle::StatusError)
+      if (p->Locate(v[i], h) == elle::StatusError)
         fail("XXX");
     }
 
-  if (p->Check() == elle::StatusError)
+  if (p->Check(nucleus::PinParent |
+               nucleus::PinNeighbours |
+               nucleus::PinKey) == elle::StatusError)
     fail("XXX");
 
-  //p->Dump();
+  elle::SecretKey sk;
+
+  if (sk.Generate(128) == elle::StatusError)
+    fail("XXX");
+
+  //p->Traverse();
+
+  if (p->Seal(sk) == elle::StatusError)
+    fail("unable to seal the porcupine");
+
+  //p->Traverse();
+
+  if (p->Check(nucleus::PinAll) == elle::StatusError)
+    fail("XXX");
+
+  p->Traverse();
 
   for (int i = 0; i < n; i++)
     {
-      printf("-------------< %s\n", v[i].c_str());
+      nucleus::Handle   h;
+
+      printf("[%u] -------------< %s\n", i, v[i].c_str());
+
+      if (p->Locate(v[i], h) == elle::StatusError)
+        fail("XXX");
 
       if (p->Remove(v[i]) == elle::StatusError)
         fail("XXX");
+
+      if (nucleus::Porcupine<>::Detach.Call(h) == elle::StatusError)
+        fail("unable to detach the value");
     }
 
-  if (p->Check() == elle::StatusError)
-    fail("XXX");
-
   p->Dump();
+
+  etoile::Nest::Show();
 
   delete p;
 

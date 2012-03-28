@@ -59,9 +59,7 @@ namespace nucleus
       //
       Inlet();
       Inlet(const typename V::K&,
-            T*);
-      Inlet(const typename V::K&,
-            const Address&);
+            Handle&);
 
       //
       // interfaces
@@ -78,9 +76,9 @@ namespace nucleus
       // attributes
       //
       typename V::K             key;
-      Handle<T>                 value;
+      Handle                    value;
 
-      elle::Footprint           _footprint;
+      elle::Footprint           footprint;
     };
 
   }

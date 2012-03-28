@@ -72,20 +72,6 @@ namespace lune
   const elle::Boolean
   Configuration::Default::Horizon::Debug = false;
 
-#if defined(INFINIT_LINUX)
-  const elle::Natural32
-  Configuration::Default::Horizon::FUker =
-    static_cast<elle::Natural32>(horizon::linux::FUker::TypeSequential);
-#elif defined(INFINIT_MACOSX)
-  const elle::Natural32
-  Configuration::Default::Horizon::FUker =
-    static_cast<elle::Natural32>(horizon::macosx::FUker::TypeSequential);
-#elif defined(INFINIT_WINDOWS)
-  // XXX
-#else
-# error "unsupported platform"
-#endif
-
   ///
   /// satellites-specific configuration values.
   ///
@@ -180,17 +166,6 @@ namespace lune
             "horizon", "debug",
             this->horizon.debug) == elle::StatusError)
         escape("unable to update the parameter");
-
-#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
-      if (elle::Settings::Set(
-            "horizon", "fuker",
-            this->horizon.fuker) == elle::StatusError)
-        escape("unable to update the parameter");
-#elif defined(INFINIT_WINDOWS)
-      // XXX
-#else
-# error "unsupported platform"
-#endif
     }
 
     //
@@ -314,18 +289,6 @@ namespace lune
             Configuration::Default::Horizon::Debug) ==
           elle::StatusError)
         escape("unable to retrieve the parameter");
-
-#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
-      if (elle::Settings::Get(
-            "horizon", "fuker",
-            this->horizon.fuker,
-            Configuration::Default::Horizon::FUker) == elle::StatusError)
-        escape("unable to update the parameter");
-#elif defined(INFINIT_WINDOWS)
-      // XXX
-#else
-# error "unsupported platform"
-#endif
     }
 
     //

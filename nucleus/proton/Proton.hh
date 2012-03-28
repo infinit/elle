@@ -46,11 +46,14 @@ namespace nucleus
 // ---------- includes --------------------------------------------------------
 //
 
+#include <nucleus/proton/Action.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Base.hh>
 #include <nucleus/proton/Block.hh>
 #include <nucleus/proton/ContentHashBlock.hh>
+#include <nucleus/proton/Contents.hh>
 #include <nucleus/proton/Family.hh>
+// #include <XXX/Handle.hh>
 #include <nucleus/proton/History.hh>
 #include <nucleus/proton/ImmutableBlock.hh>
 #include <nucleus/proton/ImprintBlock.hh>
@@ -66,6 +69,7 @@ namespace nucleus
          // XXX #include <nucleus/proton/Seam.hh>
 #include <nucleus/proton/Stamp.hh>
 #include <nucleus/proton/State.hh>
+#include <nucleus/proton/Transcript.hh>
 #include <nucleus/proton/Version.hh>
 
 #endif

@@ -14,6 +14,8 @@
 
 #include <nucleus/neutron/Catalog.hh>
 
+#include <nucleus/proton/Contents.hh>
+
 namespace nucleus
 {
   namespace neutron
@@ -42,14 +44,24 @@ namespace nucleus
     ///
     /// default constructor.
     ///
-    Catalog::Catalog():
-      _state(proton::StateClean)
+    Catalog::Catalog(proton::Contents<Catalog>&                 contents):
+      contents(contents)
     {
     }
 
 //
 // ---------- methods ---------------------------------------------------------
 //
+
+    ///
+    /// this method creates the catalog.
+    ///
+    elle::Status        Catalog::Create()
+    {
+      this->contents.state = proton::StateDirty;
+
+      return elle::StatusOk;
+    }
 
     ///
     /// this method adds the given entry to the catalog.
@@ -65,7 +77,7 @@ namespace nucleus
         escape("unable to add the entry in the range");
 
       // range the object as dirty.
-      this->_state = proton::StateDirty;
+      this->contents.state = proton::StateDirty;
 
       return elle::StatusOk;
     }
@@ -150,7 +162,7 @@ namespace nucleus
         escape("unable to remove the entry");
 
       // range the object as dirty.
-      this->_state = proton::StateDirty;
+      this->contents.state = proton::StateDirty;
 
       return elle::StatusOk;
     }
@@ -183,7 +195,7 @@ namespace nucleus
       entry->name = to;
 
       // range the object as dirty.
-      this->_state = proton::StateDirty;
+      this->contents.state = proton::StateDirty;
 
       return elle::StatusOk;
     }
@@ -201,15 +213,6 @@ namespace nucleus
     }
 
 //
-// ---------- object ----------------------------------------------------------
-//
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Catalog, _());
-
-//
 // ---------- dumpable --------------------------------------------------------
 //
 
@@ -221,10 +224,6 @@ namespace nucleus
       elle::String      alignment(margin, ' ');
 
       std::cout << alignment << "[Catalog]" << std::endl;
-
-      // dump the state.
-      std::cout << alignment << elle::Dumpable::Shift << "[_State] "
-                << this->_state << std::endl;
 
       // dump the range.
       if (this->range.Dump(margin + 2) == elle::StatusError)

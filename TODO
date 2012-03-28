@@ -1,4 +1,26 @@
-cp: /Users/mycure/PROJECTS/infinit-new/dependencies/platforms/macosx64/work/man/man3/X509_VERIFY_PARAM_set_trust.3: could not copy extended attributes to ./infinit-new/dependencies/platforms/macosx64/work/man/man3/X509_VERIFY_PARAM_set_trust.3: No such file or directory
+- IMPORTANT:
+ - umount auto marche pas sous linux
+ - bencher avec parallel contre sans et avec -j3
+ - tester compile kernel linux
+ - faire en sorte que ca umount automatiquement avec le thread fuse: ameliorer cela car parfois ca plante si on est en train de faire des operations -> faire un ticket
+ - quand on copier infinit-new, il n'arrive pas a copier les attributs
+ - virer Broker dans elle: plus necessaire
+
+general:
+ - mettre le Infinit::Configuration dans Hole::Configuration du coup.
+ - prevoir pour que plusieurs users puissent se logguer: lien symbolique cree par updater.
+ - dans Crux, si le fichier owner c'est le user en cours, utiliser son UID
+
+- porcupine
+ - dechiffrer automatiquement un block recupere du reseau i.e dans Nest::Load.
+ - utiliser Encipher/Decipher pour distinguer de Encrypt/Decrypt de Contents
+ - du coup, nodule ne derive plus CHB mais Object
+ - lorsque l'arbre est vide, on devrait avoir le handle root qui pointe vers une valeur unique: de cette maniere pour un directory on aurait Object qui contient Porcupine qui ne contient qu'un handle qui pointe vers un autre block: les entrees du directory => faire ca avec une union { Porcupine; Handle; }. meme si ca complique pas mal le code, c'est vriament necessaire, surtout pour les petits directories. voire faire l'union dans porcupine avec un mode qui nous dit ou en en est et lors d'un Add etc. ca le prend en compte: soit ca va chopper le Quill, soit ca Grow() pour faire le Search.
+ - verifier que lorsque l'on seal, on ne seale que les blocs qui en ont besoin
+ - ajouter le nombre d'entrees par repertoire, et le propager up to the root
+ - si on garde sur disque les blocs non chiffres, alors il faut les supprimer si on quitte Infinit.
+ - faire une methode avec callback genre Fill qui appelle le callback pour chaque value
+>>>>>>> fuse
 
 - register/auth
  - creer le login/pass localement et envoyer le hash a meta
@@ -9,24 +31,10 @@ cp: /Users/mycure/PROJECTS/infinit-new/dependencies/platforms/macosx64/work/man/
  - Broker: select() == 0
  - regler ca en passant a un nouveau core: asio
 
-- SocketNotifier
- - regarder pourquoi le warning
-
-- fiber
- - merger func
- - comments
-
 - serialization
  - renommer package en serialization
  - utiliser boost::serialization
  - pour cela il ne faudra plus acceder a contents et size
-
-- epth
- - ajouter locking
- - ajouter implem pthread
- - ou passer a asio, cf ci-dessous
-
-- bouger le .conf et .log dans network/
 
 - tests
  - rename un fichier A en B tout en gardant le scope A ouvert et en faisant

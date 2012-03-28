@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       etoile
+// project       nucleus
 //
 // license       infinit
 //
@@ -12,11 +12,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/gear/Action.hh>
+#include <nucleus/proton/Action.hh>
 
-namespace etoile
+namespace nucleus
 {
-  namespace gear
+  namespace proton
   {
 
 //
@@ -26,8 +26,8 @@ namespace etoile
     ///
     /// push-specifc constructor.
     ///
-    Action::Action(const nucleus::Address&                      address,
-                   const nucleus::Block*                        block):
+    Action::Action(const Address&                               address,
+                   const Block*                                 block):
       type(Action::TypePush),
       address(address),
       block(block)
@@ -37,7 +37,7 @@ namespace etoile
     ///
     /// wipe-specifc constructor.
     ///
-    Action::Action(const nucleus::Address&                      address):
+    Action::Action(const Address&                               address):
       type(Action::TypeWipe),
       address(address)
     {

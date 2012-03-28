@@ -1,26 +1,28 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       etoile
+// project       nucleus
 //
 // license       infinit
 //
 // author        julien quintard   [fri jun 24 14:45:52 2011]
 //
 
-#ifndef ETOILE_GEAR_ACTION_HH
-#define ETOILE_GEAR_ACTION_HH
+#ifndef NUCLEUS_PROTON_ACTION_HH
+#define NUCLEUS_PROTON_ACTION_HH
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
 #include <elle/Elle.hh>
-#include <nucleus/Nucleus.hh>
 
-namespace etoile
+#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Block.hh>
+
+namespace nucleus
 {
-  namespace gear
+  namespace proton
   {
 
 //
@@ -28,7 +30,8 @@ namespace etoile
 //
 
     ///
-    /// this class defines an action to be performed by the journal.
+    /// this class defines an action related to the blocks being either
+    /// pushed/wiped to/from the storage layer.
     ///
     class Action:
       public elle::Object
@@ -47,9 +50,9 @@ namespace etoile
       //
       // constructors & destructors
       //
-      Action(const nucleus::Address&,
-             const nucleus::Block*);
-      Action(const nucleus::Address&);
+      Action(const Address&,
+             const Block*);
+      Action(const Address&);
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
@@ -57,10 +60,10 @@ namespace etoile
       //
       // attributes
       //
-      const Type                type;
+      const Type        type;
 
-      const nucleus::Address    address;
-      const nucleus::Block*     block;
+      const Address     address;
+      const Block*      block;
     };
 
   }
