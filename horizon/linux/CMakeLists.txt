@@ -6,16 +6,22 @@ CHECK_FUNCTION_EXISTS(setxattr HAVE_SETXATTR)
 
 ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
 
-ADD_LIBRARY(linux
-  Crib.cc
-  Crux.cc
-  FUSE.cc
-  Handle.cc
-  InterlacedFUker.cc
-  Janitor.cc
-  ParallelFUker.cc
-  Linux.cc
-  SequentialFUker.cc
+QT4_WRAP_CPP(linux_MOCS
+  Broker.hh
 )
 
-TARGET_LINK_LIBRARIES(linux etoile fuse)
+ADD_LIBRARY(linux
+  Broker.cc
+  Crib.cc
+  Crux.cc
+  Event.cc
+  FUker.cc
+  FUSE.cc
+  Handle.cc
+  Janitor.cc
+  Linux.cc
+
+  ${linux_MOCS}
+)
+
+TARGET_LINK_LIBRARIES(linux etoile fuse pthread)

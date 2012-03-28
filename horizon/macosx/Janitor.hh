@@ -9,7 +9,7 @@
 //
 
 #ifndef HORIZON_MACOSX_JANITOR_HH
-#define HORIZON_MACOSX_JANOTIR_HH
+#define HORIZON_MACOSX_JANITOR_HH
 
 //
 // ---------- includes --------------------------------------------------------

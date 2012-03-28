@@ -60,7 +60,7 @@ namespace nucleus
     /// contents though the nature of the contents depends upon the
     /// object's nature: file, directory or reference.
     ///
-    /// noteworthy is tha meta.owner._record is generated in order to
+    /// noteworthy is tha meta.owner.record is generated in order to
     /// make it as easy to manipulate the owner entry as for other access
     /// records. thus, this attribute is never serialized.
     ///
@@ -122,7 +122,7 @@ namespace nucleus
           Permissions           permissions;
           Token                 token;
 
-          Record                _record;
+          Record                record;
         }                       owner;
 
         Genre                   genre;
@@ -135,7 +135,7 @@ namespace nucleus
         proton::Version         version;
         elle::Signature         signature;
 
-        proton::State           _state;
+        proton::State           state;
       }                         meta;
 
       struct
@@ -150,7 +150,7 @@ namespace nucleus
         proton::Version         version;
         elle::Signature         signature;
 
-        proton::State           _state;
+        proton::State           state;
       }                         data;
     };
 

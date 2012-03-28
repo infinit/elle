@@ -8,8 +8,8 @@
 // author        julien quintard   [mon aug 10 12:07:15 2009]
 //
 
-#ifndef NUCLEUS_NEUTRON_CONTENTS_HH
-#define NUCLEUS_NEUTRON_CONTENTS_HH
+#ifndef NUCLEUS_PROTON_CONTENTS_HH
+#define NUCLEUS_PROTON_CONTENTS_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -17,11 +17,9 @@
 
 #include <nucleus/proton/ContentHashBlock.hh>
 
-#include <nucleus/neutron/Size.hh>
-
 namespace nucleus
 {
-  namespace neutron
+  namespace proton
   {
 
 //
@@ -30,7 +28,7 @@ namespace nucleus
 
     ///
     /// this class abstracts the data, catalog or reference by embedding
-    /// it since the contents is always encrypted.
+    /// it since the contents is always encrypted. XXX[to rewrite]
     ///
     /// therefore, once a contents is retrieved from the storage, the Extract()
     /// method is called which basically extracts an archive i.e the encrypted
@@ -47,6 +45,11 @@ namespace nucleus
       public proton::ContentHashBlock
     {
     public:
+      //
+      // types
+      //
+      typedef T                 C;
+
       //
       // constructors & destructors
       //
@@ -90,6 +93,6 @@ namespace nucleus
 // ---------- templates -------------------------------------------------------
 //
 
-#include <nucleus/neutron/Contents.hxx>
+#include <nucleus/proton/Contents.hxx>
 
 #endif

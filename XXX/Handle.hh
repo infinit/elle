@@ -18,6 +18,7 @@
 #include <elle/Elle.hh>
 
 #include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Block.hh>
 #include <XXX/Placement.hh>
 
 namespace nucleus
@@ -26,17 +27,50 @@ namespace nucleus
   {
 
 //
+// ---------- forward declarations --------------------------------------------
+//
+
+    ///
+    /// this class needs forward declaration to prevent conflicts.
+    ///
+    template <typename V>
+    class Nodule;
+
+    ///
+    /// this class needs forward declaration to prevent conflicts.
+    ///
+    template <typename... T>
+    class Seam;
+
+    ///
+    /// this class needs forward declaration to prevent conflicts.
+    ///
+    template <typename... T>
+    class Quill;
+
+//
 // ---------- classes ---------------------------------------------------------
 //
 
     ///
     /// XXX
     ///
-    template <typename T>
+    /// XXX placement(version inline), address(version offline) et
+    ///     block(version inline chargee en RAM)
+    ///
     class Handle:
       public elle::Object
     {
     public:
+      //
+      // enumerations
+      //
+      enum State
+        {
+          StateUnloaded,
+          StateLoaded
+        };
+
       //
       // constants
       //
@@ -46,25 +80,23 @@ namespace nucleus
       // constructors & destructors
       //
       Handle();
-      Handle(T*);
+      Handle(Placement&);
       Handle(const Address&);
-      Handle(const Handle<T>&);
-      ~Handle();
+      Handle(const Handle&);
 
       //
       // methods
       //
-      // XXX[rename Create into Update]
-      elle::Status      Create(const Address&,
-                               T*);
+      elle::Status      Load();
+      elle::Status      Unload();
 
       //
       // interfaces
       //
 
       // object
-      declare(Handle<T>);
-      elle::Boolean     operator==(const Handle<T>&) const;
+      declare(Handle);
+      elle::Boolean     operator==(const Handle&) const;
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
@@ -76,19 +108,14 @@ namespace nucleus
       //
       // attributes
       //
+      State             state;
+      Placement         placement;
       Address           address;
-
-      T*                _object;
-      Placement         _placement;
+      elle::SecretKey   secret;
+      Block*            block;
     };
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
-
-#include <XXX/Handle.hxx>
 
 #endif

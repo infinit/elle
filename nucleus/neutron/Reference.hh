@@ -17,13 +17,23 @@
 
 #include <elle/Elle.hh>
 
-#include <nucleus/proton/State.hh>
-
 #include <nucleus/neutron/Offset.hh>
 #include <nucleus/neutron/Size.hh>
 
 namespace nucleus
 {
+  namespace proton
+  {
+
+//
+// ---------- forward declarations --------------------------------------------
+//
+
+    template <typename T>
+    class Contents;
+
+  }
+
   namespace neutron
   {
 
@@ -45,11 +55,13 @@ namespace nucleus
       //
       // constructors & destructors
       //
-      Reference();
+      Reference(proton::Contents<Reference>&);
 
       //
       // methods
       //
+      elle::Status      Create();
+
       elle::Status      Bind(const elle::String&);
       elle::Status      Resolve(elle::String&) const;
 
@@ -58,9 +70,6 @@ namespace nucleus
       //
       // interfaces
       //
-
-      // object
-      declare(Reference);
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
@@ -72,9 +81,9 @@ namespace nucleus
       //
       // attributes
       //
-      proton::State     _state;
+      proton::Contents<Reference>&      contents;
 
-      elle::String      target;
+      elle::String                      target;
     };
 
   }

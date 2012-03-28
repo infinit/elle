@@ -14,6 +14,8 @@
 
 #include <nucleus/neutron/Reference.hh>
 
+#include <nucleus/proton/Contents.hh>
+
 namespace nucleus
 {
   namespace neutron
@@ -26,14 +28,24 @@ namespace nucleus
     ///
     /// default constructor.
     ///
-    Reference::Reference():
-      _state(proton::StateClean)
+    Reference::Reference(proton::Contents<Reference>&           contents):
+      contents(contents)
     {
     }
 
 //
 // ---------- methods ---------------------------------------------------------
 //
+
+    ///
+    /// this method creates the data.
+    ///
+    elle::Status        Reference::Create()
+    {
+      this->contents.state = proton::StateDirty;
+
+      return elle::StatusOk;
+    }
 
     ///
     /// this method sets the target way.
@@ -44,7 +56,7 @@ namespace nucleus
       this->target = target;
 
       // set the reference as dirty.
-      this->_state = proton::StateDirty;
+      this->contents.state = proton::StateDirty;
 
       return elle::StatusOk;
     }
@@ -72,15 +84,6 @@ namespace nucleus
     }
 
 //
-// ---------- object ----------------------------------------------------------
-//
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Reference, _());
-
-//
 // ---------- dumpable --------------------------------------------------------
 //
 
@@ -92,10 +95,6 @@ namespace nucleus
       elle::String      alignment(margin, ' ');
 
       std::cout << alignment << "[Reference] " << std::endl;
-
-      // dump the state.
-      std::cout << alignment << elle::Dumpable::Shift << "[_State] "
-                << this->_state << std::endl;
 
       // dump the target.
       std::cout << alignment << elle::Dumpable::Shift << "[Target] "

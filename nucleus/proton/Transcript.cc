@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       etoile
+// project       nucleus
 //
 // license       infinit
 //
@@ -12,11 +12,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/gear/Transcript.hh>
+#include <nucleus/proton/Transcript.hh>
 
-namespace etoile
+namespace nucleus
 {
-  namespace gear
+  namespace proton
   {
 
 //
@@ -40,8 +40,8 @@ namespace etoile
     /// this method records the given address/block as needed to be
     /// pushed onto the storage layer.
     ///
-    elle::Status        Transcript::Push(const nucleus::Address& address,
-                                         const nucleus::Block*  block)
+    elle::Status        Transcript::Push(const Address&         address,
+                                         const Block*           block)
     {
       // add the action to the transcript's container.
       this->container.push_back(new Action(address, block));
@@ -53,7 +53,7 @@ namespace etoile
     /// this method records the given address as needed to be removed
     /// from the storage layer.
     ///
-    elle::Status        Transcript::Wipe(const nucleus::Address& address)
+    elle::Status        Transcript::Wipe(const Address&         address)
     {
       // add the action to the transcript's container.
       this->container.push_back(new Action(address));
@@ -74,7 +74,7 @@ namespace etoile
            iterator != this->container.end();
            )
         {
-          Action*       action = *iterator;
+          Action*      action = *iterator;
 
           // ignore actions mismatching the given type.
           if (action->type != type)
@@ -111,7 +111,7 @@ namespace etoile
            iterator != this->container.end();
            iterator++)
         {
-          Action*       action = *iterator;
+          Action*      action = *iterator;
 
           // delete the action.
           delete action;
@@ -142,7 +142,7 @@ namespace etoile
            scoutor != this->container.end();
            scoutor++)
         {
-          Action*       action = *scoutor;
+          Action*      action = *scoutor;
 
           // dump the action.
           if (action->Dump(margin + 2) == elle::StatusError)

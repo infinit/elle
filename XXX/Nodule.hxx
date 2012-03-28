@@ -31,40 +31,9 @@ namespace nucleus
     ///
     template <typename V>
     Nodule<V>::Nodule(const Type                                type):
-      ContentHashBlock(type == TypeSeam ? V::S : V::Q),
-
       type(type),
-
-      _footprint(*this)
-    {
-    }
-
-    ///
-    /// specific constructor.
-    ///
-    template <typename V>
-    Nodule<V>::Nodule(const Type                                type,
-                      const elle::Callback<
-                        elle::Status,
-                        elle::Parameters<
-                          const Address&,
-                          Nodule<V>*&
-                          >
-                        >&                                      load,
-                      const elle::Callback<
-                        elle::Status,
-                        elle::Parameters<
-                          const Address&,
-                          const Nodule<V>*
-                          >
-                        >&                                      unload):
-      ContentHashBlock(type == TypeSeam ? V::S : V::Q),
-
-      type(type),
-
-      _load(load),
-      _unload(unload),
-      _footprint(*this)
+      state(StateClean),
+      footprint(*this)
     {
     }
 
@@ -88,6 +57,7 @@ namespace nucleus
     {
       T*                                left = static_cast<T*>(this);
       elle::Natural32                   footprint;
+      auto                              end = left->container.end();
       typename T::Iterator::Forward     i;
       typename T::Iterator::Forward     j;
 
@@ -97,9 +67,7 @@ namespace nucleus
       // go through the left nodule's entries until the future size is reached
       // after which all the remaining entries will be moved to the right
       // nodule.
-      for (i = left->container.begin();
-           i != left->container.end();
-           i++)
+      for (i = left->container.begin(); i != end; ++i)
         {
           typename T::I*                inlet = i->second;
 
@@ -114,22 +82,22 @@ namespace nucleus
           // note however that another check is performed in order to make
           // sure that adding this inlet will not make the nodule too large.
           if ((footprint +
-               inlet->_footprint.size) > hole::Hole::Descriptor.extent)
+               inlet->footprint.size) > hole::Hole::Descriptor.extent)
             break;
 
           // add the inlet's footprint to the footprint.
-          footprint += inlet->_footprint.size;
+          footprint += inlet->footprint.size;
         }
 
       // go through the remaining entries in order to move them to
       // the right nodule.
-      for (j = i; j != left->container.end(); j++)
+      for (j = i; j != end; ++j)
         {
           typename T::I*                inlet = j->second;
 
           // substract the inlet's footprint from the current nodule since
           // it is getting moved to the right one.
-          left->_footprint.size -= inlet->_footprint.size;
+          left->footprint.size -= inlet->footprint.size;
 
           // insert the inlet into the right nodule.
           if (right->Insert(inlet) == elle::StatusError)
@@ -137,15 +105,15 @@ namespace nucleus
         }
 
       // remove the right entries from the left nodule.
-      left->container.erase(i, left->container.end());
+      left->container.erase(i, end);
 
       // set the nodules' states.
-      left->_state = StateDirty;
-      right->_state = StateDirty;
+      left->state = StateDirty;
+      right->state = StateDirty;
 
       // set both nodules' footprint as consistent.
-      left->_footprint.state = elle::Footprint::StateConsistent;
-      right->_footprint.state = elle::Footprint::StateConsistent;
+      left->footprint.state = elle::Footprint::StateConsistent;
+      right->footprint.state = elle::Footprint::StateConsistent;
 
       return elle::StatusOk;
     }
@@ -164,6 +132,7 @@ namespace nucleus
     {
       T*                                left = static_cast<T*>(this);
       elle::Natural32                   footprint;
+      auto                              rend = right->container.rend();
       typename T::Iterator::Backward    i;
       typename T::Iterator::Backward    j;
 
@@ -173,9 +142,7 @@ namespace nucleus
       // go through the right nodule's entries until the future size is reached
       // after which all the remaining entries will be moved to the left
       // nodule.
-      for (i = right->container.rbegin();
-           i != right->container.rend();
-           i++)
+      for (i = right->container.rbegin(); i != rend; ++i)
         {
           typename T::I*                inlet = i->second;
 
@@ -190,22 +157,22 @@ namespace nucleus
           // note however that another check is performed in order to make
           // sure that adding this inlet will not make the nodule too large.
           if ((footprint +
-               inlet->_footprint.size) > hole::Hole::Descriptor.extent)
+               inlet->footprint.size) > hole::Hole::Descriptor.extent)
             break;
 
           // add the inlet's footprint to the footprint.
-          footprint += inlet->_footprint.size;
+          footprint += inlet->footprint.size;
         }
 
       // go through the remaining entries in order to move them to
       // the left nodule.
-      for (j = i; j != right->container.rend(); j++)
+      for (j = i; j != rend; ++j)
         {
           typename T::I*                inlet = j->second;
 
           // substract the inlet's footprint from the current nodule since
           // it is getting moved to the left one.
-          right->_footprint.size -= inlet->_footprint.size;
+          right->footprint.size -= inlet->footprint.size;
 
           // insert the inlet into the left nodule.
           if (left->Insert(inlet) == elle::StatusError)
@@ -216,12 +183,12 @@ namespace nucleus
       right->container.erase(right->container.begin(), i.base());
 
       // set the nodules' states.
-      left->_state = StateDirty;
-      right->_state = StateDirty;
+      left->state = StateDirty;
+      right->state = StateDirty;
 
       // set both nodules' footprint as consistent.
-      left->_footprint.state = elle::Footprint::StateConsistent;
-      right->_footprint.state = elle::Footprint::StateConsistent;
+      left->footprint.state = elle::Footprint::StateConsistent;
+      right->footprint.state = elle::Footprint::StateConsistent;
 
       return elle::StatusOk;
     }
@@ -241,15 +208,10 @@ namespace nucleus
 
       std::cout << alignment << "[Nodule]" << std::endl;
 
-      // dump the parent.
-      if (ContentHashBlock::Dump(margin + 2) == elle::StatusError)
-        escape("unable to dump the content hash block");
-
       // dump the type.
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Type] " << std::dec << this->type << std::endl;
 
-      /* XXX
       // dump the parent.
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Parent]" << std::endl;
@@ -270,29 +232,12 @@ namespace nucleus
 
       if (this->right.Dump(margin + 4) == elle::StatusError)
         escape("unable to dump the right");
-      */
-
-      /* XXX
-      // dump the load callback.
-      std::cout << alignment << elle::Dumpable::Shift
-                << "[Load]" << std::endl;
-
-      if (this->load.Dump(margin + 4) == elle::StatusError)
-        escape("unable to dump the callback");
-
-      // dump the unload callback.
-      std::cout << alignment << elle::Dumpable::Shift
-                << "[Unload]" << std::endl;
-
-      if (this->unload.Dump(margin + 4) == elle::StatusError)
-        escape("unable to dump the callback");
-      */
 
       // dump the footprint.
       std::cout << alignment << elle::Dumpable::Shift
-                << "[_Footprint]" << std::endl;
+                << "[Footprint]" << std::endl;
 
-      if (this->_footprint.Dump(margin + 4) == elle::StatusError)
+      if (this->footprint.Dump(margin + 4) == elle::StatusError)
         escape("unable to dump the footprint");
 
       return elle::StatusOk;
@@ -336,6 +281,9 @@ namespace nucleus
 
       // cast the type.
       this->type = static_cast<Nodule<V>::Type>(type);
+
+      // XXX[ne devrait-t-on pas calculer le footprint? ou juste que c'est
+      //     toujours calcule au dernier moment?]
 
       return elle::StatusOk;
     }

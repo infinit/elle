@@ -145,18 +145,6 @@ namespace horizon
     }
 
     ///
-    /// this method sets up the Linux implementation.
-    ///
-    elle::Status        Linux::Setup()
-    {
-      // set up FUSE.
-      if (FUSE::Setup(Infinit::Mountpoint) == elle::StatusError)
-        escape("unable to set up FUSE");
-
-      return elle::StatusOk;
-    }
-
-    ///
     /// this method cleans Linux.
     ///
     elle::Status        Linux::Clean()

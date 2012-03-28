@@ -8,8 +8,8 @@
 // author        julien quintard   [sun jan 31 21:15:18 2010]
 //
 
-#ifndef NUCLEUS_NEUTRON_CONTENTS_HXX
-#define NUCLEUS_NEUTRON_CONTENTS_HXX
+#ifndef NUCLEUS_PROTON_CONTENTS_HXX
+#define NUCLEUS_PROTON_CONTENTS_HXX
 
 //
 // ---------- includes --------------------------------------------------------
@@ -22,7 +22,7 @@
 
 namespace nucleus
 {
-  namespace neutron
+  namespace proton
   {
 
 //
@@ -41,21 +41,21 @@ namespace nucleus
     /// this macro-function associates a component to a content type
     /// such as ComponentData with the Data class.
     ///
-#define ContentsDeclare(_type_)                                         \
+#define ContentsDeclare(_type_, _component_)                            \
   template <>                                                           \
   struct ContentsMap<_type_>                                            \
   {                                                                     \
-    static const enum Component         Component =                     \
-      Component ## _type_;                                              \
+    static const enum neutron::Component        Component =             \
+      neutron::Component ## _component_;                                \
   };
 
     ///
     /// these macro-function calls actually generate the specialized-templates
     /// for content type.
     ///
-    ContentsDeclare(Data);
-    ContentsDeclare(Catalog);
-    ContentsDeclare(Reference);
+    ContentsDeclare(neutron::Data, Data);
+    ContentsDeclare(neutron::Catalog, Catalog);
+    ContentsDeclare(neutron::Reference, Reference);
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -146,7 +146,7 @@ namespace nucleus
         delete this->content;
 
       // allocate a new block.
-      this->content = new T;
+      this->content = new T(*this);
 
       // decrypt the cipher.
       if (key.Decrypt(*this->cipher, clear) == elle::StatusError)
@@ -187,7 +187,11 @@ namespace nucleus
     elle::Status        Contents<T>::Create()
     {
       // allocate the block.
-      this->content = new T;
+      this->content = new T(*this);
+
+      // create the content.
+      if (this->content->Create() == elle::StatusError)
+        escape("unable to create the content");
 
       return elle::StatusOk;
     }
@@ -277,9 +281,11 @@ namespace nucleus
       if (proton::ContentHashBlock::Extract(archive) == elle::StatusError)
         escape("unable to extract the underlying CHB");
 
+      /* XXX[to remove]
       // compare the component.
       if (this->component != ContentsMap<T>::Component)
         escape("the archive does not seem to contain a content");
+      */
 
       // allocate a new cipher.
       this->cipher = new elle::Cipher;

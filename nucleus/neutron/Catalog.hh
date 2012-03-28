@@ -17,8 +17,6 @@
 
 #include <elle/Elle.hh>
 
-#include <nucleus/proton/State.hh>
-
 #include <nucleus/neutron/Offset.hh>
 #include <nucleus/neutron/Range.hh>
 #include <nucleus/neutron/Entry.hh>
@@ -26,6 +24,18 @@
 
 namespace nucleus
 {
+  namespace proton
+  {
+
+//
+// ---------- forward declarations --------------------------------------------
+//
+
+    template <typename T>
+    class Contents;
+
+  }
+
   namespace neutron
   {
 
@@ -59,11 +69,14 @@ namespace nucleus
       //
       // constructors & destructors
       //
-      Catalog();
+      Catalog(proton::Contents<Catalog>&);
 
       //
       // methods
       //
+
+      elle::Status      Create();
+
       elle::Status      Add(Entry*);
       elle::Status      Exist(const elle::String&) const;
       elle::Status      Lookup(const elle::String&,
@@ -80,9 +93,6 @@ namespace nucleus
       // interfaces
       //
 
-      // object
-      declare(Catalog);
-
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
@@ -93,9 +103,9 @@ namespace nucleus
       //
       // attributes
       //
-      proton::State     _state;
+      proton::Contents<Catalog>&        contents;
 
-      Range<Entry>      range;
+      Range<Entry>                      range;
     };
 
   }
