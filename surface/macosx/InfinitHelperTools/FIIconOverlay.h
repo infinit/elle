@@ -10,6 +10,12 @@
 #import "FISwizzle.h"
 #import "CDStructures.h"
 
+typedef enum {
+    Syncing,
+    Synced,
+    Disconected
+} NodeStatus;
+
 @interface FIIconOverlay : NSObject
 {
     NSMutableDictionary     *nodesStatusDict; // fake ivar
@@ -26,8 +32,8 @@
 + (FIIconOverlay*) instance;
 
 - (IconRef)iconRefForURL:(NSURL *)arg1;
-- (id) NodeObserver:(id)arg1;
-- (void) removeNodeObserver:(id)arg1;
-- (void) addNodeObserver:(id)arg1;
+- (id) CellStatusWithCell:(id)arg1;
+- (void) removeCellStatusWithCell:(id)arg1;
+- (void) addCellStatusWithCell:(id)arg1;
 
 @end

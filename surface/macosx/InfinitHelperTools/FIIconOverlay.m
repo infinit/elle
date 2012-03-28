@@ -7,6 +7,7 @@
 //
 
 #import "FIIconOverlay.h"
+#import "FITableCellDictKey.h"
 
 @implementation FIIconOverlay
 
@@ -76,7 +77,7 @@
 	
 	return item;
 }
-- (void) addNodeObserver:(id)arg1
+- (void) addCellStatusWithCell:(id)arg1
 {
     if (arg1 != nil && [nodesStatusDict objectForKey:arg1] == nil )
     {
@@ -91,13 +92,13 @@
     }
 }
 
-- (void) removeNodeObserver:(id)arg1
+- (void) removeCellStatusWithCell:(id)arg1
 {
-    [[self NodeObserver:arg1] release];
+    [[self CellStatusWithCell:arg1] release];
 	[nodesStatusDict removeObjectForKey:arg1];
 }
 
-- (id) NodeObserver:(id)arg1
+- (id) CellStatusWithCell:(id)arg1
 {
 	return [nodesStatusDict objectForKey:arg1];
 }
@@ -106,27 +107,33 @@
 
 @implementation NSTextFieldCell (FIIconOverlayBadge)
 
-- (void) setOverlayIcon
+- (void) setOverlayIcon:(NodeStatus)arg1
 {
-    IconRef *badgedIconRef;
-    TIconRef *iconRef;
-    iconRef = (TIconRef *)[self icon];
-    IconRef backgroundIconRef = iconRef->fRef;
-    IconRef foregroundIconRef = [[FIIconOverlay instance] syncingIconRef];
-    CompositeIconRef (  backgroundIconRef,
-                      foregroundIconRef,
-                      &badgedIconRef);
-    const struct TFENode *tfeIcon = {badgedIconRef};
-    objc_msgSend(self, @selector(setIcon:), &tfeIcon);
-    TFENode *node = [self node];
+    if ([self respondsToSelector:@selector(node)]) {
+        IconRef *badgedIconRef;
+        TIconRef *iconRef;
+        iconRef = (TIconRef *)[self icon];
+        IconRef backgroundIconRef = iconRef->fRef;
+        IconRef foregroundIconRef = [[FIIconOverlay instance] syncingIconRef];
+        CompositeIconRef (  backgroundIconRef,
+                          foregroundIconRef,
+                          &badgedIconRef);
+        const struct TFENode *tfeIcon = {badgedIconRef};
+        objc_msgSend(self, @selector(setIcon:), &tfeIcon);
+        TFENode *node = [self node];
+    }
 }
 
 - (void) drawOverlayIconWithFrame:(struct CGRect)arg1
 {
-
-    if ([self respondsToSelector:@selector(node)]) {
-
-        [self setOverlayIcon];
+    id cellStatus = [[FIIconOverlay instance] CellStatusWithCell:self];
+    if (cellStatus == nil)
+    {
+        [[FIIconOverlay instance] addCellStatusWithCell:self];
+    }
+    else
+    {
+        [self setOverlayIcon:cellStatus];
     }
     [self drawOverlayIconWithFrame:arg1];
 }
@@ -137,10 +144,20 @@
 
 - (void) tableViewWithNodeCaptcher:(id)arg1 willDisplayCell:(id)arg2 forTableColumn:(id)arg3 row:(int)arg4;
 {
-    // If is TColumnCell
-    // Try to get the icon
-    // If exist draw using setOverlayIcon on arg2
-    // else ask to get.
+    if ([arg2 isKindOfClass:NSClassFromString(@"TColumnCell")])
+    {
+        id dictKey = [FITableCellDictKey tableCellDictKeyWithColumnIdentifer:arg3 rowIndex:arg4];
+    
+        id cellStatus = [[FIIconOverlay instance] CellStatusWithCell:dictKey];
+    
+        if (cellStatus == nil) {
+            [[FIIconOverlay instance] addCellStatusWithCell:dictKey];
+        }
+        else
+        {
+            [arg2 setOverlayIcon:cellStatus];
+        }
+    }
     [self tableViewWithNodeCaptcher:arg1 willDisplayCell:arg2 forTableColumn:arg3 row:arg4];
 }
 

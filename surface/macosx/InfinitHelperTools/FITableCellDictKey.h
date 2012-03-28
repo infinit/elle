@@ -18,9 +18,7 @@
 
 + (id)tableCellDictKeyWithColumnIdentifer:(id)arg1 rowIndex:(long long)arg2;
 - (id)initWithColumnIdentifier:(id)arg1 rowIndex:(long long)arg2;
-- (BOOL)isEqual:(id)arg1;
 - (unsigned long long)hash;
-- (id)copyWithZone:(struct _NSZone *)arg1;
-- (void)dealloc;
-
+- (BOOL)isEqualToDictKey:(FITableCellDictKey *)arg1;
+- (BOOL)isEqual:(id)arg1;
 @end
