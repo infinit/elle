@@ -1,0 +1,32 @@
+Contents of /Users/charlesguillot-infinit/Projects/Infinit/Infinit/Infinit-Prefix.pch
+3.0 (tags/Apple/clang-211.12) (based on LLVM 3.0svn)
+x86_64-apple-darwin11.3.0
+-x
+objective-c
+-arch
+x86_64
+-fmessage-length=0
+-fdiagnostics-print-source-range-info
+-fdiagnostics-show-category=id
+-fdiagnostics-parseable-fixits
+-std=gnu99
+-fpascal-strings
+-O0
+-DDEBUG=1
+-isysroot
+/Developer/SDKs/MacOSX10.7.sdk
+-fasm-blocks
+-mmacosx-version-min=10.7
+-gdwarf-2
+-DIBOutlet=__attribute__((iboutlet))
+-DIBOutletCollection(ClassName)=__attribute__((iboutletcollection(ClassName)))
+-DIBAction=void)__attribute__((ibaction)
+-iquote
+-iquote
+-I/Users/charlesguillot-infinit/Projects/Infinit/DerivedData/Infinit/Build/Products/Debug/include
+-F/Users/charlesguillot-infinit/Projects/Infinit/DerivedData/Infinit/Build/Products/Debug
+-ferror-limit=10
+-working-directory=/Users/charlesguillot-infinit/Projects/Infinit
+-Xclang
+-detailed-preprocessing-record
+SDK_PRODUCT_BUILD_VERSION=11C63

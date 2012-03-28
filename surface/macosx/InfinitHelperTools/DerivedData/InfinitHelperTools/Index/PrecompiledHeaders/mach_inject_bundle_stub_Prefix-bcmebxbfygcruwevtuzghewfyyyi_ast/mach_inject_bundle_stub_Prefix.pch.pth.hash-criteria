@@ -1,0 +1,24 @@
+Contents of /Users/charlesguillot-infinit/Projects/InfinitHelperTools/mach_star/mach_inject_bundle_stub/mach_inject_bundle_stub_Prefix.pch
+3.0 (tags/Apple/clang-211.12) (based on LLVM 3.0svn)
+x86_64-apple-darwin11.3.0
+-x
+c
+-arch
+x86_64
+-fmessage-length=0
+-fdiagnostics-print-source-range-info
+-fdiagnostics-show-category=id
+-fdiagnostics-parseable-fixits
+-fpascal-strings
+-Os
+-isysroot
+/Developer/SDKs/MacOSX10.7.sdk
+-fasm-blocks
+-mmacosx-version-min=10.7
+-I/Users/charlesguillot-infinit/Projects/InfinitHelperTools/DerivedData/InfinitHelperTools/Build/Products/Default/include
+-F/Users/charlesguillot-infinit/Projects/InfinitHelperTools/DerivedData/InfinitHelperTools/Build/Products/Default
+-ferror-limit=10
+-working-directory=/Users/charlesguillot-infinit/Projects/InfinitHelperTools/mach_star/mach_inject_bundle_stub
+-Xclang
+-detailed-preprocessing-record
+SDK_PRODUCT_BUILD_VERSION=11C63

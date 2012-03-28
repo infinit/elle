@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleIdentifier</key>
+	<string>io.infinit.HelperTools.helper</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>io.infinit.HelperTools.helper</string>
+	<key>CFBundleVersion</key>
+	<string>1.0</string>
+	<key>SecTaskAccess</key>
+	<string></string>
+	<key>SMAuthorizedClients</key>
+	<array>
+		<string>identifier io.infinit.Infinit and certificate leaf[subject.CN] = &quot;io.infinit&quot;</string>
+	</array>
+</dict>
+</plist>
