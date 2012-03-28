@@ -56,7 +56,17 @@
     return self;
 }
 
-- (IconRef)iconRefForURL:(NSURL *)arg1
++ (FIIconOverlay*) instance
+{
+	static FIIconOverlay *item = nil;
+	
+	if(item == nil)
+		item = [[FIIconOverlay alloc] init];
+	
+	return item;
+}
+
+- (IconRef) iconRefForURL:(NSURL *)arg1
 {
     FSRef   theFSRef;
     IconRef theIconRef;
@@ -67,28 +77,39 @@
     }
     
     return theIconRef;
-}                                             
-+ (FIIconOverlay*) instance
-{
-	static FIIconOverlay *item = nil;
-	
-	if(item == nil)
-		item = [[FIIconOverlay alloc] init];
-	
-	return item;
-}
+}  
 - (void) addCellStatusWithCell:(id)arg1
 {
     if (arg1 != nil && [nodesStatusDict objectForKey:arg1] == nil )
     {
-        //CFDictionarySetValue((CFMutableDictionaryRef)nodeStatus,tIconAndTextCell, watingStatusImg);
-        // Add task to operation queue
         [nodeStatusOperationQueue addOperationWithBlock:^{
             sleep(1);
-            //CFDictionarySetValue((CFMutableDictionaryRef)nodeStatus,tIconAndTextCell, satusChecked);
-            //[self UpdateViewLayout];
-            [[arg1 controlView] updateCell:arg1];
+            
+            if ([arg1 isKindOfClass:NSClassFromString(@"TListViewIconAndTextCell")])
+            {
+                if ([self respondsToSelector:@selector(node)]) {
+                    TFENode *node = [self node];
+                    // TODO get node status
+                    
+                    // Set new node status
+                    CFDictionarySetValue( (CFMutableDictionaryRef)nodesStatusDict, arg1, [NSNumber numberWithInt:FISynced]);
+                    
+                    // Redraw cell
+                    [[arg1 controlView] updateCell:arg1];
+                    
+                    // If is active schedule status getter. 
+                }
+            }
+            else if ([arg1 isKindOfClass:[FITableCellDictKey class]])
+            {
+                
+            }
         }];
+        
+        
+        //CFDictionarySetValue((CFMutableDictionaryRef)nodeStatus,tIconAndTextCell, watingStatusImg);
+        // Add task to operation queue
+        
     }
 }
 
@@ -103,6 +124,21 @@
 	return [nodesStatusDict objectForKey:arg1];
 }
 
+- (IconRef) iconRefFromNodeStatus:(id)arg1
+{
+    switch ([[self CellStatusWithCell:arg1] intValue]) {
+        case FISynced:
+            return [self syncedIconRef];
+            break;
+        case FISyncing:
+            return [self syncingIconRef];
+            break;
+        default:
+            return [self disconnectedIconRef];
+            break;
+    }
+}
+
 @end
 
 @implementation NSTextFieldCell (FIIconOverlayBadge)
@@ -114,13 +150,12 @@
         TIconRef *iconRef;
         iconRef = (TIconRef *)[self icon];
         IconRef backgroundIconRef = iconRef->fRef;
-        IconRef foregroundIconRef = [[FIIconOverlay instance] syncingIconRef];
+        IconRef foregroundIconRef = [[FIIconOverlay instance] iconRefFromNodeStatus:self];
         CompositeIconRef (  backgroundIconRef,
                           foregroundIconRef,
                           &badgedIconRef);
         const struct TFENode *tfeIcon = {badgedIconRef};
         objc_msgSend(self, @selector(setIcon:), &tfeIcon);
-        TFENode *node = [self node];
     }
 }
 

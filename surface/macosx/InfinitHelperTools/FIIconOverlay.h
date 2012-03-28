@@ -11,9 +11,9 @@
 #import "CDStructures.h"
 
 typedef enum {
-    Syncing,
-    Synced,
-    Disconected
+    FISyncing,
+    FISynced,
+    FIDisconected
 } NodeStatus;
 
 @interface FIIconOverlay : NSObject
@@ -31,6 +31,7 @@ typedef enum {
 
 + (FIIconOverlay*) instance;
 
+- (IconRef) iconRefFromNodeStatus:(id)arg1;
 - (IconRef)iconRefForURL:(NSURL *)arg1;
 - (id) CellStatusWithCell:(id)arg1;
 - (void) removeCellStatusWithCell:(id)arg1;
