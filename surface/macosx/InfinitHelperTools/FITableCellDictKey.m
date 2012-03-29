@@ -51,11 +51,18 @@
 
 - (BOOL)hasSameColumnIdentifier:(id)arg1 andRowIndex:(long long)arg2
 {
+    // has the same row index.
     if (rowIndex != arg2)
         return NO;
-    
-    if (![columnIdentifier isEqual:arg1])
+    // Is a NSTableColumn.
+    if ( [columnIdentifier isKindOfClass:[NSTableColumn class]] && [arg1 isKindOfClass:[NSTableColumn class]] ) {
+        // Is equal.
+        if (![columnIdentifier isEqual:arg1])
+            return NO;
+    }
+    else {
         return NO;
+    }
     
     return YES;
 }
