@@ -7,25 +7,28 @@
 //
 
 #import "FITableCellDictKey.h"
+#import <objc/objc-class.h>
 
 @implementation FITableCellDictKey
 
 @synthesize rowIndex;
 @synthesize columnIdentifier;
 
+static NSMutableSet *items = nil;
+static NSString *kTableCellDictKey = @"tableCellDictKey";
+
 + (id)tableCellDictKeyWithColumnIdentifer:(id)arg1 rowIndex:(long long)arg2
 {
-    static NSMutableSet *items = nil;
     
     if (items == nil) {
         items = [[NSMutableSet alloc] init];
     }
-    
     id item = [[FITableCellDictKey alloc] initWithColumnIdentifier:arg1 rowIndex:arg2];
     id memberItem = [items member:item];
     if (memberItem == nil)
     {
         [items addObject:item];
+        objc_setAssociatedObject(arg1, &kTableCellDictKey, item, OBJC_ASSOCIATION_RETAIN);
     }
     else
     {
@@ -42,6 +45,14 @@
     rowIndex = arg2;
     
     return self;
+}
+
+-(void)dealloc
+{
+    if ([items containsObject:self]){
+        [items removeObject:self];
+    }
+    [super dealloc];
 }
 
 - (unsigned long long)hash

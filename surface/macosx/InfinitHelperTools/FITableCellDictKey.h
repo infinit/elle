@@ -11,10 +11,10 @@
 @interface FITableCellDictKey : NSObject
 {
     long long rowIndex;
-    id columnIdentifier;
+    NSTableColumn *columnIdentifier;
 }
 @property long long rowIndex;
-@property(retain) id columnIdentifier;
+@property(nonatomic, retain) id columnIdentifier;
 
 + (id)tableCellDictKeyWithColumnIdentifer:(id)arg1 rowIndex:(long long)arg2;
 - (id)initWithColumnIdentifier:(id)arg1 rowIndex:(long long)arg2;

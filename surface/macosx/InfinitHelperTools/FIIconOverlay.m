@@ -41,6 +41,9 @@
         nodeStatusOperationQueue = [[NSOperationQueue alloc] init];
         [nodeStatusOperationQueue setMaxConcurrentOperationCount:2];
     }
+    if (!nodesStatusDict) {
+        nodesStatusDict = [[NSMutableDictionary alloc] init];
+    }
     if(self) {
         NSString* imageName;
         
@@ -83,12 +86,13 @@
     if (arg1 != nil && [nodesStatusDict objectForKey:arg1] == nil )
     {
         [nodeStatusOperationQueue addOperationWithBlock:^{
+            // Sleep to test... TODELETE
             sleep(1);
             
             if ([arg1 isKindOfClass:NSClassFromString(@"TListViewIconAndTextCell")])
             {
-                if ([self respondsToSelector:@selector(node)]) {
-                    TFENode *node = [self node];
+                if ([arg1 respondsToSelector:@selector(node)]) {
+                    TFENode *node = [arg1 node];
                     // TODO get node status
                     
                     // Set new node status
