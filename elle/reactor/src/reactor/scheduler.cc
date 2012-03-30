@@ -16,6 +16,9 @@ namespace reactor
     , _starting_mtx()
     , _running()
     , _frozen()
+    , _io_service()
+    , _io_service_work(_io_service)
+    , _manager()
   {}
 
   /*----.
@@ -75,7 +78,18 @@ namespace reactor
             INFINIT_REACTOR_DEBUG("Scheduler: nothing to do, "
                                   "polling asio in a blocking fashion");
             _io_service.reset();
-            _io_service.run_one();
+            boost::system::error_code err;
+            std::size_t run = _io_service.run_one(err);
+            if (err)
+            {
+              std::cerr << "fatal ASIO error: " << err << std::endl;
+              std::abort();
+            }
+            else if (run == 0)
+            {
+              std::cerr << "ASIO service is dead." << std::endl;
+              std::abort();
+            }
           }
     }
     INFINIT_REACTOR_DEBUG("Scheduler: done");
