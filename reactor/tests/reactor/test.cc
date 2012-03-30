@@ -454,6 +454,33 @@ void test_multithread_spawn_wake()
   s.join();
 }
 
+int spawned(reactor::Signal& s)
+{
+  s.signal();
+  return 42;
+}
+
+void spawn(reactor::Signal& s)
+{
+  int res = sched->mt_run<int>("spawned", boost::bind(spawned, boost::ref(s)));
+  BOOST_CHECK_EQUAL(res, 42);
+}
+
+void spawner()
+{
+  reactor::Signal s;
+  boost::thread spawner(boost::bind(spawn, boost::ref(s)));
+  wait(s);
+}
+
+void test_multithread_run()
+{
+  Fixture f;
+
+  reactor::Thread t(*sched, "spawner", spawner);
+  sched->run();
+}
+
 /*-----.
 | Main |
 `-----*/
@@ -498,6 +525,8 @@ bool test_suite()
   boost::unit_test::test_suite* mt = BOOST_TEST_SUITE("Multithreading");
   boost::unit_test::framework::master_test_suite().add(mt);
   mt->add(BOOST_TEST_CASE(test_multithread_spawn_wake));
+  mt->add(BOOST_TEST_CASE(test_multithread_run));
+
   boost::unit_test::framework::master_test_suite().add
     (reactor::network::test_suite());
 
