@@ -86,32 +86,30 @@
     if (arg1 != nil && [nodesStatusDict objectForKey:arg1] == nil )
     {
         [nodeStatusOperationQueue addOperationWithBlock:^{
-            // Sleep to test... TODELETE
-            sleep(1);
             
             if ([arg1 isKindOfClass:NSClassFromString(@"TListViewIconAndTextCell")])
             {
+                
                 if ([arg1 respondsToSelector:@selector(node)]) {
                     TFENode *node = [arg1 node];
                     // TODO get node status
                     
                     // Set new node status
-                    CFDictionarySetValue( (CFMutableDictionaryRef)nodesStatusDict, arg1, [NSNumber numberWithInt:FISynced]);
+                    CFDictionarySetValue( (CFMutableDictionaryRef)nodesStatusDict, arg1, [NSNumber numberWithInt:FISynced] );
                     
                     // Redraw cell
                     [[arg1 controlView] updateCell:arg1];
                     
                     // If is active schedule status getter. 
+                    
+                    free(node);
                 }
             }
             else if ([arg1 isKindOfClass:[FITableCellDictKey class]])
-            {
+           {
                 
             }
         }];
-        
-        
-        //CFDictionarySetValue((CFMutableDictionaryRef)nodeStatus,tIconAndTextCell, watingStatusImg);
         // Add task to operation queue
         
     }
@@ -130,11 +128,10 @@
 
 - (IconRef) iconRefWithCell:(id)arg1
 {
-    NSNumber *cellStatusNumber = [self CellStatusWithCell:arg1];
-    if (cellStatusNumber == nil) {
+    if ([self CellStatusWithCell:arg1] == nil) {
         return NULL;
     }
-    switch ([cellStatusNumber intValue]) {
+    switch ([[self CellStatusWithCell:arg1] intValue]) {
         case FISynced:
             return [self syncedIconRef];
             break;
@@ -170,6 +167,14 @@
     const struct TFENode *tfeIcon = {badgedIconRef};
     // Send message to self seIcon method.
     objc_msgSend(self, @selector(setIcon:), &tfeIcon);
+    
+    
+    // FREES
+    free(badgedIconRef);
+    free(iconRef);
+    free(backgroundIconRef);
+    free(foregroundIconRef);
+    free(&tfeIcon);
 }
 
 - (void) drawOverlayIconWithFrame:(struct CGRect)arg1
@@ -179,9 +184,9 @@
     {
         // Check path => if it is an infinit path add icon overlay.
         if ([self respondsToSelector:@selector(node)]) {
-            NSURL *path = [NSURL fileURLWithPath:
-                           [[NSClassFromString(@"NSNavFBENode") _nodeWithFBENode:
-                             ((TFENode *)[self node])->fNodeRef] path]];
+//            NSURL *path = [NSURL fileURLWithPath:
+//                           [[NSClassFromString(@"NSNavFBENode") _nodeWithFBENode:
+//                             ((TFENode *)[self node])->fNodeRef] path]];
             // TODO
             IconRef cellStatus = [[FIIconOverlay instance] iconRefWithCell:self];
             if (cellStatus == NULL)
@@ -193,6 +198,9 @@
             {
                 [self setOverlayIcon:cellStatus];
             }
+            
+            //FREES
+            free(cellStatus);
         }
     }
     // Default method
@@ -224,6 +232,9 @@
             // If yes draw icon
             [arg2 setOverlayIcon:cellStatus];
         }
+        
+        // FREES
+        free(cellStatus);
     }
     
     // Default method

@@ -15,34 +15,37 @@
 @synthesize columnIdentifier;
 
 static NSMutableSet *items = nil;
-static NSString *kTableCellDictKey = @"tableCellDictKey";
+static NSString *kTableCellDictKeyArray = @"fi_TableCellDictKeyArray";
 
 + (id)tableCellDictKeyWithColumnIdentifer:(id)arg1 rowIndex:(long long)arg2
 {
-    
-    if (items == nil) {
-        items = [[NSMutableSet alloc] init];
-    }
-    id item = [[FITableCellDictKey alloc] initWithColumnIdentifier:arg1 rowIndex:arg2];
-    id memberItem = [items member:item];
-    if (memberItem == nil)
+    @synchronized(items)
     {
-        [items addObject:item];
-        objc_setAssociatedObject(arg1, &kTableCellDictKey, item, OBJC_ASSOCIATION_RETAIN);
+        if (items == nil) {
+            items = [[NSMutableSet alloc] init];
+        }
+        id item = [[FITableCellDictKey alloc] initWithColumnIdentifier:arg1 rowIndex:arg2];
+        id memberItem = [items member:item];
+        if (memberItem == nil)
+        {
+            [items addObject:item];
+            [item autorelease];
+            return item;
+        }
+        else
+        {
+            [item release];
+            return memberItem;
+        }
     }
-    else
-    {
-        item = memberItem;
-    }
-    return item;
 }
 
 - (id)initWithColumnIdentifier:(id)arg1 rowIndex:(long long)arg2
 {
     self = [super init];
     
-    columnIdentifier = arg1;
-    rowIndex = arg2;
+    self.columnIdentifier = arg1;
+    self.rowIndex = arg2;
     
     return self;
 }
@@ -52,23 +55,24 @@ static NSString *kTableCellDictKey = @"tableCellDictKey";
     if ([items containsObject:self]){
         [items removeObject:self];
     }
+    [columnIdentifier release];
     [super dealloc];
 }
 
 - (unsigned long long)hash
 {
-    return rowIndex ^ [columnIdentifier hash];
+    return self.rowIndex ^ [self.columnIdentifier hash];
 }
 
 - (BOOL)hasSameColumnIdentifier:(id)arg1 andRowIndex:(long long)arg2
 {
     // has the same row index.
-    if (rowIndex != arg2)
+    if (self.rowIndex != arg2)
         return NO;
     // Is a NSTableColumn.
-    if ( [columnIdentifier isKindOfClass:[NSTableColumn class]] && [arg1 isKindOfClass:[NSTableColumn class]] ) {
+    if ( [self.columnIdentifier isKindOfClass:[NSTableColumn class]] && [arg1 isKindOfClass:[NSTableColumn class]] ) {
         // Is equal.
-        if (![columnIdentifier isEqual:arg1])
+        if (![self.columnIdentifier isEqual:arg1])
             return NO;
     }
     else {
@@ -84,7 +88,7 @@ static NSString *kTableCellDictKey = @"tableCellDictKey";
         return YES;
     if (!arg1 || ![arg1 isKindOfClass:[self class]])
         return NO;
-    return [self hasSameColumnIdentifier:[arg1 columnIdentifier] andRowIndex:[arg1 rowIndex]];
+    return [self hasSameColumnIdentifier:((FITableCellDictKey *)arg1).columnIdentifier andRowIndex:((FITableCellDictKey *)arg1).rowIndex];
 }
 
 @end

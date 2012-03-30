@@ -10,6 +10,7 @@
 		1C0858E01523084000D161A7 /* FITableCellDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C0858DF1523084000D161A7 /* FITableCellDictKey.m */; };
 		1C0AEFA21524475100708354 /* FIHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C0AEFA11524475100708354 /* FIHelper.m */; };
 		1CD3CBF115220401006E2814 /* FIIconOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CD3CBF015220401006E2814 /* FIIconOverlay.m */; };
+		1CE4F5951524E8CB00E5199D /* FIGetStatusOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CE4F5941524E8CB00E5199D /* FIGetStatusOperationQueue.m */; };
 		360D48D31510F27300C88E93 /* FIMain.m in Sources */ = {isa = PBXBuildFile; fileRef = 360D48CA1510F27200C88E93 /* FIMain.m */; };
 		360D48D41510F27300C88E93 /* FinderInjectee-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 360D48CB1510F27200C88E93 /* FinderInjectee-Info.plist */; };
 		360D48D61510F27300C88E93 /* IHFMenuNeedsUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = 360D48D01510F27300C88E93 /* IHFMenuNeedsUpdate.m */; };
@@ -39,13 +40,13 @@
 		1C0AEFA11524475100708354 /* FIHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FIHelper.m; sourceTree = SOURCE_ROOT; };
 		1CD3CBEF15220401006E2814 /* FIIconOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FIIconOverlay.h; sourceTree = SOURCE_ROOT; };
 		1CD3CBF015220401006E2814 /* FIIconOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FIIconOverlay.m; sourceTree = SOURCE_ROOT; };
+		1CE4F5931524E8CB00E5199D /* FIGetStatusOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FIGetStatusOperationQueue.h; sourceTree = SOURCE_ROOT; };
+		1CE4F5941524E8CB00E5199D /* FIGetStatusOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FIGetStatusOperationQueue.m; sourceTree = SOURCE_ROOT; };
 		360D48C81510F27200C88E93 /* CDStructures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDStructures.h; path = FinderInjectee/CDStructures.h; sourceTree = SOURCE_ROOT; };
 		360D48C91510F27200C88E93 /* FIMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FIMain.h; path = FinderInjectee/FIMain.h; sourceTree = SOURCE_ROOT; };
 		360D48CA1510F27200C88E93 /* FIMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FIMain.m; path = FinderInjectee/FIMain.m; sourceTree = SOURCE_ROOT; };
 		360D48CB1510F27200C88E93 /* FinderInjectee-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "FinderInjectee-Info.plist"; path = "FinderInjectee/FinderInjectee-Info.plist"; sourceTree = SOURCE_ROOT; };
 		360D48CC1510F27200C88E93 /* FinderInjectee-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "FinderInjectee-Prefix.pch"; path = "FinderInjectee/FinderInjectee-Prefix.pch"; sourceTree = SOURCE_ROOT; };
-		360D48CD1510F27300C88E93 /* FIIconOverlayBadge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FIIconOverlayBadge.h; path = FinderInjectee/FIIconOverlayBadge.h; sourceTree = SOURCE_ROOT; };
-		360D48CE1510F27300C88E93 /* FIIconOverlayBadge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FIIconOverlayBadge.m; path = FinderInjectee/FIIconOverlayBadge.m; sourceTree = SOURCE_ROOT; };
 		360D48CF1510F27300C88E93 /* IHFMenuNeedsUpdate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IHFMenuNeedsUpdate.h; path = FinderInjectee/IHFMenuNeedsUpdate.h; sourceTree = SOURCE_ROOT; };
 		360D48D01510F27300C88E93 /* IHFMenuNeedsUpdate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IHFMenuNeedsUpdate.m; path = FinderInjectee/IHFMenuNeedsUpdate.m; sourceTree = SOURCE_ROOT; };
 		360D48D11510F27300C88E93 /* FISwizzle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FISwizzle.h; path = FinderInjectee/FISwizzle.h; sourceTree = SOURCE_ROOT; };
@@ -113,12 +114,12 @@
 		360D490A1511103E00C88E93 /* IconOverlay */ = {
 			isa = PBXGroup;
 			children = (
-				360D48CD1510F27300C88E93 /* FIIconOverlayBadge.h */,
-				360D48CE1510F27300C88E93 /* FIIconOverlayBadge.m */,
 				1CD3CBEF15220401006E2814 /* FIIconOverlay.h */,
 				1CD3CBF015220401006E2814 /* FIIconOverlay.m */,
 				1C0858DE1523084000D161A7 /* FITableCellDictKey.h */,
 				1C0858DF1523084000D161A7 /* FITableCellDictKey.m */,
+				1CE4F5931524E8CB00E5199D /* FIGetStatusOperationQueue.h */,
+				1CE4F5941524E8CB00E5199D /* FIGetStatusOperationQueue.m */,
 			);
 			name = IconOverlay;
 			sourceTree = "<group>";
@@ -402,6 +403,7 @@
 				1CD3CBF115220401006E2814 /* FIIconOverlay.m in Sources */,
 				1C0858E01523084000D161A7 /* FITableCellDictKey.m in Sources */,
 				1C0AEFA21524475100708354 /* FIHelper.m in Sources */,
+				1CE4F5951524E8CB00E5199D /* FIGetStatusOperationQueue.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
