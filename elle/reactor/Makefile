@@ -50,12 +50,15 @@ LDFLAGS += -lpthread
 
 all: $(LIB) $(TEST)
 
--include $(SOURCES:=.deps) $(TEST_SOURCES:=.deps)
+DEPS=$(SOURCES:=.deps) $(TEST_SOURCES:=.deps)
+-include $(DEPS)
 
 %.cc.deps: %.cc
 	$(CXX) $(CPPFLAGS) -MM $< \
 	| sed 's,^\(.*\)\.o: \(.*\)\.cc,\2.o: \2.cc,' > $@.tmp
-	mv $@.tmp $@
+	cp $@.tmp $@
+	sed 's,^\(.*\)\.o: ,\1.cc.deps: ,' $@.tmp >> $@
+	rm $@.tmp
 
 %.o: %.cc
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
@@ -67,4 +70,4 @@ $(TEST): $(TEST_OBJECTS) $(LIB) $(SOURCES_ASM)
 	$(CXX) $^ $(LDFLAGS) -lboost_unit_test_framework -o $@
 
 clean:
-	rm -f $(OBJECTS) $(TEST_OBJECTS) $(TEST)
+	rm -f $(OBJECTS) $(TEST_OBJECTS) $(TEST) $(DEPS)
