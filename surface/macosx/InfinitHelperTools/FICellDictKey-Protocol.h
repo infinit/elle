@@ -13,5 +13,6 @@
 @required
 - (void) refreshCell;
 - (NSURL *) getPath;
-
+- (unsigned long long)hash;
+- (BOOL)isEqual:(id)arg1;
 @end

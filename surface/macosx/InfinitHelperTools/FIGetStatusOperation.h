@@ -9,14 +9,15 @@
 #import <Cocoa/Cocoa.h>
 #import "CDStructures.h"
 #import "FIIconOverlay.h"
+#import "FICellDictKey-Protocol.h"
 
 @interface FIGetStatusOperation : NSOperation
 {
-    id dictKey;
+    id<FICellDictKey_Protocol> dictKey;
 }
 @property(retain) id dictKey;
 
 - (id) initWithDictKey:(id)arg1;
-- (NodeStatus) getStatusByPath:(NSURL *)arg1;
-- (TFENode *)GetNode;
+- (FINodeStatus) getStatusByPath:(NSURL *)arg1;
+
 @end

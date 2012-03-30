@@ -124,9 +124,9 @@
 				1CC481271525CFBC00B79205 /* FIListCellDictKey.m */,
 				1C0858DE1523084000D161A7 /* FITableCellDictKey.h */,
 				1C0858DF1523084000D161A7 /* FITableCellDictKey.m */,
+				1CC481241525CE5300B79205 /* FICellDictKey-Protocol.h */,
 				1CE4F5931524E8CB00E5199D /* FIGetStatusOperation.h */,
 				1CE4F5941524E8CB00E5199D /* FIGetStatusOperation.m */,
-				1CC481241525CE5300B79205 /* FICellDictKey-Protocol.h */,
 			);
 			name = IconOverlay;
 			sourceTree = "<group>";

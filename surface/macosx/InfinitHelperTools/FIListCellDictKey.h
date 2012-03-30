@@ -8,12 +8,20 @@
 
 #import <Cocoa/Cocoa.h>
 #import "FICellDictKey-Protocol.h"
+#import "FIIconOverlay.h"
 
 @interface FIListCellDictKey : NSObject <FICellDictKey_Protocol>
 {
-    id node;
+    id              cell;
+    FINodeStatus    nodeStatus;
 }
 
-@property(nonatomic, retain) id node;
+@property(nonatomic, retain) id cell;
+@property FINodeStatus nodeStatus;
+
++ (id) listCellDictKeyWithCell:(id)arg1;
+
+- (id) initWithCell:(id)arg1;
+
 
 @end

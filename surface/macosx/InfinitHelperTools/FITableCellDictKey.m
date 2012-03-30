@@ -14,6 +14,7 @@
 @synthesize rowIndex;
 @synthesize columnIdentifier;
 @synthesize node;
+@synthesize nodeStatus;
 
 static NSMutableSet *items = nil;
 static NSString *kTableCellDictKeyArray = @"fi_TableCellDictKeyArray";
@@ -48,6 +49,7 @@ static NSString *kTableCellDictKeyArray = @"fi_TableCellDictKeyArray";
     self.columnIdentifier = arg1;
     self.rowIndex = arg2;
     self.node = arg3;
+    self.nodeStatus = FINodeStatusUnknowned;
     
     return self;
 }
@@ -95,13 +97,11 @@ static NSString *kTableCellDictKeyArray = @"fi_TableCellDictKeyArray";
 
 - (NSURL *) getPath
 {
-    if ([self.node respondsToSelector:@selector(node)]) {
-        // TODO return PATH
-        return [self.node node];
-    }
-    else {
-        return nil;
-    }
+    NSURL *path = [NSURL fileURLWithPath:
+                   [[NSClassFromString(@"NSNavFBENode") _nodeWithFBENode:
+                     ((TFENode *)self.node)->fNodeRef] path]];
+    
+    return [path autorelease];
 }
 - (void) refreshCell
 {

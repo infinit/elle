@@ -8,16 +8,19 @@
 
 #import <Cocoa/Cocoa.h>
 #import "FICellDictKey-Protocol.h"
+#import "FIIconOverlay.h"
 
 @interface FITableCellDictKey : NSObject <FICellDictKey_Protocol>
 {
-    long long rowIndex;
-    NSTableColumn *columnIdentifier;
-    id node;
+    long long       rowIndex;
+    NSTableColumn   *columnIdentifier;
+    id              node;
+    FINodeStatus      nodeStatus;
 }
 @property long long rowIndex;
 @property(nonatomic, retain) id columnIdentifier;
 @property(nonatomic, retain) id node;
+@property FINodeStatus nodeStatus;
 
 + (id)tableCellDictKeyWithColumnIdentifer:(id)arg1 rowIndex:(long long)arg2 forNode:(id)arg3;
 - (id)initWithColumnIdentifier:(id)arg1 rowIndex:(long long)arg2 forNode:(id)arg3;

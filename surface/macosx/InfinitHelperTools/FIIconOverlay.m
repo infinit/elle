@@ -9,6 +9,7 @@
 #import "FIIconOverlay.h"
 #import "FITableCellDictKey.h"
 #import "FIGetStatusOperation.h"
+#import "FIListCellDictKey.h"
 
 @implementation FIIconOverlay
 
@@ -43,9 +44,6 @@
     if (!nodeStatusOperationQueue) {
         nodeStatusOperationQueue = [[NSOperationQueue alloc] init];
         [nodeStatusOperationQueue setMaxConcurrentOperationCount:2];
-    }
-    if (!nodesStatusDict) {
-        nodesStatusDict = [[NSMutableDictionary alloc] init];
     }
     if(self) {
         NSString* imageName;
@@ -84,39 +82,28 @@
     
     return theIconRef;
 }  
-- (void) addCellStatusWithCell:(id)arg1
+- (void) addStatusOpperationToQueue:(id)arg1
 {
-    if (arg1 != nil && [nodesStatusDict objectForKey:arg1] == nil )
+    if (arg1 != nil)
     {
         [nodeStatusOperationQueue addOperation:[[FIGetStatusOperation alloc] initWithDictKey:arg1]];
     }
 }
 
-- (void) removeCellStatusWithCell:(id)arg1
+- (IconRef) iconRefWithCell:(FINodeStatus)arg1
 {
-    [[self CellStatusWithCell:arg1] release];
-	[nodesStatusDict removeObjectForKey:arg1];
-}
-
-- (id) CellStatusWithCell:(id)arg1
-{
-	return [nodesStatusDict objectForKey:arg1];
-}
-
-- (IconRef) iconRefWithCell:(id)arg1
-{
-    if ([self CellStatusWithCell:arg1] == nil) {
-        return NULL;
-    }
-    switch ([[self CellStatusWithCell:arg1] intValue]) {
-        case FISynced:
+    switch (arg1) {
+        case FINodeStatusSynced:
             return [self syncedIconRef];
             break;
-        case FISyncing:
+        case FINodeStatusSyncing:
             return [self syncingIconRef];
             break;
-        default:
+        case FINodeStatusDisconected:
             return [self disconnectedIconRef];
+            break;
+        default:
+            return NULL;
             break;
     }
 }
@@ -154,15 +141,14 @@
     {
         // Check path => if it is an infinit path add icon overlay.
         if ([self respondsToSelector:@selector(node)]) {
-//            NSURL *path = [NSURL fileURLWithPath:
-//                           [[NSClassFromString(@"NSNavFBENode") _nodeWithFBENode:
-//                             ((TFENode *)[self node])->fNodeRef] path]];
             // TODO
-            IconRef cellStatus = [[FIIconOverlay instance] iconRefWithCell:self];
+            FIListCellDictKey *dictKey = [FIListCellDictKey listCellDictKeyWithCell:self];
+            
+            IconRef cellStatus = [[FIIconOverlay instance] iconRefWithCell:dictKey.nodeStatus];
             if (cellStatus == NULL)
             {
                 // If no cell status has been set.
-                [[FIIconOverlay instance] addCellStatusWithCell:self];
+                [[FIIconOverlay instance] addStatusOpperationToQueue:dictKey];
             }
             else
             {
@@ -183,21 +169,24 @@
     // if the cell is a TColumnCell
     if ([arg2 isKindOfClass:NSClassFromString(@"TColumnCell")])
     {
-        // if the path is an Infinit path.
-        // TODO
-        
-        id dictKey = [FITableCellDictKey tableCellDictKeyWithColumnIdentifer:arg3 rowIndex:arg4 forNode:arg2];
-        // checl if a cell status has been retrieve.
-        IconRef cellStatus = [[FIIconOverlay instance] iconRefWithCell:dictKey];
-    
-        if (cellStatus == NULL) {
-            // If not get it.
-            [[FIIconOverlay instance] addCellStatusWithCell:dictKey];
-        }
-        else
-        {
-            // If yes draw icon
-            [arg2 setOverlayIcon:cellStatus];
+        if ([self respondsToSelector:@selector(node)]) {
+            // if the path is an Infinit path.
+            // TODO
+            
+            FITableCellDictKey *dictKey = [FITableCellDictKey tableCellDictKeyWithColumnIdentifer:arg3 rowIndex:arg4 forNode:[arg2 node]];
+            // checl if a cell status has been retrieve.
+            
+            IconRef cellStatus = [[FIIconOverlay instance] iconRefWithCell:dictKey.nodeStatus];
+            
+            if (cellStatus == NULL) {
+                // If not get it.
+                [[FIIconOverlay instance] addStatusOpperationToQueue:dictKey];
+            }
+            else
+            {
+                // If yes draw icon
+                [arg2 setOverlayIcon:cellStatus];
+            }
         }
     }
     

@@ -11,14 +11,14 @@
 #import "CDStructures.h"
 
 typedef enum {
-    FISyncing,
-    FISynced,
-    FIDisconected
-} NodeStatus;
+    FINodeStatusUnknowned,
+    FINodeStatusSyncing,
+    FINodeStatusSynced,
+    FINodeStatusDisconected
+} FINodeStatus;
 
 @interface FIIconOverlay : NSObject
 {
-    NSMutableDictionary     *nodesStatusDict; // fake ivar
     NSOperationQueue        *nodeStatusOperationQueue;
     struct OpaqueIconRef    *syncingIconRef;
     struct OpaqueIconRef    *syncedIconRef;
@@ -33,10 +33,8 @@ typedef enum {
 
 + (FIIconOverlay*) instance;
 
-- (IconRef) iconRefWithCell:(id)arg1;
+- (IconRef) iconRefWithCell:(FINodeStatus)arg1;
 - (IconRef)iconRefForURL:(NSURL *)arg1;
-- (id) CellStatusWithCell:(id)arg1;
-- (void) removeCellStatusWithCell:(id)arg1;
-- (void) addCellStatusWithCell:(id)arg1;
+- (void) addStatusOpperationToQueue:(id)arg1;
 
 @end
