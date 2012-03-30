@@ -11,22 +11,21 @@
 
 namespace reactor
 {
-  typedef backend::Action Action;
-
   class Thread: public Waitable
   {
     /*---------.
     | Typedefs |
     `---------*/
     public:
+      typedef backend::Action Action;
 
     /*-------------.
     | Construction |
     `-------------*/
     public:
       Thread(Scheduler& scheduler,
-             const std::string& name,
-             const Action& action);
+                 const std::string& name,
+                 const Action& action);
 
     /*-------.
     | Status |
@@ -115,7 +114,35 @@ namespace reactor
       Scheduler& _scheduler;
   };
 
+  template <typename R>
+  class VThread: public Thread
+  {
+    /*---------.
+    | Typedefs |
+    `---------*/
+    public:
+      typedef boost::function<R ()> Action;
+
+    /*-------------.
+    | Construction |
+    `-------------*/
+    public:
+      VThread(Scheduler& scheduler,
+              const std::string& name,
+              const Action& action);
+
+    /*-------.
+    | Result |
+    `-------*/
+    public:
+      const R& result() const;
+    private:
+      R _result;
+  };
+
   std::ostream& operator << (std::ostream& s, const Thread& t);
 }
+
+# include <reactor/thread.hxx>
 
 #endif

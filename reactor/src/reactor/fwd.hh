@@ -20,6 +20,8 @@ namespace reactor
   class Signal;
   class Sleep;
   class Thread;
+  template <typename R = void>
+  class VThread;
   class Waitable;
 
   typedef boost::posix_time::time_duration Duration;

@@ -408,6 +408,25 @@ void test_timeout_dont()
   sched->run();
 }
 
+/*--------.
+| VThread |
+`--------*/
+
+int answer()
+{
+  return 42;
+}
+
+void test_vthread()
+{
+  Fixture f;
+
+  reactor::VThread<int> t(*sched, "return value", answer);
+  BOOST_CHECK_THROW(t.result(), reactor::Exception);
+  sched->run();
+  BOOST_CHECK_EQUAL(t.result(), 42);
+}
+
 /*-----.
 | Main |
 `-----*/
@@ -444,6 +463,10 @@ bool test_suite()
   boost::unit_test::framework::master_test_suite().add(timeout);
   timeout->add(BOOST_TEST_CASE(test_timeout_do));
   timeout->add(BOOST_TEST_CASE(test_timeout_dont));
+
+  boost::unit_test::test_suite* vthread = BOOST_TEST_SUITE("Return value");
+  boost::unit_test::framework::master_test_suite().add(vthread);
+  vthread->add(BOOST_TEST_CASE(test_vthread));
 
   boost::unit_test::framework::master_test_suite().add
     (reactor::network::test_suite());
