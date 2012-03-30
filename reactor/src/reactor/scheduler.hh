@@ -37,6 +37,8 @@ namespace reactor
       void _unfreeze(Thread& thread);
       typedef std::set<Thread*> Threads;
       Thread* _current;
+      Threads _starting;
+      boost::mutex _starting_mtx;
       Threads _running;
       Threads _frozen;
 
