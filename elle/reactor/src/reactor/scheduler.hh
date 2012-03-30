@@ -42,6 +42,14 @@ namespace reactor
       Threads _running;
       Threads _frozen;
 
+    /*----------------.
+    | Multithread API |
+    `----------------*/
+    public:
+      template <typename R>
+      R mt_run(const std::string& name,
+               const boost::function<R ()>& action);
+
     /*-----.
     | Asio |
     `-----*/
@@ -59,5 +67,7 @@ namespace reactor
       backend::Manager _manager;
   };
 }
+
+# include <reactor/scheduler.hxx>
 
 #endif
