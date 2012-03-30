@@ -8,12 +8,15 @@
 
 #import "FIIconOverlay.h"
 #import "FITableCellDictKey.h"
+#import "FIGetStatusOperation.h"
 
 @implementation FIIconOverlay
 
 @synthesize syncingIconRef;
 @synthesize syncedIconRef;
 @synthesize disconnectedIconRef;
+
+@synthesize nodesStatusDict;
 
 + (void) initialize
 {
@@ -85,33 +88,7 @@
 {
     if (arg1 != nil && [nodesStatusDict objectForKey:arg1] == nil )
     {
-        [nodeStatusOperationQueue addOperationWithBlock:^{
-            
-            if ([arg1 isKindOfClass:NSClassFromString(@"TListViewIconAndTextCell")])
-            {
-                
-                if ([arg1 respondsToSelector:@selector(node)]) {
-                    TFENode *node = [arg1 node];
-                    // TODO get node status
-                    
-                    // Set new node status
-                    CFDictionarySetValue( (CFMutableDictionaryRef)nodesStatusDict, arg1, [NSNumber numberWithInt:FISynced] );
-                    
-                    // Redraw cell
-                    [[arg1 controlView] updateCell:arg1];
-                    
-                    // If is active schedule status getter. 
-                    
-                    free(node);
-                }
-            }
-            else if ([arg1 isKindOfClass:[FITableCellDictKey class]])
-           {
-                
-            }
-        }];
-        // Add task to operation queue
-        
+        [nodeStatusOperationQueue addOperation:[[FIGetStatusOperation alloc] initWithDictKey:arg1]];
     }
 }
 
@@ -168,13 +145,6 @@
     // Send message to self seIcon method.
     objc_msgSend(self, @selector(setIcon:), &tfeIcon);
     
-    
-    // FREES
-    free(badgedIconRef);
-    free(iconRef);
-    free(backgroundIconRef);
-    free(foregroundIconRef);
-    free(&tfeIcon);
 }
 
 - (void) drawOverlayIconWithFrame:(struct CGRect)arg1
@@ -198,9 +168,6 @@
             {
                 [self setOverlayIcon:cellStatus];
             }
-            
-            //FREES
-            free(cellStatus);
         }
     }
     // Default method
@@ -219,7 +186,7 @@
         // if the path is an Infinit path.
         // TODO
         
-        id dictKey = [FITableCellDictKey tableCellDictKeyWithColumnIdentifer:arg3 rowIndex:arg4];
+        id dictKey = [FITableCellDictKey tableCellDictKeyWithColumnIdentifer:arg3 rowIndex:arg4 forNode:arg2];
         // checl if a cell status has been retrieve.
         IconRef cellStatus = [[FIIconOverlay instance] iconRefWithCell:dictKey];
     
@@ -232,9 +199,6 @@
             // If yes draw icon
             [arg2 setOverlayIcon:cellStatus];
         }
-        
-        // FREES
-        free(cellStatus);
     }
     
     // Default method

@@ -29,6 +29,8 @@ typedef enum {
 @property(readonly) struct OpaqueIconRef *syncedIconRef;
 @property(readonly) struct OpaqueIconRef *disconnectedIconRef;
 
+@property(retain) NSMutableDictionary *nodesStatusDict;
+
 + (FIIconOverlay*) instance;
 
 - (IconRef) iconRefWithCell:(id)arg1;

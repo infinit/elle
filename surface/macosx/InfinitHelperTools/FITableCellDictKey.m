@@ -13,18 +13,19 @@
 
 @synthesize rowIndex;
 @synthesize columnIdentifier;
+@synthesize node;
 
 static NSMutableSet *items = nil;
 static NSString *kTableCellDictKeyArray = @"fi_TableCellDictKeyArray";
 
-+ (id)tableCellDictKeyWithColumnIdentifer:(id)arg1 rowIndex:(long long)arg2
++ (id)tableCellDictKeyWithColumnIdentifer:(id)arg1 rowIndex:(long long)arg2 forNode:(id)arg3
 {
     @synchronized(items)
     {
         if (items == nil) {
             items = [[NSMutableSet alloc] init];
         }
-        id item = [[FITableCellDictKey alloc] initWithColumnIdentifier:arg1 rowIndex:arg2];
+        id item = [[FITableCellDictKey alloc] initWithColumnIdentifier:arg1 rowIndex:arg2  forNode:arg3];
         id memberItem = [items member:item];
         if (memberItem == nil)
         {
@@ -40,12 +41,13 @@ static NSString *kTableCellDictKeyArray = @"fi_TableCellDictKeyArray";
     }
 }
 
-- (id)initWithColumnIdentifier:(id)arg1 rowIndex:(long long)arg2
+- (id)initWithColumnIdentifier:(id)arg1 rowIndex:(long long)arg2 forNode:(id)arg3
 {
     self = [super init];
     
     self.columnIdentifier = arg1;
     self.rowIndex = arg2;
+    self.node = arg3;
     
     return self;
 }
@@ -91,4 +93,18 @@ static NSString *kTableCellDictKeyArray = @"fi_TableCellDictKeyArray";
     return [self hasSameColumnIdentifier:((FITableCellDictKey *)arg1).columnIdentifier andRowIndex:((FITableCellDictKey *)arg1).rowIndex];
 }
 
+- (NSURL *) getPath
+{
+    if ([self.node respondsToSelector:@selector(node)]) {
+        // TODO return PATH
+        return [self.node node];
+    }
+    else {
+        return nil;
+    }
+}
+- (void) refreshCell
+{
+    return;
+}
 @end
