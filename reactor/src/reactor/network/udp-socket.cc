@@ -1,3 +1,5 @@
+#include <boost/lexical_cast.hpp>
+
 #include <reactor/debug.hh>
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>

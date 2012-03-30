@@ -3,9 +3,9 @@
 
 # include <set>
 
-# include <reactor/asio.hh>
 # include <boost/thread.hpp>
 
+# include <reactor/asio.hh>
 # include <reactor/fwd.hh>
 # include <reactor/scheduler.hh>
 # include <reactor/backend/thread.hh>
