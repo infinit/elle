@@ -7,72 +7,70 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3600CA3B151EA5930004954E /* Infinit.icns in Resources */ = {isa = PBXBuildFile; fileRef = 3600CA3A151EA5930004954E /* Infinit.icns */; };
-		360D48F61510F8D000C88E93 /* IHTInjector.h in Headers */ = {isa = PBXBuildFile; fileRef = 360D48F51510F8D000C88E93 /* IHTInjector.h */; };
-		360D490415110F9A00C88E93 /* io.infinit.FinderInjectee.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 360D490115110F7500C88E93 /* io.infinit.FinderInjectee.bundle */; };
-		360D490515110F9A00C88E93 /* io.infinit.HelperTools.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = 360D490315110F7500C88E93 /* io.infinit.HelperTools.helper */; };
-		3619AF431508F5ED00324697 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3619AF411508F5ED00324697 /* InfoPlist.strings */; };
-		3619AF471508F5ED00324697 /* Preferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 3619AF461508F5ED00324697 /* Preferences.m */; };
-		3619AF491508F5ED00324697 /* Preferences.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 3619AF481508F5ED00324697 /* Preferences.tiff */; };
-		3619AF4C1508F5ED00324697 /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3619AF4A1508F5ED00324697 /* Preferences.xib */; };
-		3628ABFC151CE7D60093312B /* red-status.icns in Resources */ = {isa = PBXBuildFile; fileRef = 3628ABFB151CE7D60093312B /* red-status.icns */; };
+		1CB4FB4C1528DC0F00DDEC99 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB421528DC0F00DDEC99 /* InfoPlist.strings */; };
+		1CB4FB4D1528DC0F00DDEC99 /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB441528DC0F00DDEC99 /* Preferences.xib */; };
+		1CB4FB4E1528DC0F00DDEC99 /* Preferences.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CB4FB461528DC0F00DDEC99 /* Preferences.h */; };
+		1CB4FB4F1528DC0F00DDEC99 /* Preferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB4FB471528DC0F00DDEC99 /* Preferences.m */; };
+		1CB4FB501528DC0F00DDEC99 /* Preferences.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB491528DC0F00DDEC99 /* Preferences.tiff */; };
+		1CB4FB511528DC0F00DDEC99 /* Preferences-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB4B1528DC0F00DDEC99 /* Preferences-Info.plist */; };
+		1CB4FB671528DC1C00DDEC99 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB531528DC1C00DDEC99 /* InfoPlist.strings */; };
+		1CB4FB681528DC1C00DDEC99 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB551528DC1C00DDEC99 /* MainMenu.xib */; };
+		1CB4FB6A1528DC1C00DDEC99 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB4FB581528DC1C00DDEC99 /* main.m */; };
+		1CB4FB6B1528DC1C00DDEC99 /* OOAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB4FB5A1528DC1C00DDEC99 /* OOAppDelegate.m */; };
+		1CB4FB6C1528DC1C00DDEC99 /* OOInjectorHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB4FB5C1528DC1C00DDEC99 /* OOInjectorHelper.m */; };
+		1CB4FB6D1528DC1C00DDEC99 /* OOInstallerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB4FB5E1528DC1C00DDEC99 /* OOInstallerHelper.m */; };
+		1CB4FB6E1528DC1C00DDEC99 /* 8installer in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB601528DC1C00DDEC99 /* 8installer */; };
+		1CB4FB6F1528DC1C00DDEC99 /* Infinit-status-dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB611528DC1C00DDEC99 /* Infinit-status-dark.png */; };
+		1CB4FB701528DC1C00DDEC99 /* Infinit.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB621528DC1C00DDEC99 /* Infinit.icns */; };
+		1CB4FB711528DC1C00DDEC99 /* ok.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB631528DC1C00DDEC99 /* ok.icns */; };
+		1CB4FB721528DC1C00DDEC99 /* Infinit-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB651528DC1C00DDEC99 /* Infinit-Info.plist */; };
+		1CB4FB751528EDA100DDEC99 /* io.infinit.FinderDopant.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CD297041528D28A006D1A4C /* io.infinit.FinderDopant.bundle */; };
+		1CB4FB761528EDA100DDEC99 /* io.infinit.HelperTools.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CD297061528D28A006D1A4C /* io.infinit.HelperTools.helper */; };
+		1CB4FB7D1528EDEB00DDEC99 /* mach_inject_bundle_stub.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CB4FB7C1528EDDA00DDEC99 /* mach_inject_bundle_stub.bundle */; };
 		362A33DD150B69AF00D92151 /* PreferencePanes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3619AF211508F3A900324697 /* PreferencePanes.framework */; };
 		362A340A150B700800D92151 /* Preferences.prefPane in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3619AF3B1508F5ED00324697 /* Preferences.prefPane */; };
-		362A340B150B701800D92151 /* mach_inject_bundle_stub.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 36507C67150A492900830312 /* mach_inject_bundle_stub.bundle */; };
-		36631859151F7B9F00599033 /* Infinit-status-dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 36631858151F7B9F00599033 /* Infinit-status-dark.png */; };
-		36672005150BE2B6002A595A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 36E9F8C614FF7DE8000B9C12 /* main.m */; };
-		36672006150BE2BE002A595A /* Infinit-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 36E9F8C214FF7DE8000B9C12 /* Infinit-Info.plist */; };
-		36672008150BE301002A595A /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 36E9F8CF14FF7DE8000B9C12 /* MainMenu.xib */; };
-		36672009150BE305002A595A /* OOAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 36E9F8CD14FF7DE8000B9C12 /* OOAppDelegate.m */; };
-		3667200A150BE30D002A595A /* OOInstallerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3619AF55150918AF00324697 /* OOInstallerHelper.m */; };
-		3667200B150BE312002A595A /* OOInjectorHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 36E9F8DA14FF86B4000B9C12 /* OOInjectorHelper.m */; };
 		3667200D150BE36D002A595A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36E9F8BF14FF7DE8000B9C12 /* Foundation.framework */; };
 		3667200E150BE370002A595A /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367B0EBA14FFB70200AC66A2 /* ServiceManagement.framework */; };
 		3667200F150BE372002A595A /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367B0EB714FFB6F100AC66A2 /* Security.framework */; };
-		367ADC301517EFC2009E706B /* ok.icns in Resources */ = {isa = PBXBuildFile; fileRef = 367ADC2F1517EFC2009E706B /* ok.icns */; };
-		367ADC311517EFE1009E706B /* ok.icns in CopyFiles */ = {isa = PBXBuildFile; fileRef = 367ADC2F1517EFC2009E706B /* ok.icns */; };
 		368C77DC150C1052009E8FC4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 368C77DA150C1038009E8FC4 /* Cocoa.framework */; };
 		368C77DD150C1062009E8FC4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 368C77DA150C1038009E8FC4 /* Cocoa.framework */; };
-		368C7805150E161A009E8FC4 /* 8installer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 368C7803150E1610009E8FC4 /* 8installer */; };
-		36A9401E151535AC00B58D1E /* pastille-ok.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 36A9401A1515358200B58D1E /* pastille-ok.png */; };
-		36A9401F151535AC00B58D1E /* pastille-pending.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 36A9401B1515358200B58D1E /* pastille-pending.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		360D490015110F7500C88E93 /* PBXContainerItemProxy */ = {
+		1C8523221528DAF600051605 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 360D48F715110F7400C88E93 /* HelperTools.xcodeproj */;
+			containerPortal = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 367BCFF514FE6F4600B41298;
+			remoteInfo = FinderDopant;
+		};
+		1C8523241528DAF600051605 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 3661644515011A08008A1425;
+			remoteInfo = Nurse;
+		};
+		1CB4FB7B1528EDDA00DDEC99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D01CCD20486CAD60068D4B7;
+			remoteInfo = mach_inject_bundle_stub;
+		};
+		1CD297031528D28A006D1A4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 367BCFF614FE6F4600B41298;
 			remoteInfo = FinderInjectee;
 		};
-		360D490215110F7500C88E93 /* PBXContainerItemProxy */ = {
+		1CD297051528D28A006D1A4C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 360D48F715110F7400C88E93 /* HelperTools.xcodeproj */;
+			containerPortal = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 3661644615011A08008A1425;
 			remoteInfo = HelperTools;
-		};
-		360D490615110FA600C88E93 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 360D48F715110F7400C88E93 /* HelperTools.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 367BCFF514FE6F4600B41298;
-			remoteInfo = FinderInjectee;
-		};
-		360D490815110FA600C88E93 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 360D48F715110F7400C88E93 /* HelperTools.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 3661644515011A08008A1425;
-			remoteInfo = HelperTools;
-		};
-		362A33FD150B6F7200D92151 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 36507C62150A492900830312 /* mach_inject_bundle_stub.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D01CCC60486CAD60068D4B7;
-			remoteInfo = mach_inject_bundle_stub;
 		};
 		362A3403150B6F7C00D92151 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -80,13 +78,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 3619AF3A1508F5ED00324697;
 			remoteInfo = Preferences;
-		};
-		36507C66150A492900830312 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 36507C62150A492900830312 /* mach_inject_bundle_stub.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D01CCD20486CAD60068D4B7;
-			remoteInfo = mach_inject_bundle_stub;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -97,9 +88,9 @@
 			dstPath = Contents/Library/LaunchServices;
 			dstSubfolderSpec = 1;
 			files = (
-				360D490415110F9A00C88E93 /* io.infinit.FinderInjectee.bundle in CopyFiles */,
-				360D490515110F9A00C88E93 /* io.infinit.HelperTools.helper in CopyFiles */,
-				362A340B150B701800D92151 /* mach_inject_bundle_stub.bundle in CopyFiles */,
+				1CB4FB7D1528EDEB00DDEC99 /* mach_inject_bundle_stub.bundle in CopyFiles */,
+				1CB4FB751528EDA100DDEC99 /* io.infinit.FinderDopant.bundle in CopyFiles */,
+				1CB4FB761528EDA100DDEC99 /* io.infinit.HelperTools.helper in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,10 +100,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
-				367ADC311517EFE1009E706B /* ok.icns in CopyFiles */,
-				36A9401E151535AC00B58D1E /* pastille-ok.png in CopyFiles */,
-				36A9401F151535AC00B58D1E /* pastille-pending.png in CopyFiles */,
-				368C7805150E161A009E8FC4 /* 8installer in CopyFiles */,
 				362A340A150B700800D92151 /* Preferences.prefPane in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -120,44 +107,40 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		3600CA3A151EA5930004954E /* Infinit.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Infinit.icns; sourceTree = SOURCE_ROOT; };
-		360D48F51510F8D000C88E93 /* IHTInjector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IHTInjector.h; path = InfinitHelperTools/HelperTools/IHTInjector.h; sourceTree = SOURCE_ROOT; };
-		360D48F715110F7400C88E93 /* HelperTools.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = HelperTools.xcodeproj; path = InfinitHelperTools/HelperTools.xcodeproj; sourceTree = "<group>"; };
+		1CB4FB431528DC0F00DDEC99 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1CB4FB451528DC0F00DDEC99 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/Preferences.xib; sourceTree = "<group>"; };
+		1CB4FB461528DC0F00DDEC99 /* Preferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Preferences.h; sourceTree = "<group>"; };
+		1CB4FB471528DC0F00DDEC99 /* Preferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Preferences.m; sourceTree = "<group>"; };
+		1CB4FB491528DC0F00DDEC99 /* Preferences.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Preferences.tiff; sourceTree = "<group>"; };
+		1CB4FB4B1528DC0F00DDEC99 /* Preferences-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Preferences-Info.plist"; sourceTree = "<group>"; };
+		1CB4FB541528DC1C00DDEC99 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1CB4FB561528DC1C00DDEC99 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		1CB4FB581528DC1C00DDEC99 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		1CB4FB591528DC1C00DDEC99 /* OOAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOAppDelegate.h; sourceTree = "<group>"; };
+		1CB4FB5A1528DC1C00DDEC99 /* OOAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOAppDelegate.m; sourceTree = "<group>"; };
+		1CB4FB5B1528DC1C00DDEC99 /* OOInjectorHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOInjectorHelper.h; sourceTree = "<group>"; };
+		1CB4FB5C1528DC1C00DDEC99 /* OOInjectorHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOInjectorHelper.m; sourceTree = "<group>"; };
+		1CB4FB5D1528DC1C00DDEC99 /* OOInstallerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOInstallerHelper.h; sourceTree = "<group>"; };
+		1CB4FB5E1528DC1C00DDEC99 /* OOInstallerHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOInstallerHelper.m; sourceTree = "<group>"; };
+		1CB4FB601528DC1C00DDEC99 /* 8installer */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = 8installer; sourceTree = "<group>"; };
+		1CB4FB611528DC1C00DDEC99 /* Infinit-status-dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Infinit-status-dark.png"; sourceTree = "<group>"; };
+		1CB4FB621528DC1C00DDEC99 /* Infinit.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Infinit.icns; sourceTree = "<group>"; };
+		1CB4FB631528DC1C00DDEC99 /* ok.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ok.icns; sourceTree = "<group>"; };
+		1CB4FB651528DC1C00DDEC99 /* Infinit-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Infinit-Info.plist"; sourceTree = "<group>"; };
+		1CB4FB661528DC1C00DDEC99 /* Infinit-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Infinit-Prefix.pch"; sourceTree = "<group>"; };
+		1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = needle.xcodeproj; path = medecine/needle/needle.xcodeproj; sourceTree = "<group>"; };
+		1CB4FB7F1528F73A00DDEC99 /* IHTInjector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IHTInjector.h; path = ../medecine/nurse/IHTInjector.h; sourceTree = "<group>"; };
+		1CD296FA1528D289006D1A4C /* medecine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = medecine.xcodeproj; path = medecine/medecine.xcodeproj; sourceTree = "<group>"; };
 		3619AF211508F3A900324697 /* PreferencePanes.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PreferencePanes.framework; path = System/Library/Frameworks/PreferencePanes.framework; sourceTree = SDKROOT; };
 		3619AF3B1508F5ED00324697 /* Preferences.prefPane */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Preferences.prefPane; sourceTree = BUILT_PRODUCTS_DIR; };
-		3619AF401508F5ED00324697 /* Preferences-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Preferences-Info.plist"; sourceTree = "<group>"; };
-		3619AF421508F5ED00324697 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		3619AF441508F5ED00324697 /* Preferences-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Preferences-Prefix.pch"; sourceTree = "<group>"; };
-		3619AF451508F5ED00324697 /* Preferences.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Preferences.h; sourceTree = "<group>"; };
-		3619AF461508F5ED00324697 /* Preferences.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Preferences.m; sourceTree = "<group>"; };
-		3619AF481508F5ED00324697 /* Preferences.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Preferences.tiff; sourceTree = "<group>"; };
-		3619AF4B1508F5ED00324697 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/Preferences.xib; sourceTree = "<group>"; };
-		3619AF54150918AF00324697 /* OOInstallerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOInstallerHelper.h; sourceTree = "<group>"; };
-		3619AF55150918AF00324697 /* OOInstallerHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOInstallerHelper.m; sourceTree = "<group>"; };
-		3628ABFB151CE7D60093312B /* red-status.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "red-status.icns"; sourceTree = "<group>"; };
 		362A33E4150B6ED000D92151 /* Infinit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Infinit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		362A33E7150B6ED000D92151 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		36507C62150A492900830312 /* mach_inject_bundle_stub.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = mach_inject_bundle_stub.xcodeproj; path = InfinitHelperTools/mach_inject_bundle_stub/mach_inject_bundle_stub.xcodeproj; sourceTree = "<group>"; };
-		36631858151F7B9F00599033 /* Infinit-status-dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Infinit-status-dark.png"; sourceTree = SOURCE_ROOT; };
-		367ADC2F1517EFC2009E706B /* ok.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ok.icns; sourceTree = "<group>"; };
 		367B0EB714FFB6F100AC66A2 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		367B0EBA14FFB70200AC66A2 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 		368C77DA150C1038009E8FC4 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
-		368C7803150E1610009E8FC4 /* 8installer */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = 8installer; sourceTree = "<group>"; };
-		36A9401A1515358200B58D1E /* pastille-ok.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pastille-ok.png"; sourceTree = "<group>"; };
-		36A9401B1515358200B58D1E /* pastille-pending.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pastille-pending.png"; sourceTree = "<group>"; };
 		36E9F8BD14FF7DE8000B9C12 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		36E9F8BE14FF7DE8000B9C12 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		36E9F8BF14FF7DE8000B9C12 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		36E9F8C214FF7DE8000B9C12 /* Infinit-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Infinit-Info.plist"; sourceTree = "<group>"; };
-		36E9F8C414FF7DE8000B9C12 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		36E9F8C614FF7DE8000B9C12 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		36E9F8C814FF7DE8000B9C12 /* Infinit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Infinit-Prefix.pch"; sourceTree = "<group>"; };
-		36E9F8CC14FF7DE8000B9C12 /* OOAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OOAppDelegate.h; sourceTree = "<group>"; };
-		36E9F8CD14FF7DE8000B9C12 /* OOAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OOAppDelegate.m; sourceTree = "<group>"; };
-		36E9F8D014FF7DE8000B9C12 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		36E9F8D914FF86B4000B9C12 /* OOInjectorHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOInjectorHelper.h; sourceTree = "<group>"; };
-		36E9F8DA14FF86B4000B9C12 /* OOInjectorHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOInjectorHelper.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -184,41 +167,87 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		360D48F815110F7400C88E93 /* Products */ = {
+		1CB4FB411528DC0F00DDEC99 /* preferences */ = {
 			isa = PBXGroup;
 			children = (
-				360D490115110F7500C88E93 /* io.infinit.FinderInjectee.bundle */,
-				360D490315110F7500C88E93 /* io.infinit.HelperTools.helper */,
+				1CB4FB421528DC0F00DDEC99 /* InfoPlist.strings */,
+				1CB4FB441528DC0F00DDEC99 /* Preferences.xib */,
+				1CB4FB461528DC0F00DDEC99 /* Preferences.h */,
+				1CB4FB471528DC0F00DDEC99 /* Preferences.m */,
+				1CB4FB481528DC0F00DDEC99 /* ressources */,
+				1CB4FB4A1528DC0F00DDEC99 /* supportingFiles */,
+			);
+			path = preferences;
+			sourceTree = "<group>";
+		};
+		1CB4FB481528DC0F00DDEC99 /* ressources */ = {
+			isa = PBXGroup;
+			children = (
+				1CB4FB491528DC0F00DDEC99 /* Preferences.tiff */,
+			);
+			path = ressources;
+			sourceTree = "<group>";
+		};
+		1CB4FB4A1528DC0F00DDEC99 /* supportingFiles */ = {
+			isa = PBXGroup;
+			children = (
+				1CB4FB4B1528DC0F00DDEC99 /* Preferences-Info.plist */,
+			);
+			path = supportingFiles;
+			sourceTree = "<group>";
+		};
+		1CB4FB521528DC1C00DDEC99 /* infinit */ = {
+			isa = PBXGroup;
+			children = (
+				1CB4FB7F1528F73A00DDEC99 /* IHTInjector.h */,
+				1CB4FB531528DC1C00DDEC99 /* InfoPlist.strings */,
+				1CB4FB551528DC1C00DDEC99 /* MainMenu.xib */,
+				1CB4FB581528DC1C00DDEC99 /* main.m */,
+				1CB4FB591528DC1C00DDEC99 /* OOAppDelegate.h */,
+				1CB4FB5A1528DC1C00DDEC99 /* OOAppDelegate.m */,
+				1CB4FB5B1528DC1C00DDEC99 /* OOInjectorHelper.h */,
+				1CB4FB5C1528DC1C00DDEC99 /* OOInjectorHelper.m */,
+				1CB4FB5D1528DC1C00DDEC99 /* OOInstallerHelper.h */,
+				1CB4FB5E1528DC1C00DDEC99 /* OOInstallerHelper.m */,
+				1CB4FB5F1528DC1C00DDEC99 /* ressources */,
+				1CB4FB641528DC1C00DDEC99 /* supportingFiles */,
+			);
+			path = infinit;
+			sourceTree = "<group>";
+		};
+		1CB4FB5F1528DC1C00DDEC99 /* ressources */ = {
+			isa = PBXGroup;
+			children = (
+				1CB4FB601528DC1C00DDEC99 /* 8installer */,
+				1CB4FB611528DC1C00DDEC99 /* Infinit-status-dark.png */,
+				1CB4FB621528DC1C00DDEC99 /* Infinit.icns */,
+				1CB4FB631528DC1C00DDEC99 /* ok.icns */,
+			);
+			path = ressources;
+			sourceTree = "<group>";
+		};
+		1CB4FB641528DC1C00DDEC99 /* supportingFiles */ = {
+			isa = PBXGroup;
+			children = (
+				1CB4FB651528DC1C00DDEC99 /* Infinit-Info.plist */,
+				1CB4FB661528DC1C00DDEC99 /* Infinit-Prefix.pch */,
+			);
+			path = supportingFiles;
+			sourceTree = "<group>";
+		};
+		1CB4FB781528EDDA00DDEC99 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1CB4FB7C1528EDDA00DDEC99 /* mach_inject_bundle_stub.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		3619AF3E1508F5ED00324697 /* Preferences */ = {
+		1CD296FB1528D289006D1A4C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				3619AF451508F5ED00324697 /* Preferences.h */,
-				3619AF461508F5ED00324697 /* Preferences.m */,
-				3619AF481508F5ED00324697 /* Preferences.tiff */,
-				3619AF4A1508F5ED00324697 /* Preferences.xib */,
-				3619AF3F1508F5ED00324697 /* Supporting Files */,
-			);
-			path = Preferences;
-			sourceTree = "<group>";
-		};
-		3619AF3F1508F5ED00324697 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				3619AF401508F5ED00324697 /* Preferences-Info.plist */,
-				3619AF411508F5ED00324697 /* InfoPlist.strings */,
-				3619AF441508F5ED00324697 /* Preferences-Prefix.pch */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		36507C63150A492900830312 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				36507C67150A492900830312 /* mach_inject_bundle_stub.bundle */,
+				1CD297041528D28A006D1A4C /* io.infinit.FinderDopant.bundle */,
+				1CD297061528D28A006D1A4C /* io.infinit.HelperTools.helper */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -226,25 +255,25 @@
 		36E9F8AB14FF7DE7000B9C12 = {
 			isa = PBXGroup;
 			children = (
-				36507C62150A492900830312 /* mach_inject_bundle_stub.xcodeproj */,
-				360D48F715110F7400C88E93 /* HelperTools.xcodeproj */,
-				36E9F8C014FF7DE8000B9C12 /* Infinit */,
-				3619AF3E1508F5ED00324697 /* Preferences */,
-				36E9F8B914FF7DE8000B9C12 /* Frameworks */,
-				36E9F8B714FF7DE8000B9C12 /* Products */,
+				1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */,
+				1CD296FA1528D289006D1A4C /* medecine.xcodeproj */,
+				1CB4FB521528DC1C00DDEC99 /* infinit */,
+				1CB4FB411528DC0F00DDEC99 /* preferences */,
+				36E9F8B914FF7DE8000B9C12 /* frameworks */,
+				36E9F8B714FF7DE8000B9C12 /* products */,
 			);
 			sourceTree = "<group>";
 		};
-		36E9F8B714FF7DE8000B9C12 /* Products */ = {
+		36E9F8B714FF7DE8000B9C12 /* products */ = {
 			isa = PBXGroup;
 			children = (
 				3619AF3B1508F5ED00324697 /* Preferences.prefPane */,
 				362A33E4150B6ED000D92151 /* Infinit.app */,
 			);
-			name = Products;
+			name = products;
 			sourceTree = "<group>";
 		};
-		36E9F8B914FF7DE8000B9C12 /* Frameworks */ = {
+		36E9F8B914FF7DE8000B9C12 /* frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				368C77DA150C1038009E8FC4 /* Cocoa.framework */,
@@ -254,7 +283,7 @@
 				3619AF211508F3A900324697 /* PreferencePanes.framework */,
 				36E9F8BC14FF7DE8000B9C12 /* Other Frameworks */,
 			);
-			name = Frameworks;
+			name = frameworks;
 			sourceTree = "<group>";
 		};
 		36E9F8BC14FF7DE8000B9C12 /* Other Frameworks */ = {
@@ -267,56 +296,6 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
-		36E9F8C014FF7DE8000B9C12 /* Infinit */ = {
-			isa = PBXGroup;
-			children = (
-				36E9F8D814FF7E2F000B9C12 /* Resources */,
-				36E9F8D714FF7E22000B9C12 /* Classes */,
-				36E9F8CC14FF7DE8000B9C12 /* OOAppDelegate.h */,
-				36E9F8CD14FF7DE8000B9C12 /* OOAppDelegate.m */,
-				36E9F8CF14FF7DE8000B9C12 /* MainMenu.xib */,
-				36E9F8C114FF7DE8000B9C12 /* Supporting Files */,
-			);
-			path = Infinit;
-			sourceTree = "<group>";
-		};
-		36E9F8C114FF7DE8000B9C12 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				36E9F8C214FF7DE8000B9C12 /* Infinit-Info.plist */,
-				36E9F8C314FF7DE8000B9C12 /* InfoPlist.strings */,
-				36E9F8C614FF7DE8000B9C12 /* main.m */,
-				36E9F8C814FF7DE8000B9C12 /* Infinit-Prefix.pch */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		36E9F8D714FF7E22000B9C12 /* Classes */ = {
-			isa = PBXGroup;
-			children = (
-				360D48F51510F8D000C88E93 /* IHTInjector.h */,
-				36E9F8D914FF86B4000B9C12 /* OOInjectorHelper.h */,
-				36E9F8DA14FF86B4000B9C12 /* OOInjectorHelper.m */,
-				3619AF54150918AF00324697 /* OOInstallerHelper.h */,
-				3619AF55150918AF00324697 /* OOInstallerHelper.m */,
-			);
-			name = Classes;
-			sourceTree = "<group>";
-		};
-		36E9F8D814FF7E2F000B9C12 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				36631858151F7B9F00599033 /* Infinit-status-dark.png */,
-				3600CA3A151EA5930004954E /* Infinit.icns */,
-				367ADC2F1517EFC2009E706B /* ok.icns */,
-				3628ABFB151CE7D60093312B /* red-status.icns */,
-				36A9401A1515358200B58D1E /* pastille-ok.png */,
-				36A9401B1515358200B58D1E /* pastille-pending.png */,
-				368C7803150E1610009E8FC4 /* 8installer */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -324,7 +303,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				360D48F61510F8D000C88E93 /* IHTInjector.h in Headers */,
+				1CB4FB4E1528DC0F00DDEC99 /* Preferences.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -363,10 +342,9 @@
 			buildRules = (
 			);
 			dependencies = (
-				360D490715110FA600C88E93 /* PBXTargetDependency */,
-				360D490915110FA600C88E93 /* PBXTargetDependency */,
+				1C8523231528DAF600051605 /* PBXTargetDependency */,
+				1C8523251528DAF600051605 /* PBXTargetDependency */,
 				362A3404150B6F7C00D92151 /* PBXTargetDependency */,
-				362A33FE150B6F7200D92151 /* PBXTargetDependency */,
 			);
 			name = Infinit;
 			productName = Infinit;
@@ -381,7 +359,7 @@
 			attributes = {
 				LastUpgradeCheck = 0420;
 			};
-			buildConfigurationList = 36E9F8B014FF7DE7000B9C12 /* Build configuration list for PBXProject "Infinit" */;
+			buildConfigurationList = 36E9F8B014FF7DE7000B9C12 /* Build configuration list for PBXProject "Surface" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -389,16 +367,16 @@
 				en,
 			);
 			mainGroup = 36E9F8AB14FF7DE7000B9C12;
-			productRefGroup = 36E9F8B714FF7DE8000B9C12 /* Products */;
+			productRefGroup = 36E9F8B714FF7DE8000B9C12 /* products */;
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 360D48F815110F7400C88E93 /* Products */;
-					ProjectRef = 360D48F715110F7400C88E93 /* HelperTools.xcodeproj */;
+					ProductGroup = 1CD296FB1528D289006D1A4C /* Products */;
+					ProjectRef = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
 				},
 				{
-					ProductGroup = 36507C63150A492900830312 /* Products */;
-					ProjectRef = 36507C62150A492900830312 /* mach_inject_bundle_stub.xcodeproj */;
+					ProductGroup = 1CB4FB781528EDDA00DDEC99 /* Products */;
+					ProjectRef = 1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -410,25 +388,25 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		360D490115110F7500C88E93 /* io.infinit.FinderInjectee.bundle */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = io.infinit.FinderInjectee.bundle;
-			remoteRef = 360D490015110F7500C88E93 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		360D490315110F7500C88E93 /* io.infinit.HelperTools.helper */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = io.infinit.HelperTools.helper;
-			remoteRef = 360D490215110F7500C88E93 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		36507C67150A492900830312 /* mach_inject_bundle_stub.bundle */ = {
+		1CB4FB7C1528EDDA00DDEC99 /* mach_inject_bundle_stub.bundle */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = mach_inject_bundle_stub.bundle;
-			remoteRef = 36507C66150A492900830312 /* PBXContainerItemProxy */;
+			remoteRef = 1CB4FB7B1528EDDA00DDEC99 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		1CD297041528D28A006D1A4C /* io.infinit.FinderDopant.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = io.infinit.FinderDopant.bundle;
+			remoteRef = 1CD297031528D28A006D1A4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		1CD297061528D28A006D1A4C /* io.infinit.HelperTools.helper */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = io.infinit.HelperTools.helper;
+			remoteRef = 1CD297051528D28A006D1A4C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -438,10 +416,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3619AF431508F5ED00324697 /* InfoPlist.strings in Resources */,
-				3619AF491508F5ED00324697 /* Preferences.tiff in Resources */,
-				3619AF4C1508F5ED00324697 /* Preferences.xib in Resources */,
-				36672006150BE2BE002A595A /* Infinit-Info.plist in Resources */,
+				1CB4FB4C1528DC0F00DDEC99 /* InfoPlist.strings in Resources */,
+				1CB4FB4D1528DC0F00DDEC99 /* Preferences.xib in Resources */,
+				1CB4FB501528DC0F00DDEC99 /* Preferences.tiff in Resources */,
+				1CB4FB511528DC0F00DDEC99 /* Preferences-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -449,11 +427,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				36672008150BE301002A595A /* MainMenu.xib in Resources */,
-				367ADC301517EFC2009E706B /* ok.icns in Resources */,
-				3628ABFC151CE7D60093312B /* red-status.icns in Resources */,
-				3600CA3B151EA5930004954E /* Infinit.icns in Resources */,
-				36631859151F7B9F00599033 /* Infinit-status-dark.png in Resources */,
+				1CB4FB671528DC1C00DDEC99 /* InfoPlist.strings in Resources */,
+				1CB4FB681528DC1C00DDEC99 /* MainMenu.xib in Resources */,
+				1CB4FB6E1528DC1C00DDEC99 /* 8installer in Resources */,
+				1CB4FB6F1528DC1C00DDEC99 /* Infinit-status-dark.png in Resources */,
+				1CB4FB701528DC1C00DDEC99 /* Infinit.icns in Resources */,
+				1CB4FB711528DC1C00DDEC99 /* ok.icns in Resources */,
+				1CB4FB721528DC1C00DDEC99 /* Infinit-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -474,7 +454,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3619AF471508F5ED00324697 /* Preferences.m in Sources */,
+				1CB4FB4F1528DC0F00DDEC99 /* Preferences.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -482,30 +462,25 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				36672005150BE2B6002A595A /* main.m in Sources */,
-				36672009150BE305002A595A /* OOAppDelegate.m in Sources */,
-				3667200A150BE30D002A595A /* OOInstallerHelper.m in Sources */,
-				3667200B150BE312002A595A /* OOInjectorHelper.m in Sources */,
+				1CB4FB6A1528DC1C00DDEC99 /* main.m in Sources */,
+				1CB4FB6B1528DC1C00DDEC99 /* OOAppDelegate.m in Sources */,
+				1CB4FB6C1528DC1C00DDEC99 /* OOInjectorHelper.m in Sources */,
+				1CB4FB6D1528DC1C00DDEC99 /* OOInstallerHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		360D490715110FA600C88E93 /* PBXTargetDependency */ = {
+		1C8523231528DAF600051605 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = FinderInjectee;
-			targetProxy = 360D490615110FA600C88E93 /* PBXContainerItemProxy */;
+			name = FinderDopant;
+			targetProxy = 1C8523221528DAF600051605 /* PBXContainerItemProxy */;
 		};
-		360D490915110FA600C88E93 /* PBXTargetDependency */ = {
+		1C8523251528DAF600051605 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = HelperTools;
-			targetProxy = 360D490815110FA600C88E93 /* PBXContainerItemProxy */;
-		};
-		362A33FE150B6F7200D92151 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = mach_inject_bundle_stub;
-			targetProxy = 362A33FD150B6F7200D92151 /* PBXContainerItemProxy */;
+			name = Nurse;
+			targetProxy = 1C8523241528DAF600051605 /* PBXContainerItemProxy */;
 		};
 		362A3404150B6F7C00D92151 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -515,34 +490,34 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		3619AF411508F5ED00324697 /* InfoPlist.strings */ = {
+		1CB4FB421528DC0F00DDEC99 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				3619AF421508F5ED00324697 /* en */,
+				1CB4FB431528DC0F00DDEC99 /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		3619AF4A1508F5ED00324697 /* Preferences.xib */ = {
+		1CB4FB441528DC0F00DDEC99 /* Preferences.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				3619AF4B1508F5ED00324697 /* en */,
+				1CB4FB451528DC0F00DDEC99 /* en */,
 			);
 			name = Preferences.xib;
 			sourceTree = "<group>";
 		};
-		36E9F8C314FF7DE8000B9C12 /* InfoPlist.strings */ = {
+		1CB4FB531528DC1C00DDEC99 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				36E9F8C414FF7DE8000B9C12 /* en */,
+				1CB4FB541528DC1C00DDEC99 /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		36E9F8CF14FF7DE8000B9C12 /* MainMenu.xib */ = {
+		1CB4FB551528DC1C00DDEC99 /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				36E9F8D014FF7DE8000B9C12 /* en */,
+				1CB4FB561528DC1C00DDEC99 /* en */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";
@@ -560,8 +535,8 @@
 				);
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Preferences/Preferences-Prefix.pch";
-				INFOPLIST_FILE = "Preferences/Preferences-Info.plist";
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "preferences/supportingFiles/preferences-Info.plist";
 				INSTALL_PATH = "$(HOME)/Library/PreferencePanes";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -581,8 +556,8 @@
 				);
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Preferences/Preferences-Prefix.pch";
-				INFOPLIST_FILE = "Preferences/Preferences-Info.plist";
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "preferences/supportingFiles/preferences-Info.plist";
 				INSTALL_PATH = "$(HOME)/Library/PreferencePanes";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -597,8 +572,8 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Infinit/Infinit-Prefix.pch";
-				INFOPLIST_FILE = "Infinit/Infinit-Info.plist";
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "Infinit/supportingFiles/Infinit-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -611,8 +586,8 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Infinit/Infinit-Prefix.pch";
-				INFOPLIST_FILE = "Infinit/Infinit-Info.plist";
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "Infinit/supportingFiles/Infinit-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -690,7 +665,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		36E9F8B014FF7DE7000B9C12 /* Build configuration list for PBXProject "Infinit" */ = {
+		36E9F8B014FF7DE7000B9C12 /* Build configuration list for PBXProject "Surface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				36E9F8D214FF7DE8000B9C12 /* Debug */,
