@@ -1,0 +1,556 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1C8522BC1528D82D00051605 /* IHFMenuNeedsUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522771528D78200051605 /* IHFMenuNeedsUpdate.m */; };
+		1C8522BE1528D82D00051605 /* FIAddInfinitToFavorite.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85227A1528D78200051605 /* FIAddInfinitToFavorite.m */; };
+		1C8522C01528D82D00051605 /* FIMain.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85227C1528D78200051605 /* FIMain.m */; };
+		1C8522C31528D82D00051605 /* FISwizzle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522801528D78200051605 /* FISwizzle.m */; };
+		1C8522C61528D82D00051605 /* FIGetStatusOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522841528D78200051605 /* FIGetStatusOperation.m */; };
+		1C8522C81528D82D00051605 /* FIIconOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522861528D78200051605 /* FIIconOverlay.m */; };
+		1C8522CA1528D82D00051605 /* FIListCellDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522881528D78200051605 /* FIListCellDictKey.m */; };
+		1C8522CC1528D82D00051605 /* FITableCellDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85228A1528D78200051605 /* FITableCellDictKey.m */; };
+		1C8522CE1528D82D00051605 /* TestClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85228C1528D78200051605 /* TestClass.m */; };
+		1C8522E61528D94E00051605 /* IHTHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85229F1528D78200051605 /* IHTHelpers.m */; };
+		1C8522E71528D94E00051605 /* IHTInjector.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522A11528D78200051605 /* IHTInjector.m */; };
+		1C8522E81528D94E00051605 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522A21528D78200051605 /* main.m */; };
+		1C8522E91528D94E00051605 /* mach_inject.c in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522A91528D78200051605 /* mach_inject.c */; };
+		1C8522EA1528D94E00051605 /* mach_inject_bundle.c in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522AB1528D78200051605 /* mach_inject_bundle.c */; };
+		361286ED1510AC96008228FF /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367BCFD014FE6D4200B41298 /* AppKit.framework */; };
+		3628ABF4151B855B0093312B /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3628ABF3151B855B0093312B /* Quartz.framework */; };
+		368C77E0150C10C4009E8FC4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 368C77DE150C10BA009E8FC4 /* Cocoa.framework */; };
+		368C77E1150C10C5009E8FC4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 368C77DE150C10BA009E8FC4 /* Cocoa.framework */; };
+		368C77EA150D02B5009E8FC4 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367BCFD014FE6D4200B41298 /* AppKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1C8522761528D78200051605 /* IHFMenuNeedsUpdate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IHFMenuNeedsUpdate.h; sourceTree = "<group>"; };
+		1C8522771528D78200051605 /* IHFMenuNeedsUpdate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IHFMenuNeedsUpdate.m; sourceTree = "<group>"; };
+		1C8522791528D78200051605 /* FIAddInfinitToFavorite.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FIAddInfinitToFavorite.h; sourceTree = "<group>"; };
+		1C85227A1528D78200051605 /* FIAddInfinitToFavorite.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FIAddInfinitToFavorite.m; sourceTree = "<group>"; };
+		1C85227B1528D78200051605 /* FIMain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FIMain.h; sourceTree = "<group>"; };
+		1C85227C1528D78200051605 /* FIMain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FIMain.m; sourceTree = "<group>"; };
+		1C85227E1528D78200051605 /* CDStructures.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CDStructures.h; sourceTree = "<group>"; };
+		1C85227F1528D78200051605 /* FISwizzle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FISwizzle.h; sourceTree = "<group>"; };
+		1C8522801528D78200051605 /* FISwizzle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FISwizzle.m; sourceTree = "<group>"; };
+		1C8522821528D78200051605 /* FICellDictKey-Protocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FICellDictKey-Protocol.h"; sourceTree = "<group>"; };
+		1C8522831528D78200051605 /* FIGetStatusOperation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FIGetStatusOperation.h; sourceTree = "<group>"; };
+		1C8522841528D78200051605 /* FIGetStatusOperation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FIGetStatusOperation.m; sourceTree = "<group>"; };
+		1C8522851528D78200051605 /* FIIconOverlay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FIIconOverlay.h; sourceTree = "<group>"; };
+		1C8522861528D78200051605 /* FIIconOverlay.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FIIconOverlay.m; sourceTree = "<group>"; };
+		1C8522871528D78200051605 /* FIListCellDictKey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FIListCellDictKey.h; sourceTree = "<group>"; };
+		1C8522881528D78200051605 /* FIListCellDictKey.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FIListCellDictKey.m; sourceTree = "<group>"; };
+		1C8522891528D78200051605 /* FITableCellDictKey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FITableCellDictKey.h; sourceTree = "<group>"; };
+		1C85228A1528D78200051605 /* FITableCellDictKey.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FITableCellDictKey.m; sourceTree = "<group>"; };
+		1C85228B1528D78200051605 /* TestClass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestClass.h; sourceTree = "<group>"; };
+		1C85228C1528D78200051605 /* TestClass.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestClass.m; sourceTree = "<group>"; };
+		1C85228E1528D78200051605 /* Dopant-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Dopant-Info.plist"; sourceTree = "<group>"; };
+		1C85229E1528D78200051605 /* IHTHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IHTHelpers.h; sourceTree = "<group>"; };
+		1C85229F1528D78200051605 /* IHTHelpers.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IHTHelpers.m; sourceTree = "<group>"; };
+		1C8522A01528D78200051605 /* IHTInjector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IHTInjector.h; sourceTree = "<group>"; };
+		1C8522A11528D78200051605 /* IHTInjector.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IHTInjector.m; sourceTree = "<group>"; };
+		1C8522A21528D78200051605 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		1C8522A41528D78200051605 /* Nurse-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Nurse-Info.plist"; sourceTree = "<group>"; };
+		1C8522A51528D78200051605 /* Nurse-Launchd.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Nurse-Launchd.plist"; sourceTree = "<group>"; };
+		1C8522A91528D78200051605 /* mach_inject.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mach_inject.c; sourceTree = "<group>"; };
+		1C8522AA1528D78200051605 /* mach_inject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mach_inject.h; sourceTree = "<group>"; };
+		1C8522AB1528D78200051605 /* mach_inject_bundle.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mach_inject_bundle.c; sourceTree = "<group>"; };
+		1C8522AC1528D78200051605 /* mach_inject_bundle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mach_inject_bundle.h; sourceTree = "<group>"; };
+		1CB4FB7E1528EEDC00DDEC99 /* mach_inject_bundle_stub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mach_inject_bundle_stub.h; path = ../needle/mach_inject_bundle_stub.h; sourceTree = "<group>"; };
+		3628ABF3151B855B0093312B /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
+		3661644615011A08008A1425 /* io.infinit.HelperTools.helper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = io.infinit.HelperTools.helper; sourceTree = BUILT_PRODUCTS_DIR; };
+		367BCFD014FE6D4200B41298 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		367BCFD114FE6D4200B41298 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		367BCFF614FE6F4600B41298 /* io.infinit.FinderDopant.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = io.infinit.FinderDopant.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		368C77DE150C10BA009E8FC4 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		610CC0B514FEC5B300623642 /* ScriptingBridge.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScriptingBridge.framework; path = System/Library/Frameworks/ScriptingBridge.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3661644315011A08008A1425 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				368C77E0150C10C4009E8FC4 /* Cocoa.framework in Frameworks */,
+				368C77EA150D02B5009E8FC4 /* AppKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		367BCFF314FE6F4600B41298 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3628ABF4151B855B0093312B /* Quartz.framework in Frameworks */,
+				368C77E1150C10C5009E8FC4 /* Cocoa.framework in Frameworks */,
+				361286ED1510AC96008228FF /* AppKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1C8522741528D78200051605 /* dopant */ = {
+			isa = PBXGroup;
+			children = (
+				1C85227B1528D78200051605 /* FIMain.h */,
+				1C85227C1528D78200051605 /* FIMain.m */,
+				1C8522751528D78200051605 /* contextMenu */,
+				1C8522781528D78200051605 /* favoriteStatusBar */,
+				1C85227D1528D78200051605 /* helper */,
+				1C8522811528D78200051605 /* iconOverlay */,
+				1C85228D1528D78200051605 /* supportingFiles */,
+			);
+			path = dopant;
+			sourceTree = "<group>";
+		};
+		1C8522751528D78200051605 /* contextMenu */ = {
+			isa = PBXGroup;
+			children = (
+				1C8522761528D78200051605 /* IHFMenuNeedsUpdate.h */,
+				1C8522771528D78200051605 /* IHFMenuNeedsUpdate.m */,
+			);
+			path = contextMenu;
+			sourceTree = "<group>";
+		};
+		1C8522781528D78200051605 /* favoriteStatusBar */ = {
+			isa = PBXGroup;
+			children = (
+				1C8522791528D78200051605 /* FIAddInfinitToFavorite.h */,
+				1C85227A1528D78200051605 /* FIAddInfinitToFavorite.m */,
+			);
+			path = favoriteStatusBar;
+			sourceTree = "<group>";
+		};
+		1C85227D1528D78200051605 /* helper */ = {
+			isa = PBXGroup;
+			children = (
+				1C85227E1528D78200051605 /* CDStructures.h */,
+				1C85227F1528D78200051605 /* FISwizzle.h */,
+				1C8522801528D78200051605 /* FISwizzle.m */,
+			);
+			path = helper;
+			sourceTree = "<group>";
+		};
+		1C8522811528D78200051605 /* iconOverlay */ = {
+			isa = PBXGroup;
+			children = (
+				1C8522821528D78200051605 /* FICellDictKey-Protocol.h */,
+				1C8522831528D78200051605 /* FIGetStatusOperation.h */,
+				1C8522841528D78200051605 /* FIGetStatusOperation.m */,
+				1C8522851528D78200051605 /* FIIconOverlay.h */,
+				1C8522861528D78200051605 /* FIIconOverlay.m */,
+				1C8522871528D78200051605 /* FIListCellDictKey.h */,
+				1C8522881528D78200051605 /* FIListCellDictKey.m */,
+				1C8522891528D78200051605 /* FITableCellDictKey.h */,
+				1C85228A1528D78200051605 /* FITableCellDictKey.m */,
+				1C85228B1528D78200051605 /* TestClass.h */,
+				1C85228C1528D78200051605 /* TestClass.m */,
+			);
+			path = iconOverlay;
+			sourceTree = "<group>";
+		};
+		1C85228D1528D78200051605 /* supportingFiles */ = {
+			isa = PBXGroup;
+			children = (
+				1C85228E1528D78200051605 /* Dopant-Info.plist */,
+			);
+			path = supportingFiles;
+			sourceTree = "<group>";
+		};
+		1C85229C1528D78200051605 /* nurse */ = {
+			isa = PBXGroup;
+			children = (
+				1C85229D1528D78200051605 /* helper */,
+				1C8522A01528D78200051605 /* IHTInjector.h */,
+				1C8522A11528D78200051605 /* IHTInjector.m */,
+				1C8522A21528D78200051605 /* main.m */,
+				1C8522A31528D78200051605 /* supportingFiles */,
+			);
+			path = nurse;
+			sourceTree = "<group>";
+		};
+		1C85229D1528D78200051605 /* helper */ = {
+			isa = PBXGroup;
+			children = (
+				1C85229E1528D78200051605 /* IHTHelpers.h */,
+				1C85229F1528D78200051605 /* IHTHelpers.m */,
+			);
+			path = helper;
+			sourceTree = "<group>";
+		};
+		1C8522A31528D78200051605 /* supportingFiles */ = {
+			isa = PBXGroup;
+			children = (
+				1C8522A41528D78200051605 /* Nurse-Info.plist */,
+				1C8522A51528D78200051605 /* Nurse-Launchd.plist */,
+			);
+			path = supportingFiles;
+			sourceTree = "<group>";
+		};
+		1C8522A81528D78200051605 /* syringue */ = {
+			isa = PBXGroup;
+			children = (
+				1CB4FB7E1528EEDC00DDEC99 /* mach_inject_bundle_stub.h */,
+				1C8522A91528D78200051605 /* mach_inject.c */,
+				1C8522AA1528D78200051605 /* mach_inject.h */,
+				1C8522AB1528D78200051605 /* mach_inject_bundle.c */,
+				1C8522AC1528D78200051605 /* mach_inject_bundle.h */,
+			);
+			path = syringue;
+			sourceTree = "<group>";
+		};
+		367BCFBE14FE6D4200B41298 = {
+			isa = PBXGroup;
+			children = (
+				1C8522741528D78200051605 /* dopant */,
+				1C85229C1528D78200051605 /* nurse */,
+				1C8522A81528D78200051605 /* syringue */,
+				367BCFCC14FE6D4200B41298 /* frameworks */,
+				367BCFCA14FE6D4200B41298 /* products */,
+			);
+			sourceTree = "<group>";
+		};
+		367BCFCA14FE6D4200B41298 /* products */ = {
+			isa = PBXGroup;
+			children = (
+				367BCFF614FE6F4600B41298 /* io.infinit.FinderDopant.bundle */,
+				3661644615011A08008A1425 /* io.infinit.HelperTools.helper */,
+			);
+			name = products;
+			sourceTree = "<group>";
+		};
+		367BCFCC14FE6D4200B41298 /* frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3628ABF3151B855B0093312B /* Quartz.framework */,
+				367BCFD014FE6D4200B41298 /* AppKit.framework */,
+				368C77DE150C10BA009E8FC4 /* Cocoa.framework */,
+				367BCFCF14FE6D4200B41298 /* Other Frameworks */,
+			);
+			name = frameworks;
+			sourceTree = "<group>";
+		};
+		367BCFCF14FE6D4200B41298 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				610CC0B514FEC5B300623642 /* ScriptingBridge.framework */,
+				367BCFD114FE6D4200B41298 /* CoreData.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3661644515011A08008A1425 /* Nurse */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3661645115011A08008A1425 /* Build configuration list for PBXNativeTarget "Nurse" */;
+			buildPhases = (
+				3661644215011A08008A1425 /* Sources */,
+				3661644315011A08008A1425 /* Frameworks */,
+				36742C75150A46F900051D01 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Nurse;
+			productName = InfinitHelperTool;
+			productReference = 3661644615011A08008A1425 /* io.infinit.HelperTools.helper */;
+			productType = "com.apple.product-type.tool";
+		};
+		367BCFF514FE6F4600B41298 /* FinderDopant */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 367BCFFF14FE6F4600B41298 /* Build configuration list for PBXNativeTarget "FinderDopant" */;
+			buildPhases = (
+				367BCFF214FE6F4600B41298 /* Sources */,
+				367BCFF314FE6F4600B41298 /* Frameworks */,
+				367BCFF414FE6F4600B41298 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FinderDopant;
+			productName = InfinitHelperFinderBundle;
+			productReference = 367BCFF614FE6F4600B41298 /* io.infinit.FinderDopant.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		367BCFC014FE6D4200B41298 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
+			buildConfigurationList = 367BCFC314FE6D4200B41298 /* Build configuration list for PBXProject "medecine" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				English,
+				Japanese,
+			);
+			mainGroup = 367BCFBE14FE6D4200B41298;
+			productRefGroup = 367BCFCA14FE6D4200B41298 /* products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				367BCFF514FE6F4600B41298 /* FinderDopant */,
+				3661644515011A08008A1425 /* Nurse */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		36742C75150A46F900051D01 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		367BCFF414FE6F4600B41298 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3661644215011A08008A1425 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C8522E61528D94E00051605 /* IHTHelpers.m in Sources */,
+				1C8522E71528D94E00051605 /* IHTInjector.m in Sources */,
+				1C8522E81528D94E00051605 /* main.m in Sources */,
+				1C8522E91528D94E00051605 /* mach_inject.c in Sources */,
+				1C8522EA1528D94E00051605 /* mach_inject_bundle.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		367BCFF214FE6F4600B41298 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C8522BC1528D82D00051605 /* IHFMenuNeedsUpdate.m in Sources */,
+				1C8522BE1528D82D00051605 /* FIAddInfinitToFavorite.m in Sources */,
+				1C8522C01528D82D00051605 /* FIMain.m in Sources */,
+				1C8522C31528D82D00051605 /* FISwizzle.m in Sources */,
+				1C8522C61528D82D00051605 /* FIGetStatusOperation.m in Sources */,
+				1C8522C81528D82D00051605 /* FIIconOverlay.m in Sources */,
+				1C8522CA1528D82D00051605 /* FIListCellDictKey.m in Sources */,
+				1C8522CC1528D82D00051605 /* FITableCellDictKey.m in Sources */,
+				1C8522CE1528D82D00051605 /* TestClass.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3661645215011A08008A1425 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = io.infinit;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = (
+					"-sectcreate",
+					__TEXT,
+					__info_plist,
+					"nurse/supportingFiles/Nurse-Info.plist",
+					"-sectcreate",
+					__TEXT,
+					__launchd_plist,
+					"nurse/supportingFiles/Nurse-Launchd.plist",
+				);
+				PRODUCT_NAME = io.infinit.HelperTools.helper;
+				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx;
+				SYMROOT = build;
+				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
+				VALID_ARCHS = x86_64;
+			};
+			name = Debug;
+		};
+		3661645315011A08008A1425 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = io.infinit;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = (
+					"-sectcreate",
+					__TEXT,
+					__info_plist,
+					"nurse/supportingFiles/Nurse-Info.plist",
+					"-sectcreate",
+					__TEXT,
+					__launchd_plist,
+					"nurse/supportingFiles/Nurse-Launchd.plist",
+				);
+				PRODUCT_NAME = io.infinit.HelperTools.helper;
+				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx;
+				SYMROOT = build;
+				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
+				VALID_ARCHS = x86_64;
+			};
+			name = Release;
+		};
+		367BCFE514FE6D4200B41298 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = macosx;
+				SYMROOT = /Library/InfinitHelperTools;
+				VALID_ARCHS = x86_64;
+			};
+			name = Debug;
+		};
+		367BCFE614FE6D4200B41298 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = macosx;
+				SYMROOT = /Library/InfinitHelperTools;
+				VALID_ARCHS = x86_64;
+			};
+			name = Release;
+		};
+		367BD00014FE6F4600B41298 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				INFOPLIST_FILE = "dopant/supportingFiles/Dopant-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_NAME = "io.infinit.$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SYMROOT = "";
+				VALID_ARCHS = x86_64;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		367BD00114FE6F4600B41298 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				INFOPLIST_FILE = "dopant/supportingFiles/Dopant-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_NAME = "io.infinit.$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SYMROOT = "";
+				VALID_ARCHS = x86_64;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3661645115011A08008A1425 /* Build configuration list for PBXNativeTarget "Nurse" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3661645215011A08008A1425 /* Debug */,
+				3661645315011A08008A1425 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		367BCFC314FE6D4200B41298 /* Build configuration list for PBXProject "medecine" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				367BCFE514FE6D4200B41298 /* Debug */,
+				367BCFE614FE6D4200B41298 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		367BCFFF14FE6F4600B41298 /* Build configuration list for PBXNativeTarget "FinderDopant" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				367BD00014FE6F4600B41298 /* Debug */,
+				367BD00114FE6F4600B41298 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 367BCFC014FE6D4200B41298 /* Project object */;
+}

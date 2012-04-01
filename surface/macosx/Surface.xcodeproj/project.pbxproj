@@ -1,0 +1,680 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1CB4FB4C1528DC0F00DDEC99 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB421528DC0F00DDEC99 /* InfoPlist.strings */; };
+		1CB4FB4D1528DC0F00DDEC99 /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB441528DC0F00DDEC99 /* Preferences.xib */; };
+		1CB4FB4E1528DC0F00DDEC99 /* Preferences.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CB4FB461528DC0F00DDEC99 /* Preferences.h */; };
+		1CB4FB4F1528DC0F00DDEC99 /* Preferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB4FB471528DC0F00DDEC99 /* Preferences.m */; };
+		1CB4FB501528DC0F00DDEC99 /* Preferences.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB491528DC0F00DDEC99 /* Preferences.tiff */; };
+		1CB4FB511528DC0F00DDEC99 /* Preferences-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB4B1528DC0F00DDEC99 /* Preferences-Info.plist */; };
+		1CB4FB671528DC1C00DDEC99 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB531528DC1C00DDEC99 /* InfoPlist.strings */; };
+		1CB4FB681528DC1C00DDEC99 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB551528DC1C00DDEC99 /* MainMenu.xib */; };
+		1CB4FB6A1528DC1C00DDEC99 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB4FB581528DC1C00DDEC99 /* main.m */; };
+		1CB4FB6B1528DC1C00DDEC99 /* OOAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB4FB5A1528DC1C00DDEC99 /* OOAppDelegate.m */; };
+		1CB4FB6C1528DC1C00DDEC99 /* OOInjectorHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB4FB5C1528DC1C00DDEC99 /* OOInjectorHelper.m */; };
+		1CB4FB6D1528DC1C00DDEC99 /* OOInstallerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB4FB5E1528DC1C00DDEC99 /* OOInstallerHelper.m */; };
+		1CB4FB6E1528DC1C00DDEC99 /* 8installer in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB601528DC1C00DDEC99 /* 8installer */; };
+		1CB4FB6F1528DC1C00DDEC99 /* Infinit-status-dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB611528DC1C00DDEC99 /* Infinit-status-dark.png */; };
+		1CB4FB701528DC1C00DDEC99 /* Infinit.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB621528DC1C00DDEC99 /* Infinit.icns */; };
+		1CB4FB711528DC1C00DDEC99 /* ok.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB631528DC1C00DDEC99 /* ok.icns */; };
+		1CB4FB721528DC1C00DDEC99 /* Infinit-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB651528DC1C00DDEC99 /* Infinit-Info.plist */; };
+		1CB4FB751528EDA100DDEC99 /* io.infinit.FinderDopant.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CD297041528D28A006D1A4C /* io.infinit.FinderDopant.bundle */; };
+		1CB4FB761528EDA100DDEC99 /* io.infinit.HelperTools.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CD297061528D28A006D1A4C /* io.infinit.HelperTools.helper */; };
+		1CB4FB7D1528EDEB00DDEC99 /* mach_inject_bundle_stub.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CB4FB7C1528EDDA00DDEC99 /* mach_inject_bundle_stub.bundle */; };
+		362A33DD150B69AF00D92151 /* PreferencePanes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3619AF211508F3A900324697 /* PreferencePanes.framework */; };
+		362A340A150B700800D92151 /* Preferences.prefPane in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3619AF3B1508F5ED00324697 /* Preferences.prefPane */; };
+		3667200D150BE36D002A595A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36E9F8BF14FF7DE8000B9C12 /* Foundation.framework */; };
+		3667200E150BE370002A595A /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367B0EBA14FFB70200AC66A2 /* ServiceManagement.framework */; };
+		3667200F150BE372002A595A /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367B0EB714FFB6F100AC66A2 /* Security.framework */; };
+		368C77DC150C1052009E8FC4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 368C77DA150C1038009E8FC4 /* Cocoa.framework */; };
+		368C77DD150C1062009E8FC4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 368C77DA150C1038009E8FC4 /* Cocoa.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		1C8523221528DAF600051605 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 367BCFF514FE6F4600B41298;
+			remoteInfo = FinderDopant;
+		};
+		1C8523241528DAF600051605 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 3661644515011A08008A1425;
+			remoteInfo = Nurse;
+		};
+		1CB4FB7B1528EDDA00DDEC99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D01CCD20486CAD60068D4B7;
+			remoteInfo = mach_inject_bundle_stub;
+		};
+		1CD297031528D28A006D1A4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 367BCFF614FE6F4600B41298;
+			remoteInfo = FinderInjectee;
+		};
+		1CD297051528D28A006D1A4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3661644615011A08008A1425;
+			remoteInfo = HelperTools;
+		};
+		362A3403150B6F7C00D92151 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 36E9F8AD14FF7DE7000B9C12 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3619AF3A1508F5ED00324697;
+			remoteInfo = Preferences;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		362A3405150B6F8D00D92151 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Library/LaunchServices;
+			dstSubfolderSpec = 1;
+			files = (
+				1CB4FB7D1528EDEB00DDEC99 /* mach_inject_bundle_stub.bundle in CopyFiles */,
+				1CB4FB751528EDA100DDEC99 /* io.infinit.FinderDopant.bundle in CopyFiles */,
+				1CB4FB761528EDA100DDEC99 /* io.infinit.HelperTools.helper in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		362A3408150B6FED00D92151 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				362A340A150B700800D92151 /* Preferences.prefPane in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		1CB4FB431528DC0F00DDEC99 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1CB4FB451528DC0F00DDEC99 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/Preferences.xib; sourceTree = "<group>"; };
+		1CB4FB461528DC0F00DDEC99 /* Preferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Preferences.h; sourceTree = "<group>"; };
+		1CB4FB471528DC0F00DDEC99 /* Preferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Preferences.m; sourceTree = "<group>"; };
+		1CB4FB491528DC0F00DDEC99 /* Preferences.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Preferences.tiff; sourceTree = "<group>"; };
+		1CB4FB4B1528DC0F00DDEC99 /* Preferences-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Preferences-Info.plist"; sourceTree = "<group>"; };
+		1CB4FB541528DC1C00DDEC99 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1CB4FB561528DC1C00DDEC99 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		1CB4FB581528DC1C00DDEC99 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		1CB4FB591528DC1C00DDEC99 /* OOAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOAppDelegate.h; sourceTree = "<group>"; };
+		1CB4FB5A1528DC1C00DDEC99 /* OOAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOAppDelegate.m; sourceTree = "<group>"; };
+		1CB4FB5B1528DC1C00DDEC99 /* OOInjectorHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOInjectorHelper.h; sourceTree = "<group>"; };
+		1CB4FB5C1528DC1C00DDEC99 /* OOInjectorHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOInjectorHelper.m; sourceTree = "<group>"; };
+		1CB4FB5D1528DC1C00DDEC99 /* OOInstallerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOInstallerHelper.h; sourceTree = "<group>"; };
+		1CB4FB5E1528DC1C00DDEC99 /* OOInstallerHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOInstallerHelper.m; sourceTree = "<group>"; };
+		1CB4FB601528DC1C00DDEC99 /* 8installer */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = 8installer; sourceTree = "<group>"; };
+		1CB4FB611528DC1C00DDEC99 /* Infinit-status-dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Infinit-status-dark.png"; sourceTree = "<group>"; };
+		1CB4FB621528DC1C00DDEC99 /* Infinit.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Infinit.icns; sourceTree = "<group>"; };
+		1CB4FB631528DC1C00DDEC99 /* ok.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ok.icns; sourceTree = "<group>"; };
+		1CB4FB651528DC1C00DDEC99 /* Infinit-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Infinit-Info.plist"; sourceTree = "<group>"; };
+		1CB4FB661528DC1C00DDEC99 /* Infinit-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Infinit-Prefix.pch"; sourceTree = "<group>"; };
+		1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = needle.xcodeproj; path = medecine/needle/needle.xcodeproj; sourceTree = "<group>"; };
+		1CB4FB7F1528F73A00DDEC99 /* IHTInjector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IHTInjector.h; path = ../medecine/nurse/IHTInjector.h; sourceTree = "<group>"; };
+		1CD296FA1528D289006D1A4C /* medecine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = medecine.xcodeproj; path = medecine/medecine.xcodeproj; sourceTree = "<group>"; };
+		3619AF211508F3A900324697 /* PreferencePanes.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PreferencePanes.framework; path = System/Library/Frameworks/PreferencePanes.framework; sourceTree = SDKROOT; };
+		3619AF3B1508F5ED00324697 /* Preferences.prefPane */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Preferences.prefPane; sourceTree = BUILT_PRODUCTS_DIR; };
+		362A33E4150B6ED000D92151 /* Infinit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Infinit.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		362A33E7150B6ED000D92151 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		367B0EB714FFB6F100AC66A2 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		367B0EBA14FFB70200AC66A2 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
+		368C77DA150C1038009E8FC4 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		36E9F8BD14FF7DE8000B9C12 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		36E9F8BE14FF7DE8000B9C12 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		36E9F8BF14FF7DE8000B9C12 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3619AF361508F5ED00324697 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				362A33DD150B69AF00D92151 /* PreferencePanes.framework in Frameworks */,
+				368C77DC150C1052009E8FC4 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		362A33E1150B6ED000D92151 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3667200D150BE36D002A595A /* Foundation.framework in Frameworks */,
+				3667200E150BE370002A595A /* ServiceManagement.framework in Frameworks */,
+				3667200F150BE372002A595A /* Security.framework in Frameworks */,
+				368C77DD150C1062009E8FC4 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1CB4FB411528DC0F00DDEC99 /* preferences */ = {
+			isa = PBXGroup;
+			children = (
+				1CB4FB421528DC0F00DDEC99 /* InfoPlist.strings */,
+				1CB4FB441528DC0F00DDEC99 /* Preferences.xib */,
+				1CB4FB461528DC0F00DDEC99 /* Preferences.h */,
+				1CB4FB471528DC0F00DDEC99 /* Preferences.m */,
+				1CB4FB481528DC0F00DDEC99 /* ressources */,
+				1CB4FB4A1528DC0F00DDEC99 /* supportingFiles */,
+			);
+			path = preferences;
+			sourceTree = "<group>";
+		};
+		1CB4FB481528DC0F00DDEC99 /* ressources */ = {
+			isa = PBXGroup;
+			children = (
+				1CB4FB491528DC0F00DDEC99 /* Preferences.tiff */,
+			);
+			path = ressources;
+			sourceTree = "<group>";
+		};
+		1CB4FB4A1528DC0F00DDEC99 /* supportingFiles */ = {
+			isa = PBXGroup;
+			children = (
+				1CB4FB4B1528DC0F00DDEC99 /* Preferences-Info.plist */,
+			);
+			path = supportingFiles;
+			sourceTree = "<group>";
+		};
+		1CB4FB521528DC1C00DDEC99 /* infinit */ = {
+			isa = PBXGroup;
+			children = (
+				1CB4FB7F1528F73A00DDEC99 /* IHTInjector.h */,
+				1CB4FB531528DC1C00DDEC99 /* InfoPlist.strings */,
+				1CB4FB551528DC1C00DDEC99 /* MainMenu.xib */,
+				1CB4FB581528DC1C00DDEC99 /* main.m */,
+				1CB4FB591528DC1C00DDEC99 /* OOAppDelegate.h */,
+				1CB4FB5A1528DC1C00DDEC99 /* OOAppDelegate.m */,
+				1CB4FB5B1528DC1C00DDEC99 /* OOInjectorHelper.h */,
+				1CB4FB5C1528DC1C00DDEC99 /* OOInjectorHelper.m */,
+				1CB4FB5D1528DC1C00DDEC99 /* OOInstallerHelper.h */,
+				1CB4FB5E1528DC1C00DDEC99 /* OOInstallerHelper.m */,
+				1CB4FB5F1528DC1C00DDEC99 /* ressources */,
+				1CB4FB641528DC1C00DDEC99 /* supportingFiles */,
+			);
+			path = infinit;
+			sourceTree = "<group>";
+		};
+		1CB4FB5F1528DC1C00DDEC99 /* ressources */ = {
+			isa = PBXGroup;
+			children = (
+				1CB4FB601528DC1C00DDEC99 /* 8installer */,
+				1CB4FB611528DC1C00DDEC99 /* Infinit-status-dark.png */,
+				1CB4FB621528DC1C00DDEC99 /* Infinit.icns */,
+				1CB4FB631528DC1C00DDEC99 /* ok.icns */,
+			);
+			path = ressources;
+			sourceTree = "<group>";
+		};
+		1CB4FB641528DC1C00DDEC99 /* supportingFiles */ = {
+			isa = PBXGroup;
+			children = (
+				1CB4FB651528DC1C00DDEC99 /* Infinit-Info.plist */,
+				1CB4FB661528DC1C00DDEC99 /* Infinit-Prefix.pch */,
+			);
+			path = supportingFiles;
+			sourceTree = "<group>";
+		};
+		1CB4FB781528EDDA00DDEC99 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1CB4FB7C1528EDDA00DDEC99 /* mach_inject_bundle_stub.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1CD296FB1528D289006D1A4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1CD297041528D28A006D1A4C /* io.infinit.FinderDopant.bundle */,
+				1CD297061528D28A006D1A4C /* io.infinit.HelperTools.helper */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		36E9F8AB14FF7DE7000B9C12 = {
+			isa = PBXGroup;
+			children = (
+				1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */,
+				1CD296FA1528D289006D1A4C /* medecine.xcodeproj */,
+				1CB4FB521528DC1C00DDEC99 /* infinit */,
+				1CB4FB411528DC0F00DDEC99 /* preferences */,
+				36E9F8B914FF7DE8000B9C12 /* frameworks */,
+				36E9F8B714FF7DE8000B9C12 /* products */,
+			);
+			sourceTree = "<group>";
+		};
+		36E9F8B714FF7DE8000B9C12 /* products */ = {
+			isa = PBXGroup;
+			children = (
+				3619AF3B1508F5ED00324697 /* Preferences.prefPane */,
+				362A33E4150B6ED000D92151 /* Infinit.app */,
+			);
+			name = products;
+			sourceTree = "<group>";
+		};
+		36E9F8B914FF7DE8000B9C12 /* frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				368C77DA150C1038009E8FC4 /* Cocoa.framework */,
+				36E9F8BF14FF7DE8000B9C12 /* Foundation.framework */,
+				367B0EBA14FFB70200AC66A2 /* ServiceManagement.framework */,
+				367B0EB714FFB6F100AC66A2 /* Security.framework */,
+				3619AF211508F3A900324697 /* PreferencePanes.framework */,
+				36E9F8BC14FF7DE8000B9C12 /* Other Frameworks */,
+			);
+			name = frameworks;
+			sourceTree = "<group>";
+		};
+		36E9F8BC14FF7DE8000B9C12 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				36E9F8BD14FF7DE8000B9C12 /* AppKit.framework */,
+				36E9F8BE14FF7DE8000B9C12 /* CoreData.framework */,
+				362A33E7150B6ED000D92151 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		3619AF371508F5ED00324697 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1CB4FB4E1528DC0F00DDEC99 /* Preferences.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		3619AF3A1508F5ED00324697 /* Preferences */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3619AF4D1508F5ED00324697 /* Build configuration list for PBXNativeTarget "Preferences" */;
+			buildPhases = (
+				3619AF351508F5ED00324697 /* Sources */,
+				3619AF361508F5ED00324697 /* Frameworks */,
+				3619AF371508F5ED00324697 /* Headers */,
+				3619AF381508F5ED00324697 /* Resources */,
+				3619AF391508F5ED00324697 /* Rez */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Preferences;
+			productName = Preferences;
+			productReference = 3619AF3B1508F5ED00324697 /* Preferences.prefPane */;
+			productType = "com.apple.product-type.bundle";
+		};
+		362A33E3150B6ED000D92151 /* Infinit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 362A33FA150B6ED000D92151 /* Build configuration list for PBXNativeTarget "Infinit" */;
+			buildPhases = (
+				362A33E0150B6ED000D92151 /* Sources */,
+				362A33E1150B6ED000D92151 /* Frameworks */,
+				362A33E2150B6ED000D92151 /* Resources */,
+				362A3405150B6F8D00D92151 /* CopyFiles */,
+				362A3408150B6FED00D92151 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1C8523231528DAF600051605 /* PBXTargetDependency */,
+				1C8523251528DAF600051605 /* PBXTargetDependency */,
+				362A3404150B6F7C00D92151 /* PBXTargetDependency */,
+			);
+			name = Infinit;
+			productName = Infinit;
+			productReference = 362A33E4150B6ED000D92151 /* Infinit.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		36E9F8AD14FF7DE7000B9C12 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
+			buildConfigurationList = 36E9F8B014FF7DE7000B9C12 /* Build configuration list for PBXProject "Surface" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 36E9F8AB14FF7DE7000B9C12;
+			productRefGroup = 36E9F8B714FF7DE8000B9C12 /* products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 1CD296FB1528D289006D1A4C /* Products */;
+					ProjectRef = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
+				},
+				{
+					ProductGroup = 1CB4FB781528EDDA00DDEC99 /* Products */;
+					ProjectRef = 1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				3619AF3A1508F5ED00324697 /* Preferences */,
+				362A33E3150B6ED000D92151 /* Infinit */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		1CB4FB7C1528EDDA00DDEC99 /* mach_inject_bundle_stub.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = mach_inject_bundle_stub.bundle;
+			remoteRef = 1CB4FB7B1528EDDA00DDEC99 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		1CD297041528D28A006D1A4C /* io.infinit.FinderDopant.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = io.infinit.FinderDopant.bundle;
+			remoteRef = 1CD297031528D28A006D1A4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		1CD297061528D28A006D1A4C /* io.infinit.HelperTools.helper */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = io.infinit.HelperTools.helper;
+			remoteRef = 1CD297051528D28A006D1A4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3619AF381508F5ED00324697 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1CB4FB4C1528DC0F00DDEC99 /* InfoPlist.strings in Resources */,
+				1CB4FB4D1528DC0F00DDEC99 /* Preferences.xib in Resources */,
+				1CB4FB501528DC0F00DDEC99 /* Preferences.tiff in Resources */,
+				1CB4FB511528DC0F00DDEC99 /* Preferences-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		362A33E2150B6ED000D92151 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1CB4FB671528DC1C00DDEC99 /* InfoPlist.strings in Resources */,
+				1CB4FB681528DC1C00DDEC99 /* MainMenu.xib in Resources */,
+				1CB4FB6E1528DC1C00DDEC99 /* 8installer in Resources */,
+				1CB4FB6F1528DC1C00DDEC99 /* Infinit-status-dark.png in Resources */,
+				1CB4FB701528DC1C00DDEC99 /* Infinit.icns in Resources */,
+				1CB4FB711528DC1C00DDEC99 /* ok.icns in Resources */,
+				1CB4FB721528DC1C00DDEC99 /* Infinit-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXRezBuildPhase section */
+		3619AF391508F5ED00324697 /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXRezBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3619AF351508F5ED00324697 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1CB4FB4F1528DC0F00DDEC99 /* Preferences.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		362A33E0150B6ED000D92151 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1CB4FB6A1528DC1C00DDEC99 /* main.m in Sources */,
+				1CB4FB6B1528DC1C00DDEC99 /* OOAppDelegate.m in Sources */,
+				1CB4FB6C1528DC1C00DDEC99 /* OOInjectorHelper.m in Sources */,
+				1CB4FB6D1528DC1C00DDEC99 /* OOInstallerHelper.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1C8523231528DAF600051605 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FinderDopant;
+			targetProxy = 1C8523221528DAF600051605 /* PBXContainerItemProxy */;
+		};
+		1C8523251528DAF600051605 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Nurse;
+			targetProxy = 1C8523241528DAF600051605 /* PBXContainerItemProxy */;
+		};
+		362A3404150B6F7C00D92151 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3619AF3A1508F5ED00324697 /* Preferences */;
+			targetProxy = 362A3403150B6F7C00D92151 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		1CB4FB421528DC0F00DDEC99 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1CB4FB431528DC0F00DDEC99 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		1CB4FB441528DC0F00DDEC99 /* Preferences.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1CB4FB451528DC0F00DDEC99 /* en */,
+			);
+			name = Preferences.xib;
+			sourceTree = "<group>";
+		};
+		1CB4FB531528DC1C00DDEC99 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1CB4FB541528DC1C00DDEC99 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		1CB4FB551528DC1C00DDEC99 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1CB4FB561528DC1C00DDEC99 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		3619AF4E1508F5ED00324697 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(DEVELOPER_DIR)/SDKs/MacOSX10.6.sdk/System/Library/Frameworks\"",
+				);
+				GCC_ENABLE_OBJC_GC = supported;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "preferences/supportingFiles/preferences-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/PreferencePanes";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				VALID_ARCHS = x86_64;
+				WRAPPER_EXTENSION = prefPane;
+			};
+			name = Debug;
+		};
+		3619AF4F1508F5ED00324697 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(DEVELOPER_DIR)/SDKs/MacOSX10.6.sdk/System/Library/Frameworks\"",
+				);
+				GCC_ENABLE_OBJC_GC = supported;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "preferences/supportingFiles/preferences-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/PreferencePanes";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				VALID_ARCHS = x86_64;
+				WRAPPER_EXTENSION = prefPane;
+			};
+			name = Release;
+		};
+		362A33FB150B6ED000D92151 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "Infinit/supportingFiles/Infinit-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		362A33FC150B6ED000D92151 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "Infinit/supportingFiles/Infinit-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		36E9F8D214FF7DE8000B9C12 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CODE_SIGN_IDENTITY = io.infinit;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		36E9F8D314FF7DE8000B9C12 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CODE_SIGN_IDENTITY = io.infinit;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3619AF4D1508F5ED00324697 /* Build configuration list for PBXNativeTarget "Preferences" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3619AF4E1508F5ED00324697 /* Debug */,
+				3619AF4F1508F5ED00324697 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		362A33FA150B6ED000D92151 /* Build configuration list for PBXNativeTarget "Infinit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				362A33FB150B6ED000D92151 /* Debug */,
+				362A33FC150B6ED000D92151 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		36E9F8B014FF7DE7000B9C12 /* Build configuration list for PBXProject "Surface" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				36E9F8D214FF7DE8000B9C12 /* Debug */,
+				36E9F8D314FF7DE8000B9C12 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 36E9F8AD14FF7DE7000B9C12 /* Project object */;
+}
