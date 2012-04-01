@@ -408,6 +408,79 @@ void test_timeout_dont()
   sched->run();
 }
 
+/*--------.
+| VThread |
+`--------*/
+
+int answer()
+{
+  return 42;
+}
+
+void test_vthread()
+{
+  Fixture f;
+
+  reactor::VThread<int> t(*sched, "return value", answer);
+  BOOST_CHECK_THROW(t.result(), reactor::Exception);
+  sched->run();
+  BOOST_CHECK_EQUAL(t.result(), 42);
+}
+
+/*------------.
+| Multithread |
+`------------*/
+
+void run_sched(reactor::Signal& s)
+{
+  Fixture f;
+
+  typedef bool (reactor::Thread::*F)(reactor::Waitable&, reactor::DurationOpt);
+  reactor::Thread keeper(*sched, "keeper",
+                         boost::bind(static_cast<F>(&reactor::Thread::wait),
+                                     &keeper, boost::ref(s),
+                                     reactor::DurationOpt()));
+  sched->run();
+}
+
+void test_multithread_spawn_wake()
+{
+  reactor::Signal sig;
+  boost::thread s(boost::bind(run_sched, boost::ref(sig)));
+  // Make sure the scheduler is sleeping.
+  sleep(1);
+  reactor::Thread waker(*sched, "waker",
+                        boost::bind(&reactor::Signal::signal, &sig));
+  s.join();
+}
+
+int spawned(reactor::Signal& s)
+{
+  s.signal();
+  return 42;
+}
+
+void spawn(reactor::Signal& s)
+{
+  int res = sched->mt_run<int>("spawned", boost::bind(spawned, boost::ref(s)));
+  BOOST_CHECK_EQUAL(res, 42);
+}
+
+void spawner()
+{
+  reactor::Signal s;
+  boost::thread spawner(boost::bind(spawn, boost::ref(s)));
+  wait(s);
+}
+
+void test_multithread_run()
+{
+  Fixture f;
+
+  reactor::Thread t(*sched, "spawner", spawner);
+  sched->run();
+}
+
 /*-----.
 | Main |
 `-----*/
@@ -444,6 +517,15 @@ bool test_suite()
   boost::unit_test::framework::master_test_suite().add(timeout);
   timeout->add(BOOST_TEST_CASE(test_timeout_do));
   timeout->add(BOOST_TEST_CASE(test_timeout_dont));
+
+  boost::unit_test::test_suite* vthread = BOOST_TEST_SUITE("Return value");
+  boost::unit_test::framework::master_test_suite().add(vthread);
+  vthread->add(BOOST_TEST_CASE(test_vthread));
+
+  boost::unit_test::test_suite* mt = BOOST_TEST_SUITE("Multithreading");
+  boost::unit_test::framework::master_test_suite().add(mt);
+  mt->add(BOOST_TEST_CASE(test_multithread_spawn_wake));
+  mt->add(BOOST_TEST_CASE(test_multithread_run));
 
   boost::unit_test::framework::master_test_suite().add
     (reactor::network::test_suite());

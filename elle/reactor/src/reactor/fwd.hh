@@ -3,7 +3,7 @@
 
 # include <vector>
 
-# include <boost/date_time/posix_time/posix_time.hpp>
+# include <boost/date_time/posix_time/posix_time_types.hpp>
 # include <boost/optional.hpp>
 
 # ifdef BUILDING_REACTOR_DLL
@@ -20,6 +20,8 @@ namespace reactor
   class Signal;
   class Sleep;
   class Thread;
+  template <typename R = void>
+  class VThread;
   class Waitable;
 
   typedef boost::posix_time::time_duration Duration;

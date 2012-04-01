@@ -12,8 +12,13 @@ namespace reactor
 
   Scheduler::Scheduler()
     : _current(0)
+    , _starting()
+    , _starting_mtx()
     , _running()
     , _frozen()
+    , _io_service()
+    , _io_service_work(_io_service)
+    , _manager()
   {}
 
   /*----.
@@ -25,6 +30,12 @@ namespace reactor
   {
     while (true)
     {
+      // Could avoid locking if no jobs are pending with a boolean.
+      {
+        boost::unique_lock<boost::mutex> lock(_starting_mtx);
+        _running.insert(_starting.begin(), _starting.end());
+        _starting.clear();
+      }
       Threads running(_running);
       INFINIT_REACTOR_DEBUG("Scheduler: new round with "
                             << running.size() << " jobs");
@@ -58,16 +69,27 @@ namespace reactor
       INFINIT_REACTOR_DEBUG("Scheduler: run asio callbacks");
       _io_service.reset();
       _io_service.poll();
-      if (_running.empty())
+      if (_running.empty() && _starting.empty())
         if (_frozen.empty())
           break;
         else
-          while (_running.empty())
+          while (_running.empty() && _starting.empty())
           {
             INFINIT_REACTOR_DEBUG("Scheduler: nothing to do, "
                                   "polling asio in a blocking fashion");
             _io_service.reset();
-            _io_service.run_one();
+            boost::system::error_code err;
+            std::size_t run = _io_service.run_one(err);
+            if (err)
+            {
+              std::cerr << "fatal ASIO error: " << err << std::endl;
+              std::abort();
+            }
+            else if (run == 0)
+            {
+              std::cerr << "ASIO service is dead." << std::endl;
+              std::abort();
+            }
           }
     }
     INFINIT_REACTOR_DEBUG("Scheduler: done");
@@ -93,10 +115,19 @@ namespace reactor
     _frozen.insert(&thread);
   }
 
+  static void nothing()
+  {}
+
   void
   Scheduler::_thread_register(Thread& thread)
   {
-    _running.insert(&thread);
+    // FIXME: be thread safe only if needed
+    {
+      boost::unique_lock<boost::mutex> lock(_starting_mtx);
+      _starting.insert(&thread);
+      // Wake the scheduler.
+      _io_service.post(nothing);
+    }
   }
 
   void

@@ -3,9 +3,9 @@
 
 # include <set>
 
-# include <reactor/asio.hh>
 # include <boost/thread.hpp>
 
+# include <reactor/asio.hh>
 # include <reactor/fwd.hh>
 # include <reactor/scheduler.hh>
 # include <reactor/backend/thread.hh>
@@ -37,8 +37,18 @@ namespace reactor
       void _unfreeze(Thread& thread);
       typedef std::set<Thread*> Threads;
       Thread* _current;
+      Threads _starting;
+      boost::mutex _starting_mtx;
       Threads _running;
       Threads _frozen;
+
+    /*----------------.
+    | Multithread API |
+    `----------------*/
+    public:
+      template <typename R>
+      R mt_run(const std::string& name,
+               const boost::function<R ()>& action);
 
     /*-----.
     | Asio |
@@ -47,6 +57,7 @@ namespace reactor
       boost::asio::io_service& io_service();
     private:
       boost::asio::io_service _io_service;
+      boost::asio::io_service::work _io_service_work;
 
     /*--------.
     | Details |
@@ -56,5 +67,7 @@ namespace reactor
       backend::Manager _manager;
   };
 }
+
+# include <reactor/scheduler.hxx>
 
 #endif
