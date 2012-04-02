@@ -54,6 +54,9 @@ set(INFINIT_QJSON_SHARED_LIBRARIES
 
 message("-- External librairies directory: ${INFINIT_LIBRARIES_PREFIX}")
 
+find_package(Boost COMPONENTS system thread REQUIRED)
+include_directories(${Boost_INCLUDE_DIR})
+
 set(INFINIT_EXTERNAL_LIBRARIES
   ${INFINIT_OPENSSL_STATIC_LIBRARIES}
   ${INFINIT_OPENSSL_SHARED_LIBRARIES}
@@ -95,6 +98,8 @@ include_directories(${QT_INCLUDES})
 set(BUILD_SHARED_LIBS OFF)
 
 include_directories(BEFORE SYSTEM ${INFINIT_LIBRARIES_PREFIX}/include .)
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/elle/reactor/src)
 
 #
 # MSVC CXXFLAGS
@@ -145,7 +150,7 @@ add_executable(8infinit
 add_dependencies(8infinit dependencies)
 add_dependencies(infinit dependencies)
 target_link_libraries(8infinit
-  infinit elle etoile nucleus lune agent hole horizon
+  infinit elle etoile nucleus lune agent hole horizon ${Boost_LIBRARIES}
 )
 
 # XXX

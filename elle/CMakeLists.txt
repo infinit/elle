@@ -25,6 +25,8 @@ ELSEIF(INFINIT_WINDOWS)
     utility/Unicode-win32.cc)
 ENDIF()
 
+set_property (SOURCE reactor/src/reactor/backend/coro_io/libcoroutine/asm.S PROPERTY LANGUAGE CXX)
+
 ADD_LIBRARY(elle
   core/Integer.cc
   core/Large.cc
@@ -122,6 +124,29 @@ ADD_LIBRARY(elle
   format/json/String.cc
 
   Elle.cc
+
+  reactor/src/reactor/signal.cc
+  reactor/src/reactor/sleep.cc
+  reactor/src/reactor/waitable.cc
+  reactor/src/reactor/exception.cc
+  reactor/src/reactor/thread.cc
+  reactor/src/reactor/backend/pthread/pthread.cc
+  reactor/src/reactor/backend/coro_io/thread.cc
+  reactor/src/reactor/backend/coro_io/libcoroutine/context.cc
+  reactor/src/reactor/backend/coro_io/libcoroutine/coroutine.cc
+  reactor/src/reactor/backend/coro_io/libcoroutine/asm.S
+  reactor/src/reactor/debug.cc
+  reactor/src/reactor/network/udp-server-socket.cc
+  reactor/src/reactor/network/exception.cc
+  reactor/src/reactor/network/udp-socket.cc
+  reactor/src/reactor/network/tcp-socket.cc
+  reactor/src/reactor/network/resolve.cc
+  reactor/src/reactor/network/tcp-server.cc
+  reactor/src/reactor/network/socket.cc
+  reactor/src/reactor/network/server.cc
+  reactor/src/reactor/network/udp-server.cc
+  reactor/src/reactor/operation.cc
+  reactor/src/reactor/scheduler.cc
 
   ${elle_MOCS}
   ${elle_PLATFORM}

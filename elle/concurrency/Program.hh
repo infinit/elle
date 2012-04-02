@@ -23,11 +23,19 @@
 #include <elle/concurrency/Broker.hh>
 
 #include <elle/idiom/Close.hh>
+
 # include <QCoreApplication>
 # include <QAbstractEventDispatcher>
 # include <list>
 # include <signal.h>
+//# include <reactor/fwd.hh>
+
 #include <elle/idiom/Open.hh>
+
+namespace reactor
+{
+  class Scheduler;
+}
 
 namespace elle
 {
@@ -89,6 +97,8 @@ namespace elle
       ::QCoreApplication*       core;
 
       State                     state;
+    public:
+      static reactor::Scheduler* scheduler;
     };
 
 //
@@ -96,7 +106,6 @@ namespace elle
 //
 
     extern Program*             program;
-
   }
 }
 

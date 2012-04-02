@@ -4,4 +4,4 @@ ADD_EXECUTABLE(8shell
   Shell.cc
 )
 
-TARGET_LINK_LIBRARIES(8shell infinit elle nucleus lune etoile agent hole)
+TARGET_LINK_LIBRARIES(8shell infinit elle nucleus lune etoile agent hole ${Boost_LIBRARIES})

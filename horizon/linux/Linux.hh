@@ -70,7 +70,6 @@ namespace horizon
 // ---------- includes --------------------------------------------------------
 //
 
-#include <horizon/linux/Broker.hh>
 #include <horizon/linux/Crib.hh>
 #include <horizon/linux/Crux.hh>
 #include <horizon/linux/Event.hh>

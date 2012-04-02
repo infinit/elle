@@ -1,7 +1,7 @@
 
 #include <cstdio>
 #include <iostream>
-#include <thread>
+#include <boost/thread.hpp>
 
 #include "Application.hh"
 #include "Agent.hh"
@@ -24,7 +24,7 @@ int     main(int ac, char* av[])
   try
     {
       _initAll();
-      std::thread agentThread(std::bind(&Agent::Run, &agent));
+      boost::thread agentThread(std::bind(&Agent::Run, &agent));
       auto res = app.Exec();
       agentThread.join();
       return res;
