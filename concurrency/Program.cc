@@ -20,6 +20,11 @@
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
+#include <elle/idiom/Close.hh>
+# include <reactor/scheduler.hh>
+# include <reactor/thread.hh>
+#include <elle/idiom/Open.hh>
+
 namespace elle
 {
   namespace concurrency
@@ -101,6 +106,17 @@ namespace elle
       return StatusOk;
     }
 
+    static void qt_runner()
+    {
+      static const reactor::Duration delay
+        = boost::posix_time::milliseconds(100);
+      while (true)
+      {
+        QCoreApplication::processEvents();
+        Program::scheduler->current()->sleep(delay);
+      }
+    }
+
     ///
     /// this method processes events.
     ///
@@ -111,8 +127,9 @@ namespace elle
         escape("unable to process events since the program has not "
                "been set up");
 
-      // process the events.
-      program->core->exec();
+      // reactor::Scheduler scheduler;
+      reactor::Thread qt(*scheduler, "Qt event loop", &qt_runner);
+      scheduler->run();
 
       return StatusOk;
     }
@@ -204,5 +221,7 @@ namespace elle
         delete this->core;
     }
 
+
+    reactor::Scheduler* Program::scheduler = new reactor::Scheduler;
   }
 }
