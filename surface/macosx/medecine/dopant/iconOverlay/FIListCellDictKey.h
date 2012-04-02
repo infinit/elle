@@ -10,13 +10,13 @@
 #import "FICellDictKey-Protocol.h"
 #import "FIIconOverlay.h"
 
-@interface FIListCellDictKey : NSObject <FICellDictKey_Protocol>
+@interface FIListCellDictKey : NSOperation <FICellDictKey_Protocol>
 {
     id              cell;
     FINodeStatus    nodeStatus;
 }
 
-@property(nonatomic, retain) id cell;
+@property(assign) id cell;
 @property FINodeStatus nodeStatus;
 
 + (id) listCellDictKeyWithCell:(id)arg1;

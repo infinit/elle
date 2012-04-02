@@ -7,34 +7,51 @@
 //
 
 #import "FIListCellDictKey.h"
+#import <objc/objc-class.h>
+#import "ZombieDictKey.h"
 
 @implementation FIListCellDictKey
 
 @synthesize cell;
 @synthesize nodeStatus;
 
+static char overviewKey;
 static NSMutableSet *items = nil;
 
 + (id)listCellDictKeyWithCell:(id)arg1
 {
-    @synchronized(arg1)
+    @synchronized(items)
     {
         if (items == nil) {
             items = [[NSMutableSet alloc] init];
         }
-        id item = [[FIListCellDictKey alloc] initWithCell:arg1];
-        id memberItem = [items member:item];
-        if (memberItem == nil)
-        {
-            [items addObject:item];
-            [item autorelease];
-            return item;
+        FIListCellDictKey *matchItem = nil;
+        for (FIListCellDictKey *item in [items allObjects]) {
+            if (item.cell != nil) {
+                if (item.cell == arg1) {
+                    matchItem = item;
+                    break;
+                }
+            }
         }
-        else
+        
+        if (matchItem == nil)
         {
-            [item release];
-            return memberItem;
+            matchItem = [[FIListCellDictKey alloc] initWithCell:arg1];
+            [items addObject:matchItem];
+            ZombieDictKey *zombieReleaser = objc_getAssociatedObject(arg1, &overviewKey);
+            
+            if (zombieReleaser == nil) {
+                zombieReleaser = [[ZombieDictKey alloc] init];
+                objc_setAssociatedObject ( arg1, &overviewKey, zombieReleaser, OBJC_ASSOCIATION_RETAIN );
+            }
+            [zombieReleaser addDictKey:matchItem];
+            
+            [zombieReleaser release];
+            //[matchItem release];
         }
+        
+        return matchItem;
     }
 }
 
@@ -45,18 +62,18 @@ static NSMutableSet *items = nil;
     self.cell = arg1; // TODO add release link
     self.nodeStatus = FINodeStatusUnknowned;
     
+    [[FIIconOverlay instance] addStatusOpperationToQueue:self];
+    //[self retain];
     return self;
 }
 -(void)dealloc
 {
-    if ([items containsObject:self]){
-        [items removeObject:self];
-    }
-    [cell release];
     [super dealloc];
 }
 - (unsigned long long)hash
 {
+    if (self.cell == nil)
+        return 0;
     return [self.cell hash];
 }
 - (BOOL)isEqual:(id)arg1
@@ -65,11 +82,16 @@ static NSMutableSet *items = nil;
         return YES;
     if (!arg1 || ![arg1 isKindOfClass:[self class]])
         return NO;
-    return [self.cell isEqual:((FIListCellDictKey *)arg1).cell];
+    if (self.cell == nil || ((FIListCellDictKey *)arg1).cell == nil)
+        return NO;
+    return self.cell == ((FIListCellDictKey *)arg1).cell;
 }
 
 - (NSURL *) getPath
 {
+    if (self.cell == nil)
+        return nil;
+    
     if ([self.cell respondsToSelector:@selector(node)]) {
         NSURL *path = [NSURL fileURLWithPath:[[NSClassFromString(@"NSNavFBENode") _nodeWithFBENode:((TFENode *)[self.cell node])->fNodeRef] path]];
         
@@ -82,11 +104,39 @@ static NSMutableSet *items = nil;
 
 - (void) refreshCell
 {   
+    if (self.cell == nil)
+        return;
+    
     if ([self.cell respondsToSelector:@selector(controlView)]) {
         [[self.cell controlView] updateCell:cell];
     }
 }
 
+- (void) cleanUp
+{
+    @synchronized(items)
+    {
+        if ([items containsObject:self]){
+            [items removeObject:self];
+        }
+    }
+    [self cancel];
+}
+
+- (void) main
+{
+    if (self != nil && !self.isCancelled)
+    {
+        //NSURL* url = [self getPath];
+        
+        // Get status by path
+        sleep(1);
+        // Set status
+        [self setNodeStatus:FINodeStatusDisconected];
+        
+        [self performSelectorOnMainThread:@selector(refreshCell:) withObject:nil waitUntilDone:NO];
+    }
+}
 
 
 @end

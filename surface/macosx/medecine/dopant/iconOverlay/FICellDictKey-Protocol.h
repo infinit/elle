@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 
 @protocol FICellDictKey_Protocol <NSObject>
 
@@ -15,4 +15,5 @@
 - (NSURL *) getPath;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+- (void)cleanUp;
 @end

@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C7A3C711529EFF800D6988A /* ZombieDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C7A3C701529EFF800D6988A /* ZombieDictKey.m */; };
 		1C8522BC1528D82D00051605 /* IHFMenuNeedsUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522771528D78200051605 /* IHFMenuNeedsUpdate.m */; };
 		1C8522BE1528D82D00051605 /* FIAddInfinitToFavorite.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85227A1528D78200051605 /* FIAddInfinitToFavorite.m */; };
 		1C8522C01528D82D00051605 /* FIMain.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85227C1528D78200051605 /* FIMain.m */; };
 		1C8522C31528D82D00051605 /* FISwizzle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522801528D78200051605 /* FISwizzle.m */; };
-		1C8522C61528D82D00051605 /* FIGetStatusOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522841528D78200051605 /* FIGetStatusOperation.m */; };
 		1C8522C81528D82D00051605 /* FIIconOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522861528D78200051605 /* FIIconOverlay.m */; };
 		1C8522CA1528D82D00051605 /* FIListCellDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522881528D78200051605 /* FIListCellDictKey.m */; };
 		1C8522CC1528D82D00051605 /* FITableCellDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85228A1528D78200051605 /* FITableCellDictKey.m */; };
@@ -29,6 +29,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1C7A3C6F1529EFF800D6988A /* ZombieDictKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZombieDictKey.h; sourceTree = "<group>"; };
+		1C7A3C701529EFF800D6988A /* ZombieDictKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZombieDictKey.m; sourceTree = "<group>"; };
 		1C8522761528D78200051605 /* IHFMenuNeedsUpdate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IHFMenuNeedsUpdate.h; sourceTree = "<group>"; };
 		1C8522771528D78200051605 /* IHFMenuNeedsUpdate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IHFMenuNeedsUpdate.m; sourceTree = "<group>"; };
 		1C8522791528D78200051605 /* FIAddInfinitToFavorite.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FIAddInfinitToFavorite.h; sourceTree = "<group>"; };
@@ -39,8 +41,6 @@
 		1C85227F1528D78200051605 /* FISwizzle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FISwizzle.h; sourceTree = "<group>"; };
 		1C8522801528D78200051605 /* FISwizzle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FISwizzle.m; sourceTree = "<group>"; };
 		1C8522821528D78200051605 /* FICellDictKey-Protocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FICellDictKey-Protocol.h"; sourceTree = "<group>"; };
-		1C8522831528D78200051605 /* FIGetStatusOperation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FIGetStatusOperation.h; sourceTree = "<group>"; };
-		1C8522841528D78200051605 /* FIGetStatusOperation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FIGetStatusOperation.m; sourceTree = "<group>"; };
 		1C8522851528D78200051605 /* FIIconOverlay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FIIconOverlay.h; sourceTree = "<group>"; };
 		1C8522861528D78200051605 /* FIIconOverlay.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FIIconOverlay.m; sourceTree = "<group>"; };
 		1C8522871528D78200051605 /* FIListCellDictKey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FIListCellDictKey.h; sourceTree = "<group>"; };
@@ -63,7 +63,7 @@
 		1C8522AC1528D78200051605 /* mach_inject_bundle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mach_inject_bundle.h; sourceTree = "<group>"; };
 		1CB4FB7E1528EEDC00DDEC99 /* mach_inject_bundle_stub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mach_inject_bundle_stub.h; path = ../needle/mach_inject_bundle_stub.h; sourceTree = "<group>"; };
 		3628ABF3151B855B0093312B /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
-		3661644615011A08008A1425 /* io.infinit.HelperTools.helper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = io.infinit.HelperTools.helper; sourceTree = BUILT_PRODUCTS_DIR; };
+		3661644615011A08008A1425 /* io.infinit.Nurse.helper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = io.infinit.Nurse.helper; sourceTree = BUILT_PRODUCTS_DIR; };
 		367BCFD014FE6D4200B41298 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		367BCFD114FE6D4200B41298 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		367BCFF614FE6F4600B41298 /* io.infinit.FinderDopant.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = io.infinit.FinderDopant.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -97,13 +97,13 @@
 		1C8522741528D78200051605 /* dopant */ = {
 			isa = PBXGroup;
 			children = (
-				1C85227B1528D78200051605 /* FIMain.h */,
-				1C85227C1528D78200051605 /* FIMain.m */,
+				1C85227D1528D78200051605 /* helper */,
 				1C8522751528D78200051605 /* contextMenu */,
 				1C8522781528D78200051605 /* favoriteStatusBar */,
-				1C85227D1528D78200051605 /* helper */,
 				1C8522811528D78200051605 /* iconOverlay */,
 				1C85228D1528D78200051605 /* supportingFiles */,
+				1C85227B1528D78200051605 /* FIMain.h */,
+				1C85227C1528D78200051605 /* FIMain.m */,
 			);
 			path = dopant;
 			sourceTree = "<group>";
@@ -139,17 +139,17 @@
 		1C8522811528D78200051605 /* iconOverlay */ = {
 			isa = PBXGroup;
 			children = (
-				1C8522821528D78200051605 /* FICellDictKey-Protocol.h */,
-				1C8522831528D78200051605 /* FIGetStatusOperation.h */,
-				1C8522841528D78200051605 /* FIGetStatusOperation.m */,
 				1C8522851528D78200051605 /* FIIconOverlay.h */,
 				1C8522861528D78200051605 /* FIIconOverlay.m */,
 				1C8522871528D78200051605 /* FIListCellDictKey.h */,
 				1C8522881528D78200051605 /* FIListCellDictKey.m */,
 				1C8522891528D78200051605 /* FITableCellDictKey.h */,
 				1C85228A1528D78200051605 /* FITableCellDictKey.m */,
+				1C8522821528D78200051605 /* FICellDictKey-Protocol.h */,
 				1C85228B1528D78200051605 /* TestClass.h */,
 				1C85228C1528D78200051605 /* TestClass.m */,
+				1C7A3C6F1529EFF800D6988A /* ZombieDictKey.h */,
+				1C7A3C701529EFF800D6988A /* ZombieDictKey.m */,
 			);
 			path = iconOverlay;
 			sourceTree = "<group>";
@@ -219,7 +219,7 @@
 			isa = PBXGroup;
 			children = (
 				367BCFF614FE6F4600B41298 /* io.infinit.FinderDopant.bundle */,
-				3661644615011A08008A1425 /* io.infinit.HelperTools.helper */,
+				3661644615011A08008A1425 /* io.infinit.Nurse.helper */,
 			);
 			name = products;
 			sourceTree = "<group>";
@@ -261,7 +261,7 @@
 			);
 			name = Nurse;
 			productName = InfinitHelperTool;
-			productReference = 3661644615011A08008A1425 /* io.infinit.HelperTools.helper */;
+			productReference = 3661644615011A08008A1425 /* io.infinit.Nurse.helper */;
 			productType = "com.apple.product-type.tool";
 		};
 		367BCFF514FE6F4600B41298 /* FinderDopant */ = {
@@ -347,11 +347,11 @@
 				1C8522BE1528D82D00051605 /* FIAddInfinitToFavorite.m in Sources */,
 				1C8522C01528D82D00051605 /* FIMain.m in Sources */,
 				1C8522C31528D82D00051605 /* FISwizzle.m in Sources */,
-				1C8522C61528D82D00051605 /* FIGetStatusOperation.m in Sources */,
 				1C8522C81528D82D00051605 /* FIIconOverlay.m in Sources */,
 				1C8522CA1528D82D00051605 /* FIListCellDictKey.m in Sources */,
 				1C8522CC1528D82D00051605 /* FITableCellDictKey.m in Sources */,
 				1C8522CE1528D82D00051605 /* TestClass.m in Sources */,
+				1C7A3C711529EFF800D6988A /* ZombieDictKey.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -381,7 +381,7 @@
 					__launchd_plist,
 					"nurse/supportingFiles/Nurse-Launchd.plist",
 				);
-				PRODUCT_NAME = io.infinit.HelperTools.helper;
+				PRODUCT_NAME = io.infinit.Nurse.helper;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
 				SYMROOT = build;
@@ -414,7 +414,7 @@
 					__launchd_plist,
 					"nurse/supportingFiles/Nurse-Launchd.plist",
 				);
-				PRODUCT_NAME = io.infinit.HelperTools.helper;
+				PRODUCT_NAME = io.infinit.Nurse.helper;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
 				SYMROOT = build;

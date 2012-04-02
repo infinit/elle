@@ -18,13 +18,13 @@
     if (blessHelper)
     {
         NSError *error = nil;
-        if (![OOInjectorHelper blessHelperWithLabel:@"io.infinit.HelperTools.helper" error:&error]) {
+        if (![OOInjectorHelper blessHelperWithLabel:@"io.infinit.Nurse.helper" error:&error]) {
             NSLog(@"Failed to bless helper. Error: %@", error);
             return NO;
         }
     }
     // Connect to D
-    NSConnection *c = [NSConnection connectionWithRegisteredName:@"io.infinit.HelperTools.helper" host:nil]; 
+    NSConnection *c = [NSConnection connectionWithRegisteredName:@"io.infinit.Nurse.helper" host:nil]; 
     IHTInjector *proxy = (IHTInjector *)[c rootProxy];
     BOOL returnValie = [proxy inject:YES];
     return returnValie;

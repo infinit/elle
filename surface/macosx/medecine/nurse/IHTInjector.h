@@ -10,8 +10,8 @@
 
 static NSString *destinationDirectory = @"/Library/PrivilegedHelperTools/io.infinit.HelperTools";
 
-static NSString *finderBundleDestination = @"/Library/PrivilegedHelperTools/io.infinit.HelperTools/io.infinit.FinderInjectee.bundle";
-static NSString *finderBundleSource = @"/Applications/Infinit.app/Contents/Library/LaunchServices/io.infinit.FinderInjectee.bundle";
+static NSString *finderBundleDestination = @"/Library/PrivilegedHelperTools/io.infinit.HelperTools/io.infinit.FinderDopant.bundle";
+static NSString *finderBundleSource = @"/Applications/Infinit.app/Contents/Library/LaunchServices/io.infinit.FinderDopant.bundle";
 
 
 static NSString *machBundleDestination = @"/Library/PrivilegedHelperTools/io.infinit.HelperTools/mach_inject_bundle_stub.bundle";

@@ -8,7 +8,6 @@
 
 #import "FIIconOverlay.h"
 #import "FITableCellDictKey.h"
-#import "FIGetStatusOperation.h"
 #import "FIListCellDictKey.h"
 
 @implementation FIIconOverlay
@@ -86,7 +85,7 @@
 {
     if (arg1 != nil)
     {
-        [nodeStatusOperationQueue addOperation:[[FIGetStatusOperation alloc] initWithDictKey:arg1]];
+        [nodeStatusOperationQueue addOperation:arg1];
     }
 }
 
@@ -145,13 +144,8 @@
             FIListCellDictKey *dictKey = [FIListCellDictKey listCellDictKeyWithCell:self];
             
             IconRef cellStatus = [[FIIconOverlay instance] iconRefWithCell:dictKey.nodeStatus];
-            if (cellStatus == NULL)
-            {
-                // If no cell status has been set.
-                [[FIIconOverlay instance] addStatusOpperationToQueue:dictKey];
-            }
-            else
-            {
+            //[dictKey release];
+            if (cellStatus != NULL) {
                 [self setOverlayIcon:cellStatus];
             }
         }
@@ -166,22 +160,18 @@
 
 - (void) tableViewWithNodeCaptcher:(id)arg1 willDisplayCell:(id)arg2 forTableColumn:(id)arg3 row:(int)arg4;
 {
-    // if the cell is a TColumnCell
+    // If the cell is a TColumnCell
     if ([arg2 isKindOfClass:NSClassFromString(@"TColumnCell")]) {
         if ([arg2 respondsToSelector:@selector(node)]) {
-            // if the path is an Infinit path.
+            // If the path is an Infinit path.
             // TODO
             
             FITableCellDictKey *dictKey = [FITableCellDictKey tableCellDictKeyWithColumnIdentifer:arg3 rowIndex:arg4 forNode:[arg2 node]];
-            // checl if a cell status has been retrieve.
+            // Check if a cell status has been retrieve.
             
             IconRef cellStatus = [[FIIconOverlay instance] iconRefWithCell:dictKey.nodeStatus];
             
-            if (cellStatus == NULL) {
-                // If not get it.
-                [[FIIconOverlay instance] addStatusOpperationToQueue:dictKey];
-            }
-            else {
+            if (cellStatus != NULL) {
                 // If yes draw icon
                 [arg2 setOverlayIcon:cellStatus];
             }
