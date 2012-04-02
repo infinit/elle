@@ -21,12 +21,15 @@
 		1CA1A65D152A443B0066D288 /* Infinit.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A659152A443B0066D288 /* Infinit.icns */; };
 		1CA1A65E152A443B0066D288 /* ok.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A65A152A443B0066D288 /* ok.icns */; };
 		1CA1A660152A444D0066D288 /* Infinit-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A65F152A444D0066D288 /* Infinit-Info.plist */; };
-		1CB4FB4C1528DC0F00DDEC99 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB421528DC0F00DDEC99 /* InfoPlist.strings */; };
-		1CB4FB4D1528DC0F00DDEC99 /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB441528DC0F00DDEC99 /* Preferences.xib */; };
-		1CB4FB4E1528DC0F00DDEC99 /* Preferences.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CB4FB461528DC0F00DDEC99 /* Preferences.h */; };
-		1CB4FB4F1528DC0F00DDEC99 /* Preferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB4FB471528DC0F00DDEC99 /* Preferences.m */; };
-		1CB4FB501528DC0F00DDEC99 /* Preferences.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB491528DC0F00DDEC99 /* Preferences.tiff */; };
-		1CB4FB511528DC0F00DDEC99 /* Preferences-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CB4FB4B1528DC0F00DDEC99 /* Preferences-Info.plist */; };
+		1CA1A66F152A47B20066D288 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A662152A47B20066D288 /* InfoPlist.strings */; };
+		1CA1A670152A47B20066D288 /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A664152A47B20066D288 /* Preferences.xib */; };
+		1CA1A671152A47B20066D288 /* Preferences-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A666152A47B20066D288 /* Preferences-Info.plist */; };
+		1CA1A672152A47B20066D288 /* Preferences-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 1CA1A667152A47B20066D288 /* Preferences-Prefix.pch */; };
+		1CA1A673152A47B20066D288 /* Preferences.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CA1A668152A47B20066D288 /* Preferences.h */; };
+		1CA1A674152A47B20066D288 /* Preferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A669152A47B20066D288 /* Preferences.m */; };
+		1CA1A675152A47B20066D288 /* Preferences.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A66A152A47B20066D288 /* Preferences.tiff */; };
+		1CA1A676152A47B20066D288 /* Preferences.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A66C152A47B20066D288 /* Preferences.tiff */; };
+		1CA1A677152A47B20066D288 /* Preferences-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A66E152A47B20066D288 /* Preferences-Info.plist */; };
 		1CB4FB751528EDA100DDEC99 /* io.infinit.FinderDopant.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CD297041528D28A006D1A4C /* io.infinit.FinderDopant.bundle */; };
 		1CB4FB761528EDA100DDEC99 /* io.infinit.Nurse.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CD297061528D28A006D1A4C /* io.infinit.Nurse.helper */; };
 		1CB4FB7D1528EDEB00DDEC99 /* mach_inject_bundle_stub.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CB4FB7C1528EDDA00DDEC99 /* mach_inject_bundle_stub.bundle */; };
@@ -123,13 +126,16 @@
 		1CA1A659152A443B0066D288 /* Infinit.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = Infinit.icns; path = field/ressources/Infinit.icns; sourceTree = SOURCE_ROOT; };
 		1CA1A65A152A443B0066D288 /* ok.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = ok.icns; path = field/ressources/ok.icns; sourceTree = SOURCE_ROOT; };
 		1CA1A65F152A444D0066D288 /* Infinit-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Infinit-Info.plist"; path = "field/supportingFiles/Infinit-Info.plist"; sourceTree = SOURCE_ROOT; };
+		1CA1A663152A47B20066D288 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1CA1A665152A47B20066D288 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/Preferences.xib; sourceTree = "<group>"; };
+		1CA1A666152A47B20066D288 /* Preferences-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Preferences-Info.plist"; sourceTree = "<group>"; };
+		1CA1A667152A47B20066D288 /* Preferences-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Preferences-Prefix.pch"; sourceTree = "<group>"; };
+		1CA1A668152A47B20066D288 /* Preferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Preferences.h; sourceTree = "<group>"; };
+		1CA1A669152A47B20066D288 /* Preferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Preferences.m; sourceTree = "<group>"; };
+		1CA1A66A152A47B20066D288 /* Preferences.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Preferences.tiff; sourceTree = "<group>"; };
+		1CA1A66C152A47B20066D288 /* Preferences.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Preferences.tiff; sourceTree = "<group>"; };
+		1CA1A66E152A47B20066D288 /* Preferences-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Preferences-Info.plist"; sourceTree = "<group>"; };
 		1CAD9C8D152990A100F3217E /* IHTInjector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IHTInjector.h; path = ../../medecine/nurse/IHTInjector.h; sourceTree = "<group>"; };
-		1CB4FB431528DC0F00DDEC99 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		1CB4FB451528DC0F00DDEC99 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/Preferences.xib; sourceTree = "<group>"; };
-		1CB4FB461528DC0F00DDEC99 /* Preferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Preferences.h; sourceTree = "<group>"; };
-		1CB4FB471528DC0F00DDEC99 /* Preferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Preferences.m; sourceTree = "<group>"; };
-		1CB4FB491528DC0F00DDEC99 /* Preferences.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Preferences.tiff; sourceTree = "<group>"; };
-		1CB4FB4B1528DC0F00DDEC99 /* Preferences-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Preferences-Info.plist"; sourceTree = "<group>"; };
 		1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = needle.xcodeproj; path = medecine/needle/needle.xcodeproj; sourceTree = "<group>"; };
 		1CD296FA1528D289006D1A4C /* medecine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = medecine.xcodeproj; path = medecine/medecine.xcodeproj; sourceTree = "<group>"; };
 		3619AF211508F3A900324697 /* PreferencePanes.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PreferencePanes.framework; path = System/Library/Frameworks/PreferencePanes.framework; sourceTree = SDKROOT; };
@@ -168,6 +174,38 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1CA1A661152A47B20066D288 /* stoneTablets */ = {
+			isa = PBXGroup;
+			children = (
+				1CA1A662152A47B20066D288 /* InfoPlist.strings */,
+				1CA1A664152A47B20066D288 /* Preferences.xib */,
+				1CA1A666152A47B20066D288 /* Preferences-Info.plist */,
+				1CA1A667152A47B20066D288 /* Preferences-Prefix.pch */,
+				1CA1A668152A47B20066D288 /* Preferences.h */,
+				1CA1A669152A47B20066D288 /* Preferences.m */,
+				1CA1A66A152A47B20066D288 /* Preferences.tiff */,
+				1CA1A66B152A47B20066D288 /* ressources */,
+				1CA1A66D152A47B20066D288 /* supportingFiles */,
+			);
+			path = stoneTablets;
+			sourceTree = "<group>";
+		};
+		1CA1A66B152A47B20066D288 /* ressources */ = {
+			isa = PBXGroup;
+			children = (
+				1CA1A66C152A47B20066D288 /* Preferences.tiff */,
+			);
+			path = ressources;
+			sourceTree = "<group>";
+		};
+		1CA1A66D152A47B20066D288 /* supportingFiles */ = {
+			isa = PBXGroup;
+			children = (
+				1CA1A66E152A47B20066D288 /* Preferences-Info.plist */,
+			);
+			path = supportingFiles;
+			sourceTree = "<group>";
+		};
 		1CAD9C8015298DCD00F3217E /* helpers */ = {
 			isa = PBXGroup;
 			children = (
@@ -178,35 +216,6 @@
 				1CA1A644152A43910066D288 /* OOInstallerHelper.m */,
 			);
 			path = helpers;
-			sourceTree = "<group>";
-		};
-		1CB4FB411528DC0F00DDEC99 /* preferences */ = {
-			isa = PBXGroup;
-			children = (
-				1CB4FB421528DC0F00DDEC99 /* InfoPlist.strings */,
-				1CB4FB441528DC0F00DDEC99 /* Preferences.xib */,
-				1CB4FB461528DC0F00DDEC99 /* Preferences.h */,
-				1CB4FB471528DC0F00DDEC99 /* Preferences.m */,
-				1CB4FB481528DC0F00DDEC99 /* ressources */,
-				1CB4FB4A1528DC0F00DDEC99 /* supportingFiles */,
-			);
-			path = preferences;
-			sourceTree = "<group>";
-		};
-		1CB4FB481528DC0F00DDEC99 /* ressources */ = {
-			isa = PBXGroup;
-			children = (
-				1CB4FB491528DC0F00DDEC99 /* Preferences.tiff */,
-			);
-			path = ressources;
-			sourceTree = "<group>";
-		};
-		1CB4FB4A1528DC0F00DDEC99 /* supportingFiles */ = {
-			isa = PBXGroup;
-			children = (
-				1CB4FB4B1528DC0F00DDEC99 /* Preferences-Info.plist */,
-			);
-			path = supportingFiles;
 			sourceTree = "<group>";
 		};
 		1CB4FB521528DC1C00DDEC99 /* field */ = {
@@ -266,7 +275,7 @@
 				1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */,
 				1CD296FA1528D289006D1A4C /* medecine.xcodeproj */,
 				1CB4FB521528DC1C00DDEC99 /* field */,
-				1CB4FB411528DC0F00DDEC99 /* preferences */,
+				1CA1A661152A47B20066D288 /* stoneTablets */,
 				36E9F8B914FF7DE8000B9C12 /* frameworks */,
 				36E9F8B714FF7DE8000B9C12 /* products */,
 			);
@@ -311,7 +320,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1CB4FB4E1528DC0F00DDEC99 /* Preferences.h in Headers */,
+				1CA1A672152A47B20066D288 /* Preferences-Prefix.pch in Headers */,
+				1CA1A673152A47B20066D288 /* Preferences.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -424,10 +434,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1CB4FB4C1528DC0F00DDEC99 /* InfoPlist.strings in Resources */,
-				1CB4FB4D1528DC0F00DDEC99 /* Preferences.xib in Resources */,
-				1CB4FB501528DC0F00DDEC99 /* Preferences.tiff in Resources */,
-				1CB4FB511528DC0F00DDEC99 /* Preferences-Info.plist in Resources */,
+				1CA1A66F152A47B20066D288 /* InfoPlist.strings in Resources */,
+				1CA1A670152A47B20066D288 /* Preferences.xib in Resources */,
+				1CA1A671152A47B20066D288 /* Preferences-Info.plist in Resources */,
+				1CA1A675152A47B20066D288 /* Preferences.tiff in Resources */,
+				1CA1A676152A47B20066D288 /* Preferences.tiff in Resources */,
+				1CA1A677152A47B20066D288 /* Preferences-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -461,7 +473,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1CB4FB4F1528DC0F00DDEC99 /* Preferences.m in Sources */,
+				1CA1A674152A47B20066D288 /* Preferences.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -509,18 +521,18 @@
 			name = MainMenu.xib;
 			sourceTree = "<group>";
 		};
-		1CB4FB421528DC0F00DDEC99 /* InfoPlist.strings */ = {
+		1CA1A662152A47B20066D288 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				1CB4FB431528DC0F00DDEC99 /* en */,
+				1CA1A663152A47B20066D288 /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		1CB4FB441528DC0F00DDEC99 /* Preferences.xib */ = {
+		1CA1A664152A47B20066D288 /* Preferences.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				1CB4FB451528DC0F00DDEC99 /* en */,
+				1CA1A665152A47B20066D288 /* en */,
 			);
 			name = Preferences.xib;
 			sourceTree = "<group>";
