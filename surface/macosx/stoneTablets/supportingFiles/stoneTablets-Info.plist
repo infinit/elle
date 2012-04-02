@@ -9,11 +9,11 @@
 	<key>CFBundleIconFile</key>
 	<string></string>
 	<key>CFBundleIdentifier</key>
-	<string>io.infinit.${PRODUCT_NAME:rfc1034identifier}</string>
+	<string>io.infinit.${PRODUCT_NAME}</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>${PRODUCT_NAME}</string>
+	<string>io.infinit.${PRODUCT_NAME}</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>
@@ -25,7 +25,7 @@
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2012 __MyCompanyName__. All rights reserved.</string>
 	<key>NSMainNibFile</key>
-	<string>Preferences</string>
+	<string>StoneTablets</string>
 	<key>NSPrefPaneIconFile</key>
 	<string>Preferences.tiff</string>
 	<key>NSPrefPaneIconLabel</key>

@@ -22,19 +22,19 @@
 		1CA1A65E152A443B0066D288 /* ok.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A65A152A443B0066D288 /* ok.icns */; };
 		1CA1A660152A444D0066D288 /* Infinit-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A65F152A444D0066D288 /* Infinit-Info.plist */; };
 		1CA1A66F152A47B20066D288 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A662152A47B20066D288 /* InfoPlist.strings */; };
-		1CA1A670152A47B20066D288 /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A664152A47B20066D288 /* Preferences.xib */; };
+		1CA1A670152A47B20066D288 /* StoneTablets.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A664152A47B20066D288 /* StoneTablets.xib */; };
 		1CA1A671152A47B20066D288 /* Preferences-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A666152A47B20066D288 /* Preferences-Info.plist */; };
 		1CA1A672152A47B20066D288 /* Preferences-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 1CA1A667152A47B20066D288 /* Preferences-Prefix.pch */; };
 		1CA1A673152A47B20066D288 /* Preferences.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CA1A668152A47B20066D288 /* Preferences.h */; };
 		1CA1A674152A47B20066D288 /* Preferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A669152A47B20066D288 /* Preferences.m */; };
 		1CA1A675152A47B20066D288 /* Preferences.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A66A152A47B20066D288 /* Preferences.tiff */; };
 		1CA1A676152A47B20066D288 /* Preferences.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A66C152A47B20066D288 /* Preferences.tiff */; };
-		1CA1A677152A47B20066D288 /* Preferences-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A66E152A47B20066D288 /* Preferences-Info.plist */; };
+		1CA1A677152A47B20066D288 /* stoneTablets-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A66E152A47B20066D288 /* stoneTablets-Info.plist */; };
 		1CB4FB751528EDA100DDEC99 /* io.infinit.FinderDopant.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CD297041528D28A006D1A4C /* io.infinit.FinderDopant.bundle */; };
 		1CB4FB761528EDA100DDEC99 /* io.infinit.Nurse.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CD297061528D28A006D1A4C /* io.infinit.Nurse.helper */; };
 		1CB4FB7D1528EDEB00DDEC99 /* mach_inject_bundle_stub.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CB4FB7C1528EDDA00DDEC99 /* mach_inject_bundle_stub.bundle */; };
 		362A33DD150B69AF00D92151 /* PreferencePanes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3619AF211508F3A900324697 /* PreferencePanes.framework */; };
-		362A340A150B700800D92151 /* Preferences.prefPane in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3619AF3B1508F5ED00324697 /* Preferences.prefPane */; };
+		362A340A150B700800D92151 /* StoneTablets.prefPane in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3619AF3B1508F5ED00324697 /* StoneTablets.prefPane */; };
 		3667200D150BE36D002A595A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36E9F8BF14FF7DE8000B9C12 /* Foundation.framework */; };
 		3667200E150BE370002A595A /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367B0EBA14FFB70200AC66A2 /* ServiceManagement.framework */; };
 		3667200F150BE372002A595A /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367B0EB714FFB6F100AC66A2 /* Security.framework */; };
@@ -43,6 +43,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		1C672E96152A4D21003C653F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D01CCC60486CAD60068D4B7;
+			remoteInfo = mach_inject_bundle_stub;
+		};
 		1C8523221528DAF600051605 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
@@ -106,13 +113,14 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
-				362A340A150B700800D92151 /* Preferences.prefPane in CopyFiles */,
+				362A340A150B700800D92151 /* StoneTablets.prefPane in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1C672E95152A4C9E003C653F /* IHTInjector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IHTInjector.h; path = medecine/nurse/IHTInjector.h; sourceTree = "<group>"; };
 		1CA1A641152A43910066D288 /* OOInjectorHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OOInjectorHelper.h; path = field/helpers/OOInjectorHelper.h; sourceTree = SOURCE_ROOT; };
 		1CA1A642152A43910066D288 /* OOInjectorHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OOInjectorHelper.m; path = field/helpers/OOInjectorHelper.m; sourceTree = SOURCE_ROOT; };
 		1CA1A643152A43910066D288 /* OOInstallerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OOInstallerHelper.h; path = field/helpers/OOInstallerHelper.h; sourceTree = SOURCE_ROOT; };
@@ -127,19 +135,18 @@
 		1CA1A65A152A443B0066D288 /* ok.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = ok.icns; path = field/ressources/ok.icns; sourceTree = SOURCE_ROOT; };
 		1CA1A65F152A444D0066D288 /* Infinit-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Infinit-Info.plist"; path = "field/supportingFiles/Infinit-Info.plist"; sourceTree = SOURCE_ROOT; };
 		1CA1A663152A47B20066D288 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		1CA1A665152A47B20066D288 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/Preferences.xib; sourceTree = "<group>"; };
+		1CA1A665152A47B20066D288 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/stoneTablets.xib; sourceTree = "<group>"; };
 		1CA1A666152A47B20066D288 /* Preferences-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Preferences-Info.plist"; sourceTree = "<group>"; };
 		1CA1A667152A47B20066D288 /* Preferences-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Preferences-Prefix.pch"; sourceTree = "<group>"; };
 		1CA1A668152A47B20066D288 /* Preferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Preferences.h; sourceTree = "<group>"; };
 		1CA1A669152A47B20066D288 /* Preferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Preferences.m; sourceTree = "<group>"; };
 		1CA1A66A152A47B20066D288 /* Preferences.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Preferences.tiff; sourceTree = "<group>"; };
 		1CA1A66C152A47B20066D288 /* Preferences.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Preferences.tiff; sourceTree = "<group>"; };
-		1CA1A66E152A47B20066D288 /* Preferences-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Preferences-Info.plist"; sourceTree = "<group>"; };
-		1CAD9C8D152990A100F3217E /* IHTInjector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IHTInjector.h; path = ../../medecine/nurse/IHTInjector.h; sourceTree = "<group>"; };
+		1CA1A66E152A47B20066D288 /* stoneTablets-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "stoneTablets-Info.plist"; sourceTree = "<group>"; };
 		1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = needle.xcodeproj; path = medecine/needle/needle.xcodeproj; sourceTree = "<group>"; };
 		1CD296FA1528D289006D1A4C /* medecine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = medecine.xcodeproj; path = medecine/medecine.xcodeproj; sourceTree = "<group>"; };
 		3619AF211508F3A900324697 /* PreferencePanes.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PreferencePanes.framework; path = System/Library/Frameworks/PreferencePanes.framework; sourceTree = SDKROOT; };
-		3619AF3B1508F5ED00324697 /* Preferences.prefPane */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Preferences.prefPane; sourceTree = BUILT_PRODUCTS_DIR; };
+		3619AF3B1508F5ED00324697 /* StoneTablets.prefPane */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StoneTablets.prefPane; sourceTree = BUILT_PRODUCTS_DIR; };
 		362A33E4150B6ED000D92151 /* Infinit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Infinit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		362A33E7150B6ED000D92151 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		367B0EB714FFB6F100AC66A2 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -178,7 +185,7 @@
 			isa = PBXGroup;
 			children = (
 				1CA1A662152A47B20066D288 /* InfoPlist.strings */,
-				1CA1A664152A47B20066D288 /* Preferences.xib */,
+				1CA1A664152A47B20066D288 /* StoneTablets.xib */,
 				1CA1A666152A47B20066D288 /* Preferences-Info.plist */,
 				1CA1A667152A47B20066D288 /* Preferences-Prefix.pch */,
 				1CA1A668152A47B20066D288 /* Preferences.h */,
@@ -201,7 +208,7 @@
 		1CA1A66D152A47B20066D288 /* supportingFiles */ = {
 			isa = PBXGroup;
 			children = (
-				1CA1A66E152A47B20066D288 /* Preferences-Info.plist */,
+				1CA1A66E152A47B20066D288 /* stoneTablets-Info.plist */,
 			);
 			path = supportingFiles;
 			sourceTree = "<group>";
@@ -209,7 +216,7 @@
 		1CAD9C8015298DCD00F3217E /* helpers */ = {
 			isa = PBXGroup;
 			children = (
-				1CAD9C8D152990A100F3217E /* IHTInjector.h */,
+				1C672E95152A4C9E003C653F /* IHTInjector.h */,
 				1CA1A641152A43910066D288 /* OOInjectorHelper.h */,
 				1CA1A642152A43910066D288 /* OOInjectorHelper.m */,
 				1CA1A643152A43910066D288 /* OOInstallerHelper.h */,
@@ -284,7 +291,7 @@
 		36E9F8B714FF7DE8000B9C12 /* products */ = {
 			isa = PBXGroup;
 			children = (
-				3619AF3B1508F5ED00324697 /* Preferences.prefPane */,
+				3619AF3B1508F5ED00324697 /* StoneTablets.prefPane */,
 				362A33E4150B6ED000D92151 /* Infinit.app */,
 			);
 			name = products;
@@ -328,9 +335,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		3619AF3A1508F5ED00324697 /* Preferences */ = {
+		3619AF3A1508F5ED00324697 /* StoneTablets */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 3619AF4D1508F5ED00324697 /* Build configuration list for PBXNativeTarget "Preferences" */;
+			buildConfigurationList = 3619AF4D1508F5ED00324697 /* Build configuration list for PBXNativeTarget "StoneTablets" */;
 			buildPhases = (
 				3619AF351508F5ED00324697 /* Sources */,
 				3619AF361508F5ED00324697 /* Frameworks */,
@@ -342,9 +349,9 @@
 			);
 			dependencies = (
 			);
-			name = Preferences;
+			name = StoneTablets;
 			productName = Preferences;
-			productReference = 3619AF3B1508F5ED00324697 /* Preferences.prefPane */;
+			productReference = 3619AF3B1508F5ED00324697 /* StoneTablets.prefPane */;
 			productType = "com.apple.product-type.bundle";
 		};
 		362A33E3150B6ED000D92151 /* Infinit */ = {
@@ -360,6 +367,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				1C672E97152A4D21003C653F /* PBXTargetDependency */,
 				1C8523231528DAF600051605 /* PBXTargetDependency */,
 				1C8523251528DAF600051605 /* PBXTargetDependency */,
 				362A3404150B6F7C00D92151 /* PBXTargetDependency */,
@@ -399,7 +407,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				3619AF3A1508F5ED00324697 /* Preferences */,
+				3619AF3A1508F5ED00324697 /* StoneTablets */,
 				362A33E3150B6ED000D92151 /* Infinit */,
 			);
 		};
@@ -435,11 +443,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				1CA1A66F152A47B20066D288 /* InfoPlist.strings in Resources */,
-				1CA1A670152A47B20066D288 /* Preferences.xib in Resources */,
+				1CA1A670152A47B20066D288 /* StoneTablets.xib in Resources */,
 				1CA1A671152A47B20066D288 /* Preferences-Info.plist in Resources */,
 				1CA1A675152A47B20066D288 /* Preferences.tiff in Resources */,
 				1CA1A676152A47B20066D288 /* Preferences.tiff in Resources */,
-				1CA1A677152A47B20066D288 /* Preferences-Info.plist in Resources */,
+				1CA1A677152A47B20066D288 /* stoneTablets-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -495,6 +503,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		1C672E97152A4D21003C653F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = mach_inject_bundle_stub;
+			targetProxy = 1C672E96152A4D21003C653F /* PBXContainerItemProxy */;
+		};
 		1C8523231528DAF600051605 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FinderDopant;
@@ -507,7 +520,7 @@
 		};
 		362A3404150B6F7C00D92151 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 3619AF3A1508F5ED00324697 /* Preferences */;
+			target = 3619AF3A1508F5ED00324697 /* StoneTablets */;
 			targetProxy = 362A3403150B6F7C00D92151 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -529,12 +542,12 @@
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		1CA1A664152A47B20066D288 /* Preferences.xib */ = {
+		1CA1A664152A47B20066D288 /* StoneTablets.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				1CA1A665152A47B20066D288 /* en */,
 			);
-			name = Preferences.xib;
+			name = StoneTablets.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -551,7 +564,7 @@
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
-				INFOPLIST_FILE = "preferences/supportingFiles/preferences-Info.plist";
+				INFOPLIST_FILE = "stoneTablets/supportingFiles/stoneTablets-Info.plist";
 				INSTALL_PATH = "$(HOME)/Library/PreferencePanes";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -572,7 +585,7 @@
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
-				INFOPLIST_FILE = "preferences/supportingFiles/preferences-Info.plist";
+				INFOPLIST_FILE = "stoneTablets/supportingFiles/stoneTablets-Info.plist";
 				INSTALL_PATH = "$(HOME)/Library/PreferencePanes";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -588,7 +601,7 @@
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
-				INFOPLIST_FILE = "Infinit/supportingFiles/Infinit-Info.plist";
+				INFOPLIST_FILE = "field/supportingFiles/Infinit-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -602,7 +615,7 @@
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
-				INFOPLIST_FILE = "Infinit/supportingFiles/Infinit-Info.plist";
+				INFOPLIST_FILE = "field/supportingFiles/Infinit-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -662,7 +675,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		3619AF4D1508F5ED00324697 /* Build configuration list for PBXNativeTarget "Preferences" */ = {
+		3619AF4D1508F5ED00324697 /* Build configuration list for PBXNativeTarget "StoneTablets" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3619AF4E1508F5ED00324697 /* Debug */,
