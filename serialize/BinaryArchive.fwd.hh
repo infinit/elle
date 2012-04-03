@@ -1,0 +1,15 @@
+#ifndef ELLE_SERIALIZE_BINARYARCHIVE_FWD_HH
+#define ELLE_SERIALIZE_BINARYARCHIVE_FWD_HH
+
+namespace elle { namespace serialize {
+
+    template<ArchiveMode mode> class BinaryArchive;
+
+    typedef BinaryArchive<ArchiveMode::Output> OutputBinaryArchive;
+    typedef BinaryArchive<ArchiveMode::Input>  InputBinaryArchive;
+
+}} // !namespace elle::serialize
+
+#endif /* ! BINARYARCHIVE_FWD_HH */
+
+
