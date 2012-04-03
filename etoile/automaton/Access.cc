@@ -83,7 +83,7 @@ namespace etoile
                "the access permissions");
 
       // update the accesses depending on the subject.
-      if (subject == context.object.owner._subject)
+      if (subject == context.object.owner.subject)
         {
           //
           // in this case, the subject represents the object's owner.
@@ -222,7 +222,7 @@ namespace etoile
           //
 
           // perform the lookup according to the subject.
-          if (subject == context.object.owner._subject)
+          if (subject == context.object.owner.subject)
             {
               //
               // if the target subject is the object owner, retrieve the
@@ -232,7 +232,7 @@ namespace etoile
               //
 
               // return the record.
-              record = &context.object.meta.owner._record;
+              record = &context.object.meta.owner.record;
             }
           else
             {
@@ -275,7 +275,7 @@ namespace etoile
         {
           // create the record.
           auto record = std::unique_ptr<nucleus::Record>(
-              new nucleus::Record(context.object.meta.owner._record)
+              new nucleus::Record(context.object.meta.owner.record)
           );
 
           // add the record to the range.
@@ -324,7 +324,7 @@ namespace etoile
                "access permissions");
 
       // update the access block or object according to the subject.
-      if (subject == context.object.owner._subject)
+      if (subject == context.object.owner.subject)
         {
           //
           // in this case, the subject represents the object's owner.
@@ -538,7 +538,7 @@ namespace etoile
           return elle::StatusOk;
 
         // if the access has not changed, do nothing.
-        if (context.access->_state == nucleus::StateClean)
+        if (context.access->state == nucleus::StateClean)
           return elle::StatusOk;
       }
 
@@ -614,7 +614,7 @@ namespace etoile
             escape("unable to bind the access");
 
           // set the state as consistent.
-          context.access->_state = nucleus::StateConsistent;
+          context.access->state = nucleus::StateConsistent;
 
           // finally, update the object with the new access address.
           if (context.object.Update(

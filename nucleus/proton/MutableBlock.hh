@@ -53,7 +53,7 @@ namespace nucleus
     /// a regular file in order to be portable since Windows, for instance,
     /// does not support symbolic links.
     ///
-    /// the _base attribute is used internally to keep a view of the
+    /// the _base_ attribute is used internally to keep a view of the
     /// block's original state i.e before being modified.
     ///
     class MutableBlock:
@@ -98,7 +98,7 @@ namespace nucleus
       //
       Version           version;
 
-      Base              _base;
+      Base              base;
     };
 
   }

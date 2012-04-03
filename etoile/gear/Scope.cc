@@ -844,7 +844,6 @@ namespace etoile
     ///
     elle::Status        Scope::Shutdown()
     {
-
       // if actors remain, do nothing.
       //
       // indeed, only the final actor will trigger the shutdown operation. this
@@ -1074,7 +1073,6 @@ namespace etoile
     elle::Status        Scope::Refresh()
     {
       elle::Hurdle::Zone        zone(this->hurdle, elle::ModeWrite);
-
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)

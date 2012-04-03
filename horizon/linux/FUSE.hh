@@ -53,40 +53,15 @@ namespace horizon
       // static methods
       //
       static elle::Status       Initialize(const struct ::fuse_operations&);
-      static elle::Status       Setup(const elle::String&);
       static elle::Status       Clean();
 
       //
       // static attributes
       //
-      static elle::String               Mountpoint;
-      static FUker*                     Fuker;
-
       static struct ::fuse_operations   Operations;
     };
 
   }
 }
-
-//
-// ---------- structures ------------------------------------------------------
-//
-
-///
-/// this structure is theoretically kept internally within the FUSE source
-/// code.
-///
-/// unfortunately, since horizon is using FUSE's low-level functions, this
-/// structure is needed to access the session (->se) field.
-///
-/// therefore this definition gives us just enough information in order
-/// to access this field without having to define the rest of it.
-///
-struct fuse
-{
-  struct fuse_session *se;
-
-  /* [...] */
-};
 
 #endif

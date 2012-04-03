@@ -27,9 +27,6 @@ namespace elle
 /// this namespace contains the whole logic related to the Infinit
 /// file system.
 ///
-/// note that every attribute starting with an underscore, such as '_state',
-/// will not be serialized, hence represent in-memory information only.
-///
 namespace nucleus
 {
 

@@ -21,6 +21,7 @@
 #include <nucleus/proton/Block.hh>
 #include <XXX/Nodule.hh>
 #include <XXX/Inlet.hh>
+#include <XXX/Pins.hh>
 
 #include <elle/idiom/Close.hh>
 # include <map>
@@ -82,30 +83,19 @@ namespace nucleus
         typedef typename Container::reverse_iterator            Backward;
       };
 
-      struct                                                    Scoutor
-      {
-        typedef typename Container::const_iterator              Forward;
-        typedef typename Container::const_reverse_iterator      Backward;
-      };
-
       //
       // constructors & destructors
       //
-      Quill();
-      Quill(const elle::Callback<
-              elle::Status,
-              elle::Parameters<
-                const Address&,
-                Nodule<V>*&
-                >
-              >&,
-            const elle::Callback<
-              elle::Status,
-              elle::Parameters<
-                const Address&,
-                const Nodule<V>*
-                >
-              >&);
+
+      // XXX[virer le constructeur vide du coup]
+      Contents< Quill<V> >* contents() { return &this->_contents; }
+      Contents< Quill<V> >& _contents;
+      Quill(Contents< Quill<V> >& contents):
+        Nodule<V>(Nodule<V>::TypeQuill),
+        _contents(contents)
+      {}
+
+      // XXX Quill();
       ~Quill();
 
       //
@@ -113,12 +103,11 @@ namespace nucleus
       //
       elle::Status              Create();
 
-      elle::Status              Insert(const typename V::K&,
-                                       V*);
       elle::Status              Insert(I*);
+      elle::Status              Insert(const typename V::K&,
+                                       Handle&);
 
       elle::Status              Delete(typename Iterator::Forward&);
-      elle::Status              Delete(V*);
       elle::Status              Delete(const typename V::K&);
 
       elle::Status              Exist(const typename V::K&);
@@ -128,17 +117,23 @@ namespace nucleus
       elle::Status              Lookup(const typename V::K&,
                                        I*&);
       elle::Status              Lookup(const typename V::K&,
-                                       V*&);
+                                       Handle&);
 
       elle::Status              Locate(const typename V::K&,
                                        typename Iterator::Forward&);
       elle::Status              Locate(const typename V::K&,
                                        I*&);
       elle::Status              Locate(const typename V::K&,
-                                       V*&);
+                                       Handle&);
 
-      elle::Status              Split(Quill<V>*&);
+      elle::Status              Link(I*,
+                                     Handle&);
+      elle::Status              Link(Handle&);
+
       elle::Status              Merge(Quill<V>*);
+
+      elle::Status              Check(Handle&,
+                                      const Pins);
 
       //
       // interfaces
@@ -148,8 +143,13 @@ namespace nucleus
       elle::Status              Mayor(typename V::K&) const;
       elle::Status              Maiden(typename V::K&) const;
       elle::Status              Search(const typename V::K&,
-                                       Quill<V>*&);
-      elle::Status              Check() const;
+                                       Handle&);
+      elle::Status              Check(Handle&,
+                                      Handle&,
+                                      const Pins = PinAll);
+      elle::Status              Traverse(const elle::Natural32 = 0);
+      elle::Status              Seal(const elle::SecretKey&,
+                                     Address&);
 
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;

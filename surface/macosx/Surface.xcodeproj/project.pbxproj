@@ -1,0 +1,708 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1CA1A64C152A43CD0066D288 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A649152A43CD0066D288 /* main.m */; };
+		1CA1A64D152A43CD0066D288 /* OOAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A64B152A43CD0066D288 /* OOAppDelegate.m */; };
+		1CA1A64E152A43DD0066D288 /* OOInjectorHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A642152A43910066D288 /* OOInjectorHelper.m */; };
+		1CA1A64F152A43E40066D288 /* OOInstallerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A644152A43910066D288 /* OOInstallerHelper.m */; };
+		1CA1A650152A43F90066D288 /* OOInjectorHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A642152A43910066D288 /* OOInjectorHelper.m */; };
+		1CA1A651152A43F90066D288 /* OOInstallerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A644152A43910066D288 /* OOInstallerHelper.m */; };
+		1CA1A652152A441F0066D288 /* OOInjectorHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A642152A43910066D288 /* OOInjectorHelper.m */; };
+		1CA1A653152A441F0066D288 /* OOInstallerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A644152A43910066D288 /* OOInstallerHelper.m */; };
+		1CA1A656152A442A0066D288 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A654152A442A0066D288 /* MainMenu.xib */; };
+		1CA1A65B152A443B0066D288 /* 8installer in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A657152A443B0066D288 /* 8installer */; };
+		1CA1A65C152A443B0066D288 /* Infinit-status-dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A658152A443B0066D288 /* Infinit-status-dark.png */; };
+		1CA1A65D152A443B0066D288 /* Infinit.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A659152A443B0066D288 /* Infinit.icns */; };
+		1CA1A65E152A443B0066D288 /* ok.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A65A152A443B0066D288 /* ok.icns */; };
+		1CA1A660152A444D0066D288 /* Infinit-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A65F152A444D0066D288 /* Infinit-Info.plist */; };
+		1CA1A66F152A47B20066D288 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A662152A47B20066D288 /* InfoPlist.strings */; };
+		1CA1A670152A47B20066D288 /* StoneTablets.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A664152A47B20066D288 /* StoneTablets.xib */; };
+		1CA1A671152A47B20066D288 /* Preferences-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A666152A47B20066D288 /* Preferences-Info.plist */; };
+		1CA1A672152A47B20066D288 /* Preferences-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 1CA1A667152A47B20066D288 /* Preferences-Prefix.pch */; };
+		1CA1A673152A47B20066D288 /* Preferences.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CA1A668152A47B20066D288 /* Preferences.h */; };
+		1CA1A674152A47B20066D288 /* Preferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A669152A47B20066D288 /* Preferences.m */; };
+		1CA1A675152A47B20066D288 /* Preferences.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A66A152A47B20066D288 /* Preferences.tiff */; };
+		1CA1A676152A47B20066D288 /* Preferences.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A66C152A47B20066D288 /* Preferences.tiff */; };
+		1CA1A677152A47B20066D288 /* stoneTablets-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A66E152A47B20066D288 /* stoneTablets-Info.plist */; };
+		1CB4FB751528EDA100DDEC99 /* io.infinit.FinderDopant.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CD297041528D28A006D1A4C /* io.infinit.FinderDopant.bundle */; };
+		1CB4FB761528EDA100DDEC99 /* io.infinit.Nurse.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CD297061528D28A006D1A4C /* io.infinit.Nurse.helper */; };
+		1CB4FB7D1528EDEB00DDEC99 /* mach_inject_bundle_stub.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CB4FB7C1528EDDA00DDEC99 /* mach_inject_bundle_stub.bundle */; };
+		362A33DD150B69AF00D92151 /* PreferencePanes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3619AF211508F3A900324697 /* PreferencePanes.framework */; };
+		362A340A150B700800D92151 /* StoneTablets.prefPane in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3619AF3B1508F5ED00324697 /* StoneTablets.prefPane */; };
+		3667200D150BE36D002A595A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36E9F8BF14FF7DE8000B9C12 /* Foundation.framework */; };
+		3667200E150BE370002A595A /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367B0EBA14FFB70200AC66A2 /* ServiceManagement.framework */; };
+		3667200F150BE372002A595A /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367B0EB714FFB6F100AC66A2 /* Security.framework */; };
+		368C77DC150C1052009E8FC4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 368C77DA150C1038009E8FC4 /* Cocoa.framework */; };
+		368C77DD150C1062009E8FC4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 368C77DA150C1038009E8FC4 /* Cocoa.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		1C672E96152A4D21003C653F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D01CCC60486CAD60068D4B7;
+			remoteInfo = mach_inject_bundle_stub;
+		};
+		1C8523221528DAF600051605 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 367BCFF514FE6F4600B41298;
+			remoteInfo = FinderDopant;
+		};
+		1C8523241528DAF600051605 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 3661644515011A08008A1425;
+			remoteInfo = Nurse;
+		};
+		1CB4FB7B1528EDDA00DDEC99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D01CCD20486CAD60068D4B7;
+			remoteInfo = mach_inject_bundle_stub;
+		};
+		1CD297031528D28A006D1A4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 367BCFF614FE6F4600B41298;
+			remoteInfo = FinderInjectee;
+		};
+		1CD297051528D28A006D1A4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3661644615011A08008A1425;
+			remoteInfo = HelperTools;
+		};
+		362A3403150B6F7C00D92151 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 36E9F8AD14FF7DE7000B9C12 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3619AF3A1508F5ED00324697;
+			remoteInfo = Preferences;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		362A3405150B6F8D00D92151 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Library/LaunchServices;
+			dstSubfolderSpec = 1;
+			files = (
+				1CB4FB7D1528EDEB00DDEC99 /* mach_inject_bundle_stub.bundle in CopyFiles */,
+				1CB4FB751528EDA100DDEC99 /* io.infinit.FinderDopant.bundle in CopyFiles */,
+				1CB4FB761528EDA100DDEC99 /* io.infinit.Nurse.helper in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		362A3408150B6FED00D92151 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				362A340A150B700800D92151 /* StoneTablets.prefPane in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		1C672E95152A4C9E003C653F /* IHTInjector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IHTInjector.h; path = medecine/nurse/IHTInjector.h; sourceTree = "<group>"; };
+		1CA1A641152A43910066D288 /* OOInjectorHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OOInjectorHelper.h; path = field/helpers/OOInjectorHelper.h; sourceTree = SOURCE_ROOT; };
+		1CA1A642152A43910066D288 /* OOInjectorHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OOInjectorHelper.m; path = field/helpers/OOInjectorHelper.m; sourceTree = SOURCE_ROOT; };
+		1CA1A643152A43910066D288 /* OOInstallerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OOInstallerHelper.h; path = field/helpers/OOInstallerHelper.h; sourceTree = SOURCE_ROOT; };
+		1CA1A644152A43910066D288 /* OOInstallerHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OOInstallerHelper.m; path = field/helpers/OOInstallerHelper.m; sourceTree = SOURCE_ROOT; };
+		1CA1A649152A43CD0066D288 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = field/main.m; sourceTree = SOURCE_ROOT; };
+		1CA1A64A152A43CD0066D288 /* OOAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OOAppDelegate.h; path = field/OOAppDelegate.h; sourceTree = SOURCE_ROOT; };
+		1CA1A64B152A43CD0066D288 /* OOAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OOAppDelegate.m; path = field/OOAppDelegate.m; sourceTree = SOURCE_ROOT; };
+		1CA1A655152A442A0066D288 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = field/en.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
+		1CA1A657152A443B0066D288 /* 8installer */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = 8installer; path = field/ressources/8installer; sourceTree = SOURCE_ROOT; };
+		1CA1A658152A443B0066D288 /* Infinit-status-dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Infinit-status-dark.png"; path = "field/ressources/Infinit-status-dark.png"; sourceTree = SOURCE_ROOT; };
+		1CA1A659152A443B0066D288 /* Infinit.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = Infinit.icns; path = field/ressources/Infinit.icns; sourceTree = SOURCE_ROOT; };
+		1CA1A65A152A443B0066D288 /* ok.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = ok.icns; path = field/ressources/ok.icns; sourceTree = SOURCE_ROOT; };
+		1CA1A65F152A444D0066D288 /* Infinit-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Infinit-Info.plist"; path = "field/supportingFiles/Infinit-Info.plist"; sourceTree = SOURCE_ROOT; };
+		1CA1A663152A47B20066D288 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1CA1A665152A47B20066D288 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/stoneTablets.xib; sourceTree = "<group>"; };
+		1CA1A666152A47B20066D288 /* Preferences-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Preferences-Info.plist"; sourceTree = "<group>"; };
+		1CA1A667152A47B20066D288 /* Preferences-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Preferences-Prefix.pch"; sourceTree = "<group>"; };
+		1CA1A668152A47B20066D288 /* Preferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Preferences.h; sourceTree = "<group>"; };
+		1CA1A669152A47B20066D288 /* Preferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Preferences.m; sourceTree = "<group>"; };
+		1CA1A66A152A47B20066D288 /* Preferences.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Preferences.tiff; sourceTree = "<group>"; };
+		1CA1A66C152A47B20066D288 /* Preferences.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Preferences.tiff; sourceTree = "<group>"; };
+		1CA1A66E152A47B20066D288 /* stoneTablets-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "stoneTablets-Info.plist"; sourceTree = "<group>"; };
+		1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = needle.xcodeproj; path = medecine/needle/needle.xcodeproj; sourceTree = "<group>"; };
+		1CD296FA1528D289006D1A4C /* medecine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = medecine.xcodeproj; path = medecine/medecine.xcodeproj; sourceTree = "<group>"; };
+		3619AF211508F3A900324697 /* PreferencePanes.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PreferencePanes.framework; path = System/Library/Frameworks/PreferencePanes.framework; sourceTree = SDKROOT; };
+		3619AF3B1508F5ED00324697 /* StoneTablets.prefPane */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StoneTablets.prefPane; sourceTree = BUILT_PRODUCTS_DIR; };
+		362A33E4150B6ED000D92151 /* Infinit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Infinit.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		362A33E7150B6ED000D92151 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		367B0EB714FFB6F100AC66A2 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		367B0EBA14FFB70200AC66A2 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
+		368C77DA150C1038009E8FC4 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		36E9F8BD14FF7DE8000B9C12 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		36E9F8BE14FF7DE8000B9C12 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		36E9F8BF14FF7DE8000B9C12 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3619AF361508F5ED00324697 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				362A33DD150B69AF00D92151 /* PreferencePanes.framework in Frameworks */,
+				368C77DC150C1052009E8FC4 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		362A33E1150B6ED000D92151 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3667200D150BE36D002A595A /* Foundation.framework in Frameworks */,
+				3667200E150BE370002A595A /* ServiceManagement.framework in Frameworks */,
+				3667200F150BE372002A595A /* Security.framework in Frameworks */,
+				368C77DD150C1062009E8FC4 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1CA1A661152A47B20066D288 /* stoneTablets */ = {
+			isa = PBXGroup;
+			children = (
+				1CA1A662152A47B20066D288 /* InfoPlist.strings */,
+				1CA1A664152A47B20066D288 /* StoneTablets.xib */,
+				1CA1A666152A47B20066D288 /* Preferences-Info.plist */,
+				1CA1A667152A47B20066D288 /* Preferences-Prefix.pch */,
+				1CA1A668152A47B20066D288 /* Preferences.h */,
+				1CA1A669152A47B20066D288 /* Preferences.m */,
+				1CA1A66A152A47B20066D288 /* Preferences.tiff */,
+				1CA1A66B152A47B20066D288 /* ressources */,
+				1CA1A66D152A47B20066D288 /* supportingFiles */,
+			);
+			path = stoneTablets;
+			sourceTree = "<group>";
+		};
+		1CA1A66B152A47B20066D288 /* ressources */ = {
+			isa = PBXGroup;
+			children = (
+				1CA1A66C152A47B20066D288 /* Preferences.tiff */,
+			);
+			path = ressources;
+			sourceTree = "<group>";
+		};
+		1CA1A66D152A47B20066D288 /* supportingFiles */ = {
+			isa = PBXGroup;
+			children = (
+				1CA1A66E152A47B20066D288 /* stoneTablets-Info.plist */,
+			);
+			path = supportingFiles;
+			sourceTree = "<group>";
+		};
+		1CAD9C8015298DCD00F3217E /* helpers */ = {
+			isa = PBXGroup;
+			children = (
+				1C672E95152A4C9E003C653F /* IHTInjector.h */,
+				1CA1A641152A43910066D288 /* OOInjectorHelper.h */,
+				1CA1A642152A43910066D288 /* OOInjectorHelper.m */,
+				1CA1A643152A43910066D288 /* OOInstallerHelper.h */,
+				1CA1A644152A43910066D288 /* OOInstallerHelper.m */,
+			);
+			path = helpers;
+			sourceTree = "<group>";
+		};
+		1CB4FB521528DC1C00DDEC99 /* field */ = {
+			isa = PBXGroup;
+			children = (
+				1CAD9C8015298DCD00F3217E /* helpers */,
+				1CA1A654152A442A0066D288 /* MainMenu.xib */,
+				1CA1A649152A43CD0066D288 /* main.m */,
+				1CA1A64A152A43CD0066D288 /* OOAppDelegate.h */,
+				1CA1A64B152A43CD0066D288 /* OOAppDelegate.m */,
+				1CB4FB5F1528DC1C00DDEC99 /* ressources */,
+				1CB4FB641528DC1C00DDEC99 /* supportingFiles */,
+			);
+			name = field;
+			path = infinit;
+			sourceTree = "<group>";
+		};
+		1CB4FB5F1528DC1C00DDEC99 /* ressources */ = {
+			isa = PBXGroup;
+			children = (
+				1CA1A657152A443B0066D288 /* 8installer */,
+				1CA1A658152A443B0066D288 /* Infinit-status-dark.png */,
+				1CA1A659152A443B0066D288 /* Infinit.icns */,
+				1CA1A65A152A443B0066D288 /* ok.icns */,
+			);
+			path = ressources;
+			sourceTree = "<group>";
+		};
+		1CB4FB641528DC1C00DDEC99 /* supportingFiles */ = {
+			isa = PBXGroup;
+			children = (
+				1CA1A65F152A444D0066D288 /* Infinit-Info.plist */,
+			);
+			path = supportingFiles;
+			sourceTree = "<group>";
+		};
+		1CB4FB781528EDDA00DDEC99 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1CB4FB7C1528EDDA00DDEC99 /* mach_inject_bundle_stub.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1CD296FB1528D289006D1A4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1CD297041528D28A006D1A4C /* io.infinit.FinderDopant.bundle */,
+				1CD297061528D28A006D1A4C /* io.infinit.Nurse.helper */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		36E9F8AB14FF7DE7000B9C12 = {
+			isa = PBXGroup;
+			children = (
+				1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */,
+				1CD296FA1528D289006D1A4C /* medecine.xcodeproj */,
+				1CB4FB521528DC1C00DDEC99 /* field */,
+				1CA1A661152A47B20066D288 /* stoneTablets */,
+				36E9F8B914FF7DE8000B9C12 /* frameworks */,
+				36E9F8B714FF7DE8000B9C12 /* products */,
+			);
+			sourceTree = "<group>";
+		};
+		36E9F8B714FF7DE8000B9C12 /* products */ = {
+			isa = PBXGroup;
+			children = (
+				3619AF3B1508F5ED00324697 /* StoneTablets.prefPane */,
+				362A33E4150B6ED000D92151 /* Infinit.app */,
+			);
+			name = products;
+			sourceTree = "<group>";
+		};
+		36E9F8B914FF7DE8000B9C12 /* frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				368C77DA150C1038009E8FC4 /* Cocoa.framework */,
+				36E9F8BF14FF7DE8000B9C12 /* Foundation.framework */,
+				367B0EBA14FFB70200AC66A2 /* ServiceManagement.framework */,
+				367B0EB714FFB6F100AC66A2 /* Security.framework */,
+				3619AF211508F3A900324697 /* PreferencePanes.framework */,
+				36E9F8BC14FF7DE8000B9C12 /* Other Frameworks */,
+			);
+			name = frameworks;
+			sourceTree = "<group>";
+		};
+		36E9F8BC14FF7DE8000B9C12 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				36E9F8BD14FF7DE8000B9C12 /* AppKit.framework */,
+				36E9F8BE14FF7DE8000B9C12 /* CoreData.framework */,
+				362A33E7150B6ED000D92151 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		3619AF371508F5ED00324697 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1CA1A672152A47B20066D288 /* Preferences-Prefix.pch in Headers */,
+				1CA1A673152A47B20066D288 /* Preferences.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		3619AF3A1508F5ED00324697 /* StoneTablets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3619AF4D1508F5ED00324697 /* Build configuration list for PBXNativeTarget "StoneTablets" */;
+			buildPhases = (
+				3619AF351508F5ED00324697 /* Sources */,
+				3619AF361508F5ED00324697 /* Frameworks */,
+				3619AF371508F5ED00324697 /* Headers */,
+				3619AF381508F5ED00324697 /* Resources */,
+				3619AF391508F5ED00324697 /* Rez */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = StoneTablets;
+			productName = Preferences;
+			productReference = 3619AF3B1508F5ED00324697 /* StoneTablets.prefPane */;
+			productType = "com.apple.product-type.bundle";
+		};
+		362A33E3150B6ED000D92151 /* Infinit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 362A33FA150B6ED000D92151 /* Build configuration list for PBXNativeTarget "Infinit" */;
+			buildPhases = (
+				362A33E0150B6ED000D92151 /* Sources */,
+				362A33E1150B6ED000D92151 /* Frameworks */,
+				362A33E2150B6ED000D92151 /* Resources */,
+				362A3405150B6F8D00D92151 /* CopyFiles */,
+				362A3408150B6FED00D92151 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1C672E97152A4D21003C653F /* PBXTargetDependency */,
+				1C8523231528DAF600051605 /* PBXTargetDependency */,
+				1C8523251528DAF600051605 /* PBXTargetDependency */,
+				362A3404150B6F7C00D92151 /* PBXTargetDependency */,
+			);
+			name = Infinit;
+			productName = Infinit;
+			productReference = 362A33E4150B6ED000D92151 /* Infinit.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		36E9F8AD14FF7DE7000B9C12 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
+			buildConfigurationList = 36E9F8B014FF7DE7000B9C12 /* Build configuration list for PBXProject "Surface" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 36E9F8AB14FF7DE7000B9C12;
+			productRefGroup = 36E9F8B714FF7DE8000B9C12 /* products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 1CD296FB1528D289006D1A4C /* Products */;
+					ProjectRef = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
+				},
+				{
+					ProductGroup = 1CB4FB781528EDDA00DDEC99 /* Products */;
+					ProjectRef = 1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				3619AF3A1508F5ED00324697 /* StoneTablets */,
+				362A33E3150B6ED000D92151 /* Infinit */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		1CB4FB7C1528EDDA00DDEC99 /* mach_inject_bundle_stub.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = mach_inject_bundle_stub.bundle;
+			remoteRef = 1CB4FB7B1528EDDA00DDEC99 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		1CD297041528D28A006D1A4C /* io.infinit.FinderDopant.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = io.infinit.FinderDopant.bundle;
+			remoteRef = 1CD297031528D28A006D1A4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		1CD297061528D28A006D1A4C /* io.infinit.Nurse.helper */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = io.infinit.Nurse.helper;
+			remoteRef = 1CD297051528D28A006D1A4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3619AF381508F5ED00324697 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1CA1A66F152A47B20066D288 /* InfoPlist.strings in Resources */,
+				1CA1A670152A47B20066D288 /* StoneTablets.xib in Resources */,
+				1CA1A671152A47B20066D288 /* Preferences-Info.plist in Resources */,
+				1CA1A675152A47B20066D288 /* Preferences.tiff in Resources */,
+				1CA1A676152A47B20066D288 /* Preferences.tiff in Resources */,
+				1CA1A677152A47B20066D288 /* stoneTablets-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		362A33E2150B6ED000D92151 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1CA1A656152A442A0066D288 /* MainMenu.xib in Resources */,
+				1CA1A65B152A443B0066D288 /* 8installer in Resources */,
+				1CA1A65C152A443B0066D288 /* Infinit-status-dark.png in Resources */,
+				1CA1A65D152A443B0066D288 /* Infinit.icns in Resources */,
+				1CA1A65E152A443B0066D288 /* ok.icns in Resources */,
+				1CA1A660152A444D0066D288 /* Infinit-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXRezBuildPhase section */
+		3619AF391508F5ED00324697 /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXRezBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3619AF351508F5ED00324697 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1CA1A674152A47B20066D288 /* Preferences.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		362A33E0150B6ED000D92151 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1CA1A64C152A43CD0066D288 /* main.m in Sources */,
+				1CA1A64D152A43CD0066D288 /* OOAppDelegate.m in Sources */,
+				1CA1A64E152A43DD0066D288 /* OOInjectorHelper.m in Sources */,
+				1CA1A64F152A43E40066D288 /* OOInstallerHelper.m in Sources */,
+				1CA1A650152A43F90066D288 /* OOInjectorHelper.m in Sources */,
+				1CA1A651152A43F90066D288 /* OOInstallerHelper.m in Sources */,
+				1CA1A652152A441F0066D288 /* OOInjectorHelper.m in Sources */,
+				1CA1A653152A441F0066D288 /* OOInstallerHelper.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1C672E97152A4D21003C653F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = mach_inject_bundle_stub;
+			targetProxy = 1C672E96152A4D21003C653F /* PBXContainerItemProxy */;
+		};
+		1C8523231528DAF600051605 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FinderDopant;
+			targetProxy = 1C8523221528DAF600051605 /* PBXContainerItemProxy */;
+		};
+		1C8523251528DAF600051605 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Nurse;
+			targetProxy = 1C8523241528DAF600051605 /* PBXContainerItemProxy */;
+		};
+		362A3404150B6F7C00D92151 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3619AF3A1508F5ED00324697 /* StoneTablets */;
+			targetProxy = 362A3403150B6F7C00D92151 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		1CA1A654152A442A0066D288 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1CA1A655152A442A0066D288 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		1CA1A662152A47B20066D288 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1CA1A663152A47B20066D288 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		1CA1A664152A47B20066D288 /* StoneTablets.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1CA1A665152A47B20066D288 /* en */,
+			);
+			name = StoneTablets.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		3619AF4E1508F5ED00324697 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(DEVELOPER_DIR)/SDKs/MacOSX10.6.sdk/System/Library/Frameworks\"",
+				);
+				GCC_ENABLE_OBJC_GC = supported;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "stoneTablets/supportingFiles/stoneTablets-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/PreferencePanes";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				VALID_ARCHS = x86_64;
+				WRAPPER_EXTENSION = prefPane;
+			};
+			name = Debug;
+		};
+		3619AF4F1508F5ED00324697 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(DEVELOPER_DIR)/SDKs/MacOSX10.6.sdk/System/Library/Frameworks\"",
+				);
+				GCC_ENABLE_OBJC_GC = supported;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "stoneTablets/supportingFiles/stoneTablets-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/PreferencePanes";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				VALID_ARCHS = x86_64;
+				WRAPPER_EXTENSION = prefPane;
+			};
+			name = Release;
+		};
+		362A33FB150B6ED000D92151 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "field/supportingFiles/Infinit-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		362A33FC150B6ED000D92151 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "field/supportingFiles/Infinit-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		36E9F8D214FF7DE8000B9C12 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CODE_SIGN_IDENTITY = io.infinit;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		36E9F8D314FF7DE8000B9C12 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CODE_SIGN_IDENTITY = io.infinit;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3619AF4D1508F5ED00324697 /* Build configuration list for PBXNativeTarget "StoneTablets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3619AF4E1508F5ED00324697 /* Debug */,
+				3619AF4F1508F5ED00324697 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		362A33FA150B6ED000D92151 /* Build configuration list for PBXNativeTarget "Infinit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				362A33FB150B6ED000D92151 /* Debug */,
+				362A33FC150B6ED000D92151 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		36E9F8B014FF7DE7000B9C12 /* Build configuration list for PBXProject "Surface" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				36E9F8D214FF7DE8000B9C12 /* Debug */,
+				36E9F8D314FF7DE8000B9C12 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 36E9F8AD14FF7DE7000B9C12 /* Project object */;
+}

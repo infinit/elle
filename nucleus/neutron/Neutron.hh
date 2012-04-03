@@ -33,7 +33,6 @@ namespace nucleus
 #include <nucleus/neutron/Attributes.hh>
 #include <nucleus/neutron/Author.hh>
 #include <nucleus/neutron/Catalog.hh>
-#include <nucleus/neutron/Contents.hh>
 #include <nucleus/neutron/Data.hh>
 #include <nucleus/neutron/Entry.hh>
 #include <nucleus/neutron/Genre.hh>

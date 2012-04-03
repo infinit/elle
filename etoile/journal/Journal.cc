@@ -14,8 +14,7 @@
 
 #include <etoile/journal/Journal.hh>
 
-#include <etoile/gear/Transcript.hh>
-#include <etoile/gear/Action.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <etoile/depot/Depot.hh>
 
@@ -38,7 +37,7 @@ namespace etoile
     ///
     elle::Status        Journal::Record(gear::Scope*            scope)
     {
-      gear::Transcript::Scoutor         scoutor;
+      nucleus::Transcript::Scoutor      scoutor;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -56,12 +55,12 @@ namespace etoile
            scoutor != scope->context->transcript.container.end();
            scoutor++)
         {
-          gear::Action*                 action = *scoutor;
+          nucleus::Action*              action = *scoutor;
 
           // perform the action.
           switch (action->type)
             {
-            case gear::Action::TypePush:
+            case nucleus::Action::TypePush:
               {
                 // store the block in the depot.
                 if (depot::Depot::Push(action->address,
@@ -70,7 +69,7 @@ namespace etoile
 
                 break;
               }
-            case gear::Action::TypeWipe:
+            case nucleus::Action::TypeWipe:
               {
                 // wipe the block from the depot.
                 if (depot::Depot::Wipe(action->address) == elle::StatusError)
@@ -78,7 +77,7 @@ namespace etoile
 
                 break;
               }
-            case gear::Action::TypeUnknown:
+            case nucleus::Action::TypeUnknown:
               {
                 escape("unknown action type");
               }

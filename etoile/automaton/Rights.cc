@@ -41,7 +41,7 @@ namespace etoile
         return elle::StatusOk;
 
       // determine the rights according to the subject.
-      if (agent::Agent::Subject == context.object.owner._subject)
+      if (agent::Agent::Subject == context.object.owner.subject)
         {
           //
           // if the user is the object's owner, retrieve the user's
@@ -65,7 +65,7 @@ namespace etoile
             }
 
           // set the record for ease purpose.
-          context.rights.record = context.object.meta.owner._record;
+          context.rights.record = context.object.meta.owner.record;
         }
       else
         {

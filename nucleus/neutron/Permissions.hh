@@ -42,9 +42,9 @@ namespace nucleus
     /// note that for convenience, the write permission implictly includes
     /// the read permission as well.
     ///
-    const Permissions           PermissionNone = 0x0;
-    const Permissions           PermissionRead = 0x1;
-    const Permissions           PermissionWrite = 0x3;
+    const Permissions           PermissionNone = 0;
+    const Permissions           PermissionRead = (1 << 0);
+    const Permissions           PermissionWrite = PermissionRead | (1 << 1);
 
   }
 }

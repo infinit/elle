@@ -19,8 +19,9 @@
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
-#include <XXX/Nodule.hh>
 #include <XXX/Handle.hh>
+#include <XXX/Pins.hh>
+#include <nucleus/proton/Transcript.hh>
 
 namespace nucleus
 {
@@ -97,6 +98,9 @@ namespace nucleus
     /// the request from the top. likewise, a key is said to be the maiden
     /// key if it is the only one remaining in a nodule.
     ///
+    /// XXX attention V doit etre un type qui peut se mettre dans Contents.
+    /// XXX et les handles Add()ed doivent representer des Contents aussi.
+    ///
     template <typename V>
     class Porcupine<V>:
       public elle::Object
@@ -111,33 +115,30 @@ namespace nucleus
       // methods
       //
       elle::Status              Add(const typename V::K&,
-                                    V*);
+                                    Handle&);
       elle::Status              Exist(const typename V::K&);
       elle::Status              Locate(const typename V::K&,
-                                       V*&);
+                                       Handle&);
       elle::Status              Remove(const typename V::K&);
 
-      template <typename N,
-                typename W>
-      elle::Status              Insert(N*,
-                                       const typename V::K&,
-                                       W*);
       template <typename N>
-      elle::Status              Delete(N*,
+      elle::Status              Insert(Handle&,
+                                       const typename V::K&,
+                                       Handle&);
+      template <typename N>
+      elle::Status              Delete(Handle&,
                                        const typename V::K&);
 
       elle::Status              Grow();
       elle::Status              Shrink();
 
       elle::Status              Search(const typename V::K&,
-                                       Quill<V>*&);
+                                       Handle&);
 
-      elle::Status              Check() const;
+      elle::Status              Check(const Pins = PinAll);
+      elle::Status              Traverse(const elle::Natural32 = 0);
 
-      elle::Status              Load(const Address&,
-                                     Nodule<V>*&);
-      elle::Status              Unload(const Address&,
-                                       const Nodule<V>*);
+      elle::Status              Seal(const elle::SecretKey&);
 
       //
       // interfaces
@@ -151,7 +152,9 @@ namespace nucleus
       //
       elle::Natural32           height;
 
-      Handle< Nodule<V> >       root;
+      Handle                    root;
+
+      Transcript                transcript;
     };
 
     ///
@@ -163,10 +166,78 @@ namespace nucleus
     {
     public:
       //
+      // constants
+      //
+      struct                                    Default
+      {
+        static const elle::Natural32            Length;
+
+        static elle::SecretKey                  Secret;
+      };
+
+      //
       // static methods
       //
-      static elle::Status       Initialize();
+      static elle::Status       Initialize(
+        const elle::Callback<
+          elle::Status,
+          elle::Parameters<
+            Block*,
+            Handle&
+            >
+          >&,
+        const elle::Callback<
+          elle::Status,
+          elle::Parameters<
+            Handle&
+            >
+          >&,
+        const elle::Callback<
+          elle::Status,
+          elle::Parameters<
+            Handle&
+            >
+          >&,
+        const elle::Callback<
+          elle::Status,
+          elle::Parameters<
+            Handle&
+            >
+          >&);
       static elle::Status       Clean();
+
+      //
+      // static attributes
+      //
+      static
+      elle::Callback<
+        elle::Status,
+        elle::Parameters<
+          Block*,
+          Handle&
+          >
+        >                       Attach;
+      static
+      elle::Callback<
+        elle::Status,
+        elle::Parameters<
+          Handle&
+          >
+        >                       Detach;
+      static
+      elle::Callback<
+        elle::Status,
+        elle::Parameters<
+          Handle&
+          >
+        >                       Load;
+      static
+      elle::Callback<
+        elle::Status,
+        elle::Parameters<
+          Handle&
+          >
+        >                       Unload;
     };
 
   }

@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <XXX/Nest.hh>
+#include <XXX/Ambit.hh>
 
 #include <hole/Hole.hh>
 
@@ -31,33 +31,13 @@ namespace nucleus
     ///
     /// default constructor.
     ///
+    /* XXX
     template <typename V>
     Seam<V>::Seam():
       Nodule<V>(Nodule<V>::TypeSeam)
     {
     }
-
-    ///
-    /// specific constructor.
-    ///
-    template <typename V>
-    Seam<V>::Seam(const elle::Callback<
-                    elle::Status,
-                    elle::Parameters<
-                      const Address&,
-                      Nodule<V>*&
-                      >
-                    >&                                          load,
-                  const elle::Callback<
-                    elle::Status,
-                    elle::Parameters<
-                      const Address&,
-                      const Nodule<V>*
-                      >
-                    >&                                          unload):
-      Nodule<V>(Nodule<V>::TypeSeam, load, unload)
-    {
-    }
+    */
 
     ///
     /// destructor.
@@ -65,14 +45,13 @@ namespace nucleus
     template <typename V>
     Seam<V>::~Seam()
     {
-      typename Seam<V>::Scoutor::Forward        scoutor;
+      auto      iterator = this->container.begin();
+      auto      end = this->container.end();
 
       // go through the container.
-      for (scoutor = this->container.begin();
-           scoutor != this->container.end();
-           scoutor++)
+      for (; iterator != end; ++iterator)
         {
-          Seam<V>::I*   inlet = scoutor->second;
+          Seam<V>::I*   inlet = iterator->second;
 
           // delete the inlet.
           delete inlet;
@@ -93,32 +72,10 @@ namespace nucleus
     elle::Status        Seam<V>::Create()
     {
       // initialize the footprint.
-      this->_footprint.size = Seam<V>::Footprint;
+      this->footprint.size = Seam<V>::Footprint;
 
       // set the state.
-      this->_state = StateDirty;
-
-      return elle::StatusOk;
-    }
-
-    ///
-    /// this method inserts the given nodule in the seam.
-    ///
-    template <typename V>
-    elle::Status        Seam<V>::Insert(const typename V::K&    key,
-                                        Nodule<V>*              nodule)
-    {
-      // create an inlet.
-      auto              inlet =
-        std::unique_ptr<typename Seam<V>::I>(
-          new typename Seam<V>::I(key, nodule));
-
-      // add the inlet to the seam.
-      if (this->Insert(inlet.get()) == elle::StatusError)
-        escape("unable to add the value to the seam");
-
-      // waive.
-      inlet.release();
+      this->contents()->state = StateDirty;
 
       return elle::StatusOk;
     }
@@ -145,24 +102,37 @@ namespace nucleus
       if (result.second == false)
         escape("unable to insert the inlet in the container");
 
-      // XXX make sure it is loaded
-
-      // set the seam's parent handle.
-      if (inlet->value._object->parent.Create(Address::Some,
-                                              this) == elle::StatusError)
-        escape("unable to create the inlet's parent handle");
-
-      // XXX unload
-
       // compute the inlet's footprint.
-      if (inlet->_footprint.Compute() == elle::StatusError)
+      if (inlet->footprint.Compute() == elle::StatusError)
         escape("unable to compute the inlet's footprint");
 
       // add the inlet footprint to the seam's.
-      this->_footprint.size += inlet->_footprint.size;
+      this->footprint.size += inlet->footprint.size;
 
       // set the state.
-      this->_state = StateDirty;
+      this->contents()->state = StateDirty;
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// this method inserts the given nodule in the seam.
+    ///
+    template <typename V>
+    elle::Status        Seam<V>::Insert(const typename V::K&    key,
+                                        Handle&                 value)
+    {
+      // create an inlet.
+      auto              inlet =
+        std::unique_ptr<typename Seam<V>::I>(
+          new typename Seam<V>::I(key, value));
+
+      // add the inlet to the seam.
+      if (this->Insert(inlet.get()) == elle::StatusError)
+        escape("unable to add the value to the seam");
+
+      // waive.
+      inlet.release();
 
       return elle::StatusOk;
     }
@@ -180,11 +150,11 @@ namespace nucleus
       inlet = iterator->second;
 
       // compute the inlet's footprint.
-      if (inlet->_footprint.Compute() == elle::StatusError)
+      if (inlet->footprint.Compute() == elle::StatusError)
         escape("unable to compute the inlet's footprint");
 
       // substract the inlet footprint to the seam's.
-      this->_footprint.size -= inlet->_footprint.size;
+      this->footprint.size -= inlet->footprint.size;
 
       // delete the inlet.
       delete inlet;
@@ -193,26 +163,7 @@ namespace nucleus
       this->container.erase(iterator);
 
       // set the state.
-      this->_state = StateDirty;
-
-      return elle::StatusOk;
-    }
-
-    ///
-    /// this method deletes the given nodule from the seam.
-    ///
-    template <typename V>
-    elle::Status        Seam<V>::Delete(Nodule<V>*              nodule)
-    {
-      typename Seam<V>::Iterator::Forward       iterator;
-
-      // locate the inlet for the given nodule.
-      if (this->Locate(nodule, iterator) == elle::StatusError)
-        escape("unable to locate the given nodule");
-
-      // delete the entry associated with the given iterator.
-      if (this->Delete(iterator) == elle::StatusError)
-        escape("unable to delete the entry associated with the iterator");
+      this->contents()->state = StateDirty;
 
       return elle::StatusOk;
     }
@@ -262,17 +213,17 @@ namespace nucleus
                           const typename V::K&                  key,
                           typename Iterator::Forward&           iterator)
     {
+      auto              end = this->container.end();
+      auto              rbegin = this->container.rbegin();
+
       // go through the container.
-      for (iterator = this->container.begin();
-           iterator != this->container.end();
-           iterator++)
+      for (iterator = this->container.begin(); iterator != end; ++iterator)
         {
           Seam<V>::I*   inlet = iterator->second;
 
           // check if this inlet is responsible for the given key or
           // the end of the seam has been reached.
-          if ((key <= iterator->first) ||
-              (inlet == this->container.rbegin()->second))
+          if ((key <= iterator->first) || (inlet == rbegin->second))
             {
               // return with the correct iterator set.
               return elle::StatusOk;
@@ -306,19 +257,16 @@ namespace nucleus
     ///
     template <typename V>
     elle::Status        Seam<V>::Lookup(const typename V::K&    key,
-                                        Nodule<V>*&             nodule)
+                                        Handle&                 handle)
     {
-      Seam<V>::I*       inlet;
+      Seam<V>::I*               inlet;
 
       // lookup the inlet associated with the given key.
       if (this->Lookup(key, inlet) == elle::StatusError)
         escape("unable to locate the inlet");
 
-      // load the value block.
-      NestLoad(inlet->value);
-
-      // return the nodule.
-      nodule = inlet->value._object;
+      // return the nodule's handle.
+      handle = inlet->value;
 
       return elle::StatusOk;
     }
@@ -363,7 +311,7 @@ namespace nucleus
     ///
     template <typename V>
     elle::Status        Seam<V>::Locate(const typename V::K&    key,
-                                        Nodule<V>*&             nodule)
+                                        Handle&                 handle)
     {
       Seam<V>::I*       inlet;
 
@@ -371,11 +319,67 @@ namespace nucleus
       if (this->Locate(key, inlet) == elle::StatusError)
         escape("unable to locate the inlet associated with the given key");
 
-      // load the value block.
-      NestLoad(inlet->value);
+      // return the nodule's handle.
+      handle = inlet->value;
 
-      // return the nodule.
-      nodule = inlet->value._object;
+      return elle::StatusOk;
+    }
+
+    ///
+    /// XXX
+    ///
+    /// since seams reference sub-seams/quills, these must be
+    /// updated so as to reference the parent seam.
+    ///
+    template <typename V>
+    elle::Status        Seam<V>::Link(I*                        inlet,
+                                      Handle&                   parent)
+    {
+      Ambit< Contents< Seam<V> > >      child(inlet->value);
+
+      // load the child nodule.
+      if (child.Load() == elle::StatusError)
+        escape("unable to load the block");
+
+      // the child nodule must have been loaded.
+      assert(child.nodule() != nullptr);
+
+      // set the child nodule's parent handle.
+      child.nodule()->parent = parent;
+
+      // unload the child nodule.
+      if (child.Unload() == elle::StatusError)
+        escape("unable to unload the block");
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status        Seam<V>::Link(Handle&                   parent)
+    {
+      auto              iterator = this->container.begin();
+      auto              end = this->container.end();
+
+      // go through the inlets.
+      for (; iterator != end; ++iterator)
+        {
+          Seam<V>::I*                           inlet = iterator->second;
+          Ambit< Contents< Nodule<V> > >        child(inlet->value);
+
+          // load the value block.
+          if (child.Load() == elle::StatusError)
+            escape("unable to load the block");
+
+          // update the parent link.
+          child.nodule()->parent = parent;
+
+          // unload the value block.
+          if (child.Unload() == elle::StatusError)
+            escape("unable to unload the block");
+        }
 
       return elle::StatusOk;
     }
@@ -421,7 +425,7 @@ namespace nucleus
             escape("unable to insert the inlet in the container");
 
           // set the state.
-          this->_state = StateDirty;
+          this->contents()->state = StateDirty;
         }
 
       return elle::StatusOk;
@@ -454,51 +458,26 @@ namespace nucleus
       // finally, propagate the update should have the mayor key changed
       // and if a parent nodule exists.
       if ((recent != ancient) &&
-          (this->parent != Handle< Seam<V> >::Null))
+          (this->parent != Handle::Null))
         {
+          Ambit< Contents< Seam<V> > >  parent(this->parent);
+
           // load the parent nodule.
-          NestLoad(this->parent);
+          if (parent.Load() == elle::StatusError)
+            escape("unable to load the parent block");
+
+          // at this point, the parent must have been loaded.
+          assert(parent.nodule() != nullptr);
 
           // progate the update.
-          if (this->parent._object->Propagate(ancient,
-                                              recent) == elle::StatusError)
+          if (parent.nodule()->Propagate(ancient,
+                                  recent) == elle::StatusError)
             escape("unable to propagate the update");
+
+          // unload the parent nodule.
+          if (parent.Unload() == elle::StatusError)
+            escape("unable to unload the block");
         }
-
-      return elle::StatusOk;
-    }
-
-    ///
-    /// this method splits the current seam and returns a newly allocated
-    /// seam i.e _right_.
-    ///
-    template <typename V>
-    elle::Status        Seam<V>::Split(Seam<V>*&                right)
-    {
-      elle::Natural32   size;
-
-      // initialize _size_ as being the future left quills' size.
-      size =
-        hole::Hole::Descriptor.extent * hole::Hole::Descriptor.contention;
-
-      // allocate a new seam.
-      auto              r =
-        std::unique_ptr< Seam<V> >(
-          new Seam<V>(this->_load, this->_unload));
-
-      // create the seam.
-      if (r.get()->Create() == elle::StatusError)
-        escape("unable to create the seam");
-
-      // export inlets from the current seam into the new seam.
-      if (this->Export(r.get(), size) == elle::StatusError)
-        escape("unable to export inlets");
-
-      // set the output right seam.
-      right = r.get();
-
-      // release the tracking.
-      r.release();
 
       return elle::StatusOk;
     }
@@ -507,6 +486,7 @@ namespace nucleus
     /// this method takes the given seam and merges its inlets with the
     /// current one.
     ///
+    /// XXX[a virer et mettre direct dans Porcupine, comme Split]
     template <typename V>
     elle::Status        Seam<V>::Merge(Seam<V>*                 seam)
     {
@@ -538,6 +518,74 @@ namespace nucleus
       return elle::StatusOk;
     }
 
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status        Seam<V>::Check(Handle&                  current,
+                                       const Pins               pins)
+    {
+      auto              iterator = this->container.begin();
+      auto              end = this->container.end();
+
+      // go through the inlets.
+      for (; iterator != end; ++iterator)
+        {
+          Seam<V>::I*                           inlet = iterator->second;
+          Ambit< Contents< Nodule<V> > >        child(inlet->value);
+          typename V::K                         mayor;
+
+          // load the value block.
+          if (child.Load() == elle::StatusError)
+            escape("unable to load the block");
+
+          // the child nodule must have been loaded.
+          assert(child.nodule() != nullptr);
+
+          // check the address, if required.
+          if (pins & PinAddress)
+            {
+              Address   address;
+
+              // bind the child block.
+              if (child.contents()->Bind(address) == elle::StatusError)
+                escape("unable to bind the block");
+
+              // compare the addresses.
+              if (inlet->value.address != address)
+                escape("invalid address");
+            }
+
+          // check the keys, if required.
+          if (pins & PinKey)
+            {
+              // check the key.
+              if (inlet->key != iterator->first)
+                escape("invalid key");
+
+              // retrieve the child's mauor key.
+              if (child.nodule()->Mayor(mayor) == elle::StatusError)
+                escape("unable to retrieve the mayor key");
+
+              // compare the mayor key with the inlet's reference.
+              if (inlet->key != mayor)
+                escape("the child nodule's mayor key differs from its "
+                       "reference");
+            }
+
+          // trigger the check on the child nodule.
+          if (child.nodule()->Check(current,
+                             inlet->value,
+                             pins) == elle::StatusError)
+            escape("unable to check the child nodule's consistency");
+
+          // unload the value block.
+          if (child.Unload() == elle::StatusError)
+            escape("unable to unload the block");
+        }
+
+      return elle::StatusOk;
+    }
 //
 // ---------- nodule ----------------------------------------------------------
 //
@@ -580,7 +628,7 @@ namespace nucleus
     ///
     template <typename V>
     elle::Status        Seam<V>::Search(const typename V::K&    key,
-                                        Quill<V>*&              quill)
+                                        Handle&                 handle)
     {
       typename Seam<V>::Iterator::Forward       iterator;
       Seam<V>::I*                               inlet;
@@ -592,12 +640,34 @@ namespace nucleus
       // retrieve the inlet.
       inlet = iterator->second;
 
+      // set the handle as being the inlet's value.
+      //
+      // this is required because, should the child be a quill, the Search()
+      // method implementation for Quills does nothing.
+      //
+      // therefore, the whole Search() mechanism relies on the fact that
+      // the seam's Search() method sets the handle temporarily until the
+      // child quill does nothing after which the call returns with the
+      // temporary handle which happens to reference the quill.
+      //
+      handle = inlet->value;
+
+      Ambit< Contents< Nodule<V> > >            child(inlet->value);
+
       // load the child nodule.
-      NestLoad(inlet->value);
+      if (child.Load() == elle::StatusError)
+        escape("unable to load the block");
+
+      // the child nodule must have been loaded.
+      assert(child.nodule() != nullptr);
 
       // search in this nodule.
-      if (inlet->value._object->Search(key, quill) == elle::StatusError)
+      if (child.nodule()->Search(key, handle) == elle::StatusError)
         escape("unable to locate the quill for the given key");
+
+      // unload the child nodule.
+      if (child.Unload() == elle::StatusError)
+        escape("unable to unload the block");
 
       return elle::StatusOk;
     }
@@ -607,37 +677,196 @@ namespace nucleus
     /// nodules' mayor key is the one being referenced in the inlets.
     ///
     template <typename V>
-    elle::Status        Seam<V>::Check() const
+    elle::Status        Seam<V>::Check(Handle&                  parent,
+                                       Handle&                  current,
+                                       const Pins               pins)
     {
-      typename Seam<V>::Scoutor::Forward        scoutor;
+      // check the parent handle, if required.
+      if (pins & PinParent)
+        {
+          if (this->parent != parent)
+            escape("the parent handle is invalid");
+        }
+
+      // check the neighbours, if required.
+      if (pins & PinNeighbours)
+        {
+          // XXX checker les addresses aussi
+
+          if (this->left != Handle::Null)
+            {
+              Ambit< Contents< Seam<V> > >      left(this->left);
+
+              if (left.Load() == elle::StatusError)
+                escape("unable to load the nodule");
+
+              if (left.nodule()->right != current)
+                escape("the neighbour link differs");
+
+              if (left.Unload() == elle::StatusError)
+                escape("unable to unload the nodule");
+            }
+
+          if (this->right != Handle::Null)
+            {
+              Ambit< Contents< Seam<V> > >      right(this->right);
+
+              if (right.Load() == elle::StatusError)
+                escape("unable to load the nodule");
+
+              if (right.nodule()->left != current)
+                escape("the neighbour link differs");
+
+              if (right.Unload() == elle::StatusError)
+                escape("unable to unload the nodule");
+            }
+        }
+
+      if (this->Check(current,
+                      pins) == elle::StatusError)
+        escape("unable to check the seam consistency");
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// this method traverses the seam.
+    ///
+    template <typename V>
+    elle::Status        Seam<V>::Traverse(const elle::Natural32 margin)
+    {
+      elle::String      alignment(margin, ' ');
+      auto              iterator = this->container.begin();
+      auto              end = this->container.end();
+
+      std::cout << alignment << "[Seam] " << this << std::endl;
+
+      // dump the parent nodule.
+      if (Nodule<V>::Dump(margin + 2) == elle::StatusError)
+        escape("unable to dump the parent nodule");
+
+      // dump the inlets.
+      std::cout << alignment << elle::Dumpable::Shift
+                << "[Inlets] " << this->container.size() << std::endl;
 
       // go through the inlets.
-      for (scoutor = this->container.begin();
-           scoutor != this->container.end();
-           scoutor++)
+      for (; iterator != end; ++iterator)
         {
-          Seam<V>::I*                           inlet = scoutor->second;
-          typename V::K                         mayor;
+          Seam<V>::I*                           inlet = iterator->second;
+          Ambit< Contents< Nodule<V> > >        child(inlet->value);
 
-          // check the key.
-          if (inlet->key != scoutor->first)
-            escape("invalid key");
+          // dump the inlet.
+          if (inlet->Dump(margin + 4) == elle::StatusError)
+            escape("unable to dump the inlet");
 
           // load the value block.
-          NestLoad(inlet->value);
+          if (child.Load() == elle::StatusError)
+            escape("unable to load the block");
 
-          // retrieve the child's mauor key.
-          if (inlet->value._object->Mayor(mayor) == elle::StatusError)
-            escape("unable to retrieve the mayor key");
+          // the child nodule must have been loaded.
+          assert(child.nodule() != nullptr);
 
-          // compare the mayor key with the inlet's reference.
-          if (inlet->key != mayor)
-            escape("the child nodule's mayor key differs from its "
-                   "reference");
-
-          // trigger the check on the child nodule.
-          if (inlet->value._object->Check() == elle::StatusError)
+          // traverse the child.
+          if (child.nodule()->Traverse(margin + 6) == elle::StatusError)
             escape("unable to check the child nodule's consistency");
+
+          // unload the value block.
+          if (child.Unload() == elle::StatusError)
+            escape("unable to unload the block");
+        }
+
+      return elle::StatusOk;
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status        Seam<V>::Seal(const elle::SecretKey&    secret,
+                                      Address&                  address)
+    {
+      auto              iterator = this->container.begin();
+      auto              end = this->container.end();
+
+      // go through the container.
+      for (; iterator != end; ++iterator)
+        {
+          Seam<V>::I*                           inlet = iterator->second;
+          Ambit< Contents< Nodule<V> > >        child(inlet->value);
+          Address                               newaddress;
+
+          // ignore nodules which have not been created or modified.
+          //
+          // such nodules can easily be identified since they have a
+          // non-null placement.
+          if (child.handle.placement == Placement::Null)
+            continue;
+
+          // load the value block.
+          if (child.Load() == elle::StatusError)
+            escape("unable to load the block");
+
+          // the child nodule must have been loaded.
+          assert(child.nodule() != nullptr);
+
+          // set the secret key.
+          inlet->value.secret = secret;
+
+          // seal the child.
+          if (child.nodule()->Seal(inlet->value.secret,
+                                   newaddress) == elle::StatusError)
+            escape("unable to seal the child nodule");
+
+          // is the child dirty in which case the seam referencing
+          // it would need updating.
+          if (child.nodule()->state == StateDirty)
+            {
+              // update the child address.
+              inlet->value.address = newaddress;
+
+              // and set the seam as dirty i.e the nodule has been
+              // modified and therefore needs sealing as well.
+              this->contents()->state = StateDirty;
+            }
+
+          // unload the value block.
+          if (child.Unload() == elle::StatusError)
+            escape("unable to unload the block");
+        }
+
+      // has the nodule been modified?
+      if (this->contents()->state == StateDirty)
+        {
+          //
+          // if so, the nodule needs to be encrypted with the new key
+          // and bound so as to compute the new block address.
+          //
+          // this address will then be used to update the parent and
+          // neighbour nodes.
+          //
+
+          // encrypt the seam itself with the secret.
+          if (this->contents()->Encrypt(secret) == elle::StatusError)
+            escape("unable to encrypt the seam contents");
+
+          // once the child addresses have been computed and recorded,
+          // the seam contents can, in turn, be bound.
+          if (this->contents()->Bind(address) == elle::StatusError)
+            escape("unable to bind the block");
+
+          // this address can then be updated for the parent and neighbour
+          // nodes.
+          // XXX
+
+          // set the quill as clean.
+          this->contents()->state = StateClean;
+        }
+      else
+        {
+          //
+          // otherwise, the nodule has not been updated since it was
+          // loaded and can be thus ignored.
+          //
         }
 
       return elle::StatusOk;
@@ -654,8 +883,9 @@ namespace nucleus
     elle::Status        Seam<V>::Dump(const elle::Natural32     margin)
       const
     {
-      elle::String                              alignment(margin, ' ');
-      typename Seam<V>::Scoutor::Forward        scoutor;
+      elle::String      alignment(margin, ' ');
+      auto              iterator = this->container.begin();
+      auto              end = this->container.end();
 
       std::cout << alignment << "[Seam] " << this << std::endl;
 
@@ -668,12 +898,10 @@ namespace nucleus
                 << "[Inlets] " << this->container.size() << std::endl;
 
       // go through the container.
-      for (scoutor = this->container.begin();
-           scoutor != this->container.end();
-           scoutor++)
+      for (; iterator != end; ++iterator)
         {
           // dump the inlet.
-          if (scoutor->second->Dump(margin + 4) == elle::StatusError)
+          if (iterator->second->Dump(margin + 4) == elle::StatusError)
             escape("unable to dump the inlet");
         }
 
@@ -690,8 +918,9 @@ namespace nucleus
     template <typename V>
     elle::Status        Seam<V>::Serialize(elle::Archive&       archive) const
     {
-      typename Seam<V>::Scoutor::Forward        scoutor;
-      elle::Natural32                           size;
+      auto              iterator = this->container.begin();
+      auto              end = this->container.end();
+      elle::Natural32   size;
 
       // serialize the parent nodule.
       if (Nodule<V>::Serialize(archive) == elle::StatusError)
@@ -705,12 +934,10 @@ namespace nucleus
         escape("unable to serialize the size");
 
       // go through the container.
-      for (scoutor = this->container.begin();
-           scoutor != this->container.end();
-           scoutor++)
+      for (; iterator != end; ++iterator)
         {
           // serialize the key and inlet.
-          if (archive.Serialize(*scoutor->second) == elle::StatusError)
+          if (archive.Serialize(*iterator->second) == elle::StatusError)
             escape("unable to serialize the key/inlet tuple");
         }
 
@@ -777,22 +1004,30 @@ namespace nucleus
     template <typename V>
     elle::Status        Seam<V>::Initialize()
     {
-      Seam<V>           seam;
+      Contents< Seam<V> >       contents;
+
+      // create the contents.
+      if (contents.Create() == elle::StatusError)
+        escape("unable to create the contents");
 
       // compute the initial footprint from which the Insert(), Delete()
       // methods will work in order to adjust it.
-      if (seam._footprint.Compute() == elle::StatusError)
+      if (contents.content->footprint.Compute() == elle::StatusError)
         escape("unable to compute the footprint");
 
       // retrieve the initial seam footprint.
-      Seam<V>::Footprint = seam._footprint.size;
+      Seam<V>::Footprint = contents.content->footprint.size;
 
       // register the seams to the nucleus' factory.
       {
+        /* XXX[i.e Contents<>]
         // register the catalog-specific seam.
         if (Nucleus::Factory.Register< proton::Seam<neutron::Catalog> >
             (neutron::ComponentSeamCatalog) == elle::StatusError)
           escape("unable to register the factory product");
+        */
+
+        // XXX
       }
 
       return elle::StatusOk;

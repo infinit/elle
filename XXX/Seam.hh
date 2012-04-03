@@ -21,6 +21,7 @@
 #include <XXX/Nodule.hh>
 #include <XXX/Quill.hh>
 #include <XXX/Inlet.hh>
+#include <XXX/Pins.hh>
 
 #include <elle/idiom/Close.hh>
 # include <map>
@@ -82,30 +83,19 @@ namespace nucleus
         typedef typename Container::reverse_iterator            Backward;
       };
 
-      struct                                                    Scoutor
-      {
-        typedef typename Container::const_iterator              Forward;
-        typedef typename Container::const_reverse_iterator      Backward;
-      };
-
       //
       // constructors & destructors
       //
-      Seam();
-      Seam(const elle::Callback<
-             elle::Status,
-             elle::Parameters<
-               const Address&,
-               Nodule<V>*&
-               >
-             >&,
-           const elle::Callback<
-             elle::Status,
-             elle::Parameters<
-               const Address&,
-               const Nodule<V>*
-               >
-             >&);
+
+      // XXX[virer le constructeur vide du coup]
+      Contents< Seam<V> >* contents() { return &this->_contents; }
+      Contents< Seam<V> >& _contents;
+      Seam(Contents< Seam<V> >& contents):
+        Nodule<V>(Nodule<V>::TypeSeam),
+        _contents(contents)
+      {}
+
+      // XXX Seam();
       ~Seam();
 
       //
@@ -113,12 +103,12 @@ namespace nucleus
       //
       elle::Status              Create();
 
-      elle::Status              Insert(const typename V::K&,
-                                       Nodule<V>*);
       elle::Status              Insert(I*);
+      elle::Status              Insert(const typename V::K&,
+                                       Handle&);
 
       elle::Status              Delete(typename Iterator::Forward&);
-      elle::Status              Delete(Nodule<V>*);
+      elle::Status              Delete(Handle&);
       elle::Status              Delete(const typename V::K&);
 
       elle::Status              Exist(const typename V::K&);
@@ -128,22 +118,28 @@ namespace nucleus
       elle::Status              Lookup(const typename V::K&,
                                        I*&);
       elle::Status              Lookup(const typename V::K&,
-                                       Nodule<V>*&);
+                                       Handle&);
 
       elle::Status              Locate(const typename V::K&,
                                        typename Iterator::Forward&);
       elle::Status              Locate(const typename V::K&,
                                        I*&);
       elle::Status              Locate(const typename V::K&,
-                                       Nodule<V>*&);
+                                       Handle&);
+
+      elle::Status              Link(I*,
+                                     Handle&);
+      elle::Status              Link(Handle&);
 
       elle::Status              Update(const typename V::K&,
                                        const typename V::K&);
       elle::Status              Propagate(const typename V::K&,
                                           const typename V::K&);
 
-      elle::Status              Split(Seam<V>*&);
       elle::Status              Merge(Seam<V>*);
+
+      elle::Status              Check(Handle&,
+                                      const Pins);
 
       //
       // interfaces
@@ -153,8 +149,13 @@ namespace nucleus
       elle::Status              Mayor(typename V::K&) const;
       elle::Status              Maiden(typename V::K&) const;
       elle::Status              Search(const typename V::K&,
-                                       Quill<V>*&);
-      elle::Status              Check() const;
+                                       Handle&);
+      elle::Status              Check(Handle&,
+                                      Handle&,
+                                      const Pins = PinAll);
+      elle::Status              Traverse(const elle::Natural32 = 0);
+      elle::Status              Seal(const elle::SecretKey&,
+                                     Address&);
 
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;

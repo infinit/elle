@@ -14,6 +14,8 @@
 
 #include <nucleus/neutron/Data.hh>
 
+#include <nucleus/proton/Contents.hh>
+
 namespace nucleus
 {
   namespace neutron
@@ -26,14 +28,24 @@ namespace nucleus
     ///
     /// default constructor.
     ///
-    Data::Data():
-      _state(proton::StateClean)
+    Data::Data(proton::Contents<Data>&                          contents):
+      contents(contents)
     {
     }
 
 //
 // ---------- methods ---------------------------------------------------------
 //
+
+    ///
+    /// this method creates the data.
+    ///
+    elle::Status        Data::Create()
+    {
+      this->contents.state = proton::StateDirty;
+
+      return elle::StatusOk;
+    }
 
     ///
     /// this method updates a segment of the data object.
@@ -56,7 +68,7 @@ namespace nucleus
         escape("unable to write the data");
 
       // set the data as dirty.
-      this->_state = proton::StateDirty;
+      this->contents.state = proton::StateDirty;
 
       return elle::StatusOk;
     }
@@ -112,7 +124,7 @@ namespace nucleus
       this->region.size = size;
 
       // set the data as dirty.
-      this->_state = proton::StateDirty;
+      this->contents.state = proton::StateDirty;
 
       return elle::StatusOk;
     }
@@ -129,15 +141,6 @@ namespace nucleus
     }
 
 //
-// ---------- object ----------------------------------------------------------
-//
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Data, _());
-
-//
 // ---------- dumpable --------------------------------------------------------
 //
 
@@ -149,10 +152,6 @@ namespace nucleus
       elle::String      alignment(margin, ' ');
 
       std::cout << alignment << "[Data]" << std::endl;
-
-      // dump the state.
-      std::cout << alignment << elle::Dumpable::Shift << "[_State] "
-                << this->_state << std::endl;
 
       // dump the region attribute.
       if (this->region.Dump(margin + 2) == elle::StatusError)

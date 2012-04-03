@@ -49,7 +49,6 @@ namespace horizon
       // static methods
       //
       static elle::Status       Initialize();
-      static elle::Status       Setup();
       static elle::Status       Clean();
 
       //
@@ -71,12 +70,13 @@ namespace horizon
 // ---------- includes --------------------------------------------------------
 //
 
+#include <horizon/macosx/Broker.hh>
 #include <horizon/macosx/Crib.hh>
 #include <horizon/macosx/Crux.hh>
+#include <horizon/macosx/Event.hh>
 #include <horizon/macosx/FUSE.hh>
 #include <horizon/macosx/FUker.hh>
-#include <horizon/macosx/InterlacedFUker.hh>
-#include <horizon/macosx/ParallelFUker.hh>
-#include <horizon/macosx/SequentialFUker.hh>
+#include <horizon/macosx/Handle.hh>
+#include <horizon/macosx/Janitor.hh>
 
 #endif

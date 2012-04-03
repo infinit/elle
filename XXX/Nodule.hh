@@ -17,9 +17,10 @@
 
 #include <elle/Elle.hh>
 
-#include <nucleus/proton/ContentHashBlock.hh>
+#include <nucleus/proton/Address.hh>
 #include <nucleus/proton/State.hh>
 #include <XXX/Handle.hh>
+#include <XXX/Pins.hh>
 
 namespace nucleus
 {
@@ -55,7 +56,7 @@ namespace nucleus
     ///
     template <typename V>
     class Nodule:
-      public ContentHashBlock
+      public elle::Object
     {
     public:
       //
@@ -71,21 +72,6 @@ namespace nucleus
       // constructors & destructors
       //
       Nodule(const Type);
-      Nodule(const Type,
-             const elle::Callback<
-               elle::Status,
-               elle::Parameters<
-                 const Address&,
-                 Nodule<V>*&
-                 >
-               >&,
-             const elle::Callback<
-               elle::Status,
-               elle::Parameters<
-                 const Address&,
-                 const Nodule<V>*
-                 >
-               >&);
 
       //
       // methods
@@ -97,19 +83,19 @@ namespace nucleus
       elle::Status              Import(T*,
                                        const elle::Natural32 = 0);
 
-      template <typename T>
-      elle::Status              Split(T*&);
-      template <typename T>
-      elle::Status              Merge(T*);
-
       //
       // virtual methods
       //
       virtual elle::Status      Mayor(typename V::K&) const = 0;
       virtual elle::Status      Maiden(typename V::K&) const = 0;
       virtual elle::Status      Search(const typename V::K&,
-                                       Quill<V>*&) = 0;
-      virtual elle::Status      Check() const = 0;
+                                       Handle&) = 0;
+      virtual elle::Status      Check(Handle&,
+                                      Handle&,
+                                      const Pins = PinNone) = 0;
+      virtual elle::Status      Traverse(const elle::Natural32 = 0) = 0;
+      virtual elle::Status      Seal(const elle::SecretKey&,
+                                     Address&) = 0;
 
       //
       // interfaces
@@ -126,25 +112,11 @@ namespace nucleus
       // attributes
       //
       Type                      type;
-      Handle< Seam<V> >         parent;
-      Handle< Nodule<V> >       left;
-      Handle< Nodule<V> >       right;
-
-      elle::Callback<
-        elle::Status,
-        elle::Parameters<
-          const Address&,
-          Nodule<V>*&
-          >
-        >                       _load;
-      elle::Callback<
-        elle::Status,
-        elle::Parameters<
-          const Address&,
-          const Nodule<V>*
-          >
-        >                       _unload;
-      elle::Footprint           _footprint;
+      Handle                    parent;
+      Handle                    left;
+      Handle                    right;
+      State                     state;
+      elle::Footprint           footprint;
     };
 
   }

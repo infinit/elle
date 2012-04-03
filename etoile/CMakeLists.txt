@@ -9,7 +9,6 @@ ADD_LIBRARY(etoile
 
   depot/Depot.cc
 
-  gear/Action.cc
   gear/Actor.cc
   gear/Context.cc
   gear/Directory.cc
@@ -20,7 +19,6 @@ ADD_LIBRARY(etoile
   gear/Link.cc
   gear/Object.cc
   gear/Scope.cc
-  gear/Transcript.cc
 
   automaton/Access.cc
   automaton/Attributes.cc
@@ -49,6 +47,9 @@ ADD_LIBRARY(etoile
 
   shrub/Shrub.cc
   shrub/Riffle.cc
+
+  nest/Nest.cc
+  nest/Pod.cc
 
   Etoile.cc
 )

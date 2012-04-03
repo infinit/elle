@@ -38,7 +38,7 @@ namespace nucleus
     Block::Block():
       family(FamilyUnknown),
       component(neutron::ComponentUnknown),
-      _state(StateClean)
+      state(StateClean)
     {
     }
 
@@ -49,7 +49,7 @@ namespace nucleus
                  const neutron::Component                       component):
       family(family),
       component(component),
-      _state(StateClean)
+      state(StateClean)
     {
     }
 
@@ -102,15 +102,15 @@ namespace nucleus
 
       // dump the family.
       std::cout << alignment << elle::Dumpable::Shift << "[Family] "
-                << this->family << std::endl;
+                << std::dec << this->family << std::endl;
 
       // dump the component.
       std::cout << alignment << elle::Dumpable::Shift << "[Component] "
-                << this->component << std::endl;
+                << std::dec << this->component << std::endl;
 
       // dump the state.
-      std::cout << alignment << elle::Dumpable::Shift << "[_State] "
-                << this->_state << std::endl;
+      std::cout << alignment << elle::Dumpable::Shift << "[State] "
+                << std::dec << this->state << std::endl;
 
       return elle::StatusOk;
     }

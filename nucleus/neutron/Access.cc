@@ -56,7 +56,7 @@ namespace nucleus
         escape("unable to add the record in the range");
 
       // set the block as dirty.
-      this->_state = proton::StateDirty;
+      this->state = proton::StateDirty;
 
       return elle::StatusOk;
     }
@@ -231,7 +231,7 @@ namespace nucleus
             }
 
           // set the access block as being dirty.
-          this->_state = proton::StateDirty;
+          this->state = proton::StateDirty;
         }
 
       return elle::StatusOk;
@@ -259,7 +259,7 @@ namespace nucleus
           record->token = Token::Null;
 
           // set the access block as being dirty.
-          this->_state = proton::StateDirty;
+          this->state = proton::StateDirty;
         }
 
       return elle::StatusOk;
@@ -275,7 +275,7 @@ namespace nucleus
         escape("unable to remove the record");
 
       // set the block as dirty.
-      this->_state = proton::StateDirty;
+      this->state = proton::StateDirty;
 
       return elle::StatusOk;
     }

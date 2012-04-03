@@ -630,28 +630,6 @@ namespace elle
         delete this->timer;
     }
 
-///<<<<<<< HEAD ?? No more Fiber::Create() ??
-/////
-///// ---------- methods ---------------------------------------------------------
-/////
-///
-///    ///
-///    /// this method initializes a new fiber.
-///    ///
-///    Status              Fiber::Create(const Natural32           size)
-///    {
-///      // allocate the frame.
-///      this->frame = new Frame;
-///
-///      // create the frame.
-///      if (this->frame->Create(size) == StatusError)
-///        escape("unable to create the frame");
-///
-///      return StatusOk;
-///    }
-///=======
-///>>>>>>> d261c92ccfe6fe027aca1abd7bdb4b854f43de22
-
 //
 // ---------- callbacks -------------------------------------------------------
 //

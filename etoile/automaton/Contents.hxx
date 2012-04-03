@@ -121,7 +121,7 @@ namespace etoile
           return elle::StatusOk;
 
         // if the contents has not changed, do nothing.
-        if (context.contents->content->_state == nucleus::StateClean)
+        if (context.contents->state == nucleus::StateClean)
           return elle::StatusOk;
       }
 
@@ -208,7 +208,7 @@ namespace etoile
             }
 
           // generate a secret key.
-          if (key.Generate() == elle::StatusError)
+          if (key.Generate() == elle::StatusError) // XXX[should provide a len]
             escape("unable to generate the secret key");
 
           // encrypt the contents.
@@ -220,7 +220,7 @@ namespace etoile
             escape("unable to bind the contents");
 
           // set the content as consistent.
-          context.contents->content->_state = nucleus::StateConsistent;
+          context.contents->state = nucleus::StateConsistent;
 
           // update the object.
           if (context.object.Update(
