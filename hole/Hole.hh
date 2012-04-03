@@ -38,10 +38,21 @@ namespace hole
   {
   public:
     //
+    // enumerations
+    //
+    enum State
+      {
+        StateOffline,
+        StateOnline
+      };
+
+    //
     // static methods
     //
     static elle::Status         Initialize();
     static elle::Status         Clean();
+
+    static elle::Status         Ready();
 
     static elle::Status         Origin(nucleus::Address&);
     static elle::Status         Push(const nucleus::Address&,
@@ -59,6 +70,13 @@ namespace hole
     static lune::Passport       Passport;
 
     static Holeable*            Implementation;
+
+    // XXX
+    static State                state;
+    static
+    elle::Signal<
+      elle::Parameters<>
+      >                         ready;
   };
 
 }

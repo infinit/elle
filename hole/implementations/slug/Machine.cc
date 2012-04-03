@@ -1092,6 +1092,10 @@ namespace hole
             // thus, it can be implicitly considered as authenticated
             // in a network composed of itself alone.
             this->state = Machine::StateAttached;
+
+            // set the hole as ready to receive requests.
+            if (Hole::Ready() == elle::StatusError)
+              escape("unable to set the hole online");
           }
 
         return elle::StatusOk;
@@ -1257,6 +1261,10 @@ namespace hole
         // set the machine as being authenticated and is therefore now
         // considered attached to the network.
         this->state = Machine::StateAttached;
+
+        // set the hole as ready to receive requests.
+        if (Hole::Ready() == elle::StatusError)
+          escape("unable to set the hole online");
 
         // stop the timer, if present.
         if (this->timer != nullptr)

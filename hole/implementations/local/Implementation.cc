@@ -14,6 +14,7 @@
 
 #include <hole/implementations/local/Implementation.hh>
 #include <hole/implementations/local/Local.hh>
+#include <hole/Hole.hh>
 
 namespace hole
 {
@@ -46,6 +47,10 @@ namespace hole
       {
         // allocate the machine.
         Local::Computer = new Machine;
+
+        // set the hole as ready to receive requests.
+        if (Hole::Ready() == elle::StatusError)
+          escape("unable to set the hole online");
 
         return elle::StatusOk;
       }

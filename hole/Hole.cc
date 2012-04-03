@@ -47,6 +47,18 @@ namespace hole
   ///
   Holeable*                     Hole::Implementation = NULL;
 
+  ///
+  /// XXX
+  ///
+  Hole::State                   Hole::state = Hole::StateOffline;
+
+  ///
+  /// XXX[to replace by a new signal]
+  ///
+  elle::Signal<
+    elle::Parameters<>
+    >                           Hole::ready;
+
 //
 // ---------- static methods --------------------------------------------------
 //
@@ -178,6 +190,23 @@ namespace hole
 
     // delete the implementation.
     delete Hole::Implementation;
+
+    return elle::StatusOk;
+  }
+
+  ///
+  /// this method can be called to signal the other components that the
+  /// network layer is ready to receive requests.
+  ///
+  elle::Status          Hole::Ready()
+  {
+    if (Hole::state == Hole::StateOnline)
+      return elle::StatusOk;
+
+    if (Hole::ready.Emit() == elle::StatusError)
+      escape("unable to emit the signal");
+
+    Hole::state = Hole::StateOnline;
 
     return elle::StatusOk;
   }

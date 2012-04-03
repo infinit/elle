@@ -99,6 +99,10 @@ namespace hole
               // set the role.
               this->role = Machine::RoleClient;
 
+              // set the hole as ready to receive requests.
+              if (Hole::Ready() == elle::StatusError)
+                escape("unable to set the hole online");
+
               return elle::StatusOk;
             }
         }
