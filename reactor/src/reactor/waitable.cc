@@ -1,0 +1,116 @@
+#include <boost/foreach.hpp>
+
+#include <reactor/debug.hh>
+#include <reactor/thread.hh>
+#include <reactor/waitable.hh>
+
+namespace reactor
+{
+  /*-------------.
+  | Construction |
+  `-------------*/
+
+  Waitable::Waitable(const std::string& name)
+    : _name(name)
+    , _threads()
+    , _exception(0)
+  {}
+
+  Waitable::~Waitable()
+  {}
+
+  /*-------.
+  | Status |
+  `-------*/
+
+  const std::string&
+  Waitable::name() const
+  {
+    return _name;
+  }
+
+  const char*
+  Waitable::type_name() const
+  {
+    static const char* name = "waitable";
+    return name;
+  }
+
+  const Waitable::Waiters&
+  Waitable::waiters() const
+  {
+    return _threads;
+  }
+
+  /*--------.
+  | Waiting |
+  `--------*/
+
+  void
+  Waitable::_signal()
+  {
+    BOOST_FOREACH (Thread* thread, _threads)
+    {
+      INFINIT_REACTOR_DEBUG(": woken by " << *this);
+      INFINIT_REACTOR_DEBUG(*thread << ": woken by " << *this);
+      thread->_wake(this);
+    }
+    _threads.clear();
+    _exception = 0;
+  }
+
+  bool
+  Waitable::_wait(Thread* t)
+  {
+    INFINIT_REACTOR_DEBUG(*t << ": wait " << *this);
+    assert(_threads.find(t) == _threads.end());
+    _threads.insert(t);
+    return true;
+  }
+
+  void
+  Waitable::_unwait(Thread* t)
+  {
+    INFINIT_REACTOR_DEBUG(*t << ": unwait " << *this);
+    assert(_threads.find(t) != _threads.end());
+    _threads.erase(t);
+  }
+
+  void
+  Waitable::_raise(Exception* e)
+  {
+    _exception = e;
+  }
+
+  /*----------.
+  | Waitables |
+  `----------*/
+
+  Waitables&
+  operator << (Waitables& waitables, Waitable& s)
+  {
+    waitables.push_back(&s);
+    return waitables;
+  }
+
+  Waitables&
+  operator << (Waitables& waitables, Waitable* s)
+  {
+    waitables.push_back(s);
+    return waitables;
+  }
+
+  /*-------------.
+  | Pretty print |
+  `-------------*/
+
+  std::ostream& operator << (std::ostream& s, const Waitable& t)
+  {
+    s << t.type_name() << " ";
+    if (t.name().empty())
+      s << &t;
+    else
+      s << t.name();
+    return s;
+  }
+};
