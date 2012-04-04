@@ -123,8 +123,6 @@ namespace elle
                                     const String&               time,
                                     const String&               message)
     {
-      Report*                   report;
-
       //
       // log the actual message.
       //
@@ -135,30 +133,28 @@ namespace elle
       //
 
       // retrieve the report.
-      if (Report::Instance(report) == StatusTrue)
-        {
-          Report::Scoutor       scoutor;
+      Report& report = Report::report.Get();
+      Report::Scoutor       scoutor;
 
-          // go through the report messages.
-          for (scoutor = report->container.begin();
-               scoutor != report->container.end();
-               scoutor++)
-            {
-              Report::Entry*            entry = *scoutor;
+      // go through the report messages.
+      for (scoutor = report.container.begin();
+           scoutor != report.container.end();
+           scoutor++)
+      {
+        Report::Entry*            entry = *scoutor;
 
-              // build the report.
-              stream_ << "  "
-                      << entry->message
-                      << " ("
-                      << entry->location
-                      << ") @ "
-                      << entry->time
-                      << std::endl;
-            }
+        // build the report.
+        stream_ << "  "
+                << entry->message
+                << " ("
+                << entry->location
+                << ") @ "
+                << entry->time
+                << std::endl;
+      }
 
-          // flush the report.
-          report->Flush();
-        }
+      // flush the report.
+      report.Flush();
 
       // flush the stream
       stream_.flush();

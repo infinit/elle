@@ -12,9 +12,10 @@ namespace reactor
   | Construction |
   `-------------*/
 
-  Thread::Thread(Scheduler& scheduler,
-                 const std::string& name,
-                 const Action& action)
+  Thread::Thread(Scheduler&             scheduler,
+                 std::string const&     name,
+                 Action const&          action,
+                 bool                   dispose)
     : _state(state::running)
     , _injection()
     , _exception(0)
@@ -22,13 +23,29 @@ namespace reactor
     , _timeout(false)
     , _thread(scheduler._manager, name, action)
     , _scheduler(scheduler)
+    , _dispose(dispose)
   {
     _scheduler._thread_register(*this);
   }
 
-  /*------.
-  | State |
-  `------*/
+  Thread::~Thread()
+  {
+    _destructed();
+  }
+
+  /*---------.
+  | Tracking |
+  `---------*/
+
+  Thread::Tracker&
+  Thread::destructed()
+  {
+    return _destructed;
+  }
+
+  /*-------.
+  | Status |
+  `-------*/
 
   Thread::State
   Thread::state() const
@@ -46,6 +63,18 @@ namespace reactor
   Thread::name() const
   {
     return _thread.name();
+  }
+
+  void
+  Thread::Print(std::ostream& s) const
+  {
+    s << "thread " << name();
+  }
+
+  void
+  Thread::Dump(std::ostream& s) const
+  {
+    s << "Thread " << name() << " [ State = " << state() << "]";
   }
 
   /*----.
@@ -81,8 +110,12 @@ namespace reactor
     }
   }
 
+  /*-----------.
+  | Injections |
+  `-----------*/
+
   void
-  Thread::inject(const Injection& injection)
+  Thread::inject(Injection const& injection)
   {
     _injection = injection;
   }
@@ -105,14 +138,16 @@ namespace reactor
   `----------------*/
 
   bool
-  Thread::wait(Waitable& s, boost::optional<Duration> timeout)
+  Thread::wait(Waitable&                        s,
+               boost::optional<Duration>        timeout)
   {
     Waitables waitables(1, &s);
     return wait(waitables, timeout);
   }
 
   bool
-  Thread::wait(Waitables& waitables, boost::optional<Duration> timeout)
+  Thread::wait(Waitables&                       waitables,
+               boost::optional<Duration>        timeout)
   {
     assert(_state == state::running);
     assert(_waited.empty());
@@ -161,7 +196,7 @@ namespace reactor
   }
 
   void
-  Thread::_wait_timeout(const boost::system::error_code& e)
+  Thread::_wait_timeout(boost::system::error_code const& e)
   {
     if (e == boost::system::errc::operation_canceled)
       return;
@@ -184,7 +219,7 @@ namespace reactor
   }
 
   void
-  Thread::_wake(Waitable* waitable)
+  Thread::_wake(Waitable*       waitable)
   {
     INFINIT_REACTOR_DEBUG(*this << ": wake one");
     if (waitable->_exception && !_exception)
@@ -197,9 +232,34 @@ namespace reactor
     }
   }
 
-  std::ostream& operator << (std::ostream& s, const Thread& t)
+  /*----------------.
+  | Print operators |
+  `----------------*/
+
+  std::ostream&
+  operator <<(std::ostream&     s,
+              Thread const&     t)
   {
-    s << "thread " << t.name();
+    t.Print(s);
+    return s;
+  }
+
+  std::ostream&
+  operator <<(std::ostream&     s,
+              Thread::State     state)
+  {
+    switch (state)
+    {
+      case Thread::state::done:
+        s << "done";
+        break;
+      case Thread::state::frozen:
+        s << "frozen";
+        break;
+      case Thread::state::running:
+        s << "running";
+        break;
+    }
     return s;
   }
 }

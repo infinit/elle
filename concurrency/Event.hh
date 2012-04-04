@@ -25,6 +25,7 @@
 
 #include <elle/idiom/Close.hh>
 # include <openssl/err.h>
+# include <reactor/signal.hh>
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -32,6 +33,12 @@ namespace elle
   using namespace core;
   using namespace radix;
   using namespace package;
+
+  // XXX
+  namespace network
+  {
+    class Parcel;
+  }
 
   namespace concurrency
   {
@@ -44,8 +51,8 @@ namespace elle
     /// this class is used to uniquely identify events, network packets and
     /// so on.
     ///
-    class Event:
-      public Object
+    class Event
+      : public Object
     {
     public:
       //
@@ -62,6 +69,7 @@ namespace elle
       // methods
       //
       Status            Generate();
+      void              Cleanup();
 
       //
       // interfaces
@@ -82,7 +90,13 @@ namespace elle
       //
       // attributes
       //
-      Natural64         identifier;
+      Natural64 Identifier() const;
+
+    public:
+      reactor::VSignal<std::shared_ptr<elle::network::Parcel> >& Signal();
+    private:
+      Natural64                                 _identifier;
+      reactor::VSignal<std::shared_ptr<elle::network::Parcel> >*  _signal;
     };
 
   }

@@ -12,11 +12,12 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/concurrency/Broker.hh>
+#include <reactor/thread.hh>
 
+#include <elle/concurrency/Broker.hh>
 #include <elle/concurrency/Callback.hh>
 #include <elle/concurrency/Closure.hh>
-#include <elle/concurrency/Fiber.hh>
+#include <elle/concurrency/Program.hh>
 
 namespace elle
 {
@@ -107,13 +108,13 @@ namespace elle
     Status              Broker::Trigger()
     {
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
-      // emit the signal.
+      // Q_EMIT the signal.
       if (this->signal.ready.Emit(this->descriptor) == StatusError)
-        escape("unable to emit the signal");
+        escape("unable to Q_EMIT the signal");
 #elif defined(INFINIT_WINDOWS)
-      // emit the signal.
+      // Q_EMIT the signal.
       if (this->signal.ready.Emit(this->notifier.handle()) == StatusError)
-        escape("unable to emit the signal");
+        escape("unable to Q_EMIT the signal");
 #else
 # error "unsupported platform"
 #endif
@@ -132,10 +133,6 @@ namespace elle
     ///
     void                Broker::_trigger()
     {
-      Closure< Status,
-               Parameters<> >   closure(Callback<>::Infer(&Broker::Trigger,
-                                                          this));
-
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       //
       // the following part should not be necessary but it turns out
@@ -176,10 +173,8 @@ namespace elle
       }
 #endif
 
-      // spawn a fiber.
-      if (Fiber::Spawn(closure) == StatusError)
-        yield(_(), "unable to spawn a fiber");
+      new reactor::Thread(scheduler(), "broker trigger",
+                          boost::bind(&Broker::Trigger, this), true);
     }
-
   }
 }

@@ -43,7 +43,7 @@ namespace elle
 
     ///
     /// a signal represents an event to which one can subscribe so that
-    /// when it is emitted, the subscribed callbacks are called.
+    /// when it is Q_EMITted, the subscribed callbacks are called.
     ///
     template <typename... T>
     class Signal< Parameters<T...> >:
@@ -62,6 +62,8 @@ namespace elle
         public Entity
       {
       public:
+        virtual Functionoid* clone() const = 0;
+
         //
         // constructors & destructors
         //
@@ -84,6 +86,9 @@ namespace elle
         public Functionoid
       {
       public:
+        typedef Selectionoid<Y> Self;
+        virtual Functionoid* clone() const;
+
         //
         // constructors & destructors
         //
@@ -126,6 +131,10 @@ namespace elle
                                   Stream&);
       Status            Unsubscribe(const Stream);
       Status            Emit(T...);
+      Status            AsyncEmit(T...);
+      static
+      Status            EmitOne(Signal< Parameters<T...> >::Functionoid* f,
+                                T...);
 
       Status            Flush();
 

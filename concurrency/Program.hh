@@ -28,7 +28,6 @@
 # include <QAbstractEventDispatcher>
 # include <list>
 # include <signal.h>
-//# include <reactor/fwd.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -43,7 +42,6 @@ namespace elle
 
   namespace concurrency
   {
-
 //
 // ---------- classes ---------------------------------------------------------
 //
@@ -97,8 +95,9 @@ namespace elle
       ::QCoreApplication*       core;
 
       State                     state;
-    public:
-      static reactor::Scheduler* scheduler;
+    private:
+      static bool               _exit;
+      friend void qt_runner();
     };
 
 //

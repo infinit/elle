@@ -12,11 +12,14 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/concurrency/Program.hh>
 #include <elle/concurrency/Timer.hh>
-#include <elle/concurrency/Fiber.hh>
-
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+
+#include <elle/idiom/Close.hh>
+#include <reactor/thread.hh>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -119,9 +122,9 @@ namespace elle
     ///
     Status              Timer::Timeout()
     {
-      // emit the signal.
+      // Q_EMIT the signal.
       if (this->signal.timeout.Emit() == StatusError)
-        escape("unable to emit the signal");
+        escape("unable to Q_EMIT the signal");
 
       return StatusOk;
     }
@@ -163,13 +166,8 @@ namespace elle
     ///
     void                Timer::_timeout()
     {
-      Closure< Status,
-               Parameters<> >   closure(Callback<>::Infer(&Timer::Timeout,
-                                                          this));
-
-      // trigger the callback in a new fiber.
-      if (Fiber::Spawn(closure) == StatusError)
-        yield(_(), "unable to spawn a fiber");
+      new reactor::Thread(scheduler(), "Timer timeout",
+                          boost::bind(&Timer::Timeout, this), true);
     }
 
   }

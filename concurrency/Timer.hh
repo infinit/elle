@@ -106,7 +106,7 @@ namespace elle
           >             timeout;
       }                 signal;
 
-    private slots:
+    private Q_SLOTS:
       //
       // slots
       //

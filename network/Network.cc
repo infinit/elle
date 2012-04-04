@@ -13,6 +13,7 @@
 //
 
 #include <elle/network/Network.hh>
+#include <elle/concurrency/Event.hh>
 
 namespace elle
 {
@@ -104,8 +105,8 @@ namespace elle
       //
       {
         // try to wake up a slot.
-        if (Fiber::Awaken(parcel->header->event, parcel) == StatusTrue)
-            return StatusOk;
+        if (parcel->header->event.Signal().Emit(parcel))
+          return StatusOk;
       }
 
       //

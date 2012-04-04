@@ -9,7 +9,9 @@
 //
 
 #ifndef ELLE_CONCURRENCY_SIGNAL_HXX
-#define ELLE_CONCURRENCY_SIGNAL_HXX
+# define ELLE_CONCURRENCY_SIGNAL_HXX
+
+# include <elle/concurrency/Scheduler.hh>
 
 namespace elle
 {
@@ -81,6 +83,7 @@ namespace elle
       auto selectionoid = new OID(object);
 
       // insert the selectionoid in the container.
+      assert(selectionoid);
       auto result = this->container.insert(
           ValueType(this->counter, selectionoid)
       );
@@ -134,18 +137,45 @@ namespace elle
       for (scoutor = this->container.begin();
            scoutor != this->container.end();
            scoutor++)
-        {
-          Signal< Parameters<T...> >::Functionoid*      functionoid =
-            scoutor->second;
+      {
+        Signal< Parameters<T...> >::Functionoid*      functionoid =
+          scoutor->second;
+        EmitOne(functionoid, arguments...);
+      }
 
-          // call the functionoid's object.
-          if (functionoid->Call(arguments...) == StatusError)
-            {
-              // if an error occured, log it.
-              log("an error occured while processing a signal");
-            }
-        }
+      return StatusOk;
+    }
 
+    template <typename... T>
+    Status
+    Signal< Parameters<T...> >::AsyncEmit(T... arguments)
+    {
+      Signal< Parameters<T...> >::Scoutor scoutor;
+
+      // go through the container.
+      for (scoutor = this->container.begin();
+           scoutor != this->container.end();
+           scoutor++)
+      {
+        Signal< Parameters<T...> >::Functionoid* f = scoutor->second;
+        new reactor::Thread(scheduler(), "Signal emission",
+                            boost::bind(&Signal< Parameters<T...> >::EmitOne,
+                                        f, arguments...), true);
+      }
+
+      return StatusOk;
+    }
+
+
+    template <typename... T>
+    Status
+    Signal< Parameters<T...> >::EmitOne(
+      Signal< Parameters<T...> >::Functionoid* f,
+      T... arguments)
+    {
+      assert(f);
+      if (f->Call(arguments...) == StatusError)
+        log("an error occured while processing a signal");
       return StatusOk;
     }
 
@@ -194,6 +224,14 @@ namespace elle
                 << "[Functionoids] " << this->container.size() << std::endl;
 
       return StatusOk;
+    }
+
+    template <typename ...T>
+    template <typename Y>
+    typename Signal< Parameters<T...> >::Functionoid*
+    Signal< Parameters<T...> >::Selectionoid<Y>::clone() const
+    {
+      return new Self(*this);
     }
 
 //
