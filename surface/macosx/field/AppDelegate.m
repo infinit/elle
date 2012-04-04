@@ -6,10 +6,10 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "OOAppDelegate.h"
+#import "AppDelegate.h"
 #import "OOInjectorHelper.h"
 
-@implementation OOAppDelegate
+@implementation AppDelegate
 
 @synthesize window = _window;
 

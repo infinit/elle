@@ -7,20 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1CA1A64C152A43CD0066D288 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A649152A43CD0066D288 /* main.m */; };
-		1CA1A64D152A43CD0066D288 /* OOAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A64B152A43CD0066D288 /* OOAppDelegate.m */; };
-		1CA1A64E152A43DD0066D288 /* OOInjectorHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A642152A43910066D288 /* OOInjectorHelper.m */; };
-		1CA1A64F152A43E40066D288 /* OOInstallerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A644152A43910066D288 /* OOInstallerHelper.m */; };
-		1CA1A650152A43F90066D288 /* OOInjectorHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A642152A43910066D288 /* OOInjectorHelper.m */; };
-		1CA1A651152A43F90066D288 /* OOInstallerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A644152A43910066D288 /* OOInstallerHelper.m */; };
-		1CA1A652152A441F0066D288 /* OOInjectorHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A642152A43910066D288 /* OOInjectorHelper.m */; };
-		1CA1A653152A441F0066D288 /* OOInstallerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A644152A43910066D288 /* OOInstallerHelper.m */; };
-		1CA1A656152A442A0066D288 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A654152A442A0066D288 /* MainMenu.xib */; };
-		1CA1A65B152A443B0066D288 /* 8installer in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A657152A443B0066D288 /* 8installer */; };
-		1CA1A65C152A443B0066D288 /* Infinit-status-dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A658152A443B0066D288 /* Infinit-status-dark.png */; };
-		1CA1A65D152A443B0066D288 /* Infinit.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A659152A443B0066D288 /* Infinit.icns */; };
-		1CA1A65E152A443B0066D288 /* ok.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A65A152A443B0066D288 /* ok.icns */; };
-		1CA1A660152A444D0066D288 /* Infinit-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A65F152A444D0066D288 /* Infinit-Info.plist */; };
+		1C45EE56152AECAB00EFB356 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C45EE45152AECAB00EFB356 /* MainMenu.xib */; };
+		1C45EE57152AECAB00EFB356 /* OOInjectorHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C45EE49152AECAB00EFB356 /* OOInjectorHelper.m */; };
+		1C45EE58152AECAB00EFB356 /* OOInstallerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C45EE4B152AECAB00EFB356 /* OOInstallerHelper.m */; };
+		1C45EE59152AECAB00EFB356 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C45EE4C152AECAB00EFB356 /* main.m */; };
+		1C45EE5A152AECAB00EFB356 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C45EE4E152AECAB00EFB356 /* AppDelegate.m */; };
+		1C45EE5B152AECAB00EFB356 /* 8installer in Resources */ = {isa = PBXBuildFile; fileRef = 1C45EE50152AECAB00EFB356 /* 8installer */; };
+		1C45EE5C152AECAB00EFB356 /* Infinit-status-dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C45EE51152AECAB00EFB356 /* Infinit-status-dark.png */; };
+		1C45EE5D152AECAB00EFB356 /* Infinit.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1C45EE52152AECAB00EFB356 /* Infinit.icns */; };
+		1C45EE5E152AECAB00EFB356 /* ok.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1C45EE53152AECAB00EFB356 /* ok.icns */; };
+		1C45EE5F152AECAB00EFB356 /* Infinit-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1C45EE55152AECAB00EFB356 /* Infinit-Info.plist */; };
 		1CA1A66F152A47B20066D288 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A662152A47B20066D288 /* InfoPlist.strings */; };
 		1CA1A670152A47B20066D288 /* StoneTablets.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A664152A47B20066D288 /* StoneTablets.xib */; };
 		1CA1A671152A47B20066D288 /* Preferences-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A666152A47B20066D288 /* Preferences-Info.plist */; };
@@ -120,20 +116,20 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1C672E95152A4C9E003C653F /* IHTInjector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IHTInjector.h; path = medecine/nurse/IHTInjector.h; sourceTree = "<group>"; };
-		1CA1A641152A43910066D288 /* OOInjectorHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OOInjectorHelper.h; path = field/helpers/OOInjectorHelper.h; sourceTree = SOURCE_ROOT; };
-		1CA1A642152A43910066D288 /* OOInjectorHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OOInjectorHelper.m; path = field/helpers/OOInjectorHelper.m; sourceTree = SOURCE_ROOT; };
-		1CA1A643152A43910066D288 /* OOInstallerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OOInstallerHelper.h; path = field/helpers/OOInstallerHelper.h; sourceTree = SOURCE_ROOT; };
-		1CA1A644152A43910066D288 /* OOInstallerHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OOInstallerHelper.m; path = field/helpers/OOInstallerHelper.m; sourceTree = SOURCE_ROOT; };
-		1CA1A649152A43CD0066D288 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = field/main.m; sourceTree = SOURCE_ROOT; };
-		1CA1A64A152A43CD0066D288 /* OOAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OOAppDelegate.h; path = field/OOAppDelegate.h; sourceTree = SOURCE_ROOT; };
-		1CA1A64B152A43CD0066D288 /* OOAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OOAppDelegate.m; path = field/OOAppDelegate.m; sourceTree = SOURCE_ROOT; };
-		1CA1A655152A442A0066D288 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = field/en.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
-		1CA1A657152A443B0066D288 /* 8installer */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = 8installer; path = field/ressources/8installer; sourceTree = SOURCE_ROOT; };
-		1CA1A658152A443B0066D288 /* Infinit-status-dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Infinit-status-dark.png"; path = "field/ressources/Infinit-status-dark.png"; sourceTree = SOURCE_ROOT; };
-		1CA1A659152A443B0066D288 /* Infinit.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = Infinit.icns; path = field/ressources/Infinit.icns; sourceTree = SOURCE_ROOT; };
-		1CA1A65A152A443B0066D288 /* ok.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = ok.icns; path = field/ressources/ok.icns; sourceTree = SOURCE_ROOT; };
-		1CA1A65F152A444D0066D288 /* Infinit-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Infinit-Info.plist"; path = "field/supportingFiles/Infinit-Info.plist"; sourceTree = SOURCE_ROOT; };
+		1C45EE46152AECAB00EFB356 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		1C45EE48152AECAB00EFB356 /* OOInjectorHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOInjectorHelper.h; sourceTree = "<group>"; };
+		1C45EE49152AECAB00EFB356 /* OOInjectorHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOInjectorHelper.m; sourceTree = "<group>"; };
+		1C45EE4A152AECAB00EFB356 /* OOInstallerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOInstallerHelper.h; sourceTree = "<group>"; };
+		1C45EE4B152AECAB00EFB356 /* OOInstallerHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOInstallerHelper.m; sourceTree = "<group>"; };
+		1C45EE4C152AECAB00EFB356 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		1C45EE4D152AECAB00EFB356 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		1C45EE4E152AECAB00EFB356 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		1C45EE50152AECAB00EFB356 /* 8installer */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = 8installer; sourceTree = "<group>"; };
+		1C45EE51152AECAB00EFB356 /* Infinit-status-dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Infinit-status-dark.png"; sourceTree = "<group>"; };
+		1C45EE52152AECAB00EFB356 /* Infinit.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Infinit.icns; sourceTree = "<group>"; };
+		1C45EE53152AECAB00EFB356 /* ok.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ok.icns; sourceTree = "<group>"; };
+		1C45EE55152AECAB00EFB356 /* Infinit-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Infinit-Info.plist"; sourceTree = "<group>"; };
+		1C45EE60152AECD600EFB356 /* IHTInjector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IHTInjector.h; path = ../../medecine/nurse/IHTInjector.h; sourceTree = "<group>"; };
 		1CA1A663152A47B20066D288 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1CA1A665152A47B20066D288 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/stoneTablets.xib; sourceTree = "<group>"; };
 		1CA1A666152A47B20066D288 /* Preferences-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Preferences-Info.plist"; sourceTree = "<group>"; };
@@ -181,6 +177,51 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1C45EE44152AECAB00EFB356 /* field */ = {
+			isa = PBXGroup;
+			children = (
+				1C45EE45152AECAB00EFB356 /* MainMenu.xib */,
+				1C45EE4C152AECAB00EFB356 /* main.m */,
+				1C45EE4D152AECAB00EFB356 /* AppDelegate.h */,
+				1C45EE4E152AECAB00EFB356 /* AppDelegate.m */,
+				1C45EE47152AECAB00EFB356 /* helpers */,
+				1C45EE4F152AECAB00EFB356 /* ressources */,
+				1C45EE54152AECAB00EFB356 /* supportingFiles */,
+			);
+			path = field;
+			sourceTree = "<group>";
+		};
+		1C45EE47152AECAB00EFB356 /* helpers */ = {
+			isa = PBXGroup;
+			children = (
+				1C45EE60152AECD600EFB356 /* IHTInjector.h */,
+				1C45EE48152AECAB00EFB356 /* OOInjectorHelper.h */,
+				1C45EE49152AECAB00EFB356 /* OOInjectorHelper.m */,
+				1C45EE4A152AECAB00EFB356 /* OOInstallerHelper.h */,
+				1C45EE4B152AECAB00EFB356 /* OOInstallerHelper.m */,
+			);
+			path = helpers;
+			sourceTree = "<group>";
+		};
+		1C45EE4F152AECAB00EFB356 /* ressources */ = {
+			isa = PBXGroup;
+			children = (
+				1C45EE50152AECAB00EFB356 /* 8installer */,
+				1C45EE51152AECAB00EFB356 /* Infinit-status-dark.png */,
+				1C45EE52152AECAB00EFB356 /* Infinit.icns */,
+				1C45EE53152AECAB00EFB356 /* ok.icns */,
+			);
+			path = ressources;
+			sourceTree = "<group>";
+		};
+		1C45EE54152AECAB00EFB356 /* supportingFiles */ = {
+			isa = PBXGroup;
+			children = (
+				1C45EE55152AECAB00EFB356 /* Infinit-Info.plist */,
+			);
+			path = supportingFiles;
+			sourceTree = "<group>";
+		};
 		1CA1A661152A47B20066D288 /* stoneTablets */ = {
 			isa = PBXGroup;
 			children = (
@@ -213,52 +254,6 @@
 			path = supportingFiles;
 			sourceTree = "<group>";
 		};
-		1CAD9C8015298DCD00F3217E /* helpers */ = {
-			isa = PBXGroup;
-			children = (
-				1C672E95152A4C9E003C653F /* IHTInjector.h */,
-				1CA1A641152A43910066D288 /* OOInjectorHelper.h */,
-				1CA1A642152A43910066D288 /* OOInjectorHelper.m */,
-				1CA1A643152A43910066D288 /* OOInstallerHelper.h */,
-				1CA1A644152A43910066D288 /* OOInstallerHelper.m */,
-			);
-			path = helpers;
-			sourceTree = "<group>";
-		};
-		1CB4FB521528DC1C00DDEC99 /* field */ = {
-			isa = PBXGroup;
-			children = (
-				1CAD9C8015298DCD00F3217E /* helpers */,
-				1CA1A654152A442A0066D288 /* MainMenu.xib */,
-				1CA1A649152A43CD0066D288 /* main.m */,
-				1CA1A64A152A43CD0066D288 /* OOAppDelegate.h */,
-				1CA1A64B152A43CD0066D288 /* OOAppDelegate.m */,
-				1CB4FB5F1528DC1C00DDEC99 /* ressources */,
-				1CB4FB641528DC1C00DDEC99 /* supportingFiles */,
-			);
-			name = field;
-			path = infinit;
-			sourceTree = "<group>";
-		};
-		1CB4FB5F1528DC1C00DDEC99 /* ressources */ = {
-			isa = PBXGroup;
-			children = (
-				1CA1A657152A443B0066D288 /* 8installer */,
-				1CA1A658152A443B0066D288 /* Infinit-status-dark.png */,
-				1CA1A659152A443B0066D288 /* Infinit.icns */,
-				1CA1A65A152A443B0066D288 /* ok.icns */,
-			);
-			path = ressources;
-			sourceTree = "<group>";
-		};
-		1CB4FB641528DC1C00DDEC99 /* supportingFiles */ = {
-			isa = PBXGroup;
-			children = (
-				1CA1A65F152A444D0066D288 /* Infinit-Info.plist */,
-			);
-			path = supportingFiles;
-			sourceTree = "<group>";
-		};
 		1CB4FB781528EDDA00DDEC99 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -281,7 +276,7 @@
 			children = (
 				1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */,
 				1CD296FA1528D289006D1A4C /* medecine.xcodeproj */,
-				1CB4FB521528DC1C00DDEC99 /* field */,
+				1C45EE44152AECAB00EFB356 /* field */,
 				1CA1A661152A47B20066D288 /* stoneTablets */,
 				36E9F8B914FF7DE8000B9C12 /* frameworks */,
 				36E9F8B714FF7DE8000B9C12 /* products */,
@@ -455,12 +450,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1CA1A656152A442A0066D288 /* MainMenu.xib in Resources */,
-				1CA1A65B152A443B0066D288 /* 8installer in Resources */,
-				1CA1A65C152A443B0066D288 /* Infinit-status-dark.png in Resources */,
-				1CA1A65D152A443B0066D288 /* Infinit.icns in Resources */,
-				1CA1A65E152A443B0066D288 /* ok.icns in Resources */,
-				1CA1A660152A444D0066D288 /* Infinit-Info.plist in Resources */,
+				1C45EE56152AECAB00EFB356 /* MainMenu.xib in Resources */,
+				1C45EE5B152AECAB00EFB356 /* 8installer in Resources */,
+				1C45EE5C152AECAB00EFB356 /* Infinit-status-dark.png in Resources */,
+				1C45EE5D152AECAB00EFB356 /* Infinit.icns in Resources */,
+				1C45EE5E152AECAB00EFB356 /* ok.icns in Resources */,
+				1C45EE5F152AECAB00EFB356 /* Infinit-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -489,14 +484,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1CA1A64C152A43CD0066D288 /* main.m in Sources */,
-				1CA1A64D152A43CD0066D288 /* OOAppDelegate.m in Sources */,
-				1CA1A64E152A43DD0066D288 /* OOInjectorHelper.m in Sources */,
-				1CA1A64F152A43E40066D288 /* OOInstallerHelper.m in Sources */,
-				1CA1A650152A43F90066D288 /* OOInjectorHelper.m in Sources */,
-				1CA1A651152A43F90066D288 /* OOInstallerHelper.m in Sources */,
-				1CA1A652152A441F0066D288 /* OOInjectorHelper.m in Sources */,
-				1CA1A653152A441F0066D288 /* OOInstallerHelper.m in Sources */,
+				1C45EE57152AECAB00EFB356 /* OOInjectorHelper.m in Sources */,
+				1C45EE58152AECAB00EFB356 /* OOInstallerHelper.m in Sources */,
+				1C45EE59152AECAB00EFB356 /* main.m in Sources */,
+				1C45EE5A152AECAB00EFB356 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -526,10 +517,10 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		1CA1A654152A442A0066D288 /* MainMenu.xib */ = {
+		1C45EE45152AECAB00EFB356 /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				1CA1A655152A442A0066D288 /* en */,
+				1C45EE46152AECAB00EFB356 /* en */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";

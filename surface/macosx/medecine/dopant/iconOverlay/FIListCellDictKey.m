@@ -48,7 +48,6 @@ static NSMutableSet *items = nil;
             [zombieReleaser addDictKey:matchItem];
             
             [zombieReleaser release];
-            //[matchItem release];
         }
         
         return matchItem;
@@ -63,7 +62,7 @@ static NSMutableSet *items = nil;
     self.nodeStatus = FINodeStatusUnknowned;
     
     [[FIIconOverlay instance] addStatusOpperationToQueue:self];
-    //[self retain];
+    
     return self;
 }
 -(void)dealloc
@@ -114,28 +113,41 @@ static NSMutableSet *items = nil;
 
 - (void) cleanUp
 {
+    self.cell = nil;
     @synchronized(items)
     {
         if ([items containsObject:self]){
             [items removeObject:self];
         }
     }
+    [self release];
     [self cancel];
+    
 }
 
 - (void) main
 {
+    NSAutoreleasePool *oppPool = [[NSAutoreleasePool alloc] init];
     if (self != nil && !self.isCancelled)
     {
-        //NSURL* url = [self getPath];
+        NSURL* url = [self getPath];
+        NSString *filename = [[url path] lastPathComponent];
+        
+        NSString *firstChar = [filename substringToIndex:1];
         
         // Get status by path
         sleep(1);
         // Set status
-        [self setNodeStatus:FINodeStatusDisconected];
+        if ([firstChar isEqualToString:@"A"])
+        {
+            [self setNodeStatus:FINodeStatusDisconected];
+        }
         
-        [self performSelectorOnMainThread:@selector(refreshCell:) withObject:nil waitUntilDone:NO];
+        if ([self respondsToSelector:@selector(refreshCell)]) {
+            [self performSelectorOnMainThread:@selector(refreshCell) withObject:nil waitUntilDone:NO];
+        }
     }
+    [oppPool drain];
 }
 
 

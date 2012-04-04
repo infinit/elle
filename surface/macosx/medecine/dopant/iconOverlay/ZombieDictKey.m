@@ -10,37 +10,14 @@
 
 @implementation ZombieDictKey
 
-//static NSMutableDictionary *items = nil;
-
 @synthesize linkedDictKeys;
-
-/*+ (id) ZombieWithCell:(id)arg1
-{
-    @synchronized(items)
-    {
-        if (items == nil) {
-            items = [[NSMutableDictionary alloc] init];
-        }
-        
-        ZombieDictKey *item = nil;
-        item = [items objectForKey:arg1];
-        
-        if (item == nil)
-        {
-            item = [[ZombieDictKey alloc] initWithCell:arg1];
-            [items setObject:item forKey:arg1];
-        }
-        
-        return item;
-    }
-}*/
 
 - (id) init
 {
     self = [super init];
     
-    if (!linkedDictKeys) {
-        linkedDictKeys = [[NSMutableArray alloc] init];
+    if (!self.linkedDictKeys) {
+        self.linkedDictKeys = [[NSMutableArray alloc] init];
     }
     
     return self;
@@ -51,11 +28,12 @@
     [self.linkedDictKeys addObject:arg1];
 }
 
--(void)dealloc
+-(void) dealloc
 {
-    for (id<FICellDictKey_Protocol> dictKeys in self.linkedDictKeys) {
-        [dictKeys cleanUp];
+    for (id<FICellDictKey_Protocol> dictKey in self.linkedDictKeys) {
+        [dictKey cleanUp];
     }
+    [self.linkedDictKeys removeAllObjects];
     [super dealloc];
 }
 
