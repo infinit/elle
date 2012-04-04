@@ -105,6 +105,10 @@ namespace hole
 
               return elle::StatusOk;
             }
+#include <elle/idiom/Close.hh>
+          // XXX
+          elle::concurrency::scheduler().current()->yield();
+#include <elle/idiom/Open.hh>
         }
 
         // purge the error messages.

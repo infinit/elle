@@ -49,7 +49,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-private slots:
+private Q_SLOTS:
     void on_launchInstall_clicked();
     void on_cancelInstall_clicked();
 

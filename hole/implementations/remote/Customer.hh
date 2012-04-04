@@ -67,7 +67,8 @@ namespace hole
         // callbacks
         //
         elle::Status            Disconnected();
-        elle::Status            Error(const elle::String&);
+        // XXX: const string&
+        elle::Status            Error(elle::String);
 
         elle::Status            Abort();
 

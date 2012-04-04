@@ -293,17 +293,9 @@ namespace elle
     ///
     void                UDPSocket::_ready()
     {
-      Closure<
-        Status,
-        Parameters<>
-        >               closure(Callback<>::Infer(&Signal<
-                                                    Parameters<>
-                                                    >::Emit,
-                                                  &this->signal.ready));
-
-      // spawn a fiber.
-      if (Fiber::Spawn(closure) == StatusError)
-        yield(_(), "unable to spawn a fiber");
+      new reactor::Thread(concurrency::scheduler(), "UDPSocket ready",
+                          boost::bind(&Signal<Parameters<> >::Emit,
+                                      &this->signal.ready), true);
     }
 
     ///
@@ -317,22 +309,10 @@ namespace elle
                           const QAbstractSocket::SocketError)
     {
       String            cause(this->socket->errorString().toStdString());
-      Closure<
-        Status,
-        Parameters<
-          const String&
-          >
-        >               closure(Callback<>::Infer(&Signal<
-                                                    Parameters<
-                                                      const String&
-                                                      >
-                                                    >::Emit,
-                                                  &this->signal.error),
-                                cause);
-
-      // spawn a fiber.
-      if (Fiber::Spawn(closure) == StatusError)
-        yield(_(), "unable to spawn a fiber");
+      new reactor::Thread
+        (concurrency::scheduler(), "UDPSocket error",
+         boost::bind(&Signal<Parameters<const String& > >::Emit,
+                     &this->signal.error, cause), true);
     }
 
   }

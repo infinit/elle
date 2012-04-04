@@ -12,6 +12,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/concurrency/Scheduler.hh>
+
 #include <etoile/gear/Scope.hh>
 #include <etoile/gear/Gear.hh>
 #include <etoile/gear/Directory.hh>
@@ -1072,8 +1074,6 @@ namespace etoile
     template <typename T>
     elle::Status        Scope::Refresh()
     {
-      elle::Hurdle::Zone        zone(this->hurdle, elle::ModeWrite);
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] gear::Scope::Refresh()\n");
@@ -1083,7 +1083,7 @@ namespace etoile
       //
       // this is especially required since Load()ing may block the current
       // fiber.
-      zone.Lock();
+      reactor::Lock lock(&elle::concurrency::scheduler(), mutex.write());
       {
         elle::Callback<
           elle::Status,
@@ -1126,7 +1126,6 @@ namespace etoile
         // in this case, nothing is done.
         //
       }
-      zone.Unlock();
 
       return elle::StatusOk;
     }
@@ -1145,14 +1144,11 @@ namespace etoile
     template <typename T>
     elle::Status        Scope::Disclose()
     {
-      elle::Hurdle::Zone        zone(this->hurdle, elle::ModeWrite);
-
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] gear::Scope::Disclose()\n");
 
-      // protect the access to the current scope. XXX RAII ?
-      zone.Lock();
+      reactor::Lock lock(&elle::concurrency::scheduler(), mutex.write());
       {
         Scope*          scope = nullptr;
         T*              context = nullptr;
@@ -1231,7 +1227,6 @@ namespace etoile
         if (T::A::Load(*context) == elle::StatusError)
           escape("unable to load the object");
       }
-      zone.Unlock();
 
       return elle::StatusOk;
     }

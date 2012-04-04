@@ -1171,15 +1171,11 @@ namespace hole
                                               const elle::Port& port)
       {
         Host*           host;
-        elle::Session*  session;
+        elle::Session*  session = elle::network::Session::session.Get();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Machine::Authenticate()\n");
-
-        // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::StatusError)
-          escape("unable to retrieve the current session");
 
         // if the host exists in the guestlist, handle its authentication.
         if (this->guestlist.Exist(
@@ -1248,15 +1244,11 @@ namespace hole
       ///
       elle::Status      Machine::Authenticated(const Cluster&   cluster)
       {
-        elle::Session*  session;
+        elle::Session*  session = elle::network::Session::session.Get();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Machine::Authenticated()\n");
-
-        // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::StatusError)
-          escape("unable to retrieve the current session");
 
         // set the machine as being authenticated and is therefore now
         // considered attached to the network.
@@ -1414,16 +1406,12 @@ namespace hole
                                           <nucleus::Block>&     derivable)
       {
         Host*           host;
-        elle::Session*  session;
+        elle::Session*  session = elle::network::Session::session.Get();
         nucleus::Block* object;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Machine::Push()\n");
-
-        // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::StatusError)
-          escape("unable to retrieve the current session");
 
         // retrieve the host from the guestlist.
         if (this->guestlist.Retrieve(
@@ -1588,16 +1576,12 @@ namespace hole
                                       const nucleus::Version&   version)
       {
         Host*           host;
-        elle::Session*  session;
+        elle::Session*  session = elle::network::Session::session.Get();
         nucleus::Block* block;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Machine::Pull()\n");
-
-        // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::StatusError)
-          escape("unable to retrieve the current session");
 
         // retrieve the host from the guestlist.
         if (this->guestlist.Retrieve(
@@ -1741,15 +1725,11 @@ namespace hole
       elle::Status      Machine::Wipe(const nucleus::Address&   address)
       {
         Host*           host;
-        elle::Session*  session;
+        elle::Session*  session = elle::network::Session::session.Get();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Machine::Wipe()\n");
-
-        // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::StatusError)
-          escape("unable to retrieve the current session");
 
         // retrieve the host from the guestlist.
         if (this->guestlist.Retrieve(

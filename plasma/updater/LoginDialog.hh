@@ -18,10 +18,10 @@ public:
 
     void SetErrorMessage(std::string const& error);
 
-signals:
+Q_SIGNALS:
     void doLogin(std::string const& login, std::string const& password);
 
-private slots:
+private Q_SLOTS:
     void _OnAccepted();
 };
 

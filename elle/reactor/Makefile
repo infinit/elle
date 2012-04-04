@@ -1,6 +1,8 @@
 SOURCES =					\
   src/reactor/debug.cc				\
   src/reactor/exception.cc			\
+  src/reactor/lockable.cc			\
+  src/reactor/mutex.cc				\
   src/reactor/network/exception.cc		\
   src/reactor/network/resolve.cc		\
   src/reactor/network/server.cc			\
@@ -11,7 +13,9 @@ SOURCES =					\
   src/reactor/network/udp-server-socket.cc	\
   src/reactor/network/udp-socket.cc		\
   src/reactor/operation.cc			\
+  src/reactor/rw-mutex.cc			\
   src/reactor/scheduler.cc			\
+  src/reactor/semaphore.cc			\
   src/reactor/signal.cc				\
   src/reactor/sleep.cc				\
   src/reactor/thread.cc				\

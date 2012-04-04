@@ -32,6 +32,8 @@
 # include <reactor/thread.hh>
 #include <elle/idiom/Open.hh>
 
+#include <elle/concurrency/Scheduler.hh>
+
 namespace horizon
 {
   namespace linux
@@ -114,7 +116,7 @@ namespace horizon
          BOOST_PP_SEQ_FOR_EACH_I(INFINIT_FUSE_FORMALS, _,               \
                                  BOOST_PP_SEQ_POP_FRONT(Args)))         \
     {                                                                   \
-      return elle::Program::scheduler->mt_run<int>                      \
+      return elle::concurrency::scheduler().mt_run<int>                 \
         (#Name,                                                         \
          boost::bind(FUSE::Operations.Name                              \
                      BOOST_PP_SEQ_FOR_EACH_I(INFINIT_FUSE_EFFECTIVE,    \

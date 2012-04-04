@@ -21,10 +21,10 @@ public:
     void setProgress(float percent);
     void setStatus(std::string const& status);
 
-private slots:
+private Q_SLOTS:
     void on_cancelButton_clicked();
 
-signals:
+Q_SIGNALS:
     void cancelled();
 };
 

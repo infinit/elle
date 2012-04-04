@@ -514,16 +514,11 @@ namespace hole
       elle::Status      Server::Challenge(const lune::Passport& passport)
       {
         Customer*       customer;
-        elle::Session*  session;
-
+        elle::Session*  session = elle::network::Session::session.Get();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Server::Challenge()\n");
-
-        // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::StatusError)
-          escape("unable to retrieve the current session");
 
         // retrieve the customer.
         if (this->Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
@@ -583,17 +578,13 @@ namespace hole
                                          <nucleus::Block>&      derivable)
       {
         Customer*       customer;
-        elle::Session*  session;
+        elle::Session*  session = elle::network::Session::session.Get();
         nucleus::Block* object;
 
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Server::Push()\n");
-
-        // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::StatusError)
-          escape("unable to retrieve the current session");
 
         // retrieve the customer.
         if (this->Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
@@ -661,16 +652,12 @@ namespace hole
                                      const nucleus::Version&    version)
       {
         Customer*       customer;
-        elle::Session*  session;
+        elle::Session*  session = elle::network::Session::session.Get();
         nucleus::Block* block;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Server::Pull()\n");
-
-        // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::StatusError)
-          escape("unable to retrieve the current session");
 
         // retrieve the customer.
         if (this->Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
@@ -743,15 +730,11 @@ namespace hole
       elle::Status      Server::Wipe(const nucleus::Address&    address)
       {
         Customer*       customer;
-        elle::Session*  session;
+        elle::Session*  session = elle::network::Session::session.Get();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Server::Wipe()\n");
-
-        // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::StatusError)
-          escape("unable to retrieve the current session");
 
         // retrieve the customer.
         if (this->Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),

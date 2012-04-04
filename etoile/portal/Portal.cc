@@ -651,17 +651,13 @@ namespace etoile
     ///
     elle::Status        Portal::Authenticate(const elle::String&        pass)
     {
-      elle::Session*    session;
+      elle::Session*  session = elle::network::Session::session.Get();
       Application*      application;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
         std::cout << "[etoile] portal::Portal::Authenticate()"
                   << std::endl;
-
-      // retrieve the network session.
-      if (elle::Session::Instance(session) == elle::StatusError)
-        escape("unable to retrieve the current session");
 
       // retrieve the application associated with the current socket.
       if (Portal::Retrieve(dynamic_cast<elle::LocalSocket*>(session->socket),
@@ -692,12 +688,8 @@ namespace etoile
     ///
     elle::Status        Portal::Prolog()
     {
-      elle::Session*    session;
+      elle::Session*  session = elle::network::Session::session.Get();
       Application*      application;
-
-      // retrieve the network session.
-      if (elle::Session::Instance(session) == elle::StatusError)
-        escape("unable to retrieve the current session");
 
       // retrieve the application associated with the current socket.
       if (Portal::Retrieve(dynamic_cast<elle::LocalSocket*>(session->socket),
@@ -727,12 +719,8 @@ namespace etoile
     ///
     elle::Status        Portal::Epilog()
     {
-      elle::Session*    session;
       Application*      application;
-
-      // retrieve the network session.
-      if (elle::Session::Instance(session) == elle::StatusError)
-        escape("unable to retrieve the current session");
+      elle::Session*  session = elle::network::Session::session.Get();
 
       // retrieve the application associated with the current socket.
       if (Portal::Retrieve(dynamic_cast<elle::LocalSocket*>(session->socket),

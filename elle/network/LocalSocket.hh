@@ -109,8 +109,7 @@ namespace elle
       Status            Send(const I,
                              const Event& = Event::Null);
       template <typename O>
-      Status            Receive(const Event&,
-                                O);
+      Status            Receive(Event&, O);
       template <typename I,
                 typename O>
       Status            Call(const I,
@@ -139,7 +138,7 @@ namespace elle
 
       ::QLocalSocket*   socket;
 
-    private slots:
+    private Q_SLOTS:
       //
       // slots
       //

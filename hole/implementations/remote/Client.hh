@@ -7,7 +7,7 @@
 //
 // author        julien quintard   [thu may 26 10:21:46 2011]
 //
- 
+
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_CLIENT_HH
 #define HOLE_IMPLEMENTATIONS_REMOTE_CLIENT_HH
 
@@ -75,7 +75,8 @@ namespace hole
         //
         elle::Status            Connected();
         elle::Status            Disconnected();
-        elle::Status            Error(const elle::String&);
+        // XXX: const string&
+        elle::Status            Error(elle::String);
 
         elle::Status            Authenticated();
         elle::Status            Exception(const elle::Report&);

@@ -116,7 +116,7 @@ void IdentityUpdater::_OnLogin(std::string const& password,
       else
         {
           std::cout << "Found a passport file.\n";
-          emit identityUpdated(true);
+          Q_EMIT identityUpdated(true);
         }
     }
 
@@ -143,7 +143,7 @@ void IdentityUpdater::_OnError(meta::MetaClient::Error error,
   else
     {
       std::cerr << "Got a very unexpected error: " << error_string << "\n";
-      emit identityUpdated(false);
+      Q_EMIT identityUpdated(false);
     }
 }
 
@@ -166,7 +166,7 @@ void IdentityUpdater::_OnDeviceCreated(meta::CreateDeviceResponse const& res)
   if (passport.Store() == elle::StatusError)
     throw std::runtime_error("Cannot save the passport");
 
-  emit identityUpdated(true);
+  Q_EMIT identityUpdated(true);
 }
 
 std::string IdentityUpdater::_DecryptIdentity(std::string const& password,
@@ -216,9 +216,8 @@ void IdentityUpdater::_UpdatePassport()
   std::cout << "Registering host: '" << host << "'\n";
 
   // XXX should be done in infinit instance
-  using namespace std::placeholders;
   this->_api.CreateDevice("default device name", host, 1912,
-      std::bind(&IdentityUpdater::_OnDeviceCreated, this, _1),
-      std::bind(&IdentityUpdater::_OnError, this, _1, _2)
+      boost::bind(&IdentityUpdater::_OnDeviceCreated, this, _1),
+      boost::bind(&IdentityUpdater::_OnError, this, _1, _2)
   );
 }

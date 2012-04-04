@@ -60,10 +60,10 @@ namespace plasma
       /// Launch the download (non blocking)
       void Start();
 
-    signals:
+    Q_SIGNALS:
       void releaseUpdated(bool);
 
-    private slots:
+    private Q_SLOTS:
       void _OnDownloadFinished(QNetworkReply* reply);
       void _OnDownloadError(QNetworkReply::NetworkError error);
       void _OnDownloadProgress(qint64 read, qint64 total);

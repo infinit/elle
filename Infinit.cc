@@ -90,7 +90,7 @@ elle::Status            Infinit::Initialize()
 
     // ignore this step if the key is empty.
     //
-    // this is especially useful whenever the authority must be author 
+    // this is especially useful whenever the authority must be author
     // the very first time.
     if (Infinit::Key.empty() == false)
       {

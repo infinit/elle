@@ -26,7 +26,7 @@ void LoginDialog::_OnAccepted()
 {
   if (this->ui && this->ui->email && this->ui->password)
     {
-      emit doLogin(this->ui->email->text().toStdString(),
+      Q_EMIT doLogin(this->ui->email->text().toStdString(),
                    this->ui->password->text().toStdString());
     }
   else

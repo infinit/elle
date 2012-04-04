@@ -79,7 +79,7 @@ void ReleaseUpdater::Start()
 void ReleaseUpdater::_OnCancelled()
 {
   std::cerr << "Cancelled !\n";
-  emit releaseUpdated(false);
+  Q_EMIT releaseUpdated(false);
 }
 
 void ReleaseUpdater::_OnDownloadFinished(QNetworkReply* reply)
@@ -120,7 +120,7 @@ void ReleaseUpdater::_OnDownloadFinished(QNetworkReply* reply)
   if (isDone || !success)
     {
       this->_updateDialog.hide();
-      emit releaseUpdated(success);
+      Q_EMIT releaseUpdated(success);
     }
 }
 
@@ -149,7 +149,7 @@ void ReleaseUpdater::_DownloadNextResource()
 void ReleaseUpdater::_OnDownloadError(QNetworkReply::NetworkError error)
 {
   std::cout << "Got error code = " << error << std::endl;
-  //emit releaseUpdated(false);
+  //Q_EMIT releaseUpdated(false);
 }
 
 void ReleaseUpdater::_OnDownloadProgress(qint64 read, qint64 total)

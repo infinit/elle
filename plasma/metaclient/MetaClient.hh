@@ -166,7 +166,7 @@ namespace plasma
       void _Get(std::string const& url,
                 RequestHandler* handler);
 
-    private slots:
+    private Q_SLOTS:
       void _OnRequestFinished(QNetworkReply* reply);
 
     };

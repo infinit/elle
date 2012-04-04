@@ -614,7 +614,7 @@ namespace satellite
       if (upcall.Inputs(
             elle::String(path),
             elle::String(name),
-            elle::String(value, size),
+            size != 0 ? elle::String(value, size) : "",
             static_cast<elle::Natural64>(size)) ==
           elle::StatusError)
         fail("unable to specify the upcall's inputs");
@@ -622,7 +622,7 @@ namespace satellite
       res = Record::Reference->fuse.getxattr(path, name, value, size);
 
       if (upcall.Outputs(
-            elle::String(value)) ==
+            size != 0 ? elle::String(value) : "") ==
           elle::StatusError)
         fail("unable to specify the upcall's outputs");
 

@@ -123,9 +123,9 @@ namespace hole
         // set the customer's state as dead.
         this->state = Customer::StateDead;
 
-        // emit the signal.
+        // Q_EMIT the signal.
         if (this->signal.dead.Emit(this) == elle::StatusError)
-          escape("unable to emit the signal");
+          escape("unable to Q_EMIT the signal");
 
         return elle::StatusOk;
       }
@@ -134,7 +134,7 @@ namespace hole
       /// this callback is triggered whenever an error occurs on the
       /// customer's socket.
       ///
-      elle::Status      Customer::Error(const elle::String&     error)
+      elle::Status      Customer::Error(elle::String     error)
       {
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -169,9 +169,9 @@ namespace hole
         // check if the customer has been authenticated.
         if (this->state != Customer::StateAuthenticated)
           {
-            // emit the signal.
+            // Q_EMIT the signal.
             if (this->signal.dead.Emit(this) == elle::StatusError)
-              escape("unable to emit the signal");
+              escape("unable to Q_EMIT the signal");
           }
 
         return elle::StatusOk;

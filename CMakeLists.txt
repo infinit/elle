@@ -54,7 +54,7 @@ set(INFINIT_QJSON_SHARED_LIBRARIES
 
 message("-- External librairies directory: ${INFINIT_LIBRARIES_PREFIX}")
 
-find_package(Boost COMPONENTS system thread REQUIRED)
+find_package(Boost COMPONENTS system thread signals REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 
 set(INFINIT_EXTERNAL_LIBRARIES
@@ -100,6 +100,8 @@ set(BUILD_SHARED_LIBS OFF)
 include_directories(BEFORE SYSTEM ${INFINIT_LIBRARIES_PREFIX}/include .)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/elle/reactor/src)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DQT_NO_KEYWORDS")
 
 #
 # MSVC CXXFLAGS

@@ -71,10 +71,10 @@ namespace plasma
                                    std::string const& identity);
       void _StoreIdentity(std::string const& identityString);
 
-    private slots:
+    private Q_SLOTS:
       void _DoLogin(std::string const& login, std::string const& password);
 
-    signals:
+    Q_SIGNALS:
       void identityUpdated(bool);
     };
 
