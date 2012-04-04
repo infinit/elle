@@ -4,6 +4,7 @@
 # include <cstring>
 # include <cstdint>
 # include <iosfwd>
+# include <list>
 # include <memory>
 # include <string>
 # include <stdexcept>
@@ -27,7 +28,7 @@ namespace elle { namespace serialize {
     };
 
     /// Convenient macro to declare the version of a serialized class
-# define ELLE_ARCHIVE_CLASS_VERSION(Class_, version_)                         \
+# define ELLE_ARCHIVE_CLASS_VERSION(Class_, version_)                             \
     template<> struct ArchivableClass                                             \
     {                                                                             \
       static const unsigned int version = version_;                               \
@@ -204,8 +205,10 @@ namespace elle { namespace serialize {
       // Helper to select proper operators overloads
       template<typename T, ArchiveMode _mode> struct _EnableFor
       {
-        template<typename _T> struct _IsNamedValue { static bool const value = false; };
-        template<typename _T> struct _IsNamedValue<NamedValue<_T>> { static bool const value = true; };
+        template<typename _T> struct _IsNamedValue
+          { static bool const value = false; };
+        template<typename _T> struct _IsNamedValue<NamedValue<_T>>
+          { static bool const value = true; };
 
         typedef typename std::enable_if<
             std::is_same<
