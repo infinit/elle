@@ -16,8 +16,8 @@
     FINodeStatus    nodeStatus;
 }
 
-@property(assign) id cell;
-@property FINodeStatus nodeStatus;
+@property(assign) id    cell;
+@property FINodeStatus  nodeStatus;
 
 + (id) listCellDictKeyWithCell:(id)arg1;
 

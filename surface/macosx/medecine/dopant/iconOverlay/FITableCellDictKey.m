@@ -27,29 +27,31 @@ static char overviewKey;
         if (items == nil) {
             items = [[NSMutableSet alloc] init];
         }
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(columnIdentifier == %@) AND (rowIndex == %qi)", arg1, arg2];
-        NSSet *filtered = [items filteredSetUsingPredicate:predicate];
         
-        if ([filtered count] == 0)
+        FITableCellDictKey *matchItem = nil;
+        for (FITableCellDictKey *item in [items allObjects]) {
+            if (item.columnIdentifier == arg1 && item.rowIndex == arg2) {
+                matchItem = item;
+                break;
+            }
+        }
+        
+        if (matchItem == nil)
         {
-            id item = [[FITableCellDictKey alloc] initWithColumnIdentifier:arg1 rowIndex:arg2  forNode:arg3];
+            matchItem = [[FITableCellDictKey alloc] initWithColumnIdentifier:arg1 rowIndex:arg2  forNode:arg3];
+            [items addObject:matchItem];
             ZombieDictKey *zombieReleaser = objc_getAssociatedObject(arg1, &overviewKey);
             
             if (zombieReleaser == nil) {
                 zombieReleaser = [[ZombieDictKey alloc] init];
+                objc_setAssociatedObject(arg1, &overviewKey, zombieReleaser, OBJC_ASSOCIATION_RETAIN);
             }
-            [zombieReleaser addDictKey:item];
+            [zombieReleaser addDictKey:matchItem];
             
-            objc_setAssociatedObject ( arg1, &overviewKey, zombieReleaser, OBJC_ASSOCIATION_RETAIN );
-            
-            [items addObject:item];
-            [item autorelease];
-            return item;
+            [zombieReleaser release];
         }
-        else
-        {
-            return [filtered anyObject];
-        }
+        
+        return matchItem;
     }
 }
 
@@ -57,7 +59,7 @@ static char overviewKey;
 {
     self = [super init];
     
-    self.columnIdentifier = arg1;  // TODO add release link
+    self.columnIdentifier = arg1;
     self.rowIndex = arg2;
     self.node = (TFENode *)arg3;
     self.nodeStatus = FINodeStatusUnknowned;
@@ -69,9 +71,6 @@ static char overviewKey;
 
 -(void)dealloc
 {
-    if ([items containsObject:self]){
-        [items removeObject:self];
-    }
     [super dealloc];
 }
 
@@ -126,20 +125,45 @@ static char overviewKey;
     return;
 }
 
+- (void) cleanUp
+{
+    self.rowIndex = -1;
+    self.columnIdentifier = nil;
+    self.node = NULL;
+    @synchronized(items)
+    {
+        if ([items containsObject:self]){
+            [items removeObject:self];
+        }
+    }
+    [self release];
+    [self cancel];
+    
+}
+
 - (void) main
 {
-    if (self != nil)
+    NSAutoreleasePool *oppPool = [[NSAutoreleasePool alloc] init];
+    if (self != nil && !self.isCancelled)
     {
-        //NSURL* url = [self getPath];
+        NSURL* url = [self getPath];
+        NSString *filename = [[url path] lastPathComponent];
+        
+        NSString *firstChar = [filename substringToIndex:1];
         
         // Get status by path
         sleep(1);
         // Set status
-        [self setNodeStatus:FINodeStatusDisconected];
+        if ([firstChar isEqualToString:@"A"])
+        {
+            [self setNodeStatus:FINodeStatusDisconected];
+        }
         
-        [self performSelectorOnMainThread:@selector(refreshCell:) withObject:nil waitUntilDone:NO];
+        if ([self respondsToSelector:@selector(refreshCell)]) {
+            [self performSelectorOnMainThread:@selector(refreshCell) withObject:nil waitUntilDone:NO];
+        }
     }
-    return;
+    [oppPool drain];
 }
 
 @end

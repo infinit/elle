@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface OOAppDelegate : NSObject <NSApplicationDelegate>
+@interface AppDelegate : NSObject <NSApplicationDelegate>
 {
     NSWindow *window;
     IBOutlet NSMenu *statusMenu;

@@ -12,6 +12,7 @@
 
 @implementation FIIconOverlay
 
+@synthesize nodeStatusOperationQueue;
 @synthesize syncingIconRef;
 @synthesize syncedIconRef;
 @synthesize disconnectedIconRef;
@@ -144,7 +145,7 @@
             FIListCellDictKey *dictKey = [FIListCellDictKey listCellDictKeyWithCell:self];
             
             IconRef cellStatus = [[FIIconOverlay instance] iconRefWithCell:dictKey.nodeStatus];
-            //[dictKey release];
+            
             if (cellStatus != NULL) {
                 [self setOverlayIcon:cellStatus];
             }

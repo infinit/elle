@@ -25,9 +25,10 @@ typedef enum {
     struct OpaqueIconRef    *disconnectedIconRef;
 }
 
-@property(readonly) struct OpaqueIconRef *syncingIconRef;
-@property(readonly) struct OpaqueIconRef *syncedIconRef;
-@property(readonly) struct OpaqueIconRef *disconnectedIconRef;
+@property(readonly) NSOperationQueue        *nodeStatusOperationQueue;
+@property(readonly) struct OpaqueIconRef    *syncingIconRef;
+@property(readonly) struct OpaqueIconRef    *syncedIconRef;
+@property(readonly) struct OpaqueIconRef    *disconnectedIconRef;
 
 @property(retain) NSMutableDictionary *nodesStatusDict;
 

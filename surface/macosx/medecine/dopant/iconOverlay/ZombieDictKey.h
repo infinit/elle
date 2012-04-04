@@ -15,7 +15,7 @@
     id      *parentCell;
 }
 
-@property(retain) NSMutableArray *linkedDictKeys;
+@property(retain, atomic) NSMutableArray *linkedDictKeys;
 
 - (void) addDictKey:(id)arg1;
 - (id) init;
