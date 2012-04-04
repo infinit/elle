@@ -1,5 +1,5 @@
-#ifndef ELLE_FORMAT_JSON_DICT_HH
-# define ELLE_FORMAT_JSON_DICT_HH
+#ifndef ELLE_FORMAT_JSON_DICTIONARY_HH
+# define ELLE_FORMAT_JSON_DICTIONARY_HH
 
 # include <unordered_map>
 
@@ -11,7 +11,7 @@
 
 namespace elle { namespace format { namespace json {
 
-    struct Dict : public Object
+    class Dictionary : public Object
     {
     private:
       typedef std::unordered_map<std::string, Object*> MapType;
@@ -92,19 +92,19 @@ namespace elle { namespace format { namespace json {
           >::type operator =(T&& val);
         };
 
-      friend class OutputJSONArchive;
       friend struct _DictProxy;
 
     private:
       MapType _map;
 
     public:
-      Dict() {}
+      Dictionary() {}
 
       template<typename Container>
-      Dict(Container const& container,
-           typename std::enable_if<detail::IsStringMap<Container>::value, bool>::type = true)
+      Dictionary(Container const& container)
       {
+        static bool const is_map = detail::IsStringMap<Container>::value;
+        static_assert(is_map, "The container must be a map indexed with strings");
         auto it = container.begin(), end = container.end();
         for (; it != end; ++it)
           {
@@ -112,7 +112,7 @@ namespace elle { namespace format { namespace json {
           }
       }
 
-      ~Dict()
+      ~Dictionary()
       {
         for (auto it = _map.begin(), end = _map.end(); it != end; ++it)
           delete it->second;

@@ -5,8 +5,8 @@
 
 namespace elle { namespace serialize {
 
-    class OutputJsonArchive;
-    class InputJsonArchive;
+    class OutputJSONArchive;
+    class InputJSONArchive;
 
 }}
 

@@ -15,7 +15,7 @@ namespace elle { namespace format { namespace json {
 
     extern Null const null;
 
-}
+}}} // !namespace elle::format::json
 
 #endif /* ! NULL_HH */
 

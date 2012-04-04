@@ -6,10 +6,10 @@
 
 #include "Array.hh"
 #include "Bool.hh"
-#include "Dict.hh"
-#include "Dict.hxx"
+#include "Dictionary.hh"
+#include "Dictionary.hxx"
 #include "Float.hh"
-#include "Int.hh"
+#include "Integer.hh"
 #include "Parser.hh"
 #include "String.hh"
 
@@ -81,7 +81,7 @@ template<typename T>
 bool Parser<T>::_ReadJSONInt(StreamType& in,      ObjectPtr& out)
 {
   auto pos = in.tellg();
-  json::Int::Type i;
+  json::Integer::Type i;
 
   in >> i;
   CharType c = 0;
@@ -98,7 +98,7 @@ bool Parser<T>::_ReadJSONInt(StreamType& in,      ObjectPtr& out)
       in.seekg(pos);
       return false;
     }
-  out.reset(new json::Int(i));
+  out.reset(new json::Integer(i));
   return true;
 }
 
@@ -205,7 +205,7 @@ bool Parser<T>::_ReadJSONDict(StreamType& in,     ObjectPtr& out)
 {
   if (!_ReadChar(in, '{'))
     return false;
-  std::unique_ptr<json::Dict> res(new json::Dict);
+  std::unique_ptr<json::Dictionary> res(new json::Dictionary);
 
   auto pos = in.tellg();
   while (in.good())
@@ -236,7 +236,7 @@ bool Parser<T>::_ReadJSONDict(StreamType& in,     ObjectPtr& out)
           std::cout << "read dictionary pair: ("
                     << key->repr() << ", "
                     << value->repr() << ")\n";
-          (*res)[static_cast<json::String&>(*key).value()] = std::move(value);
+          (*res)[static_cast<json::String&>(*key)] = std::move(value);
 
           _Skip(in);
           if (_ReadChar(in, ','))
@@ -316,10 +316,10 @@ template<> std::string const Parser<std::string>::_falseString = "false";
 //template<> std::wstring const Parser<std::wstring>::_trueString  = L"true";
 //template<> std::wstring const Parser<std::wstring>::_falseString = L"false";
 
-namespace json {
+namespace elle { namespace format { namespace json {
 
     template class Parser<std::string>;
     //template class Parser<std::wstring>;
 
-}
+}}} // !namespace elle::format::json
 

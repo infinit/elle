@@ -5,20 +5,18 @@
 
 # include "Object.hh"
 # include "Bool.hh"
-# include "Int.hh"
+# include "Integer.hh"
 # include "Float.hh"
 # include "String.hh"
-# include "Dict.hh"
+# include "Dictionary.hh"
 # include "Null.hh"
 
 # include "_detail.hh"
 
 namespace elle { namespace format { namespace json {
 
-    struct Array : public Object
+    class Array : public Object
     {
-      friend class elle::serialize::OutputJSONArchive;
-
     private:
       std::vector<Object*> _value;
 
