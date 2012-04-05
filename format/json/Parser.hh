@@ -2,6 +2,7 @@
 # define ELLE_FORMAT_JSON_PARSER_HH
 
 # include <stdexcept>
+# include <string>
 
 # include "Object.hh"
 
@@ -12,7 +13,7 @@ namespace elle { namespace format { namespace json {
       None = 0x00,
     };
 
-    template<typename StringType_>
+    template<typename StringType_ = std::string>
     class Parser
     {
     private:

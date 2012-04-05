@@ -45,6 +45,9 @@ public:
   {}
 
 protected:
+  inline void Save(uint16_t val)  { this->stream() << val; }
+  inline void Save(uint32_t val)  { this->stream() << val; }
+  inline void Save(uint64_t val)  { this->stream() << val; }
   inline void Save(int16_t val)  { this->stream() << val; }
   inline void Save(int32_t val)  { this->stream() << val; }
   inline void Save(int64_t val)  { this->stream() << val; }
@@ -83,8 +86,11 @@ protected:
   template<typename T> inline typename std::enable_if<
       std::is_base_of<json::Object, T>::value
   >::type Save(T const& value);
+
   template<typename T> inline typename std::enable_if<
-      !std::is_base_of<json::Object, T>::value
+      !std::is_base_of<json::Object, T>::value &&
+      !std::is_arithmetic<T>::value &&
+      !std::is_same<T, std::string>::value
   >::type Save(T const& val);
 
   friend class json::detail::BasicObject<int32_t>;
@@ -126,6 +132,41 @@ public:
 protected:
   template<typename T> void Load(T& val);
   using BaseClass::operator >>;
+};
+
+template<ArchiveMode mode> struct _JSONArchiveSelector;
+template<> struct _JSONArchiveSelector<ArchiveMode::Output>
+{
+  typedef OutputJSONArchive type;
+};
+
+template<> struct _JSONArchiveSelector<ArchiveMode::Input>
+{
+  typedef InputJSONArchive type;
+};
+
+template<ArchiveMode mode>
+class JSONArchive
+  : public _JSONArchiveSelector<mode>::type
+{
+private:
+  typedef typename _JSONArchiveSelector<mode>::type BaseClass;
+public:
+  template<typename T>
+    JSONArchive(typename BaseClass::StreamType& stream,
+                typename std::enable_if<mode == ArchiveMode::Output, T&>::type out)
+      : BaseClass(stream, out)
+    {}
+  template<typename T>
+    JSONArchive(typename BaseClass::StreamType& stream,
+                typename std::enable_if<mode == ArchiveMode::Input, T const&>::type in)
+      : BaseClass(stream, in)
+    {}
+  template<typename T>
+    JSONArchive(typename BaseClass::StreamType& stream,
+                typename std::enable_if<mode == ArchiveMode::Input, T&&>::type in)
+      : BaseClass(stream, in)
+    {}
 };
 
 

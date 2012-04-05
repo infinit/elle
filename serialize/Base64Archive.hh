@@ -3,7 +3,7 @@
 
 # include <cassert>
 
-# include "BaseArchive.hh"
+# include "BaseArchive.hxx"
 
 # include "Base64Archive.fwd.hh"
 
@@ -69,7 +69,7 @@ namespace elle { namespace serialize {
       size_t i = 0;
       unsigned char const* ptr = static_cast<unsigned char const*>(data);
 
-      this->_temp.resize(size + (size >> 1) + 4); // 4/3*size is really needed
+      this->_temp.resize(size + (size / 2) + 4); // 4/3*size is really needed
       unsigned char c1;
       unsigned char c2;
       unsigned char c3;

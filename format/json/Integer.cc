@@ -1,6 +1,6 @@
 #include <ostream>
 
-#include "elle/serialize/JSONArchive.hh"
+#include "elle/serialize/JSONArchive.hxx"
 
 #include "Integer.hh"
 
