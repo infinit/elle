@@ -94,7 +94,7 @@ namespace elle { namespace format { namespace json { namespace detail {
           typedef struct { Yes _[2]; } No;
           static No f(...);
           template<typename K>
-            static Yes f(K*, typename K::value_type* = nullptr, typename K::key_type* = nullptr);
+            static Yes f(K*, typename K::mapped_type* = nullptr, typename K::key_type* = nullptr);
           static bool const value = (
                 HasIterator<T>::value
             &&  sizeof(f(static_cast<T*>(nullptr))) == sizeof(Yes)
@@ -123,9 +123,12 @@ namespace elle { namespace format { namespace json { namespace detail {
       struct IsArray
         {
           static bool const value = (
-                HasIterator<T>::value
-            &&  !IsString<T>::value
-            &&  !IsMap<T>::value
+                std::is_array<T>::value
+            ||  (
+                    HasIterator<T>::value
+                &&  !IsString<T>::value
+                &&  !IsMap<T>::value
+            )
           );
         };
 

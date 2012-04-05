@@ -6,13 +6,19 @@
 
 using namespace elle::format::json;
 
-namespace elle { namespace format { namespace json { namespace detail {
+namespace elle { namespace format { namespace json {
 
-    template<>
-    void Bool::Save(elle::serialize::OutputJSONArchive& ar) const
-    {
-      ar.stream() << (_value ? "true" : "false");
+    Bool const true_ = Bool{true};
+    Bool const false_ = Bool{false};
+
+    namespace detail {
+
+        template<>
+          void Bool::Save(elle::serialize::OutputJSONArchive& ar) const
+          {
+            ar.stream() << (_value ? "true" : "false");
+          }
     }
 
-}}}}
+}}}
 
