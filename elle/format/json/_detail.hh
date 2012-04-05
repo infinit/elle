@@ -8,8 +8,6 @@ namespace elle { namespace format { namespace json { namespace detail {
       {
         typedef Then type;
       };
-
-    template<bool Cond, typename Then, typename Else> struct StaticIf;
     template<typename Then, typename Else> struct StaticIf<false, Then, Else>
       {
         typedef Else type;
@@ -20,7 +18,7 @@ namespace elle { namespace format { namespace json { namespace detail {
       {
         typedef typename StaticIf<
             std::is_arithmetic<T>::value ||
-            (std::is_trivial<T>::value && (sizeof(T) <= 24))
+            (std::is_trivial<T>::value && (sizeof(T) <= 4 * sizeof(size_t))) /// XXX different value should be tested
           , T
           , T const&
         >::type type;
@@ -74,17 +72,8 @@ namespace elle { namespace format { namespace json { namespace detail {
 
     template<typename T>
       struct IsString {
-          static bool const value = false;
+          static bool const value = std::is_same<T, std::string>::value;
       };
-    template<>
-      struct IsString<std::string> {
-          static bool const value = true;
-      };
-    template<>
-      struct IsString<std::wstring> {
-          static bool const value = true;
-      };
-
 
     template<typename T>
       struct HasIterator
@@ -98,16 +87,31 @@ namespace elle { namespace format { namespace json { namespace detail {
             sizeof(f(static_cast<T*>(nullptr))) == sizeof(Yes);
         };
 
+    template<typename T>
+      struct IsMap
+        {
+          typedef char Yes;
+          typedef struct { Yes _[2]; } No;
+          static No f(...);
+          template<typename K>
+            static Yes f(K*, typename K::value_type* = nullptr, typename K::key_type* = nullptr);
+          static bool const value = (
+                HasIterator<T>::value
+            &&  sizeof(f(static_cast<T*>(nullptr))) == sizeof(Yes)
+          );
+        };
+
     template<typename T, typename KeyType = void>
       struct IsMappedWith
         {
           typedef char Yes;
           typedef struct { Yes _[2]; } No;
           static No f(...);
-          template<typename K>
-            static Yes f(K*, typename K::key_type*);
-          static bool const value =
-            sizeof(f(static_cast<T*>(nullptr), static_cast<KeyType*>(nullptr))) == sizeof(Yes);
+          template<typename K> static Yes f(typename K::key_type*);
+          static bool const value = (
+                IsMap<T>::value
+            &&  sizeof(f(static_cast<KeyType*>(nullptr))) == sizeof(Yes)
+          );
         };
 
     template<typename Container>
@@ -116,9 +120,14 @@ namespace elle { namespace format { namespace json { namespace detail {
       };
 
     template<typename T>
-      struct IsArray {
-          static bool const value = HasIterator<T>::value && !IsString<T>::value;
-      };
+      struct IsArray
+        {
+          static bool const value = (
+                HasIterator<T>::value
+            &&  !IsString<T>::value
+            &&  !IsMap<T>::value
+          );
+        };
 
 }}}} // !namespace elle::format::json::detail
 
