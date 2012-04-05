@@ -51,6 +51,8 @@ struct A
   std::string b;
   std::string c;
   float       float_;
+  int         int_;
+  short       short_;
 
   bool operator ==(A const& o) const
     {
@@ -59,9 +61,14 @@ struct A
           &&  b == o.b
           &&  c == o.c
           &&  float_ == o.float_
+          &&  int_ == o.int_
+          &&  short_ == o.short_
+
       );
     }
 };
+
+
 
 namespace elle { namespace serialize {
   template<> struct ArchiveSerializer<A>
@@ -73,6 +80,32 @@ namespace elle { namespace serialize {
         ar & named("b", a.b);
         ar & named("c", a.c);
         ar & named("a float", a.float_);
+        ar & named("an int", a.int_);
+        ar & named("a short", a.short_);
+      }
+  };
+}}
+
+struct B
+{
+  int i, j;
+  A a;
+  bool operator == (B const& o) const
+    {
+      return i == o.i && j == o.j && a == o.a;
+    }
+};
+
+
+namespace elle { namespace serialize {
+  template<> struct ArchiveSerializer<B>
+  {
+    template<typename Archive>
+    static void Serialize(Archive& ar, B& b, unsigned int)
+      {
+        ar & named("i", b.i);
+        ar & named("j", b.j);
+        ar & named("a", b.a);
       }
   };
 }}
@@ -80,37 +113,48 @@ namespace elle { namespace serialize {
 template<template <ArchiveMode> class Archive> void testClass()
 {
   std::stringstream ss;
+  A el1{"salut", "pif", "paf", 42.3f, 32, 3000};
+  A el2{"1", "2", "3", 77.5f, 24, 3001};
+  B el3{12, 13, A{"4", "5", "6", 32.5f, 2000000000, 443}};
     {
       Archive<ArchiveMode::Output> ar(ss);
-      ar & named("el1", A{"salut", "pif", "paf", 42.3f});
-      ar << named("el2", A{"1", "2", "3", 77.5f});
+      ar & named("el1", el1);
+      ar << named("el2", el2);
+      ar << named("el3", el3);
     }
     {
       Archive<ArchiveMode::Input> ar(ss);
       A a;
       ar & named("el1", a);
-      assert(a.a == "salut");
-      assert(a.b == "pif");
-      assert(a.c == "paf");
-      assert(a.float_ == 42.3f);
+      assert(a == el1);
       ar & named("el2", a);
-      assert(a.a == "1");
-      assert(a.b == "2");
-      assert(a.c == "3");
-      assert(a.float_ == 77.5f);
+      assert(a == el2);
+      B b;
+      ar & named("el3", b);
+      assert(b == el3);
     }
 }
 
-template<typename T> void testJSON()
+void testJSON()
 {
+  A el1{"salut", "pif", "paf", 42.3f, 32, 3000};
+  A el2{"1", "2", "3", 77.5f, 24, 3001};
+  B el3{12, 13, A{"4", "5", "6", 32.5f, 2000000000, 443}};
   std::stringstream ss;
     {
-      OutputJSONArchive ar(ss, T{"1", "2", "3", 12.3});
+      OutputJSONArchive(ss, el1);
+      OutputJSONArchive(ss, el2);
+      OutputJSONArchive(ss, el3);
     }
     {
-      T t;
-      InputJSONArchive ar(ss, t);
-      assert((t == T{"1", "2", "3", 12.3}));
+      A a;
+      InputJSONArchive(ss, a);
+      assert(a == el1);
+      InputJSONArchive(ss, a);
+      assert(a == el2);
+      B b;
+      InputJSONArchive(ss, b);
+      assert(b == el3);
     }
 }
 
@@ -124,7 +168,7 @@ int main()
   testClass<BinaryArchive>();
   testClass<Base64Archive>();
 
-  testJSON<A>();
+  testJSON();
 
   std::cout << "tests done.\n";
   return 0;
