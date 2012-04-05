@@ -35,7 +35,6 @@ typename Parser<T>::ObjectPtr Parser<T>::Parse(StreamType& input)
   if (!_ReadJSONValue(input, res))
     throw std::runtime_error("Couldn't read any JSON value");
   assert(res && "true returned, the object should not be null");
-  std::cout << "Parsed: " << res->repr() << std::endl;
   return res;
 }
 
@@ -177,7 +176,6 @@ bool Parser<T>::_ReadJSONArray(StreamType& in,    ObjectPtr& out)
         }
       else
         {
-          std::cout << "Array value: " << value->repr() << std::endl;
           res->push_back(std::move(value));
 
           _Skip(in);
@@ -189,11 +187,9 @@ bool Parser<T>::_ReadJSONArray(StreamType& in,    ObjectPtr& out)
 
       if (_ReadChar(in, ']'))
         {
-          std::cout << "Read json array:  " << res->repr() << " elements" << std::endl;
           out.reset(res.release());
           return true;
         }
-      std::cout << "THRWO \n";
       throw Error(in, "Expected ',' or ']' in an array");
     }
   in.seekg(pos);
@@ -233,9 +229,6 @@ bool Parser<T>::_ReadJSONDict(StreamType& in,     ObjectPtr& out)
           if (!_ReadJSONValue(in, value))
             throw std::runtime_error("Could not read dictionary pair");
 
-          std::cout << "read dictionary pair: ("
-                    << key->repr() << ", "
-                    << value->repr() << ")\n";
           (*res)[static_cast<json::String&>(*key)] = std::move(value);
 
           _Skip(in);
@@ -245,7 +238,6 @@ bool Parser<T>::_ReadJSONDict(StreamType& in,     ObjectPtr& out)
 
       if (_ReadChar(in, '}'))
         {
-          std::cout << "read dictionary of " << res->size() << " elements: " << res->repr() <<std::endl;
           out.reset(res.release());
           return true;
         }
@@ -300,7 +292,6 @@ void Parser<T>::_Skip(StreamType& in, StringType const& chars)
       CharType c = in.peek();
       if (chars.find(c) == StringType::npos)
         break;
-      std::cout << "Ignoring char : '" << c << "'\n";
       in.ignore(256, c);
     }
 }

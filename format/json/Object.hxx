@@ -1,10 +1,13 @@
 #ifndef ELLE_FORMAT_JSON_OBJECT_HXX
 # define ELLE_FORMAT_JSON_OBJECT_HXX
 
+# include <typeinfo>
+
 # include "Object.hh"
 # include "Float.hh"
 # include "String.hh"
 # include "Integer.hh"
+# include "Bool.hh"
 
 namespace elle { namespace format { namespace json {
 
@@ -35,22 +38,29 @@ namespace elle { namespace format { namespace json {
                     std::is_integral<T>::value
                   , Type
                 > Integer;
+
+                typedef typename std::enable_if<
+                    std::is_same<T, bool>::value
+                  , Type
+                > Bool;
               };
 
           public:
             /// Simple objects have a cast operator
-#define LOAD_SIMPLE_OBJECT_FOR(Type)                                          \
+#define LOAD_SIMPLE_OBJECT_FOR(JSONType)                                      \
             template<typename T> static inline typename                       \
-              Select<T>::Type::type Load(Object const& o, T& out)             \
+              Select<T>::JSONType::type Load(Object const& o, T& out)         \
               {                                                               \
-                out = dynamic_cast<Type const&>(o);                           \
+                out = static_cast<typename JSONType::CastType>(               \
+                    dynamic_cast<JSONType const&>(o)                          \
+                );                                                            \
               }                                                               \
             template<typename T> static inline typename                       \
-              Select<T, bool>::Type::type TryLoad(Object const& o, T& out)    \
+              Select<T, bool>::JSONType::type TryLoad(Object const& o, T& out)\
               {                                                               \
-                if (auto ptr = dynamic_cast<Type const*>(&o))                 \
+                if (auto ptr = dynamic_cast<JSONType const*>(&o))             \
                   {                                                           \
-                    out = *ptr;                                               \
+                    out = static_cast<typename JSONType::CastType>(*ptr);     \
                     return true;                                              \
                   }                                                           \
                 return false;                                                 \
@@ -60,11 +70,35 @@ namespace elle { namespace format { namespace json {
             LOAD_SIMPLE_OBJECT_FOR(String)
             LOAD_SIMPLE_OBJECT_FOR(Float)
             LOAD_SIMPLE_OBJECT_FOR(Integer)
+            LOAD_SIMPLE_OBJECT_FOR(Bool)
 #undef LOAD_SIMPLE_OBJECT_FOR
+
+//            template<typename T> static inline
+//              void Load(T& out)
+//                {
+//#ifdef INFINIT_DEBUG
+//                  if (dynamic_cast<json::Dictionary const*>(this) == nullptr)
+//                    throw std::bad_cast(
+//                        "Asked type '" + typeid(T).name() + "' is a class, but json element '" +
+//                        this->repr() +
+//                        "' is not a dictionary"
+//                    );
+//#endif
+//                }
 
           };
 
     } // !namespace detail
+
+    template<typename T> struct Object::CanLoad
+      {
+        static bool const value = (
+              std::is_arithmetic<T>::value
+          ||  std::is_same<T, std::string>::value
+          ||  std::is_same<T, bool>::value
+        );
+      };
+
 
     template<typename T> void Object::Load(T& out) const
       {

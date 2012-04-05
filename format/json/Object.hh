@@ -16,6 +16,8 @@ namespace elle { namespace format { namespace json {
     class Object
     {
     public:
+      template<typename T> struct CanLoad;
+
       typedef elle::serialize::OutputJSONArchive OutputJSONArchive;
       typedef elle::serialize::InputJSONArchive  InputJSONArchive;
 

@@ -135,6 +135,7 @@ protected:
 };
 
 template<ArchiveMode mode> struct _JSONArchiveSelector;
+
 template<> struct _JSONArchiveSelector<ArchiveMode::Output>
 {
   typedef OutputJSONArchive type;

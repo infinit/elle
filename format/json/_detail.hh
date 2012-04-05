@@ -3,15 +3,28 @@
 
 namespace elle { namespace format { namespace json { namespace detail {
 
+    template<bool Cond, typename Then, typename Else> struct StaticIf;
+    template<typename Then, typename Else> struct StaticIf<true, Then, Else>
+      {
+        typedef Then type;
+      };
+
+    template<bool Cond, typename Then, typename Else> struct StaticIf;
+    template<typename Then, typename Else> struct StaticIf<false, Then, Else>
+      {
+        typedef Else type;
+      };
+
+
     template<typename T> struct FastConst
       {
-        typedef T const& type;
+        typedef typename StaticIf<
+            std::is_arithmetic<T>::value ||
+            (std::is_trivial<T>::value && (sizeof(T) <= 24))
+          , T
+          , T const&
+        >::type type;
       };
-# define fast_is_value(T) template<> struct FastConst<T> { typedef T type; }
-    fast_is_value(int32_t);
-    fast_is_value(double);
-    fast_is_value(bool);
-# undef fast_is_value
 
     template<typename T>
       class BasicObject
@@ -21,6 +34,7 @@ namespace elle { namespace format { namespace json { namespace detail {
         typedef typename FastConst<T>::type FastConstType;
       public:
         typedef T Type;
+        typedef FastConstType CastType;
 
       private:
         Type _value;
@@ -44,7 +58,8 @@ namespace elle { namespace format { namespace json { namespace detail {
           _value = value;
           return *this;
         }
-        operator FastConstType() const { return _value; }
+        operator CastType() const { return _value; }
+
         bool operator ==(FastConstType value) const
         {
           return _value == value;
