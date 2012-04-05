@@ -4,16 +4,12 @@
 # include <vector>
 
 # include "Object.hh"
-# include "Bool.hh"
-# include "Integer.hh"
-# include "Float.hh"
-# include "String.hh"
-# include "Dictionary.hh"
-# include "Null.hh"
 
 # include "_detail.hh"
 
 namespace elle { namespace format { namespace json {
+
+    class Null;
 
     class Array : public Object
     {
@@ -25,14 +21,7 @@ namespace elle { namespace format { namespace json {
 
       template<typename Container>
       Array(Container const& container,
-            typename std::enable_if<detail::IsArray<Container>::value, bool>::type = true)
-      {
-        auto it = container.begin(), end = container.end();
-        for (; it != end; ++it)
-        {
-          this->push_back(*it);
-        }
-      }
+            typename std::enable_if<detail::IsArray<Container>::value, bool>::type = true);
 
       ~Array()
       {
@@ -41,17 +30,20 @@ namespace elle { namespace format { namespace json {
         _value.clear();
       }
 
-      inline void push_back(Null const&)
-        { _value.push_back(new Null); }
+      template<typename T> inline typename std::enable_if<
+          std::is_same<T, Null>::value
+      >::type push_back(T const&);
 
-      inline void push_back(bool value)
-        { _value.push_back(new Bool(value)); }
+      template<typename T> inline typename std::enable_if<
+          std::is_same<T, bool>::value
+      >::type push_back(T value);
 
       inline void push_back(std::unique_ptr<Object>&& value)
         { _value.push_back(value.release()); }
 
       template<typename T> inline typename std::enable_if<
-          std::is_integral<T>::value
+            std::is_integral<T>::value
+        &&  !std::is_same<T , bool>::value
       >::type push_back(T value);
 
       template<typename T> inline typename std::enable_if<
@@ -71,7 +63,12 @@ namespace elle { namespace format { namespace json {
       >::type push_back(T const& value);
 
       template<typename T> inline typename std::enable_if<
-          std::is_base_of<Object, T>::value
+            std::is_base_of<Object, T>::value
+        &&  !std::is_same<T, Null>::value
+      >::type push_back(T const& value);
+
+      template<typename T> inline typename std::enable_if<
+          std::is_pointer<T>::value && !std::is_array<T>::value
       >::type push_back(T const& value);
 
       size_t size() const { return _value.size(); }
