@@ -21,7 +21,7 @@ namespace elle { namespace format { namespace json {
     class Array;
     class Dictionary;
     class Null;
-    class Parser;
+    template<typename StringType> class Parser;
 
 }}}
 
