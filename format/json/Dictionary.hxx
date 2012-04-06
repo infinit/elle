@@ -1,92 +1,151 @@
 #ifndef ELLE_FORMAT_JSON_DICT_HXX
 # define ELLE_FORMAT_JSON_DICT_HXX
 
-# include "Bool.hh"
 # include "Dictionary.hh"
-# include "Float.hh"
-# include "Integer.hh"
-# include "Null.hh"
-# include "String.hh"
+
+# include "Object.hxx"
 
 namespace elle { namespace format { namespace json {
 
-    template<typename T> inline typename std::enable_if<
-        std::is_integral<T>::value
-        , Dictionary::_DictProxy&
-    >::type Dictionary::_DictProxy::operator =(T val)
+      struct Dictionary::_DictProxy
+        {
+        private:
+          Dictionary::MapType&  _map;
+          std::string           _key;
+          Object*               _value;
+
+        public:
+          _DictProxy(Dictionary::MapType& map, std::string&& key)
+            : _map(map)
+            , _key(key)
+            , _value(nullptr)
+          {
+            auto it = _map.find(_key);
+            if (it != _map.end())
+              _value = it->second;
+          }
+
+          _DictProxy(Dictionary::MapType& map, std::string const& key)
+            : _map(map)
+            , _key(key)
+            , _value(nullptr)
+          {
+            auto it = _map.find(_key);
+            if (it != _map.end())
+              _value = it->second;
+          }
+
+          _DictProxy(_DictProxy&& proxy)
+            : _map(proxy._map)
+            , _key(std::move(proxy._key))
+            , _value(proxy._value)
+          {}
+
+
+        private:
+          _DictProxy& operator =(_DictProxy const&);
+          _DictProxy(_DictProxy const& proxy);
+
+        public:
+          template<typename T> inline typename std::enable_if<
+              !std::is_base_of<Object, T>::value
+            , _DictProxy&
+          >::type operator =(T const& val)
+              {
+                typedef typename detail::SelectJSONType<T>::type JSONType;
+                delete _value;
+                _value = nullptr;
+                _value = new JSONType(val);
+                _map[_key] = _value;
+                return *this;
+              }
+
+          template<typename T> inline typename std::enable_if<
+              std::is_base_of<Object, T>::value
+            , _DictProxy&
+          >::type operator =(T const& val)
+              {
+                typedef typename detail::SelectJSONType<T>::type JSONType;
+                delete _value;
+                _value = nullptr;
+                auto clone = val.Clone();
+                _value = _map[_key] = clone.get();
+                assert(_value != nullptr);
+                clone.release(); // exception could happen in map insertion
+                return *this;
+              }
+
+          template<typename T> inline typename std::enable_if<
+              std::is_same<T, std::unique_ptr<Object>>::value
+              , _DictProxy&
+          >::type operator =(T&& val)
+            {
+              delete _value;
+              _value = nullptr;
+              _value = _map[_key] = val.get();
+              assert(_value != nullptr);
+              val.release(); // exception could happen in map insertion
+              return *this;
+            }
+          template<typename T> inline typename std::enable_if<
+              !std::is_base_of<Object, T>::value
+            , bool
+          >::type operator ==(T const& val) const
+            {
+              return (_value && (*_value == val));
+            }
+
+          template<typename T> inline typename std::enable_if<
+              std::is_base_of<Object, T>::value
+            , bool
+          >::type operator ==(T const& val) const
+            {
+              return (
+                  (_value && (*_value == val))
+
+                // if val is Null, returns true;
+                || (!_value
+                     && (std::is_same<T, Null>::value
+                        || (std::is_same<T, Object>::value
+                            &&  dynamic_cast<Null const*>(&val) != nullptr
+                        )
+                    )
+                )
+              );
+            }
+
+          template<typename T>
+            inline bool operator !=(T const& val) const
+              { return !(*this == val); }
+
+          operator Object const&()
+            {
+              if (_value == nullptr)
+                throw Dictionary::KeyError(_key);
+              return *_value;
+            }
+          std::string repr() const
+            {
+              if (_value == nullptr)
+                throw Dictionary::KeyError(_key);
+              return _value->repr();
+            }
+        };
+
+      template<typename Container>
+      Dictionary::Dictionary(Container const& container)
       {
-        delete _value;
-        _map[_key] = _value = new Integer(val);
-        return *this;
+        static bool const is_map = detail::IsStringMap<Container>::value;
+        static_assert(is_map, "The container must be a map indexed with strings");
+        auto it = container.begin(), end = container.end();
+        for (; it != end; ++it)
+          {
+            _DictProxy(_map, it->first) = it->second;
+          }
       }
 
-    template<typename T> inline typename std::enable_if<
-        std::is_floating_point<T>::value
-        , Dictionary::_DictProxy&
-    >::type Dictionary::_DictProxy::operator =(T val)
-      {
-        delete _value;
-        _map[_key] = _value = new Float(val);
-        return *this;
-      }
-
-    template<typename T> inline typename std::enable_if<
-        detail::IsString<T>::value
-        , Dictionary::_DictProxy&
-    >::type Dictionary::_DictProxy::operator =(T const& val)
-      {
-        delete _value;
-        _map[_key] = _value = new String(val);
-        return *this;
-      }
-
-    template<typename T> inline typename std::enable_if<
-        detail::IsArray<T>::value
-        , Dictionary::_DictProxy&
-    >::type Dictionary::_DictProxy::operator =(T const& val)
-      {
-        delete _value;
-        _map[_key] = _value = new Array(val);
-        return *this;
-      }
-
-    template<typename T> inline typename std::enable_if<
-        detail::IsStringMap<T>::value
-        , Dictionary::_DictProxy&
-    >::type Dictionary::_DictProxy::operator =(T const& val)
-      {
-        delete _value;
-        _map[_key] = _value = new Dictionary(val);
-        return *this;
-      }
-
-    template<typename T> inline typename std::enable_if<
-        std::is_base_of<T, Object>::value
-        , Dictionary::_DictProxy&
-    >::type Dictionary::_DictProxy::operator =(Object const& val)
-      {
-        delete _value;
-        _map[_key] = _value = val.Clone().release();
-        return *this;
-      }
-
-    template<typename T> inline typename std::enable_if<
-        std::is_same<T, std::unique_ptr<Object>>::value
-        , Dictionary::_DictProxy&
-    >::type Dictionary::_DictProxy::operator =(T&& val)
-      {
-        delete _value;
-        _map[_key] = _value = val.release();
-        return *this;
-      }
-
-    //template<typename T> void Dictionary::_DictProxy::Load(T& val)
-    //  {
-    //    if (_value != nullptr)
-    //      return _value->Load(val);
-    //    else
-    //      return json::null.Load(val);
-    //  }
+      Dictionary::_DictProxy Dictionary::operator [](std::string const& key)
+        { return _DictProxy(_map, key); }
 
 }}} // !namespace elle::format::json
 

@@ -9,8 +9,20 @@
 
 namespace elle { namespace format { namespace json {
 
-    class Dictionary;
+    namespace detail {
+
+        template<typename T> class BasicObject;
+
+    }
+
+    typedef detail::BasicObject<int32_t>        Integer;
+    typedef detail::BasicObject<bool>           Bool;
+    typedef detail::BasicObject<double>         Float;
+    typedef detail::BasicObject<std::string>    String;
+
     class Array;
+    class Dictionary;
+    class Null;
 
     /// Root object for all json types
     class Object
@@ -28,6 +40,9 @@ namespace elle { namespace format { namespace json {
       // Array and Dictionary class may save children objects
       friend class Dictionary;
       friend class Array;
+
+      /// Used to build a JSON type form a type
+      struct Factory;
 
     public:
       virtual ~Object() {}
@@ -56,6 +71,34 @@ namespace elle { namespace format { namespace json {
 
       /// Returns the JSON representation of this object
       std::string repr() const;
+
+
+    public:
+      /// double dispatch
+      virtual bool operator ==(Object const& other) const = 0;
+      virtual bool operator ==(Array const&) const      { return false; }
+      virtual bool operator ==(Bool const&) const       { return false; }
+      virtual bool operator ==(Dictionary const&) const { return false; }
+      virtual bool operator ==(Float const&) const      { return false; }
+      virtual bool operator ==(Integer const&) const    { return false; }
+      virtual bool operator ==(Null const&) const       { return false; }
+      virtual bool operator ==(String const&) const     { return false; }
+      template<typename T> typename std::enable_if<
+            !std::is_base_of<T, Object>::value
+          , bool
+      >::type operator ==(T const& other) const;
+
+      bool operator !=(Object const& other) const       { return !(*this == other); }
+      bool operator !=(Array const& other) const        { return !(*this == other); }
+      bool operator !=(Bool const& other) const         { return !(*this == other); }
+      bool operator !=(Dictionary const& other) const   { return !(*this == other); }
+      bool operator !=(Float const& other) const        { return !(*this == other); }
+      bool operator !=(Integer const& other) const      { return !(*this == other); }
+      bool operator !=(Null const& other) const         { return !(*this == other); }
+      bool operator !=(String const& other) const       { return !(*this == other); }
+      template<typename T>
+        bool operator !=(T const& other) const          { return !(*this == other); }
+
     };
 
 }}}
