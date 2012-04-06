@@ -1,0 +1,8 @@
+
+simple_test(Integer "" "tests done." "")
+simple_test(Bool "" "tests done." "")
+simple_test(Null "" "tests done." "")
+simple_test(Float "" "tests done." "")
+simple_test(Dictionary "" "tests done." "")
+simple_test(Array "" "tests done." "")
+simple_test(String "" "tests done." "")

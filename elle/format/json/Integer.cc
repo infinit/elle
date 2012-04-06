@@ -2,12 +2,13 @@
 
 #include "elle/serialize/JSONArchive.hxx"
 
-#include "Float.hh"
+#include "Integer.hh"
 
 namespace elle { namespace format { namespace json { namespace detail {
 
+
     template<>
-    void Float::Save(elle::serialize::OutputJSONArchive& ar) const
+    void Integer::Save(elle::serialize::OutputJSONArchive& ar) const
     {
       ar << _value;
     }

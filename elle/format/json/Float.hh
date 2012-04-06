@@ -2,28 +2,11 @@
 # define ELLE_FORMAT_JSON_FLOAT_HH
 
 # include "Object.hh"
+# include "_detail.hh"
 
 namespace elle { namespace format { namespace json {
 
-    struct Float : public Object
-    {
-      friend class elle::serialize::OutputJSONArchive;
-    public:
-      typedef double Type;
-    private:
-      Type _value;
-
-    public:
-      Float(Type value) : _value(value) {}
-
-      Type value() const { return _value; }
-      Type& value()      { return _value; }
-
-    protected:
-      void Save(elle::serialize::OutputJSONArchive& ar) const;
-      std::unique_ptr<Object> Clone() const
-        { return std::unique_ptr<Object>(new Float(_value)); }
-    };
+    typedef detail::BasicObject<double> Float;
 
 }}} // !namespace elle::format::json
 

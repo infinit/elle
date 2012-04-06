@@ -111,6 +111,16 @@ ADD_LIBRARY(elle
   utility/Settings.cc
   utility/Time.cc
 
+  format/json/Null.cc
+  format/json/Bool.cc
+  format/json/Float.cc
+  format/json/Parser.cc
+  format/json/Dictionary.cc
+  format/json/Array.cc
+  format/json/Object.cc
+  format/json/Integer.cc
+  format/json/String.cc
+
   Elle.cc
 
   ${elle_MOCS}

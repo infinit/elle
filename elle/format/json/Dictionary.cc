@@ -1,12 +1,12 @@
 #include <ostream>
 
-#include "elle/serialize/JSONArchive.hh"
+#include "elle/serialize/JSONArchive.hxx"
 
-#include "Dict.hh"
+#include "Dictionary.hh"
 
 using namespace elle::format::json;
 
-void Dict::Save(elle::serialize::OutputJSONArchive& ar) const
+void Dictionary::Save(elle::serialize::OutputJSONArchive& ar) const
 {
   auto it = _map.begin(),
        end = _map.end();
@@ -27,9 +27,9 @@ void Dict::Save(elle::serialize::OutputJSONArchive& ar) const
     }
   ar.stream() << '}';
 }
-std::unique_ptr<Object> Dict::Clone() const
+std::unique_ptr<Object> Dictionary::Clone() const
 {
-  auto res = std::unique_ptr<Dict>(new Dict);
+  auto res = std::unique_ptr<Dictionary>(new Dictionary);
   for (auto it = _map.begin(), end = _map.end(); it != end; ++it)
     {
       res->_map[it->first] = it->second->Clone().release();

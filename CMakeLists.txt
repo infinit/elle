@@ -160,3 +160,6 @@ target_link_libraries(8infinit
 
 # configuration
 configure_file("${CMAKE_SOURCE_DIR}/config.hh.cmake" "${CMAKE_SOURCE_DIR}/config.hh")
+
+# tests
+add_subdirectory(tests)
