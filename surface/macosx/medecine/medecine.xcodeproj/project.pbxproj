@@ -21,12 +21,25 @@
 		1C8522E81528D94E00051605 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522A21528D78200051605 /* main.m */; };
 		1C8522E91528D94E00051605 /* mach_inject.c in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522A91528D78200051605 /* mach_inject.c */; };
 		1C8522EA1528D94E00051605 /* mach_inject_bundle.c in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522AB1528D78200051605 /* mach_inject_bundle.c */; };
+		1CFCA40C152EFE3B00F67E8D /* ok.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CFCA40B152EFE3B00F67E8D /* ok.icns */; };
 		361286ED1510AC96008228FF /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367BCFD014FE6D4200B41298 /* AppKit.framework */; };
 		3628ABF4151B855B0093312B /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3628ABF3151B855B0093312B /* Quartz.framework */; };
 		368C77E0150C10C4009E8FC4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 368C77DE150C10BA009E8FC4 /* Cocoa.framework */; };
 		368C77E1150C10C5009E8FC4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 368C77DE150C10BA009E8FC4 /* Cocoa.framework */; };
 		368C77EA150D02B5009E8FC4 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367BCFD014FE6D4200B41298 /* AppKit.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		1CFCA40E152EFE7300F67E8D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1C7A3C6F1529EFF800D6988A /* ZombieDictKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZombieDictKey.h; sourceTree = "<group>"; };
@@ -62,6 +75,7 @@
 		1C8522AB1528D78200051605 /* mach_inject_bundle.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mach_inject_bundle.c; sourceTree = "<group>"; };
 		1C8522AC1528D78200051605 /* mach_inject_bundle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mach_inject_bundle.h; sourceTree = "<group>"; };
 		1CB4FB7E1528EEDC00DDEC99 /* mach_inject_bundle_stub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mach_inject_bundle_stub.h; path = ../needle/mach_inject_bundle_stub.h; sourceTree = "<group>"; };
+		1CFCA40B152EFE3B00F67E8D /* ok.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ok.icns; sourceTree = "<group>"; };
 		3628ABF3151B855B0093312B /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		3661644615011A08008A1425 /* io.infinit.Nurse.helper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = io.infinit.Nurse.helper; sourceTree = BUILT_PRODUCTS_DIR; };
 		367BCFD014FE6D4200B41298 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -101,9 +115,10 @@
 				1C8522751528D78200051605 /* contextMenu */,
 				1C8522781528D78200051605 /* favoriteStatusBar */,
 				1C8522811528D78200051605 /* iconOverlay */,
-				1C85228D1528D78200051605 /* supportingFiles */,
 				1C85227B1528D78200051605 /* FIMain.h */,
 				1C85227C1528D78200051605 /* FIMain.m */,
+				1CFCA40A152EFE3B00F67E8D /* ressources */,
+				1C85228D1528D78200051605 /* supportingFiles */,
 			);
 			path = dopant;
 			sourceTree = "<group>";
@@ -204,6 +219,14 @@
 			path = syringue;
 			sourceTree = "<group>";
 		};
+		1CFCA40A152EFE3B00F67E8D /* ressources */ = {
+			isa = PBXGroup;
+			children = (
+				1CFCA40B152EFE3B00F67E8D /* ok.icns */,
+			);
+			path = ressources;
+			sourceTree = "<group>";
+		};
 		367BCFBE14FE6D4200B41298 = {
 			isa = PBXGroup;
 			children = (
@@ -271,6 +294,7 @@
 				367BCFF214FE6F4600B41298 /* Sources */,
 				367BCFF314FE6F4600B41298 /* Frameworks */,
 				367BCFF414FE6F4600B41298 /* Resources */,
+				1CFCA40E152EFE7300F67E8D /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -321,6 +345,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1CFCA40C152EFE3B00F67E8D /* ok.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

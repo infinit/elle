@@ -13,24 +13,33 @@
 
 @implementation IHTInjector
 
-- (BOOL)inject
+@synthesize sourceDir;
+@synthesize sourceFinderBundleFullPath;
+@synthesize sourceMachBundleFullPath;
+
+- (BOOL)injectWithAppPath:(NSString *)arg1
 {
-    return [self inject:NO];
+    return [self injectWithAppPath:arg1 forceInstall:NO];
 }
 
-- (BOOL)inject:(BOOL)forceInstallBundle
+- (BOOL)injectWithAppPath:(NSString *)arg1 forceInstall:(BOOL)arg2
 {
-    if (![[NSFileManager defaultManager] fileExistsAtPath:destinationDirectory] && forceInstallBundle)
+    
+    self.sourceDir = [arg1 stringByAppendingString:sourceDirRelativePath];
+    self.sourceFinderBundleFullPath = [sourceDir stringByAppendingString:finderBundleName];
+    self.sourceMachBundleFullPath = [sourceDir stringByAppendingString:machBundleName];
+    
+    if (![[NSFileManager defaultManager] fileExistsAtPath:destinationDirFullPath] && arg2)
     {
         if (![self createDirectory])
             return NO;
     }
-    if (![[NSFileManager defaultManager] fileExistsAtPath:finderBundleDestination] && forceInstallBundle)
+    if (![[NSFileManager defaultManager] fileExistsAtPath:destinationFinderBundleFullPath] && arg2)
     {
         if (![self installFinderBundle])
             return NO;
     }
-    if (![[NSFileManager defaultManager] fileExistsAtPath:machBundleDestination] && forceInstallBundle)
+    if (![[NSFileManager defaultManager] fileExistsAtPath:destinationMachBundleFullPath] && arg2)
     {
         if (![self installMachBundle])
             return NO;
@@ -43,9 +52,9 @@
         return NO; // Can't get Finder pid
     }
     
-	syslog(LOG_NOTICE, "Injecting to Finder bundle at path : %s \n", [finderBundleDestination UTF8String]);
-	mach_error_t err = mach_inject_bundle_pid([finderBundleDestination fileSystemRepresentation],
-                                              [machBundleDestination fileSystemRepresentation],
+	syslog(LOG_NOTICE, "Injecting to Finder bundle at path : %s \n", [destinationFinderBundleFullPath UTF8String]);
+	mach_error_t err = mach_inject_bundle_pid([destinationFinderBundleFullPath fileSystemRepresentation],
+                                              [destinationMachBundleFullPath fileSystemRepresentation],
                                               finder_pid );
     
 	if (!err)
@@ -62,9 +71,9 @@
 - (BOOL)createDirectory
 {
     @try {
-        if ([[NSFileManager defaultManager] createDirectoryAtPath:destinationDirectory withIntermediateDirectories:YES attributes:nil error:nil])
+        if ([[NSFileManager defaultManager] createDirectoryAtPath:destinationDirFullPath withIntermediateDirectories:YES attributes:nil error:nil])
             syslog(LOG_NOTICE, "PrivilegiedDirectory created");
-        return [[NSFileManager defaultManager] fileExistsAtPath:destinationDirectory];
+        return [[NSFileManager defaultManager] fileExistsAtPath:destinationDirFullPath];
     }
     @catch (NSException *exception) {
         syslog(LOG_NOTICE, "Exception: %s", [[exception name] UTF8String]);
@@ -74,11 +83,11 @@
 - (BOOL)installFinderBundle
 {
     @try {
-        if ( [[NSFileManager defaultManager] isReadableFileAtPath:finderBundleSource] )
+        if ( [[NSFileManager defaultManager] isReadableFileAtPath:self.sourceFinderBundleFullPath] )
         {
-            if ([[NSFileManager defaultManager] fileExistsAtPath:finderBundleDestination])
+            if ([[NSFileManager defaultManager] fileExistsAtPath:destinationFinderBundleFullPath])
             {
-                if ([[NSFileManager defaultManager] removeItemAtPath:finderBundleDestination error:nil])
+                if ([[NSFileManager defaultManager] removeItemAtPath:destinationFinderBundleFullPath error:nil])
                 {
                     syslog(LOG_NOTICE, "Finder bundle removed");
                 }
@@ -87,10 +96,10 @@
                     return NO;
                 }
             }
-            if ([[NSFileManager defaultManager] copyItemAtPath:finderBundleSource toPath:finderBundleDestination error:nil])
+            if ([[NSFileManager defaultManager] copyItemAtPath:self.sourceFinderBundleFullPath toPath:destinationFinderBundleFullPath error:nil])
                 syslog(LOG_NOTICE, "Finder bundle copied");
         }
-        return [[NSFileManager defaultManager] fileExistsAtPath:finderBundleDestination];
+        return [[NSFileManager defaultManager] fileExistsAtPath:destinationFinderBundleFullPath];
     }
     @catch (NSException *exception) {
         syslog(LOG_NOTICE, "Exception: %s", [[exception name] UTF8String]);
@@ -100,11 +109,11 @@
 - (BOOL)installMachBundle
 {
     @try {
-        if ( [[NSFileManager defaultManager] isReadableFileAtPath:machBundleSource] )
+        if ( [[NSFileManager defaultManager] isReadableFileAtPath:self.sourceMachBundleFullPath] )
         {
-            if ([[NSFileManager defaultManager] fileExistsAtPath:machBundleDestination])
+            if ([[NSFileManager defaultManager] fileExistsAtPath:destinationMachBundleFullPath])
             {
-                if ([[NSFileManager defaultManager] removeItemAtPath:machBundleDestination error:nil])
+                if ([[NSFileManager defaultManager] removeItemAtPath:destinationMachBundleFullPath error:nil])
                 {
                     syslog(LOG_NOTICE, "Mach bundle removed");
                 }
@@ -113,10 +122,10 @@
                     return NO;
                 }
             }
-            if ([[NSFileManager defaultManager] copyItemAtPath:machBundleSource toPath:machBundleDestination error:nil])
+            if ([[NSFileManager defaultManager] copyItemAtPath:self.sourceMachBundleFullPath toPath:destinationMachBundleFullPath error:nil])
                 syslog(LOG_NOTICE, "Mach bundle copied");
         }
-        return [[NSFileManager defaultManager] fileExistsAtPath:machBundleDestination];
+        return [[NSFileManager defaultManager] fileExistsAtPath:destinationMachBundleFullPath];
     }
     @catch (NSException *exception) {
         syslog(LOG_NOTICE, "Exception: %s", [[exception name] UTF8String]);

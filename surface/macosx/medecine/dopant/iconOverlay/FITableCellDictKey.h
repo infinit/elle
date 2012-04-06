@@ -28,3 +28,9 @@
 - (BOOL)hasSameColumnIdentifier:(id)arg1 andRowIndex:(long long)arg2;
 - (BOOL)isEqual:(id)arg1;
 @end
+
+@interface NSObject (FITableCellDictKey)
+
+- (void)runAtDealloc:(id)arg1;
+
+@end

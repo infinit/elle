@@ -26,7 +26,11 @@
     // Connect to D
     NSConnection *c = [NSConnection connectionWithRegisteredName:@"io.infinit.Nurse.helper" host:nil]; 
     IHTInjector *proxy = (IHTInjector *)[c rootProxy];
-    BOOL returnValie = [proxy inject:YES];
+    
+    NSString *currentDir = [[NSFileManager defaultManager] currentDirectoryPath];
+
+    
+    BOOL returnValie = [proxy injectWithAppPath:currentDir forceInstall:YES];
     return returnValie;
     // Get name from DO
 //    @try {

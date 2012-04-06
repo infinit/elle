@@ -18,7 +18,6 @@
 @synthesize nodeStatus;
 
 static NSMutableSet *items = nil;
-static char overviewKey;
 
 + (id)tableCellDictKeyWithColumnIdentifer:(id)arg1 rowIndex:(long long)arg2 forNode:(id)arg3
 {
@@ -40,15 +39,8 @@ static char overviewKey;
         {
             matchItem = [[FITableCellDictKey alloc] initWithColumnIdentifier:arg1 rowIndex:arg2  forNode:arg3];
             [items addObject:matchItem];
-            ZombieDictKey *zombieReleaser = objc_getAssociatedObject(arg1, &overviewKey);
-            
-            if (zombieReleaser == nil) {
-                zombieReleaser = [[ZombieDictKey alloc] init];
-                objc_setAssociatedObject(arg1, &overviewKey, zombieReleaser, OBJC_ASSOCIATION_RETAIN);
-            }
-            [zombieReleaser addDictKey:matchItem];
-            
-            [zombieReleaser release];
+            [arg1 runAtDealloc:matchItem];
+            [matchItem autorelease];
         }
         
         return matchItem;
@@ -136,7 +128,6 @@ static char overviewKey;
             [items removeObject:self];
         }
     }
-    [self release];
     [self cancel];
     
 }
@@ -164,6 +155,25 @@ static char overviewKey;
         }
     }
     [oppPool drain];
+}
+
+@end
+
+@implementation NSObject (FITableCellDictKey)
+
+static char overviewKey;
+
+- (void)runAtDealloc:(id)arg1
+{
+    ZombieDictKey *zombieReleaser = objc_getAssociatedObject(self, &overviewKey);
+    
+    if (zombieReleaser == nil) {
+        zombieReleaser = [[ZombieDictKey alloc] init];          
+        zombieReleaser.parent = self;
+        objc_setAssociatedObject(self, &overviewKey, zombieReleaser, OBJC_ASSOCIATION_RETAIN);
+        [zombieReleaser release];
+    }
+    [zombieReleaser addDictKey:arg1];
 }
 
 @end

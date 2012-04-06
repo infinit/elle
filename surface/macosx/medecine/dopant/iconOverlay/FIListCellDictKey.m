@@ -44,10 +44,11 @@ static NSMutableSet *items = nil;
             if (zombieReleaser == nil) {
                 zombieReleaser = [[ZombieDictKey alloc] init];
                 objc_setAssociatedObject ( arg1, &overviewKey, zombieReleaser, OBJC_ASSOCIATION_RETAIN );
+                [zombieReleaser release];
             }
             [zombieReleaser addDictKey:matchItem];
             
-            [zombieReleaser release];
+            [matchItem release];
         }
         
         return matchItem;
@@ -120,16 +121,15 @@ static NSMutableSet *items = nil;
             [items removeObject:self];
         }
     }
-    [self release];
     [self cancel];
     
 }
 
 - (void) main
 {
-    NSAutoreleasePool *oppPool = [[NSAutoreleasePool alloc] init];
     if (self != nil && !self.isCancelled)
     {
+        NSAutoreleasePool *oppPool = [[NSAutoreleasePool alloc] init];
         NSURL* url = [self getPath];
         NSString *filename = [[url path] lastPathComponent];
         
@@ -146,8 +146,8 @@ static NSMutableSet *items = nil;
         if ([self respondsToSelector:@selector(refreshCell)]) {
             [self performSelectorOnMainThread:@selector(refreshCell) withObject:nil waitUntilDone:NO];
         }
+        [oppPool drain];
     }
-    [oppPool drain];
 }
 
 

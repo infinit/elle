@@ -11,11 +11,12 @@
 
 @interface ZombieDictKey : NSObject
 {
-    NSMutableArray *linkedDictKeys;
-    id      *parentCell;
+    NSMutableArray  *linkedDictKeys;
+    id              parent;
 }
 
-@property(retain, atomic) NSMutableArray *linkedDictKeys;
+@property(retain) NSMutableArray *linkedDictKeys;
+@property(assign) id parent;
 
 - (void) addDictKey:(id)arg1;
 - (id) init;
