@@ -11,6 +11,7 @@
 @implementation ZombieDictKey
 
 @synthesize linkedDictKeys;
+@synthesize parent;
 
 - (id) init
 {
@@ -28,12 +29,13 @@
     [self.linkedDictKeys addObject:arg1];
 }
 
--(void) dealloc
+- (void) dealloc
 {
     for (id<FICellDictKey_Protocol> dictKey in self.linkedDictKeys) {
         [dictKey cleanUp];
     }
     [self.linkedDictKeys removeAllObjects];
+    [linkedDictKeys release];
     [super dealloc];
 }
 

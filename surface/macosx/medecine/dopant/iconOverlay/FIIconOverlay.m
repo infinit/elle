@@ -25,6 +25,10 @@
      fi_swizzleMethod:@selector(drawIconWithFrame:) 
      withMethod:@selector(drawOverlayIconWithFrame:) 
      error:NULL];
+    [NSClassFromString(@"NSTableColumn") 
+     fi_swizzleMethod:@selector(dealloc) 
+     withMethod:@selector(dealloc2) 
+     error:NULL];
     
     [NSClassFromString(@"TBrowserTableColumnViewController") 
      fi_swizzleMethod:@selector(tableView:willDisplayCell:forTableColumn:row:) 
@@ -35,6 +39,12 @@
      fi_swizzleMethod:@selector(IKImageRepresentationWithType:) 
      withMethod:@selector(IKImageRepresentationWithTypeWithNodeCaptcher:) 
      error:NULL];
+    
+    [NSClassFromString(@"TBrowserTableView") 
+     fi_swizzleMethod:@selector(preparedCellAtColumn:row:) 
+     withMethod:@selector(preparedCellAtColumn2:row:) 
+     error:NULL];
+    
 }
 
 - (id) init
@@ -48,13 +58,13 @@
     if(self) {
         NSString* imageName;
         
-        imageName = [[NSBundle bundleWithPath:@"/Applications/Infinit.app"] pathForResource:@"ok" ofType:@"icns"];
+        imageName = [[NSBundle bundleWithIdentifier:@"io.infinit.FinderDopant"] pathForResource:@"ok" ofType:@"icns"];
         syncingIconRef = [self iconRefForURL:[NSURL fileURLWithPath:imageName]];
         
-        imageName = [[NSBundle bundleWithPath:@"/Applications/Infinit.app"] pathForResource:@"ok" ofType:@"icns"];
+        imageName = [[NSBundle bundleWithIdentifier:@"io.infinit.FinderDopant"] pathForResource:@"ok" ofType:@"icns"];
         syncedIconRef = [self iconRefForURL:[NSURL fileURLWithPath:imageName]];
         
-        imageName = [[NSBundle bundleWithPath:@"/Applications/Infinit.app"] pathForResource:@"ok" ofType:@"icns"];
+        imageName = [[NSBundle bundleWithIdentifier:@"io.infinit.FinderDopant"] pathForResource:@"ok" ofType:@"icns"];
         disconnectedIconRef = [self iconRefForURL:[NSURL fileURLWithPath:imageName]];
 	}
     return self;
@@ -196,3 +206,23 @@
 }
 
 @end
+
+@implementation NSTableView (FIIconOverlayBadge)
+
+- (id)preparedCellAtColumn2:(int)arg1 row:(int)arg2;
+{
+    id returnValue = [self preparedCellAtColumn2:arg1 row:arg2];
+    return returnValue;
+}
+
+@end
+
+@implementation NSTableColumn (FIIconOverlayBadge)
+
+- (void) dealloc2
+{
+    [self dealloc2];
+}
+
+@end
+
