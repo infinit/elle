@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C61848E152F369D00B4F947 /* FICellDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C61848D152F369D00B4F947 /* FICellDictKey.m */; };
 		1C7A3C711529EFF800D6988A /* ZombieDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C7A3C701529EFF800D6988A /* ZombieDictKey.m */; };
 		1C8522BC1528D82D00051605 /* IHFMenuNeedsUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522771528D78200051605 /* IHFMenuNeedsUpdate.m */; };
 		1C8522BE1528D82D00051605 /* FIAddInfinitToFavorite.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85227A1528D78200051605 /* FIAddInfinitToFavorite.m */; };
@@ -42,6 +43,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1C61848B152F369000B4F947 /* FICellDictKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FICellDictKey.h; sourceTree = "<group>"; };
+		1C61848D152F369D00B4F947 /* FICellDictKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FICellDictKey.m; sourceTree = "<group>"; };
 		1C7A3C6F1529EFF800D6988A /* ZombieDictKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZombieDictKey.h; sourceTree = "<group>"; };
 		1C7A3C701529EFF800D6988A /* ZombieDictKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZombieDictKey.m; sourceTree = "<group>"; };
 		1C8522761528D78200051605 /* IHFMenuNeedsUpdate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IHFMenuNeedsUpdate.h; sourceTree = "<group>"; };
@@ -160,6 +163,8 @@
 				1C8522881528D78200051605 /* FIListCellDictKey.m */,
 				1C8522891528D78200051605 /* FITableCellDictKey.h */,
 				1C85228A1528D78200051605 /* FITableCellDictKey.m */,
+				1C61848B152F369000B4F947 /* FICellDictKey.h */,
+				1C61848D152F369D00B4F947 /* FICellDictKey.m */,
 				1C8522821528D78200051605 /* FICellDictKey-Protocol.h */,
 				1C85228B1528D78200051605 /* TestClass.h */,
 				1C85228C1528D78200051605 /* TestClass.m */,
@@ -377,6 +382,7 @@
 				1C8522CC1528D82D00051605 /* FITableCellDictKey.m in Sources */,
 				1C8522CE1528D82D00051605 /* TestClass.m in Sources */,
 				1C7A3C711529EFF800D6988A /* ZombieDictKey.m in Sources */,
+				1C61848E152F369D00B4F947 /* FICellDictKey.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -13,9 +13,7 @@
 @implementation FIListCellDictKey
 
 @synthesize cell;
-@synthesize nodeStatus;
 
-static char overviewKey;
 static NSMutableSet *items = nil;
 
 + (id)listCellDictKeyWithCell:(id)arg1
@@ -39,14 +37,7 @@ static NSMutableSet *items = nil;
         {
             matchItem = [[FIListCellDictKey alloc] initWithCell:arg1];
             [items addObject:matchItem];
-            ZombieDictKey *zombieReleaser = objc_getAssociatedObject(arg1, &overviewKey);
-            
-            if (zombieReleaser == nil) {
-                zombieReleaser = [[ZombieDictKey alloc] init];
-                objc_setAssociatedObject ( arg1, &overviewKey, zombieReleaser, OBJC_ASSOCIATION_RETAIN );
-                [zombieReleaser release];
-            }
-            [zombieReleaser addDictKey:matchItem];
+            [arg1 runAtDealloc:matchItem];
             
             [matchItem release];
         }
@@ -65,10 +56,6 @@ static NSMutableSet *items = nil;
     [[FIIconOverlay instance] addStatusOpperationToQueue:self];
     
     return self;
-}
--(void)dealloc
-{
-    [super dealloc];
 }
 - (unsigned long long)hash
 {
@@ -124,31 +111,5 @@ static NSMutableSet *items = nil;
     [self cancel];
     
 }
-
-- (void) main
-{
-    if (self != nil && !self.isCancelled)
-    {
-        NSAutoreleasePool *oppPool = [[NSAutoreleasePool alloc] init];
-        NSURL* url = [self getPath];
-        NSString *filename = [[url path] lastPathComponent];
-        
-        NSString *firstChar = [filename substringToIndex:1];
-        
-        // Get status by path
-        sleep(1);
-        // Set status
-        if ([firstChar isEqualToString:@"A"])
-        {
-            [self setNodeStatus:FINodeStatusDisconected];
-        }
-        
-        if ([self respondsToSelector:@selector(refreshCell)]) {
-            [self performSelectorOnMainThread:@selector(refreshCell) withObject:nil waitUntilDone:NO];
-        }
-        [oppPool drain];
-    }
-}
-
 
 @end

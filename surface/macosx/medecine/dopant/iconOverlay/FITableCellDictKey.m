@@ -15,7 +15,6 @@
 @synthesize rowIndex;
 @synthesize columnIdentifier;
 @synthesize node;
-@synthesize nodeStatus;
 
 static NSMutableSet *items = nil;
 
@@ -130,50 +129,6 @@ static NSMutableSet *items = nil;
     }
     [self cancel];
     
-}
-
-- (void) main
-{
-    NSAutoreleasePool *oppPool = [[NSAutoreleasePool alloc] init];
-    if (self != nil && !self.isCancelled)
-    {
-        NSURL* url = [self getPath];
-        NSString *filename = [[url path] lastPathComponent];
-        
-        NSString *firstChar = [filename substringToIndex:1];
-        
-        // Get status by path
-        sleep(1);
-        // Set status
-        if ([firstChar isEqualToString:@"A"])
-        {
-            [self setNodeStatus:FINodeStatusDisconected];
-        }
-        
-        if ([self respondsToSelector:@selector(refreshCell)]) {
-            [self performSelectorOnMainThread:@selector(refreshCell) withObject:nil waitUntilDone:NO];
-        }
-    }
-    [oppPool drain];
-}
-
-@end
-
-@implementation NSObject (FITableCellDictKey)
-
-static char overviewKey;
-
-- (void)runAtDealloc:(id)arg1
-{
-    ZombieDictKey *zombieReleaser = objc_getAssociatedObject(self, &overviewKey);
-    
-    if (zombieReleaser == nil) {
-        zombieReleaser = [[ZombieDictKey alloc] init];          
-        zombieReleaser.parent = self;
-        objc_setAssociatedObject(self, &overviewKey, zombieReleaser, OBJC_ASSOCIATION_RETAIN);
-        [zombieReleaser release];
-    }
-    [zombieReleaser addDictKey:arg1];
 }
 
 @end
