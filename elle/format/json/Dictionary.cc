@@ -15,6 +15,7 @@ void Dictionary::Save(elle::serialize::OutputJSONArchive& ar) const
     {
       ar << it->first;
       ar.stream() << ':';
+      assert(it->second != nullptr);
       it->second->Save(ar);
       ++it;
       for (; it != end; ++it)
@@ -32,6 +33,7 @@ std::unique_ptr<Object> Dictionary::Clone() const
   auto res = std::unique_ptr<Dictionary>(new Dictionary);
   for (auto it = _map.begin(), end = _map.end(); it != end; ++it)
     {
+      assert(it->second != nullptr);
       res->_map[it->first] = it->second->Clone().release();
     }
   return std::unique_ptr<Object>(res.release());

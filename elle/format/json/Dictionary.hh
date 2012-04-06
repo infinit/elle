@@ -1,13 +1,12 @@
 #ifndef ELLE_FORMAT_JSON_DICTIONARY_HH
 # define ELLE_FORMAT_JSON_DICTIONARY_HH
 
+# include <stdexcept>
+# include <string>
 # include <unordered_map>
 
 # include "Object.hh"
-# include "Bool.hh"
 # include "Null.hh"
-
-# include "_detail.hh"
 
 namespace elle { namespace format { namespace json {
 
@@ -15,84 +14,18 @@ namespace elle { namespace format { namespace json {
     {
     private:
       typedef std::unordered_map<std::string, Object*> MapType;
-
       /// Wrapper to set item into the map
-      struct _DictProxy
-        {
-        private:
-          MapType&            _map;
-          std::string         _key;
-          Object*             _value;
-
-        public:
-          _DictProxy(MapType& map, std::string&& key)
-            : _map(map)
-            , _key(key)
-            , _value(_map[_key])
-          {}
-
-          _DictProxy(MapType& map, std::string const& key)
-            : _map(map)
-            , _key(key)
-            , _value(_map[_key])
-          {}
-
-          _DictProxy(_DictProxy&& proxy)
-            : _map(proxy._map)
-            , _key(std::move(proxy._key))
-            , _value(proxy._value)
-          {}
-
-
-        private:
-          _DictProxy& operator =(_DictProxy const&);
-          _DictProxy(_DictProxy const& proxy);
-
-        public:
-          _DictProxy& operator =(bool val)
-            {
-              delete _value;
-              _map[_key] = _value = new Bool(val);
-              return *this;
-            }
-
-          template<typename T> inline typename std::enable_if<
-              std::is_integral<T>::value
-              , _DictProxy&
-          >::type operator =(T val);
-
-          template<typename T> inline typename std::enable_if<
-              std::is_floating_point<T>::value
-              , _DictProxy&
-          >::type operator =(T val);
-
-          template<typename T> inline typename std::enable_if<
-              detail::IsString<T>::value
-              , _DictProxy&
-          >::type operator =(T const& val);
-
-          template<typename T> inline typename std::enable_if<
-              detail::IsArray<T>::value
-              , _DictProxy&
-          >::type operator =(T const& val);
-
-          template<typename T> inline typename std::enable_if<
-              detail::IsStringMap<T>::value
-              , _DictProxy&
-          >::type operator =(T const& val);
-
-          template<typename T> inline typename std::enable_if<
-              std::is_base_of<T, Object>::value
-              , _DictProxy&
-          >::type operator =(Object const& val);
-
-          template<typename T> inline typename std::enable_if<
-              std::is_same<T, std::unique_ptr<Object>>::value
-              , _DictProxy&
-          >::type operator =(T&& val);
-        };
-
+      struct _DictProxy;
       friend struct _DictProxy;
+    public:
+      /// error class thrown when reading an inexistant key
+      class KeyError : public std::runtime_error
+      {
+      public:
+        KeyError(std::string const& key)
+          : std::runtime_error("KeyError: '" + key + "'")
+        {}
+      };
 
     private:
       MapType _map;
@@ -101,16 +34,7 @@ namespace elle { namespace format { namespace json {
       Dictionary() {}
 
       template<typename Container>
-      Dictionary(Container const& container)
-      {
-        static bool const is_map = detail::IsStringMap<Container>::value;
-        static_assert(is_map, "The container must be a map indexed with strings");
-        auto it = container.begin(), end = container.end();
-        for (; it != end; ++it)
-          {
-            _DictProxy(_map, it->first) = it->second;
-          }
-      }
+        Dictionary(Container const& container);
 
       ~Dictionary()
       {
@@ -119,25 +43,68 @@ namespace elle { namespace format { namespace json {
         _map.clear();
       }
 
-      _DictProxy operator [](std::string&& key)
-        { return _DictProxy(_map, key); }
-
-      _DictProxy operator [](std::string const& key)
-        { return _DictProxy(_map, key); }
-
-      Object const& operator [](std::string const& key) const
+      ///
+      /// Returns a JSON Object indexed by a string.
+      /// The operator[] will throw a KeyError exception when the key
+      /// is not found and:
+      ///   - The dictionary itsef is const
+      ///   - Or, if you try to read from the proxy object returned when the
+      ///     dictionary is not const
+      ///
+      /// This operator also enables assignment into a dictionary with a hidden
+      /// temporary proxy object that supports assignement, comparison and can
+      /// cast to a JSON Object. That latter cast will throw if the key is not
+      /// found, or not yet assigned.
+      ///
+      /// @see contains() to know is the key is really present
+      ///
+      inline _DictProxy operator [](std::string const& key);
+      inline Object const& operator [](std::string const& key) const
       {
         auto it = _map.find(key);
         if (it == _map.end())
-          return null;
+          throw KeyError(key);
         return *(it->second);
       }
 
+      ///
+      /// Check if the dictionary contains a key.
+      /// While you might want to do something with the value
+      /// if it exists, this function returns a pointer to it.
+      ///
+      Object const* contains(std::string const& key) const
+        {
+          auto it = _map.find(key);
+          if (it != _map.end())
+            return it->second;
+          return nullptr;
+        }
+
       size_t size() const { return _map.size(); }
 
+      std::unique_ptr<Object> Clone() const;
     protected:
       void Save(OutputJSONArchive& ar) const;
-      std::unique_ptr<Object> Clone() const;
+
+    public:
+      virtual bool operator ==(Object const& other) const
+        { return other == *this; }
+
+      virtual bool operator ==(Dictionary const& other) const
+        {
+          if (this->size() != other.size())
+            return false;
+          auto it = _map.begin(),
+               end = _map.end();
+          for (; it != end; ++it)
+            {
+              auto other_it = other._map.find(it->first);
+              if (other_it == other._map.end() ||
+                  *other_it->second != *it->second)
+                return false;
+            }
+          return true;
+        }
     };
 
 }}} // !namespace elle::format::json

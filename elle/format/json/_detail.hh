@@ -63,6 +63,14 @@ namespace elle { namespace format { namespace json { namespace detail {
           return _value == value;
         }
 
+        virtual bool operator ==(Object const& other) const
+          { return other == *this; }
+
+        virtual bool operator ==(BasicObject const& other) const
+          {
+            return _value == other._value;
+          }
+
         std::unique_ptr<Object> Clone() const
           { return std::unique_ptr<Object>(new BasicObject(_value)); }
 
@@ -72,7 +80,10 @@ namespace elle { namespace format { namespace json { namespace detail {
 
     template<typename T>
       struct IsString {
-          static bool const value = std::is_same<T, std::string>::value;
+          static bool const value = (
+                std::is_same<T, std::string>::value
+            ||  std::is_convertible<T, char const* const>::value
+          );
       };
 
     template<typename T>
