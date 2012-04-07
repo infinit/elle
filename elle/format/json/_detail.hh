@@ -118,10 +118,10 @@ namespace elle { namespace format { namespace json { namespace detail {
           typedef char Yes;
           typedef struct { Yes _[2]; } No;
           static No f(...);
-          template<typename K> static Yes f(typename K::key_type*);
+          template<typename K> static Yes f(K*, typename K::key_type*);
           static bool const value = (
                 IsMap<T>::value
-            &&  sizeof(f(static_cast<KeyType*>(nullptr))) == sizeof(Yes)
+            &&  sizeof(f(static_cast<T*>(nullptr), static_cast<KeyType*>(nullptr))) == sizeof(Yes)
           );
         };
 
