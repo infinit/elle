@@ -87,31 +87,12 @@ namespace elle { namespace format { namespace json {
               val.release(); // exception could happen in map insertion
               return *this;
             }
-          template<typename T> inline typename std::enable_if<
-              !std::is_base_of<Object, T>::value
-            , bool
-          >::type operator ==(T const& val) const
+          template<typename T>
+            bool operator ==(T const& val) const
             {
-              return (_value && (*_value == val));
-            }
-
-          template<typename T> inline typename std::enable_if<
-              std::is_base_of<Object, T>::value
-            , bool
-          >::type operator ==(T const& val) const
-            {
-              return (
-                  (_value && (*_value == val))
-
-                // if val is Null, returns true;
-                || (!_value
-                     && (std::is_same<T, Null>::value
-                        || (std::is_same<T, Object>::value
-                            &&  dynamic_cast<Null const*>(&val) != nullptr
-                        )
-                    )
-                )
-              );
+              if (_value == nullptr)
+                throw Dictionary::KeyError(_key);
+              return *_value == val;
             }
 
           template<typename T>
@@ -135,8 +116,14 @@ namespace elle { namespace format { namespace json {
       template<typename Container>
       Dictionary::Dictionary(Container const& container)
       {
-        static bool const is_map = detail::IsStringMap<Container>::value;
-        static_assert(is_map, "The container must be a map indexed with strings");
+        static_assert(
+            detail::IsMap<Container>::value,
+            "This container is not a map"
+        );
+        static_assert(
+            detail::IsStringMap<Container>::value,
+            "This map is not indexed with std::string"
+        );
         auto it = container.begin(), end = container.end();
         for (; it != end; ++it)
           {
