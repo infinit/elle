@@ -19,7 +19,9 @@ namespace elle { namespace serialize {
 
     ///
     /// Using a NamedValue wrapper for each serialized variable, serialization process
-    /// is also available JSON, XML, ...
+    /// is also available for JSON, XML, ...
+    ///
+    /// @see elle::serialize::named() for an helper
     ///
     template<typename T> struct NamedValue
       {
@@ -44,20 +46,22 @@ namespace elle { namespace serialize {
         static bool const value = true;
       };
 
+    /// Helper to infer the right NamedValue<T> type.
     template<typename T>
     static inline NamedValue<T> named(std::string const& name, T& value)
       {
         return NamedValue<T>(name, value);
       }
-
     template<typename T>
     static inline NamedValue<T const> named(std::string const& name, T const& value)
       {
         return NamedValue<T const>(name, value);
       }
 
+    ///
     /// Strong typed unsigned int representing the class version for Save()/Load()
-    /// overloads.
+    /// overloads. (it gives you a chance to catch the call)
+    ///
     struct ClassVersionType
     {
     public:
@@ -77,6 +81,14 @@ namespace elle { namespace serialize {
     ///
     /// The base archive class implements portable raw binary operations, but
     /// should not be used directly.
+    ///
+    /// c string are not supported by default, but you can make your
+    /// own archive and add methods Load(char const*) and Save(char const*)
+    /// to achieve that.
+    ///
+    /// STL containers and strings are fully supported with some limitations :
+    ///   - string size is limited to the maximum number contained in BaseArchive::StringSizeType
+    ///   - list size is limited to the maximum number contained in BaseArchive::ListSizeType
     ///
     template<ArchiveMode mode_, typename Archive, typename CharType_ = char>
     class BaseArchive : private boost::noncopyable
@@ -211,10 +223,10 @@ namespace elle { namespace serialize {
       /// Read from the archive
       template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::NotPointer::
         type operator >>(T& val)
-      {
-        Access::Load(this->self(), val);
-        return this->self();
-      }
+        {
+          Access::Load(this->self(), val);
+          return this->self();
+        }
 
       /// Redirect to read or write operation depending on the archive type
       template<typename T> inline typename _EnableFor<T, ArchiveMode::Output>::Ref::

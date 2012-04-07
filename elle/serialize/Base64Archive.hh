@@ -9,6 +9,13 @@
 
 namespace elle { namespace serialize {
 
+  ///
+  /// Simple Base64 archive encoder and decoder.
+  ///
+  /// WARNING: Be aware that the serialization may not be completed until
+  /// the archive object is destroyed. (This applies particularly to
+  /// this archiver since it has to fill the last bytes with '=' char).
+  ///
   template<> class Base64Archive<ArchiveMode::Output> :
     public BaseArchive<ArchiveMode::Output, Base64Archive<ArchiveMode::Output>>
   {
@@ -132,7 +139,8 @@ namespace elle { namespace serialize {
           break;
         }
 
-      BaseClass::SaveBinary(this->_temp.data(), i);
+      if (i > 0)
+        BaseClass::SaveBinary(this->_temp.data(), i);
     }
 
   };
