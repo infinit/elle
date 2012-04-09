@@ -6,11 +6,11 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "FICellDictKey.h"
+#import "OOCellDictKey.h"
 #import <objc/objc-class.h>
-#import "ZombieDictKey.h"
+#import "OOZombieDictKey.h"
 
-@implementation FICellDictKey
+@implementation OOCellDictKey
 
 @synthesize nodeStatus;
 
@@ -59,11 +59,11 @@
         NSString *firstChar = [filename substringToIndex:1];
         
         // Get status by path
-        //sleep(1);
+        sleep(1);
         // Set status
         if ([firstChar isEqualToString:@"A"])
         {
-            self.nodeStatus = FINodeStatusDisconected;
+            self.nodeStatus = OONodeStatusDisconected;
         }
         
         if ([self respondsToSelector:@selector(refreshCell)]) {
@@ -75,16 +75,16 @@
 
 @end
 
-@implementation NSObject (FITableCellDictKey)
+@implementation NSObject (OOTableCellDictKey)
 
 static char zombieReleaserKey;
 
 - (void)runAtDealloc:(id)arg1
 {
-    ZombieDictKey *zombieReleaser = objc_getAssociatedObject(self, &zombieReleaserKey);
+    OOZombieDictKey *zombieReleaser = objc_getAssociatedObject(self, &zombieReleaserKey);
     
     if (zombieReleaser == nil) {
-        zombieReleaser = [[ZombieDictKey alloc] init];          
+        zombieReleaser = [[OOZombieDictKey alloc] init];          
         zombieReleaser.parent = self;
         objc_setAssociatedObject(self, &zombieReleaserKey, zombieReleaser, OBJC_ASSOCIATION_RETAIN);
         [zombieReleaser release];

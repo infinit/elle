@@ -7,9 +7,9 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "FICellDictKey-Protocol.h"
+#import "OOCellDictKey-Protocol.h"
 
-@interface ZombieDictKey : NSObject
+@interface OOZombieDictKey : NSObject
 {
     NSMutableArray  *linkedDictKeys;
     id              parent;

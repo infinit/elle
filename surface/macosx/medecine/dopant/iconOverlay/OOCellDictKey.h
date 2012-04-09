@@ -7,15 +7,15 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "FICellDictKey-Protocol.h"
-#import "FIIconOverlay.h"
+#import "OOCellDictKey-Protocol.h"
+#import "OOIconOverlay.h"
 
-@interface FICellDictKey : NSOperation <FICellDictKey_Protocol>
+@interface OOCellDictKey : NSOperation <OOCellDictKey_Protocol>
 {
-    FINodeStatus    nodeStatus;
+    OONodeStatus    nodeStatus;
 }
 
-@property FINodeStatus  nodeStatus;
+@property OONodeStatus  nodeStatus;
 
 - (void) refreshCell;
 - (NSURL *) getPath;

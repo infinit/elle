@@ -6,25 +6,25 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "FIIconCellDictKey.h"
+#import "OOListCellDictKey.h"
 #import <objc/objc-class.h>
-#import "ZombieDictKey.h"
+#import "OOZombieDictKey.h"
 
-@implementation FIIconCellDictKey
+@implementation OOListCellDictKey
 
 @synthesize cell;
 
 static NSMutableSet *items = nil;
 
-+ (id)iconCellDictKeyWithCell:(id)arg1
++ (id)listCellDictKeyWithCell:(id)arg1
 {
     @synchronized(items)
     {
         if (items == nil) {
             items = [[NSMutableSet alloc] init];
         }
-        FIIconCellDictKey *matchItem = nil;
-        for (FIIconCellDictKey *item in [items allObjects]) {
+        OOListCellDictKey *matchItem = nil;
+        for (OOListCellDictKey *item in [items allObjects]) {
             if (item.cell != nil) {
                 if (item.cell == arg1) {
                     matchItem = item;
@@ -35,7 +35,7 @@ static NSMutableSet *items = nil;
         
         if (matchItem == nil)
         {
-            matchItem = [[FIIconCellDictKey alloc] initWithCell:arg1];
+            matchItem = [[OOListCellDictKey alloc] initWithCell:arg1];
             [items addObject:matchItem];
             [arg1 runAtDealloc:matchItem];
             
@@ -51,9 +51,9 @@ static NSMutableSet *items = nil;
     self = [super init];
     
     self.cell = arg1; // TODO add release link
-    self.nodeStatus = FINodeStatusUnknowned;
+    self.nodeStatus = OONodeStatusUnknowned;
     
-    [[FIIconOverlay instance] addStatusOpperationToQueue:self];
+    [[OOIconOverlay instance] addStatusOpperationToQueue:self];
     
     return self;
 }
@@ -69,26 +69,34 @@ static NSMutableSet *items = nil;
         return YES;
     if (!arg1 || ![arg1 isKindOfClass:[self class]])
         return NO;
-    if (self.cell == nil || ((FIIconCellDictKey *)arg1).cell == nil)
+    if (self.cell == nil || ((OOListCellDictKey *)arg1).cell == nil)
         return NO;
-    return self.cell == ((FIIconCellDictKey *)arg1).cell;
+    return self.cell == ((OOListCellDictKey *)arg1).cell;
 }
 
 - (NSURL *) getPath
 {
-    id finode = [self.cell representedItem];
+    if (self.cell == nil)
+        return nil;
     
-    NSURL *path = [NSURL fileURLWithPath:
-                   [[NSClassFromString(@"NSNavFBENode") _nodeWithFBENode:
-                     [finode nodeRef]] path]];
-    
-    return path;
+    if ([self.cell respondsToSelector:@selector(node)]) {
+        NSURL *path = [NSURL fileURLWithPath:[[NSClassFromString(@"NSNavFBENode") _nodeWithFBENode:((TFENode *)[self.cell node])->fNodeRef] path]];
+        
+        return [path autorelease];
+    }
+    else {
+        return nil;
+    }
 }
 
 - (void) refreshCell
 {   
-    [NSException raise:NSInternalInconsistencyException 
-                format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
+    if (self.cell == nil)
+        return;
+    
+    if ([self.cell respondsToSelector:@selector(controlView)]) {
+        [[self.cell controlView] updateCell:cell];
+    }
 }
 
 - (void) cleanUp

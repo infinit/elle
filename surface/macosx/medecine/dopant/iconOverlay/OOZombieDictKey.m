@@ -6,9 +6,9 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "ZombieDictKey.h"
+#import "OOZombieDictKey.h"
 
-@implementation ZombieDictKey
+@implementation OOZombieDictKey
 
 @synthesize linkedDictKeys;
 @synthesize parent;
@@ -31,7 +31,7 @@
 
 - (void) dealloc
 {
-    for (id<FICellDictKey_Protocol> dictKey in self.linkedDictKeys) {
+    for (id<OOCellDictKey_Protocol> dictKey in self.linkedDictKeys) {
         [dictKey cleanUp];
     }
     [self.linkedDictKeys removeAllObjects];

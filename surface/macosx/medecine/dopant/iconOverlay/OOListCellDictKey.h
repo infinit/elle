@@ -7,18 +7,18 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "FICellDictKey-Protocol.h"
-#import "FICellDictKey.h"
-#import "FIIconOverlay.h"
+#import "OOCellDictKey-Protocol.h"
+#import "OOCellDictKey.h"
+#import "OOIconOverlay.h"
 
-@interface FIIconCellDictKey : FICellDictKey
+@interface OOListCellDictKey : OOCellDictKey
 {
     id              cell;
 }
 
 @property(assign) id    cell;
 
-+ (id) iconCellDictKeyWithCell:(id)arg1;
++ (id) listCellDictKeyWithCell:(id)arg1;
 
 - (id) initWithCell:(id)arg1;
 

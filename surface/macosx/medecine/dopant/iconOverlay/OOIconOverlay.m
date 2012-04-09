@@ -6,13 +6,13 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "FIIconOverlay.h"
-#import "FITableCellDictKey.h"
-#import "FIListCellDictKey.h"
-#import "FIIconCellDictKey.h"
+#import "OOIconOverlay.h"
+#import "OOTableCellDictKey.h"
+#import "OOListCellDictKey.h"
+#import "OOIconCellDictKey.h"
 #import <Quartz/Quartz.h>
 
-@implementation FIIconOverlay
+@implementation OOIconOverlay
 
 @synthesize nodeStatusOperationQueue;
 @synthesize syncingIconRef;
@@ -69,12 +69,12 @@
     return self;
 }
 
-+ (FIIconOverlay*) instance
++ (OOIconOverlay*) instance
 {
-	static FIIconOverlay *item = nil;
+	static OOIconOverlay *item = nil;
 	
 	if(item == nil)
-		item = [[FIIconOverlay alloc] init];
+		item = [[OOIconOverlay alloc] init];
 	
 	return item;
 }
@@ -99,16 +99,16 @@
     }
 }
 
-- (IconRef) iconRefWithNodeStatus:(FINodeStatus)arg1
+- (IconRef) iconRefWithNodeStatus:(OONodeStatus)arg1
 {
     switch (arg1) {
-        case FINodeStatusSynced:
+        case OONodeStatusSynced:
             return [self syncedIconRef];
             break;
-        case FINodeStatusSyncing:
+        case OONodeStatusSyncing:
             return [self syncingIconRef];
             break;
-        case FINodeStatusDisconected:
+        case OONodeStatusDisconected:
             return [self disconnectedIconRef];
             break;
         default:
@@ -117,16 +117,16 @@
     }
 }
 
-- (NSImage *) imageWithNodeStatus:(FINodeStatus)arg1
+- (NSImage *) imageWithNodeStatus:(OONodeStatus)arg1
 {
     switch (arg1) {
-        case FINodeStatusSynced:
+        case OONodeStatusSynced:
             return [self syncedImage];
             break;
-        case FINodeStatusSyncing:
+        case OONodeStatusSyncing:
             return [self syncingImage];
             break;
-        case FINodeStatusDisconected:
+        case OONodeStatusDisconected:
             return [self disconnectedImage];
             break;
         default:
@@ -169,9 +169,9 @@
         // Check path => if it is an infinit path add icon overlay.
         if ([self respondsToSelector:@selector(node)]) {
             // TODO
-            FIListCellDictKey *dictKey = [FIListCellDictKey listCellDictKeyWithCell:self];
+            OOListCellDictKey *dictKey = [OOListCellDictKey listCellDictKeyWithCell:self];
             
-            IconRef cellStatus = [[FIIconOverlay instance] iconRefWithNodeStatus:dictKey.nodeStatus];
+            IconRef cellStatus = [[OOIconOverlay instance] iconRefWithNodeStatus:dictKey.nodeStatus];
             if (cellStatus != NULL) {
                 [self setOverlayIcon:cellStatus];
             }
@@ -195,10 +195,10 @@
             // If the path is an Infinit path.
             // TODO
             
-            FITableCellDictKey *dictKey = [FITableCellDictKey tableCellDictKeyWithColumnIdentifer:arg3 rowIndex:arg4 forNode:[arg2 node]];
+            OOTableCellDictKey *dictKey = [OOTableCellDictKey tableCellDictKeyWithColumnIdentifer:arg3 rowIndex:arg4 forNode:[arg2 node]];
             // Check if a cell status has been retrieve.
             
-            IconRef cellStatus = [[FIIconOverlay instance] iconRefWithNodeStatus:dictKey.nodeStatus];
+            IconRef cellStatus = [[OOIconOverlay instance] iconRefWithNodeStatus:dictKey.nodeStatus];
             
             if (cellStatus != NULL) {
                 // If yes draw icon
@@ -210,16 +210,16 @@
 
 @end
 
-@implementation IKImageBrowserCell (FIIconOverlayBadge)
+@implementation IKImageBrowserCell (OOIconOverlayBadge)
 
 - (CALayer *) OverlayLayerForType:(NSString *) type
 {
     if(type == IKImageBrowserCellForegroundLayer){
         
         // TODO
-        FIIconCellDictKey *dictKey = [FIIconCellDictKey iconCellDictKeyWithCell:self];
+        OOIconCellDictKey *dictKey = [OOIconCellDictKey iconCellDictKeyWithCell:self];
         
-        NSImage *cellStatus = [[FIIconOverlay instance] imageWithNodeStatus:dictKey.nodeStatus];
+        NSImage *cellStatus = [[OOIconOverlay instance] imageWithNodeStatus:dictKey.nodeStatus];
         if (cellStatus != nil) {
             
             CALayer *layer = [self FT_layerForType:type];
@@ -247,7 +247,7 @@
             
         }
     }
-    return [self OverlaylayerForType:type];
+    return [self OverlayLayerForType:type];
     
 }
 @end

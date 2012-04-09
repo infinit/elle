@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@protocol FICellDictKey_Protocol <NSObject>
+@protocol OOCellDictKey_Protocol <NSObject>
 
 @required
 - (void) refreshCell;
