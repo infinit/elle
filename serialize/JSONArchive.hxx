@@ -77,7 +77,8 @@ namespace elle { namespace serialize {
     >::type OutputJSONArchive::Save(T const& val)
     {
       _DictStream dict(*this);
-      dict << NamedValue<int32_t const>("_class_version", ArchivableClass<T>::version);
+      if (StoreClassVersion<T>::value == true)
+        dict << NamedValue<int32_t const>("_class_version", ArchivableClass<T>::version);
 
       typedef ArchiveSerializer<typename std::remove_cv<T>::type> Serializer;
       Serializer::Serialize(
@@ -142,8 +143,9 @@ namespace elle { namespace serialize {
             throw std::runtime_error("Cannot convert '"+ obj.repr() +"' to a dictionary");
           _DictStream dstream(_in, *dict);
 
-          unsigned int version;
-          dstream >> NamedValue<unsigned int>("_class_version", version);
+          unsigned int version = 0;
+          if (StoreClassVersion<T>::value == true)
+            dstream >> NamedValue<unsigned int>("_class_version", version);
           typedef ArchiveSerializer<typename std::remove_cv<T>::type> Serializer;
           Serializer::Serialize(
               dstream,

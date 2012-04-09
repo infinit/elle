@@ -8,12 +8,66 @@
 
 namespace elle { namespace serialize {
 
+    template<ArchiveMode mode_, typename Archive, typename CharType_>
+    template<typename T, ArchiveMode _mode>
+      struct BaseArchive<mode_, Archive, CharType_>::_EnableFor
+      {
+        template<typename _T> struct _IsNamedValue
+          { static bool const value = false; };
+        template<typename _T> struct _IsNamedValue<NamedValue<_T>>
+          { static bool const value = true; };
+
+        typedef typename std::enable_if<
+                 (
+                      std::is_same<
+                          typename boost::call_traits<T>::param_type,
+                          typename std::add_lvalue_reference<
+                              typename std::add_const<T>::type
+                          >::type
+                      >::value
+                  ||  (!std::is_pointer<T>::value && std::is_array<T>::value)
+                )
+            &&  mode == _mode
+            &&  !_IsNamedValue<T>::value
+          , Archive&
+        > Ref;
+
+        typedef typename std::enable_if<
+                std::is_same<
+                    typename boost::call_traits<T>::param_type,
+                    typename std::add_const<T>::type
+                >::value
+            &&  mode == _mode
+            &&  !_IsNamedValue<T>::value
+            && !std::is_pointer<T>::value
+          , Archive&
+        > Val;
+
+        typedef typename std::enable_if<
+                (!std::is_pointer<T>::value || std::is_array<T>::value)
+            &&  mode == _mode
+          , Archive&
+        > NotPointer;
+
+        typedef typename std::enable_if<
+            !std::is_pointer<T>::value && mode == _mode,
+            std::unique_ptr<T, ConstructDeleter<T>>
+        > ConstructPtr;
+
+        typedef typename std::enable_if<
+          _IsNamedValue<T>::value && mode == _mode,
+          Archive&
+        > NamedValue;
+      };
+
     /// Generic save method. Uses an explicit specialization of ArchiveSerializer.
     template<ArchiveMode mode_, typename Archive, typename CharType_>
     template<typename T>
       inline void BaseArchive<mode_, Archive, CharType_>::Save(T const& val)
       {
-        Access::Save(this->self(), ClassVersionType(ArchivableClass<T>::version));
+        if (StoreClassVersion<T>::value == true)
+            Access::Save(this->self(), ClassVersionType(ArchivableClass<T>::version));
+
         typedef ArchiveSerializer<typename std::remove_cv<T>::type> Serializer;
         // this const_cast is safe since the archive is in output mode
         Serializer::Serialize(
@@ -29,7 +83,8 @@ namespace elle { namespace serialize {
       inline void BaseArchive<mode_, Archive, CharType_>::Load(T& val)
       {
         ClassVersionType classVersion(0);
-        Access::Load(this->self(), classVersion);
+        if (StoreClassVersion<T>::value == true)
+          Access::Load(this->self(), classVersion);
 
         typedef ArchiveSerializer<typename std::remove_cv<T>::type> Serializer;
         Serializer::Serialize(this->self(), val, classVersion.version);
