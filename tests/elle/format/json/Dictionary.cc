@@ -163,6 +163,7 @@ void test_except()
     {
       json::Object const& o = d["paf"];
       assert(false && "Should have thrown !");
+      (void) o; // no unused var
     }
   catch (json::Dictionary::KeyError const&)
     {
