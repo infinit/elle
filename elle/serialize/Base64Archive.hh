@@ -9,6 +9,13 @@
 
 namespace elle { namespace serialize {
 
+  ///
+  /// Simple Base64 archive encoder and decoder.
+  ///
+  /// WARNING: Be aware that the serialization may not be completed until
+  /// the archive object is destroyed. (This applies particularly to
+  /// this archiver since it has to fill the last bytes with '=' char).
+  ///
   template<> class Base64Archive<ArchiveMode::Output> :
     public BaseArchive<ArchiveMode::Output, Base64Archive<ArchiveMode::Output>>
   {
@@ -132,7 +139,8 @@ namespace elle { namespace serialize {
           break;
         }
 
-      BaseClass::SaveBinary(this->_temp.data(), i);
+      if (i > 0)
+        BaseClass::SaveBinary(this->_temp.data(), i);
     }
 
   };
@@ -175,9 +183,9 @@ namespace elle { namespace serialize {
             from[2] = _DecodeChar(from[2]);
             from[3] = _DecodeChar(from[3]);
 
-            static_cast<char*>(data)[i++] = (from[0] << 2) + ((from[1] & 0x30) >> 4);
-            static_cast<char*>(data)[i++] = ((from[1] & 0xf) << 4) + ((from[2] & 0x3c) >> 2);
-            static_cast<char*>(data)[i++] = ((from[2] & 0x3) << 6) + from[3];
+            static_cast<unsigned char*>(data)[i++] = (from[0] << 2) + ((from[1] & 0x30) >> 4);
+            static_cast<unsigned char*>(data)[i++] = ((from[1] & 0xf) << 4) + ((from[2] & 0x3c) >> 2);
+            static_cast<unsigned char*>(data)[i++] = ((from[2] & 0x3) << 6) + from[3];
             size -= 3;
           }
 
@@ -192,13 +200,13 @@ namespace elle { namespace serialize {
               {
               case 2:
                 _dataLeft.resize(1);
-                static_cast<char*>(data)[i++] = (from[0] << 2) + ((from[1] & 0x30) >> 4);
-                static_cast<char*>(data)[i++] = ((from[1] & 0xf) << 4) + ((from[2] & 0x3c) >> 2);
+                static_cast<unsigned char*>(data)[i++] = (from[0] << 2) + ((from[1] & 0x30) >> 4);
+                static_cast<unsigned char*>(data)[i++] = ((from[1] & 0xf) << 4) + ((from[2] & 0x3c) >> 2);
                 _dataLeft[0] = ((from[2] & 0x3) << 6) + from[3];
                 break;
               case 1:
                 _dataLeft.resize(2);
-                static_cast<char*>(data)[i++] = (from[0] << 2) + ((from[1] & 0x30) >> 4);
+                static_cast<unsigned char*>(data)[i++] = (from[0] << 2) + ((from[1] & 0x30) >> 4);
                 _dataLeft[0] = ((from[1] & 0xf) << 4) + ((from[2] & 0x3c) >> 2);
                 _dataLeft[1] = ((from[2] & 0x3) << 6) + from[3];
                 break;
@@ -229,7 +237,12 @@ namespace elle { namespace serialize {
           return 0;
         char res = reverse[c];
         if (res < 0)
-          throw std::runtime_error("Unexpected base64 char");
+          {
+            char wrong = c;
+            std::stringstream ss;
+            ss << (unsigned int) c;
+            throw std::runtime_error("Unexpected base64 char: '" + ss.str() + "'");
+          }
         return res;
       }
   };

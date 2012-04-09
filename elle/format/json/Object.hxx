@@ -9,6 +9,8 @@
 # include "Integer.hh"
 # include "Bool.hh"
 # include "Null.hh"
+# include "Dictionary.hh"
+# include "Array.hh"
 
 namespace elle { namespace format { namespace json {
 

@@ -46,6 +46,19 @@ namespace elle { namespace serialize {
         );
       }
     };
+# define ELLE_SERIALIZE_SIMPLE_SERIALIZER(T, archive, value, version)             \
+namespace elle { namespace serialize {                                            \
+    template<typename T> struct ArchiveSerializer<T> :                            \
+      public BaseArchiveSerializer<T> {                                           \
+        template<typename Archive>                                                \
+          static void Serialize(Archive&, T&, unsigned int);                      \
+      };                                                                          \
+}}                                                                                \
+    template<typename T> template<typename Archive>                               \
+          static void elle::serialize::ArchiveSerializer<T>::Serialize(           \
+                                                      Archive& archive,           \
+                                                      T& value,                   \
+                                                      unsigned int version)       \
 
     template<typename T, ArchiveMode mode> struct _SplittedSerializerSelectMethod;
 

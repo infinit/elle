@@ -18,7 +18,7 @@ namespace elle { namespace serialize {
 /// Convenient macro to declare the version of a serialized class
 # define ELLE_ARCHIVE_CLASS_VERSION(Class_, version_)                             \
   namespace elle { namespace serialize {                                          \
-    template<> struct ::elle::serialize::ArchivableClass                          \
+    template<> struct ArchivableClass                                             \
       {                                                                           \
         static unsigned int const version = version_;                             \
       };                                                                          \

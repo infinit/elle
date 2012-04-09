@@ -16,10 +16,11 @@
 
 namespace elle { namespace serialize {
 
-
     ///
-    /// Using a NamedValue wrapper for each serialized variable, serialization process
-    /// is also available JSON, XML, ...
+    /// Using a NamedValue wrapper for each serialized variable, serialization
+    /// process is also available for JSON, XML, ...
+    ///
+    /// @see elle::serialize::named() for an helper
     ///
     template<typename T> struct NamedValue
       {
@@ -44,20 +45,22 @@ namespace elle { namespace serialize {
         static bool const value = true;
       };
 
-    template<typename T>
-    static inline NamedValue<T> named(std::string const& name, T& value)
+    /// Helper to infer the right NamedValue<T> type.
+    template<typename T> static inline
+      NamedValue<T> named(std::string const& name, T& value)
       {
         return NamedValue<T>(name, value);
       }
-
-    template<typename T>
-    static inline NamedValue<T const> named(std::string const& name, T const& value)
+    template<typename T> static inline
+      NamedValue<T const> named(std::string const& name, T const& value)
       {
         return NamedValue<T const>(name, value);
       }
 
-    /// Strong typed unsigned int representing the class version for Save()/Load()
-    /// overloads.
+    ///
+    /// Strong typed unsigned short representing the class version for
+    /// Save()/Load() overloads. (it gives you a chance to catch the call)
+    ///
     struct ClassVersionType
     {
     public:
@@ -70,13 +73,31 @@ namespace elle { namespace serialize {
       { version = other.version; return *this; }
     };
 
+    ///
+    /// Each specialized type gets its version stored along with the object
+    /// itself. To change this behavior, you just have to define a specialization
+    /// for each type that doesn't need to store its version.
+    ///
+    template<typename T> struct StoreClassVersion
+      {
+        static bool const value = true;
+      };
 
     // Helper to select to right stream type depending on the archive mode
     template<ArchiveMode mode, typename CharType> struct _TypeToStreamType;
 
     ///
     /// The base archive class implements portable raw binary operations, but
-    /// should not be used directly.
+    /// should not be used directly (@see BinaryArchive).
+    ///
+    /// c string are not supported by default, but you can make your own archive
+    /// and add methods Load(char const*) and Save(char const*) to achieve that.
+    ///
+    /// STL containers and strings are fully supported with some limitations :
+    ///   - string size is limited to the maximum number contained in
+    ///     BaseArchive::StringSizeType
+    ///   - list size is limited to the maximum number  contained in
+    ///     BaseArchive::SequenceSizeType
     ///
     template<ArchiveMode mode_, typename Archive, typename CharType_ = char>
     class BaseArchive : private boost::noncopyable
@@ -88,7 +109,7 @@ namespace elle { namespace serialize {
       /// CharType implies string type and stream type
       typedef CharType_                                     CharType;
 
-      /// The StreamType might be overrided by a derived class
+      /// The StreamType might be overriden by a derived class
       typedef typename _TypeToStreamType<
           mode_, CharType_
       >::StreamType                                         StreamType;
@@ -99,7 +120,7 @@ namespace elle { namespace serialize {
       /// Strings size are limited by the type of their size. You may
       /// want to override it in a derived class.
       typedef uint32_t                                      StringSizeType;
-      typedef uint32_t                                      ListSizeType;
+      typedef uint32_t                                      SequenceSizeType;
 
 
     protected:
@@ -119,49 +140,6 @@ namespace elle { namespace serialize {
         }
       };
 
-    protected:
-      // Helper to select proper operators overloads
-      template<typename T, ArchiveMode _mode> struct _EnableFor
-      {
-        template<typename _T> struct _IsNamedValue
-          { static bool const value = false; };
-        template<typename _T> struct _IsNamedValue<NamedValue<_T>>
-          { static bool const value = true; };
-
-        typedef typename std::enable_if<
-            std::is_same<
-                typename boost::call_traits<T>::param_type,
-                typename std::add_lvalue_reference<
-                    typename std::add_const<T>::type
-                >::type
-            >::value && mode == _mode && !_IsNamedValue<T>::value,
-            Archive&
-        > Ref;
-
-        typedef typename std::enable_if<
-            std::is_same<
-                typename boost::call_traits<T>::param_type,
-                typename std::add_const<T>::type
-            >::value && mode == _mode && !_IsNamedValue<T>::value,
-            Archive&
-        > Val;
-
-        typedef typename std::enable_if<
-            !std::is_pointer<T>::value && mode == _mode,
-            Archive&
-        > NotPointer;
-
-        typedef typename std::enable_if<
-            !std::is_pointer<T>::value && mode == _mode,
-            std::unique_ptr<T, ConstructDeleter<T>>
-        > ConstructPtr;
-
-        typedef typename std::enable_if<
-          _IsNamedValue<T>::value && mode == _mode,
-          Archive&
-        > NamedValue;
-      };
-
     private:
       StreamType& _stream;
 
@@ -177,8 +155,15 @@ namespace elle { namespace serialize {
       /// return the stream used to read/write raw data
       inline StreamType&  stream() { return this->_stream; }
 
+    protected:
+      // Helper to select proper operators overloads
+      template<typename T, ArchiveMode _mode> struct _EnableFor;
+
     public:
-      /// Write into the archive (by value overload)
+      ///////////////////////////////////////////////////////////////////////
+      // OutputArchive::operator <<
+
+      /// output_ar << value
       template<typename T> inline typename _EnableFor<T, ArchiveMode::Output>::Val::
         type operator <<(T val)
         {
@@ -186,7 +171,7 @@ namespace elle { namespace serialize {
           return this->self();
         }
 
-      /// Write into the archive (by reference overload)
+      /// output_ar << ref
       template<typename T> inline typename _EnableFor<T, ArchiveMode::Output>::Ref::
         type operator <<(T const& val)
         {
@@ -194,6 +179,7 @@ namespace elle { namespace serialize {
           return this->self();
         }
 
+      /// output_ar << named_value
       template<typename T> inline typename _EnableFor<T, ArchiveMode::Output>::NamedValue::
         type operator <<(T const& val)
         {
@@ -201,6 +187,42 @@ namespace elle { namespace serialize {
           return this->self();
         }
 
+      ///////////////////////////////////////////////////////////////////////
+      // OutputArchive::operator & (redirect to operator <<)
+
+      /// output_ar & ref
+      template<typename T> inline typename _EnableFor<T, ArchiveMode::Output>::Ref::
+        type operator &(T const& val)
+        {
+          return *this << val;
+        }
+
+      /// output_ar & value
+      template<typename T> inline typename _EnableFor<T, ArchiveMode::Output>::Val::
+        type operator &(T val)
+        {
+          return *this << val;
+        }
+
+      /// output_ar & named_value
+      template<typename T> inline typename _EnableFor<T, ArchiveMode::Output>::NamedValue::
+        type operator &(T const& val)
+        {
+          return *this << val;
+        }
+
+      ///////////////////////////////////////////////////////////////////////
+      // InputArchive::operator >>
+
+      /// input_ar >> ref_of_non_pointer
+      template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::NotPointer::
+        type operator >>(T& val)
+        {
+          Access::Load(this->self(), val);
+          return this->self();
+        }
+
+      /// input_ar >> named_value
       template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::NamedValue::
         type operator >>(T const& val)
         {
@@ -208,49 +230,28 @@ namespace elle { namespace serialize {
           return this->self();
         }
 
-      /// Read from the archive
-      template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::NotPointer::
-        type operator >>(T& val)
-      {
-        Access::Load(this->self(), val);
-        return this->self();
-      }
+      ///////////////////////////////////////////////////////////////////////
+      // InputArchive::operator & (redirect to operator >>)
 
-      /// Redirect to read or write operation depending on the archive type
-      template<typename T> inline typename _EnableFor<T, ArchiveMode::Output>::Ref::
-        type operator &(T const& val)
-        {
-          return *this << val;
-        }
-
-      /// Redirect to read or write operation depending on the archive type
-      template<typename T>
-        inline typename _EnableFor<T, ArchiveMode::Output>::Val::type operator &(T const& val)
-        {
-          return *this << val;
-        }
-
-      template<typename T>
-        inline typename _EnableFor<T, ArchiveMode::Input>::NamedValue::type operator &(T const& val)
-        {
-          return *this >> val;
-        }
-      template<typename T>
-        inline typename _EnableFor<T, ArchiveMode::Output>::NamedValue::type operator &(T const& val)
-        {
-          return *this << val;
-        }
-
-      /// Redirect to read or write operation depending on the archive type
+      /// input_ar & ref_of_non_pointer
       template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::NotPointer::
         type operator &(T& val)
         {
           return *this >> val;
         }
 
-      /// Load an object on the heap
-      /// If the constructors need arguments you will have to override the LoadConstruct
-      /// function member of ArchiveSerializer<T>
+      /// intput_ar & named_value
+      template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::NamedValue::
+        type operator &(T const& val)
+        {
+          return *this >> val;
+        }
+
+      ///
+      /// Load an object on the heap.  If the constructors need arguments, you
+      /// will have to override the LoadConstruct function of the
+      /// ArchiveSerializer<T> specialization.
+      ///
       template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::ConstructPtr::
         type Construct()
         {
@@ -270,7 +271,6 @@ namespace elle { namespace serialize {
         }
 
     protected:
-
       // Default implementation ignores the name
       template<typename T> inline void SaveNamed(std::string const&, T const& value)
       {
@@ -331,43 +331,6 @@ namespace elle { namespace serialize {
       {
         typedef std::basic_ostream<CharType> StreamType;
       };
-
-
-    //template<typename T>
-    //  struct ArchiveSerializer<std::list<T>> :
-    //    public SplittedSerializer<std::list<T>>
-    //  {
-    //    template<typename Archive>
-    //      static inline void Save(Archive& ar, std::list<T> const& val, unsigned int)
-    //      {
-    //        typedef typename Archive::ListSizeType SizeType;
-    //        static_assert(std::is_unsigned<SizeType>::value, "SizeType has to be unsigned");
-    //        size_t size = val.size();
-    //        if (size > static_cast<SizeType>(-1))
-    //          throw std::runtime_error("List too big");
-    //        ar << static_cast<SizeType>(size);
-    //        auto it = val.begin(), end = val.end();
-    //        for (; it != end; ++it)
-    //          {
-    //            ar << *it;
-    //          }
-    //      }
-
-    //    template<typename Archive>
-    //      static inline void Load(Archive& ar, std::list<T>& val, unsigned int)
-    //      {
-    //        typedef typename Archive::ListSizeType SizeType;
-    //        static_assert(std::is_unsigned<SizeType>::value, "SizeType has to be unsigned");
-    //        SizeType size;
-    //        ar >> size;
-    //        for (SizeType i = 0; i < size; ++i)
-    //          {
-    //            T t;
-    //            ar >> t;
-    //            val.push_back(t);
-    //          }
-    //      }
-    //};
 
 }} // !namespace elle::serialize
 

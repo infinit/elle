@@ -1,6 +1,7 @@
 #ifndef ELLE_FORMAT_JSON_ARRAY_HH
 # define ELLE_FORMAT_JSON_ARRAY_HH
 
+# include <cassert>
 # include <vector>
 
 # include "Object.hh"
