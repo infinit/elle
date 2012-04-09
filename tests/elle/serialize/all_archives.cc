@@ -2,9 +2,10 @@
 #include <iostream>
 #include <sstream>
 
-#include "elle/serialize/Base64Archive.hh"
-#include "elle/serialize/BinaryArchive.hh"
-#include "elle/serialize/JSONArchive.hxx"
+#include <elle/serialize/Base64Archive.hh>
+#include <elle/serialize/BinaryArchive.hh>
+#include <elle/serialize/HexadecimalArchive.hh>
+#include <elle/serialize/JSONArchive.hxx>
 
 using namespace elle::serialize;
 
@@ -22,6 +23,7 @@ void testLinear()
       ar << '1';
     }
 
+  //std::cout << ss.str() << std::endl;
     {
       Archive<ArchiveMode::Input> ar(ss);
       int int_;
@@ -164,9 +166,11 @@ int main()
 {
   testLinear<BinaryArchive>();
   testLinear<Base64Archive>();
+  testLinear<HexadecimalArchive>();
 
   testClass<BinaryArchive>();
   testClass<Base64Archive>();
+  testClass<HexadecimalArchive>();
 
   testJSON();
 
