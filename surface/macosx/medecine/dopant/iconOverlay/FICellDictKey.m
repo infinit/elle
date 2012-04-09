@@ -59,7 +59,7 @@
         NSString *firstChar = [filename substringToIndex:1];
         
         // Get status by path
-        sleep(1);
+        //sleep(1);
         // Set status
         if ([firstChar isEqualToString:@"A"])
         {

@@ -9,7 +9,6 @@
 #import "FIMain.h"
 #import "IHFMenuNeedsUpdate.h"
 #import "FIIconOverlay.h"
-#import "TestClass.h"
 #import "FIAddInfinitToFavorite.h"
 
 @implementation IHFBMain
@@ -18,7 +17,6 @@
 {
     [FIIconOverlay instance];
     [FIAddInfinitToFavorite instance];
-    [TestClass instance];
     [IHFMenuNeedsUpdate instance];
 }
 

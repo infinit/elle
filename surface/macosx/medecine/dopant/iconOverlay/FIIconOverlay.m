@@ -9,6 +9,8 @@
 #import "FIIconOverlay.h"
 #import "FITableCellDictKey.h"
 #import "FIListCellDictKey.h"
+#import "FIIconCellDictKey.h"
+#import <Quartz/Quartz.h>
 
 @implementation FIIconOverlay
 
@@ -16,6 +18,10 @@
 @synthesize syncingIconRef;
 @synthesize syncedIconRef;
 @synthesize disconnectedIconRef;
+
+@synthesize syncingImage;
+@synthesize syncedImage;
+@synthesize disconnectedImage;
 
 @synthesize nodesStatusDict;
 
@@ -25,26 +31,16 @@
      fi_swizzleMethod:@selector(drawIconWithFrame:) 
      withMethod:@selector(drawOverlayIconWithFrame:) 
      error:NULL];
-    [NSClassFromString(@"NSTableColumn") 
-     fi_swizzleMethod:@selector(dealloc) 
-     withMethod:@selector(dealloc2) 
-     error:NULL];
     
     [NSClassFromString(@"TBrowserTableColumnViewController") 
      fi_swizzleMethod:@selector(tableView:willDisplayCell:forTableColumn:row:) 
      withMethod:@selector(tableViewWithNodeCaptcher:willDisplayCell:forTableColumn:row:) 
      error:NULL];
     
-    [NSClassFromString(@"FINode") 
-     fi_swizzleMethod:@selector(IKImageRepresentationWithType:) 
-     withMethod:@selector(IKImageRepresentationWithTypeWithNodeCaptcher:) 
+    [NSClassFromString(@"IKImageBrowserCell") 
+     fi_swizzleMethod:@selector(layerForType:) 
+     withMethod:@selector(OverlayLayerForType:) 
      error:NULL];
-    
-    [NSClassFromString(@"TBrowserTableView") 
-     fi_swizzleMethod:@selector(preparedCellAtColumn:row:) 
-     withMethod:@selector(preparedCellAtColumn2:row:) 
-     error:NULL];
-    
 }
 
 - (id) init
@@ -59,12 +55,15 @@
         NSString* imageName;
         
         imageName = [[NSBundle bundleWithIdentifier:@"io.infinit.FinderDopant"] pathForResource:@"ok" ofType:@"icns"];
+        syncingImage = [[NSImage alloc] initWithContentsOfFile:imageName];
         syncingIconRef = [self iconRefForURL:[NSURL fileURLWithPath:imageName]];
         
         imageName = [[NSBundle bundleWithIdentifier:@"io.infinit.FinderDopant"] pathForResource:@"ok" ofType:@"icns"];
+        syncedImage = [[NSImage alloc] initWithContentsOfFile:imageName];
         syncedIconRef = [self iconRefForURL:[NSURL fileURLWithPath:imageName]];
         
         imageName = [[NSBundle bundleWithIdentifier:@"io.infinit.FinderDopant"] pathForResource:@"ok" ofType:@"icns"];
+        disconnectedImage = [[NSImage alloc] initWithContentsOfFile:imageName];
         disconnectedIconRef = [self iconRefForURL:[NSURL fileURLWithPath:imageName]];
 	}
     return self;
@@ -100,7 +99,7 @@
     }
 }
 
-- (IconRef) iconRefWithCell:(FINodeStatus)arg1
+- (IconRef) iconRefWithNodeStatus:(FINodeStatus)arg1
 {
     switch (arg1) {
         case FINodeStatusSynced:
@@ -114,6 +113,24 @@
             break;
         default:
             return NULL;
+            break;
+    }
+}
+
+- (NSImage *) imageWithNodeStatus:(FINodeStatus)arg1
+{
+    switch (arg1) {
+        case FINodeStatusSynced:
+            return [self syncedImage];
+            break;
+        case FINodeStatusSyncing:
+            return [self syncingImage];
+            break;
+        case FINodeStatusDisconected:
+            return [self disconnectedImage];
+            break;
+        default:
+            return nil;
             break;
     }
 }
@@ -135,8 +152,8 @@
     IconRef foregroundIconRef = arg1;
     
     CompositeIconRef (  backgroundIconRef,
-                        foregroundIconRef,
-                        &badgedIconRef);
+                      foregroundIconRef,
+                      &badgedIconRef);
     // Set adhoc struct
     const struct TFENode *tfeIcon = {badgedIconRef};
     // Send message to self seIcon method.
@@ -154,7 +171,7 @@
             // TODO
             FIListCellDictKey *dictKey = [FIListCellDictKey listCellDictKeyWithCell:self];
             
-            IconRef cellStatus = [[FIIconOverlay instance] iconRefWithCell:dictKey.nodeStatus];
+            IconRef cellStatus = [[FIIconOverlay instance] iconRefWithNodeStatus:dictKey.nodeStatus];
             if (cellStatus != NULL) {
                 [self setOverlayIcon:cellStatus];
             }
@@ -181,7 +198,7 @@
             FITableCellDictKey *dictKey = [FITableCellDictKey tableCellDictKeyWithColumnIdentifer:arg3 rowIndex:arg4 forNode:[arg2 node]];
             // Check if a cell status has been retrieve.
             
-            IconRef cellStatus = [[FIIconOverlay instance] iconRefWithCell:dictKey.nodeStatus];
+            IconRef cellStatus = [[FIIconOverlay instance] iconRefWithNodeStatus:dictKey.nodeStatus];
             
             if (cellStatus != NULL) {
                 // If yes draw icon
@@ -193,34 +210,46 @@
 
 @end
 
-@implementation NSObject (FIIconOverlayBadge)
+@implementation IKImageBrowserCell (FIIconOverlayBadge)
 
-- (id)IKImageRepresentationWithTypeWithNodeCaptcher:(id)arg1
+- (CALayer *) OverlayLayerForType:(NSString *) type
 {
-    if ([self isInIconView]) {
-        //TODO
+    if(type == IKImageBrowserCellForegroundLayer){
+        
+        // TODO
+        FIIconCellDictKey *dictKey = [FIIconCellDictKey iconCellDictKeyWithCell:self];
+        
+        NSImage *cellStatus = [[FIIconOverlay instance] imageWithNodeStatus:dictKey.nodeStatus];
+        if (cellStatus != nil) {
+            
+            CALayer *layer = [self FT_layerForType:type];
+            NSRect frame = [(IKImageBrowserCell *)self frame];
+            
+            //create a selection layer
+            CALayer *iconLayer = [CALayer layer];
+            NSRect imgFrame = [(IKImageBrowserCell *)self imageFrame];
+            iconLayer.frame = CGRectMake(imgFrame.origin.x - frame.origin.x, imgFrame.origin.y - frame.origin.y, imgFrame.size.width, imgFrame.size.height);
+            
+            if (layer == nil) {
+                layer = [CALayer layer];
+            }
+            
+            [layer setNeedsDisplay];
+            layer.name = @"infinitOverlayLayer";
+            //layer.minificationFilter = kCAFilterLinear;
+            
+            [layer addSublayer:iconLayer];
+            iconLayer.contents = cellStatus;
+            //iconLayer.minificationFilter = kCAFilterLinear;
+            //iconLayer.contentsGravity = kCAGravityResizeAspect;
+            
+            return layer;
+            
+        }
     }
-    return [self IKImageRepresentationWithTypeWithNodeCaptcher:arg1];
+    return [self OverlaylayerForType:type];
+    
 }
-
 @end
 
-@implementation NSTableView (FIIconOverlayBadge)
-
-- (id)preparedCellAtColumn2:(int)arg1 row:(int)arg2;
-{
-    id returnValue = [self preparedCellAtColumn2:arg1 row:arg2];
-    return returnValue;
-}
-
-@end
-
-@implementation NSTableColumn (FIIconOverlayBadge)
-
-- (void) dealloc2
-{
-    [self dealloc2];
-}
-
-@end
 

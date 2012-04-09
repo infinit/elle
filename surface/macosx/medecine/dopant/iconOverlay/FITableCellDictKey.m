@@ -1,3 +1,4 @@
+
 //
 //  FITableCellDictKey.m
 //  HelperTools
@@ -113,12 +114,31 @@ static NSMutableSet *items = nil;
 
 - (void) refreshCell
 {
-    id a = [self.columnIdentifier dataCellForRow:rowIndex];
+    
+    id a = [self.columnIdentifier dataCellForRow:self.rowIndex];
     id b  = [a controlView];
-    id c = [b columnViewController];
+    id c = [a controller];
+    [[a controlView] updateCell:a];
+    //[a drawWithFrame:[b rectOfRow:self.rowIndex] inView:[a view]];
+    //id qdsqd = [self.columnIdentifier tableView];
+    //[self.columnIdentifier setDataCell:a];
+    //[self.columnIdentifier _updateDataCellControlView];
+    //id b  = [a controlView];
+    //CGRect arect = [b rectOfRow:self.rowIndex];
+    //[b drawRow:self.rowIndex clipRect:arect];
+    //[b preparedCellAtColumn:0 row:self.rowIndex];
+    /*id c = [b columnViewController];
     id d = [b viewController];
-    [b updateCell:a];
+    id e = [c browserView];
+    //id f = [c browserConclipRecttroller];
+    id ff = [c browserWindowController];
+    id fff = [c viewOptionsSettingsController];
+    id ffff = [b itemAtRow:rowIndex];
+    id fffff = [b viewAtColumn:0 row:rowIndex makeIfNecessary:YES];
+    //[b updateCell:a];
     // TODO refresh
+    //browser:(id)arg1 willDisplayCell:(id)arg2 atRow:(long long)arg3 column:(long long)arg4;
+    //[d browser:b willDisplayCell:a atRow:rowIndex column:0];*/
     return;
 }
 
