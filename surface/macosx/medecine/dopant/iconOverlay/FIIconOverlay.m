@@ -155,7 +155,6 @@
             FIListCellDictKey *dictKey = [FIListCellDictKey listCellDictKeyWithCell:self];
             
             IconRef cellStatus = [[FIIconOverlay instance] iconRefWithCell:dictKey.nodeStatus];
-            
             if (cellStatus != NULL) {
                 [self setOverlayIcon:cellStatus];
             }
@@ -171,6 +170,8 @@
 
 - (void) tableViewWithNodeCaptcher:(id)arg1 willDisplayCell:(id)arg2 forTableColumn:(id)arg3 row:(int)arg4;
 {
+    // Default method
+    [self tableViewWithNodeCaptcher:arg1 willDisplayCell:arg2 forTableColumn:arg3 row:arg4];
     // If the cell is a TColumnCell
     if ([arg2 isKindOfClass:NSClassFromString(@"TColumnCell")]) {
         if ([arg2 respondsToSelector:@selector(node)]) {
@@ -188,9 +189,6 @@
             }
         }
     }
-    
-    // Default method
-    [self tableViewWithNodeCaptcher:arg1 willDisplayCell:arg2 forTableColumn:arg3 row:arg4];
 }
 
 @end

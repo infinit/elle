@@ -13,7 +13,6 @@
 		1C45EE59152AECAB00EFB356 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C45EE4C152AECAB00EFB356 /* main.m */; };
 		1C45EE5A152AECAB00EFB356 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C45EE4E152AECAB00EFB356 /* AppDelegate.m */; };
 		1C45EE5B152AECAB00EFB356 /* 8installer in Resources */ = {isa = PBXBuildFile; fileRef = 1C45EE50152AECAB00EFB356 /* 8installer */; };
-		1C45EE5C152AECAB00EFB356 /* Infinit-status-dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C45EE51152AECAB00EFB356 /* Infinit-status-dark.png */; };
 		1C45EE5D152AECAB00EFB356 /* Infinit.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1C45EE52152AECAB00EFB356 /* Infinit.icns */; };
 		1C45EE5F152AECAB00EFB356 /* Infinit-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1C45EE55152AECAB00EFB356 /* Infinit-Info.plist */; };
 		1CA1A66F152A47B20066D288 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A662152A47B20066D288 /* InfoPlist.strings */; };
@@ -124,7 +123,6 @@
 		1C45EE4D152AECAB00EFB356 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		1C45EE4E152AECAB00EFB356 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		1C45EE50152AECAB00EFB356 /* 8installer */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = 8installer; sourceTree = "<group>"; };
-		1C45EE51152AECAB00EFB356 /* Infinit-status-dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Infinit-status-dark.png"; sourceTree = "<group>"; };
 		1C45EE52152AECAB00EFB356 /* Infinit.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Infinit.icns; sourceTree = "<group>"; };
 		1C45EE55152AECAB00EFB356 /* Infinit-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Infinit-Info.plist"; sourceTree = "<group>"; };
 		1C45EE60152AECD600EFB356 /* IHTInjector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IHTInjector.h; path = ../../medecine/nurse/IHTInjector.h; sourceTree = "<group>"; };
@@ -205,7 +203,6 @@
 			isa = PBXGroup;
 			children = (
 				1C45EE50152AECAB00EFB356 /* 8installer */,
-				1C45EE51152AECAB00EFB356 /* Infinit-status-dark.png */,
 				1C45EE52152AECAB00EFB356 /* Infinit.icns */,
 			);
 			path = ressources;
@@ -449,7 +446,6 @@
 			files = (
 				1C45EE56152AECAB00EFB356 /* MainMenu.xib in Resources */,
 				1C45EE5B152AECAB00EFB356 /* 8installer in Resources */,
-				1C45EE5C152AECAB00EFB356 /* Infinit-status-dark.png in Resources */,
 				1C45EE5D152AECAB00EFB356 /* Infinit.icns in Resources */,
 				1C45EE5F152AECAB00EFB356 /* Infinit-Info.plist in Resources */,
 			);

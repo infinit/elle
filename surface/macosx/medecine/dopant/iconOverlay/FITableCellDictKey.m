@@ -113,6 +113,11 @@ static NSMutableSet *items = nil;
 
 - (void) refreshCell
 {
+    id a = [self.columnIdentifier dataCellForRow:rowIndex];
+    id b  = [a controlView];
+    id c = [b columnViewController];
+    id d = [b viewController];
+    [b updateCell:a];
     // TODO refresh
     return;
 }
