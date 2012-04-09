@@ -7,21 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1C61848E152F369D00B4F947 /* FICellDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C61848D152F369D00B4F947 /* FICellDictKey.m */; };
-		1C7A3C711529EFF800D6988A /* ZombieDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C7A3C701529EFF800D6988A /* ZombieDictKey.m */; };
 		1C8522BC1528D82D00051605 /* IHFMenuNeedsUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522771528D78200051605 /* IHFMenuNeedsUpdate.m */; };
 		1C8522BE1528D82D00051605 /* FIAddInfinitToFavorite.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85227A1528D78200051605 /* FIAddInfinitToFavorite.m */; };
 		1C8522C01528D82D00051605 /* FIMain.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85227C1528D78200051605 /* FIMain.m */; };
 		1C8522C31528D82D00051605 /* FISwizzle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522801528D78200051605 /* FISwizzle.m */; };
-		1C8522C81528D82D00051605 /* FIIconOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522861528D78200051605 /* FIIconOverlay.m */; };
-		1C8522CA1528D82D00051605 /* FIListCellDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522881528D78200051605 /* FIListCellDictKey.m */; };
-		1C8522CC1528D82D00051605 /* FITableCellDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85228A1528D78200051605 /* FITableCellDictKey.m */; };
-		1C8522CE1528D82D00051605 /* TestClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85228C1528D78200051605 /* TestClass.m */; };
 		1C8522E61528D94E00051605 /* IHTHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85229F1528D78200051605 /* IHTHelpers.m */; };
 		1C8522E71528D94E00051605 /* IHTInjector.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522A11528D78200051605 /* IHTInjector.m */; };
 		1C8522E81528D94E00051605 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522A21528D78200051605 /* main.m */; };
 		1C8522E91528D94E00051605 /* mach_inject.c in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522A91528D78200051605 /* mach_inject.c */; };
 		1C8522EA1528D94E00051605 /* mach_inject_bundle.c in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522AB1528D78200051605 /* mach_inject_bundle.c */; };
+		1CDEC3241533543E001EFEC0 /* OOCellDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CDEC3181533543E001EFEC0 /* OOCellDictKey.m */; };
+		1CDEC3251533543E001EFEC0 /* OOIconCellDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CDEC31A1533543E001EFEC0 /* OOIconCellDictKey.m */; };
+		1CDEC3261533543E001EFEC0 /* OOIconOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CDEC31C1533543E001EFEC0 /* OOIconOverlay.m */; };
+		1CDEC3271533543E001EFEC0 /* OOListCellDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CDEC31E1533543E001EFEC0 /* OOListCellDictKey.m */; };
+		1CDEC3281533543E001EFEC0 /* OOTableCellDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CDEC3201533543E001EFEC0 /* OOTableCellDictKey.m */; };
+		1CDEC3291533543E001EFEC0 /* OOZombieDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CDEC3221533543E001EFEC0 /* OOZombieDictKey.m */; };
 		1CFCA40C152EFE3B00F67E8D /* ok.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CFCA40B152EFE3B00F67E8D /* ok.icns */; };
 		361286ED1510AC96008228FF /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367BCFD014FE6D4200B41298 /* AppKit.framework */; };
 		3628ABF4151B855B0093312B /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3628ABF3151B855B0093312B /* Quartz.framework */; };
@@ -43,10 +43,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1C61848B152F369000B4F947 /* FICellDictKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FICellDictKey.h; sourceTree = "<group>"; };
-		1C61848D152F369D00B4F947 /* FICellDictKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FICellDictKey.m; sourceTree = "<group>"; };
-		1C7A3C6F1529EFF800D6988A /* ZombieDictKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZombieDictKey.h; sourceTree = "<group>"; };
-		1C7A3C701529EFF800D6988A /* ZombieDictKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZombieDictKey.m; sourceTree = "<group>"; };
 		1C8522761528D78200051605 /* IHFMenuNeedsUpdate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IHFMenuNeedsUpdate.h; sourceTree = "<group>"; };
 		1C8522771528D78200051605 /* IHFMenuNeedsUpdate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IHFMenuNeedsUpdate.m; sourceTree = "<group>"; };
 		1C8522791528D78200051605 /* FIAddInfinitToFavorite.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FIAddInfinitToFavorite.h; sourceTree = "<group>"; };
@@ -56,15 +52,6 @@
 		1C85227E1528D78200051605 /* CDStructures.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CDStructures.h; sourceTree = "<group>"; };
 		1C85227F1528D78200051605 /* FISwizzle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FISwizzle.h; sourceTree = "<group>"; };
 		1C8522801528D78200051605 /* FISwizzle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FISwizzle.m; sourceTree = "<group>"; };
-		1C8522821528D78200051605 /* FICellDictKey-Protocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FICellDictKey-Protocol.h"; sourceTree = "<group>"; };
-		1C8522851528D78200051605 /* FIIconOverlay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FIIconOverlay.h; sourceTree = "<group>"; };
-		1C8522861528D78200051605 /* FIIconOverlay.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FIIconOverlay.m; sourceTree = "<group>"; };
-		1C8522871528D78200051605 /* FIListCellDictKey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FIListCellDictKey.h; sourceTree = "<group>"; };
-		1C8522881528D78200051605 /* FIListCellDictKey.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FIListCellDictKey.m; sourceTree = "<group>"; };
-		1C8522891528D78200051605 /* FITableCellDictKey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FITableCellDictKey.h; sourceTree = "<group>"; };
-		1C85228A1528D78200051605 /* FITableCellDictKey.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FITableCellDictKey.m; sourceTree = "<group>"; };
-		1C85228B1528D78200051605 /* TestClass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestClass.h; sourceTree = "<group>"; };
-		1C85228C1528D78200051605 /* TestClass.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestClass.m; sourceTree = "<group>"; };
 		1C85228E1528D78200051605 /* Dopant-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Dopant-Info.plist"; sourceTree = "<group>"; };
 		1C85229E1528D78200051605 /* IHTHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IHTHelpers.h; sourceTree = "<group>"; };
 		1C85229F1528D78200051605 /* IHTHelpers.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IHTHelpers.m; sourceTree = "<group>"; };
@@ -78,6 +65,19 @@
 		1C8522AB1528D78200051605 /* mach_inject_bundle.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mach_inject_bundle.c; sourceTree = "<group>"; };
 		1C8522AC1528D78200051605 /* mach_inject_bundle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mach_inject_bundle.h; sourceTree = "<group>"; };
 		1CB4FB7E1528EEDC00DDEC99 /* mach_inject_bundle_stub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mach_inject_bundle_stub.h; path = ../needle/mach_inject_bundle_stub.h; sourceTree = "<group>"; };
+		1CDEC3161533543E001EFEC0 /* OOCellDictKey-Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OOCellDictKey-Protocol.h"; sourceTree = "<group>"; };
+		1CDEC3171533543E001EFEC0 /* OOCellDictKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOCellDictKey.h; sourceTree = "<group>"; };
+		1CDEC3181533543E001EFEC0 /* OOCellDictKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOCellDictKey.m; sourceTree = "<group>"; };
+		1CDEC3191533543E001EFEC0 /* OOIconCellDictKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOIconCellDictKey.h; sourceTree = "<group>"; };
+		1CDEC31A1533543E001EFEC0 /* OOIconCellDictKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOIconCellDictKey.m; sourceTree = "<group>"; };
+		1CDEC31B1533543E001EFEC0 /* OOIconOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOIconOverlay.h; sourceTree = "<group>"; };
+		1CDEC31C1533543E001EFEC0 /* OOIconOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOIconOverlay.m; sourceTree = "<group>"; };
+		1CDEC31D1533543E001EFEC0 /* OOListCellDictKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOListCellDictKey.h; sourceTree = "<group>"; };
+		1CDEC31E1533543E001EFEC0 /* OOListCellDictKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOListCellDictKey.m; sourceTree = "<group>"; };
+		1CDEC31F1533543E001EFEC0 /* OOTableCellDictKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOTableCellDictKey.h; sourceTree = "<group>"; };
+		1CDEC3201533543E001EFEC0 /* OOTableCellDictKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOTableCellDictKey.m; sourceTree = "<group>"; };
+		1CDEC3211533543E001EFEC0 /* OOZombieDictKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOZombieDictKey.h; sourceTree = "<group>"; };
+		1CDEC3221533543E001EFEC0 /* OOZombieDictKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOZombieDictKey.m; sourceTree = "<group>"; };
 		1CFCA40B152EFE3B00F67E8D /* ok.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ok.icns; sourceTree = "<group>"; };
 		3628ABF3151B855B0093312B /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		3661644615011A08008A1425 /* io.infinit.Nurse.helper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = io.infinit.Nurse.helper; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -117,7 +117,7 @@
 				1C85227D1528D78200051605 /* helper */,
 				1C8522751528D78200051605 /* contextMenu */,
 				1C8522781528D78200051605 /* favoriteStatusBar */,
-				1C8522811528D78200051605 /* iconOverlay */,
+				1CDEC3141533543E001EFEC0 /* iconOverlay */,
 				1C85227B1528D78200051605 /* FIMain.h */,
 				1C85227C1528D78200051605 /* FIMain.m */,
 				1CFCA40A152EFE3B00F67E8D /* ressources */,
@@ -152,26 +152,6 @@
 				1C8522801528D78200051605 /* FISwizzle.m */,
 			);
 			path = helper;
-			sourceTree = "<group>";
-		};
-		1C8522811528D78200051605 /* iconOverlay */ = {
-			isa = PBXGroup;
-			children = (
-				1C8522851528D78200051605 /* FIIconOverlay.h */,
-				1C8522861528D78200051605 /* FIIconOverlay.m */,
-				1C8522871528D78200051605 /* FIListCellDictKey.h */,
-				1C8522881528D78200051605 /* FIListCellDictKey.m */,
-				1C8522891528D78200051605 /* FITableCellDictKey.h */,
-				1C85228A1528D78200051605 /* FITableCellDictKey.m */,
-				1C61848B152F369000B4F947 /* FICellDictKey.h */,
-				1C61848D152F369D00B4F947 /* FICellDictKey.m */,
-				1C8522821528D78200051605 /* FICellDictKey-Protocol.h */,
-				1C85228B1528D78200051605 /* TestClass.h */,
-				1C85228C1528D78200051605 /* TestClass.m */,
-				1C7A3C6F1529EFF800D6988A /* ZombieDictKey.h */,
-				1C7A3C701529EFF800D6988A /* ZombieDictKey.m */,
-			);
-			path = iconOverlay;
 			sourceTree = "<group>";
 		};
 		1C85228D1528D78200051605 /* supportingFiles */ = {
@@ -222,6 +202,26 @@
 				1C8522AC1528D78200051605 /* mach_inject_bundle.h */,
 			);
 			path = syringue;
+			sourceTree = "<group>";
+		};
+		1CDEC3141533543E001EFEC0 /* iconOverlay */ = {
+			isa = PBXGroup;
+			children = (
+				1CDEC3161533543E001EFEC0 /* OOCellDictKey-Protocol.h */,
+				1CDEC3171533543E001EFEC0 /* OOCellDictKey.h */,
+				1CDEC3181533543E001EFEC0 /* OOCellDictKey.m */,
+				1CDEC3191533543E001EFEC0 /* OOIconCellDictKey.h */,
+				1CDEC31A1533543E001EFEC0 /* OOIconCellDictKey.m */,
+				1CDEC31B1533543E001EFEC0 /* OOIconOverlay.h */,
+				1CDEC31C1533543E001EFEC0 /* OOIconOverlay.m */,
+				1CDEC31D1533543E001EFEC0 /* OOListCellDictKey.h */,
+				1CDEC31E1533543E001EFEC0 /* OOListCellDictKey.m */,
+				1CDEC31F1533543E001EFEC0 /* OOTableCellDictKey.h */,
+				1CDEC3201533543E001EFEC0 /* OOTableCellDictKey.m */,
+				1CDEC3211533543E001EFEC0 /* OOZombieDictKey.h */,
+				1CDEC3221533543E001EFEC0 /* OOZombieDictKey.m */,
+			);
+			path = iconOverlay;
 			sourceTree = "<group>";
 		};
 		1CFCA40A152EFE3B00F67E8D /* ressources */ = {
@@ -377,12 +377,12 @@
 				1C8522BE1528D82D00051605 /* FIAddInfinitToFavorite.m in Sources */,
 				1C8522C01528D82D00051605 /* FIMain.m in Sources */,
 				1C8522C31528D82D00051605 /* FISwizzle.m in Sources */,
-				1C8522C81528D82D00051605 /* FIIconOverlay.m in Sources */,
-				1C8522CA1528D82D00051605 /* FIListCellDictKey.m in Sources */,
-				1C8522CC1528D82D00051605 /* FITableCellDictKey.m in Sources */,
-				1C8522CE1528D82D00051605 /* TestClass.m in Sources */,
-				1C7A3C711529EFF800D6988A /* ZombieDictKey.m in Sources */,
-				1C61848E152F369D00B4F947 /* FICellDictKey.m in Sources */,
+				1CDEC3241533543E001EFEC0 /* OOCellDictKey.m in Sources */,
+				1CDEC3251533543E001EFEC0 /* OOIconCellDictKey.m in Sources */,
+				1CDEC3261533543E001EFEC0 /* OOIconOverlay.m in Sources */,
+				1CDEC3271533543E001EFEC0 /* OOListCellDictKey.m in Sources */,
+				1CDEC3281533543E001EFEC0 /* OOTableCellDictKey.m in Sources */,
+				1CDEC3291533543E001EFEC0 /* OOZombieDictKey.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

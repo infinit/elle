@@ -1,3 +1,4 @@
+
 //
 //  FITableCellDictKey.m
 //  HelperTools
@@ -6,11 +7,11 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "FITableCellDictKey.h"
+#import "OOTableCellDictKey.h"
 #import <objc/objc-class.h>
-#import "ZombieDictKey.h"
+#import "OOZombieDictKey.h"
 
-@implementation FITableCellDictKey
+@implementation OOTableCellDictKey
 
 @synthesize rowIndex;
 @synthesize columnIdentifier;
@@ -26,8 +27,8 @@ static NSMutableSet *items = nil;
             items = [[NSMutableSet alloc] init];
         }
         
-        FITableCellDictKey *matchItem = nil;
-        for (FITableCellDictKey *item in [items allObjects]) {
+        OOTableCellDictKey *matchItem = nil;
+        for (OOTableCellDictKey *item in [items allObjects]) {
             if (item.columnIdentifier == arg1 && item.rowIndex == arg2) {
                 matchItem = item;
                 break;
@@ -36,7 +37,7 @@ static NSMutableSet *items = nil;
         
         if (matchItem == nil)
         {
-            matchItem = [[FITableCellDictKey alloc] initWithColumnIdentifier:arg1 rowIndex:arg2  forNode:arg3];
+            matchItem = [[OOTableCellDictKey alloc] initWithColumnIdentifier:arg1 rowIndex:arg2  forNode:arg3];
             [items addObject:matchItem];
             [arg1 runAtDealloc:matchItem];
             [matchItem autorelease];
@@ -53,9 +54,9 @@ static NSMutableSet *items = nil;
     self.columnIdentifier = arg1;
     self.rowIndex = arg2;
     self.node = (TFENode *)arg3;
-    self.nodeStatus = FINodeStatusUnknowned;
+    self.nodeStatus = OONodeStatusUnknowned;
     
-    [[FIIconOverlay instance] addStatusOpperationToQueue:self];
+    [[OOIconOverlay instance] addStatusOpperationToQueue:self];
     
     return self;
 }
@@ -96,10 +97,10 @@ static NSMutableSet *items = nil;
         return YES;
     if (!arg1 || ![arg1 isKindOfClass:[self class]])
         return NO;
-    if (self.columnIdentifier == nil || ((FITableCellDictKey *)arg1).columnIdentifier == nil)
+    if (self.columnIdentifier == nil || ((OOTableCellDictKey *)arg1).columnIdentifier == nil)
         return NO;
     
-    return [self hasSameColumnIdentifier:((FITableCellDictKey *)arg1).columnIdentifier andRowIndex:((FITableCellDictKey *)arg1).rowIndex];
+    return [self hasSameColumnIdentifier:((OOTableCellDictKey *)arg1).columnIdentifier andRowIndex:((OOTableCellDictKey *)arg1).rowIndex];
 }
 
 - (NSURL *) getPath
@@ -113,7 +114,31 @@ static NSMutableSet *items = nil;
 
 - (void) refreshCell
 {
+    
+    id a = [self.columnIdentifier dataCellForRow:self.rowIndex];
+    id b  = [a controlView];
+    id c = [a controller];
+    [[a controlView] updateCell:a];
+    //[a drawWithFrame:[b rectOfRow:self.rowIndex] inView:[a view]];
+    //id qdsqd = [self.columnIdentifier tableView];
+    //[self.columnIdentifier setDataCell:a];
+    //[self.columnIdentifier _updateDataCellControlView];
+    //id b  = [a controlView];
+    //CGRect arect = [b rectOfRow:self.rowIndex];
+    //[b drawRow:self.rowIndex clipRect:arect];
+    //[b preparedCellAtColumn:0 row:self.rowIndex];
+    /*id c = [b columnViewController];
+    id d = [b viewController];
+    id e = [c browserView];
+    //id f = [c browserConclipRecttroller];
+    id ff = [c browserWindowController];
+    id fff = [c viewOptionsSettingsController];
+    id ffff = [b itemAtRow:rowIndex];
+    id fffff = [b viewAtColumn:0 row:rowIndex makeIfNecessary:YES];
+    //[b updateCell:a];
     // TODO refresh
+    //browser:(id)arg1 willDisplayCell:(id)arg2 atRow:(long long)arg3 column:(long long)arg4;
+    //[d browser:b willDisplayCell:a atRow:rowIndex column:0];*/
     return;
 }
 

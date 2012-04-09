@@ -8,17 +8,15 @@
 
 #import "FIMain.h"
 #import "IHFMenuNeedsUpdate.h"
-#import "FIIconOverlay.h"
-#import "TestClass.h"
+#import "OOIconOverlay.h"
 #import "FIAddInfinitToFavorite.h"
 
 @implementation IHFBMain
 
 + (void) load
 {
-    [FIIconOverlay instance];
+    [OOIconOverlay instance];
     [FIAddInfinitToFavorite instance];
-    [TestClass instance];
     [IHFMenuNeedsUpdate instance];
 }
 

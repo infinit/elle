@@ -6,11 +6,11 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "FIListCellDictKey.h"
+#import "OOListCellDictKey.h"
 #import <objc/objc-class.h>
-#import "ZombieDictKey.h"
+#import "OOZombieDictKey.h"
 
-@implementation FIListCellDictKey
+@implementation OOListCellDictKey
 
 @synthesize cell;
 
@@ -23,8 +23,8 @@ static NSMutableSet *items = nil;
         if (items == nil) {
             items = [[NSMutableSet alloc] init];
         }
-        FIListCellDictKey *matchItem = nil;
-        for (FIListCellDictKey *item in [items allObjects]) {
+        OOListCellDictKey *matchItem = nil;
+        for (OOListCellDictKey *item in [items allObjects]) {
             if (item.cell != nil) {
                 if (item.cell == arg1) {
                     matchItem = item;
@@ -35,7 +35,7 @@ static NSMutableSet *items = nil;
         
         if (matchItem == nil)
         {
-            matchItem = [[FIListCellDictKey alloc] initWithCell:arg1];
+            matchItem = [[OOListCellDictKey alloc] initWithCell:arg1];
             [items addObject:matchItem];
             [arg1 runAtDealloc:matchItem];
             
@@ -51,9 +51,9 @@ static NSMutableSet *items = nil;
     self = [super init];
     
     self.cell = arg1; // TODO add release link
-    self.nodeStatus = FINodeStatusUnknowned;
+    self.nodeStatus = OONodeStatusUnknowned;
     
-    [[FIIconOverlay instance] addStatusOpperationToQueue:self];
+    [[OOIconOverlay instance] addStatusOpperationToQueue:self];
     
     return self;
 }
@@ -69,9 +69,9 @@ static NSMutableSet *items = nil;
         return YES;
     if (!arg1 || ![arg1 isKindOfClass:[self class]])
         return NO;
-    if (self.cell == nil || ((FIListCellDictKey *)arg1).cell == nil)
+    if (self.cell == nil || ((OOListCellDictKey *)arg1).cell == nil)
         return NO;
-    return self.cell == ((FIListCellDictKey *)arg1).cell;
+    return self.cell == ((OOListCellDictKey *)arg1).cell;
 }
 
 - (NSURL *) getPath

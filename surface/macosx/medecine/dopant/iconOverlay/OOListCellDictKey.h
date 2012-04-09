@@ -7,11 +7,11 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "FICellDictKey-Protocol.h"
-#import "FICellDictKey.h"
-#import "FIIconOverlay.h"
+#import "OOCellDictKey-Protocol.h"
+#import "OOCellDictKey.h"
+#import "OOIconOverlay.h"
 
-@interface FIListCellDictKey : FICellDictKey
+@interface OOListCellDictKey : OOCellDictKey
 {
     id              cell;
 }
