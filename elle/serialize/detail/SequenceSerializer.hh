@@ -7,8 +7,30 @@
 
 namespace elle { namespace serialize { namespace detail {
 
+    namespace stl_insert {
+
+        template<typename Container> struct PushBack
+          {
+            typedef typename Container::value_type ValueType;
+
+            static inline void Save(Container& container,
+                                    ValueType const& value)
+            { container.push_back(value); }
+          };
+
+        template<typename Container> struct Insert
+          {
+            typedef typename Container::value_type ValueType;
+
+            static inline void Save(Container& container,
+                                    ValueType const& value)
+            { container.insert(value); }
+          };
+
+    } // !ns stl_insert
+
     // Base class for stl sequences
-    template<typename Container_>
+    template<typename Container_, template <typename> class SaveMethod = stl_insert::PushBack>
       struct SequenceSerializer
         : public SplittedSerializer<Container_>
       {
@@ -54,9 +76,9 @@ namespace elle { namespace serialize { namespace detail {
                 {
                   /// XXX copy involved
                   /// XXX value_type ctor not customizable
-                  typename Container::value_type el;
+                  typename SaveMethod<Container>::ValueType el;
                   ar >> el;
-                  container.push_back(el);
+                  SaveMethod<Container>::Save(container, el);
                 }
             }
       };
