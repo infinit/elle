@@ -45,6 +45,7 @@ namespace elle { namespace serialize {
 
         typedef typename std::enable_if<
                 (!std::is_pointer<T>::value || std::is_array<T>::value)
+            &&  !std::is_const<T>::value
             &&  mode == _mode
           , Archive&
         > NotPointer;
