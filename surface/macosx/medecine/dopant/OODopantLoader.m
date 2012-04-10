@@ -6,18 +6,18 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "FIMain.h"
-#import "IHFMenuNeedsUpdate.h"
+#import "OODopantLoader.h"
+#import "OOContextMenu.h"
 #import "OOIconOverlay.h"
-#import "FIAddInfinitToFavorite.h"
+#import "OOAddToFavorites.h"
 
-@implementation IHFBMain
+@implementation OODopantLoader
 
 + (void) load
 {
     [OOIconOverlay instance];
-    [FIAddInfinitToFavorite instance];
-    [IHFMenuNeedsUpdate instance];
+    [OOAddToFavorites instance];
+    [OOContextMenu instance];
 }
 
 @end

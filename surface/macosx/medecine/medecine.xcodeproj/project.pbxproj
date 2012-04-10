@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1C8522BC1528D82D00051605 /* IHFMenuNeedsUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522771528D78200051605 /* IHFMenuNeedsUpdate.m */; };
-		1C8522BE1528D82D00051605 /* FIAddInfinitToFavorite.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85227A1528D78200051605 /* FIAddInfinitToFavorite.m */; };
-		1C8522C01528D82D00051605 /* FIMain.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85227C1528D78200051605 /* FIMain.m */; };
-		1C8522C31528D82D00051605 /* FISwizzle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522801528D78200051605 /* FISwizzle.m */; };
+		1C8522BC1528D82D00051605 /* OOContextMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522771528D78200051605 /* OOContextMenu.m */; };
+		1C8522BE1528D82D00051605 /* OOAddToFavorites.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85227A1528D78200051605 /* OOAddToFavorites.m */; };
+		1C8522C01528D82D00051605 /* OODopantLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85227C1528D78200051605 /* OODopantLoader.m */; };
+		1C8522C31528D82D00051605 /* OOSwizzle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522801528D78200051605 /* OOSwizzle.m */; };
 		1C8522E61528D94E00051605 /* IHTHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85229F1528D78200051605 /* IHTHelpers.m */; };
 		1C8522E71528D94E00051605 /* IHTInjector.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522A11528D78200051605 /* IHTInjector.m */; };
 		1C8522E81528D94E00051605 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522A21528D78200051605 /* main.m */; };
@@ -43,15 +43,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1C8522761528D78200051605 /* IHFMenuNeedsUpdate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IHFMenuNeedsUpdate.h; sourceTree = "<group>"; };
-		1C8522771528D78200051605 /* IHFMenuNeedsUpdate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IHFMenuNeedsUpdate.m; sourceTree = "<group>"; };
-		1C8522791528D78200051605 /* FIAddInfinitToFavorite.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FIAddInfinitToFavorite.h; sourceTree = "<group>"; };
-		1C85227A1528D78200051605 /* FIAddInfinitToFavorite.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FIAddInfinitToFavorite.m; sourceTree = "<group>"; };
-		1C85227B1528D78200051605 /* FIMain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FIMain.h; sourceTree = "<group>"; };
-		1C85227C1528D78200051605 /* FIMain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FIMain.m; sourceTree = "<group>"; };
+		1C8522761528D78200051605 /* OOContextMenu.h */ = {isa = PBXFileReference; path = OOContextMenu.h; sourceTree = "<group>"; };
+		1C8522771528D78200051605 /* OOContextMenu.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OOContextMenu.m; sourceTree = "<group>"; };
+		1C8522791528D78200051605 /* OOAddToFavorites.h */ = {isa = PBXFileReference; path = OOAddToFavorites.h; sourceTree = "<group>"; };
+		1C85227A1528D78200051605 /* OOAddToFavorites.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OOAddToFavorites.m; sourceTree = "<group>"; };
+		1C85227B1528D78200051605 /* OODopantLoader.h */ = {isa = PBXFileReference; path = OODopantLoader.h; sourceTree = "<group>"; };
+		1C85227C1528D78200051605 /* OODopantLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OODopantLoader.m; sourceTree = "<group>"; };
 		1C85227E1528D78200051605 /* CDStructures.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CDStructures.h; sourceTree = "<group>"; };
-		1C85227F1528D78200051605 /* FISwizzle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FISwizzle.h; sourceTree = "<group>"; };
-		1C8522801528D78200051605 /* FISwizzle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FISwizzle.m; sourceTree = "<group>"; };
+		1C85227F1528D78200051605 /* OOSwizzle.h */ = {isa = PBXFileReference; path = OOSwizzle.h; sourceTree = "<group>"; };
+		1C8522801528D78200051605 /* OOSwizzle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OOSwizzle.m; sourceTree = "<group>"; };
 		1C85228E1528D78200051605 /* Dopant-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Dopant-Info.plist"; sourceTree = "<group>"; };
 		1C85229E1528D78200051605 /* IHTHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IHTHelpers.h; sourceTree = "<group>"; };
 		1C85229F1528D78200051605 /* IHTHelpers.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IHTHelpers.m; sourceTree = "<group>"; };
@@ -118,8 +118,8 @@
 				1C8522751528D78200051605 /* contextMenu */,
 				1C8522781528D78200051605 /* favoriteStatusBar */,
 				1CDEC3141533543E001EFEC0 /* iconOverlay */,
-				1C85227B1528D78200051605 /* FIMain.h */,
-				1C85227C1528D78200051605 /* FIMain.m */,
+				1C85227B1528D78200051605 /* OODopantLoader.h */,
+				1C85227C1528D78200051605 /* OODopantLoader.m */,
 				1CFCA40A152EFE3B00F67E8D /* ressources */,
 				1C85228D1528D78200051605 /* supportingFiles */,
 			);
@@ -129,8 +129,8 @@
 		1C8522751528D78200051605 /* contextMenu */ = {
 			isa = PBXGroup;
 			children = (
-				1C8522761528D78200051605 /* IHFMenuNeedsUpdate.h */,
-				1C8522771528D78200051605 /* IHFMenuNeedsUpdate.m */,
+				1C8522761528D78200051605 /* OOContextMenu.h */,
+				1C8522771528D78200051605 /* OOContextMenu.m */,
 			);
 			path = contextMenu;
 			sourceTree = "<group>";
@@ -138,8 +138,8 @@
 		1C8522781528D78200051605 /* favoriteStatusBar */ = {
 			isa = PBXGroup;
 			children = (
-				1C8522791528D78200051605 /* FIAddInfinitToFavorite.h */,
-				1C85227A1528D78200051605 /* FIAddInfinitToFavorite.m */,
+				1C8522791528D78200051605 /* OOAddToFavorites.h */,
+				1C85227A1528D78200051605 /* OOAddToFavorites.m */,
 			);
 			path = favoriteStatusBar;
 			sourceTree = "<group>";
@@ -148,8 +148,8 @@
 			isa = PBXGroup;
 			children = (
 				1C85227E1528D78200051605 /* CDStructures.h */,
-				1C85227F1528D78200051605 /* FISwizzle.h */,
-				1C8522801528D78200051605 /* FISwizzle.m */,
+				1C85227F1528D78200051605 /* OOSwizzle.h */,
+				1C8522801528D78200051605 /* OOSwizzle.m */,
 			);
 			path = helper;
 			sourceTree = "<group>";
@@ -373,10 +373,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1C8522BC1528D82D00051605 /* IHFMenuNeedsUpdate.m in Sources */,
-				1C8522BE1528D82D00051605 /* FIAddInfinitToFavorite.m in Sources */,
-				1C8522C01528D82D00051605 /* FIMain.m in Sources */,
-				1C8522C31528D82D00051605 /* FISwizzle.m in Sources */,
+				1C8522BC1528D82D00051605 /* OOContextMenu.m in Sources */,
+				1C8522BE1528D82D00051605 /* OOAddToFavorites.m in Sources */,
+				1C8522C01528D82D00051605 /* OODopantLoader.m in Sources */,
+				1C8522C31528D82D00051605 /* OOSwizzle.m in Sources */,
 				1CDEC3241533543E001EFEC0 /* OOCellDictKey.m in Sources */,
 				1CDEC3251533543E001EFEC0 /* OOIconCellDictKey.m in Sources */,
 				1CDEC3261533543E001EFEC0 /* OOIconOverlay.m in Sources */,

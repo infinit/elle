@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "FISwizzle.h"
+#import "OOSwizzle.h"
 #import "CDStructures.h"
 
 typedef enum {

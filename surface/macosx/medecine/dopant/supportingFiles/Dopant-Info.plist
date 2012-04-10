@@ -19,6 +19,6 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>NSPrincipalClass</key>
-	<string>FIMain</string>
+	<string>OODopantLoader</string>
 </dict>
 </plist>

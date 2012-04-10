@@ -7,12 +7,12 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "FISwizzle.h"
+#import "OOSwizzle.h"
 #import "CDStructures.h"
 
-@interface FIAddInfinitToFavorite : NSObject
+@interface OOAddToFavorites : NSObject
 
-+ (FIAddInfinitToFavorite*) instance;
++ (OOAddToFavorites*) instance;
 
 +(id)nodeRefWithFENode:(TFENode*)fn;
 +(TFENode*)feNodeWithNodeRef:(void*)fn;

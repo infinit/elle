@@ -6,13 +6,13 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "FIAddInfinitToFavorite.h"
+#import "OOAddToFavorites.h"
 
-@implementation FIAddInfinitToFavorite
+@implementation OOAddToFavorites
 
 +(void)initialize
 {
-	[FIAddInfinitToFavorite addToFavorite];
+	[OOAddToFavorites addToFavorite];
 }
 
 - (id) init
@@ -26,12 +26,12 @@
 }
 
 
-+ (FIAddInfinitToFavorite*) instance
++ (OOAddToFavorites*) instance
 {
-    static FIAddInfinitToFavorite *item = nil;
+    static OOAddToFavorites *item = nil;
 	
 	if(item == nil)
-		item = [[FIAddInfinitToFavorite alloc] init];
+		item = [[OOAddToFavorites alloc] init];
 	
 	return item;
 }
@@ -41,8 +41,8 @@
     //id MyVirtualNode = [NSClassFromString(@"NSNavVirtualNode") containerNode];
     //[MyVirtualNode setPath:@"/InfinitNode"];
     
-    TFENode* node = [FIAddInfinitToFavorite feNodeWithPath:@"/opt"];
-    [[FIAddInfinitToFavorite nodeRefWithFENode:node] addToFavoritesAtIndex:1];
+    TFENode* node = [OOAddToFavorites feNodeWithPath:@"/opt"];
+    [[OOAddToFavorites nodeRefWithFENode:node] addToFavoritesAtIndex:1];
 }
 
 +(id)nodeRefWithFENode:(TFENode*)fn

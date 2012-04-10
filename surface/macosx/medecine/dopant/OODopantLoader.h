@@ -7,7 +7,7 @@
 //
 #import <Cocoa/Cocoa.h>
 
-@interface IHFBMain : NSObject {
+@interface OODopantLoader : NSObject {
 
 }
 + (void) load;

@@ -1,15 +1,15 @@
-#import "FISwizzle.h"
+#import "OOSwizzle.h"
 #import <objc/objc-class.h>
 
 #define SetNSError(ERROR_VAR, FORMAT,...)	\
 if (ERROR_VAR) {	\
-NSString *errStr = [@"+[NSObject(FISwizzle) fi_swizzleMethod:withMethod:error:]: " stringByAppendingFormat:FORMAT,##__VA_ARGS__];	\
+NSString *errStr = [@"+[NSObject(OOSwizzle) fi_swizzleMethod:withMethod:error:]: " stringByAppendingFormat:FORMAT,##__VA_ARGS__];	\
 *ERROR_VAR = [NSError errorWithDomain:@"NSCocoaErrorDomain" \
 code:-1	\
 userInfo:[NSDictionary dictionaryWithObject:errStr forKey:NSLocalizedDescriptionKey]]; \
 }
 
-@implementation NSObject (FISwizzle)
+@implementation NSObject (OOSwizzle)
 
 + (BOOL)fi_swizzleMethod:(SEL)origSel_ withMethod:(SEL)altSel_ error:(NSError**)error_ {
 #if OBJC_API_VERSION >= 2

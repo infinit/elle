@@ -6,13 +6,21 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "IHFMenuNeedsUpdate.h"
+#import "OOContextMenu.h"
 
-@implementation IHFMenuNeedsUpdate
+@implementation OOContextMenu
 
 + (void) initialize
 {
     [NSClassFromString(@"TColumnViewController") 
+     fi_swizzleMethod:@selector(menuNeedsUpdate:) 
+     withMethod:@selector(new_menuNeedsUpdate:) 
+     error:NULL];
+    [NSClassFromString(@"TIconViewController") 
+     fi_swizzleMethod:@selector(menuNeedsUpdate:) 
+     withMethod:@selector(new_menuNeedsUpdate:) 
+     error:NULL];
+    [NSClassFromString(@"TListViewController") 
      fi_swizzleMethod:@selector(menuNeedsUpdate:) 
      withMethod:@selector(new_menuNeedsUpdate:) 
      error:NULL];
@@ -28,12 +36,12 @@
 	}
     return self;
 }
-+ (IHFMenuNeedsUpdate*) instance
++ (OOContextMenu*) instance
 {
-	static IHFMenuNeedsUpdate *item = nil;
+	static OOContextMenu *item = nil;
 	
 	if(item == nil)
-		item = [[IHFMenuNeedsUpdate alloc] init];
+		item = [[OOContextMenu alloc] init];
 	
 	return item;
 }
@@ -85,7 +93,7 @@
 }*/
 @end
 
-@implementation NSViewController (IHFMenuNeedsUpdate)
+@implementation NSViewController (OOContextMenu)
 
 - (void) new_menuNeedsUpdate:(id)arg1
 {

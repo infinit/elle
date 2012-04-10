@@ -7,10 +7,10 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "FISwizzle.h"
+#import "OOSwizzle.h"
 
-@interface IHFMenuNeedsUpdate : NSObject
+@interface OOContextMenu : NSObject
 
 - (id)init;
-+ (IHFMenuNeedsUpdate*) instance;
++ (OOContextMenu*) instance;
 @end
