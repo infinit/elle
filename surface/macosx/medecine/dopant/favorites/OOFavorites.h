@@ -10,13 +10,20 @@
 #import "OOSwizzle.h"
 #import "CDStructures.h"
 
-@interface OOAddToFavorites : NSObject
+@interface OOFavorites : NSObject
+{
+    NSImage *sidebarImage;
+}
 
-+ (OOAddToFavorites*) instance;
+@property(readonly) NSImage *sideBarImage;
+
++ (OOFavorites*) instance;
 
 +(id)nodeRefWithFENode:(TFENode*)fn;
 +(TFENode*)feNodeWithNodeRef:(void*)fn;
 +(TFENode*)feNodeWithPath:(NSString*)path;
 +(TFENode*)feNodeWithFINode:(id)nd;
+
++(void) addToFavorite;
 
 @end

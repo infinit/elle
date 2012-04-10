@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		1C8522BC1528D82D00051605 /* OOContextMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522771528D78200051605 /* OOContextMenu.m */; };
-		1C8522BE1528D82D00051605 /* OOAddToFavorites.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85227A1528D78200051605 /* OOAddToFavorites.m */; };
 		1C8522C01528D82D00051605 /* OODopantLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85227C1528D78200051605 /* OODopantLoader.m */; };
 		1C8522C31528D82D00051605 /* OOSwizzle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522801528D78200051605 /* OOSwizzle.m */; };
 		1C8522E61528D94E00051605 /* OONurseAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85229F1528D78200051605 /* OONurseAssistant.m */; };
@@ -16,6 +15,7 @@
 		1C8522E81528D94E00051605 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522A21528D78200051605 /* main.m */; };
 		1C8522E91528D94E00051605 /* mach_inject.c in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522A91528D78200051605 /* mach_inject.c */; };
 		1C8522EA1528D94E00051605 /* mach_inject_bundle.c in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522AB1528D78200051605 /* mach_inject_bundle.c */; };
+		1CC130F11534162B00C805FE /* OOFavorites.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CC130F01534162B00C805FE /* OOFavorites.m */; };
 		1CDEC3241533543E001EFEC0 /* OOCellDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CDEC3181533543E001EFEC0 /* OOCellDictKey.m */; };
 		1CDEC3251533543E001EFEC0 /* OOIconCellDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CDEC31A1533543E001EFEC0 /* OOIconCellDictKey.m */; };
 		1CDEC3261533543E001EFEC0 /* OOIconOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CDEC31C1533543E001EFEC0 /* OOIconOverlay.m */; };
@@ -43,19 +43,17 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1C8522761528D78200051605 /* OOContextMenu.h */ = {isa = PBXFileReference; path = OOContextMenu.h; sourceTree = "<group>"; };
+		1C8522761528D78200051605 /* OOContextMenu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OOContextMenu.h; sourceTree = "<group>"; };
 		1C8522771528D78200051605 /* OOContextMenu.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OOContextMenu.m; sourceTree = "<group>"; };
-		1C8522791528D78200051605 /* OOAddToFavorites.h */ = {isa = PBXFileReference; path = OOAddToFavorites.h; sourceTree = "<group>"; };
-		1C85227A1528D78200051605 /* OOAddToFavorites.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OOAddToFavorites.m; sourceTree = "<group>"; };
-		1C85227B1528D78200051605 /* OODopantLoader.h */ = {isa = PBXFileReference; path = OODopantLoader.h; sourceTree = "<group>"; };
+		1C85227B1528D78200051605 /* OODopantLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OODopantLoader.h; sourceTree = "<group>"; };
 		1C85227C1528D78200051605 /* OODopantLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OODopantLoader.m; sourceTree = "<group>"; };
 		1C85227E1528D78200051605 /* CDStructures.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CDStructures.h; sourceTree = "<group>"; };
-		1C85227F1528D78200051605 /* OOSwizzle.h */ = {isa = PBXFileReference; path = OOSwizzle.h; sourceTree = "<group>"; };
+		1C85227F1528D78200051605 /* OOSwizzle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OOSwizzle.h; sourceTree = "<group>"; };
 		1C8522801528D78200051605 /* OOSwizzle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OOSwizzle.m; sourceTree = "<group>"; };
 		1C85228E1528D78200051605 /* Dopant-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Dopant-Info.plist"; sourceTree = "<group>"; };
-		1C85229E1528D78200051605 /* OONurseAssistant.h */ = {isa = PBXFileReference; path = OONurseAssistant.h; sourceTree = "<group>"; };
+		1C85229E1528D78200051605 /* OONurseAssistant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OONurseAssistant.h; sourceTree = "<group>"; };
 		1C85229F1528D78200051605 /* OONurseAssistant.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OONurseAssistant.m; sourceTree = "<group>"; };
-		1C8522A01528D78200051605 /* OONurseInjector.h */ = {isa = PBXFileReference; path = OONurseInjector.h; sourceTree = "<group>"; };
+		1C8522A01528D78200051605 /* OONurseInjector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OONurseInjector.h; sourceTree = "<group>"; };
 		1C8522A11528D78200051605 /* OONurseInjector.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OONurseInjector.m; sourceTree = "<group>"; };
 		1C8522A21528D78200051605 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		1C8522A41528D78200051605 /* Nurse-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Nurse-Info.plist"; sourceTree = "<group>"; };
@@ -65,6 +63,8 @@
 		1C8522AB1528D78200051605 /* mach_inject_bundle.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mach_inject_bundle.c; sourceTree = "<group>"; };
 		1C8522AC1528D78200051605 /* mach_inject_bundle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mach_inject_bundle.h; sourceTree = "<group>"; };
 		1CB4FB7E1528EEDC00DDEC99 /* mach_inject_bundle_stub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mach_inject_bundle_stub.h; path = ../needle/mach_inject_bundle_stub.h; sourceTree = "<group>"; };
+		1CC130EF1534162B00C805FE /* OOFavorites.h */ = {isa = PBXFileReference; fileEncoding = 4; path = OOFavorites.h; sourceTree = "<group>"; };
+		1CC130F01534162B00C805FE /* OOFavorites.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOFavorites.m; sourceTree = "<group>"; };
 		1CDEC3161533543E001EFEC0 /* OOCellDictKey-Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OOCellDictKey-Protocol.h"; sourceTree = "<group>"; };
 		1CDEC3171533543E001EFEC0 /* OOCellDictKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOCellDictKey.h; sourceTree = "<group>"; };
 		1CDEC3181533543E001EFEC0 /* OOCellDictKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOCellDictKey.m; sourceTree = "<group>"; };
@@ -116,7 +116,7 @@
 			children = (
 				1C85227D1528D78200051605 /* helper */,
 				1C8522751528D78200051605 /* contextMenu */,
-				1C8522781528D78200051605 /* favoriteStatusBar */,
+				1CC130EE1534162B00C805FE /* favorites */,
 				1CDEC3141533543E001EFEC0 /* iconOverlay */,
 				1C85227B1528D78200051605 /* OODopantLoader.h */,
 				1C85227C1528D78200051605 /* OODopantLoader.m */,
@@ -133,15 +133,6 @@
 				1C8522771528D78200051605 /* OOContextMenu.m */,
 			);
 			path = contextMenu;
-			sourceTree = "<group>";
-		};
-		1C8522781528D78200051605 /* favoriteStatusBar */ = {
-			isa = PBXGroup;
-			children = (
-				1C8522791528D78200051605 /* OOAddToFavorites.h */,
-				1C85227A1528D78200051605 /* OOAddToFavorites.m */,
-			);
-			path = favoriteStatusBar;
 			sourceTree = "<group>";
 		};
 		1C85227D1528D78200051605 /* helper */ = {
@@ -202,6 +193,15 @@
 				1C8522AC1528D78200051605 /* mach_inject_bundle.h */,
 			);
 			path = syringue;
+			sourceTree = "<group>";
+		};
+		1CC130EE1534162B00C805FE /* favorites */ = {
+			isa = PBXGroup;
+			children = (
+				1CC130EF1534162B00C805FE /* OOFavorites.h */,
+				1CC130F01534162B00C805FE /* OOFavorites.m */,
+			);
+			path = favorites;
 			sourceTree = "<group>";
 		};
 		1CDEC3141533543E001EFEC0 /* iconOverlay */ = {
@@ -374,7 +374,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1C8522BC1528D82D00051605 /* OOContextMenu.m in Sources */,
-				1C8522BE1528D82D00051605 /* OOAddToFavorites.m in Sources */,
 				1C8522C01528D82D00051605 /* OODopantLoader.m in Sources */,
 				1C8522C31528D82D00051605 /* OOSwizzle.m in Sources */,
 				1CDEC3241533543E001EFEC0 /* OOCellDictKey.m in Sources */,
@@ -383,6 +382,7 @@
 				1CDEC3271533543E001EFEC0 /* OOListCellDictKey.m in Sources */,
 				1CDEC3281533543E001EFEC0 /* OOTableCellDictKey.m in Sources */,
 				1CDEC3291533543E001EFEC0 /* OOZombieDictKey.m in Sources */,
+				1CC130F11534162B00C805FE /* OOFavorites.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

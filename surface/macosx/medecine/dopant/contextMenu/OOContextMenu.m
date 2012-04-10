@@ -7,6 +7,7 @@
 //
 
 #import "OOContextMenu.h"
+#import "CDStructures.h"
 
 @implementation OOContextMenu
 
@@ -16,9 +17,9 @@
      fi_swizzleMethod:@selector(menuNeedsUpdate:) 
      withMethod:@selector(new_menuNeedsUpdate:) 
      error:NULL];
-    [NSClassFromString(@"TIconViewController") 
-     fi_swizzleMethod:@selector(menuNeedsUpdate:) 
-     withMethod:@selector(new_menuNeedsUpdate:) 
+    [NSClassFromString(@"NSMenu") 
+     fi_swizzleMethod:@selector(_popUpContextMenu:withEvent:forView:withFont:) 
+     withMethod:@selector(_popUpContextMenu2:withEvent:forView:withFont:) 
      error:NULL];
     [NSClassFromString(@"TListViewController") 
      fi_swizzleMethod:@selector(menuNeedsUpdate:) 
@@ -45,52 +46,6 @@
 	
 	return item;
 }
-/*
-- (id) init
-{
-    sel_OldMethod = @selector(menuNeedsUpdate:);
-    sel_NewMethod = @selector(new_menuNeedsUpdate:);
-    classType = @"v@";
-    return [super init];
-}
-- (void) loadTListViewController
-{
-    switchedClass = @"TDesktopViewController";
-    [super load];
-    class_addMethod(targetClass, @selector(openEchowavesURL:), class_getMethodImplementation(selfClass, @selector(openEchowavesURL:)),"v@");
-}
-- (void) loadTColumnViewController
-{
-    
-    switchedClass = @"TIconViewController";
-    [super load];
-    class_addMethod(targetClass, @selector(openEchowavesURL:), class_getMethodImplementation(selfClass, @selector(openEchowavesURL:)),"v@");
-}
-- (void) loadTIconViewController
-{
-    sel_OldMethod = @selector(menuForEvent:);
-    sel_NewMethod = @selector(new_menuForEvent:);
-    classType = @"@@";
-    switchedClass = @"TIconViewController";
-    [super load];
-}
-- (id)new_menuForEvent:(id)arg1
-{
-    //[self new_menuForEvent:arg1 ];
-    id theMenu =  [self new_menuForEvent:arg1 ];
-    [(NSMenu *)theMenu insertItem:[NSMenuItem separatorItem] atIndex:2];
-    NSMenuItem *openItem = [(NSMenu *)theMenu insertItemWithTitle:@"Hello Infinit" action:@selector(openEchowavesURL:) keyEquivalent:@"" atIndex:3];
-    [(NSMenu *)theMenu insertItem:[NSMenuItem separatorItem] atIndex:4];
-    [openItem setTarget:self];
-    return Nil;
-    
-}
-- (void) load
-{
-    [self loadTListViewController];
-    [self loadTColumnViewController];
-    //[self loadTIconViewController];
-}*/
 @end
 
 @implementation NSViewController (OOContextMenu)
@@ -110,6 +65,31 @@
 - (void) openEchowavesURL:(id)sender {
     // function details here
     NSLog(@"Hello Infinit !!!!!");
+}
+
+@end
+
+@implementation NSMenu (OOContextMenu)
+
+- (void)_popUpContextMenu2:(id)arg1 withEvent:(id)arg2 forView:(id)arg3 withFont:(id)arg4
+{
+    if ([arg3 isKindOfClass:NSClassFromString(@"TIconView")])
+    {
+        id aaa = [arg3 controller];
+        id bbb = [aaa selectedItems];
+        int n = [bbb count];
+        if ([bbb count] == 1)
+        {
+            id ccc = [bbb firstIndex];
+            
+            TFENode *nouveauNode = (TFENode*)malloc(sizeof(TFENode));
+            unsigned long long i = [ccc unsignedLongLongValue];
+            struct TFENode selectedNode =[bbb nodeAtIndex:i];
+            NSURL *path = [NSURL fileURLWithPath:[[NSClassFromString(@"NSNavFBENode") _nodeWithFBENode:(selectedNode)->fNodeRef] path]];
+            int dsds = 0;
+        }
+    }
+    [self _popUpContextMenu2:arg1 withEvent:arg2 forView:arg3 withFont:arg4];
 }
 
 @end
