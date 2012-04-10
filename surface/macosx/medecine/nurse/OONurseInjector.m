@@ -6,12 +6,12 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "IHTInjector.h"
-#import "IHTHelpers.h"
+#import "OONurseInjector.h"
+#import "OONurseAssistant.h"
 #import <syslog.h>
 #import "mach_inject_bundle.h"
 
-@implementation IHTInjector
+@implementation OONurseInjector
 
 @synthesize sourceDir;
 @synthesize sourceFinderBundleFullPath;
@@ -44,8 +44,7 @@
         if (![self installMachBundle])
             return NO;
     }
-    IHTHelpers* helper = [[IHTHelpers alloc] init];
-    pid_t finder_pid = [helper getFinderPid];
+    pid_t finder_pid = [OONurseAssistant getFinderPid];
     if (finder_pid < 0) 
     {
         NSLog(@"Finder can't be find : %@ \n", finder_pid);

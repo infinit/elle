@@ -11,8 +11,8 @@
 		1C8522BE1528D82D00051605 /* OOAddToFavorites.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85227A1528D78200051605 /* OOAddToFavorites.m */; };
 		1C8522C01528D82D00051605 /* OODopantLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85227C1528D78200051605 /* OODopantLoader.m */; };
 		1C8522C31528D82D00051605 /* OOSwizzle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522801528D78200051605 /* OOSwizzle.m */; };
-		1C8522E61528D94E00051605 /* IHTHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85229F1528D78200051605 /* IHTHelpers.m */; };
-		1C8522E71528D94E00051605 /* IHTInjector.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522A11528D78200051605 /* IHTInjector.m */; };
+		1C8522E61528D94E00051605 /* OONurseAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C85229F1528D78200051605 /* OONurseAssistant.m */; };
+		1C8522E71528D94E00051605 /* OONurseInjector.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522A11528D78200051605 /* OONurseInjector.m */; };
 		1C8522E81528D94E00051605 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522A21528D78200051605 /* main.m */; };
 		1C8522E91528D94E00051605 /* mach_inject.c in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522A91528D78200051605 /* mach_inject.c */; };
 		1C8522EA1528D94E00051605 /* mach_inject_bundle.c in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522AB1528D78200051605 /* mach_inject_bundle.c */; };
@@ -53,10 +53,10 @@
 		1C85227F1528D78200051605 /* OOSwizzle.h */ = {isa = PBXFileReference; path = OOSwizzle.h; sourceTree = "<group>"; };
 		1C8522801528D78200051605 /* OOSwizzle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OOSwizzle.m; sourceTree = "<group>"; };
 		1C85228E1528D78200051605 /* Dopant-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Dopant-Info.plist"; sourceTree = "<group>"; };
-		1C85229E1528D78200051605 /* IHTHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IHTHelpers.h; sourceTree = "<group>"; };
-		1C85229F1528D78200051605 /* IHTHelpers.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IHTHelpers.m; sourceTree = "<group>"; };
-		1C8522A01528D78200051605 /* IHTInjector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IHTInjector.h; sourceTree = "<group>"; };
-		1C8522A11528D78200051605 /* IHTInjector.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IHTInjector.m; sourceTree = "<group>"; };
+		1C85229E1528D78200051605 /* OONurseAssistant.h */ = {isa = PBXFileReference; path = OONurseAssistant.h; sourceTree = "<group>"; };
+		1C85229F1528D78200051605 /* OONurseAssistant.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OONurseAssistant.m; sourceTree = "<group>"; };
+		1C8522A01528D78200051605 /* OONurseInjector.h */ = {isa = PBXFileReference; path = OONurseInjector.h; sourceTree = "<group>"; };
+		1C8522A11528D78200051605 /* OONurseInjector.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OONurseInjector.m; sourceTree = "<group>"; };
 		1C8522A21528D78200051605 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		1C8522A41528D78200051605 /* Nurse-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Nurse-Info.plist"; sourceTree = "<group>"; };
 		1C8522A51528D78200051605 /* Nurse-Launchd.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Nurse-Launchd.plist"; sourceTree = "<group>"; };
@@ -166,8 +166,8 @@
 			isa = PBXGroup;
 			children = (
 				1C85229D1528D78200051605 /* helper */,
-				1C8522A01528D78200051605 /* IHTInjector.h */,
-				1C8522A11528D78200051605 /* IHTInjector.m */,
+				1C8522A01528D78200051605 /* OONurseInjector.h */,
+				1C8522A11528D78200051605 /* OONurseInjector.m */,
 				1C8522A21528D78200051605 /* main.m */,
 				1C8522A31528D78200051605 /* supportingFiles */,
 			);
@@ -177,8 +177,8 @@
 		1C85229D1528D78200051605 /* helper */ = {
 			isa = PBXGroup;
 			children = (
-				1C85229E1528D78200051605 /* IHTHelpers.h */,
-				1C85229F1528D78200051605 /* IHTHelpers.m */,
+				1C85229E1528D78200051605 /* OONurseAssistant.h */,
+				1C85229F1528D78200051605 /* OONurseAssistant.m */,
 			);
 			path = helper;
 			sourceTree = "<group>";
@@ -361,8 +361,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1C8522E61528D94E00051605 /* IHTHelpers.m in Sources */,
-				1C8522E71528D94E00051605 /* IHTInjector.m in Sources */,
+				1C8522E61528D94E00051605 /* OONurseAssistant.m in Sources */,
+				1C8522E71528D94E00051605 /* OONurseInjector.m in Sources */,
 				1C8522E81528D94E00051605 /* main.m in Sources */,
 				1C8522E91528D94E00051605 /* mach_inject.c in Sources */,
 				1C8522EA1528D94E00051605 /* mach_inject_bundle.c in Sources */,

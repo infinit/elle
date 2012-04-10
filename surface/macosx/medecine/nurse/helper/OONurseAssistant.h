@@ -6,7 +6,8 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 #import <Cocoa/Cocoa.h>
-@interface IHTHelpers : NSObject
+@interface OONurseAssistant : NSObject
     
-- (pid_t) getFinderPid;
++ (pid_t) getFinderPid;
+
 @end

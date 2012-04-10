@@ -31,6 +31,8 @@
 	<key>NSPrefPaneIconLabel</key>
 	<string>Infinit</string>
 	<key>NSPrincipalClass</key>
-	<string>Preferences</string>
+	<string>OOStoneTablets</string>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 </dict>
 </plist>

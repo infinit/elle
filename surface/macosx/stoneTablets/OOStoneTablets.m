@@ -6,9 +6,9 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "Preferences.h"
+#import "OOStoneTablets.h"
 
-@implementation Preferences
+@implementation OOStoneTablets
 
 - (void)mainViewDidLoad
 {

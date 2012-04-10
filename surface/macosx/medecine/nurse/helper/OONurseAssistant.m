@@ -6,11 +6,11 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "IHTHelpers.h"
+#import "OONurseAssistant.h"
 #import <AppKit/AppKit.h>
 
-@implementation IHTHelpers
-- (pid_t) getFinderPid
+@implementation OONurseAssistant
++ (pid_t) getFinderPid
 {
     NSLog(@"Start Finding processes...");
     NSArray *finders = [NSRunningApplication runningApplicationsWithBundleIdentifier:@"com.apple.finder"];

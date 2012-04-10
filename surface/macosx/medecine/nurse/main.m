@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "IHTInjector.h"
+#import "OONurseAssistant.h"
 #import <syslog.h>
 #import <launch.h>
 
@@ -111,7 +111,7 @@ int main (int argc, const char * argv[])
         NSMachPort *rp = [[NSMachPort alloc] initWithMachPort:mp];
         NSConnection *c = [NSConnection connectionWithReceivePort:rp sendPort:nil];
         
-        IHTInjector *obj = [IHTInjector new];
+        OONurseAssistant *obj = [OONurseAssistant new];
         [c setRootObject:obj];
         [[NSRunLoop currentRunLoop] run];
         

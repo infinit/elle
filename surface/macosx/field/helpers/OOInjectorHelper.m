@@ -9,7 +9,7 @@
 #import "OOInjectorHelper.h"
 #import <ServiceManagement/ServiceManagement.h>
 #import <Security/Authorization.h>
-#import "IHTInjector.h"
+#import "OONurseInjector.h"
 
 @implementation OOInjectorHelper
 
@@ -25,7 +25,7 @@
     }
     // Connect to D
     NSConnection *c = [NSConnection connectionWithRegisteredName:@"io.infinit.Nurse.helper" host:nil]; 
-    IHTInjector *proxy = (IHTInjector *)[c rootProxy];
+    OOInjectorHelper *proxy = (OOInjectorHelper *)[c rootProxy];
     
     NSString *currentDir = [[NSFileManager defaultManager] currentDirectoryPath];
 

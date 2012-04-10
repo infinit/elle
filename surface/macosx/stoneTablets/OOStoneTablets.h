@@ -8,7 +8,7 @@
 
 #import <PreferencePanes/PreferencePanes.h>
 
-@interface Preferences : NSPreferencePane
+@interface OOStoneTablets : NSPreferencePane
 
 - (void)mainViewDidLoad;
 

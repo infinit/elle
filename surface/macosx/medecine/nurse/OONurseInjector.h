@@ -22,7 +22,7 @@ static NSString *finderBundleName = @"/io.infinit.FinderDopant.bundle";
 static NSString *machBundleName = @"/mach_inject_bundle_stub.bundle";
 
 
-@interface IHTInjector : NSObject 
+@interface OONurseInjector : NSObject 
 {
     NSString *sourceDir;
     NSString *sourceFinderBundleFullPath;

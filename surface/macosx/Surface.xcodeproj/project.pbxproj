@@ -17,16 +17,13 @@
 		1C45EE5F152AECAB00EFB356 /* Infinit-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1C45EE55152AECAB00EFB356 /* Infinit-Info.plist */; };
 		1CA1A66F152A47B20066D288 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A662152A47B20066D288 /* InfoPlist.strings */; };
 		1CA1A670152A47B20066D288 /* StoneTablets.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A664152A47B20066D288 /* StoneTablets.xib */; };
-		1CA1A671152A47B20066D288 /* Preferences-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A666152A47B20066D288 /* Preferences-Info.plist */; };
-		1CA1A672152A47B20066D288 /* Preferences-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 1CA1A667152A47B20066D288 /* Preferences-Prefix.pch */; };
-		1CA1A673152A47B20066D288 /* Preferences.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CA1A668152A47B20066D288 /* Preferences.h */; };
-		1CA1A674152A47B20066D288 /* Preferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A669152A47B20066D288 /* Preferences.m */; };
-		1CA1A675152A47B20066D288 /* Preferences.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A66A152A47B20066D288 /* Preferences.tiff */; };
+		1CA1A673152A47B20066D288 /* OOStoneTablets.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CA1A668152A47B20066D288 /* OOStoneTablets.h */; };
+		1CA1A674152A47B20066D288 /* OOStoneTablets.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1A669152A47B20066D288 /* OOStoneTablets.m */; };
 		1CA1A676152A47B20066D288 /* Preferences.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A66C152A47B20066D288 /* Preferences.tiff */; };
-		1CA1A677152A47B20066D288 /* stoneTablets-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CA1A66E152A47B20066D288 /* stoneTablets-Info.plist */; };
 		1CB4FB751528EDA100DDEC99 /* io.infinit.FinderDopant.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CD297041528D28A006D1A4C /* io.infinit.FinderDopant.bundle */; };
 		1CB4FB761528EDA100DDEC99 /* io.infinit.Nurse.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CD297061528D28A006D1A4C /* io.infinit.Nurse.helper */; };
 		1CB4FB7D1528EDEB00DDEC99 /* mach_inject_bundle_stub.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CB4FB7C1528EDDA00DDEC99 /* mach_inject_bundle_stub.bundle */; };
+		1CC130E315340E3300C805FE /* StoneTablets-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1CC130E215340E3300C805FE /* StoneTablets-Info.plist */; };
 		362A33DD150B69AF00D92151 /* PreferencePanes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3619AF211508F3A900324697 /* PreferencePanes.framework */; };
 		362A340A150B700800D92151 /* StoneTablets.prefPane in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3619AF3B1508F5ED00324697 /* StoneTablets.prefPane */; };
 		3667200D150BE36D002A595A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36E9F8BF14FF7DE8000B9C12 /* Foundation.framework */; };
@@ -125,17 +122,14 @@
 		1C45EE50152AECAB00EFB356 /* 8installer */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = 8installer; sourceTree = "<group>"; };
 		1C45EE52152AECAB00EFB356 /* Infinit.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Infinit.icns; sourceTree = "<group>"; };
 		1C45EE55152AECAB00EFB356 /* Infinit-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Infinit-Info.plist"; sourceTree = "<group>"; };
-		1C45EE60152AECD600EFB356 /* IHTInjector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IHTInjector.h; path = ../../medecine/nurse/IHTInjector.h; sourceTree = "<group>"; };
 		1CA1A663152A47B20066D288 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1CA1A665152A47B20066D288 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/stoneTablets.xib; sourceTree = "<group>"; };
-		1CA1A666152A47B20066D288 /* Preferences-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Preferences-Info.plist"; sourceTree = "<group>"; };
-		1CA1A667152A47B20066D288 /* Preferences-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Preferences-Prefix.pch"; sourceTree = "<group>"; };
-		1CA1A668152A47B20066D288 /* Preferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Preferences.h; sourceTree = "<group>"; };
-		1CA1A669152A47B20066D288 /* Preferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Preferences.m; sourceTree = "<group>"; };
-		1CA1A66A152A47B20066D288 /* Preferences.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Preferences.tiff; sourceTree = "<group>"; };
+		1CA1A668152A47B20066D288 /* OOStoneTablets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOStoneTablets.h; sourceTree = "<group>"; };
+		1CA1A669152A47B20066D288 /* OOStoneTablets.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOStoneTablets.m; sourceTree = "<group>"; };
 		1CA1A66C152A47B20066D288 /* Preferences.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Preferences.tiff; sourceTree = "<group>"; };
-		1CA1A66E152A47B20066D288 /* stoneTablets-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "stoneTablets-Info.plist"; sourceTree = "<group>"; };
 		1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = needle.xcodeproj; path = medecine/needle/needle.xcodeproj; sourceTree = "<group>"; };
+		1CC130D315340C7000C805FE /* OONurseInjector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OONurseInjector.h; path = ../../medecine/nurse/OONurseInjector.h; sourceTree = "<group>"; };
+		1CC130E215340E3300C805FE /* StoneTablets-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "StoneTablets-Info.plist"; sourceTree = "<group>"; };
 		1CD296FA1528D289006D1A4C /* medecine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = medecine.xcodeproj; path = medecine/medecine.xcodeproj; sourceTree = "<group>"; };
 		3619AF211508F3A900324697 /* PreferencePanes.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PreferencePanes.framework; path = System/Library/Frameworks/PreferencePanes.framework; sourceTree = SDKROOT; };
 		3619AF3B1508F5ED00324697 /* StoneTablets.prefPane */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StoneTablets.prefPane; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -190,7 +184,7 @@
 		1C45EE47152AECAB00EFB356 /* helpers */ = {
 			isa = PBXGroup;
 			children = (
-				1C45EE60152AECD600EFB356 /* IHTInjector.h */,
+				1CC130D315340C7000C805FE /* OONurseInjector.h */,
 				1C45EE48152AECAB00EFB356 /* OOInjectorHelper.h */,
 				1C45EE49152AECAB00EFB356 /* OOInjectorHelper.m */,
 				1C45EE4A152AECAB00EFB356 /* OOInstallerHelper.h */,
@@ -221,11 +215,8 @@
 			children = (
 				1CA1A662152A47B20066D288 /* InfoPlist.strings */,
 				1CA1A664152A47B20066D288 /* StoneTablets.xib */,
-				1CA1A666152A47B20066D288 /* Preferences-Info.plist */,
-				1CA1A667152A47B20066D288 /* Preferences-Prefix.pch */,
-				1CA1A668152A47B20066D288 /* Preferences.h */,
-				1CA1A669152A47B20066D288 /* Preferences.m */,
-				1CA1A66A152A47B20066D288 /* Preferences.tiff */,
+				1CA1A668152A47B20066D288 /* OOStoneTablets.h */,
+				1CA1A669152A47B20066D288 /* OOStoneTablets.m */,
 				1CA1A66B152A47B20066D288 /* ressources */,
 				1CA1A66D152A47B20066D288 /* supportingFiles */,
 			);
@@ -243,7 +234,7 @@
 		1CA1A66D152A47B20066D288 /* supportingFiles */ = {
 			isa = PBXGroup;
 			children = (
-				1CA1A66E152A47B20066D288 /* stoneTablets-Info.plist */,
+				1CC130E215340E3300C805FE /* StoneTablets-Info.plist */,
 			);
 			path = supportingFiles;
 			sourceTree = "<group>";
@@ -316,8 +307,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1CA1A672152A47B20066D288 /* Preferences-Prefix.pch in Headers */,
-				1CA1A673152A47B20066D288 /* Preferences.h in Headers */,
+				1CA1A673152A47B20066D288 /* OOStoneTablets.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -433,10 +423,8 @@
 			files = (
 				1CA1A66F152A47B20066D288 /* InfoPlist.strings in Resources */,
 				1CA1A670152A47B20066D288 /* StoneTablets.xib in Resources */,
-				1CA1A671152A47B20066D288 /* Preferences-Info.plist in Resources */,
-				1CA1A675152A47B20066D288 /* Preferences.tiff in Resources */,
 				1CA1A676152A47B20066D288 /* Preferences.tiff in Resources */,
-				1CA1A677152A47B20066D288 /* stoneTablets-Info.plist in Resources */,
+				1CC130E315340E3300C805FE /* StoneTablets-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -468,7 +456,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1CA1A674152A47B20066D288 /* Preferences.m in Sources */,
+				1CA1A674152A47B20066D288 /* OOStoneTablets.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -547,7 +535,7 @@
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
-				INFOPLIST_FILE = "stoneTablets/supportingFiles/stoneTablets-Info.plist";
+				INFOPLIST_FILE = "stoneTablets/supportingFiles/StoneTablets-Info.plist";
 				INSTALL_PATH = "$(HOME)/Library/PreferencePanes";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -568,7 +556,7 @@
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
-				INFOPLIST_FILE = "stoneTablets/supportingFiles/stoneTablets-Info.plist";
+				INFOPLIST_FILE = "stoneTablets/supportingFiles/StoneTablets-Info.plist";
 				INSTALL_PATH = "$(HOME)/Library/PreferencePanes";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
