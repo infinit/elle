@@ -29,7 +29,7 @@ namespace satellite
   ///
   class Memoirs:
     public elle::Object,
-    public virtual elle::Fileable<elle::FormatRaw>
+    public elle::Fileable<Memoirs>
   {
   public:
     //
@@ -44,8 +44,8 @@ namespace satellite
     elle::Status        Extract(elle::Archive&);
 
     // fileable
-    elle::Status        Load(const elle::Path&);
-    elle::Status        Store(const elle::Path&) const;
+    //elle::Status        Load(const elle::Path&);
+    //elle::Status        Store(const elle::Path&) const;
 
     //
     // attributes

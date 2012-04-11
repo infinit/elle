@@ -459,7 +459,7 @@ namespace lune
         escape("unable to complete the path");
 
       // setup the log.
-      if (elle::Log::Setup(path.string) == elle::StatusError)
+      if (elle::Log::Setup(path.str()) == elle::StatusError)
         escape("unable to set up the log system");
     }
 

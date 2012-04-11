@@ -30,7 +30,7 @@ namespace lune
   ///
   class Set:
     public elle::Object,
-    public virtual elle::Fileable<elle::FormatCustom>
+    public elle::Fileable<Set>
   {
   public:
     //

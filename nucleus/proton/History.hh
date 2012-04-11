@@ -15,7 +15,6 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
 
 #include <nucleus/proton/Version.hh>
@@ -39,7 +38,7 @@ namespace nucleus
     ///
     class History:
       public elle::Object,
-      public virtual elle::Fileable<elle::FormatCustom>
+      public elle::io::Fileable<History>
     {
     public:
       //

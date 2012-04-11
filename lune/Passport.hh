@@ -15,8 +15,6 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
-
 #include <lune/Authority.hh>
 
 #include <hole/Label.hh>
@@ -34,8 +32,8 @@ namespace lune
   /// block's replica for instance.
   ///
   class Passport:
-    public elle::Object,
-    public virtual elle::Fileable<elle::FormatCustom>
+    public elle::radix::Object,
+    public elle::io::Fileable<Passport>
   {
   public:
     //

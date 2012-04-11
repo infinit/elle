@@ -154,7 +154,7 @@ namespace elle { namespace format { namespace json {
         template<typename T> static inline typename std::enable_if<
               std::is_pointer<T>::value
           &&  !std::is_array<T>::value
-        >::type Construct(T const& value)
+        >::type Construct(T const&)
           { static_assert(!std::is_pointer<T>::value, "You cannot build JSON Object from a pointer"); }
       };
 

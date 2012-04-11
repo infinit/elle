@@ -12,6 +12,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/io/Fileable.hxx>
+#include <elle/utility/SettingsSerializer.hxx>
+
 #include <lune/Configuration.hh>
 
 #include <lune/Lune.hh>

@@ -15,7 +15,6 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Network.hh>
@@ -48,7 +47,7 @@ namespace nucleus
     ///
     class Block:
       public elle::Object,
-      public virtual elle::Fileable<elle::FormatCustom>
+      public elle::io::Fileable<Block>
     {
     public:
       //

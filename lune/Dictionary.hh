@@ -33,8 +33,8 @@ namespace lune
   /// system entities such as UNIX's UIDs/GIDs for instance.
   ///
   class Dictionary:
-    public elle::Object,
-    public virtual elle::Fileable<elle::FormatCustom>
+    public elle::radix::Object,
+    public virtual elle::io::Fileable<Dictionary>
   {
   public:
     //

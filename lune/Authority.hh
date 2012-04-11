@@ -15,7 +15,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+
+#include <elle/cryptography.fwd.hh>
+#include <elle/cryptography/PublicKey.hh>
+#include <elle/io/Fileable.hh>
+#include <elle/radix/Object.hh>
 
 namespace lune
 {
@@ -33,8 +37,8 @@ namespace lune
   /// verify signatures.
   ///
   class Authority:
-    public elle::Object,
-    public virtual elle::Fileable<elle::FormatCustom>
+    public elle::radix::Object,
+    public elle::io::Fileable<Authority>
   {
   public:
     //
@@ -61,8 +65,8 @@ namespace lune
     //
     // methods
     //
-    elle::Status        Create(const elle::KeyPair&);
-    elle::Status        Create(const elle::PublicKey&);
+    elle::Status        Create(const elle::cryptography::KeyPair&);
+    elle::Status        Create(const elle::cryptography::PublicKey&);
 
     elle::Status        Encrypt(const elle::String&);
     elle::Status        Decrypt(const elle::String&);
@@ -93,10 +97,10 @@ namespace lune
     //
     Type                type;
 
-    elle::PublicKey     K;
-    elle::PrivateKey*   k;
+    elle::cryptography::PublicKey     K;
+    elle::cryptography::PrivateKey*   k;
 
-    elle::Cipher*       cipher;
+    elle::cryptography::Cipher*       cipher;
   };
 
 }

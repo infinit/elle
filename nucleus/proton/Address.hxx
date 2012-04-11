@@ -11,6 +11,8 @@
 #ifndef NUCLEUS_PROTON_ADDRESS_HXX
 #define NUCLEUS_PROTON_ADDRESS_HXX
 
+#include <elle/cryptography/OneWay.hh>
+
 namespace nucleus
 {
   namespace proton
@@ -43,14 +45,15 @@ namespace nucleus
         delete this->digest;
 
       // allocate the digest object.
-      this->digest = new elle::Digest;
+      this->digest = new elle::cryptography::Digest;
 
       // compute the digest based on the parameters. note that most of
       // the components requesting this method pass family and component
       // in the parameters as well. for examples, please refer to
       // ContentHashBlock, PublicKeyBlock etc.
-      if (elle::OneWay::Hash(parameter, parameters...,
-                             *this->digest) == elle::StatusError)
+      if (elle::cryptography::OneWay::Hash(
+            parameter, parameters...,
+            *this->digest) == elle::StatusError)
         escape("unable to hash the given parameter(s)");
 
       return elle::StatusOk;

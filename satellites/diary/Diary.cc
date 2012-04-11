@@ -259,7 +259,7 @@ namespace satellite
 
           // display a message.
           std::cout << "The sequence of file system operations have been "
-                    << "successfully recorded in '" << path.string << "'!"
+                    << "successfully recorded in '" << path.str() << "'!"
                     << std::endl;
 
           break;

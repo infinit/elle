@@ -72,10 +72,14 @@ namespace elle
 
       // archivable: nothing
 
-      //
-      // attributes
-      //
-      String            string;
+    private:
+      String            _string;
+
+    public:
+      std::string const& str() const
+        { return this->_string; }
+      std::string& str()
+        { return this->_string; }
     };
 
   }

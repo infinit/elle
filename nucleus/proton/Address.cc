@@ -97,7 +97,7 @@ namespace nucleus
       // copy the digest, if present.
       if (address.digest != NULL)
         {
-          this->digest = new elle::Digest(*address.digest);
+          this->digest = new elle::cryptography::Digest(*address.digest);
         }
       else
         {
@@ -269,7 +269,7 @@ namespace nucleus
       else
         {
           // allocate a digest.
-          this->digest = new elle::Digest;
+          this->digest = new elle::cryptography::Digest;
 
           // extract the internal digest.
           if (archive.Extract(

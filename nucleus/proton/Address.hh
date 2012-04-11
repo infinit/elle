@@ -15,7 +15,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/cryptography/Digest.hh>
+#include <elle/io/Fileable.hh>
+#include <elle/serialize/Base64Archive.fwd.hh>
 
 #include <nucleus/proton/Family.hh>
 
@@ -47,7 +49,7 @@ namespace nucleus
     ///
     class Address:
       public elle::Object,
-      public elle::Fileable<elle::FormatBase64>
+      public elle::io::Fileable<Address, elle::serialize::Base64Archive>
     {
     public:
       //
@@ -102,7 +104,7 @@ namespace nucleus
       Family                    family;
       neutron::Component        component;
 
-      elle::Digest*             digest;
+      elle::cryptography::Digest* digest;
     };
 
   }

@@ -61,7 +61,7 @@ namespace lune
   ///
   /// this method creates an authority based on the given key pair.
   ///
-  elle::Status          Authority::Create(const elle::KeyPair&  pair)
+  elle::Status          Authority::Create(elle::cryptography::KeyPair const&  pair)
   {
     // set the type.
     this->type = Authority::TypePair;
@@ -78,7 +78,7 @@ namespace lune
   ///
   /// this method creates an authority based on the given public key only.
   ///
-  elle::Status          Authority::Create(const elle::PublicKey&        K)
+  elle::Status          Authority::Create(elle::cryptography::PublicKey const& K)
   {
     // set the type.
     this->type = Authority::TypePublic;

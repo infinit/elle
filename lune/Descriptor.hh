@@ -15,7 +15,6 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
 
 #include <hole/Model.hh>
@@ -36,8 +35,8 @@ namespace lune
   /// role of identifier.
   ///
   class Descriptor:
-    public elle::Object,
-    public virtual elle::Fileable<elle::FormatCustom>
+    public elle::radix::Object,
+    public elle::io::Fileable<Descriptor>
   {
   public:
     //

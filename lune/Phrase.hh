@@ -15,7 +15,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+# include <elle/radix/Object.hh>
+# include <elle/io/Fileable.hh>
 
 namespace lune
 {
@@ -37,8 +38,8 @@ namespace lune
   /// connect to in order to issue requests to Infinit.
   ///
   class Phrase:
-    public elle::Object,
-    public virtual elle::Fileable<elle::FormatCustom>
+    public elle::radix::Object,
+    public elle::io::Fileable<Phrase>
   {
   public:
     //

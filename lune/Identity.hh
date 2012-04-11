@@ -15,12 +15,16 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
-
-#include <lune/Authority.hh>
+# include <elle/cryptography.fwd.hh>
+# include <elle/cryptography/KeyPair.hh>
+# include <elle/cryptography/Signature.hh>
+# include <elle/io/Fileable.hh>
+# include <elle/radix/Object.hh>
 
 namespace lune
 {
+
+  class Authority;
 
 //
 // ---------- classes ---------------------------------------------------------
@@ -34,8 +38,8 @@ namespace lune
   /// role of identifier.
   ///
   class Identity:
-    public elle::Object,
-    public virtual elle::Fileable<elle::FormatCustom>
+    public elle::radix::Object,
+    public elle::io::Fileable<Identity>
   {
   public:
     //
@@ -62,7 +66,7 @@ namespace lune
     // methods
     //
     elle::Status        Create(const elle::String&,
-                               const elle::KeyPair&);
+                               const elle::cryptography::KeyPair&);
 
     elle::Status        Encrypt(const elle::String&);
     elle::Status        Decrypt(const elle::String&);
@@ -100,11 +104,11 @@ namespace lune
     //
     // attributes
     //
-    elle::String        name;
-    elle::KeyPair       pair;
-    elle::Signature     signature;
+    elle::String                      name;
+    elle::cryptography::KeyPair       pair;
+    elle::cryptography::Signature     signature;
 
-    elle::Cipher*       cipher;
+    elle::cryptography::Cipher*       cipher;
   };
 
 }
