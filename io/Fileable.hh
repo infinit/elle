@@ -1,93 +1,44 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [fri apr 30 17:35:00 2010]
-//
-
 #ifndef ELLE_IO_FILEABLE_HH
-#define ELLE_IO_FILEABLE_HH
+# define ELLE_IO_FILEABLE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/standalone/Maid.hh>
-#include <elle/standalone/Report.hh>
-
-#include <elle/radix/Status.hh>
-
-#include <elle/io/Format.hh>
-#include <elle/io/Path.hh>
+# include <elle/io/Path.hh>
+# include <elle/radix/Status.hh>
+# include <elle/serialize/BinaryArchive.fwd.hh>
 
 namespace elle
 {
-  using namespace standalone;
   using namespace radix;
 
   namespace io
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
-    /// this interface must be inherited by every class which wishes
-    /// to make its instances fileable i.e storable and loadable
-    /// to/from files.
+    /// Adapt any class to be storable in a file (it uses the Strangly
+    /// Recurring Pattern).
     ///
-    template <const Format F>
-    class Fileable
+    template<
+        typename T
+      , template<elle::serialize::ArchiveMode> class DefaultArchive =
+            elle::serialize::BinaryArchive
+    > class Fileable
     {
     public:
-      //
-      // methods
-      //
+      /// Load T given an archive type and a path
+      template<template<elle::serialize::ArchiveMode> class Archive = DefaultArchive>
+        Status Load(Path const& path);
 
-      ///
-      /// this method loads an object and reconstructs it in memory.
-      ///
-      Status            Load(const Path&)
-      {
-        escape("this method should never have been called");
-      }
-
-      ///
       /// this method stores the object in the given file.
-      ///
-      Status            Store(const Path&) const
-      {
-        escape("this method should never have been called");
-      }
+      template<template<elle::serialize::ArchiveMode> class Archive = DefaultArchive>
+        Status Store(Path const&) const;
 
-      ///
       /// this method erases the given file.
-      ///
-      Status            Erase(const Path&) const
-      {
-        escape("this method should never have been called");
-      }
+      Status Erase(const Path&) const;
 
-      ///
       /// this method returns true if the given file exists.
-      ///
-      Status            Exist(const Path&) const
-      {
-        escape("this method should never have been called");
-      }
+      Status Exist(const Path&) const;
     };
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
-
-#include <elle/io/Fileable.hxx>
 
 #endif

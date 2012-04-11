@@ -1,5 +1,7 @@
 #ifndef ELLE_SERIALIZE_BINARYARCHIVE_FWD_HH
-#define ELLE_SERIALIZE_BINARYARCHIVE_FWD_HH
+# define ELLE_SERIALIZE_BINARYARCHIVE_FWD_HH
+
+# include <elle/serialize/ArchiveMode.hh>
 
 namespace elle { namespace serialize {
 

@@ -1,6 +1,12 @@
 #ifndef ELLE_SERIALIZE_ARCHIVESERIALIZER_HXX
 # define ELLE_SERIALIZE_ARCHIVESERIALIZER_HXX
 
+# include <type_traits>
+
+# include "ArchivableClass.hh"
+# include "ArchiveMode.hh"
+# include "BaseArchive.hxx"
+
 namespace elle { namespace serialize {
 
     ///
@@ -48,14 +54,15 @@ namespace elle { namespace serialize {
     };
 # define ELLE_SERIALIZE_SIMPLE_SERIALIZER(T, archive, value, version)             \
 namespace elle { namespace serialize {                                            \
-    template<typename T> struct ArchiveSerializer<T> :                            \
-      public BaseArchiveSerializer<T> {                                           \
+    template<> struct ArchiveSerializer<T>                                        \
+      : public BaseArchiveSerializer<T>                                           \
+      {                                                                           \
         template<typename Archive>                                                \
           static void Serialize(Archive&, T&, unsigned int);                      \
       };                                                                          \
 }}                                                                                \
-    template<typename T> template<typename Archive>                               \
-          static void elle::serialize::ArchiveSerializer<T>::Serialize(           \
+        template<typename Archive>                                                \
+          void elle::serialize::ArchiveSerializer<T>::Serialize(                  \
                                                       Archive& archive,           \
                                                       T& value,                   \
                                                       unsigned int version)       \

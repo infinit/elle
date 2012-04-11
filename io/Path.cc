@@ -29,7 +29,7 @@ namespace elle
     Status              Path::Create(const String&              string)
     {
       // assign the string.
-      this->string = string;
+      this->_string = string;
 
       return StatusOk;
     }
@@ -40,7 +40,7 @@ namespace elle
     Status              Path::Create(const Pattern&             pattern)
     {
       // assign the pattern.
-      this->string = pattern.string;
+      this->_string = pattern.string;
 
       return StatusOk;
     }
@@ -54,10 +54,10 @@ namespace elle
       String::size_type position;
 
       // as long as the name is located within the string.
-      while ((position = this->string.find(name)) != String::npos)
+      while ((position = this->_string.find(name)) != String::npos)
         {
           // replace the name with the value.
-          this->string.replace(position, name.length(), value);
+          this->_string.replace(position, name.length(), value);
         }
 
       return StatusOk;
@@ -77,7 +77,7 @@ namespace elle
         return StatusTrue;
 
       // compare the internal.
-      if (this->string != element.string)
+      if (this->_string != element.str())
         return StatusFalse;
 
       return StatusTrue;
@@ -100,7 +100,7 @@ namespace elle
       String            alignment(margin, ' ');
 
       std::cout << alignment << "[Path] "
-                << this->string
+                << this->_string
                 << std::endl;
 
       return StatusOk;

@@ -111,6 +111,9 @@ ADD_LIBRARY(elle
   utility/Settings.cc
   utility/Time.cc
 
+  format/ini/Section.cc
+  format/ini/File.cc
+
   format/json/Null.cc
   format/json/Bool.cc
   format/json/Float.cc
@@ -120,6 +123,9 @@ ADD_LIBRARY(elle
   format/json/Object.cc
   format/json/Integer.cc
   format/json/String.cc
+
+  serialize/ArchiveMode.cc
+  serialize/Base64Archive.cc
 
   Elle.cc
 

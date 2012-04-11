@@ -93,19 +93,15 @@ namespace elle
             typename Message<O>::P
             >::Type                             R;
 
+      typedef Callback<Status, Parameters<>> BaseCallback;
+
       //
       // constructors & destructors
       //
       Procedure(const Callback< Status,
                                 R >,
-                const Callback< Status,
-                                Parameters<> > =
-                  Callback< Status,
-                            Parameters<> >::Null,
-                const Callback< Status,
-                                Parameters<> > =
-                  Callback< Status,
-                            Parameters<> >::Null);
+                const BaseCallback = BaseCallback::Null,
+                const BaseCallback = BaseCallback::Null);
 
       //
       // methods

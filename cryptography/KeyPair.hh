@@ -52,7 +52,7 @@ namespace elle
     ///
     class KeyPair:
       public Object,
-      public virtual Fileable<FormatCustom>
+      public Fileable<KeyPair>
     {
     public:
       //

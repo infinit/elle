@@ -1,48 +1,33 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun apr 25 20:56:02 2010]
-//
-
 #ifndef ELLE_UTILITY_SETTINGS_HH
-#define ELLE_UTILITY_SETTINGS_HH
+# define ELLE_UTILITY_SETTINGS_HH
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/String.hh>
-#include <elle/core/Natural.hh>
-
-#include <elle/radix/Status.hh>
-#include <elle/radix/Object.hh>
-#include <elle/radix/Entity.hh>
-
-#include <elle/io/Fileable.hh>
-#include <elle/io/Format.hh>
-#include <elle/io/Uniquable.hh>
-#include <elle/io/Unique.hh>
-
-#include <elle/idiom/Close.hh>
-# include <list>
-#include <elle/idiom/Open.hh>
-
-namespace elle
-{
-  using namespace core;
-  using namespace radix;
-  using namespace io;
-
-  namespace utility
-  {
-
+//#include <elle/core/String.hh>
+//#include <elle/core/Natural.hh>
 //
-// ---------- classes ---------------------------------------------------------
+//#include <elle/radix/Status.hh>
+//#include <elle/radix/Object.hh>
+//#include <elle/radix/Entity.hh>
 //
+//#include <elle/io/Fileable.hh>
+//#include <elle/io/Format.hh>
+//#include <elle/io/Uniquable.hh>
+//#include <elle/io/Unique.hh>
+//
+//#include <elle/idiom/Close.hh>
+//# include <list>
+//#include <elle/idiom/Open.hh>
+
+# include <elle/format/ini/File.hh>
+
+# include <elle/io/Fileable.hh>
+
+# include <elle/serialize/IniArchive.hh>
+
+namespace elle { namespace utility {
 
     ///
     /// this class provides functionalities for human-readable, hence editable,
@@ -51,213 +36,214 @@ namespace elle
     /// note that the class supports both basic types and compound i.e
     /// Uniquable classes through the Behaviour structure dispatcher.
     ///
-    class Settings:
-      public Object,
-      public virtual Fileable<FormatCustom>
-    {
-    public:
-      ///
-      /// this enumeration types every basic element settings are composed of.
-      ///
-      enum Type
-        {
-          TypeUnknown = 0,
-          TypeNull,
-          TypeBoolean,
-          TypeCharacter,
-          TypeReal,
-          TypeInteger8,
-          TypeInteger16,
-          TypeInteger32,
-          TypeInteger64,
-          TypeNatural8,
-          TypeNatural16,
-          TypeNatural32,
-          TypeNatural64,
-          TypeString
-        };
+    class Settings
+      : public elle::format::ini::File
+      , public Fileable<Settings, elle::serialize::IniArchive>
+    {};
 
-      //
-      // classes
-      //
+    //public:
+    //  ///
+    //  /// this enumeration types every basic element settings are composed of.
+    //  ///
+    //  enum Type
+    //    {
+    //      TypeUnknown = 0,
+    //      TypeNull,
+    //      TypeBoolean,
+    //      TypeCharacter,
+    //      TypeReal,
+    //      TypeInteger8,
+    //      TypeInteger16,
+    //      TypeInteger32,
+    //      TypeInteger64,
+    //      TypeNatural8,
+    //      TypeNatural16,
+    //      TypeNatural32,
+    //      TypeNatural64,
+    //      TypeString
+    //    };
 
-      ///
-      /// this class represents an assignment.
-      ///
-      class Assignment:
-        public Entity
-      {
-      public:
-        //
-        // constructors & destructors
-        //
-        Assignment(const String&,
-                   const String&);
+    //  //
+    //  // classes
+    //  //
 
-        //
-        // attributes
-        //
-        String          name;
-        String          value;
-      };
+    //  ///
+    //  /// this class represents an assignment.
+    //  ///
+    //  class Assignment:
+    //    public Entity
+    //  {
+    //  public:
+    //    //
+    //    // constructors & destructors
+    //    //
+    //    Assignment(const String&,
+    //               const String&);
 
-      ///
-      /// this class represents a section.
-      ///
-      class Section:
-        public Entity
-      {
-      public:
-        //
-        // types
-        //
-        typedef std::list<Assignment*>          Container;
-        typedef Container::iterator             Iterator;
-        typedef Container::const_iterator       Scoutor;
+    //    //
+    //    // attributes
+    //    //
+    //    String          name;
+    //    String          value;
+    //  };
 
-        //
-        // constructors & destructors
-        //
-        Section(const String&);
-        ~Section();
+    //  ///
+    //  /// this class represents a section.
+    //  ///
+    //  class Section:
+    //    public Entity
+    //  {
+    //  public:
+    //    //
+    //    // types
+    //    //
+    //    typedef std::list<Assignment*>          Container;
+    //    typedef Container::iterator             Iterator;
+    //    typedef Container::const_iterator       Scoutor;
 
-        //
-        // methods
-        //
-        Status          Exist(const String&);
-        Status          Add(const String&,
-                            const String&);
-        Status          Lookup(const String&,
-                               String&);
-        Status          Update(const String&,
-                               const String&);
-        Status          Remove(const String&);
-        Status          Locate(const String&,
-                               Iterator* = NULL);
+    //    //
+    //    // constructors & destructors
+    //    //
+    //    Section(const String&);
+    //    ~Section();
 
-        //
-        // attributes
-        //
-        String          identifier;
+    //    //
+    //    // methods
+    //    //
+    //    Status          Exist(const String&);
+    //    Status          Add(const String&,
+    //                        const String&);
+    //    Status          Lookup(const String&,
+    //                           String&);
+    //    Status          Update(const String&,
+    //                           const String&);
+    //    Status          Remove(const String&);
+    //    Status          Locate(const String&,
+    //                           Iterator* = NULL);
 
-        Container       assignments;
-      };
+    //    //
+    //    // attributes
+    //    //
+    //    String          identifier;
 
-      //
-      // types
-      //
-      typedef std::list<Section*>               Container;
-      typedef Container::iterator               Iterator;
-      typedef Container::const_iterator         Scoutor;
+    //    Container       assignments;
+    //  };
 
-      //
-      // static methods
-      //
-      static Status     Trim(const String&,
-                             String&,
-                             const String& = "\n\t\r\v ");
+    //  //
+    //  // types
+    //  //
+    //  typedef std::list<Section*>               Container;
+    //  typedef Container::iterator               Iterator;
+    //  typedef Container::const_iterator         Scoutor;
 
-      //
-      // constructors & destructors
-      //
-      ~Settings();
+    //  //
+    //  // static methods
+    //  //
+    //  static Status     Trim(const String&,
+    //                         String&,
+    //                         const String& = "\n\t\r\v ");
 
-      //
-      // methods
-      //
-      Status            Add(const String&);
-      Status            Lookup(const String&,
-                               Section*&);
-      Status            Remove(const String&);
-      Status            Locate(const String&,
-                               Iterator* = NULL);
-      Status            Find(const String&,
-                             const String&);
+    //  //
+    //  // constructors & destructors
+    //  //
+    //  ~Settings();
 
-      Status            Write(const String&,
-                              const String&,
-                              const String&);
-      Status            Read(const String&,
-                             const String&,
-                             String&);
+    //  //
+    //  // methods
+    //  //
+    //  Status            Add(const String&);
+    //  Status            Lookup(const String&,
+    //                           Section*&);
+    //  Status            Remove(const String&);
+    //  Status            Locate(const String&,
+    //                           Iterator* = NULL);
+    //  Status            Find(const String&,
+    //                         const String&);
 
-      template <typename T>
-      Status            Set(const String&,
-                            const String&,
-                            const T&);
-      template <typename T>
-      Status            Get(const String&,
-                            const String&,
-                            T&);
-      template <typename T>
-      Status            Get(const String&,
-                            const String&,
-                            T&,
-                            const T&);
+    //  Status            Write(const String&,
+    //                          const String&,
+    //                          const String&);
+    //  Status            Read(const String&,
+    //                         const String&,
+    //                         String&);
 
-      //
-      // behaviours
-      //
-      template <typename T, Boolean C>
-      struct            Behaviour
-      {
-        static Status   Set(Settings&,
-                            const String&,
-                            const String&,
-                            const T&);
-        static Status   Get(Settings&,
-                            const String&,
-                            const String&,
-                            T&);
-        static Status   Get(Settings&,
-                            const String&,
-                            const String&,
-                            T&,
-                            const T);
-      };
+    //  template <typename T>
+    //  Status            Set(const String&,
+    //                        const String&,
+    //                        const T&);
+    //  template <typename T>
+    //  Status            Get(const String&,
+    //                        const String&,
+    //                        T&);
+    //  template <typename T>
+    //  Status            Get(const String&,
+    //                        const String&,
+    //                        T&,
+    //                        const T&);
 
-      template <typename T>
-      struct            Behaviour<T, true>
-      {
-        template <const Format F>
-        static Status   Set(Settings&,
-                            const String&,
-                            const String&,
-                            const Uniquable<F>&);
-        template <const Format F>
-        static Status   Get(Settings&,
-                            const String&,
-                            const String&,
-                            Uniquable<F>&);
-        template <const Format F>
-        static Status   Get(Settings&,
-                            const String&,
-                            const String&,
-                            Uniquable<F>&,
-                            const Uniquable<F>);
-      };
+    //  //
+    //  // behaviours
+    //  //
+    //  template <typename T, Boolean C>
+    //  struct            Behaviour
+    //  {
+    //    static Status   Set(Settings&,
+    //                        const String&,
+    //                        const String&,
+    //                        const T&);
+    //    static Status   Get(Settings&,
+    //                        const String&,
+    //                        const String&,
+    //                        T&);
+    //    static Status   Get(Settings&,
+    //                        const String&,
+    //                        const String&,
+    //                        T&,
+    //                        const T);
+    //  };
 
-      //
-      // interfaces
-      //
+    //  template <typename T>
+    //  struct            Behaviour<T, true>
+    //  {
+    //    template <const Format F>
+    //    static Status   Set(Settings&,
+    //                        const String&,
+    //                        const String&,
+    //                        const Uniquable<F>&);
+    //    template <const Format F>
+    //    static Status   Get(Settings&,
+    //                        const String&,
+    //                        const String&,
+    //                        Uniquable<F>&);
+    //    template <const Format F>
+    //    static Status   Get(Settings&,
+    //                        const String&,
+    //                        const String&,
+    //                        Uniquable<F>&,
+    //                        const Uniquable<F>);
+    //  };
 
-      // object
-      declare(Settings);
+    //  //
+    //  // interfaces
+    //  //
 
-      // dumpable
-      Status            Dump(const Natural32 = 0) const;
+    //  // object
+    //  declare(Settings);
 
-      // fileable
-      Status            Load(const Path&);
-      Status            Store(const Path&) const;
-      Status            Erase(const Path&) const;
-      Status            Exist(const Path&) const;
+    //  // dumpable
+    //  Status            Dump(const Natural32 = 0) const;
 
-      //
-      // attributes
-      //
-      Container         sections;
-    };
+    //  // fileable
+    //  //Status            Load(const Path&);
+    //  //Status            Store(const Path&) const;
+    //  //Status            Erase(const Path&) const;
+    //  //Status            Exist(const Path&) const;
+
+    //  //
+    //  // attributes
+    //  //
+    //  Container         sections;
+    //};
 
   }
 }
@@ -266,6 +252,6 @@ namespace elle
 // ---------- templates -------------------------------------------------------
 //
 
-#include <elle/utility/Settings.hxx>
+//#include <elle/utility/Settings.hxx>
 
 #endif
