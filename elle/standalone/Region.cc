@@ -257,6 +257,7 @@ namespace elle
           // otherwise, enlarge the buffer's capacity.
           this->capacity = size;
 
+          // XXX this->contents set to nullptr, but old pointer not freed.
           if ((this->contents =
                static_cast<Byte*>(::realloc(this->contents,
                                             this->capacity))) == NULL)

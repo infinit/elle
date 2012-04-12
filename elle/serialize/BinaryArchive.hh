@@ -34,6 +34,9 @@ namespace elle { namespace serialize {
         template<typename T> BinaryArchive(StreamType& stream, T& value)
           : BaseClass(stream, value)
         {}
+      public:
+        using BaseClass::SaveBinary;
+        using BaseClass::LoadBinary;
       };
 
 }} // !elle::serialize
