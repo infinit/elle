@@ -38,22 +38,11 @@ namespace elle
     class Dumpable
     {
     public:
-      //
-      // constants
-      //
       static const String               Shift;
 
-      //
-      // constructors & destructors
-      //
-      virtual ~Dumpable()
-      {
-      }
+      virtual ~Dumpable() {}
 
-      //
-      // methods
-      //
-      virtual Status    Dump(const Natural32 = 0) const;
+      virtual Status    Dump(const Natural32 shift = 0) const = 0;
     };
 
   }

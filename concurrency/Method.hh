@@ -70,7 +70,8 @@ namespace elle
       /// this class is a base for inheritance.
       ///
       class Shell:
-        public Object
+        public Object,
+        public Dumpable
       {
       public:
         //

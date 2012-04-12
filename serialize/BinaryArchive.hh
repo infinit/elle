@@ -27,7 +27,13 @@ namespace elle { namespace serialize {
         typedef typename BaseClass::StreamType StreamType;
 
       public:
-        BinaryArchive(StreamType& stream) : BaseClass(stream) {}
+        BinaryArchive(StreamType& stream)
+          : BaseClass(stream)
+        {}
+
+        template<typename T> BinaryArchive(StreamType& stream, T& value)
+          : BaseClass(stream, value)
+        {}
       };
 
 }} // !elle::serialize

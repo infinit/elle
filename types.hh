@@ -2,8 +2,8 @@
 # define ELLE_TYPES_HH
 
 ///
-/// light weight header for elle library.  It include basic types defined in
-/// elle/core, and publish in the root namespace.
+/// light weight header for elle library.  It includes basic types defined in
+/// elle/core, and publishes them in the elle namespace.
 ///
 
 # include <elle/core.hh>
