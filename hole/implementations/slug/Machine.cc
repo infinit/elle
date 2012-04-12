@@ -134,12 +134,7 @@ namespace hole
           auto                  end = Hole::Set.loci.end();
 
           // retrieve the machine's listening port.
-          if (Infinit::Configuration.Get(
-                "hole", "slug.port",
-                this->port,
-                Machine::Default::Port) == elle::StatusError)
-            escape("unable to retrieve the slug's local port from the "
-                   "network descriptor");
+          this->port = Infinit::Configuration["hole"].Get("slug.port", Machine::Default::Port);
 
           // for every locus in the set.
           for (; iterator != end; ++iterator)

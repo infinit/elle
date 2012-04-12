@@ -94,92 +94,37 @@ namespace lune
     //
     // etoile
     //
-    {
-      if (elle::Settings::Set(
-            "etoile", "debug",
-            this->etoile.debug) == elle::StatusError)
-        escape("unable to update the parameter");
-
-      if (elle::Settings::Set(
-            "etoile", "gear.containment",
-            this->etoile.gear.containment) == elle::StatusError)
-        escape("unable to update the parameter");
-
-      if (elle::Settings::Set(
-            "etoile", "shrub.status",
-            this->etoile.shrub.status) == elle::StatusError)
-        escape("unable to update the parameter");
-
-      if (elle::Settings::Set(
-            "etoile", "shrub.capacity",
-            this->etoile.shrub.capacity) == elle::StatusError)
-        escape("unable to update the parameter");
-
-      if (elle::Settings::Set(
-            "etoile", "shrub.lifespan",
-            this->etoile.shrub.lifespan) == elle::StatusError)
-        escape("unable to update the parameter");
-
-      if (elle::Settings::Set(
-            "etoile", "shrub.frequency",
-            this->etoile.shrub.frequency) == elle::StatusError)
-        escape("unable to update the parameter");
-
-      if (elle::Settings::Set(
-            "etoile", "history.status",
-            this->etoile.history.status) == elle::StatusError)
-      escape("unable to update the parameter");
-
-      if (elle::Settings::Set(
-            "etoile", "history.indicator.root",
-            this->etoile.history.indicator.root) == elle::StatusError)
-        escape("unable to update the parameter");
-
-      if (elle::Settings::Set(
-            "etoile", "history.indicator.slab",
-            this->etoile.history.indicator.slab) == elle::StatusError)
-        escape("unable to update the parameter");
-    }
+    (*this)["etoile"].Set("debug", this->etoile.debug);
+    (*this)["etoile"].Set("gear.containment", this->etoile.gear.containment);
+    (*this)["etoile"].Set("shrub.status", this->etoile.shrub.status);
+    (*this)["etoile"].Set("shrub.capacity", this->etoile.shrub.capacity);
+    (*this)["etoile"].Set("shrub.lifespan", this->etoile.shrub.lifespan);
+    (*this)["etoile"].Set("shrub.frequency", this->etoile.shrub.frequency);
+    (*this)["etoile"].Set("history.status", this->etoile.history.status);
+    (*this)["etoile"].Set("history.indicator.root",
+                          this->etoile.history.indicator.root);
+    (*this)["etoile"].Set("history.indicator.slab",
+                          this->etoile.history.indicator.slab);
 
     //
     // nucleus
     //
-    {
-      if (elle::Settings::Set(
-            "nucleus", "debug",
-            this->nucleus.debug) == elle::StatusError)
-        escape("unable to update the parameter");
-    }
+    (*this)["nucleus"].Set("debug", this->nucleus.debug);
 
     //
     // hole
     //
-    {
-      if (elle::Settings::Set(
-            "hole", "debug",
-            this->hole.debug) == elle::StatusError)
-        escape("unable to update the parameter");
-    }
+    (*this)["hole"].Set("debug", this->hole.debug);
 
     //
     // horizon
     //
-    {
-      if (elle::Settings::Set(
-            "horizon", "debug",
-            this->horizon.debug) == elle::StatusError)
-        escape("unable to update the parameter");
-    }
+    (*this)["horizon"].Set("debug", this->horizon.debug);
 
     //
     // satellites
     //
-    {
-      if (elle::Settings::Set(
-            "satellites", "debug",
-            this->satellites.debug) == elle::StatusError)
-        escape("unable to update the parameter");
-    }
+    (*this)["satellites"].Set("debug", this->satellites.debug);
 
     return elle::StatusOk;
   }
@@ -193,118 +138,58 @@ namespace lune
     //
     // etoile
     //
-    {
-      if (elle::Settings::Get(
-            "etoile", "debug",
-            this->etoile.debug,
-            Configuration::Default::Etoile::Debug) ==
-          elle::StatusError)
-        escape("unable to retrieve the parameter");
+    this->etoile.debug = (*this)["etoile"].Get("debug",
+        Configuration::Default::Etoile::Debug);
 
-      if (elle::Settings::Get(
-            "etoile", "gear.containment",
-            this->etoile.gear.containment,
-            Configuration::Default::Etoile::Gear::Containment) ==
-          elle::StatusError)
-        escape("unable to retrieve the parameter");
+    this->etoile.gear.containment = (*this)["etoile"].Get("gear.containment",
+        Configuration::Default::Etoile::Gear::Containment);
 
-      if (elle::Settings::Get(
-            "etoile", "shrub.status",
-            this->etoile.shrub.status,
-            Configuration::Default::Etoile::Shrub::Status) ==
-          elle::StatusError)
-        escape("unable to retrieve the parameter");
+    this->etoile.shrub.status = (*this)["etoile"].Get("shrub.status",
+        Configuration::Default::Etoile::Shrub::Status);
 
-      if (elle::Settings::Get(
-            "etoile", "shrub.capacity",
-            this->etoile.shrub.capacity,
-            Configuration::Default::Etoile::Shrub::Capacity) ==
-          elle::StatusError)
-        escape("unable to retrieve the parameter");
+    this->etoile.shrub.capacity = (*this)["etoile"].Get("shrub.capacity",
+        Configuration::Default::Etoile::Shrub::Capacity);
 
-      if (elle::Settings::Get(
-            "etoile", "shrub.lifespan",
-            this->etoile.shrub.lifespan,
-            Configuration::Default::Etoile::Shrub::Lifespan) ==
-          elle::StatusError)
-        escape("unable to retrieve the parameter");
+    this->etoile.shrub.lifespan = (*this)["etoile"].Get("shrub.lifespan",
+        Configuration::Default::Etoile::Shrub::Lifespan);
 
-      if (elle::Settings::Get(
-            "etoile", "shrub.frequency",
-            this->etoile.shrub.frequency,
-            Configuration::Default::Etoile::Shrub::Frequency) ==
-          elle::StatusError)
-        escape("unable to retrieve the parameter");
+    this->etoile.shrub.frequency = (*this)["etoile"].Get("shrub.frequency",
+        Configuration::Default::Etoile::Shrub::Frequency);
 
-      if (elle::Settings::Get(
-            "etoile", "history.status",
-            this->etoile.history.status,
-            Configuration::Default::Etoile::History::Status) ==
-          elle::StatusError)
-        escape("unable to update the parameter");
+    this->etoile.history.status = (*this)["etoile"].Get("history.status",
+        Configuration::Default::Etoile::History::Status);
 
-      if (elle::Settings::Get(
-            "etoile", "history.indicator.root",
-            this->etoile.history.indicator.root,
-            Configuration::Default::Etoile::History::Indicator::Root) ==
-          elle::StatusError)
-        escape("unable to update the parameter");
+    this->etoile.history.indicator.root =
+      (*this)["etoile"].Get("history.indicator.root",
+          Configuration::Default::Etoile::History::Indicator::Root);
 
-      if (elle::Settings::Get(
-            "etoile", "history.indicator.slab",
-            this->etoile.history.indicator.slab,
-            Configuration::Default::Etoile::History::Indicator::Slab) ==
-          elle::StatusError)
-        escape("unable to update the parameter");
-    }
+    this->etoile.history.indicator.slab =
+      (*this)["etoile"].Get("history.indicator.slab",
+          Configuration::Default::Etoile::History::Indicator::Slab);
 
     //
     // nucleus
     //
-    {
-      if (elle::Settings::Get(
-            "nucleus", "debug",
-            this->nucleus.debug,
-            Configuration::Default::Nucleus::Debug) ==
-          elle::StatusError)
-        escape("unable to retrieve the parameter");
-    }
+    this->nucleus.debug = (*this)["nucleus"].Get("debug",
+        Configuration::Default::Nucleus::Debug);
 
     //
     // hole
     //
-    {
-      if (elle::Settings::Get(
-            "hole", "debug",
-            this->hole.debug,
-            Configuration::Default::Hole::Debug) ==
-          elle::StatusError)
-        escape("unable to retrieve the parameter");
-    }
+    this->hole.debug = (*this)["hole"].Get("debug",
+        Configuration::Default::Hole::Debug);
 
     //
     // horizon
     //
-    {
-      if (elle::Settings::Get(
-            "horizon", "debug",
-            this->horizon.debug,
-            Configuration::Default::Horizon::Debug) ==
-          elle::StatusError)
-        escape("unable to retrieve the parameter");
-    }
+    this->horizon.debug = (*this)["horizon"].Get("debug",
+        Configuration::Default::Horizon::Debug);
 
     //
     // satellites
     //
-    {
-      if (elle::Settings::Get(
-            "satellites", "debug",
-            this->satellites.debug,
-            Configuration::Default::Satellites::Debug) ==
-          elle::StatusError)
-        escape("unable to retrieve the parameter");
-    }
+    this->satellites.debug = (*this)["satellites"].Get("debug",
+        Configuration::Default::Satellites::Debug);
 
     return elle::StatusOk;
   }
@@ -316,7 +201,7 @@ namespace lune
   ///
   /// this macro-function call generates the object.
   ///
-  embed(Configuration, _());
+  //embed(Configuration, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
