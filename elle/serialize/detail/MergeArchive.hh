@@ -3,6 +3,8 @@
 
 # include <boost/mpl/if.hpp>
 
+# include <elle/serialize/ArchiveMode.hh>
+
 namespace elle { namespace serialize { namespace detail {
 
     template<typename InputArchive,
@@ -42,6 +44,10 @@ namespace elle { namespace serialize { namespace detail {
       );                                                                      \
     public:                                                                   \
       class_name(typename BaseClass::StreamType& stream) : BaseClass(stream)  \
+        {}                                                                    \
+      template<typename T>                                                    \
+      class_name(typename BaseClass::StreamType& stream,                      \
+                 T const& value) : BaseClass(stream, value)                   \
         {}                                                                    \
     };                                                                        \
 

@@ -1,26 +1,6 @@
 #ifndef ELLE_UTILITY_SETTINGS_HH
 # define ELLE_UTILITY_SETTINGS_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-//#include <elle/core/String.hh>
-//#include <elle/core/Natural.hh>
-//
-//#include <elle/radix/Status.hh>
-//#include <elle/radix/Object.hh>
-//#include <elle/radix/Entity.hh>
-//
-//#include <elle/io/Fileable.hh>
-//#include <elle/io/Format.hh>
-//#include <elle/io/Uniquable.hh>
-//#include <elle/io/Unique.hh>
-//
-//#include <elle/idiom/Close.hh>
-//# include <list>
-//#include <elle/idiom/Open.hh>
-
 # include <elle/format/ini/File.hh>
 
 # include <elle/io/Fileable.hh>
@@ -38,9 +18,12 @@ namespace elle { namespace utility {
     ///
     class Settings
       : public elle::format::ini::File
-      , public Fileable<Settings, elle::serialize::IniArchive>
-    {};
-
+      , public elle::io::Fileable<Settings, elle::serialize::IniArchive>
+      , public elle::io::Dumpable
+    {
+    public:
+      Status Dump(Natural32 const indent = 0) const;
+    };
     //public:
     //  ///
     //  /// this enumeration types every basic element settings are composed of.

@@ -9,17 +9,17 @@
 
 using namespace elle::serialize;
 
-OutputIniArchive(StreamType& stream)
+OutputIniArchive::OutputIniArchive(StreamType& stream)
   : BaseClass(stream)
 {}
 
-OutputIniArchive(StreamType& stream, elle::format::ini::File const& ini_file)
+OutputIniArchive::OutputIniArchive(StreamType& stream, elle::format::ini::File const& ini_file)
   : BaseClass(stream)
 {
   *this << ini_file;
 }
 
-OutputIniArchive& operator <<(elle::format::ini::Section const& section)
+OutputIniArchive& OutputIniArchive::operator <<(elle::format::ini::Section const& section)
 {
   this->stream() << "[" << section.name() << "]\n";
   auto it = section.begin(),
@@ -29,7 +29,7 @@ OutputIniArchive& operator <<(elle::format::ini::Section const& section)
   return *this;
 }
 
-OutputIniArchive& operator <<(elle::format::ini::File const& ini_file)
+OutputIniArchive& OutputIniArchive::operator <<(elle::format::ini::File const& ini_file)
 {
   auto it = ini_file.begin(),
        end = ini_file.end();
@@ -61,7 +61,7 @@ InputIniArchive& InputIniArchive::operator >>(elle::format::ini::File& file)
           auto end = line.find(']');
           if (end == std::string::npos)
             throw std::runtime_error("Couldn't find ']' character");
-          auto section_name = boost::trim(line.substr(1, end - 1));
+          auto section_name = boost::trim_copy(line.substr(1, end - 1));
           if (section_name.empty())
             throw std::runtime_error("A section name cannot be empty");
           section = &file[section_name];
@@ -71,13 +71,14 @@ InputIniArchive& InputIniArchive::operator >>(elle::format::ini::File& file)
           size_t pos;
           if ((pos = line.find('=')) == std::string::npos)
             throw std::runtime_error("No equal sign found in a section");
-          std::string name = boost::trim(line.substr(0, pos)),
-                      value = boost::trim(line.substr(pos + 1));
+          std::string name = boost::trim_copy(line.substr(0, pos)),
+                      value = boost::trim_copy(line.substr(pos + 1));
           if (name.empty())
             throw std::runtime_error("setting name cannot be empty");
           (*section)[name] = value;
         }
     }
+  return *this;
 }
 
 

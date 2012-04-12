@@ -12,6 +12,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/format/ini.hxx>
+
 #include <hole/implementations/slug/Machine.hh>
 #include <hole/implementations/slug/Manifest.hh>
 #include <hole/Hole.hh>

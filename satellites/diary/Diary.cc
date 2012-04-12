@@ -12,7 +12,10 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <satellites/diary/Diary.hh>
+#include <elle/io/Fileable.hxx>
+
+#include "Diary.hh"
+#include "MemoirsSerializer.hxx"
 
 namespace satellite
 {

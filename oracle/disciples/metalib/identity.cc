@@ -13,6 +13,7 @@
 #include "elle/core/String.hh"
 
 #include "lune/Identity.hh"
+#include "lune/Authority.hh"
 
 // XXX When Qt is out, remove this
 #ifdef slots
@@ -36,10 +37,10 @@ static lune::Identity create_identity(elle::String const& authority_file,
                                       elle::String const& login,
                                       elle::String const& password)
 {
-  elle::KeyPair       pair;
-  lune::Authority     authority;
-  elle::Path          authority_path;
-  lune::Identity      identity;
+  elle::cryptography::KeyPair       pair;
+  lune::Authority                   authority;
+  elle::Path                        authority_path;
+  lune::Identity                    identity;
 
   // check the argument.
   if (login.empty() == true)

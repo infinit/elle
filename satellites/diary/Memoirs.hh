@@ -15,7 +15,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/io/Fileable.hh>
+#include <elle/io/Dumpable.hh>
+
+#include <elle/types.hh>
+//#include <elle/radix.hh>
 
 namespace satellite
 {
@@ -29,7 +33,8 @@ namespace satellite
   ///
   class Memoirs:
     public elle::Object,
-    public elle::Fileable<Memoirs>
+    public elle::io::Dumpable,
+    public elle::io::Fileable<Memoirs>
   {
   public:
     //
@@ -40,8 +45,8 @@ namespace satellite
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // archivable
-    elle::Status        Serialize(elle::Archive&) const;
-    elle::Status        Extract(elle::Archive&);
+    //elle::Status        Serialize(elle::Archive&) const;
+    //elle::Status        Extract(elle::Archive&);
 
     // fileable
     //elle::Status        Load(const elle::Path&);

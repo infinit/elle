@@ -56,7 +56,7 @@ namespace elle
     class Object:
       public Meta,
       public Resource,
-      public virtual Dumpable,
+//      public virtual Dumpable,
       public virtual Archivable,
       public virtual Uniquable<FormatBase64>
     {

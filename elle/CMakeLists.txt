@@ -126,6 +126,8 @@ ADD_LIBRARY(elle
 
   serialize/ArchiveMode.cc
   serialize/Base64Archive.cc
+  serialize/JSONArchive.cc
+  serialize/IniArchive.cc
 
   Elle.cc
 

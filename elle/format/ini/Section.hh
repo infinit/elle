@@ -32,6 +32,8 @@ namespace elle { namespace format { namespace ini {
       elle::String const& operator [](elle::String const& key) const;
       elle::String& operator [](elle::String const& key);
 
+      elle::String const& name() const { return _name; }
+
       const_iterator begin() const { return _pairs.begin(); }
       const_iterator end() const { return _pairs.end(); }
       size_t size() const { return _pairs.size(); }

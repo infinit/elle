@@ -5,7 +5,6 @@
 
 # include "ArchivableClass.hh"
 # include "ArchiveMode.hh"
-# include "BaseArchive.hxx"
 
 namespace elle { namespace serialize {
 

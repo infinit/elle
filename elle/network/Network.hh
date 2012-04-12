@@ -72,7 +72,8 @@ namespace elle
       /// this class represents the functionoid used to forward the call.
       ///
       class Functionoid:
-        public Entity
+        public Entity,
+        public Dumpable
       {
       public:
         //

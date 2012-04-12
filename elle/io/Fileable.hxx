@@ -1,9 +1,7 @@
 #ifndef ELLE_IO_FILEABLE_HXX
 # define ELLE_IO_FILEABLE_HXX
 
-# include <elle/core/Byte.hh>
-# include <elle/core/Natural.hh>
-# include <elle/core/String.hh>
+# include <elle/core.hh>
 
 # include <elle/serialize/BinaryArchive.hxx>
 
@@ -53,8 +51,7 @@ namespace elle { namespace io {
 
         try
           {
-            Archive<elle::serialize::ArchiveMode::Output> archive(out);
-            archive << *static_cast<T const*>(this);
+            Archive<elle::serialize::ArchiveMode::Output>(out, *static_cast<T const*>(this));
           }
         catch (std::exception const& err)
           {

@@ -148,6 +148,11 @@ namespace elle { namespace serialize {
         _stream(stream)
       {}
 
+      template<typename T>
+      BaseArchive(StreamType& stream, T& value) :
+        _stream(stream)
+      { *this & value; }
+
     protected:
       /// return the most derived type
       inline Archive& self()   { return *static_cast<Archive*>(this); }

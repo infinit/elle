@@ -1,7 +1,7 @@
 #include <sstream>
 #include <string>
 
-#include "elle/serialize/JSONArchive.hh"
+#include "elle/serialize/JSONArchive.hxx"
 
 #include "Object.hh"
 

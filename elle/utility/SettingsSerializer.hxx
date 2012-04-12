@@ -2,6 +2,7 @@
 # define ELLE_UTILITY_SETTINGSSERIALIZER_HXX
 
 # include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/format/ini/Section.hxx>
 
 # include "Settings.hh"
 
