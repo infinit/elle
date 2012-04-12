@@ -7,9 +7,9 @@
 
 # include "Memoirs.hh"
 
-ELLE_SERIALIZE_SPLITTED(satellite::Memoirs)
+ELLE_SERIALIZE_SPLIT(satellite::Memoirs)
 
-ELLE_SERIALIZE_SPLITTED_SAVE(satellite::Memoirs,
+ELLE_SERIALIZE_SPLIT_SAVE(satellite::Memoirs,
                              archive,
                              memoirs,
                              version)
@@ -17,15 +17,15 @@ ELLE_SERIALIZE_SPLITTED_SAVE(satellite::Memoirs,
   (void) version;
 
   // XXX uses uint64_t to store the size
-  // It means that a 32bit platform might not read successfully a archive of
-  // Memoirs.
+  // It means that a 32bit platform might not read successfully an archive of
+  // the type `satellite::Memoirs'.
   uint64_t size = memoirs.archive.size;
   archive << size;
 
   archive.SaveBinary(memoirs.archive.contents, size);
 }
 
-ELLE_SERIALIZE_SPLITTED_LOAD(satellite::Memoirs,
+ELLE_SERIALIZE_SPLIT_LOAD(satellite::Memoirs,
                              archive,
                              memoirs,
                              version)
