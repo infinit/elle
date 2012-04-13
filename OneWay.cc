@@ -13,25 +13,19 @@
 //
 
 #include <elle/cryptography/OneWay.hh>
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
+
+#include <elle/idiom/Close.hh>
+# include <openssl/evp.h>
+# include <openssl/err.h>
+#include <elle/idiom/Open.hh>
+
 
 namespace elle
 {
   namespace cryptography
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// this constant represents the algorithm used by the OneWay::Hash()
-    /// static method.
-    ///
-    const ::EVP_MD*             OneWay::Algorithm = ::EVP_sha256();
-
-//
-// ---------- methods ---------------------------------------------------------
-//
 
     ///
     /// this method hashes the given plain, returning a digest object.
@@ -39,11 +33,13 @@ namespace elle
     Status              OneWay::Hash(const Plain&               plain,
                                      Digest&                    digest)
     {
+      static ::EVP_MD const*   Algorithm = ::EVP_sha256();
+
       ::EVP_MD_CTX      context;
       unsigned int      size;
 
       // allocate the digest's contents.
-      if (digest.region.Prepare(EVP_MD_size(OneWay::Algorithm)) == StatusError)
+      if (digest.region.Prepare(EVP_MD_size(OneWay::Algorithm)) == Status::Error)
         escape("unable to allocate memory for the digest");
 
       // initialise the context.
@@ -71,7 +67,7 @@ namespace elle
       if (::EVP_MD_CTX_cleanup(&context) <= 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

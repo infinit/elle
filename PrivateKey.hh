@@ -15,9 +15,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Boolean.hh>
-#include <elle/core/Natural.hh>
-#include <elle/core/Large.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
 
 #include <elle/radix/Status.hh>
 #include <elle/radix/Object.hh>
@@ -41,7 +41,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
   using namespace package;
 
@@ -154,19 +154,19 @@ namespace elle
         Clear           clear;
 
         // decrypt the code.
-        if (this->Decrypt(code, clear) == StatusError)
+        if (this->Decrypt(code, clear) == Status::Error)
           escape("unable to decrypt the code");
 
         // prepare the archive.
-        if (archive.Acquire(clear) == StatusError)
+        if (archive.Acquire(clear) == Status::Error)
           escape("unable to prepare the archive");
 
         // detach the data so that not both the clear and archive
         // release the data.
-        if (clear.Detach() == StatusError)
+        if (clear.Detach() == Status::Error)
           escape("unable to detach the clear's data");
 
-        return StatusOk;
+        return Status::Ok;
       }
 
       Status            Sign(const Archive&             archive,
