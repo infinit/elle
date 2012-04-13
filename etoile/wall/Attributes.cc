@@ -49,7 +49,7 @@ namespace etoile
         printf("[etoile] wall::Attributes::Set()\n");
 
       // select the actor.
-      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+      if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         escape("unable to select the actor");
 
       // retrieve the scope.
@@ -62,13 +62,13 @@ namespace etoile
       zone.Lock();
       {
         // retrieve the context.
-        if (scope->Use(context) == elle::StatusError)
+        if (scope->Use(context) == elle::Status::Error)
           escape("unable to retrieve the context");
 
         // apply the set automaton on the context.
         if (automaton::Attributes::Set(*context,
                                        name,
-                                       value) == elle::StatusError)
+                                       value) == elle::Status::Error)
           escape("unable to set the attribute");
 
         // set the actor's state.
@@ -76,7 +76,7 @@ namespace etoile
       }
       zone.Unlock();
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -101,7 +101,7 @@ namespace etoile
         printf("[etoile] wall::Attributes::Get()\n");
 
       // select the actor.
-      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+      if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         escape("unable to select the actor");
 
       // retrieve the scope.
@@ -114,18 +114,18 @@ namespace etoile
       zone.Lock();
       {
         // retrieve the context.
-        if (scope->Use(context) == elle::StatusError)
+        if (scope->Use(context) == elle::Status::Error)
           escape("unable to retrieve the context");
 
         // apply the get automaton on the context.
         if (automaton::Attributes::Get(*context,
                                        name,
-                                       trait) == elle::StatusError)
+                                       trait) == elle::Status::Error)
           escape("unable to get the attribute");
       }
       zone.Unlock();
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -148,7 +148,7 @@ namespace etoile
         printf("[etoile] wall::Attributes::Fetch()\n");
 
       // select the actor.
-      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+      if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         escape("unable to select the actor");
 
       // retrieve the scope.
@@ -161,17 +161,17 @@ namespace etoile
       zone.Lock();
       {
         // retrieve the context.
-        if (scope->Use(context) == elle::StatusError)
+        if (scope->Use(context) == elle::Status::Error)
           escape("unable to retrieve the context");
 
         // apply the fetch automaton on the context.
         if (automaton::Attributes::Fetch(*context,
-                                         range) == elle::StatusError)
+                                         range) == elle::Status::Error)
           escape("unable to fetch the attribute");
       }
       zone.Unlock();
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -190,7 +190,7 @@ namespace etoile
         printf("[etoile] wall::Attributes::Omit()\n");
 
       // select the actor.
-      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+      if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         escape("unable to select the actor");
 
       // retrieve the scope.
@@ -203,12 +203,12 @@ namespace etoile
       zone.Lock();
       {
         // retrieve the context.
-        if (scope->Use(context) == elle::StatusError)
+        if (scope->Use(context) == elle::Status::Error)
           escape("unable to retrieve the context");
 
         // apply the omit automaton on the context.
         if (automaton::Attributes::Omit(*context,
-                                        name) == elle::StatusError)
+                                        name) == elle::Status::Error)
           escape("unable to omit the attribute");
 
         // set the actor's state.
@@ -216,7 +216,7 @@ namespace etoile
       }
       zone.Unlock();
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

@@ -59,7 +59,7 @@ namespace nucleus
       // set the role.
       this->role = RoleOwner;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -75,7 +75,7 @@ namespace nucleus
       // set the index.
       this->lord.index = index;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -89,11 +89,11 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return elle::Status::True;
 
       // compare the role.
       if (this->role != element.role)
-        return elle::StatusFalse;
+        return elle::Status::False;
 
       // depending on the role.
       switch (this->role)
@@ -114,7 +114,7 @@ namespace nucleus
 
             // compare the indexes.
             if (this->lord.index != element.lord.index)
-              return elle::StatusFalse;
+              return elle::Status::False;
 
             break;
           }
@@ -134,7 +134,7 @@ namespace nucleus
           }
         }
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -191,7 +191,7 @@ namespace nucleus
           }
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -204,7 +204,7 @@ namespace nucleus
     elle::Status        Author::Serialize(elle::Archive&        archive) const
     {
       // serialize the role.
-      if (archive.Serialize(this->role) == elle::StatusError)
+      if (archive.Serialize(this->role) == elle::Status::Error)
         escape("unable to serialize the role");
 
       // depending on the role.
@@ -225,7 +225,7 @@ namespace nucleus
             //
 
             // serialize the index.
-            if (archive.Serialize(this->lord.index) == elle::StatusError)
+            if (archive.Serialize(this->lord.index) == elle::Status::Error)
               escape("unable to serialize the index");
 
             break;
@@ -243,7 +243,7 @@ namespace nucleus
           }
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -252,7 +252,7 @@ namespace nucleus
     elle::Status        Author::Extract(elle::Archive&          archive)
     {
       // extract the role.
-      if (archive.Extract(this->role) == elle::StatusError)
+      if (archive.Extract(this->role) == elle::Status::Error)
         escape("unable to extract the role");
 
       // depending on the role.
@@ -273,7 +273,7 @@ namespace nucleus
             //
 
             // extract the index.
-            if (archive.Extract(this->lord.index) == elle::StatusError)
+            if (archive.Extract(this->lord.index) == elle::Status::Error)
               escape("unable to extract the index");
 
             break;
@@ -291,7 +291,7 @@ namespace nucleus
           }
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

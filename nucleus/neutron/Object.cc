@@ -63,7 +63,7 @@ namespace nucleus
       // (i)
       {
         // create the underlying owner key block.
-        if (proton::ImprintBlock::Create(owner) == elle::StatusError)
+        if (proton::ImprintBlock::Create(owner) == elle::Status::Error)
           escape("unable to create the underlying owner key block");
       }
 
@@ -75,7 +75,7 @@ namespace nucleus
         // set the initial owner permissions to all with an empty key.
         if (this->Administrate(
               this->meta.attributes,
-              PermissionRead | PermissionWrite) == elle::StatusError)
+              PermissionRead | PermissionWrite) == elle::Status::Error)
           escape("unable to set the initial meta data");
       }
 
@@ -84,7 +84,7 @@ namespace nucleus
         Author          author;
 
         // set an owner author.
-        if (author.Create() == elle::StatusError)
+        if (author.Create() == elle::Status::Error)
           escape("unable to create an author");
 
         // set the initial data with no contents and the owner as the author.
@@ -92,11 +92,11 @@ namespace nucleus
                          proton::Address::Null,
                          0,
                          proton::Address::Null,
-                         this->meta.owner.token) == elle::StatusError)
+                         this->meta.owner.token) == elle::Status::Error)
           escape("unable to set the initial data");
       }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -117,7 +117,7 @@ namespace nucleus
       //
       {
         // set the last update time.
-        if (this->data.stamp.Current() == elle::StatusError)
+        if (this->data.stamp.Current() == elle::Status::Error)
           escape("unable to set the last update time");
 
         // set the address.
@@ -145,7 +145,7 @@ namespace nucleus
       // mark the block as dirty.
       this->state = proton::StateDirty;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -155,7 +155,7 @@ namespace nucleus
                                              const Permissions& permissions)
     {
       // set the last management time.
-      if (this->meta.stamp.Current() == elle::StatusError)
+      if (this->meta.stamp.Current() == elle::Status::Error)
         escape("unable to set the last management time");
 
       // set the attributes.
@@ -173,13 +173,13 @@ namespace nucleus
       if (this->meta.owner.record.Update(
             this->owner.subject,
             this->meta.owner.permissions,
-            this->meta.owner.token) == elle::StatusError)
+            this->meta.owner.token) == elle::Status::Error)
         escape("unable to create the owner access record");
 
       // set the the block as dirty.
       this->state = proton::StateDirty;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -203,7 +203,7 @@ namespace nucleus
                      this->meta.owner.token,
                      this->meta.access,
 
-                     this->data.signature) == elle::StatusError)
+                     this->data.signature) == elle::Status::Error)
             escape("unable to sign the data archive");
 
           // mark the section as consistent.
@@ -238,7 +238,7 @@ namespace nucleus
 
               // compute the fingerprint of the access (subject, permissions)
               // tuples.
-              if (access.Fingerprint(fingerprint) == elle::StatusError)
+              if (access.Fingerprint(fingerprint) == elle::Status::Error)
                 escape("unable to compute the access block fingerprint");
 
               // sign the meta data, making sure to include the access
@@ -251,7 +251,7 @@ namespace nucleus
 
                          fingerprint,
 
-                         this->meta.signature) == elle::StatusError)
+                         this->meta.signature) == elle::Status::Error)
                 escape("unable to sign the meta archive");
             }
           else
@@ -268,7 +268,7 @@ namespace nucleus
                          this->meta.attributes,
                          this->meta.version,
 
-                         this->meta.signature) == elle::StatusError)
+                         this->meta.signature) == elle::Status::Error)
                 escape("unable to sign the meta archive");
             }
 
@@ -282,7 +282,7 @@ namespace nucleus
       // set the block as consistent.
       this->state = proton::StateConsistent;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -315,7 +315,7 @@ namespace nucleus
       // (i)
       {
         // call the parent class.
-        if (proton::ImprintBlock::Validate(address) == elle::StatusError)
+        if (proton::ImprintBlock::Validate(address) == elle::Status::Error)
           escape("unable to verify the underlying physical block");
       }
 
@@ -332,7 +332,7 @@ namespace nucleus
 
             // compute the fingerprint of the access (subject, permissions)
             // tuples.
-            if (access.Fingerprint(fingerprint) == elle::StatusError)
+            if (access.Fingerprint(fingerprint) == elle::Status::Error)
               escape("unable to compute the access block fingerprint");
 
             // verify the meta part, including the access fingerprint.
@@ -344,7 +344,7 @@ namespace nucleus
                                      this->meta.attributes,
                                      this->meta.version,
 
-                                     fingerprint) == elle::StatusError)
+                                     fingerprint) == elle::Status::Error)
               escape("unable to verify the meta's signature");
           }
         else
@@ -356,7 +356,7 @@ namespace nucleus
                                      this->meta.genre,
                                      this->meta.stamp,
                                      this->meta.attributes,
-                                     this->meta.version) == elle::StatusError)
+                                     this->meta.version) == elle::Status::Error)
               escape("unable to verify the meta's signature");
           }
       }
@@ -405,7 +405,7 @@ namespace nucleus
               // retrieve the access record corresponding to the author's
               // index.
               if (access.Lookup(this->author.lord.index,
-                                record) == elle::StatusError)
+                                record) == elle::Status::Error)
                 escape("unable to retrieve the access record");
 
               // check the access record permissions for the given author.
@@ -451,7 +451,7 @@ namespace nucleus
                           this->data.version,
 
                           this->meta.owner.token,
-                          this->meta.access) == elle::StatusError)
+                          this->meta.access) == elle::Status::Error)
           escape("unable to verify the data signature");
       }
 
@@ -462,7 +462,7 @@ namespace nucleus
           escape("invalid version number");
       }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -488,11 +488,11 @@ namespace nucleus
       std::cout << alignment << "[Object]" << std::endl;
 
       // dump the parent class.
-      if (proton::ImprintBlock::Dump(margin + 2) == elle::StatusError)
+      if (proton::ImprintBlock::Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the underlying owner key block");
 
       // dump the author part.
-      if (this->author.Dump(margin + 2) == elle::StatusError)
+      if (this->author.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the author");
 
       // dump the meta part.
@@ -505,7 +505,7 @@ namespace nucleus
                 << elle::Dumpable::Shift << "[Permissions] " << std::dec
                 << this->meta.owner.permissions << std::endl;
 
-      if (this->meta.owner.token.Dump(margin + 6) == elle::StatusError)
+      if (this->meta.owner.token.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the meta owner's token");
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
@@ -513,23 +513,23 @@ namespace nucleus
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
                 << "[Stamp] " << std::endl;
-      if (this->meta.stamp.Dump(margin + 6) == elle::StatusError)
+      if (this->meta.stamp.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the meta stamp");
 
-      if (this->meta.attributes.Dump(margin + 4) == elle::StatusError)
+      if (this->meta.attributes.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the meta attributess");
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
                 << "[Access]" << std::endl;
-      if (this->meta.access.Dump(margin + 6) == elle::StatusError)
+      if (this->meta.access.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the meta access address");
 
-      if (this->meta.version.Dump(margin + 4) == elle::StatusError)
+      if (this->meta.version.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the meta version");
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
                 << "[Signature]" << std::endl;
-      if (this->meta.signature.Dump(margin + 6) == elle::StatusError)
+      if (this->meta.signature.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the meta signature");
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
@@ -540,7 +540,7 @@ namespace nucleus
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
                 << "[Contents]" << std::endl;
-      if (this->data.contents.Dump(margin + 6) == elle::StatusError)
+      if (this->data.contents.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the contents' address");
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
@@ -548,21 +548,21 @@ namespace nucleus
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
                 << "[Stamp]" << std::endl;
-      if (this->data.stamp.Dump(margin + 6) == elle::StatusError)
+      if (this->data.stamp.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the data stamp");
 
-      if (this->data.version.Dump(margin + 4) == elle::StatusError)
+      if (this->data.version.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the data version");
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
                 << "[Signature]" << std::endl;
-      if (this->data.signature.Dump(margin + 6) == elle::StatusError)
+      if (this->data.signature.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the data signature");
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
                 << "[State] " << std::dec << this->data.state << std::endl;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -575,11 +575,11 @@ namespace nucleus
     elle::Status        Object::Serialize(elle::Archive&        archive) const
     {
       // call the parent class.
-      if (proton::ImprintBlock::Serialize(archive) == elle::StatusError)
+      if (proton::ImprintBlock::Serialize(archive) == elle::Status::Error)
         escape("unable to serialize the underlying physical block");
 
       // serialize the author part.
-      if (archive.Serialize(this->author) == elle::StatusError)
+      if (archive.Serialize(this->author) == elle::Status::Error)
         escape("unable to serialize the author");
 
       // serialize the meta part.
@@ -590,7 +590,7 @@ namespace nucleus
                             this->meta.attributes,
                             this->meta.access,
                             this->meta.version,
-                            this->meta.signature) == elle::StatusError)
+                            this->meta.signature) == elle::Status::Error)
         escape("unable to serialize the meta part");
 
       // serialize the data part.
@@ -598,10 +598,10 @@ namespace nucleus
                             this->data.size,
                             this->data.stamp,
                             this->data.version,
-                            this->data.signature) == elle::StatusError)
+                            this->data.signature) == elle::Status::Error)
         escape("unable to serialize the data part");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -610,7 +610,7 @@ namespace nucleus
     elle::Status        Object::Extract(elle::Archive&          archive)
     {
       // call the parent class.
-      if (proton::ImprintBlock::Extract(archive) == elle::StatusError)
+      if (proton::ImprintBlock::Extract(archive) == elle::Status::Error)
         escape("unable to extract the underyling physical block");
 
       // compare the component.
@@ -618,7 +618,7 @@ namespace nucleus
         escape("the archive does not seem to contain an object");
 
       // extract the author part.
-      if (archive.Extract(this->author) == elle::StatusError)
+      if (archive.Extract(this->author) == elle::Status::Error)
         escape("unable to extract the author");
 
       // extract the meta part.
@@ -629,7 +629,7 @@ namespace nucleus
                           this->meta.attributes,
                           this->meta.access,
                           this->meta.version,
-                          this->meta.signature) == elle::StatusError)
+                          this->meta.signature) == elle::Status::Error)
         escape("unable to extract the meta part");
 
       // extract the data part.
@@ -637,17 +637,17 @@ namespace nucleus
                           this->data.size,
                           this->data.stamp,
                           this->data.version,
-                          this->data.signature) == elle::StatusError)
+                          this->data.signature) == elle::Status::Error)
         escape("unable to extract the data part");
 
       // compute the owner record.
       if (this->meta.owner.record.Update(
             this->owner.subject,
             this->meta.owner.permissions,
-            this->meta.owner.token) == elle::StatusError)
+            this->meta.owner.token) == elle::Status::Error)
         escape("unable to create the owner access record");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

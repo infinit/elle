@@ -54,10 +54,10 @@ namespace nucleus
             Address::Any.family, Address::Any.component,
             static_cast<elle::Natural8>(Address::Any.family),
             static_cast<elle::Natural8>(Address::Any.component)) ==
-          elle::StatusError)
+          elle::Status::Error)
         escape("unable to create the any address");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -67,7 +67,7 @@ namespace nucleus
     {
       // nothing to do.
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -126,21 +126,21 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return elle::Status::True;
 
       // if both are NULL or equal return true, false otherwise
       if ((this->digest == NULL) || (element.digest == NULL))
         {
           if (this->digest != element.digest)
-            return elle::StatusFalse;
+            return elle::Status::False;
         }
       else
         {
           if (*this->digest != *element.digest)
-            return elle::StatusFalse;
+            return elle::Status::False;
         }
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -150,21 +150,21 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusFalse;
+        return elle::Status::False;
 
       // test for a null digest.
       if ((this->digest == NULL) && (element.digest == NULL))
-        return elle::StatusFalse;
+        return elle::Status::False;
       else if (this->digest == NULL)
-        return elle::StatusTrue;
+        return elle::Status::True;
       else if (element.digest == NULL)
-        return elle::StatusFalse;
+        return elle::Status::False;
 
       // compare the digests.
       if (*this->digest < *element.digest)
-        return elle::StatusTrue;
+        return elle::Status::True;
 
-      return elle::StatusFalse;
+      return elle::Status::False;
     }
 
     ///
@@ -214,12 +214,12 @@ namespace nucleus
           else
             {
               // dump the digest.
-              if (this->digest->Dump(margin + 2) == elle::StatusError)
+              if (this->digest->Dump(margin + 2) == elle::Status::Error)
                 escape("unable to dump the digest");
             }
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -236,17 +236,17 @@ namespace nucleus
           // serialize the internal digest.
           if (archive.Serialize(static_cast<elle::Natural8>(this->family),
                                 static_cast<elle::Natural8>(this->component),
-                                *this->digest) == elle::StatusError)
+                                *this->digest) == elle::Status::Error)
             escape("unable to serialize the digest");
         }
       else
         {
           // serialize 'none'.
-          if (archive.Serialize(elle::none) == elle::StatusError)
+          if (archive.Serialize(elle::none) == elle::Status::Error)
             escape("unable to serialize 'none'");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -257,13 +257,13 @@ namespace nucleus
       elle::Archive::Type       type;
 
       // fetch the next element's type.
-      if (archive.Fetch(type) == elle::StatusError)
+      if (archive.Fetch(type) == elle::Status::Error)
         escape("unable to fetch the next element's type");
 
       if (type == elle::Archive::TypeNull)
         {
           // nothing to do, keep the digest to NULL.
-          if (archive.Extract(elle::none) == elle::StatusError)
+          if (archive.Extract(elle::none) == elle::Status::Error)
             escape("unable to extract null");
         }
       else
@@ -275,11 +275,11 @@ namespace nucleus
           if (archive.Extract(
                 reinterpret_cast<elle::Natural8&>(this->family),
                 reinterpret_cast<elle::Natural8&>(this->component),
-                *this->digest) == elle::StatusError)
+                *this->digest) == elle::Status::Error)
             escape("unable to extract the digest");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

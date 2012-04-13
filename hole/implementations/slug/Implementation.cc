@@ -48,10 +48,10 @@ namespace hole
         Slug::Computer = new Machine;
 
         // launch it.
-        if (Slug::Computer->Launch() == elle::StatusError)
+        if (Slug::Computer->Launch() == elle::Status::Error)
           escape("unable to launch the computer");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -62,7 +62,7 @@ namespace hole
         // delete the machine.
         delete Slug::Computer;
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -73,10 +73,10 @@ namespace hole
                           const nucleus::ImmutableBlock&         block)
       {
         // forward the request to the machine.
-        if (Slug::Computer->Put(address, block) == elle::StatusError)
+        if (Slug::Computer->Put(address, block) == elle::Status::Error)
           escape("unable to put the block");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -87,10 +87,10 @@ namespace hole
                           const nucleus::MutableBlock&          block)
       {
         // forward the request to the machine.
-        if (Slug::Computer->Put(address, block) == elle::StatusError)
+        if (Slug::Computer->Put(address, block) == elle::Status::Error)
           escape("unable to put the block");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -101,10 +101,10 @@ namespace hole
                           nucleus::ImmutableBlock&              block)
       {
         // forward the request to the machine.
-        if (Slug::Computer->Get(address, block) == elle::StatusError)
+        if (Slug::Computer->Get(address, block) == elle::Status::Error)
           escape("unable to get the block");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -118,10 +118,10 @@ namespace hole
         // forward the request to the machine.
         if (Slug::Computer->Get(address,
                                 version,
-                                block) == elle::StatusError)
+                                block) == elle::Status::Error)
           escape("unable to get the block");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -131,10 +131,10 @@ namespace hole
                           const nucleus::Address&               address)
       {
         // forward the request to the machine.
-        if (Slug::Computer->Kill(address) == elle::StatusError)
+        if (Slug::Computer->Kill(address) == elle::Status::Error)
           escape("unable to kill the block");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
 //
@@ -152,14 +152,14 @@ namespace hole
         std::cout << alignment << "[Implementation] Slug" << std::endl;
 
         // dump the parent.
-        if (Holeable::Dump(margin + 2) == elle::StatusError)
+        if (Holeable::Dump(margin + 2) == elle::Status::Error)
           escape("unable to dump the holeabl");
 
         // dump the machine.
-        if (Slug::Computer->Dump(margin + 2) == elle::StatusError)
+        if (Slug::Computer->Dump(margin + 2) == elle::Status::Error)
           escape("unable to dump the machine");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     }

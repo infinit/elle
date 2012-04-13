@@ -46,32 +46,32 @@ namespace elle
       Header            header;
 
       // create an data for the inputs.
-      if (data.Create() == StatusError)
+      if (data.Create() == Status::Error)
         escape("unable to create the data");
 
       // serialize the inputs.
-      if (inputs.Serialize(data) == StatusError)
+      if (inputs.Serialize(data) == Status::Error)
         escape("unable to serialize the inputs");
 
       // create the header now that we know that final archive's size.
       if (header.Create(event,
                         inputs.tag,
-                        data.size) == StatusError)
+                        data.size) == Status::Error)
         escape("unable to create the header");
 
       // prepare the packet.
-      if (packet.Create() == StatusError)
+      if (packet.Create() == Status::Error)
         escape("unable to create the packet");
 
       // serialize the the header and data.
-      if (packet.Serialize(header, data) == StatusError)
+      if (packet.Serialize(header, data) == Status::Error)
         escape("unable to serialize the header and data");
 
       // write the socket.
-      if (this->Write(packet) == StatusError)
+      if (this->Write(packet) == Status::Error)
         escape("unable to write the socket");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -84,7 +84,7 @@ namespace elle
       std::shared_ptr<Parcel> parcel;
 
       // block the current fiber until the given event is received.
-      if (Fiber::Wait(event, parcel) == StatusError)
+      if (Fiber::Wait(event, parcel) == Status::Error)
         escape("an error occured while waiting for a specific event");
 
       assert(parcel.get() != nullptr && "The event should have filled the parcel");
@@ -105,7 +105,7 @@ namespace elle
               Report    report;
 
               // extract the error message.
-              if (report.Extract(*parcel->data) == StatusError)
+              if (report.Extract(*parcel->data) == Status::Error)
                 escape("unable to extract the error message");
 
               // report the remote error.
@@ -115,7 +115,7 @@ namespace elle
             {
               // otherwise, try to ship the parcel since a handler may be
               // able to treat it.
-              if (Socket::Ship(parcel) == StatusError)
+              if (Socket::Ship(parcel) == Status::Error)
                 log("an error occured while shipping the parcel");
             }
 
@@ -125,10 +125,10 @@ namespace elle
         }
 
       // extract the arguments.
-      if (outputs.Extract(*parcel->data) == StatusError)
+      if (outputs.Extract(*parcel->data) == Status::Error)
         escape("unable to extract the arguments");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -142,18 +142,18 @@ namespace elle
       Event             event;
 
       // generate an event to link the request with the response.
-      if (event.Generate() == StatusError)
+      if (event.Generate() == Status::Error)
         escape("unable to generate the event");
 
       // send the inputs.
-      if (this->Send(inputs, event) == StatusError)
+      if (this->Send(inputs, event) == Status::Error)
         escape("unable to send the inputs");
 
       // wait for the reply.
-      if (this->Receive(event, outputs) == StatusError)
+      if (this->Receive(event, outputs) == Status::Error)
         escape("unable to receive the outputs");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -167,16 +167,16 @@ namespace elle
       // retrieve the current session, if necessary.
       if (session == NULL)
         {
-          if (Session::Instance(session) == StatusError)
+          if (Session::Instance(session) == Status::Error)
             escape("unable to retrieve the session instance");
         }
 
       // send a message as a response by using the event of
       // the received message i.e the current session.
-      if (this->Send(inputs, session->event) == StatusError)
+      if (this->Send(inputs, session->event) == Status::Error)
         escape("unable to send the reply");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

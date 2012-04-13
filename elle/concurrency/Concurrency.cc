@@ -29,14 +29,14 @@ namespace elle
     Status              Concurrency::Initialize()
     {
       // initialize the program.
-      if (Program::Initialize() == StatusError)
+      if (Program::Initialize() == Status::Error)
         escape("unable to initialize the program");
 
       // initialize the fiber system.
-      if (Fiber::Initialize() == StatusError)
+      if (Fiber::Initialize() == Status::Error)
         escape("unable to initialize the fiber system");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -45,14 +45,14 @@ namespace elle
     Status              Concurrency::Clean()
     {
       // clean the fiber system.
-      if (Fiber::Clean() == StatusError)
+      if (Fiber::Clean() == Status::Error)
         escape("unable to clean the fiber system");
 
       // clean the program.
-      if (Program::Clean() == StatusError)
+      if (Program::Clean() == Status::Error)
         escape("unable to clean the program");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

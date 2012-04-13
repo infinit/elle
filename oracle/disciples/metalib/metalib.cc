@@ -13,7 +13,7 @@
 //
 
 #include "lune/Lune.hh"
-#include "elle/Elle.hh"
+#include <elle/types.hh>
 
 #include "identity.hh"
 #include "passport.hh"
@@ -93,12 +93,12 @@ char const* const _metalib_doc =
 
 PyMODINIT_FUNC initmetalib(void)
 {
-  if (elle::Elle::Initialize() == elle::StatusError)
+  if (elle::Elle::Initialize() == elle::Status::Error)
     {
       std::cerr << "Cannot initialize elle\n";
       return;
     }
-  if (lune::Lune::Initialize() == elle::StatusError)
+  if (lune::Lune::Initialize() == elle::Status::Error)
     {
       std::cerr << "Cannot initialize lune\n";
       return;

@@ -29,14 +29,14 @@ namespace satellite
     elle::Status        Upcall::Inputs(const T&...              inputs)
     {
       // create the archive.
-      if (this->inputs.Create() == elle::StatusError)
+      if (this->inputs.Create() == elle::Status::Error)
         escape("unable to create the archive");
 
       // serialize the inputs.
-      if (this->inputs.Serialize(inputs...) == elle::StatusError)
+      if (this->inputs.Serialize(inputs...) == elle::Status::Error)
         escape("unable to serialize the inputs");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -47,14 +47,14 @@ namespace satellite
     elle::Status        Upcall::Outputs(const T&...             outputs)
     {
       // create the archive.
-      if (this->outputs.Create() == elle::StatusError)
+      if (this->outputs.Create() == elle::Status::Error)
         escape("unable to create the archive");
 
       // serialize the outputs.
-      if (this->outputs.Serialize(outputs...) == elle::StatusError)
+      if (this->outputs.Serialize(outputs...) == elle::Status::Error)
         escape("unable to serialize the outputs");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

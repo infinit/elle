@@ -907,7 +907,7 @@ namespace satellite
         Crux::Operations.flag_nullpath_ok = 1;
       }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

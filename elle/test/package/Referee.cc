@@ -48,7 +48,7 @@ namespace elle
 
       Referee::List.push_back(element);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status              Referee::Pop(Archive::Type&             type,
@@ -70,7 +70,7 @@ namespace elle
 
       delete element;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status              Referee::Flush()
@@ -88,7 +88,7 @@ namespace elle
           delete element;
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

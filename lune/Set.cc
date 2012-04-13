@@ -42,7 +42,7 @@ elle::Status          Set::Add(const elle::Locus&               locus)
 
   this->loci.push_back(locus);
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -60,7 +60,7 @@ elle::Status          Set::Remove(const elle::Locus&            locus)
 
   this->loci.erase(iterator);
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 //
@@ -89,11 +89,11 @@ elle::Status          Set::Dump(const elle::Natural32      margin) const
 
   for (; iterator != end; ++iterator)
     {
-      if (iterator->Dump(margin + 2) == elle::StatusError)
+      if (iterator->Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the locus");
     }
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 //
@@ -111,16 +111,16 @@ elle::Status          Set::Serialize(elle::Archive&        archive) const
 
   size = this->loci.size();
 
-  if (archive.Serialize(size) == elle::StatusError)
+  if (archive.Serialize(size) == elle::Status::Error)
     escape("unable to serialize the size");
 
   for (; iterator != end; ++iterator)
     {
-      if (archive.Serialize(*iterator) == elle::StatusError)
+      if (archive.Serialize(*iterator) == elle::Status::Error)
         escape("unable to serialize the attributes");
     }
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -131,21 +131,21 @@ elle::Status          Set::Extract(elle::Archive&          archive)
   elle::Natural32     size;
   elle::Natural32     i;
 
-  if (archive.Extract(size) == elle::StatusError)
+  if (archive.Extract(size) == elle::Status::Error)
     escape("unable to extract the size");
 
   for (i = 0; i < size; i++)
     {
       elle::Locus     locus;
 
-      if (archive.Extract(locus) == elle::StatusError)
+      if (archive.Extract(locus) == elle::Status::Error)
         escape("unable to extract the attributes");
 
-      if (this->Add(locus) == elle::StatusError)
+      if (this->Add(locus) == elle::Status::Error)
         escape("unable to add the locus to the set");
     }
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 //
@@ -163,15 +163,15 @@ elle::Status          Set::Load(const elle::String&        network)
   elle::String        element;
 
   // create the path.
-  if (path.Create(Lune::Network::Set) == elle::StatusError)
+  if (path.Create(Lune::Network::Set) == elle::Status::Error)
     escape("unable to create the path");
 
   // complete the path's pattern.
-  if (path.Complete(elle::Piece("%NETWORK%", network)) == elle::StatusError)
+  if (path.Complete(elle::Piece("%NETWORK%", network)) == elle::Status::Error)
     escape("unable to complete the path");
 
   // read the file's content.
-  if (elle::File::Read(path, region) == elle::StatusError)
+  if (elle::File::Read(path, region) == elle::Status::Error)
     escape("unable to read the file's content");
 
   // set up the stream.
@@ -184,15 +184,15 @@ elle::Status          Set::Load(const elle::String&        network)
       elle::Locus       locus;
 
       // build the host locus.
-      if (locus.Create(element) == elle::StatusError)
+      if (locus.Create(element) == elle::Status::Error)
         escape("unable to create the host locus");
 
       // add the locus to the set.
-      if (this->Add(locus) == elle::StatusError)
+      if (this->Add(locus) == elle::Status::Error)
         escape("unable to add the locus");
     }
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -215,30 +215,30 @@ elle::Status          Set::Store(const elle::String&       network) const
       elle::String      host;
 
       // convert the current locus into a string.
-      if (iterator->host.Convert(host) == elle::StatusError)
+      if (iterator->host.Convert(host) == elle::Status::Error)
         escape("unable to convert the locus into a string");
 
       stream << host << ":" << iterator->port << " ";
     }
 
   // create the path.
-  if (path.Create(Lune::Network::Set) == elle::StatusError)
+  if (path.Create(Lune::Network::Set) == elle::Status::Error)
     escape("unable to create the path");
 
   // complete the path's pattern.
-  if (path.Complete(elle::Piece("%NETWORK%", network)) == elle::StatusError)
+  if (path.Complete(elle::Piece("%NETWORK%", network)) == elle::Status::Error)
     escape("unable to complete the path");
 
   // wrap the string.
   if (region.Wrap(reinterpret_cast<const elle::Byte*>(stream.str().c_str()),
-                  stream.str().length()) == elle::StatusError)
+                  stream.str().length()) == elle::Status::Error)
     escape("unable to wrap the string in a region");
 
   // write the file's content.
-  if (elle::File::Write(path, region) == elle::StatusError)
+  if (elle::File::Write(path, region) == elle::Status::Error)
     escape("unable to write the file's content");
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -249,18 +249,18 @@ elle::Status          Set::Erase(const elle::String&       network) const
   elle::Path          path;
 
   // create the path.
-  if (path.Create(Lune::Network::Set) == elle::StatusError)
+  if (path.Create(Lune::Network::Set) == elle::Status::Error)
     escape("unable to create the path");
 
   // complete the path's pattern.
-  if (path.Complete(elle::Piece("%NETWORK%", network)) == elle::StatusError)
+  if (path.Complete(elle::Piece("%NETWORK%", network)) == elle::Status::Error)
     escape("unable to complete the path");
 
   // erase the file.
-  if (elle::File::Erase(path) == elle::StatusError)
+  if (elle::File::Erase(path) == elle::Status::Error)
     escape("unable to erase the file");
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -271,16 +271,16 @@ elle::Status          Set::Exist(const elle::String&       network) const
   elle::Path          path;
 
   // create the path.
-  if (path.Create(Lune::Network::Set) == elle::StatusError)
+  if (path.Create(Lune::Network::Set) == elle::Status::Error)
     escape("unable to create the path");
 
   // complete the path's pattern.
-  if (path.Complete(elle::Piece("%NETWORK%", network)) == elle::StatusError)
+  if (path.Complete(elle::Piece("%NETWORK%", network)) == elle::Status::Error)
     escape("unable to complete the path");
 
   // test the file.
-  if (elle::File::Exist(path) == elle::StatusFalse)
-    return elle::StatusFalse;
+  if (elle::File::Exist(path) == elle::Status::False)
+    return elle::Status::False;
 
-  return elle::StatusTrue;
+  return elle::Status::True;
 }

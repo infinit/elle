@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <nucleus/proton/Block.hh>
 #include <nucleus/proton/Address.hh>

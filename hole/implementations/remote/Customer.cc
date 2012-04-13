@@ -77,33 +77,33 @@ namespace hole
         // subscribe to the signal.
         if (this->socket->signal.disconnected.Subscribe(
               elle::Callback<>::Infer(&Customer::Disconnected,
-                                      this)) == elle::StatusError)
+                                      this)) == elle::Status::Error)
           escape("unable to subscribe to the signal");
 
         // subscribe to the signal.
         if (this->socket->signal.error.Subscribe(
               elle::Callback<>::Infer(&Customer::Error,
-                                      this)) == elle::StatusError)
+                                      this)) == elle::Status::Error)
           escape("unable to subscribe to the signal");
 
         // allocate a new timer.
         this->timer = new elle::Timer;
 
         // create the timer.
-        if (this->timer->Create(elle::Timer::ModeSingle) == elle::StatusError)
+        if (this->timer->Create(elle::Timer::ModeSingle) == elle::Status::Error)
           escape("unable to create the timer");
 
         // subscribe to the timer's signal.
         if (this->timer->signal.timeout.Subscribe(
               elle::Callback<>::Infer(&Customer::Abort,
-                                      this)) == elle::StatusError)
+                                      this)) == elle::Status::Error)
           escape("unable to subscribe to the signal");
 
         // start the timer.
-        if (this->timer->Start(Customer::Timeout) == elle::StatusError)
+        if (this->timer->Start(Customer::Timeout) == elle::Status::Error)
           escape("unable to start the timer");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
 //
@@ -124,10 +124,10 @@ namespace hole
         this->state = Customer::StateDead;
 
         // emit the signal.
-        if (this->signal.dead.Emit(this) == elle::StatusError)
+        if (this->signal.dead.Emit(this) == elle::Status::Error)
           escape("unable to emit the signal");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -146,7 +146,7 @@ namespace hole
         // disconnect the socket, though that may be unecessary.
         this->socket->Disconnect();
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -170,11 +170,11 @@ namespace hole
         if (this->state != Customer::StateAuthenticated)
           {
             // emit the signal.
-            if (this->signal.dead.Emit(this) == elle::StatusError)
+            if (this->signal.dead.Emit(this) == elle::Status::Error)
               escape("unable to emit the signal");
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
 //
@@ -197,7 +197,7 @@ namespace hole
         // dump the socket.
         if (this->socket != NULL)
           {
-            if (this->socket->Dump(margin + 2) == elle::StatusError)
+            if (this->socket->Dump(margin + 2) == elle::Status::Error)
               escape("unable to dump the socket");
           }
         else
@@ -209,7 +209,7 @@ namespace hole
         // dump the timer.
         if (this->timer != NULL)
           {
-            if (this->timer->Dump(margin + 2) == elle::StatusError)
+            if (this->timer->Dump(margin + 2) == elle::Status::Error)
               escape("unable to dump the timer");
           }
         else
@@ -218,7 +218,7 @@ namespace hole
                       << "[Timer] " << elle::none << std::endl;
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     }

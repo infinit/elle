@@ -47,10 +47,10 @@ namespace horizon
       FUSE::Operations = operations;
 
       // initialize the FUker.
-      if (FUker::Initialize() == elle::StatusError)
+      if (FUker::Initialize() == elle::Status::Error)
         escape("unable to initialize the FUker");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -59,10 +59,10 @@ namespace horizon
     elle::Status        FUSE::Clean()
     {
       // clean the FUker.
-      if (FUker::Clean() == elle::StatusError)
+      if (FUker::Clean() == elle::Status::Error)
         escape("unable to clean the FUker");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

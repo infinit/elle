@@ -17,7 +17,7 @@
 
 #include <elle/radix/Trace.hh>
 
-#include <elle/core/Integer.hh>
+#include <elle/types.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
@@ -82,7 +82,7 @@ namespace elle
       // retrieve the frame addresses.
       this->size = ::backtrace(this->frames, Trace::Capacity);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -203,7 +203,7 @@ namespace elle
       // release the symbols array.
       ::free(symbols);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -227,24 +227,24 @@ namespace elle
       Trace::Length = ::strlen(Trace::Location);
 
       // create the path.
-      if (path.Create(Trace::Location) == StatusError)
+      if (path.Create(Trace::Location) == Status::Error)
         escape("unable to create the path");
 
       // if the directory exists.
-      if (Directory::Exist(path) == StatusTrue)
+      if (Directory::Exist(path) == Status::True)
         {
           // clear the directory.
-          if (Directory::Clear(path) == StatusError)
+          if (Directory::Clear(path) == Status::Error)
             escape("unable to clear the directory");
         }
       else
         {
           // create the directory.
-          if (Directory::Create(path) == StatusError)
+          if (Directory::Create(path) == Status::Error)
             escape("unable to create the directory");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -255,22 +255,22 @@ namespace elle
       Path              path;
 
       // create the path.
-      if (path.Create(Trace::Location) == StatusError)
+      if (path.Create(Trace::Location) == Status::Error)
         escape("unable to create the path");
 
       // if the directory exists.
-      if (Directory::Exist(path) == StatusTrue)
+      if (Directory::Exist(path) == Status::True)
         {
           // clear the directory.
-          if (Directory::Clear(path) == StatusError)
+          if (Directory::Clear(path) == Status::Error)
             escape("unable to clear the directory");
 
           // remove the directory.
-          if (Directory::Remove(path) == StatusError)
+          if (Directory::Remove(path) == Status::Error)
             escape("unable to remove the directory");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -291,7 +291,7 @@ namespace elle
       int               fd;
 
       // generate the trace.
-      if (trace.Generate() == StatusError)
+      if (trace.Generate() == Status::Error)
         escape("unable to generate the trace");
 
       // copy the data into the buffer.
@@ -331,7 +331,7 @@ namespace elle
       // close the file.
       ::close(fd);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -356,11 +356,11 @@ namespace elle
           Trace         trace(address);
 
           // generate the trace.
-          if (trace.Generate() == StatusError)
+          if (trace.Generate() == Status::Error)
             escape("unable to generate the trace");
 
           // dump the trace.
-          if (trace.Dump() == StatusError)
+          if (trace.Dump() == Status::Error)
             escape("unable to dump the trace");
 
           escape("this trace does not seem to exist");
@@ -369,7 +369,7 @@ namespace elle
       // unlink the file.
       ::unlink(path);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -449,14 +449,14 @@ namespace elle
                    sizeof (Natural32));
 
           // dump the trace.
-          if (trace.Dump(margin + 2) == StatusError)
+          if (trace.Dump(margin + 2) == Status::Error)
             escape("unable to dump the trace");
         }
 
       // close the directory.
       ::closedir(dp);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

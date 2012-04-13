@@ -126,7 +126,7 @@ namespace lune
     //
     (*this)["satellites"].Set("debug", this->satellites.debug);
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -191,7 +191,7 @@ namespace lune
     this->satellites.debug = (*this)["satellites"].Get("debug",
         Configuration::Default::Satellites::Debug);
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 //
@@ -220,10 +220,10 @@ namespace lune
     std::cout << alignment << "[Configuration]" << std::endl;
 
     // dump the parent settings.
-    if (elle::Settings::Dump(margin + 2) == elle::StatusError)
+    if (elle::Settings::Dump(margin + 2) == elle::Status::Error)
       escape("unable to dump the settings");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 //
@@ -238,14 +238,14 @@ namespace lune
     elle::Path          path;
 
     // create the path.
-    if (path.Create(Lune::Configuration) == elle::StatusError)
+    if (path.Create(Lune::Configuration) == elle::Status::Error)
       escape("unable to create the path");
 
     // call the setting's method.
-    if (elle::Settings::Load(path) == elle::StatusError)
+    if (elle::Settings::Load(path) == elle::Status::Error)
       escape("unable to load the settings");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -256,14 +256,14 @@ namespace lune
     elle::Path          path;
 
     // create the path.
-    if (path.Create(Lune::Configuration) == elle::StatusError)
+    if (path.Create(Lune::Configuration) == elle::Status::Error)
       escape("unable to create the path");
 
     // call the setting's method.
-    if (elle::Settings::Store(path) == elle::StatusError)
+    if (elle::Settings::Store(path) == elle::Status::Error)
       escape("unable to store the settings");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -274,14 +274,14 @@ namespace lune
     elle::Path          path;
 
     // create the path.
-    if (path.Create(Lune::Configuration) == elle::StatusError)
+    if (path.Create(Lune::Configuration) == elle::Status::Error)
       escape("unable to create the path");
 
     // erase the file.
-    if (elle::File::Erase(path) == elle::StatusError)
+    if (elle::File::Erase(path) == elle::Status::Error)
       escape("unable to erase the file");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -292,14 +292,14 @@ namespace lune
     elle::Path          path;
 
     // create the path.
-    if (path.Create(Lune::Configuration) == elle::StatusError)
+    if (path.Create(Lune::Configuration) == elle::Status::Error)
       escape("unable to create the path");
 
     // test the file.
-    if (elle::File::Exist(path) == elle::StatusFalse)
-      return elle::StatusFalse;
+    if (elle::File::Exist(path) == elle::Status::False)
+      return elle::Status::False;
 
-    return elle::StatusTrue;
+    return elle::Status::True;
   }
 
 }

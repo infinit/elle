@@ -57,14 +57,14 @@ namespace hole
             // create a locus with the port on which the peer is listening
             // for incoming connections.
             if (locus.Create(neighbour->locus.host,
-                             neighbour->port) == elle::StatusError)
+                             neighbour->port) == elle::Status::Error)
               escape("unable to create the locus");
 
             // add the neighbour's locus.
             this->container.push_back(locus);
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
 //
@@ -93,7 +93,7 @@ namespace hole
         size = this->container.size();
 
         // serialize the number of entries.
-        if (archive.Serialize(size) == elle::StatusError)
+        if (archive.Serialize(size) == elle::Status::Error)
           escape("unable to serialize the size");
 
         // go through the container.
@@ -104,11 +104,11 @@ namespace hole
             elle::Locus         locus = *scoutor;
 
             // serialize the locus.
-            if (archive.Serialize(locus) == elle::StatusError)
+            if (archive.Serialize(locus) == elle::Status::Error)
               escape("unable to serialize the locus");
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -120,7 +120,7 @@ namespace hole
         elle::Natural32 i;
 
         // extract the number of entries.
-        if (archive.Extract(size) == elle::StatusError)
+        if (archive.Extract(size) == elle::Status::Error)
           escape("unable to extract the size");
 
         // go through the entries.
@@ -129,14 +129,14 @@ namespace hole
             elle::Locus locus;
 
             // extract the locus.
-            if (archive.Extract(locus) == elle::StatusError)
+            if (archive.Extract(locus) == elle::Status::Error)
               escape("unable to extract the locus");
 
             // record the locus.
             this->container.push_back(locus);
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
 //
@@ -162,11 +162,11 @@ namespace hole
             elle::Locus         locus = *scoutor;
 
             // dump the locus.
-            if (locus.Dump(margin + 2) == elle::StatusError)
+            if (locus.Dump(margin + 2) == elle::Status::Error)
               escape("unable to dump the locus");
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     }

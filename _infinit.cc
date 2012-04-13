@@ -14,7 +14,7 @@
 
 #include <Infinit.hh>
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 #include <agent/Agent.hh>
@@ -33,18 +33,18 @@ elle::Status            Main(elle::Natural32                    argc,
                              elle::Character*                   argv[])
 {
   // initialize the Elle library.
-  if (elle::Elle::Initialize() == elle::StatusError)
+  if (elle::Elle::Initialize() == elle::Status::Error)
     escape("unable to initialize Elle");
 
   // set up the program.
-  if (elle::Program::Setup() == elle::StatusError)
+  if (elle::Program::Setup() == elle::Status::Error)
     escape("unable to set up the program");
 
   // allocate a new parser.
   Infinit::Parser = new elle::Parser(argc, argv);
 
   // specify a program description.
-  if (Infinit::Parser->Description(Infinit::Copyright) == elle::StatusError)
+  if (Infinit::Parser->Description(Infinit::Copyright) == elle::Status::Error)
     escape("unable to set the description");
 
   // register the options.
@@ -53,7 +53,7 @@ elle::Status            Main(elle::Natural32                    argc,
         'h',
         "help",
         "display the help",
-        elle::Parser::KindNone) == elle::StatusError)
+        elle::Parser::KindNone) == elle::Status::Error)
     escape("unable to register the option");
 
   // register the option.
@@ -62,7 +62,7 @@ elle::Status            Main(elle::Natural32                    argc,
         'n',
         "network",
         "specifies the name of the network",
-        elle::Parser::KindRequired) == elle::StatusError)
+        elle::Parser::KindRequired) == elle::Status::Error)
     escape("unable to register the option");
 
   // register the option.
@@ -71,21 +71,21 @@ elle::Status            Main(elle::Natural32                    argc,
         'm',
         "mountpoint",
         "specifies the mount point",
-        elle::Parser::KindRequired) == elle::StatusError)
+        elle::Parser::KindRequired) == elle::Status::Error)
     escape("unable to register the option");
 
   // parse.
-  if (Infinit::Parser->Parse() == elle::StatusError)
+  if (Infinit::Parser->Parse() == elle::Status::Error)
     escape("unable to parse the command line");
 
   // test the option.
-  if (Infinit::Parser->Test("Help") == elle::StatusTrue)
+  if (Infinit::Parser->Test("Help") == elle::Status::True)
     {
       // display the usage.
       Infinit::Parser->Usage();
 
       // quit.
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   // retrieve the user name.
@@ -122,7 +122,7 @@ elle::Status            Main(elle::Natural32                    argc,
 
   // retrieve the network name.
   if (Infinit::Parser->Value("Network",
-                             Infinit::Network) == elle::StatusError)
+                             Infinit::Network) == elle::Status::Error)
     {
       // display the usage.
       Infinit::Parser->Usage();
@@ -132,7 +132,7 @@ elle::Status            Main(elle::Natural32                    argc,
 
   // retrieve the mount point.
   if (Infinit::Parser->Value("Mountpoint",
-                             Infinit::Mountpoint) == elle::StatusError)
+                             Infinit::Mountpoint) == elle::Status::Error)
     {
       // display the usage.
       Infinit::Parser->Usage();
@@ -141,35 +141,35 @@ elle::Status            Main(elle::Natural32                    argc,
     }
 
   // initialize the nucleus library.
-  if (nucleus::Nucleus::Initialize() == elle::StatusError)
+  if (nucleus::Nucleus::Initialize() == elle::Status::Error)
     escape("unable to initialize Nucleus");
 
   // initialize the Lune library.
-  if (lune::Lune::Initialize() == elle::StatusError)
+  if (lune::Lune::Initialize() == elle::Status::Error)
     escape("unable to initialize Lune");
 
   // initialize Infinit.
-  if (Infinit::Initialize() == elle::StatusError)
+  if (Infinit::Initialize() == elle::Status::Error)
     escape("unable to initialize Infinit");
 
   // initialize the Hole library.
-  if (hole::Hole::Initialize() == elle::StatusError)
+  if (hole::Hole::Initialize() == elle::Status::Error)
     escape("unable to initialize Hole");
 
   // initialize the Agent library.
-  if (agent::Agent::Initialize() == elle::StatusError)
+  if (agent::Agent::Initialize() == elle::Status::Error)
     escape("unable to initialize Agent");
 
   // initialize the Etoile library.
-  if (etoile::Etoile::Initialize() == elle::StatusError)
+  if (etoile::Etoile::Initialize() == elle::Status::Error)
     escape("unable to initialize Etoile");
 
   // initialize the horizon.
-  if (horizon::Horizon::Initialize() == elle::StatusError)
+  if (horizon::Horizon::Initialize() == elle::Status::Error)
     escape("unable to initialize the horizon");
 
   // launch the program.
-  if (elle::Program::Launch() == elle::StatusError)
+  if (elle::Program::Launch() == elle::Status::Error)
     escape("an error occured while processing events");
 
   // delete the parser.
@@ -177,38 +177,38 @@ elle::Status            Main(elle::Natural32                    argc,
   Infinit::Parser = nullptr;
 
   // clean the horizon.
-  if (horizon::Horizon::Clean() == elle::StatusError)
+  if (horizon::Horizon::Clean() == elle::Status::Error)
     escape("unable to clean the horizon");
 
   // clean the Etoile library.
-  if (etoile::Etoile::Clean() == elle::StatusError)
+  if (etoile::Etoile::Clean() == elle::Status::Error)
     escape("unable to clean Etoile");
 
   // clean the Agent library.
-  if (agent::Agent::Clean() == elle::StatusError)
+  if (agent::Agent::Clean() == elle::Status::Error)
     escape("unable to clean Agent");
 
   // clean Hole.
-  if (hole::Hole::Clean() == elle::StatusError)
+  if (hole::Hole::Clean() == elle::Status::Error)
     escape("unable to clean Hole");
 
   // clean Infinit.
-  if (Infinit::Clean() == elle::StatusError)
+  if (Infinit::Clean() == elle::Status::Error)
     escape("unable to clean Infinit");
 
   // clean Lune
-  if (lune::Lune::Clean() == elle::StatusError)
+  if (lune::Lune::Clean() == elle::Status::Error)
     escape("unable to clean Lune");
 
   // clean the nucleus library.
-  if (nucleus::Nucleus::Clean() == elle::StatusError)
+  if (nucleus::Nucleus::Clean() == elle::Status::Error)
     escape("unable to clean Nucleus");
 
   // clean Elle.
-  if (elle::Elle::Clean() == elle::StatusError)
+  if (elle::Elle::Clean() == elle::Status::Error)
     escape("unable to clean Elle");
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 //
@@ -220,7 +220,7 @@ int                     main(int                                argc,
 {
   try
     {
-      if (Main(argc, argv) == elle::StatusError)
+      if (Main(argc, argv) == elle::Status::Error)
         {
           show();
 

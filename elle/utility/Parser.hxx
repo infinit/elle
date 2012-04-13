@@ -77,7 +77,7 @@ namespace elle
       Parser::Option*   option;
 
       // locate the option.
-      if (parser.Locate(name, option) == StatusFalse)
+      if (parser.Locate(name, option) == Status::False)
         escape("unable to locate the option '%s'",
                name.c_str());
 
@@ -92,11 +92,11 @@ namespace elle
                name.c_str());
 
       // convert the string-based argument to the given type, if possible.
-      if (Variable::Convert(*option->value, value) == StatusFalse)
+      if (Variable::Convert(*option->value, value) == Status::False)
         escape("unable to convert the argument '%s' for the option '%s'",
                option->value->c_str(), name.c_str());
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -116,11 +116,11 @@ namespace elle
       Parser::Option*   option;
 
       // locate the option.
-      if ((parser.Locate(name, option) == StatusTrue) &&
+      if ((parser.Locate(name, option) == Status::True) &&
           (option->value != NULL))
         {
           // convert the string-based argument to the given type, if possible.
-          if (Variable::Convert(*option->value, value) == StatusFalse)
+          if (Variable::Convert(*option->value, value) == Status::False)
             escape("unable to convert the argument '%s' for the option '%s'",
                    option->value->c_str(), name.c_str());
         }
@@ -130,7 +130,7 @@ namespace elle
           value = D;
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -149,7 +149,7 @@ namespace elle
       Parser::Option*   option;
 
       // locate the option.
-      if (parser.Locate(name, option) == StatusFalse)
+      if (parser.Locate(name, option) == Status::False)
         escape("unable to locate the option '%s'",
                name.c_str());
 
@@ -164,11 +164,11 @@ namespace elle
                name.c_str());
 
       // restore the object.
-      if (object.Restore(*option->value) == StatusError)
+      if (object.Restore(*option->value) == Status::Error)
         escape("unable to restore the object '%s' for the option '%s'",
                option->value->c_str(), name.c_str());
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -190,11 +190,11 @@ namespace elle
       Parser::Option*   option;
 
       // locate the option.
-      if ((parser.Locate(name, option) == StatusTrue) &&
+      if ((parser.Locate(name, option) == Status::True) &&
           (option->value != NULL))
         {
           // restore the object.
-          if (object.Restore(*option->value) == StatusError)
+          if (object.Restore(*option->value) == Status::Error)
             escape("unable to restore the object '%s' for the option '%s'",
                    option->value->c_str(), name.c_str());
         }
@@ -203,17 +203,17 @@ namespace elle
           Unique        unique;
 
           // save the default value.
-          if (D.Save(unique) == StatusError)
+          if (D.Save(unique) == Status::Error)
             escape("unable to save the default value for the option '%s'",
                    name.c_str());
 
           // restore the object.
-          if (object.Restore(unique) == StatusError)
+          if (object.Restore(unique) == Status::Error)
             escape("unable to restore the object '%s' for the option '%s'",
                    unique.c_str(), name.c_str());
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //

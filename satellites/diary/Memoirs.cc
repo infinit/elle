@@ -34,10 +34,10 @@ namespace satellite
       std::cout << alignment << "[Memoirs]" << std::endl;
 
       // dump the archive.
-      if (this->archive.Dump(margin + 2) == elle::StatusError)
+      if (this->archive.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the archive");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -50,10 +50,10 @@ namespace satellite
   //elle::Status          Memoirs::Serialize(elle::Archive&       archive) const
   //{
   //  // serialize the attributes.
-  //  if (archive.Serialize(this->archive) == elle::StatusError)
+  //  if (archive.Serialize(this->archive) == elle::Status::Error)
   //    escape("unable to serialize the attributes");
 
-  //  return elle::StatusOk;
+  //  return elle::Status::Ok;
   //}
 
   /////
@@ -62,10 +62,10 @@ namespace satellite
   //elle::Status          Memoirs::Extract(elle::Archive&         archive)
   //{
   //  // extract the attributes.
-  //  if (archive.Extract(this->archive) == elle::StatusError)
+  //  if (archive.Extract(this->archive) == elle::Status::Error)
   //    escape("unable to extract the attributes");
 
-  //  return elle::StatusOk;
+  //  return elle::Status::Ok;
   //}
 
 //
@@ -84,18 +84,18 @@ namespace satellite
   //  elle::Region        region;
 
   //  // read the file's content.
-  //  if (elle::File::Read(path, region) == elle::StatusError)
+  //  if (elle::File::Read(path, region) == elle::Status::Error)
   //    escape("unable to read the file's content");
 
   //  // prepare the archive.
-  //  if (this->archive.Acquire(region) == elle::StatusError)
+  //  if (this->archive.Acquire(region) == elle::Status::Error)
   //    escape("unable to prepare the archive");
 
   //  // detach the data from the region.
-  //  if (region.Detach() == elle::StatusError)
+  //  if (region.Detach() == elle::Status::Error)
   //    escape("unable to detach the data");
 
-  //  return elle::StatusOk;
+  //  return elle::Status::Ok;
   //}
 
   ///
@@ -113,10 +113,10 @@ namespace satellite
   //        path,
   //        elle::Region(
   //          this->archive.contents,
-  //          this->archive.size)) == elle::StatusError)
+  //          this->archive.size)) == elle::Status::Error)
   //    escape("unable to write the file's content");
 
-  //  return elle::StatusOk;
+  //  return elle::Status::Ok;
   //}
 
 }

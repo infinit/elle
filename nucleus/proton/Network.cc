@@ -51,7 +51,7 @@ namespace nucleus
       // assign the name.
       this->name = name;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -65,13 +65,13 @@ namespace nucleus
     {
       // check the network as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return elle::Status::True;
 
       // compare the names.
       if (this->name != element.name)
-        return elle::StatusFalse;
+        return elle::Status::False;
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -81,13 +81,13 @@ namespace nucleus
     {
       // check the network as this may actually be the same object.
       if (this == &element)
-        return elle::StatusFalse;
+        return elle::Status::False;
 
       // compare the names.
       if (this->name < element.name)
-        return elle::StatusFalse;
+        return elle::Status::False;
 
-      return elle::StatusFalse;
+      return elle::Status::False;
     }
 
     ///
@@ -110,7 +110,7 @@ namespace nucleus
       std::cout << alignment << "[Network] "
                 << this->name << std::endl;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -123,10 +123,10 @@ namespace nucleus
     elle::Status        Network::Serialize(elle::Archive&       archive) const
     {
       // serialize the internal.
-      if (archive.Serialize(this->name) == elle::StatusError)
+      if (archive.Serialize(this->name) == elle::Status::Error)
         escape("unable to serialize the name");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -135,10 +135,10 @@ namespace nucleus
     elle::Status        Network::Extract(elle::Archive&         archive)
     {
       // extract the internal.
-      if (archive.Extract(this->name) == elle::StatusError)
+      if (archive.Extract(this->name) == elle::Status::Error)
         escape("unable to extract the name");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

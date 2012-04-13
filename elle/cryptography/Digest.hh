@@ -15,20 +15,17 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Natural.hh>
+#include <elle/types.hh>
 
 #include <elle/standalone/Region.hh>
 
-#include <elle/radix/Status.hh>
 #include <elle/radix/Object.hh>
-
-#include <elle/package/Archive.hh>
 
 #include <elle/idiom/Open.hh>
 
 namespace elle
 {
-  using namespace core;
+
   using namespace standalone;
   using namespace radix;
   using namespace package;

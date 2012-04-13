@@ -57,14 +57,14 @@ namespace elle
       Archive           archive;
 
       // extract an archive.
-      if (this->Decrypt(code, archive) == StatusError)
+      if (this->Decrypt(code, archive) == Status::Error)
         escape("unable to decrypt into an archive");
 
       // extract the item.
-      if (archive.Extract(parameter, parameters...) == StatusError)
+      if (archive.Extract(parameter, parameters...) == Status::Error)
         escape("unable to extract the items");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     //
@@ -84,18 +84,18 @@ namespace elle
       Digest            digest;
 
       // create th archive.
-      if (archive.Create() == StatusError)
+      if (archive.Create() == Status::Error)
         escape("unable to create the archive");
 
       // serialize the object.
-      if (archive.Serialize(o1) == StatusError)
+      if (archive.Serialize(o1) == Status::Error)
         escape("unable to serialize the object");
 
       // re-launch the Sign() method for a digest.
-      if (this->Sign(archive, signature) == StatusError)
+      if (this->Sign(archive, signature) == Status::Error)
         escape("unable to sign the object's archive");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     template <typename T1,
@@ -108,16 +108,16 @@ namespace elle
       Archive           archive;
       Digest            digest;
 
-      if (archive.Create() == StatusError)
+      if (archive.Create() == Status::Error)
         escape("unable to create the archive");
 
-      if (archive.Serialize(o1, o2) == StatusError)
+      if (archive.Serialize(o1, o2) == Status::Error)
         escape("unable to serialize the objects");
 
-      if (this->Sign(archive, signature) == StatusError)
+      if (this->Sign(archive, signature) == Status::Error)
         escape("unable to sign the objects' archive");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     template <typename T1,
@@ -132,16 +132,16 @@ namespace elle
       Archive           archive;
       Digest            digest;
 
-      if (archive.Create() == StatusError)
+      if (archive.Create() == Status::Error)
         escape("unable to create the archive");
 
-      if (archive.Serialize(o1, o2, o3) == StatusError)
+      if (archive.Serialize(o1, o2, o3) == Status::Error)
         escape("unable to serialize the objects");
 
-      if (this->Sign(archive, signature) == StatusError)
+      if (this->Sign(archive, signature) == Status::Error)
         escape("unable to sign the objects' archive");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     template <typename T1,
@@ -158,16 +158,16 @@ namespace elle
       Archive           archive;
       Digest            digest;
 
-      if (archive.Create() == StatusError)
+      if (archive.Create() == Status::Error)
         escape("unable to create the archive");
 
-      if (archive.Serialize(o1, o2, o3, o4) == StatusError)
+      if (archive.Serialize(o1, o2, o3, o4) == Status::Error)
         escape("unable to serialize the objects");
 
-      if (this->Sign(archive, signature) == StatusError)
+      if (this->Sign(archive, signature) == Status::Error)
         escape("unable to sign the objects' archive");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     template <typename T1,
@@ -186,16 +186,16 @@ namespace elle
       Archive           archive;
       Digest            digest;
 
-      if (archive.Create() == StatusError)
+      if (archive.Create() == Status::Error)
         escape("unable to create the archive");
 
-      if (archive.Serialize(o1, o2, o3, o4, o5) == StatusError)
+      if (archive.Serialize(o1, o2, o3, o4, o5) == Status::Error)
         escape("unable to serialize the objects");
 
-      if (this->Sign(archive, signature) == StatusError)
+      if (this->Sign(archive, signature) == Status::Error)
         escape("unable to sign the objects' archive");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     template <typename T1,
@@ -216,16 +216,16 @@ namespace elle
       Archive           archive;
       Digest            digest;
 
-      if (archive.Create() == StatusError)
+      if (archive.Create() == Status::Error)
         escape("unable to create the archive");
 
-      if (archive.Serialize(o1, o2, o3, o4, o5, o6) == StatusError)
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6) == Status::Error)
         escape("unable to serialize the objects");
 
-      if (this->Sign(archive, signature) == StatusError)
+      if (this->Sign(archive, signature) == Status::Error)
         escape("unable to sign the objects' archive");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     template <typename T1,
@@ -248,16 +248,16 @@ namespace elle
       Archive           archive;
       Digest            digest;
 
-      if (archive.Create() == StatusError)
+      if (archive.Create() == Status::Error)
         escape("unable to create the archive");
 
-      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7) == StatusError)
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7) == Status::Error)
         escape("unable to serialize the objects");
 
-      if (this->Sign(archive, signature) == StatusError)
+      if (this->Sign(archive, signature) == Status::Error)
         escape("unable to sign the objects' archive");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     template <typename T1,
@@ -282,16 +282,16 @@ namespace elle
       Archive           archive;
       Digest            digest;
 
-      if (archive.Create() == StatusError)
+      if (archive.Create() == Status::Error)
         escape("unable to create the archive");
 
-      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7, o8) == StatusError)
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7, o8) == Status::Error)
         escape("unable to serialize the objects");
 
-      if (this->Sign(archive, signature) == StatusError)
+      if (this->Sign(archive, signature) == Status::Error)
         escape("unable to sign the objects' archive");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     template <typename T1,
@@ -318,16 +318,16 @@ namespace elle
       Archive           archive;
       Digest            digest;
 
-      if (archive.Create() == StatusError)
+      if (archive.Create() == Status::Error)
         escape("unable to create the archive");
 
-      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7, o8, o9) == StatusError)
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7, o8, o9) == Status::Error)
         escape("unable to serialize the objects");
 
-      if (this->Sign(archive, signature) == StatusError)
+      if (this->Sign(archive, signature) == Status::Error)
         escape("unable to sign the objects' archive");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     //
@@ -349,18 +349,18 @@ namespace elle
       Archive           archive;
 
       // create an archive.
-      if (archive.Create() == StatusError)
+      if (archive.Create() == Status::Error)
         escape("unable to create the archive");
 
       // serialize the object.
-      if (archive.Serialize(o1) == StatusError)
+      if (archive.Serialize(o1) == Status::Error)
         escape("unable to serialize the object");
 
       // encrypt the archive.
-      if (this->Encrypt(archive, code) == StatusError)
+      if (this->Encrypt(archive, code) == Status::Error)
         escape("unable to encrypt the object's archive");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     template <typename T1,
@@ -371,16 +371,16 @@ namespace elle
     {
       Archive           archive;
 
-      if (archive.Create() == StatusError)
+      if (archive.Create() == Status::Error)
         escape("unable to create the archive");
 
-      if (archive.Serialize(o1, o2) == StatusError)
+      if (archive.Serialize(o1, o2) == Status::Error)
         escape("unable to serialize the object");
 
-      if (this->Encrypt(archive, code) == StatusError)
+      if (this->Encrypt(archive, code) == Status::Error)
         escape("unable to encrypt the object's archive");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     template <typename T1,
@@ -393,16 +393,16 @@ namespace elle
     {
       Archive           archive;
 
-      if (archive.Create() == StatusError)
+      if (archive.Create() == Status::Error)
         escape("unable to create the archive");
 
-      if (archive.Serialize(o1, o2, o3) == StatusError)
+      if (archive.Serialize(o1, o2, o3) == Status::Error)
         escape("unable to serialize the object");
 
-      if (this->Encrypt(archive, code) == StatusError)
+      if (this->Encrypt(archive, code) == Status::Error)
         escape("unable to encrypt the object's archive");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     template <typename T1,
@@ -417,16 +417,16 @@ namespace elle
     {
       Archive           archive;
 
-      if (archive.Create() == StatusError)
+      if (archive.Create() == Status::Error)
         escape("unable to create the archive");
 
-      if (archive.Serialize(o1, o2, o3, o4) == StatusError)
+      if (archive.Serialize(o1, o2, o3, o4) == Status::Error)
         escape("unable to serialize the object");
 
-      if (this->Encrypt(archive, code) == StatusError)
+      if (this->Encrypt(archive, code) == Status::Error)
         escape("unable to encrypt the object's archive");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     template <typename T1,
@@ -443,16 +443,16 @@ namespace elle
     {
       Archive           archive;
 
-      if (archive.Create() == StatusError)
+      if (archive.Create() == Status::Error)
         escape("unable to create the archive");
 
-      if (archive.Serialize(o1, o2, o3, o4, o5) == StatusError)
+      if (archive.Serialize(o1, o2, o3, o4, o5) == Status::Error)
         escape("unable to serialize the object");
 
-      if (this->Encrypt(archive, code) == StatusError)
+      if (this->Encrypt(archive, code) == Status::Error)
         escape("unable to encrypt the object's archive");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     template <typename T1,
@@ -471,16 +471,16 @@ namespace elle
     {
       Archive           archive;
 
-      if (archive.Create() == StatusError)
+      if (archive.Create() == Status::Error)
         escape("unable to create the archive");
 
-      if (archive.Serialize(o1, o2, o3, o4, o5, o6) == StatusError)
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6) == Status::Error)
         escape("unable to serialize the object");
 
-      if (this->Encrypt(archive, code) == StatusError)
+      if (this->Encrypt(archive, code) == Status::Error)
         escape("unable to encrypt the object's archive");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     template <typename T1,
@@ -501,16 +501,16 @@ namespace elle
     {
       Archive           archive;
 
-      if (archive.Create() == StatusError)
+      if (archive.Create() == Status::Error)
         escape("unable to create the archive");
 
-      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7) == StatusError)
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7) == Status::Error)
         escape("unable to serialize the object");
 
-      if (this->Encrypt(archive, code) == StatusError)
+      if (this->Encrypt(archive, code) == Status::Error)
         escape("unable to encrypt the object's archive");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     template <typename T1,
@@ -533,16 +533,16 @@ namespace elle
     {
       Archive           archive;
 
-      if (archive.Create() == StatusError)
+      if (archive.Create() == Status::Error)
         escape("unable to create the archive");
 
-      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7, o8) == StatusError)
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7, o8) == Status::Error)
         escape("unable to serialize the object");
 
-      if (this->Encrypt(archive, code) == StatusError)
+      if (this->Encrypt(archive, code) == Status::Error)
         escape("unable to encrypt the object's archive");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     template <typename T1,
@@ -567,16 +567,16 @@ namespace elle
     {
       Archive           archive;
 
-      if (archive.Create() == StatusError)
+      if (archive.Create() == Status::Error)
         escape("unable to create the archive");
 
-      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7, o8, o9) == StatusError)
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7, o8, o9) == Status::Error)
         escape("unable to serialize the object");
 
-      if (this->Encrypt(archive, code) == StatusError)
+      if (this->Encrypt(archive, code) == Status::Error)
         escape("unable to encrypt the object's archive");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

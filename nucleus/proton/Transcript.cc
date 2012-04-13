@@ -46,7 +46,7 @@ namespace nucleus
       // add the action to the transcript's container.
       this->container.push_back(new Action(address, block));
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -58,7 +58,7 @@ namespace nucleus
       // add the action to the transcript's container.
       this->container.push_back(new Action(address));
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -95,7 +95,7 @@ namespace nucleus
           iterator = this->container.begin();
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -120,7 +120,7 @@ namespace nucleus
       // clear the container.
       this->container.clear();
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -145,11 +145,11 @@ namespace nucleus
           Action*      action = *scoutor;
 
           // dump the action.
-          if (action->Dump(margin + 2) == elle::StatusError)
+          if (action->Dump(margin + 2) == elle::Status::Error)
             escape("unable to dump the action");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

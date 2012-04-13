@@ -53,26 +53,26 @@ namespace satellite
     if (elle::Console::Input(
           pass,
           prompt,
-          elle::Console::OptionPassword) == elle::StatusError)
+          elle::Console::OptionPassword) == elle::Status::Error)
       escape("unable to read the input");
 
     // generate the authority key pair.
-    if (pair.Generate(Authority::Length) == elle::StatusError)
+    if (pair.Generate(Authority::Length) == elle::Status::Error)
       escape("unable to generate the key pair");
 
     // create the authority with the generated key pair.
-    if (authority.Create(pair) == elle::StatusError)
+    if (authority.Create(pair) == elle::Status::Error)
       escape("unable to create the authority");
 
     // encrypt the authority.
-    if (authority.Encrypt(pass) == elle::StatusError)
+    if (authority.Encrypt(pass) == elle::Status::Error)
       escape("unable to encrypt the authority");
 
     // store the authority.
-    if (authority.Store() == elle::StatusError)
+    if (authority.Store() == elle::Status::Error)
       escape("unable to store the authority");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -85,10 +85,10 @@ namespace satellite
     lune::Authority     authority;
 
     // erase the authority file.
-    if (authority.Erase() == elle::StatusError)
+    if (authority.Erase() == elle::Status::Error)
       escape("unable to erase the authority");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -102,7 +102,7 @@ namespace satellite
     elle::Unique        unique;
 
     // check if the authority exists.
-    if (authority.Exist() == elle::StatusFalse)
+    if (authority.Exist() == elle::Status::False)
       escape("unable to locate the authority file");
 
     // prompt the user for the passphrase.
@@ -111,30 +111,30 @@ namespace satellite
     if (elle::Console::Input(
           pass,
           prompt,
-          elle::Console::OptionPassword) == elle::StatusError)
+          elle::Console::OptionPassword) == elle::Status::Error)
       escape("unable to read the input");
 
     // load the authority.
-    if (authority.Load() == elle::StatusError)
+    if (authority.Load() == elle::Status::Error)
       escape("unable to load the authority file");
 
     // decrypt the authority.
-    if (authority.Decrypt(pass) == elle::StatusError)
+    if (authority.Decrypt(pass) == elle::Status::Error)
       escape("unable to decrypt the authority");
 
     // dump the authority.
-    if (authority.Dump() == elle::StatusError)
+    if (authority.Dump() == elle::Status::Error)
       escape("unable to dump the authority");
 
     // retrive the public key's unique.
-    if (authority.K.Save(unique) == elle::StatusError)
+    if (authority.K.Save(unique) == elle::Status::Error)
       escape("unable to save the authority's public key");
 
     // dump the public key's unique so that it can be easily hard-coded in the
     // infinit software sources.
     std::cout << "[Unique] " << unique << std::endl;
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 //
@@ -152,37 +152,37 @@ namespace satellite
     // XXX Infinit::Parser is not deleted in case of errors
 
     // initialize the Elle library.
-    if (elle::Elle::Initialize() == elle::StatusError)
+    if (elle::Elle::Initialize() == elle::Status::Error)
       escape("unable to initialize Elle");
 
     // set up the program.
-    if (elle::Program::Setup() == elle::StatusError)
+    if (elle::Program::Setup() == elle::Status::Error)
       escape("unable to set up the program");
 
     // initialize the nucleus library.
-    if (nucleus::Nucleus::Initialize() == elle::StatusError)
+    if (nucleus::Nucleus::Initialize() == elle::Status::Error)
       escape("unable to initialize Nucleus");
 
     // initialize the Lune library.
-    if (lune::Lune::Initialize() == elle::StatusError)
+    if (lune::Lune::Initialize() == elle::Status::Error)
       escape("unable to initialize Lune");
 
     // initialize Infinit.
-    if (Infinit::Initialize() == elle::StatusError)
+    if (Infinit::Initialize() == elle::Status::Error)
       escape("unable to initialize Infinit");
 
     // initialize the operation.
     operation = Authority::OperationUnknown;
 
     // initialize the Etoile library.
-    if (etoile::Etoile::Initialize() == elle::StatusError)
+    if (etoile::Etoile::Initialize() == elle::Status::Error)
       escape("unable to initialize Etoile");
 
     // allocate a new parser.
     Infinit::Parser = new elle::Parser(argc, argv);
 
     // specify a program description.
-    if (Infinit::Parser->Description(Infinit::Copyright) == elle::StatusError)
+    if (Infinit::Parser->Description(Infinit::Copyright) == elle::Status::Error)
       escape("unable to set the description");
 
     // register the options.
@@ -191,7 +191,7 @@ namespace satellite
           'h',
           "help",
           "display the help",
-          elle::Parser::KindNone) == elle::StatusError)
+          elle::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -200,7 +200,7 @@ namespace satellite
           'c',
           "create",
           "create the authority",
-          elle::Parser::KindNone) == elle::StatusError)
+          elle::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -209,7 +209,7 @@ namespace satellite
           'd',
           "destroy",
           "destroy the existing authority",
-          elle::Parser::KindNone) == elle::StatusError)
+          elle::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -218,27 +218,27 @@ namespace satellite
           'x',
           "information",
           "display information regarding the authority",
-          elle::Parser::KindNone) == elle::StatusError)
+          elle::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // parse.
-    if (Infinit::Parser->Parse() == elle::StatusError)
+    if (Infinit::Parser->Parse() == elle::Status::Error)
       escape("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::StatusTrue)
+    if (Infinit::Parser->Test("Help") == elle::Status::True)
       {
         // display the usage.
         Infinit::Parser->Usage();
 
         // quit.
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("Create") == elle::StatusTrue) &&
-        (Infinit::Parser->Test("Destroy") == elle::StatusTrue) &&
-        (Infinit::Parser->Test("Information") == elle::StatusTrue))
+    if ((Infinit::Parser->Test("Create") == elle::Status::True) &&
+        (Infinit::Parser->Test("Destroy") == elle::Status::True) &&
+        (Infinit::Parser->Test("Information") == elle::Status::True))
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -248,15 +248,15 @@ namespace satellite
       }
 
     // test the option.
-    if (Infinit::Parser->Test("Create") == elle::StatusTrue)
+    if (Infinit::Parser->Test("Create") == elle::Status::True)
       operation = Authority::OperationCreate;
 
     // test the option.
-    if (Infinit::Parser->Test("Destroy") == elle::StatusTrue)
+    if (Infinit::Parser->Test("Destroy") == elle::Status::True)
       operation = Authority::OperationDestroy;
 
     // test the option.
-    if (Infinit::Parser->Test("Information") == elle::StatusTrue)
+    if (Infinit::Parser->Test("Information") == elle::Status::True)
       operation = Authority::OperationInformation;
 
     // trigger the operation.
@@ -265,7 +265,7 @@ namespace satellite
       case Authority::OperationCreate:
         {
           // create the authority.
-          if (Authority::Create() == elle::StatusError)
+          if (Authority::Create() == elle::Status::Error)
             escape("unable to create the authority");
 
           // display a message.
@@ -277,7 +277,7 @@ namespace satellite
       case Authority::OperationDestroy:
         {
           // destroy the authority.
-          if (Authority::Destroy() == elle::StatusError)
+          if (Authority::Destroy() == elle::Status::Error)
             escape("unable to destroy the authority");
 
           // display a message.
@@ -289,7 +289,7 @@ namespace satellite
       case Authority::OperationInformation:
         {
           // get information on the authority.
-          if (Authority::Information() == elle::StatusError)
+          if (Authority::Information() == elle::Status::Error)
             escape("unable to retrieve information on the authority");
 
           break;
@@ -310,26 +310,26 @@ namespace satellite
 
 
     // clean the Etoile.
-    if (etoile::Etoile::Clean() == elle::StatusError)
+    if (etoile::Etoile::Clean() == elle::Status::Error)
       escape("unable to clean Etoile");
 
     // clean Infinit.
-    if (Infinit::Clean() == elle::StatusError)
+    if (Infinit::Clean() == elle::Status::Error)
       escape("unable to clean Infinit");
 
     // clean Lune
-    if (lune::Lune::Clean() == elle::StatusError)
+    if (lune::Lune::Clean() == elle::Status::Error)
       escape("unable to clean Lune");
 
     // clean the nucleus library.
-    if (nucleus::Nucleus::Clean() == elle::StatusError)
+    if (nucleus::Nucleus::Clean() == elle::Status::Error)
       escape("unable to clean Nucleus");
 
     // clean Elle.
-    if (elle::Elle::Clean() == elle::StatusError)
+    if (elle::Elle::Clean() == elle::Status::Error)
       escape("unable to clean Elle");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 }
@@ -346,7 +346,7 @@ int                     main(int                                argc,
 {
   try
     {
-      if (satellite::Main(argc, argv) == elle::StatusError)
+      if (satellite::Main(argc, argv) == elle::Status::Error)
         {
           show();
 

@@ -60,13 +60,13 @@ elle::Boolean       Placement::operator==(const Placement& element)
 {
   // check the address as this may actually be the same object.
   if (this == &element)
-    return elle::StatusTrue;
+    return elle::Status::True;
 
   // compare the placement.
   if (this->value != element.value)
-    return elle::StatusFalse;
+    return elle::Status::False;
 
-  return elle::StatusTrue;
+  return elle::Status::True;
 }
 
 ///
@@ -92,10 +92,10 @@ embed(Placement, _());
 elle::Status        Placement::Serialize(elle::Archive&     archive) const
 {
   // serialize the attributes.
-  if (archive.Serialize(this->value) == elle::StatusError)
+  if (archive.Serialize(this->value) == elle::Status::Error)
     escape("unable to serialize the placement attributes");
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 };
 
 ///
@@ -104,10 +104,10 @@ elle::Status        Placement::Serialize(elle::Archive&     archive) const
 elle::Status        Placement::Extract(elle::Archive&       archive)
 {
   // extract the attributes.
-  if (archive.Extract(this->value) == elle::StatusError)
+  if (archive.Extract(this->value) == elle::Status::Error)
     escape("unable to extract the placement attributes");
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 };
 
 //
@@ -124,7 +124,7 @@ elle::Status        Placement::Dump(const elle::Natural32   margin) const
   std::cout << alignment << "[Placement] "
             << std::dec << this->value << std::endl;
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 //
@@ -139,5 +139,5 @@ elle::Status        Placement::Generate(Placement&              placement)
   // increments the counter.
   placement.value = Placement::Counter++;
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }

@@ -76,22 +76,22 @@ namespace etoile
       std::cout << alignment << "[Object]" << std::endl;
 
       // dump the parent context.
-      if (Context::Dump(margin + 2) == elle::StatusError)
+      if (Context::Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the parent context");
 
       // dump the location.
-      if (this->location.Dump(margin + 2) == elle::StatusError)
+      if (this->location.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the location");
 
       // dump the object.
-      if (this->object.Dump(margin + 2) == elle::StatusError)
+      if (this->object.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the object");
 
       // dump the access, if present.
       if (this->access != NULL)
         {
           // dump the access block.
-          if (this->access->Dump(margin + 2) == elle::StatusError)
+          if (this->access->Dump(margin + 2) == elle::Status::Error)
             escape("unable to dump the access");
         }
       else
@@ -117,18 +117,18 @@ namespace etoile
                 << std::endl;
 
       // dump the key.
-      if (this->rights.key.Dump(margin + 4) == elle::StatusError)
+      if (this->rights.key.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the key");
 
       // dump the record.
-      if (this->rights.record.Dump(margin + 4) == elle::StatusError)
+      if (this->rights.record.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the record");
 
       // dump the author.
-      if (this->author.Dump(margin + 2) == elle::StatusError)
+      if (this->author.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the author");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -142,20 +142,20 @@ namespace etoile
     {
       // serialize the attributes.
       if (archive.Serialize(this->location,
-                            this->object) == elle::StatusError)
+                            this->object) == elle::Status::Error)
         escape("unable to serialize the attributes");
 
       // serialize the access.
       if (this->access == NULL)
         {
           // serialize the access.
-          if (archive.Serialize(*this->access) == elle::StatusError)
+          if (archive.Serialize(*this->access) == elle::Status::Error)
             escape("unable to serialize the access");
         }
       else
         {
           // serialize 'none'.
-          if (archive.Serialize(elle::none) == elle::StatusError)
+          if (archive.Serialize(elle::none) == elle::Status::Error)
             escape("unable to serialize 'none'");
         }
 
@@ -165,10 +165,10 @@ namespace etoile
             static_cast<elle::Natural8>(this->rights.permissions),
             this->rights.key,
             this->rights.record,
-            this->author) == elle::StatusError)
+            this->author) == elle::Status::Error)
         escape("unable to serialize the attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -180,18 +180,18 @@ namespace etoile
 
       // extract the attributes.
       if (archive.Extract(this->location,
-                          this->object) == elle::StatusError)
+                          this->object) == elle::Status::Error)
         escape("unable to extract the attributes");
 
       // fetch the next element's type.
-      if (archive.Fetch(type) == elle::StatusError)
+      if (archive.Fetch(type) == elle::Status::Error)
         escape("unable to fetch the next element's type");
 
       // extract the access.
       if (type == elle::Archive::TypeNull)
         {
           // extract 'none'.
-          if (archive.Extract(elle::none) == elle::StatusError)
+          if (archive.Extract(elle::none) == elle::Status::Error)
             escape("unable to extract 'none'");
         }
       else
@@ -200,7 +200,7 @@ namespace etoile
           this->access = new nucleus::Access;
 
           // extract the access.
-          if (archive.Extract(*this->access) == elle::StatusError)
+          if (archive.Extract(*this->access) == elle::Status::Error)
             escape("unable to extract the access");
         }
 
@@ -210,10 +210,10 @@ namespace etoile
             reinterpret_cast<elle::Natural8&>(this->rights.permissions),
             this->rights.key,
             this->rights.record,
-            this->author) == elle::StatusError)
+            this->author) == elle::Status::Error)
         escape("unable to extract the attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

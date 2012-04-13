@@ -79,33 +79,33 @@ namespace etoile
       // subscribe to the signal.
       if (this->socket->signal.disconnected.Subscribe(
             elle::Callback<>::Infer(&Application::Disconnected,
-                                    this)) == elle::StatusError)
+                                    this)) == elle::Status::Error)
         escape("unable to subscribe to the signal");
 
       // subscribe to the signal.
       if (this->socket->signal.error.Subscribe(
             elle::Callback<>::Infer(&Application::Error,
-                                    this)) == elle::StatusError)
+                                    this)) == elle::Status::Error)
         escape("unable to subscribe to the signal");
 
       // allocate a new timer.
       this->timer = new elle::Timer;
 
       // create the timer.
-      if (this->timer->Create(elle::Timer::ModeSingle) == elle::StatusError)
+      if (this->timer->Create(elle::Timer::ModeSingle) == elle::Status::Error)
         escape("unable to create the timer");
 
       // subscribe to the timer's signal.
       if (this->timer->signal.timeout.Subscribe(
             elle::Callback<>::Infer(&Application::Abort,
-                                    this)) == elle::StatusError)
+                                    this)) == elle::Status::Error)
         escape("unable to subscribe to the signal");
 
       // start the timer.
-      if (this->timer->Start(Application::Timeout) == elle::StatusError)
+      if (this->timer->Start(Application::Timeout) == elle::Status::Error)
         escape("unable to start the timer");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -130,14 +130,14 @@ namespace etoile
       if (this->processing == Application::ProcessingOff)
         {
           // remove the application from the portal.
-          if (Portal::Remove(this->socket) == elle::StatusError)
+          if (Portal::Remove(this->socket) == elle::Status::Error)
             escape("unable to remove the application from the portal");
 
           // bury the application.
           bury(this);
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -155,7 +155,7 @@ namespace etoile
       // check the return status.
       this->socket->Disconnect();
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -180,11 +180,11 @@ namespace etoile
       if (this->state != Application::StateAuthenticated)
         {
           // disconnect the application.
-          if (this->socket->Disconnect() == elle::StatusError)
+          if (this->socket->Disconnect() == elle::Status::Error)
             escape("unable to disconnect the socket");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -213,7 +213,7 @@ namespace etoile
       if (this->timer != NULL)
         {
           // dump the timer.
-          if (this->timer->Dump(margin + 2) == elle::StatusError)
+          if (this->timer->Dump(margin + 2) == elle::Status::Error)
             escape("unable to dump the timer");
         }
       else
@@ -227,7 +227,7 @@ namespace etoile
       if (this->socket != NULL)
         {
           // dump the socket.
-          if (this->socket->Dump(margin + 2) == elle::StatusError)
+          if (this->socket->Dump(margin + 2) == elle::Status::Error)
             escape("unable to dump the socket");
         }
       else
@@ -237,7 +237,7 @@ namespace etoile
                     << "[LocalSocket] " << elle::none << std::endl;
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

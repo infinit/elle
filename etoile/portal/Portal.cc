@@ -50,7 +50,7 @@ namespace etoile
     {
       // build an arbitrary line for applications to connect to
       // the portal and issue requests.
-      if (elle::Random::Generate(Portal::Line, 16) == elle::StatusError)
+      if (elle::Random::Generate(Portal::Line, 16) == elle::Status::Error)
         escape("unable to generate a random portal line");
 
       // register the messages.
@@ -63,7 +63,7 @@ namespace etoile
         if (elle::Network::Register(
               elle::Procedure<TagAuthenticate>(
                 elle::Callback<>::Infer(
-                  &Portal::Authenticate))) == elle::StatusError)
+                  &Portal::Authenticate))) == elle::Status::Error)
           escape("unable to register the callback");
 
         //
@@ -77,7 +77,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Path::Resolve),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-            elle::StatusError)
+            elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -87,7 +87,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Path::Locate),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-            elle::StatusError)
+            elle::Status::Error)
           escape("unable to register the callback");
 
         //
@@ -101,7 +101,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Object::Load),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-            elle::StatusError)
+            elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -111,7 +111,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Object::Information),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -121,7 +121,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Object::Discard),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -131,7 +131,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Object::Store),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -141,7 +141,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Object::Destroy),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         //
@@ -155,7 +155,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::File::Create),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -165,7 +165,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::File::Load),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -175,7 +175,7 @@ namespace etoile
                 elle::Callback<>::Infer( &wall::File::Write),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -185,7 +185,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::File::Read),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -195,7 +195,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::File::Adjust),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -205,7 +205,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::File::Discard),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -215,7 +215,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::File::Store),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -225,7 +225,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::File::Destroy),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         //
@@ -239,7 +239,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Directory::Create),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -249,7 +249,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Directory::Load),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -259,7 +259,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Directory::Add),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -269,7 +269,7 @@ namespace etoile
                 elle::Callback<>::Infer(&Wrapper::Directory::Lookup),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -279,7 +279,7 @@ namespace etoile
                 elle::Callback<>::Infer(&Wrapper::Directory::Consult),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -289,7 +289,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Directory::Rename),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -299,7 +299,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Directory::Remove),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -309,7 +309,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Directory::Discard),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -319,7 +319,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Directory::Store),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -329,7 +329,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Directory::Destroy),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         //
@@ -343,7 +343,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Link::Create),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -353,7 +353,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Link::Load),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -363,7 +363,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Link::Bind),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -373,7 +373,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Link::Resolve),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -383,7 +383,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Link::Discard),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -393,7 +393,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Link::Store),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -403,7 +403,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Link::Destroy),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         //
@@ -417,7 +417,7 @@ namespace etoile
                 elle::Callback<>::Infer(&Wrapper::Access::Lookup),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -427,7 +427,7 @@ namespace etoile
                 elle::Callback<>::Infer(&Wrapper::Access::Consult),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -437,7 +437,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Access::Grant),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -447,7 +447,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Access::Revoke),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         //
@@ -461,7 +461,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Attributes::Set),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -471,7 +471,7 @@ namespace etoile
                 elle::Callback<>::Infer(&Wrapper::Attributes::Get),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -481,7 +481,7 @@ namespace etoile
                 elle::Callback<>::Infer(&Wrapper::Attributes::Fetch),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
@@ -491,7 +491,7 @@ namespace etoile
                 elle::Callback<>::Infer(&wall::Attributes::Omit),
                 elle::Callback<>::Infer(&Portal::Prolog),
                 elle::Callback<>::Infer(&Portal::Epilog))) ==
-              elle::StatusError)
+              elle::Status::Error)
           escape("unable to register the callback");
       }
 
@@ -499,10 +499,10 @@ namespace etoile
       if (elle::LocalServer::Listen(
             Portal::Line,
             elle::Callback<>::Infer(
-              &Portal::Connection)) == elle::StatusError)
+              &Portal::Connection)) == elle::Status::Error)
         escape("unable to listen for local connections");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -512,7 +512,7 @@ namespace etoile
     {
       // nothing to do.
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -537,7 +537,7 @@ namespace etoile
       if (result.second == false)
         escape("unable to insert the application in the container");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -556,7 +556,7 @@ namespace etoile
       // return the application.
       application = iterator->second;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -574,7 +574,7 @@ namespace etoile
       // erase the entry.
       Portal::Applications.erase(iterator);
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -603,11 +603,11 @@ namespace etoile
           Application*  application = scoutor->second;
 
           // dump the application.
-          if (application->Dump(margin + 4) == elle::StatusError)
+          if (application->Dump(margin + 4) == elle::Status::Error)
             escape("unable to dump the application");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -629,16 +629,16 @@ namespace etoile
       auto application = std::unique_ptr<Application>(new Application);
 
       // create the application.
-      if (application->Create(socket) == elle::StatusError)
+      if (application->Create(socket) == elle::Status::Error)
         escape("unable to create the application");
 
       // record the application.
-      if (Portal::Add(application.get()) == elle::StatusError)
+      if (Portal::Add(application.get()) == elle::Status::Error)
         escape("unable to add the new application");
       else
         application.release();
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -660,12 +660,12 @@ namespace etoile
                   << std::endl;
 
       // retrieve the network session.
-      if (elle::Session::Instance(session) == elle::StatusError)
+      if (elle::Session::Instance(session) == elle::Status::Error)
         escape("unable to retrieve the current session");
 
       // retrieve the application associated with the current socket.
       if (Portal::Retrieve(dynamic_cast<elle::LocalSocket*>(session->socket),
-                           application) == elle::StatusError)
+                           application) == elle::Status::Error)
         escape("unable to retrieve the application");
 
       // check that the given phrase is the same as etoile's.
@@ -677,10 +677,10 @@ namespace etoile
 
       // reply with the Authenticated message.
       if (application->socket->Reply(
-            elle::Inputs<TagAuthenticated>()) == elle::StatusError)
+            elle::Inputs<TagAuthenticated>()) == elle::Status::Error)
         escape("unable to reply to the application");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -696,12 +696,12 @@ namespace etoile
       Application*      application;
 
       // retrieve the network session.
-      if (elle::Session::Instance(session) == elle::StatusError)
+      if (elle::Session::Instance(session) == elle::Status::Error)
         escape("unable to retrieve the current session");
 
       // retrieve the application associated with the current socket.
       if (Portal::Retrieve(dynamic_cast<elle::LocalSocket*>(session->socket),
-                           application) == elle::StatusError)
+                           application) == elle::Status::Error)
         escape("unable to retrieve the application");
 
       // check if the application has been authenticated.
@@ -711,7 +711,7 @@ namespace etoile
       // set the application as processing.
       application->processing = Application::ProcessingOn;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -731,12 +731,12 @@ namespace etoile
       Application*      application;
 
       // retrieve the network session.
-      if (elle::Session::Instance(session) == elle::StatusError)
+      if (elle::Session::Instance(session) == elle::Status::Error)
         escape("unable to retrieve the current session");
 
       // retrieve the application associated with the current socket.
       if (Portal::Retrieve(dynamic_cast<elle::LocalSocket*>(session->socket),
-                           application) == elle::StatusError)
+                           application) == elle::Status::Error)
         escape("unable to retrieve the application");
 
       // reset the application's processing.
@@ -746,14 +746,14 @@ namespace etoile
       if (application->state == Application::StateDisconnected)
         {
           // remove the application from the portal.
-          if (Portal::Remove(application->socket) == elle::StatusError)
+          if (Portal::Remove(application->socket) == elle::Status::Error)
             escape("unable to remove the application from the portal");
 
           // bury the application.
           bury(application);
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

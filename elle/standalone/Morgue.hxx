@@ -48,23 +48,23 @@ namespace elle
           this->timer = new Timer;
 
           // create the timer.
-          if (this->timer->Create(Timer::ModeRepetition) == StatusError)
+          if (this->timer->Create(Timer::ModeRepetition) == Status::Error)
             escape("unable to create the timer");
 
           // subscribe to the timer's signal.
           if (this->timer->signal.timeout.Subscribe(
-                Callback<>::Infer(&Morgue::Bury, this)) == StatusError)
+                Callback<>::Infer(&Morgue::Bury, this)) == Status::Error)
             escape("unable to subscribe to the signal");
 
           // start the timer.
-          if (this->timer->Start(Morgue::Frequency) == StatusError)
+          if (this->timer->Start(Morgue::Frequency) == Status::Error)
             escape("unable to start the timer");
         }
 
       // add the instance to the container.
       this->container.push_back(static_cast<Meta*>(instance));
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

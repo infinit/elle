@@ -66,7 +66,7 @@ namespace nucleus
     }
 
     ///
-    /// this method returns StatusTrue if the block is valid, StatusFalse
+    /// this method returns Status::True if the block is valid, Status::False
     /// otherwise.
     ///
     elle::Status        Block::Validate(const Address&) const
@@ -97,7 +97,7 @@ namespace nucleus
       std::cout << alignment << "[Block]" << std::endl;
 
       // dump the network.
-      if (this->network.Dump(margin + 2) == elle::StatusError)
+      if (this->network.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the network");
 
       // dump the family.
@@ -112,7 +112,7 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift << "[State] "
                 << std::dec << this->state << std::endl;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -128,10 +128,10 @@ namespace nucleus
       if (archive.Serialize(
             this->network,
             static_cast<elle::Natural8>(this->family),
-            static_cast<elle::Natural8>(this->component)) == elle::StatusError)
+            static_cast<elle::Natural8>(this->component)) == elle::Status::Error)
         escape("unable to serialize the block's attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -144,10 +144,10 @@ namespace nucleus
             this->network,
             reinterpret_cast<elle::Natural8&>(this->family),
             reinterpret_cast<elle::Natural8&>(this->component)) ==
-          elle::StatusError)
+          elle::Status::Error)
         escape("unable to extract the block's attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //

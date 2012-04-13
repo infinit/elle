@@ -79,7 +79,7 @@ elle::String                    Infinit::Mountpoint;
 elle::Status            Infinit::Initialize()
 {
   // disable the meta logging.
-  if (elle::Meta::Disable() == elle::StatusError)
+  if (elle::Meta::Disable() == elle::Status::Error)
     escape("unable to disable the meta logging");
 
   //
@@ -95,11 +95,11 @@ elle::Status            Infinit::Initialize()
     if (Infinit::Key.empty() == false)
       {
         // restore the authority's public key.
-        if (K.Restore(Infinit::Key) == elle::StatusError)
+        if (K.Restore(Infinit::Key) == elle::Status::Error)
           escape("unable to restore the authority's public key");
 
         // create the authority based on the hard-coded public key.
-        if (Infinit::Authority.Create(K) == elle::StatusError)
+        if (Infinit::Authority.Create(K) == elle::Status::Error)
           escape("unable to create the authority");
       }
   }
@@ -109,23 +109,23 @@ elle::Status            Infinit::Initialize()
   //
   {
     // if the configuration file exists...
-    if (Infinit::Configuration.Exist() == elle::StatusTrue)
+    if (Infinit::Configuration.Exist() == elle::Status::True)
       {
         // load the configuration file.
-        if (Infinit::Configuration.Load() == elle::StatusError)
+        if (Infinit::Configuration.Load() == elle::Status::Error)
           escape("unable to load the configuration");
       }
 
     // pull the parameters.
-    if (Infinit::Configuration.Pull() == elle::StatusError)
+    if (Infinit::Configuration.Pull() == elle::Status::Error)
       escape("unable to pull the configuration parameters");
   }
 
   // enable the meta logging.
-  if (elle::Meta::Enable() == elle::StatusError)
+  if (elle::Meta::Enable() == elle::Status::Error)
     escape("unable to enable the meta logging");
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -135,5 +135,5 @@ elle::Status            Infinit::Clean()
 {
   // nothing to do.
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }

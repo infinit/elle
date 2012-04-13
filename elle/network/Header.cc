@@ -58,7 +58,7 @@ namespace elle
       this->tag = tag;
       this->size = size;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -84,7 +84,7 @@ namespace elle
       std::cout << alignment << "[Header] " << std::endl;
 
       // dump the event.
-      if (this->event.Dump(margin + 2) == StatusError)
+      if (this->event.Dump(margin + 2) == Status::Error)
         escape("unable to dump the event");
 
       // dump the tag.
@@ -95,7 +95,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Size] " << this->size << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -111,10 +111,10 @@ namespace elle
       if (archive.Serialize(Header::Name,
                             this->event,
                             this->tag,
-                            this->size) == StatusError)
+                            this->size) == Status::Error)
         escape("unable to serialize the header attributes");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -128,14 +128,14 @@ namespace elle
       if (archive.Extract(name,
                           this->event,
                           this->tag,
-                          this->size) == StatusError)
+                          this->size) == Status::Error)
         escape("unable to extract the header attributes");
 
       // verify the name.
       if (Header::Name != name)
         escape("incorrect name event");
 
-      return StatusOk;
+      return Status::Ok;
 
     }
 

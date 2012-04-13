@@ -47,19 +47,19 @@ elle::Status          Etoile::Initialize()
   // initialize the components.
   //
   {
-    if (path::Path::Initialize() == elle::StatusError)
+    if (path::Path::Initialize() == elle::Status::Error)
       escape("unable to initialize the path");
 
-    if (depot::Depot::Initialize() == elle::StatusError)
+    if (depot::Depot::Initialize() == elle::Status::Error)
       escape("unable to initialize the depot");
 
-    if (gear::Gear::Initialize() == elle::StatusError)
+    if (gear::Gear::Initialize() == elle::Status::Error)
       escape("unable to initialize the gear");
 
-    if (shrub::Shrub::Initialize() == elle::StatusError)
+    if (shrub::Shrub::Initialize() == elle::Status::Error)
       escape("unable to initialize the shrub");
 
-    if (portal::Portal::Initialize() == elle::StatusError)
+    if (portal::Portal::Initialize() == elle::Status::Error)
       escape("unable to initialize the portal");
   }
 
@@ -73,18 +73,18 @@ elle::Status          Etoile::Initialize()
   {
     elle::String string;
 
-    if (elle::Random::Generate(string) == elle::StatusError)
+    if (elle::Random::Generate(string) == elle::Status::Error)
       escape("unable to generate a random string");
 
     if (Etoile::Phrase.Create(string,
-                              portal::Portal::Line) == elle::StatusError)
+                              portal::Portal::Line) == elle::Status::Error)
       escape("unable to create the phrase");
 
-    if (Etoile::Phrase.Store(Infinit::Network) == elle::StatusError)
+    if (Etoile::Phrase.Store(Infinit::Network) == elle::Status::Error)
       escape("unable to store the phrase");
   }
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -96,7 +96,7 @@ elle::Status          Etoile::Clean()
   // delete the phrase.
   //
   {
-    if (Etoile::Phrase.Erase(Infinit::Network) == elle::StatusError)
+    if (Etoile::Phrase.Erase(Infinit::Network) == elle::Status::Error)
       escape("unable to erase the phrase");
   }
 
@@ -104,21 +104,21 @@ elle::Status          Etoile::Clean()
   // clean the components.
   //
   {
-    if (portal::Portal::Clean() == elle::StatusError)
+    if (portal::Portal::Clean() == elle::Status::Error)
       escape("unable to clean the portal");
 
-    if (shrub::Shrub::Clean() == elle::StatusError)
+    if (shrub::Shrub::Clean() == elle::Status::Error)
       escape("unable to clean the shrub");
 
-    if (gear::Gear::Clean() == elle::StatusError)
+    if (gear::Gear::Clean() == elle::Status::Error)
       escape("unable to clean the gear");
 
-    if (depot::Depot::Clean() == elle::StatusError)
+    if (depot::Depot::Clean() == elle::Status::Error)
       escape("unable to clean the depot");
 
-    if (path::Path::Clean() == elle::StatusError)
+    if (path::Path::Clean() == elle::Status::Error)
       escape("unable to clean the path");
   }
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }

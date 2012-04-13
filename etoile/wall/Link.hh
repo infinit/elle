@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 #include <nucleus/Nucleus.hh>
 
 #include <etoile/path/Chemin.hh>

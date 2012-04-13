@@ -34,10 +34,10 @@ namespace hole
 
     // compute the digest based on the parameters including the family.
     if (elle::OneWay::Hash(parameter,
-                           *this->digest) == elle::StatusError)
+                           *this->digest) == elle::Status::Error)
       escape("unable to hash the given parameter(s)");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 }

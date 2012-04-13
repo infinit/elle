@@ -66,7 +66,7 @@ namespace hole
         if (result.second == false)
           escape("unable to insert the neighbour in the container");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -75,10 +75,10 @@ namespace hole
       elle::Status      Neighbourhood::Exist(const elle::Locus& locus)
       {
         // try to locate the locus.
-        if (this->Locate(locus) == elle::StatusTrue)
-          return elle::StatusTrue;
+        if (this->Locate(locus) == elle::Status::True)
+          return elle::Status::True;
 
-        return elle::StatusFalse;
+        return elle::Status::False;
       }
 
       ///
@@ -90,13 +90,13 @@ namespace hole
         Neighbourhood::Iterator iterator;
 
         // try to locate the locus.
-        if (this->Locate(locus, &iterator) == elle::StatusFalse)
+        if (this->Locate(locus, &iterator) == elle::Status::False)
           escape("unable to locate the given locus");
 
         // return the associated neighbour.
         neighbour = iterator->second;
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -107,13 +107,13 @@ namespace hole
         Neighbourhood::Iterator iterator;
 
         // try to locate the locus.
-        if (this->Locate(locus, &iterator) == elle::StatusFalse)
+        if (this->Locate(locus, &iterator) == elle::Status::False)
           escape("unable to locate the given locus");
 
         // erase the iterator.
         this->container.erase(iterator);
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -130,10 +130,10 @@ namespace hole
             if (iterator != NULL)
               *iterator = i;
 
-            return elle::StatusTrue;
+            return elle::Status::True;
           }
 
-        return elle::StatusFalse;
+        return elle::Status::False;
       }
 
 //
@@ -157,11 +157,11 @@ namespace hole
              scoutor++)
           {
             // dump the neighbour.
-            if (scoutor->second->Dump(margin + 2) == elle::StatusError)
+            if (scoutor->second->Dump(margin + 2) == elle::Status::Error)
               escape("unable to dump the neighbour");
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     }

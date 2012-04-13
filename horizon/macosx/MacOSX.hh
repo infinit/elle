@@ -16,7 +16,7 @@
 //
 
 #include <Infinit.hh>
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 

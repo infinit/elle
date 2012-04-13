@@ -60,7 +60,7 @@ namespace elle
       // release tracking.
       selectionoid.release();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -93,10 +93,10 @@ namespace elle
     Status      Network::Selectionoid<P>::Dump(const Natural32  margin) const
     {
       // dump the object.
-      if (this->procedure.Dump(margin) == StatusError)
+      if (this->procedure.Dump(margin) == Status::Error)
         escape("unable to dump the object");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

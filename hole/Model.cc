@@ -70,7 +70,7 @@ namespace hole
             // set the model type.
             type = Model::Descriptors[i].type;
 
-            return elle::StatusOk;
+            return elle::Status::Ok;
           }
       }
 
@@ -94,7 +94,7 @@ namespace hole
             // set the model name.
             name = Model::Descriptors[i].name;
 
-            return elle::StatusOk;
+            return elle::Status::Ok;
           }
       }
 
@@ -133,7 +133,7 @@ namespace hole
     // set the type.
     this->type = type;
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -142,10 +142,10 @@ namespace hole
   elle::Status          Model::Create(const elle::String&       name)
   {
     // convert the name into a type.
-    if (Model::Convert(name, this->type) == elle::StatusError)
+    if (Model::Convert(name, this->type) == elle::Status::Error)
       escape("unable to convert the model name into a valid type");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 //
@@ -159,13 +159,13 @@ namespace hole
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return elle::Status::True;
 
       // check the attributes.
       if (this->type != element.type)
-        return elle::StatusFalse;
+        return elle::Status::False;
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -187,7 +187,7 @@ namespace hole
       // display the name.
       std::cout << alignment << "[Model] " << this->type << std::endl;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -201,10 +201,10 @@ namespace hole
     {
       // serialize the internal digest.
       if (archive.Serialize(static_cast<elle::Natural8>(this->type)) ==
-          elle::StatusError)
+          elle::Status::Error)
         escape("unable to serialize the attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -214,10 +214,10 @@ namespace hole
     {
       // extract the internal digest.
       if (archive.Extract(reinterpret_cast<elle::Natural8&>(this->type)) ==
-          elle::StatusError)
+          elle::Status::Error)
         escape("unable to extract the attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 }

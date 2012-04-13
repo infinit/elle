@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 namespace elle
 {
@@ -70,14 +70,14 @@ namespace elle
         // randomize the buffer contents.
         for (i = 0; i < size; i++)
           *(buffer + i) =
-            Random::Generate(elle::core::Type<Character>::Minimum,
-                             elle::core::Type<Character>::Maximum);
+            Random::Generate(elle::Type<Character>::Minimum,
+                             elle::Type<Character>::Maximum);
 
         // assign the buffer to the region.
-        if (region.Acquire(buffer, size) == StatusError)
+        if (region.Acquire(buffer, size) == Status::Error)
           escape("unable to assign the buffer to the region");
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 

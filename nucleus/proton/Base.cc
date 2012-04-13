@@ -34,7 +34,7 @@ namespace nucleus
       this->version = version;
       this->digest = digest;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -46,10 +46,10 @@ namespace nucleus
       this->version = block.version;
 
       // compute the block's digest.
-      if (elle::OneWay::Hash(block, this->digest) == elle::StatusError)
+      if (elle::OneWay::Hash(block, this->digest) == elle::Status::Error)
         escape("unable to hash the mutable block");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -62,17 +62,17 @@ namespace nucleus
 
       // check the versions.
       if (this->version != block.version)
-        return elle::StatusFalse;
+        return elle::Status::False;
 
       // compute the block's digest.
-      if (elle::OneWay::Hash(block, digest) == elle::StatusError)
+      if (elle::OneWay::Hash(block, digest) == elle::Status::Error)
         flee("unable to hash the mutable block");
 
       // compare the digests.
       if (this->digest != digest)
-        return elle::StatusFalse;
+        return elle::Status::False;
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
 //
@@ -86,14 +86,14 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return elle::Status::True;
 
       // compare the attributes.
       if ((this->version != element.version) ||
           (this->digest != element.digest))
-        return elle::StatusFalse;
+        return elle::Status::False;
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -115,14 +115,14 @@ namespace nucleus
       std::cout << alignment << "[Base]" << std::endl;
 
       // dump the version.
-      if (this->version.Dump(margin + 2) == elle::StatusError)
+      if (this->version.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the version");
 
       // dump the digest.
-      if (this->digest.Dump(margin + 2) == elle::StatusError)
+      if (this->digest.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the digest");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -136,10 +136,10 @@ namespace nucleus
     {
       // serialize the attributes.
       if (archive.Serialize(this->version,
-                            this->digest) == elle::StatusError)
+                            this->digest) == elle::Status::Error)
         escape("unable to serialize the attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -149,10 +149,10 @@ namespace nucleus
     {
       // extract the attributes.
       if (archive.Extract(this->version,
-                          this->digest) == elle::StatusError)
+                          this->digest) == elle::Status::Error)
         escape("unable to extract the attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

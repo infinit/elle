@@ -32,7 +32,7 @@ namespace satellite
       // set the operation.
       this->operation = operation;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -44,7 +44,7 @@ namespace satellite
       // set the result;
       this->result = result;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -78,21 +78,21 @@ namespace satellite
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Inputs]" << std::endl;
 
-      if (this->inputs.Dump(margin + 4) == elle::StatusError)
+      if (this->inputs.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the archive");
 
       // display the outputs.
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Outputs]" << std::endl;
 
-      if (this->outputs.Dump(margin + 4) == elle::StatusError)
+      if (this->outputs.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the archive");
 
       // display the result.
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Result] " << this->operation << std::endl;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -108,10 +108,10 @@ namespace satellite
       if (archive.Serialize(static_cast<elle::Natural32>(this->operation),
                             this->inputs,
                             this->outputs,
-                            this->result) == elle::StatusError)
+                            this->result) == elle::Status::Error)
         escape("unable to serialize the attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -125,13 +125,13 @@ namespace satellite
       if (archive.Extract(operation,
                           this->inputs,
                           this->outputs,
-                          this->result) == elle::StatusError)
+                          this->result) == elle::Status::Error)
         escape("unable to extract the attributes");
 
       // set the operation.
       this->operation = static_cast<Upcall::Operation>(operation);
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

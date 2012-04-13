@@ -47,7 +47,7 @@ namespace etoile
         escape("invalid context nature: scope's(%u) target(%u)",
                this->context->nature, T::N);
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

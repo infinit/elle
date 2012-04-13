@@ -30,7 +30,7 @@ namespace lune
   /// alterate the Infinit behaviour dynamically.
   ///
   class Configuration
-    : public elle::Settings
+    : public elle::utility::Settings
   {
   public:
     //

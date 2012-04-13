@@ -64,7 +64,7 @@ namespace etoile
               {
                 // store the block in the depot.
                 if (depot::Depot::Push(action->address,
-                                       *action->block) == elle::StatusError)
+                                       *action->block) == elle::Status::Error)
                   escape("unable to push the block in the depot");
 
                 break;
@@ -72,7 +72,7 @@ namespace etoile
             case nucleus::Action::TypeWipe:
               {
                 // wipe the block from the depot.
-                if (depot::Depot::Wipe(action->address) == elle::StatusError)
+                if (depot::Depot::Wipe(action->address) == elle::Status::Error)
                   escape("unable to wipe the block from the depot");
 
                 break;
@@ -85,7 +85,7 @@ namespace etoile
         }
 
       // flush the transcript since the actions have been performed.
-      if (scope->context->transcript.Flush() == elle::StatusError)
+      if (scope->context->transcript.Flush() == elle::Status::Error)
         escape("unable to clear the transcript");
 
       // set the context's state.
@@ -95,7 +95,7 @@ namespace etoile
       // it in order to avoid problems.
       bury(scope);
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

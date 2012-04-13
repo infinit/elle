@@ -50,10 +50,10 @@ namespace hole
     std::cout << alignment << "[Holeable]" << std::endl;
 
     // dump the network.
-    if (this->network.Dump(margin + 2) == elle::StatusError)
+    if (this->network.Dump(margin + 2) == elle::Status::Error)
       escape("unable to dump the network");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 }

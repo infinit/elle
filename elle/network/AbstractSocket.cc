@@ -92,7 +92,7 @@ namespace elle
       std::cout << alignment << "[AbstractSocket]" << std::endl;
 
       // dump the socket.
-      if (Socket::Dump(margin + 2) == StatusError)
+      if (Socket::Dump(margin + 2) == Status::Error)
         escape("unable to dump the socket");
 
       // dump the state.
@@ -102,7 +102,7 @@ namespace elle
       // dump the buffer.
       if (this->buffer != NULL)
         {
-          if (this->buffer->Dump(margin + 2) == StatusError)
+          if (this->buffer->Dump(margin + 2) == Status::Error)
             escape("unable to dump the buffer");
         }
 
@@ -122,18 +122,18 @@ namespace elle
           Parcel*       parcel = *scoutor;
 
           // dump the parcel.
-          if (parcel->Dump(margin + 4) == StatusError)
+          if (parcel->Dump(margin + 4) == Status::Error)
             escape("unable to dump the parcel");
         }
 
       // dump the timer, if present.
       if (this->timer != NULL)
         {
-          if (this->timer->Dump(margin + 2) == StatusError)
+          if (this->timer->Dump(margin + 2) == Status::Error)
             escape("unable to dump the timer");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

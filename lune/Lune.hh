@@ -12,7 +12,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
+#include <elle/io/Pattern.hh>
 
 #ifndef LUNE_LUNE_HH
 #define LUNE_LUNE_HH
@@ -47,53 +48,53 @@ namespace lune
     //
     // static attributes
     //
-    static elle::Pattern        Home;
+    static elle::io::Pattern        Home;
 
-    static elle::Pattern        Authority;
-    static elle::Pattern        Passport;
+    static elle::io::Pattern        Authority;
+    static elle::io::Pattern        Passport;
 
-    static elle::Pattern        Configuration;
+    static elle::io::Pattern        Configuration;
 
-    static elle::Pattern        Identity;
-    static elle::Pattern        Dictionary;
+    static elle::io::Pattern        Identity;
+    static elle::io::Pattern        Dictionary;
 
-    static elle::Pattern        Users;
+    static elle::io::Pattern        Users;
 
     struct                      User
     {
-      static elle::Pattern      Root;
-      static elle::Pattern      Identity;
-      static elle::Pattern      Dictionary;
+      static elle::io::Pattern      Root;
+      static elle::io::Pattern      Identity;
+      static elle::io::Pattern      Dictionary;
     };
 
-    static elle::Pattern        Networks;
+    static elle::io::Pattern        Networks;
 
     struct                      Network
     {
-      static elle::Pattern      Root;
-      static elle::Pattern      Descriptor;
-      static elle::Pattern      Set;
-      static elle::Pattern      Phrase;
-      static elle::Pattern      Log;
+      static elle::io::Pattern      Root;
+      static elle::io::Pattern      Descriptor;
+      static elle::io::Pattern      Set;
+      static elle::io::Pattern      Phrase;
+      static elle::io::Pattern      Log;
 
       struct                    Reserve
       {
-        static elle::Pattern    Root;
+        static elle::io::Pattern    Root;
 
-        static elle::Pattern    ImmutableBlock;
-        static elle::Pattern    MutableBlock;
+        static elle::io::Pattern    ImmutableBlock;
+        static elle::io::Pattern    MutableBlock;
 
-        static elle::Pattern    History;
+        static elle::io::Pattern    History;
       };
 
       struct                    Shelter
       {
-        static elle::Pattern    Root;
+        static elle::io::Pattern    Root;
 
-        static elle::Pattern    ImmutableBlock;
-        static elle::Pattern    MutableBlock;
+        static elle::io::Pattern    ImmutableBlock;
+        static elle::io::Pattern    MutableBlock;
 
-        static elle::Pattern    History;
+        static elle::io::Pattern    History;
       };
     };
   };

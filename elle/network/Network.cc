@@ -38,18 +38,18 @@ namespace elle
     Status              Network::Initialize()
     {
       // initialize the local server.
-      if (LocalServer::Initialize() == StatusError)
+      if (LocalServer::Initialize() == Status::Error)
         escape("unable to initialize the local server");
 
       // initialize the TCP server.
-      if (TCPServer::Initialize() == StatusError)
+      if (TCPServer::Initialize() == Status::Error)
         escape("unable to initialize the TCP server");
 
       // initialize the session.
-      if (Session::Initialize() == StatusError)
+      if (Session::Initialize() == Status::Error)
         escape("unable to initialize the session");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -58,15 +58,15 @@ namespace elle
     Status              Network::Clean()
     {
       // clean the session.
-      if (Session::Clean() == StatusError)
+      if (Session::Clean() == Status::Error)
         escape("unable to clean the session");
 
       // clean the TCP server.
-      if (TCPServer::Clean() == StatusError)
+      if (TCPServer::Clean() == Status::Error)
         escape("unable to clean the TCP server");
 
       // clean the local server.
-      if (LocalServer::Clean() == StatusError)
+      if (LocalServer::Clean() == Status::Error)
         escape("unable to clean the local server");
 
       //
@@ -88,7 +88,7 @@ namespace elle
         Network::Procedures.clear();
       }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -104,8 +104,8 @@ namespace elle
       //
       {
         // try to wake up a slot.
-        if (Fiber::Awaken(parcel->header->event, parcel) == StatusTrue)
-            return StatusOk;
+        if (Fiber::Awaken(parcel->header->event, parcel) == Status::True)
+            return Status::Ok;
       }
 
       //
@@ -123,7 +123,7 @@ namespace elle
                 Report  report;
 
                 // extract the error message.
-                if (report.Extract(*parcel->data) == StatusError)
+                if (report.Extract(*parcel->data) == Status::Error)
                   escape("unable to extract the error message");
 
                 // report the remote error.
@@ -134,23 +134,23 @@ namespace elle
                     "procedure");
               }
 
-            return StatusOk;
+            return Status::Ok;
           }
 
         // assign the new session.
-        if (Session::Assign(parcel->session) == StatusError)
+        if (Session::Assign(parcel->session) == Status::Error)
           escape("unable to assign the session");
 
         // call the functionoid.
-        if (it->second->Call(*parcel->data) == StatusError)
+        if (it->second->Call(*parcel->data) == Status::Error)
           escape("an error occured while processing the event");
 
         // clear the session.
-        if (Session::Clear() == StatusError)
+        if (Session::Clear() == Status::Error)
           escape("unable to flush the session");
       }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -169,11 +169,11 @@ namespace elle
            scoutor++)
         {
           // dump the functionoid.
-          if (scoutor->second->Dump(margin + 2) == StatusError)
+          if (scoutor->second->Dump(margin + 2) == Status::Error)
             escape("unable to dump the functionoid");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

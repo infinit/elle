@@ -39,21 +39,21 @@ namespace etoile
       // create the link.
       if (context.object.Create(
             nucleus::GenreLink,
-            agent::Agent::Identity.pair.K) == elle::StatusError)
+            agent::Agent::Identity.pair.K) == elle::Status::Error)
         escape("unable to create the link object");
 
       // bind the object to its address i.e this will never changed.
-      if (context.object.Bind(address) == elle::StatusError)
+      if (context.object.Bind(address) == elle::Status::Error)
         escape("unable to bind the object");
 
       // create the context's location with an initial version number.
-      if (context.location.Create(address) == elle::StatusError)
+      if (context.location.Create(address) == elle::Status::Error)
         escape("unable to create the location");
 
       // set the context's state.
       context.state = gear::Context::StateCreated;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -65,10 +65,10 @@ namespace etoile
     {
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
-        return elle::StatusOk;
+        return elle::Status::Ok;
 
       // load the object.
-      if (Object::Load(context) == elle::StatusError)
+      if (Object::Load(context) == elle::Status::Error)
         escape("unable to fetch the object");
 
       // check that the object is a link.
@@ -78,7 +78,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateLoaded;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -91,7 +91,7 @@ namespace etoile
       nucleus::Size     size;
 
       // determine the rights.
-      if (Rights::Determine(context) == elle::StatusError)
+      if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // check if the current user has the right the bind the link.
@@ -101,7 +101,7 @@ namespace etoile
                "this link");
 
       // open the contents.
-      if (Contents::Open(context) == elle::StatusError)
+      if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
 
       // check that the content exists: the subject may have lost the
@@ -111,11 +111,11 @@ namespace etoile
                "link");
 
       // bind the link.
-      if (context.contents->content->Bind(way.path) == elle::StatusError)
+      if (context.contents->content->Bind(way.path) == elle::Status::Error)
         escape("unable to bind the link");
 
       // retrieve the new contents's size.
-      if (context.contents->content->Capacity(size) == elle::StatusError)
+      if (context.contents->content->Capacity(size) == elle::Status::Error)
         escape("unable to retrieve the contents's size");
 
       // update the object.
@@ -124,13 +124,13 @@ namespace etoile
             context.object.data.contents,
             size,
             context.object.meta.access,
-            context.object.meta.owner.token) == elle::StatusError)
+            context.object.meta.owner.token) == elle::Status::Error)
         escape("unable to update the object");
 
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -141,7 +141,7 @@ namespace etoile
                           path::Way&                            way)
     {
       // determine the rights.
-      if (Rights::Determine(context) == elle::StatusError)
+      if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // check if the current user has the right the resolve the link..
@@ -151,7 +151,7 @@ namespace etoile
                "this link");
 
       // open the contents.
-      if (Contents::Open(context) == elle::StatusError)
+      if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
 
       // check that the content exists: the subject may have lost the
@@ -161,10 +161,10 @@ namespace etoile
                "link");
 
       // resolve the link.
-      if (context.contents->content->Resolve(way.path) == elle::StatusError)
+      if (context.contents->content->Resolve(way.path) == elle::Status::Error)
         escape("unable to resolve the link");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -177,7 +177,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateDiscarded;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -188,7 +188,7 @@ namespace etoile
                           gear::Link&                           context)
     {
       // determine the rights.
-      if (Rights::Determine(context) == elle::StatusError)
+      if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // check if the current user is the object owner.
@@ -197,21 +197,21 @@ namespace etoile
                "this link");
 
       // open the contents.
-      if (Contents::Open(context) == elle::StatusError)
+      if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
 
       // destroy the contents.
-      if (Contents::Destroy(context) == elle::StatusError)
+      if (Contents::Destroy(context) == elle::Status::Error)
         escape("unable to destroy the contents");
 
       // destroy the object-related information.
-      if (Object::Destroy(context) == elle::StatusError)
+      if (Object::Destroy(context) == elle::Status::Error)
         escape("unable to destroy the object");
 
       // set the context's state.
       context.state = gear::Context::StateDestroyed;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -222,17 +222,17 @@ namespace etoile
                           gear::Link&                           context)
     {
       // close the contents.
-      if (Contents::Close(context) == elle::StatusError)
+      if (Contents::Close(context) == elle::Status::Error)
         escape("unable to close the contents");
 
       // store the object-related information.
-      if (Object::Store(context) == elle::StatusError)
+      if (Object::Store(context) == elle::Status::Error)
         escape("unable to store the object");
 
       // set the context's state.
       context.state = gear::Context::StateStored;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <etoile/path/Slab.hh>
 #include <etoile/path/Way.hh>

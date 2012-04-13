@@ -15,13 +15,13 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Boolean.hh>
-#include <elle/core/Character.hh>
-#include <elle/core/Real.hh>
-#include <elle/core/Integer.hh>
-#include <elle/core/Natural.hh>
-#include <elle/core/Large.hh>
-#include <elle/core/String.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
 
 #include <elle/standalone/Region.hh>
 
@@ -29,7 +29,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace standalone;
   using namespace radix;
 

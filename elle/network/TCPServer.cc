@@ -40,7 +40,7 @@ namespace elle
     ///
     TCPServerPorter::TCPServerPorter(const
                                        Callback<
-                                         Status,
+                                         Status::,
                                          Parameters<TCPSocket*>
                                          >&                     callback):
       server(NULL),
@@ -90,7 +90,7 @@ namespace elle
                         this, SLOT(_accept())) == false)
         escape("unable to connect the signal");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     //
@@ -102,7 +102,7 @@ namespace elle
     ///
     Status              TCPServer::Initialize()
     {
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -126,7 +126,7 @@ namespace elle
       // clear the container.
       TCPServer::Porters.clear();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -142,21 +142,21 @@ namespace elle
     Status              TCPServer::Listen(const Locus&          locus,
                                           const
                                             Callback<
-                                              Status,
+                                              Status::,
                                               Parameters<TCPSocket*>
                                               >&                callback)
     {
       typedef std::unique_ptr<TCPServerPorter> ServerPtr;
 
       // check if this locus is not already listened on.
-      if (TCPServer::Locate(locus) == StatusTrue)
+      if (TCPServer::Locate(locus) == Status::True)
         escape("this locus seems to have already been registered");
 
       // allocate a new porter.
       auto porter = ServerPtr(new TCPServerPorter(callback));
 
       // create the porter.
-      if (porter->Create(locus) == StatusError)
+      if (porter->Create(locus) == Status::Error)
         escape("unable to create the porter");
 
       // insert the porter in the container.
@@ -171,7 +171,7 @@ namespace elle
       // stop tracking porter.
       porter.release();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -184,7 +184,7 @@ namespace elle
       TCPServerPorter*          porter;
 
       // locate the porter.
-      if (TCPServer::Locate(locus, &iterator) == StatusFalse)
+      if (TCPServer::Locate(locus, &iterator) == Status::False)
         escape("unable to locate the given porter");
 
       // retrieve the porter.
@@ -196,7 +196,7 @@ namespace elle
       // remove the entry from the container.
       TCPServer::Porters.erase(iterator);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -208,13 +208,13 @@ namespace elle
       TCPServer::Iterator       iterator;
 
       // locate the porter.
-      if (TCPServer::Locate(locus, &iterator) == StatusFalse)
+      if (TCPServer::Locate(locus, &iterator) == Status::False)
         escape("unable to locate the given porter");
 
       // retrieve the porter.
       porter = iterator->second;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -232,10 +232,10 @@ namespace elle
           if (iterator != NULL)
             *iterator = i;
 
-          return StatusTrue;
+          return Status::True;
         }
 
-      return StatusFalse;
+      return Status::False;
     }
 
 //
@@ -256,7 +256,7 @@ namespace elle
       std::cout << alignment << "[Porter]" << std::endl;
 
       // dump the locus.
-      if (this->locus.Dump(margin + 2) == StatusError)
+      if (this->locus.Dump(margin + 2) == Status::Error)
         escape("unable to dump the locus");
 
       // dump the server locus.
@@ -264,10 +264,10 @@ namespace elle
                 << std::hex << this->server << std::endl;
 
       // dump the callback.
-      if (this->callback.Dump(margin + 2) == StatusError)
+      if (this->callback.Dump(margin + 2) == Status::Error)
         escape("unable to dump the callback");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     //
@@ -292,11 +292,11 @@ namespace elle
           TCPServerPorter*      porter = scoutor->second;
 
           // dump the porter.
-          if (porter->Dump(margin + 2) == StatusError)
+          if (porter->Dump(margin + 2) == Status::Error)
             escape("unable to dump the porter");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -318,17 +318,17 @@ namespace elle
       auto socket = std::unique_ptr<TCPSocket>(new TCPSocket);
 
       // create a socket with the specific connection.
-      if (socket->Create(connection) == StatusError)
+      if (socket->Create(connection) == Status::Error)
         escape("unable to create the socket");
 
       // call the callback.
-      if (this->callback.Call(socket.get()) == StatusError)
+      if (this->callback.Call(socket.get()) == Status::Error)
         escape("an error occured in the callback");
 
       // socket associated with the callback
       socket.release();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -342,13 +342,13 @@ namespace elle
     void                TCPServerPorter::_accept()
     {
       Closure<
-        Status,
+        Status::,
         Parameters<>
         >               closure(Callback<>::Infer(
                                   &TCPServerPorter::Accept, this));
 
       // spawn a fiber.
-      if (Fiber::Spawn(closure) == StatusError)
+      if (Fiber::Spawn(closure) == Status::Error)
         yield(_(), "unable to spawn a fiber");
     }
 

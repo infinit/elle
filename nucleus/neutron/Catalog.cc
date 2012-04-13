@@ -60,7 +60,7 @@ namespace nucleus
     {
       this->contents.state = proton::StateDirty;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -73,13 +73,13 @@ namespace nucleus
         escape("unable to create an empty-named entry in the catalog");
 
       // add the entry in the range.
-      if (this->range.Add(entry) == elle::StatusError)
+      if (this->range.Add(entry) == elle::Status::Error)
         escape("unable to add the entry in the range");
 
       // range the object as dirty.
       this->contents.state = proton::StateDirty;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -89,9 +89,9 @@ namespace nucleus
     {
       // test.
       if (this->range.Exist(name) == false)
-        return elle::StatusFalse;
+        return elle::Status::False;
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -101,10 +101,10 @@ namespace nucleus
                                         Entry*&                 entry) const
     {
       // look in the range.
-      if (this->range.Lookup(name, entry) == elle::StatusError)
+      if (this->range.Lookup(name, entry) == elle::Status::Error)
         escape("unable to retrieve the entry");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -119,7 +119,7 @@ namespace nucleus
       Index                     i;
 
       // first detach the data from the range.
-      if (range.Detach() == elle::StatusError)
+      if (range.Detach() == elle::Status::Error)
         escape("unable to detach the data from the range");
 
       // go through the catalog entries.
@@ -138,7 +138,7 @@ namespace nucleus
                 continue;
 
               // add the entry to the range.
-              if (range.Add(entry) == elle::StatusError)
+              if (range.Add(entry) == elle::Status::Error)
                 escape("unable to add the entry to the range");
             }
 
@@ -149,7 +149,7 @@ namespace nucleus
           i++;
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -158,13 +158,13 @@ namespace nucleus
     elle::Status        Catalog::Remove(const elle::String&     name)
     {
       // remove the entry from the range.
-      if (this->range.Remove(name) == elle::StatusError)
+      if (this->range.Remove(name) == elle::Status::Error)
         escape("unable to remove the entry");
 
       // range the object as dirty.
       this->contents.state = proton::StateDirty;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -177,18 +177,18 @@ namespace nucleus
 
       // if _from_ and _to_ are identical, return.
       if (from == to)
-        return elle::StatusOk;
+        return elle::Status::Ok;
 
       // check that the entry is non-empty.
       if (to.empty() == true)
         escape("unable to rename to a non empty-named entry in the catalog");
 
       // check that an entry _to_ does not already exist.
-      if (this->range.Exist(to) == elle::StatusTrue)
+      if (this->range.Exist(to) == elle::Status::True)
         escape("an entry already exists with the to-be-renamed name");
 
       // look in the range.
-      if (this->range.Lookup(from, entry) == elle::StatusError)
+      if (this->range.Lookup(from, entry) == elle::Status::Error)
         escape("unable to retrieve the entry");
 
       // modify the name.
@@ -197,7 +197,7 @@ namespace nucleus
       // range the object as dirty.
       this->contents.state = proton::StateDirty;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -206,10 +206,10 @@ namespace nucleus
     elle::Status        Catalog::Capacity(Size&                 size) const
     {
       // look at the size of the range.
-      if (this->range.Capacity(size) == elle::StatusError)
+      if (this->range.Capacity(size) == elle::Status::Error)
         escape("unable to retrieve the range size");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -226,10 +226,10 @@ namespace nucleus
       std::cout << alignment << "[Catalog]" << std::endl;
 
       // dump the range.
-      if (this->range.Dump(margin + 2) == elle::StatusError)
+      if (this->range.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the range");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -242,10 +242,10 @@ namespace nucleus
     elle::Status        Catalog::Serialize(elle::Archive&       archive) const
     {
       // serialize the range.
-      if (archive.Serialize(this->range) == elle::StatusError)
+      if (archive.Serialize(this->range) == elle::Status::Error)
         escape("unable to serialize the range");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -254,10 +254,10 @@ namespace nucleus
     elle::Status        Catalog::Extract(elle::Archive&         archive)
     {
       // extract the range.
-      if (archive.Extract(this->range) == elle::StatusError)
+      if (archive.Extract(this->range) == elle::Status::Error)
         escape("unable to extract the range");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

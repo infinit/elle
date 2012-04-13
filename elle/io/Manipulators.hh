@@ -15,8 +15,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Natural.hh>
-#include <elle/core/String.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
 
 #include <elle/io/Unique.hh>
 #include <elle/io/Uniquable.hh>
@@ -35,11 +35,11 @@ namespace std
 // ---------- functions -------------------------------------------------------
 //
 
-  elle::core::String    chop(const elle::core::String&,
-                             const elle::core::Natural32 = 50);
+  elle::String    chop(const elle::String&,
+                             const elle::Natural32 = 50);
   template <const elle::io::Format F>
-  elle::core::String    chop(const elle::io::Uniquable<F>&,
-                             const elle::core::Natural32 = 50);
+  elle::String    chop(const elle::io::Uniquable<F>&,
+                             const elle::Natural32 = 50);
 
 }
 

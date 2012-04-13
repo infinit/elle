@@ -70,7 +70,7 @@ namespace elle
             continue;
 
           // create a host.
-          if (host.Create(qha.toString().toStdString()) == StatusError)
+          if (host.Create(qha.toString().toStdString()) == Status::Error)
             escape("unable to create the host from '%s'",
                    qha.toString().toStdString().c_str());
 
@@ -78,7 +78,7 @@ namespace elle
           container.push_back(host);
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -127,7 +127,7 @@ namespace elle
           }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -142,7 +142,7 @@ namespace elle
       if (this->location.setAddress(string.c_str()) == false)
         escape("unable to set the location");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -152,7 +152,7 @@ namespace elle
     {
       string = this->location.toString().toStdString();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -166,14 +166,14 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return StatusTrue;
+        return Status::True;
 
       // compare the internal values.
       if ((this->type != element.type) ||
           (this->location != element.location))
-        return StatusFalse;
+        return Status::False;
 
-      return StatusTrue;
+      return Status::True;
     }
 
     ///
@@ -183,13 +183,13 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return StatusFalse;
+        return Status::False;
 
       // compare the type
       if (this->type < element.type)
-        return StatusTrue;
+        return Status::True;
       else if (this->type > element.type)
-        return StatusFalse;
+        return Status::False;
       else
         {
           ::QString     first;
@@ -201,12 +201,12 @@ namespace elle
 
           // compare the string.
           if (first < second)
-            return StatusTrue;
+            return Status::True;
           else if (first > second)
-            return StatusFalse;
+            return Status::False;
         }
 
-      return StatusFalse;
+      return Status::False;
     }
 
     ///
@@ -235,10 +235,10 @@ namespace elle
 
       // serialize the host and port.
       if (archive.Serialize(static_cast<Natural8>(this->type),
-                            host) == StatusError)
+                            host) == Status::Error)
         escape("unable to serialize the host");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -250,7 +250,7 @@ namespace elle
       String            host;
 
       // extract the host.
-      if (archive.Extract(type, host) == StatusError)
+      if (archive.Extract(type, host) == Status::Error)
         escape("unable to extract the host");
 
       // set the type.
@@ -259,7 +259,7 @@ namespace elle
       // set the location.
       this->location.setAddress(host.c_str());
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -281,7 +281,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift << "[Location] "
                 << this->location.toString().toStdString() << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

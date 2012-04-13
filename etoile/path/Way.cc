@@ -80,7 +80,7 @@ namespace etoile
       if (elle::utility::Utf16To8(u16_str,
                                   -1,
                                   &str,
-                                  &str_size) == elle::StatusError)
+                                  &str_size) == elle::Status::Error)
         fail("failed to convert the path to uft8");
 
       // assign the string.
@@ -128,7 +128,7 @@ namespace etoile
       // return the length.
       length = static_cast<Length>(this->path.length());
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -142,13 +142,13 @@ namespace etoile
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return elle::Status::True;
 
       // compare the attributes..
       if (this->path != element.path)
-        return elle::StatusFalse;
+        return elle::Status::False;
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -169,7 +169,7 @@ namespace etoile
 
       std::cout << alignment << "[Way] " << this->path << std::endl;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -182,10 +182,10 @@ namespace etoile
     elle::Status        Way::Serialize(elle::Archive&   archive) const
     {
       // serialize the target.
-      if (archive.Serialize(this->path) == elle::StatusError)
+      if (archive.Serialize(this->path) == elle::Status::Error)
         escape("unable to serialize the path");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -194,10 +194,10 @@ namespace etoile
     elle::Status        Way::Extract(elle::Archive&     archive)
     {
       // extract the target.
-      if (archive.Extract(this->path) == elle::StatusError)
+      if (archive.Extract(this->path) == elle::Status::Error)
         escape("unable to extract the path");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

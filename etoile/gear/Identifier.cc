@@ -63,7 +63,7 @@ namespace etoile
       // increments the counter.
       this->value = Identifier::Counter++;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -78,13 +78,13 @@ namespace etoile
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return elle::Status::True;
 
       // compare the identifier.
       if (this->value != element.value)
-        return elle::StatusFalse;
+        return elle::Status::False;
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -110,10 +110,10 @@ namespace etoile
     elle::Status        Identifier::Serialize(elle::Archive&    archive) const
     {
       // serialize the attributes.
-      if (archive.Serialize(this->value) == elle::StatusError)
+      if (archive.Serialize(this->value) == elle::Status::Error)
         escape("unable to serialize the identifier attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     };
 
     ///
@@ -122,10 +122,10 @@ namespace etoile
     elle::Status        Identifier::Extract(elle::Archive&      archive)
     {
       // extract the attributes.
-      if (archive.Extract(this->value) == elle::StatusError)
+      if (archive.Extract(this->value) == elle::Status::Error)
         escape("unable to extract the identifier attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     };
 
 //
@@ -142,7 +142,7 @@ namespace etoile
       std::cout << alignment << "[Identifier] "
                 << std::dec << this->value << std::endl;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

@@ -79,7 +79,7 @@ namespace horizon
                path, stat);
 
       // resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         {
           // purge the error messages since it may be normal not to be able
           // to resolve the given way.
@@ -89,7 +89,7 @@ namespace horizon
         }
 
       // load the object.
-      if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
+      if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the object",
               -ENOENT);
 
@@ -110,7 +110,7 @@ namespace horizon
               identifier);
 
       // discard the object.
-      if (etoile::wall::Object::Discard(identifier) == elle::StatusError)
+      if (etoile::wall::Object::Discard(identifier) == elle::Status::Error)
         error("unable to discard the object",
               -EPERM);
 
@@ -149,7 +149,7 @@ namespace horizon
 
       // retrieve information on the object.
       if (etoile::wall::Object::Information(handle->identifier,
-                                            abstract) == elle::StatusError)
+                                            abstract) == elle::Status::Error)
         error("unable to retrieve information on the object",
               -EPERM);
 
@@ -158,7 +158,7 @@ namespace horizon
       // file belongs to someone, with the given permissions, but cannot
       // be mapped to a local user name.
       if (Linux::Dictionary.users.Lookup(abstract.keys.owner,
-                                        name) == elle::StatusTrue)
+                                        name) == elle::Status::True)
         {
           //
           // in this case, the object's owner is known locally.
@@ -211,12 +211,12 @@ namespace horizon
       stat->st_atime = time(NULL);
 
       if (abstract.stamps.creation.Get(stat->st_ctime) ==
-          elle::StatusError)
+          elle::Status::Error)
         error("unable to convert the time stamps",
               -EPERM);
 
       if (abstract.stamps.modification.Get(stat->st_mtime) ==
-          elle::StatusError)
+          elle::Status::Error)
         error("unable to convert the time stamps",
               -EPERM);
 
@@ -263,7 +263,7 @@ namespace horizon
             // retrieve the attribute.
             if (etoile::wall::Attributes::Get(handle->identifier,
                                               "perm::exec",
-                                              trait) == elle::StatusError)
+                                              trait) == elle::Status::Error)
               error("unable to retrieve an attribute",
                     -EPERM);
 
@@ -353,13 +353,13 @@ namespace horizon
                path, info);
 
       // resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
       // load the directory.
       if (etoile::wall::Directory::Load(chemin,
-                                        identifier) == elle::StatusError)
+                                        identifier) == elle::Status::Error)
         error("unable to load the directory",
               -ENOENT);
 
@@ -405,7 +405,7 @@ namespace horizon
       // retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(handle->identifier,
                                        agent::Agent::Subject,
-                                       record) == elle::StatusError)
+                                       record) == elle::Status::Error)
         error("unable to retrieve the access record",
               -EPERM);
 
@@ -444,7 +444,7 @@ namespace horizon
                 handle->identifier,
                 static_cast<nucleus::Index>(offset),
                 Crux::Range,
-                range) == elle::StatusError)
+                range) == elle::Status::Error)
             error("unable to retrieve some directory entries",
                   -EPERM);
 
@@ -507,7 +507,7 @@ namespace horizon
 
       // discard the object.
       if (etoile::wall::Directory::Discard(
-            handle->identifier) == elle::StatusError)
+            handle->identifier) == elle::Status::Error)
         error("unable to discard the directory",
               -EPERM);
 
@@ -544,20 +544,20 @@ namespace horizon
                path, mode);
 
       // resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
       // load the directory.
       if (etoile::wall::Directory::Load(chemin,
-                                        directory) == elle::StatusError)
+                                        directory) == elle::Status::Error)
         error("unable to load the directory",
               -ENOENT);
 
       // retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(directory,
                                        agent::Agent::Subject,
-                                       record) == elle::StatusError)
+                                       record) == elle::Status::Error)
         error("unable to retrieve the access record",
               -EPERM,
               directory);
@@ -572,7 +572,7 @@ namespace horizon
               directory);
 
       // create the subdirectory.
-      if (etoile::wall::Directory::Create(subdirectory) == elle::StatusError)
+      if (etoile::wall::Directory::Create(subdirectory) == elle::Status::Error)
         error("unable to create the directory",
               -EPERM,
               directory);
@@ -587,7 +587,7 @@ namespace horizon
       // set the owner permissions.
       if (etoile::wall::Access::Grant(subdirectory,
                                       agent::Agent::Subject,
-                                      permissions) == elle::StatusError)
+                                      permissions) == elle::Status::Error)
         error("unable to update the access record",
               -EPERM,
               subdirectory, directory);
@@ -595,19 +595,19 @@ namespace horizon
       // add the subdirectory.
       if (etoile::wall::Directory::Add(directory,
                                        name,
-                                       subdirectory) == elle::StatusError)
+                                       subdirectory) == elle::Status::Error)
         error("unable to add an entry to the parent directory",
               -EPERM,
               subdirectory, directory);
 
       // store the subdirectory.
-      if (etoile::wall::Directory::Store(subdirectory) == elle::StatusError)
+      if (etoile::wall::Directory::Store(subdirectory) == elle::Status::Error)
         error("unable to store the directory",
               -EPERM,
               directory);
 
       // store the directory.
-      if (etoile::wall::Directory::Store(directory) == elle::StatusError)
+      if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
         error("unable to store the directory",
               -EPERM);
 
@@ -642,20 +642,20 @@ namespace horizon
                path);
 
       // resolve the path.
-      if (etoile::wall::Path::Resolve(parent, chemin) == elle::StatusError)
+      if (etoile::wall::Path::Resolve(parent, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
       // load the directory.
       if (etoile::wall::Directory::Load(chemin,
-                                        directory) == elle::StatusError)
+                                        directory) == elle::Status::Error)
         error("unable to load the directory",
               -ENOENT);
 
       // retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(directory,
                                        agent::Agent::Subject,
-                                       record) == elle::StatusError)
+                                       record) == elle::Status::Error)
         error("unable to retrieve the access record",
               -EPERM,
               directory);
@@ -670,27 +670,27 @@ namespace horizon
               directory);
 
       // resolve the path.
-      if (etoile::wall::Path::Resolve(child, chemin) == elle::StatusError)
+      if (etoile::wall::Path::Resolve(child, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT,
               directory);
 
       // load the subdirectory.
       if (etoile::wall::Directory::Load(chemin,
-                                        subdirectory) == elle::StatusError)
+                                        subdirectory) == elle::Status::Error)
         error("unable to load the directory",
               -ENOENT,
               directory);
 
       // retrieve information on the object.
       if (etoile::wall::Object::Information(subdirectory,
-                                            abstract) == elle::StatusError)
+                                            abstract) == elle::Status::Error)
         error("unable to retrieve information on the object",
               -EPERM,
               subdirectory, directory);
 
       // create a temporary subject based on the object owner's key.
-      if (subject.Create(abstract.keys.owner) == elle::StatusError)
+      if (subject.Create(abstract.keys.owner) == elle::Status::Error)
         error("unable to create a temporary subject",
               -EPERM,
               subdirectory, directory);
@@ -704,19 +704,19 @@ namespace horizon
 
       // remove the entry.
       if (etoile::wall::Directory::Remove(directory,
-                                          name) == elle::StatusError)
+                                          name) == elle::Status::Error)
         error("unable to remove a directory entry",
               -EPERM,
               subdirectory, directory);
 
       // store the directory.
-      if (etoile::wall::Directory::Store(directory) == elle::StatusError)
+      if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
         error("unable to store the directory",
               -EPERM,
               subdirectory);
 
       // destroy the subdirectory.
-      if (etoile::wall::Directory::Destroy(subdirectory) == elle::StatusError)
+      if (etoile::wall::Directory::Destroy(subdirectory) == elle::Status::Error)
         error("unable to destroy the directory",
               -EPERM);
 
@@ -749,18 +749,18 @@ namespace horizon
                path, mask);
 
       // resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
       // load the object.
-      if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
+      if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the object",
               -ENOENT);
 
       // retrieve information on the object.
       if (etoile::wall::Object::Information(identifier,
-                                            abstract) == elle::StatusError)
+                                            abstract) == elle::Status::Error)
         error("unable to retrieve information on the object",
               -EPERM,
               identifier);
@@ -768,7 +768,7 @@ namespace horizon
       // retrieve the user's permissions on the object.
       if (etoile::wall::Access::Lookup(identifier,
                                        agent::Agent::Subject,
-                                       record) == elle::StatusError)
+                                       record) == elle::Status::Error)
         error("unable to retrieve the access record",
               -EPERM,
               identifier);
@@ -799,7 +799,7 @@ namespace horizon
                 // get the perm::exec attribute
                 if (etoile::wall::Attributes::Get(identifier,
                                                   "perm::exec",
-                                                  trait) == elle::StatusError)
+                                                  trait) == elle::Status::Error)
                   error("unable to retrieve the attribute",
                         -EPERM,
                         identifier);
@@ -818,7 +818,7 @@ namespace horizon
                 // get the perm::exec attribute
                 if (etoile::wall::Attributes::Get(identifier,
                                                   "perm::exec",
-                                                  trait) == elle::StatusError)
+                                                  trait) == elle::Status::Error)
                   error("unable ti retrive the attribute",
                         -EPERM,
                         identifier);
@@ -850,7 +850,7 @@ namespace horizon
         }
 
       // discard the object.
-      if (etoile::wall::Object::Discard(identifier) == elle::StatusError)
+      if (etoile::wall::Object::Discard(identifier) == elle::Status::Error)
         error("unable to discard the object",
               -EPERM);
 
@@ -925,24 +925,24 @@ namespace horizon
         permissions |= nucleus::PermissionWrite;
 
       // resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
       // load the object.
-      if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
+      if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the object",
               -ENOENT);
 
       // retrieve information on the object.
       if (etoile::wall::Object::Information(identifier,
-                                            abstract) == elle::StatusError)
+                                            abstract) == elle::Status::Error)
         error("unable to retrieve information on the object",
               -EPERM,
               identifier);
 
       // create a temporary subject based on the object owner's key.
-      if (subject.Create(abstract.keys.owner) == elle::StatusError)
+      if (subject.Create(abstract.keys.owner) == elle::Status::Error)
         error("unable to create a temporary subject",
               -EPERM,
               identifier);
@@ -968,7 +968,7 @@ namespace horizon
       // in creation. if so, the permissions are recorded for future
       // application.
       //
-      if (Crib::Exist(elle::String(path)) == elle::StatusTrue)
+      if (Crib::Exist(elle::String(path)) == elle::Status::True)
         {
           Handle*       handle;
 
@@ -980,7 +980,7 @@ namespace horizon
           // when the file gets closed, these permissions get applied.
           //
 
-          if (Crib::Retrieve(elle::String(path), handle) == elle::StatusError)
+          if (Crib::Retrieve(elle::String(path), handle) == elle::Status::Error)
             escape("unable to retrieve the handle from the crib");
 
           handle->permissions = permissions;
@@ -994,7 +994,7 @@ namespace horizon
           // checking.
           if (etoile::wall::Access::Grant(identifier,
                                           agent::Agent::Subject,
-                                          permissions) == elle::StatusError)
+                                          permissions) == elle::Status::Error)
             error("unable to update the access records",
                   -EPERM,
                   identifier);
@@ -1012,7 +1012,7 @@ namespace horizon
                 // set the perm::exec attribute
                 if (etoile::wall::Attributes::Set(identifier,
                                                   "perm::exec",
-                                                  "true") == elle::StatusError)
+                                                  "true") == elle::Status::Error)
                   error("unable to set the attribute",
                         -EPERM,
                         identifier);
@@ -1030,7 +1030,7 @@ namespace horizon
         }
 
       // store the object.
-      if (etoile::wall::Object::Store(identifier) == elle::StatusError)
+      if (etoile::wall::Object::Store(identifier) == elle::Status::Error)
         error("unable to store the object",
               -EPERM);
 
@@ -1092,24 +1092,24 @@ namespace horizon
                path, name, value, size, flags);
 
       // resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
       // load the object.
-      if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
+      if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the object",
               -ENOENT);
 
       // retrieve information on the object.
       if (etoile::wall::Object::Information(identifier,
-                                            abstract) == elle::StatusError)
+                                            abstract) == elle::Status::Error)
         error("unable to retrieve information on the object",
               -EPERM,
               identifier);
 
       // create a temporary subject based on the object owner's key.
-      if (subject.Create(abstract.keys.owner) == elle::StatusError)
+      if (subject.Create(abstract.keys.owner) == elle::Status::Error)
         error("unable to create a temporary subject",
               -EPERM,
               identifier);
@@ -1125,13 +1125,13 @@ namespace horizon
       if (etoile::wall::Attributes::Set(identifier,
                                         elle::String(name),
                                         elle::String(value, size)) == 
-          elle::StatusError)
+          elle::Status::Error)
         error("unable to set the attribute",
               -EPERM,
               identifier);
 
       // store the object.
-      if (etoile::wall::Object::Store(identifier) == elle::StatusError)
+      if (etoile::wall::Object::Store(identifier) == elle::Status::Error)
         error("unable to store the object",
               -EPERM);
 
@@ -1164,25 +1164,25 @@ namespace horizon
                path, name, value, size);
 
       // resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
       // load the object.
-      if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
+      if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the object",
               -ENOENT);
 
       // get the attribute.
       if (etoile::wall::Attributes::Get(identifier,
                                         elle::String(name),
-                                        trait) == elle::StatusError)
+                                        trait) == elle::Status::Error)
         error("unable to retrieve an attribute",
               -EPERM,
               identifier);
 
       // discard the object.
-      if (etoile::wall::Object::Discard(identifier) == elle::StatusError)
+      if (etoile::wall::Object::Discard(identifier) == elle::Status::Error)
         error("unable to discard the object",
               -EPERM);
 
@@ -1233,24 +1233,24 @@ namespace horizon
                path, list, size);
 
       // resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
       // load the object.
-      if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
+      if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the object",
               -ENOENT);
 
       // fetch the attributes.
       if (etoile::wall::Attributes::Fetch(identifier,
-                                          range) == elle::StatusError)
+                                          range) == elle::Status::Error)
         error("unable to fetch the attributes",
               -EPERM,
               identifier);
 
       // discard the object.
-      if (etoile::wall::Object::Discard(identifier) == elle::StatusError)
+      if (etoile::wall::Object::Discard(identifier) == elle::Status::Error)
         error("unable to discard the object",
               -EPERM);
 
@@ -1316,24 +1316,24 @@ namespace horizon
                path, name);
 
       // resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
       // load the object.
-      if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
+      if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the object",
               -ENOENT);
 
       // retrieve information on the object.
       if (etoile::wall::Object::Information(identifier,
-                                            abstract) == elle::StatusError)
+                                            abstract) == elle::Status::Error)
         error("unable to retrieve information on the object",
               -EPERM,
               identifier);
 
       // create a temporary subject based on the object owner's key.
-      if (subject.Create(abstract.keys.owner) == elle::StatusError)
+      if (subject.Create(abstract.keys.owner) == elle::Status::Error)
         error("unable to create a temporary subject",
               -EPERM,
               identifier);
@@ -1348,13 +1348,13 @@ namespace horizon
       // omit the attribute.
       if (etoile::wall::Attributes::Omit(identifier,
                                          elle::String(name)) ==
-          elle::StatusError)
+          elle::Status::Error)
         error("unable to omit the attributes",
               -EPERM,
               identifier);
 
       // store the object.
-      if (etoile::wall::Object::Store(identifier) == elle::StatusError)
+      if (etoile::wall::Object::Store(identifier) == elle::Status::Error)
         error("unable to store the object",
               -EPERM);
 
@@ -1389,20 +1389,20 @@ namespace horizon
                target, source);
 
       // resolve the path.
-      if (etoile::wall::Path::Resolve(from, chemin) == elle::StatusError)
+      if (etoile::wall::Path::Resolve(from, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
       // load the directory.
       if (etoile::wall::Directory::Load(chemin,
-                                        directory) == elle::StatusError)
+                                        directory) == elle::Status::Error)
         error("unable to load the directory",
               -ENOENT);
 
       // retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(directory,
                                        agent::Agent::Subject,
-                                       record) == elle::StatusError)
+                                       record) == elle::Status::Error)
         error("unable to retrieve the access record",
               -EPERM,
               directory);
@@ -1417,13 +1417,13 @@ namespace horizon
               directory);
 
       // create a link
-      if (etoile::wall::Link::Create(link) == elle::StatusError)
+      if (etoile::wall::Link::Create(link) == elle::Status::Error)
         error("unable to create a link",
               -EPERM,
               directory);
 
       // bind the link.
-      if (etoile::wall::Link::Bind(link, to) == elle::StatusError)
+      if (etoile::wall::Link::Bind(link, to) == elle::Status::Error)
         error("unable to bind the link",
               -EPERM,
               link, directory);
@@ -1431,19 +1431,19 @@ namespace horizon
       // add an entry for the link.
       if (etoile::wall::Directory::Add(directory,
                                        name,
-                                       link) == elle::StatusError)
+                                       link) == elle::Status::Error)
         error("unable to add an entry to the directory",
               -EPERM,
               link, directory);
 
       // store the link.
-      if (etoile::wall::Link::Store(link) == elle::StatusError)
+      if (etoile::wall::Link::Store(link) == elle::Status::Error)
         error("unable to store the link",
               -EPERM,
               directory);
 
       // store the modified directory.
-      if (etoile::wall::Directory::Store(directory) == elle::StatusError)
+      if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
         error("unable to store the directory",
               -EPERM);
 
@@ -1476,19 +1476,19 @@ namespace horizon
                path, buffer, static_cast<elle::Natural64>(size));
 
       // resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
       // load the link.
-      if (etoile::wall::Link::Load(chemin, identifier) == elle::StatusError)
+      if (etoile::wall::Link::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the link",
               -ENOENT);
 
       // retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(identifier,
                                        agent::Agent::Subject,
-                                       record) == elle::StatusError)
+                                       record) == elle::Status::Error)
         error("unable to retrieve the access record",
               -EPERM,
               identifier);
@@ -1502,13 +1502,13 @@ namespace horizon
               identifier);
 
       // resolve the link.
-      if (etoile::wall::Link::Resolve(identifier, target) == elle::StatusError)
+      if (etoile::wall::Link::Resolve(identifier, target) == elle::Status::Error)
         error("unable to resolve the link",
               -EPERM,
               identifier);
 
       // discard the link.
-      if (etoile::wall::Link::Discard(identifier) == elle::StatusError)
+      if (etoile::wall::Link::Discard(identifier) == elle::Status::Error)
         error("unable to discard the link",
               -EPERM);
 
@@ -1550,20 +1550,20 @@ namespace horizon
                path, mode, info);
 
       // resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
       // load the directory.
       if (etoile::wall::Directory::Load(chemin,
-                                        directory) == elle::StatusError)
+                                        directory) == elle::Status::Error)
         error("unable to load the directory",
               -ENOENT);
 
       // retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(directory,
                                        agent::Agent::Subject,
-                                       record) == elle::StatusError)
+                                       record) == elle::Status::Error)
         error("unable to retrieve the access record",
               -EPERM,
               directory);
@@ -1578,7 +1578,7 @@ namespace horizon
               directory);
 
       // create the file.
-      if (etoile::wall::File::Create(file) == elle::StatusError)
+      if (etoile::wall::File::Create(file) == elle::Status::Error)
         error("unable to create a file",
               -EPERM,
               directory);
@@ -1589,7 +1589,7 @@ namespace horizon
       // set the owner permissions.
       if (etoile::wall::Access::Grant(file,
                                       agent::Agent::Subject,
-                                      permissions) == elle::StatusError)
+                                      permissions) == elle::Status::Error)
         error("unable to update the access records",
               -EPERM,
               file, directory);
@@ -1600,7 +1600,7 @@ namespace horizon
           // set the perm::exec attribute
           if (etoile::wall::Attributes::Set(file,
                                             "perm::exec",
-                                            "true") == elle::StatusError)
+                                            "true") == elle::Status::Error)
             error("unable to set the attributes",
                   -EPERM,
                   file, directory);
@@ -1609,7 +1609,7 @@ namespace horizon
       // add the file to the directory.
       if (etoile::wall::Directory::Add(directory,
                                        name,
-                                       file) == elle::StatusError)
+                                       file) == elle::Status::Error)
         error("unable to add an entry to the directory",
               -EPERM,
               file, directory);
@@ -1621,24 +1621,24 @@ namespace horizon
       // extremely rarely and such errors do not cause harm, especially
       // considering the Infinit consistency guaranties, we still prefer
       // to do things right, at least for now.
-      if (etoile::wall::File::Store(file) == elle::StatusError)
+      if (etoile::wall::File::Store(file) == elle::Status::Error)
         error("unable to store the file",
               -EPERM,
               directory);
 
       // store the directory.
-      if (etoile::wall::Directory::Store(directory) == elle::StatusError)
+      if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
         error("unable to store the directory",
               -EPERM);
 
       // resolve the path.
       if (etoile::wall::Path::Resolve(etoile::path::Way(path),
-                                      chemin) == elle::StatusError)
+                                      chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
       // finally, the file is reopened.
-      if (etoile::wall::File::Load(chemin, file) == elle::StatusError)
+      if (etoile::wall::File::Load(chemin, file) == elle::Status::Error)
         error("unable to load the file",
               -ENOENT);
 
@@ -1659,7 +1659,7 @@ namespace horizon
 
       // add the created and opened file in the crib.
       if (Crib::Add(elle::String(path),
-                    reinterpret_cast<Handle*>(info->fh)) == elle::StatusError)
+                    reinterpret_cast<Handle*>(info->fh)) == elle::Status::Error)
         escape("unable to add the created file to the crib");
 
       // debug.
@@ -1688,12 +1688,12 @@ namespace horizon
                path, info);
 
       // resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
       // load the file.
-      if (etoile::wall::File::Load(chemin, identifier) == elle::StatusError)
+      if (etoile::wall::File::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the file",
               -ENOENT);
 
@@ -1737,7 +1737,7 @@ namespace horizon
       // retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(handle->identifier,
                                        agent::Agent::Subject,
-                                       record) == elle::StatusError)
+                                       record) == elle::Status::Error)
         error("unable to retrieve the access record",
               -EPERM);
 
@@ -1750,14 +1750,14 @@ namespace horizon
 
       // wrap the buffer.
       if (region.Wrap(reinterpret_cast<const elle::Byte*>(buffer),
-                      size) == elle::StatusError)
+                      size) == elle::Status::Error)
         error("unable to wrap the buffer",
               -EPERM);
 
       // write the file.
       if (etoile::wall::File::Write(handle->identifier,
                                     static_cast<nucleus::Offset>(offset),
-                                    region) == elle::StatusError)
+                                    region) == elle::Status::Error)
         error("unable to write the file",
               -EPERM);
 
@@ -1797,7 +1797,7 @@ namespace horizon
       // retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(handle->identifier,
                                        agent::Agent::Subject,
-                                       record) == elle::StatusError)
+                                       record) == elle::Status::Error)
         error("unable to retrieve the access record",
               -EPERM);
 
@@ -1812,7 +1812,7 @@ namespace horizon
       if (etoile::wall::File::Read(handle->identifier,
                                    static_cast<nucleus::Offset>(offset),
                                    static_cast<nucleus::Size>(size),
-                                   region) == elle::StatusError)
+                                   region) == elle::Status::Error)
         error("unable to read the file",
               -EPERM);
 
@@ -1848,12 +1848,12 @@ namespace horizon
                path, static_cast<elle::Natural64>(size));
 
       // resolve the path.
-      if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
       // load the file.
-      if (etoile::wall::File::Load(chemin, identifier) == elle::StatusError)
+      if (etoile::wall::File::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the file",
               -ENOENT);
 
@@ -1871,7 +1871,7 @@ namespace horizon
               identifier);
 
       // store the file.
-      if (etoile::wall::File::Store(identifier) == elle::StatusError)
+      if (etoile::wall::File::Store(identifier) == elle::Status::Error)
         error("unable to store the file",
               -EPERM);
 
@@ -1906,7 +1906,7 @@ namespace horizon
       // retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(handle->identifier,
                                        agent::Agent::Subject,
-                                       record) == elle::StatusError)
+                                       record) == elle::Status::Error)
         error("unable to retrieve the access record",
               -EPERM);
 
@@ -1920,7 +1920,7 @@ namespace horizon
 
       // adjust the file's size.
       if (etoile::wall::File::Adjust(handle->identifier,
-                                     size) == elle::StatusError)
+                                     size) == elle::Status::Error)
         error("unable to adjust the size of the file",
               -EPERM);
 
@@ -1957,7 +1957,7 @@ namespace horizon
         case Handle::OperationCreate:
           {
             // remove the created and opened file in the crib.
-            if (Crib::Remove(elle::String(path)) == elle::StatusError)
+            if (Crib::Remove(elle::String(path)) == elle::Status::Error)
               escape("unable to remove the created file to the crib");
 
             //
@@ -1974,7 +1974,7 @@ namespace horizon
             if (etoile::wall::Access::Grant(
                   handle->identifier,
                   agent::Agent::Subject,
-                  handle->permissions) == elle::StatusError)
+                  handle->permissions) == elle::Status::Error)
               error("unable to update the access records",
                     -EPERM,
                     handle->identifier);
@@ -1992,7 +1992,7 @@ namespace horizon
         }
 
       // store the file.
-      if (etoile::wall::File::Store(handle->identifier) == elle::StatusError)
+      if (etoile::wall::File::Store(handle->identifier) == elle::Status::Error)
         error("unable to store the file",
               -EPERM);
 
@@ -2042,20 +2042,20 @@ namespace horizon
           nucleus::Record*              record;
 
           // resolve the path.
-          if (etoile::wall::Path::Resolve(from, chemin) == elle::StatusError)
+          if (etoile::wall::Path::Resolve(from, chemin) == elle::Status::Error)
             error("unable to resolve the path",
                   -ENOENT);
 
           // load the directory.
           if (etoile::wall::Directory::Load(chemin,
-                                            directory) == elle::StatusError)
+                                            directory) == elle::Status::Error)
             error("unable to load the directory",
                   -ENOENT);
 
           // retrieve the subject's permissions on the object.
           if (etoile::wall::Access::Lookup(directory,
                                            agent::Agent::Subject,
-                                           record) == elle::StatusError)
+                                           record) == elle::Status::Error)
             error("unable to retrieve the access record",
                   -EPERM,
                   directory);
@@ -2072,7 +2072,7 @@ namespace horizon
           // lookup for the target name.
           if (etoile::wall::Directory::Lookup(directory,
                                               t,
-                                              entry) == elle::StatusError)
+                                              entry) == elle::Status::Error)
             error("unable to lookup the target name",
                   -EPERM,
                   directory);
@@ -2100,13 +2100,13 @@ namespace horizon
           // rename the entry from _f_ to _t_.
           if (etoile::wall::Directory::Rename(directory,
                                               f,
-                                              t) == elle::StatusError)
+                                              t) == elle::Status::Error)
             error("unable to rename a directory entry",
                   -EPERM,
                   directory);
 
           // store the directory.
-          if (etoile::wall::Directory::Store(directory) == elle::StatusError)
+          if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
             error("unable to store the directory",
                   -EPERM);
         }
@@ -2131,7 +2131,7 @@ namespace horizon
           nucleus::Record*              record;
 
           // resolve the path.
-          if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+          if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
             error("unable to resolve the path",
                   -ENOENT);
 
@@ -2139,12 +2139,12 @@ namespace horizon
           // do not need to know to perform this operation.
           if (etoile::wall::Object::Load(
                 chemin,
-                identifier.object) == elle::StatusError)
+                identifier.object) == elle::Status::Error)
             error("unable to load the object",
                   -ENOENT);
 
           // resolve the path.
-          if (etoile::wall::Path::Resolve(to, chemin) == elle::StatusError)
+          if (etoile::wall::Path::Resolve(to, chemin) == elle::Status::Error)
             error("unable to resolve the path",
                   -ENOENT,
                   identifier.object);
@@ -2152,7 +2152,7 @@ namespace horizon
           // load the _to_ directory.
           if (etoile::wall::Directory::Load(
                 chemin,
-                identifier.to) == elle::StatusError)
+                identifier.to) == elle::Status::Error)
             error("unable to load the directory",
                   -ENOENT,
                   identifier.object);
@@ -2160,7 +2160,7 @@ namespace horizon
           // retrieve the subject's permissions on the object.
           if (etoile::wall::Access::Lookup(identifier.to,
                                            agent::Agent::Subject,
-                                           record) == elle::StatusError)
+                                           record) == elle::Status::Error)
             error("unable to retrieve the access record",
                   -EPERM,
                   identifier.object, identifier.to);
@@ -2175,7 +2175,7 @@ namespace horizon
                   identifier.object, identifier.to);
 
           // resolve the path.
-          if (etoile::wall::Path::Resolve(from, chemin) == elle::StatusError)
+          if (etoile::wall::Path::Resolve(from, chemin) == elle::Status::Error)
             error("unable to resolve the path",
                   -ENOENT,
                   identifier.object, identifier.to);
@@ -2183,7 +2183,7 @@ namespace horizon
           // load the _from_ directory.
           if (etoile::wall::Directory::Load(
                 chemin,
-                identifier.from) == elle::StatusError)
+                identifier.from) == elle::Status::Error)
             error("unable to load the directory",
                   -ENOENT,
                   identifier.object, identifier.to);
@@ -2191,7 +2191,7 @@ namespace horizon
           // retrieve the subject's permissions on the object.
           if (etoile::wall::Access::Lookup(identifier.from,
                                            agent::Agent::Subject,
-                                           record) == elle::StatusError)
+                                           record) == elle::Status::Error)
             error("unable to retrieve the access record",
                   -EPERM,
                   identifier.object, identifier.to, identifier.from);
@@ -2208,7 +2208,7 @@ namespace horizon
           // lookup for the target name.
           if (etoile::wall::Directory::Lookup(identifier.to,
                                               t,
-                                              entry) == elle::StatusError)
+                                              entry) == elle::Status::Error)
             error("unable to lookup the target name",
                   -EPERM,
                   identifier.object, identifier.to, identifier.from);
@@ -2237,7 +2237,7 @@ namespace horizon
           if (etoile::wall::Directory::Add(
                 identifier.to,
                 t,
-                identifier.object) == elle::StatusError)
+                identifier.object) == elle::Status::Error)
             error("unable to add an entry to the directory",
                   -EPERM,
                   identifier.object, identifier.to, identifier.from);
@@ -2245,28 +2245,28 @@ namespace horizon
           // remove the entry.
           if (etoile::wall::Directory::Remove(
                 identifier.from,
-                f) == elle::StatusError)
+                f) == elle::Status::Error)
             error("unable to remove a directory entry",
                   -EPERM,
                   identifier.object, identifier.to, identifier.from);
 
           // store the _to_ directory.
           if (etoile::wall::Directory::Store(
-                identifier.to) == elle::StatusError)
+                identifier.to) == elle::Status::Error)
             error("unable to store the directory",
                   -EPERM,
                   identifier.object, identifier.from);
 
           // store the _from_ directory.
           if (etoile::wall::Directory::Store(
-                identifier.from) == elle::StatusError)
+                identifier.from) == elle::Status::Error)
             error("unable to store the directory",
                   -EPERM,
                   identifier.object);
 
           // store the object.
           if (etoile::wall::Object::Store(
-                identifier.object) == elle::StatusError)
+                identifier.object) == elle::Status::Error)
             error("unable to store the object",
                   -EPERM);
         }
@@ -2302,24 +2302,24 @@ namespace horizon
                path);
 
       // resolve the path.
-      if (etoile::wall::Path::Resolve(child, chemin) == elle::StatusError)
+      if (etoile::wall::Path::Resolve(child, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
       // load the object.
-      if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
+      if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the object",
               -ENOENT);
 
       // retrieve information on the object.
       if (etoile::wall::Object::Information(identifier,
-                                            abstract) == elle::StatusError)
+                                            abstract) == elle::Status::Error)
         error("unable to retrieve information on the object",
               -EPERM,
               identifier);
 
       // create a temporary subject based on the object owner's key.
-      if (subject.Create(abstract.keys.owner) == elle::StatusError)
+      if (subject.Create(abstract.keys.owner) == elle::Status::Error)
         error("unable to create a temporary subject",
               -EPERM,
               identifier);
@@ -2331,25 +2331,25 @@ namespace horizon
               identifier);
 
       // discard the object, as no longer needed.
-      if (etoile::wall::Object::Discard(identifier) == elle::StatusError)
+      if (etoile::wall::Object::Discard(identifier) == elle::Status::Error)
         error("unable to discard the object",
               -EPERM);
 
       // resolve the path.
-      if (etoile::wall::Path::Resolve(parent, chemin) == elle::StatusError)
+      if (etoile::wall::Path::Resolve(parent, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
       // load the directory.
       if (etoile::wall::Directory::Load(chemin,
-                                        directory) == elle::StatusError)
+                                        directory) == elle::Status::Error)
         error("unable to load the directory",
               -ENOENT);
 
       // retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(directory,
                                        agent::Agent::Subject,
-                                       record) == elle::StatusError)
+                                       record) == elle::Status::Error)
         error("unable to retrieve the access record",
               -EPERM,
               directory);
@@ -2370,20 +2370,20 @@ namespace horizon
           {
             // resolve the path.
             if (etoile::wall::Path::Resolve(child,
-                                            chemin) == elle::StatusError)
+                                            chemin) == elle::Status::Error)
               error("unable to resolve the path",
                     -ENOENT,
                     directory);
 
             // load the object.
             if (etoile::wall::File::Load(chemin,
-                                         identifier) == elle::StatusError)
+                                         identifier) == elle::Status::Error)
               error("unable to load the file",
                     -ENOENT,
                     directory);
 
             // destroy the file.
-            if (etoile::wall::File::Destroy(identifier) == elle::StatusError)
+            if (etoile::wall::File::Destroy(identifier) == elle::Status::Error)
               error("unable to destroy the file",
                     -EPERM,
                     directory);
@@ -2394,20 +2394,20 @@ namespace horizon
           {
             // resolve the path.
             if (etoile::wall::Path::Resolve(child,
-                                            chemin) == elle::StatusError)
+                                            chemin) == elle::Status::Error)
               error("unable to resolve the path",
                     -ENOENT,
                     directory);
 
             // load the link
             if (etoile::wall::Link::Load(chemin,
-                                         identifier) == elle::StatusError)
+                                         identifier) == elle::Status::Error)
               error("unable to load the link",
                     -ENOENT,
                     directory);
 
             // destroy the link.
-            if (etoile::wall::Link::Destroy(identifier) == elle::StatusError)
+            if (etoile::wall::Link::Destroy(identifier) == elle::Status::Error)
               error("unable to destroy the link",
                     -EPERM,
                     directory);
@@ -2423,13 +2423,13 @@ namespace horizon
 
       // remove the entry.
       if (etoile::wall::Directory::Remove(directory,
-                                          name) == elle::StatusError)
+                                          name) == elle::Status::Error)
         error("unable to remove a directory entry",
               -EPERM,
               directory);
 
       // store the directory.
-      if (etoile::wall::Directory::Store(directory) == elle::StatusError)
+      if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
         error("unable to store the directory",
               -EPERM);
 

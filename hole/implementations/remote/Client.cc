@@ -71,14 +71,14 @@ namespace hole
           if (elle::Network::Register(
                 elle::Procedure<TagAuthenticated>(
                   elle::Callback<>::Infer(
-                    &Client::Authenticated, this))) == elle::StatusError)
+                    &Client::Authenticated, this))) == elle::Status::Error)
             escape("unable to register the callback");
 
           // register the message.
           if (elle::Network::Register(
                 elle::Procedure<TagException>(
                   elle::Callback<>::Infer(
-                    &Client::Exception, this))) == elle::StatusError)
+                    &Client::Exception, this))) == elle::Status::Error)
             escape("unable to register the callback");
         }
 
@@ -90,31 +90,31 @@ namespace hole
           this->socket = new elle::TCPSocket;
 
           // create the socket.
-          if (this->socket->Create() == elle::StatusError)
+          if (this->socket->Create() == elle::Status::Error)
             escape("unable to create the socket");
 
           // subscribe to the signal.
           if (this->socket->signal.connected.Subscribe(
                 elle::Callback<>::Infer(&Client::Connected,
-                                        this)) == elle::StatusError)
+                                        this)) == elle::Status::Error)
             escape("unable to subscribe to the signal");
 
           // subscribe to the signal.
           if (this->socket->signal.disconnected.Subscribe(
                 elle::Callback<>::Infer(&Client::Disconnected,
-                                        this)) == elle::StatusError)
+                                        this)) == elle::Status::Error)
             escape("unable to subscribe to the signal");
 
           // subscribe to the signal.
           if (this->socket->signal.error.Subscribe(
                 elle::Callback<>::Infer(&Client::Error,
-                                        this)) == elle::StatusError)
+                                        this)) == elle::Status::Error)
             escape("unable to subscribe to the signal");
 
           // connect the socket.
           if (this->socket->Connect(this->locus,
                                     elle::AbstractSocket::ModeSynchronous) ==
-              elle::StatusError)
+              elle::Status::Error)
             escape("unable to connect to the bridge");
         }
 
@@ -125,11 +125,11 @@ namespace hole
           // send the passport.
           if (this->socket->Send(
                 elle::Inputs<TagChallenge>(Hole::Passport)) ==
-              elle::StatusError)
+              elle::Status::Error)
             escape("unable to send the challenge");
         }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -152,10 +152,10 @@ namespace hole
         // transfer to the remote.
         if (this->socket->Call(
               elle::Inputs<TagPush>(address, derivable),
-              elle::Outputs<elle::TagOk>()) == elle::StatusError)
+              elle::Outputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to transfer the request");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -179,10 +179,10 @@ namespace hole
         if (this->socket->Call(
               elle::Inputs<TagPush>(address,
                                     derivable),
-              elle::Outputs<elle::TagOk>()) == elle::StatusError)
+              elle::Outputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to transfer the request");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -205,10 +205,10 @@ namespace hole
         if (this->socket->Call(
               elle::Inputs<TagPull>(address,
                                     nucleus::Version::Any),
-              elle::Outputs<TagBlock>(derivable)) == elle::StatusError)
+              elle::Outputs<TagBlock>(derivable)) == elle::Status::Error)
           escape("unable to transfer the request");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -232,10 +232,10 @@ namespace hole
         if (this->socket->Call(
               elle::Inputs<TagPull>(address,
                                     version),
-              elle::Outputs<TagBlock>(derivable)) == elle::StatusError)
+              elle::Outputs<TagBlock>(derivable)) == elle::Status::Error)
           escape("unable to transfer the request");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -254,10 +254,10 @@ namespace hole
         // transfer to the remote.
         if (this->socket->Call(
               elle::Inputs<TagWipe>(address),
-              elle::Outputs<elle::TagOk>()) == elle::StatusError)
+              elle::Outputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to transfer the request");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
 //
@@ -277,7 +277,7 @@ namespace hole
         // set the client as connected.
         this->state = Client::StateConnected;
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -301,11 +301,11 @@ namespace hole
             show();
 
             // exit the program.
-            if (elle::Program::Exit() == elle::StatusError)
+            if (elle::Program::Exit() == elle::Status::Error)
               escape("unable to exit the program");
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -320,7 +320,7 @@ namespace hole
         // disconnect the socket, though that may be unecessary.
         this->socket->Disconnect();
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -337,7 +337,7 @@ namespace hole
         // accordingly.
         this->state = Client::StateAuthenticated;
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -357,7 +357,7 @@ namespace hole
         // log the error.
         log("an error occured on the server side");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
 //
@@ -374,13 +374,13 @@ namespace hole
         std::cout << alignment << "[Client]" << std::endl;
 
         // dump the locus.
-        if (this->locus.Dump(margin + 2) == elle::StatusError)
+        if (this->locus.Dump(margin + 2) == elle::Status::Error)
           escape("unable to dump the locus");
 
         // dump the socket.
         if (this->socket != NULL)
           {
-            if (this->socket->Dump(margin + 2) == elle::StatusError)
+            if (this->socket->Dump(margin + 2) == elle::Status::Error)
               escape("unable to dump the socket");
           }
         else
@@ -389,7 +389,7 @@ namespace hole
                       << "[TCPSocket] " << elle::none << std::endl;
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     }

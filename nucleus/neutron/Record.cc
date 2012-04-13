@@ -79,7 +79,7 @@ namespace nucleus
               {
                 // create the token with the user's public key.
                 if (this->token.Update(key,
-                                       *subject.user) == elle::StatusError)
+                                       *subject.user) == elle::Status::Error)
                   escape("unable to create the token");
 
                 break;
@@ -102,7 +102,7 @@ namespace nucleus
           this->token = Token::Null;
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -121,7 +121,7 @@ namespace nucleus
       // set the token.
       this->token = token;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -135,15 +135,15 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return elle::Status::True;
 
       // compare the attributes.
       if ((this->subject != element.subject) ||
           (this->permissions != element.permissions) ||
           (this->token != element.token))
-        return elle::StatusFalse;
+        return elle::Status::False;
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -165,7 +165,7 @@ namespace nucleus
       std::cout << alignment << "[Record]" << std::endl;
 
       // dump the subject.
-      if (this->subject.Dump(margin + 2) == elle::StatusError)
+      if (this->subject.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the subject");
 
       // dump the permissions.
@@ -174,10 +174,10 @@ namespace nucleus
                 << this->permissions << std::endl;
 
       // dump the token.
-      if (this->token.Dump(margin + 2) == elle::StatusError)
+      if (this->token.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the token");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -192,10 +192,10 @@ namespace nucleus
       // serialize the attributes.
       if (archive.Serialize(this->subject,
                             this->permissions,
-                            this->token) == elle::StatusError)
+                            this->token) == elle::Status::Error)
         escape("unable to serialize the record");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -206,10 +206,10 @@ namespace nucleus
       // extract the attributes.
       if (archive.Extract(this->subject,
                           this->permissions,
-                          this->token) == elle::StatusError)
+                          this->token) == elle::Status::Error)
         escape("unable to extract the record");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //

@@ -40,7 +40,7 @@ namespace elle
       Byte              buffer[Benchmark::BlockSize];
 
       // init the library.
-      if (Elle::Initialize() == StatusError)
+      if (Elle::Initialize() == Status::Error)
         escape("unable to initialize the Elle library");
 
       // Asymmetric Generation
@@ -51,7 +51,7 @@ namespace elle
         time.Start();
 
         // generate the new keys.
-        if (keypair.Generate(Benchmark::AsymmetricKeyLength) == StatusError)
+        if (keypair.Generate(Benchmark::AsymmetricKeyLength) == Status::Error)
           escape("unable to generate a new key pair");
 
         time.Stop();
@@ -70,17 +70,17 @@ namespace elle
         Time            time;
 
         // generate the new keys.
-        if (keypair.Generate(Benchmark::AsymmetricKeyLength) == StatusError)
+        if (keypair.Generate(Benchmark::AsymmetricKeyLength) == Status::Error)
           escape("unable to generate a new key pair");
 
         // prepare random data.
-        if (region.Wrap(buffer, sizeof (buffer)) == StatusError)
+        if (region.Wrap(buffer, sizeof (buffer)) == Status::Error)
           escape("unable to prepare the block");
 
         time.Start();
 
         // encrypt the input.
-        if (keypair.K.Encrypt(region, code) == StatusError)
+        if (keypair.K.Encrypt(region, code) == Status::Error)
           escape("unable to encrypt the block");
 
         time.Stop();
@@ -100,21 +100,21 @@ namespace elle
         Time            time;
 
         // generate the new keys.
-        if (keypair.Generate(Benchmark::AsymmetricKeyLength) == StatusError)
+        if (keypair.Generate(Benchmark::AsymmetricKeyLength) == Status::Error)
           escape("unable to generate a new key pair");
 
         // some random data.
-        if (region.Wrap(buffer, sizeof (buffer)) == StatusError)
+        if (region.Wrap(buffer, sizeof (buffer)) == Status::Error)
           escape("unable to prepare the block");
 
         // encrypt the input.
-        if (keypair.K.Encrypt(region, code) == StatusError)
+        if (keypair.K.Encrypt(region, code) == Status::Error)
           escape("unable to encrypt the block");
 
         time.Start();
 
         // decrypt the data.
-        if (keypair.k.Decrypt(code, clear) == StatusError)
+        if (keypair.k.Decrypt(code, clear) == Status::Error)
           escape("unable to decrypt the block");
 
         time.Stop();
@@ -137,17 +137,17 @@ namespace elle
         Time            time;
 
         // generate the new keys.
-        if (keypair.Generate(Benchmark::AsymmetricKeyLength) == StatusError)
+        if (keypair.Generate(Benchmark::AsymmetricKeyLength) == Status::Error)
           escape("unable to generate a new key pair");
 
         // prepare random data.
-        if (region.Wrap(buffer, sizeof (buffer)) == StatusError)
+        if (region.Wrap(buffer, sizeof (buffer)) == Status::Error)
           escape("unable to prepare the block");
 
         time.Start();
 
         // sign the input.
-        if (keypair.k.Sign(region, signature) == StatusError)
+        if (keypair.k.Sign(region, signature) == Status::Error)
           escape("unable to sign the block");
 
         time.Stop();
@@ -166,21 +166,21 @@ namespace elle
         Time            time;
 
         // generate the new keys.
-        if (keypair.Generate(Benchmark::AsymmetricKeyLength) == StatusError)
+        if (keypair.Generate(Benchmark::AsymmetricKeyLength) == Status::Error)
           escape("unable to generate a new key pair");
 
         // some random data.
-        if (region.Wrap(buffer, sizeof (buffer)) == StatusError)
+        if (region.Wrap(buffer, sizeof (buffer)) == Status::Error)
           escape("unable to prepare the block");
 
         // sign the input.
-        if (keypair.k.Sign(region, signature) == StatusError)
+        if (keypair.k.Sign(region, signature) == Status::Error)
           escape("unable to sign the block");
 
         time.Start();
 
         // verify the data.
-        if (keypair.K.Verify(signature, region) == StatusError)
+        if (keypair.K.Verify(signature, region) == Status::Error)
           escape("unable to verify the signature");
 
         time.Stop();
@@ -198,13 +198,13 @@ namespace elle
         Time            time;
 
         // some random data.
-        if (region.Wrap(buffer, sizeof (buffer)) == StatusError)
+        if (region.Wrap(buffer, sizeof (buffer)) == Status::Error)
           escape("unable to prepare the block");
 
         time.Start();
 
         // hash the data.
-        if (OneWay::Hash(region, digest) == StatusError)
+        if (OneWay::Hash(region, digest) == Status::Error)
           escape("unable to hash the data");
 
         time.Stop();
@@ -222,7 +222,7 @@ namespace elle
         time.Start();
 
         // generate the new keys.
-        if (key.Generate(Benchmark::SymmetricKeyLength) == StatusError)
+        if (key.Generate(Benchmark::SymmetricKeyLength) == Status::Error)
           escape("unable to generate a new secret key");
 
         time.Stop();
@@ -241,17 +241,17 @@ namespace elle
         Time            time;
 
         // generate the new keys.
-        if (key.Generate(Benchmark::SymmetricKeyLength) == StatusError)
+        if (key.Generate(Benchmark::SymmetricKeyLength) == Status::Error)
           escape("unable to generate a new secret key");
 
         // prepare random data.
-        if (region.Wrap(buffer, sizeof (buffer)) == StatusError)
+        if (region.Wrap(buffer, sizeof (buffer)) == Status::Error)
           escape("unable to prepare the block");
 
         time.Start();
 
         // encrypt the input.
-        if (key.Encrypt(region, cipher) == StatusError)
+        if (key.Encrypt(region, cipher) == Status::Error)
           escape("unable to encrypt the block");
 
         time.Stop();
@@ -271,21 +271,21 @@ namespace elle
         Time            time;
 
         // generate the new keys.
-        if (key.Generate(Benchmark::SymmetricKeyLength) == StatusError)
+        if (key.Generate(Benchmark::SymmetricKeyLength) == Status::Error)
           escape("unable to generate a new secret key");
 
         // prepare random data.
-        if (region.Wrap(buffer, sizeof (buffer)) == StatusError)
+        if (region.Wrap(buffer, sizeof (buffer)) == Status::Error)
           escape("unable to prepare the block");
 
         // encrypt the input.
-        if (key.Encrypt(region, cipher) == StatusError)
+        if (key.Encrypt(region, cipher) == Status::Error)
           escape("unable to encrypt the block");
 
         time.Start();
 
         // decrypt the input.
-        if (key.Decrypt(cipher, clear) == StatusError)
+        if (key.Decrypt(cipher, clear) == Status::Error)
           escape("unable to decrypt the block");
 
         time.Stop();
@@ -297,10 +297,10 @@ namespace elle
       }
 
       // clean the library.
-      if (Elle::Clean() == StatusError)
+      if (Elle::Clean() == Status::Error)
         escape("unable to clean the Elle library");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }
@@ -312,7 +312,7 @@ namespace elle
 
 int                     main()
 {
-  if (elle::benchmark::Main() == elle::radix::StatusError)
+  if (elle::benchmark::Main() == elle::Status::Error)
     {
       show();
 

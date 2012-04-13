@@ -42,7 +42,7 @@ Status              CodingStandard::Method3(const Natural32 n,
 
   [...]
 
-  return (StatusOk);
+  return Status::Ok;
 }
 
 #endif

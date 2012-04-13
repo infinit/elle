@@ -30,7 +30,7 @@ static ::pth_attr_t    epth_attribute;
 ///
 /// this function initializes the epth wrapper.
 ///
-elle::radix::Status     epth_initialize(const elle::core::Natural32     size,
+elle::Status     epth_initialize(const elle::Natural32     size,
                                         t_epth&                         program)
 {
   //
@@ -61,13 +61,13 @@ elle::radix::Status     epth_initialize(const elle::core::Natural32     size,
   if ((program = ::pth_self()) == NULL)
     escape("unable to retrieve the program's thread");
 
-  return elle::radix::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
 /// this function cleans the library.
 ///
-elle::radix::Status     epth_clean()
+elle::Status     epth_clean()
 {
   //
   // destroy the pth attribute.
@@ -83,7 +83,7 @@ elle::radix::Status     epth_clean()
   if (::pth_kill() == FALSE)
     escape("unable to kill the Pth library");
 
-  return elle::radix::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -91,7 +91,7 @@ elle::radix::Status     epth_clean()
 /// the code at the given function, with the given argument
 /// i.e _function_(_argument_);
 ///
-elle::radix::Status     epth_spawn(void*                (*function)(void*),
+elle::Status     epth_spawn(void*                (*function)(void*),
                                    void*                argument,
                                    t_epth&              context)
 {
@@ -107,14 +107,14 @@ elle::radix::Status     epth_spawn(void*                (*function)(void*),
                              argument)) == NULL)
     escape("unable to spawn the thread");
 
-  return elle::radix::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
 /// this function switches fibers, saving _from_'s context and
 /// restoring _to_'s.
 ///
-elle::radix::Status     epth_switch(const t_epth&,
+elle::Status     epth_switch(const t_epth&,
                                     const t_epth&               to)
 {
   //
@@ -126,13 +126,13 @@ elle::radix::Status     epth_switch(const t_epth&,
   if (::pth_yield(to) == -1)
     escape("unable to yield execution");
 
-  return elle::radix::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
 /// this function aborts a thread, forcing it to exit.
 ///
-elle::radix::Status     epth_abort(const t_epth&                id)
+elle::Status     epth_abort(const t_epth&                id)
 {
   //
   // abort the thread.
@@ -141,5 +141,5 @@ elle::radix::Status     epth_abort(const t_epth&                id)
   if (::pth_abort(id) == -1)
     escape("unable to abort the thread");
 
-  return elle::radix::StatusOk;
+  return elle::Status::Ok;
 }

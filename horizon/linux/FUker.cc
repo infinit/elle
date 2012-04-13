@@ -184,7 +184,7 @@ namespace horizon
         log(::strerror(errno));
 
       // now that FUSE has stopped, make sure the program is exiting.
-      if (elle::Program::Exit() == elle::StatusError)
+      if (elle::Program::Exit() == elle::Status::Error)
         log("unable to exit the program");
 
       return (NULL);
@@ -204,7 +204,7 @@ namespace horizon
       if (::pthread_create(&FUker::Thread, NULL, &FUker::Setup, NULL) != 0)
         escape("unable to create the FUSE-specific thread");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -217,7 +217,7 @@ namespace horizon
       // this operation will normally make FUSE exit.
       ::umount2(Infinit::Mountpoint.c_str(), MNT_FORCE);
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //

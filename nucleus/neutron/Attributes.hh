@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <nucleus/neutron/Trait.hh>
 #include <nucleus/neutron/Index.hh>

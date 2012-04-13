@@ -78,7 +78,7 @@ namespace nucleus
       // assign the number.
       this->number = number;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -92,13 +92,13 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return elle::Status::True;
 
       // compare the numbers.
       if (this->number != element.number)
-        return elle::StatusFalse;
+        return elle::Status::False;
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -108,13 +108,13 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return elle::Status::True;
 
       // compare the numbers.
       if (this->number >= element.number)
-        return elle::StatusFalse;
+        return elle::Status::False;
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -124,13 +124,13 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return elle::Status::True;
 
       // compare the numbers.
       if (this->number <= element.number)
-        return elle::StatusFalse;
+        return elle::Status::False;
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -170,7 +170,7 @@ namespace nucleus
 
       std::cout << alignment << "[Version] " << this->number << std::endl;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -183,10 +183,10 @@ namespace nucleus
     elle::Status        Version::Serialize(elle::Archive&       archive) const
     {
       // serialize the attributes.
-      if (archive.Serialize(this->number) == elle::StatusError)
+      if (archive.Serialize(this->number) == elle::Status::Error)
         escape("unable to serialize the version's attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -195,10 +195,10 @@ namespace nucleus
     elle::Status        Version::Extract(elle::Archive&         archive)
     {
       // extracts the attributes.
-      if (archive.Extract(this->number) == elle::StatusError)
+      if (archive.Extract(this->number) == elle::Status::Error)
         escape("unable to extract the version's attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

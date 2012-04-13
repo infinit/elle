@@ -9,7 +9,7 @@
 //
 
 #include <Infinit.hh>
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 #include <etoile/Etoile.hh>
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
@@ -91,16 +91,16 @@ int main(int argc, char** argv)
 
       if (nucleus::Porcupine<>::Attach.Call(
             contents,
-            value) == elle::StatusError)
+            value) == elle::Status::Error)
         fail("unable to attach the value");
 
-      if (p->Add(v[i], value) == elle::StatusError)
+      if (p->Add(v[i], value) == elle::Status::Error)
         fail("XXX");
     }
 
   if (p->Check(nucleus::PinParent |
                nucleus::PinNeighbours |
-               nucleus::PinKey) == elle::StatusError)
+               nucleus::PinKey) == elle::Status::Error)
     fail("XXX");
 
   //p->Dump();
@@ -111,28 +111,28 @@ int main(int argc, char** argv)
 
       printf("[%u] -------------= %s\n", i, v[i].c_str());
 
-      if (p->Locate(v[i], h) == elle::StatusError)
+      if (p->Locate(v[i], h) == elle::Status::Error)
         fail("XXX");
     }
 
   if (p->Check(nucleus::PinParent |
                nucleus::PinNeighbours |
-               nucleus::PinKey) == elle::StatusError)
+               nucleus::PinKey) == elle::Status::Error)
     fail("XXX");
 
   elle::SecretKey sk;
 
-  if (sk.Generate(128) == elle::StatusError)
+  if (sk.Generate(128) == elle::Status::Error)
     fail("XXX");
 
   //p->Traverse();
 
-  if (p->Seal(sk) == elle::StatusError)
+  if (p->Seal(sk) == elle::Status::Error)
     fail("unable to seal the porcupine");
 
   //p->Traverse();
 
-  if (p->Check(nucleus::PinAll) == elle::StatusError)
+  if (p->Check(nucleus::PinAll) == elle::Status::Error)
     fail("XXX");
 
   p->Traverse();
@@ -143,13 +143,13 @@ int main(int argc, char** argv)
 
       printf("[%u] -------------< %s\n", i, v[i].c_str());
 
-      if (p->Locate(v[i], h) == elle::StatusError)
+      if (p->Locate(v[i], h) == elle::Status::Error)
         fail("XXX");
 
-      if (p->Remove(v[i]) == elle::StatusError)
+      if (p->Remove(v[i]) == elle::Status::Error)
         fail("XXX");
 
-      if (nucleus::Porcupine<>::Detach.Call(h) == elle::StatusError)
+      if (nucleus::Porcupine<>::Detach.Call(h) == elle::Status::Error)
         fail("unable to detach the value");
     }
 

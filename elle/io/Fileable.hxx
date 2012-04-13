@@ -1,7 +1,7 @@
 #ifndef ELLE_IO_FILEABLE_HXX
 # define ELLE_IO_FILEABLE_HXX
 
-# include <elle/core.hh>
+# include <elle/types.hh>
 
 # include <elle/serialize/BinaryArchive.hxx>
 
@@ -18,7 +18,7 @@ namespace elle { namespace io {
         std::ifstream in(path.str(), std::ios_base::in | std::ios_base::binary);
         if (!in.good())
           {
-            return elle::StatusError;
+            return elle::Status::Error;
             //throw std::runtime_error("Cannot read '"+  path.str().c_str() +"'");
           }
 
@@ -30,7 +30,7 @@ namespace elle { namespace io {
           }
         catch (std::exception const& err)
           {
-            return elle::StatusError;
+            return elle::Status::Error;
             //throw std::runtime_error(
             //    "Cannot load from '" + path.str() + "': " +
             //    std::string(err.what())
@@ -45,7 +45,7 @@ namespace elle { namespace io {
         std::ofstream out(path.str(), std::ios_base::out | std::ios_base::binary);
         if (!out.good())
           {
-            return elle::StatusError;
+            return elle::Status::Error;
             //throw std::runtime_error("Cannot read '"+  path.str().c_str() +"'");
           }
 
@@ -55,7 +55,7 @@ namespace elle { namespace io {
           }
         catch (std::exception const& err)
           {
-            return elle::StatusError;
+            return elle::Status::Error;
             //throw std::runtime_error(
             //    "Cannot load from '" + path.str() + "': " +
             //    std::string(err.what())
@@ -84,22 +84,22 @@ namespace elle { namespace io {
 //        Region          region;
 //
 //        // read the file's content.
-//        if (File::Read(path, region) == StatusError)
+//        if (File::Read(path, region) == Status::Error)
 //          escape("unable to read the file's content");
 //
 //        // detach the data from the region.
-//        if (region.Detach() == StatusError)
+//        if (region.Detach() == Status::Error)
 //          escape("unable to detach the data");
 //
 //        // prepare the archive.
-//        if (archive.Acquire(region) == StatusError)
+//        if (archive.Acquire(region) == Status::Error)
 //          escape("unable to prepare the archive");
 //
 //        // extract the object.
-//        if (this->Extract(archive) == StatusError)
+//        if (this->Extract(archive) == Status::Error)
 //          escape("unable to extract the archive");
 //
-//        return StatusOk;
+//        return Status::Ok;
 //      }
 //
 //      virtual Status    Store(const Path&                       path) const
@@ -107,28 +107,28 @@ namespace elle { namespace io {
 //        Archive         archive;
 //
 //        // create an archive.
-//        if (archive.Create() == StatusError)
+//        if (archive.Create() == Status::Error)
 //          escape("unable to create the archive");
 //
 //        // serialize the object.
-//        if (this->Serialize(archive) == StatusError)
+//        if (this->Serialize(archive) == Status::Error)
 //          escape("unable to serialize the object");
 //
 //        // write the file's content.
 //        if (File::Write(path, Region(archive.contents,
-//                                     archive.size)) == StatusError)
+//                                     archive.size)) == Status::Error)
 //          escape("unable to write the file's content");
 //
-//        return StatusOk;
+//        return Status::Ok;
 //      }
 //
 //      virtual Status    Erase(const Path&                       path) const
 //      {
 //        // erase the file.
-//        if (File::Erase(path) == StatusError)
+//        if (File::Erase(path) == Status::Error)
 //          escape("unable to erase the file");
 //
-//        return StatusOk;
+//        return Status::Ok;
 //      }
 //
 //      virtual Status    Exist(const Path&                       path) const
@@ -158,17 +158,17 @@ namespace elle { namespace io {
 //        String          string;
 //
 //        // read the file's content.
-//        if (File::Read(path, region) == StatusError)
+//        if (File::Read(path, region) == Status::Error)
 //          escape("unable to read the file's content");
 //
 //        // decode and extract the object.
 //        if (Hexadecimal::Decode(
 //              String(reinterpret_cast<const char*>(region.contents),
 //                     region.size),
-//              *this) == StatusError)
+//              *this) == Status::Error)
 //          escape("unable to decode the object");
 //
-//        return StatusOk;
+//        return Status::Ok;
 //      }
 //
 //      virtual Status    Store(const Path&                       path) const
@@ -177,28 +177,28 @@ namespace elle { namespace io {
 //        Region          region;
 //
 //        // encode in hexadecimal.
-//        if (Hexadecimal::Encode(*this, string) == StatusError)
+//        if (Hexadecimal::Encode(*this, string) == Status::Error)
 //          escape("unable to encode the object in hexadecimal");
 //
 //        // wrap the string.
 //        if (region.Wrap(reinterpret_cast<const Byte*>(string.c_str()),
-//                        string.length()) == StatusError)
+//                        string.length()) == Status::Error)
 //          escape("unable to wrap the string in a region");
 //
 //        // write the file's content.
-//        if (File::Write(path, region) == StatusError)
+//        if (File::Write(path, region) == Status::Error)
 //          escape("unable to write the file's content");
 //
-//        return StatusOk;
+//        return Status::Ok;
 //      }
 //
 //      virtual Status    Erase(const Path&                       path) const
 //      {
 //        // erase the file.
-//        if (File::Erase(path) == StatusError)
+//        if (File::Erase(path) == Status::Error)
 //          escape("unable to erase the file");
 //
-//        return StatusOk;
+//        return Status::Ok;
 //      }
 //
 //      virtual Status    Exist(const Path&                       path) const
@@ -228,16 +228,16 @@ namespace elle { namespace io {
 //        String          string;
 //
 //        // read the file's content.
-//        if (File::Read(path, region) == StatusError)
+//        if (File::Read(path, region) == Status::Error)
 //          escape("unable to read the file's content");
 //
 //        // decode and extract the object.
 //        if (Base64::Decode(String(reinterpret_cast<char*>(region.contents),
 //                                  region.size),
-//                           *this) == StatusError)
+//                           *this) == Status::Error)
 //          escape("unable to decode the object");
 //
-//        return StatusOk;
+//        return Status::Ok;
 //      }
 //
 //      virtual Status    Store(const Path&                       path) const
@@ -246,28 +246,28 @@ namespace elle { namespace io {
 //        Region          region;
 //
 //        // encode in base64.
-//        if (Base64::Encode(*this, string) == StatusError)
+//        if (Base64::Encode(*this, string) == Status::Error)
 //          escape("unable to encode the object in base64");
 //
 //        // wrap the string.
 //        if (region.Wrap(reinterpret_cast<const Byte*>(string.c_str()),
-//                        string.length()) == StatusError)
+//                        string.length()) == Status::Error)
 //          escape("unable to wrap the string in a region");
 //
 //        // write the file's content.
-//        if (File::Write(path, region) == StatusError)
+//        if (File::Write(path, region) == Status::Error)
 //          escape("unable to write the file's content");
 //
-//        return StatusOk;
+//        return Status::Ok;
 //      }
 //
 //      virtual Status    Erase(const Path&                       path) const
 //      {
 //        // erase the file.
-//        if (File::Erase(path) == StatusError)
+//        if (File::Erase(path) == Status::Error)
 //          escape("unable to erase the file");
 //
-//        return StatusOk;
+//        return Status::Ok;
 //      }
 //
 //      virtual Status    Exist(const Path&                       path) const

@@ -110,7 +110,7 @@ namespace elle
       // seed the random generator.
       ::RAND_seed(temporary, sizeof (temporary));
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -120,7 +120,7 @@ namespace elle
     {
       // nothing to do.
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -131,7 +131,7 @@ namespace elle
       elle::Integer32   r;
 
       // generate a random integer.
-      if (Random::Generate(r) == StatusError)
+      if (Random::Generate(r) == Status::Error)
         escape("unable to generate a random integer");
 
       // set the boolean.
@@ -140,7 +140,7 @@ namespace elle
       else
         value = false;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -153,7 +153,7 @@ namespace elle
                        sizeof (value)) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -166,7 +166,7 @@ namespace elle
                        sizeof (value)) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -179,7 +179,7 @@ namespace elle
                        sizeof (value)) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -192,7 +192,7 @@ namespace elle
                        sizeof (value)) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -205,7 +205,7 @@ namespace elle
                        sizeof (value)) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -218,7 +218,7 @@ namespace elle
                        sizeof (value)) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -231,7 +231,7 @@ namespace elle
                        sizeof (value)) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -244,7 +244,7 @@ namespace elle
                        sizeof (value)) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -257,7 +257,7 @@ namespace elle
                        sizeof (value)) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -270,7 +270,7 @@ namespace elle
                        sizeof (value)) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -283,7 +283,7 @@ namespace elle
       if (::BN_rand(&value, length, -1, 0) == 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -310,7 +310,7 @@ namespace elle
           value[i] = alphabet[c % alphabet.length()];
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -320,7 +320,7 @@ namespace elle
                                          const Natural32        size)
     {
       // prepare the region.
-      if (value.Prepare(size) == StatusError)
+      if (value.Prepare(size) == Status::Error)
         escape("unable to prepare the region");
 
       // generate a random integer.
@@ -331,7 +331,7 @@ namespace elle
       // set the region's size.
       value.size = size;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

@@ -66,11 +66,11 @@ namespace nucleus
         case Action::TypePush:
           {
             // display the address.
-            if (this->address.Dump(margin + 2) == elle::StatusError)
+            if (this->address.Dump(margin + 2) == elle::Status::Error)
               escape("unable to dump the address");
 
             // display the block.
-            if (this->block->Dump(margin + 2) == elle::StatusError)
+            if (this->block->Dump(margin + 2) == elle::Status::Error)
               escape("unable to dump the block");
 
             break;
@@ -78,7 +78,7 @@ namespace nucleus
         case Action::TypeWipe:
           {
             // display the address.
-            if (this->address.Dump(margin + 2) == elle::StatusError)
+            if (this->address.Dump(margin + 2) == elle::Status::Error)
               escape("unable to dump the address");
 
             break;
@@ -89,7 +89,7 @@ namespace nucleus
           }
         }
       
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

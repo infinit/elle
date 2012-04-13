@@ -8,7 +8,7 @@
 // author        julien quintard   [fri jan 13 19:26:19 2012]
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <elle/idiom/Close.hh>
 # include <iconv.h>
@@ -26,7 +26,7 @@ namespace elle
                     ssize_t *    output_size)
     {
       escape("XXX implement me with iconv_open/iconv/iconv_close");
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status Utf16To8(const wchar_t * input,
@@ -35,7 +35,7 @@ namespace elle
                     ssize_t *       output_size)
     {
       escape("XXX implement me with iconv_open/iconv/iconv_close");
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

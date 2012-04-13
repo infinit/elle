@@ -64,7 +64,7 @@ namespace satellite
     for (i = 0; Commands[i].name; i++)
       std::cout << "  " << Commands[i].name << std::endl;
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -75,7 +75,7 @@ namespace satellite
     // exit.
     ::exit(0);
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -98,7 +98,7 @@ namespace satellite
     // XXX
     std::cout << address << std::endl;
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 //
@@ -116,34 +116,34 @@ namespace satellite
     // XXX Infinit::Parser is not deleted in case of errors
 
     // initialize the Elle library.
-    if (elle::Elle::Initialize() == elle::StatusError)
+    if (elle::Elle::Initialize() == elle::Status::Error)
       escape("unable to initialize Elle");
 
     // set up the program.
-    if (elle::Program::Setup() == elle::StatusError)
+    if (elle::Program::Setup() == elle::Status::Error)
       escape("unable to set up the program");
 
     // initialize the nucleus library.
-    if (nucleus::Nucleus::Initialize() == elle::StatusError)
+    if (nucleus::Nucleus::Initialize() == elle::Status::Error)
       escape("unable to initialize Nucleus");
 
     // initialize the Lune library.
-    if (lune::Lune::Initialize() == elle::StatusError)
+    if (lune::Lune::Initialize() == elle::Status::Error)
       escape("unable to initialize Lune");
 
     // initialize Infinit.
-    if (Infinit::Initialize() == elle::StatusError)
+    if (Infinit::Initialize() == elle::Status::Error)
       escape("unable to initialize Infinit");
 
     // initialize the Etoile library.
-    if (etoile::Etoile::Initialize() == elle::StatusError)
+    if (etoile::Etoile::Initialize() == elle::Status::Error)
       escape("unable to initialize Etoile");
 
     // allocate a new parser.
     Infinit::Parser = new elle::Parser(argc, argv);
 
     // specify a program description.
-    if (Infinit::Parser->Description(Infinit::Copyright) == elle::StatusError)
+    if (Infinit::Parser->Description(Infinit::Copyright) == elle::Status::Error)
       escape("unable to set the description");
 
     // register the options.
@@ -152,7 +152,7 @@ namespace satellite
           'h',
           "help",
           "display the help",
-          elle::Parser::KindNone) == elle::StatusError)
+          elle::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the option.
@@ -161,7 +161,7 @@ namespace satellite
           'u',
           "user",
           "specifies the name of the user",
-          elle::Parser::KindRequired) == elle::StatusError)
+          elle::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the option.
@@ -170,26 +170,26 @@ namespace satellite
           'n',
           "network",
           "specifies the name of the network",
-          elle::Parser::KindRequired) == elle::StatusError)
+          elle::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
     // parse.
-    if (Infinit::Parser->Parse() == elle::StatusError)
+    if (Infinit::Parser->Parse() == elle::Status::Error)
       escape("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::StatusTrue)
+    if (Infinit::Parser->Test("Help") == elle::Status::True)
       {
         // display the usage.
         Infinit::Parser->Usage();
 
         // quit.
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     // retrieve the user name.
     if (Infinit::Parser->Value("User",
-                               Infinit::User) == elle::StatusError)
+                               Infinit::User) == elle::Status::Error)
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -199,7 +199,7 @@ namespace satellite
 
     // retrieve the network name.
     if (Infinit::Parser->Value("Network",
-                               Infinit::Network) == elle::StatusError)
+                               Infinit::Network) == elle::Status::Error)
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -208,11 +208,11 @@ namespace satellite
       }
 
     // initialize the Agent library.
-    if (agent::Agent::Initialize() == elle::StatusError)
+    if (agent::Agent::Initialize() == elle::Status::Error)
       escape("unable to initialize Agent");
 
     // initialize the Hole library.
-    if (hole::Hole::Initialize() == elle::StatusError)
+    if (hole::Hole::Initialize() == elle::Status::Error)
       escape("unable to initialize Hole");
 
     // wait for and trigger commands.
@@ -226,7 +226,7 @@ namespace satellite
             // trigger the command.
             if (elle::String(Commands[i].name) == elle::String(line))
               {
-                if (Commands[i].function(line) == elle::StatusError)
+                if (Commands[i].function(line) == elle::Status::Error)
                   show();
 
                 break;
@@ -243,34 +243,34 @@ namespace satellite
     Infinit::Parser = nullptr;
 
     // clean Hole.
-    if (hole::Hole::Clean() == elle::StatusError)
+    if (hole::Hole::Clean() == elle::Status::Error)
       escape("unable to clean Hole");
 
     // clean the Agent library.
-    if (agent::Agent::Clean() == elle::StatusError)
+    if (agent::Agent::Clean() == elle::Status::Error)
       escape("unable to clean Agent");
 
     // clean the Etoile library.
-    if (etoile::Etoile::Clean() == elle::StatusError)
+    if (etoile::Etoile::Clean() == elle::Status::Error)
       escape("unable to clean Etoile");
 
     // clean Infinit.
-    if (Infinit::Clean() == elle::StatusError)
+    if (Infinit::Clean() == elle::Status::Error)
       escape("unable to clean Infinit");
 
     // clean Lune
-    if (lune::Lune::Clean() == elle::StatusError)
+    if (lune::Lune::Clean() == elle::Status::Error)
       escape("unable to clean Lune");
 
     // clean the nucleus library.
-    if (nucleus::Nucleus::Clean() == elle::StatusError)
+    if (nucleus::Nucleus::Clean() == elle::Status::Error)
       escape("unable to clean Nucleus");
 
     // clean Elle.
-    if (elle::Elle::Clean() == elle::StatusError)
+    if (elle::Elle::Clean() == elle::Status::Error)
       escape("unable to clean Elle");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 }
@@ -287,7 +287,7 @@ int                     main(int                                argc,
 {
   try
     {
-      if (satellite::Main(argc, argv) == elle::StatusError)
+      if (satellite::Main(argc, argv) == elle::Status::Error)
         {
           show();
 

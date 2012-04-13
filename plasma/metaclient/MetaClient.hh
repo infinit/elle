@@ -103,8 +103,9 @@ namespace plasma
       typedef std::function<void(NetworkNodesResponse const&)> NetworkNodesCallback;
 
       typedef std::function<void(Error, std::string const&)> Errback;
-    private:
+    public:
       struct RequestHandler;
+    protected:
       typedef std::map<QNetworkReply*, RequestHandler*> HandlerMap;
 
     private:

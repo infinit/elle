@@ -32,10 +32,10 @@ namespace elle
     Status              Radix::Initialize()
     {
       // initialize the meta class.
-      if (Meta::Initialize() == StatusError)
+      if (Meta::Initialize() == Status::Error)
         escape("unable to initialize the meta class");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -44,10 +44,10 @@ namespace elle
     Status              Radix::Clean()
     {
       // clean the meta class.
-      if (Meta::Clean() == StatusError)
+      if (Meta::Clean() == Status::Error)
         escape("unable to clean the meta class");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

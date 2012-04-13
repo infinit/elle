@@ -53,10 +53,10 @@ namespace etoile
       this->parent = parent;
 
       // retrieve the current time.
-      if (this->timestamp.Current() == elle::StatusError)
+      if (this->timestamp.Current() == elle::Status::Error)
         escape("unable to retrieve the current time");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -73,12 +73,12 @@ namespace etoile
 
       // look up the element in the current riffle ... stop if not present.
       if ((scoutor = this->children.find(slab)) == this->children.end())
-        return elle::StatusOk;
+        return elle::Status::Ok;
 
       // return the resolved riffle.
       riffle = scoutor->second;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -97,18 +97,18 @@ namespace etoile
           // all the the route's slabs.
           if (Shrub::Queue.container.size() >=
               Infinit::Configuration.etoile.shrub.capacity)
-            return elle::StatusOk;
+            return elle::Status::Ok;
 
           // allocate a new riffle.
           std::unique_ptr<Riffle> riffle(new Riffle);
 
           // create the riffle.
-          if (riffle->Create(slab, location, this) == elle::StatusError)
+          if (riffle->Create(slab, location, this) == elle::Status::Error)
             escape("unable to create the riffle");
 
           // add the riffle to the queue.
           if (Shrub::Queue.Insert(riffle->timestamp,
-                                  riffle.get()) == elle::StatusError)
+                                  riffle.get()) == elle::Status::Error)
             escape("unable to add the riffle");
 
           // insert it.
@@ -134,20 +134,20 @@ namespace etoile
 
           // remove the riffle from the queue.
           if (Shrub::Queue.Delete(riffle->timestamp,
-                                  riffle) == elle::StatusError)
+                                  riffle) == elle::Status::Error)
             escape("unable to remove the riffle");
 
           // refresh the timestamp.
-          if (riffle->timestamp.Current() == elle::StatusError)
+          if (riffle->timestamp.Current() == elle::Status::Error)
             escape("unable to retrieve the current time");
 
           // finally, add the riffle back to the queue i.e at its new position.
           if (Shrub::Queue.Insert(riffle->timestamp,
-                                  riffle) == elle::StatusError)
+                                  riffle) == elle::Status::Error)
             escape("unable to add the riffle");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -167,12 +167,12 @@ namespace etoile
       riffle = iterator->second;
 
       // flush the riffle.
-      if (riffle->Flush() == elle::StatusError)
+      if (riffle->Flush() == elle::Status::Error)
         escape("unable to flush the riffle");
 
       // release the shrub slot.
       if (Shrub::Queue.Delete(riffle->timestamp,
-                              riffle) == elle::StatusError)
+                              riffle) == elle::Status::Error)
         escape("unable to remove the riffle");
 
       // delete the referenced riffle, along with its children.
@@ -181,7 +181,7 @@ namespace etoile
       // remove the entry from the container.
       this->children.erase(iterator);
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -199,12 +199,12 @@ namespace etoile
           Riffle*       riffle = scoutor->second;
 
           // flush the riffle recursively.
-          if (riffle->Flush() == elle::StatusError)
+          if (riffle->Flush() == elle::Status::Error)
             escape("unable to flush the riffle");
 
           // release the shrub slot.
           if (Shrub::Queue.Delete(riffle->timestamp,
-                                  riffle) == elle::StatusError)
+                                  riffle) == elle::Status::Error)
             escape("unable to remove the riffle");
 
           // delete the riffle.
@@ -214,7 +214,7 @@ namespace etoile
       // clear the container.
       this->children.clear();
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -236,10 +236,10 @@ namespace etoile
       std::cout << alignment << elle::Dumpable::Shift << "[Slab] "
                 << this->slab << std::endl;
 
-      if (this->location.Dump(margin + 2) == elle::StatusError)
+      if (this->location.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the location");
 
-      if (this->timestamp.Dump(margin + 2) == elle::StatusError)
+      if (this->timestamp.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the timestamp");
 
       std::cout << alignment << elle::Dumpable::Shift << "[Parent] "
@@ -254,11 +254,11 @@ namespace etoile
            scoutor++)
         {
           // dump the sub-riffle.
-          if (scoutor->second->Dump(margin + 4) == elle::StatusError)
+          if (scoutor->second->Dump(margin + 4) == elle::Status::Error)
             escape("unable to dump the sub-riffle");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

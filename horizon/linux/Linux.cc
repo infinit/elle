@@ -16,7 +16,7 @@
 #include <horizon/linux/Crux.hh>
 #include <horizon/Horizon.hh>
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 #include <agent/Agent.hh>
 #include <Infinit.hh>
 
@@ -79,10 +79,10 @@ namespace horizon
       //
       {
         // if the dictionary exist.
-        if (Linux::Dictionary.Exist() == elle::StatusTrue)
+        if (Linux::Dictionary.Exist() == elle::Status::True)
           {
             // load the dictionary file.
-            if (Linux::Dictionary.Load() == elle::StatusError)
+            if (Linux::Dictionary.Load() == elle::Status::Error)
               escape("unable to load the dictionary");
           }
       }
@@ -138,10 +138,10 @@ namespace horizon
         operations.flag_nullpath_ok = 1;
 
         // initialize FUSE.
-        if (FUSE::Initialize(operations) == elle::StatusError)
+        if (FUSE::Initialize(operations) == elle::Status::Error)
           escape("unable to initialize FUSE");
       }
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -150,10 +150,10 @@ namespace horizon
     elle::Status        Linux::Clean()
     {
       // clean FUSE.
-      if (FUSE::Clean() == elle::StatusError)
+      if (FUSE::Clean() == elle::Status::Error)
         escape("unable to clean FUSE");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

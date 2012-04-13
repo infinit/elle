@@ -62,13 +62,13 @@ namespace etoile
       std::cout << alignment << "[Directory]" << std::endl;
 
       // dump the inherited object.
-      if (Object::Dump(margin + 2) == elle::StatusError)
+      if (Object::Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the inherited object");
 
       // dump the contents.
       if (this->contents != NULL)
         {
-          if (this->contents->Dump(margin + 4) == elle::StatusError)
+          if (this->contents->Dump(margin + 4) == elle::Status::Error)
             escape("unable to dump the contents");
         }
       else
@@ -77,7 +77,7 @@ namespace etoile
                     << "[Contents] " << elle::none << std::endl;
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -93,17 +93,17 @@ namespace etoile
       if (this->contents == NULL)
         {
           // serialize the contents.
-          if (archive.Serialize(*this->contents) == elle::StatusError)
+          if (archive.Serialize(*this->contents) == elle::Status::Error)
             escape("unable to serialize the contents");
         }
       else
         {
           // serialize 'none'.
-          if (archive.Serialize(elle::none) == elle::StatusError)
+          if (archive.Serialize(elle::none) == elle::Status::Error)
             escape("unable to serialize 'none'");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -114,14 +114,14 @@ namespace etoile
       elle::Archive::Type       type;
 
       // fetch the next element's type.
-      if (archive.Fetch(type) == elle::StatusError)
+      if (archive.Fetch(type) == elle::Status::Error)
         escape("unable to fetch the next element's type");
 
       // extract the access.
       if (type == elle::Archive::TypeNull)
         {
           // extract 'none'.
-          if (archive.Extract(elle::none) == elle::StatusError)
+          if (archive.Extract(elle::none) == elle::Status::Error)
             escape("unable to extract 'none'");
         }
       else
@@ -130,11 +130,11 @@ namespace etoile
           this->contents = new nucleus::Contents<typename Directory::C>;
 
           // extract the contents.
-          if (archive.Extract(*this->contents) == elle::StatusError)
+          if (archive.Extract(*this->contents) == elle::Status::Error)
             escape("unable to extract the contents");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

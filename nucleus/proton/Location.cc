@@ -53,7 +53,7 @@ namespace nucleus
       this->address = address;
       this->version = version;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -67,14 +67,14 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return elle::Status::True;
 
       // compare the attributes.
       if ((this->address != element.address) ||
           (this->version != element.version))
-        return elle::StatusFalse;
+        return elle::Status::False;
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -96,14 +96,14 @@ namespace nucleus
       std::cout << alignment << "[Location]" << std::endl;
 
       // dump the address.
-      if (this->address.Dump(margin + 2) == elle::StatusError)
+      if (this->address.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the address");
 
       // dump the version.
-      if (this->version.Dump(margin + 2) == elle::StatusError)
+      if (this->version.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the version");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -117,10 +117,10 @@ namespace nucleus
     {
       // serialize the attributes.
       if (archive.Serialize(this->address,
-                            this->version) == elle::StatusError)
+                            this->version) == elle::Status::Error)
         escape("unable to serialize the location's attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -130,10 +130,10 @@ namespace nucleus
     {
       // extracts the attributes.
       if (archive.Extract(this->address,
-                          this->version) == elle::StatusError)
+                          this->version) == elle::Status::Error)
         escape("unable to extract the location's attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

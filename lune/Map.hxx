@@ -69,7 +69,7 @@ namespace lune
     Map<T>::Entry*      entry;
 
     // check if the entry exists.
-    if (this->Lookup(name) == elle::StatusTrue)
+    if (this->Lookup(name) == elle::Status::True)
       escape("this name is already registered");
 
     // allocate a new entry.
@@ -82,7 +82,7 @@ namespace lune
     // add a new entry.
     this->container.push_back(entry);
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -107,11 +107,11 @@ namespace lune
             // return the value.
             value = &entry->value;
 
-            return elle::StatusTrue;
+            return elle::Status::True;
           }
       }
 
-    return elle::StatusFalse;
+    return elle::Status::False;
   }
 
   ///
@@ -136,11 +136,11 @@ namespace lune
             // return the name.
             name = &entry->name;
 
-            return elle::StatusTrue;
+            return elle::Status::True;
           }
       }
 
-    return elle::StatusFalse;
+    return elle::Status::False;
   }
 
   ///
@@ -167,7 +167,7 @@ namespace lune
             // erase the entry.
             this->container.erase(iterator);
 
-            return elle::StatusOk;
+            return elle::Status::Ok;
           }
       }
 
@@ -210,11 +210,11 @@ namespace lune
                   << entry->name << std::endl;
 
         // dump the value.
-        if (entry->value.Dump(margin + 2) == elle::StatusError)
+        if (entry->value.Dump(margin + 2) == elle::Status::Error)
           escape("unable to dump the value");
       }
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 //
@@ -232,7 +232,7 @@ namespace lune
     // serialize the number of entries.
     if (archive.Serialize(
           static_cast<elle::Natural32>(
-            this->container.size())) == elle::StatusError)
+            this->container.size())) == elle::Status::Error)
       escape("unable to serialize the number of entries");
 
     // go through the entries.
@@ -244,11 +244,11 @@ namespace lune
 
         // serialize the entry.
         if (archive.Serialize(entry->name,
-                              entry->value) == elle::StatusError)
+                              entry->value) == elle::Status::Error)
           escape("unable to serialize the entry");
       }
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -261,7 +261,7 @@ namespace lune
     elle::Natural32             i;
 
     // extract the number of entries.
-    if (archive.Extract(size) == elle::StatusError)
+    if (archive.Extract(size) == elle::Status::Error)
       escape("unable to extract the number of entries");
 
     // until all the entries have been extract.
@@ -273,14 +273,14 @@ namespace lune
         entry = new Map<T>::Entry;
 
         // extract the entry.
-        if (archive.Extract(entry->name, entry->value) == elle::StatusError)
+        if (archive.Extract(entry->name, entry->value) == elle::Status::Error)
           escape("unable to extract the entry");
 
         // add a new entry.
         this->container.push_back(entry);
       }
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 }

@@ -19,7 +19,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace standalone;
   using namespace package;
 
@@ -57,13 +57,13 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return StatusTrue;
+        return Status::True;
 
       // compare the regions.
       if (this->region != element.region)
-        return StatusFalse;
+        return Status::False;
 
-      return StatusTrue;
+      return Status::True;
     }
 
     ///
@@ -92,11 +92,11 @@ namespace elle
           std::cout << alignment << "[Cipher] " << std::endl;
 
           // dump the region.
-          if (this->region.Dump(margin + 2) == StatusError)
+          if (this->region.Dump(margin + 2) == Status::Error)
               escape("unable to dump the region");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -109,10 +109,10 @@ namespace elle
     Status              Cipher::Serialize(Archive&              archive) const
     {
       // serialize the region.
-      if (archive.Serialize(this->region) == StatusError)
+      if (archive.Serialize(this->region) == Status::Error)
         escape("unable to serialize the region");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -121,10 +121,10 @@ namespace elle
     Status              Cipher::Extract(Archive&                archive)
     {
       // extract the content.
-      if (archive.Extract(this->region) == StatusError)
+      if (archive.Extract(this->region) == Status::Error)
         escape("unable to extract the region");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

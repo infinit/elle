@@ -2,7 +2,6 @@
 # define ELLE_IO_FILEABLE_HH
 
 # include <elle/io/Path.hh>
-# include <elle/radix/Status.hh>
 # include <elle/serialize/BinaryArchive.fwd.hh>
 
 namespace elle

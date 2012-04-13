@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 #include <lune/Lune.hh>
 
 #include <etoile/portal/Application.hh>

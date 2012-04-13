@@ -13,23 +13,23 @@
 
 #include "QtObj.hh"
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 using namespace elle;
 
 Status fiber2()
 {
-  return StatusOk;
+  return Status::Ok;
 }
 
 Status fiber1()
 {
-  Closure< Status,
+  Closure< Status::,
            Parameters<> >       closure(Callback<>::Infer(&fiber2));
 
   Fiber::Spawn(closure);
   log_here;
-  return StatusOk;
+  return Status::Ok;
 }
 
 ucontext_t auc,buc,mainuc;
@@ -88,7 +88,7 @@ QtObj::tetons()
 
   log_here;
   Fiber::Initialize();
-  Closure< Status,
+  Closure< Status::,
            Parameters<> >       closure(Callback<>::Infer(&fiber1));
 
   Fiber::Spawn(closure);

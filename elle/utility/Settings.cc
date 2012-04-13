@@ -35,7 +35,7 @@ namespace elle
             }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 ////
@@ -64,7 +64,7 @@ namespace elle
 //      else
 //        output.erase();
 //
-//      return StatusOk;
+//      return Status::Ok;
 //    }
 //
 ////
@@ -141,10 +141,10 @@ namespace elle
 //    Status              Settings::Section::Exist(const String&  name)
 //    {
 //      // locate the assignment.
-//      if (this->Locate(name) != StatusTrue)
-//        return StatusFalse;
+//      if (this->Locate(name) != Status::True)
+//        return Status::False;
 //
-//      return StatusTrue;
+//      return Status::True;
 //    }
 //
 //    ///
@@ -156,7 +156,7 @@ namespace elle
 //      Settings::Assignment*     assignment;
 //
 //      // check if another assignment with that name already exists.
-//      if (this->Locate(name) == StatusTrue)
+//      if (this->Locate(name) == Status::True)
 //        escape("an assignment with this name already exists");
 //
 //      // allocate the assignment.
@@ -165,7 +165,7 @@ namespace elle
 //      // add the assignment to the container.
 //      this->assignments.push_back(assignment);
 //
-//      return StatusOk;
+//      return Status::Ok;
 //    }
 //
 //    ///
@@ -179,7 +179,7 @@ namespace elle
 //      Settings::Assignment*             assignment;
 //
 //      // try to locate the assignment.
-//      if (this->Locate(name, &iterator) != StatusTrue)
+//      if (this->Locate(name, &iterator) != Status::True)
 //        escape("unable to locate the assignment");
 //
 //      // retrieve the assignment.
@@ -188,7 +188,7 @@ namespace elle
 //      // return the value.
 //      value = assignment->value;
 //
-//      return StatusOk;
+//      return Status::Ok;
 //    }
 //
 //    ///
@@ -201,7 +201,7 @@ namespace elle
 //      Settings::Assignment*             assignment;
 //
 //      // retrieve the assignment.
-//      if (this->Locate(name, &iterator) != StatusTrue)
+//      if (this->Locate(name, &iterator) != Status::True)
 //        escape("this assignment does not seem to exist");
 //
 //      // retrieve the assignment.
@@ -210,7 +210,7 @@ namespace elle
 //      // update the assignment.
 //      assignment->value = value;
 //
-//      return StatusOk;
+//      return Status::Ok;
 //    }
 //
 //    ///
@@ -222,7 +222,7 @@ namespace elle
 //      Settings::Assignment*             assignment;
 //
 //      // try to locate the assignment.
-//      if (this->Locate(name, &iterator) != StatusTrue)
+//      if (this->Locate(name, &iterator) != Status::True)
 //        escape("unable to locate the assignment");
 //
 //      // retrieve the assignment.
@@ -234,7 +234,7 @@ namespace elle
 //      // delete the assignment.
 //      delete assignment;
 //
-//      return StatusOk;
+//      return Status::Ok;
 //    }
 //
 //    ///
@@ -260,11 +260,11 @@ namespace elle
 //              if (iterator != NULL)
 //                *iterator = i;
 //
-//              return StatusTrue;
+//              return Status::True;
 //            }
 //        }
 //
-//      return StatusFalse;
+//      return Status::False;
 //    }
 //
 //    ///
@@ -275,7 +275,7 @@ namespace elle
 //      Settings::Section*        section;
 //
 //      // check if another section with that identifier already exists.
-//      if (this->Locate(identifier) == StatusTrue)
+//      if (this->Locate(identifier) == Status::True)
 //        escape("a section with this identifier already exists");
 //
 //      // allocate the section.
@@ -284,7 +284,7 @@ namespace elle
 //      // add the section to the container.
 //      this->sections.push_back(section);
 //
-//      return StatusOk;
+//      return Status::Ok;
 //    }
 //
 //    ///
@@ -296,13 +296,13 @@ namespace elle
 //      Settings::Iterator        iterator;
 //
 //      // try to locate the section.
-//      if (this->Locate(identifier, &iterator) != StatusTrue)
+//      if (this->Locate(identifier, &iterator) != Status::True)
 //        escape("unable to locate the section");
 //
 //      // retrieve the section.
 //      section = *iterator;
 //
-//      return StatusOk;
+//      return Status::Ok;
 //    }
 //
 //    ///
@@ -314,7 +314,7 @@ namespace elle
 //      Settings::Section*        section;
 //
 //      // try to locate the section.
-//      if (this->Locate(identifier, &iterator) != StatusTrue)
+//      if (this->Locate(identifier, &iterator) != Status::True)
 //        escape("unable to locate the section");
 //
 //      // retrieve the section.
@@ -326,7 +326,7 @@ namespace elle
 //      // delete the section.
 //      delete section;
 //
-//      return StatusOk;
+//      return Status::Ok;
 //    }
 //
 //    ///
@@ -351,11 +351,11 @@ namespace elle
 //              if (iterator != NULL)
 //                *iterator = i;
 //
-//              return StatusTrue;
+//              return Status::True;
 //            }
 //        }
 //
-//      return StatusFalse;
+//      return Status::False;
 //    }
 //
 //    ///
@@ -368,18 +368,18 @@ namespace elle
 //      Settings::Section*        section;
 //
 //      // check if the section exists.
-//      if (this->Locate(identifier) != StatusTrue)
-//        return StatusFalse;
+//      if (this->Locate(identifier) != Status::True)
+//        return Status::False;
 //
 //      // retrieve the section.
-//      if (this->Lookup(identifier, section) == StatusError)
+//      if (this->Lookup(identifier, section) == Status::Error)
 //        flee("unable to retrieve the section");
 //
 //      // check if the section exists.
-//      if (section->Locate(name) != StatusTrue)
-//        return StatusFalse;
+//      if (section->Locate(name) != Status::True)
+//        return Status::False;
 //
-//      return StatusTrue;
+//      return Status::True;
 //    }
 //
 //    ///
@@ -392,32 +392,32 @@ namespace elle
 //      Settings::Section*        section;
 //
 //      // check if the section exists.
-//      if (this->Locate(identifier) != StatusTrue)
+//      if (this->Locate(identifier) != Status::True)
 //        {
 //          // create the section.
-//          if (this->Add(identifier) == StatusError)
+//          if (this->Add(identifier) == Status::Error)
 //            escape("unable to create the section");
 //        }
 //
 //      // retrieve the section.
-//      if (this->Lookup(identifier, section) == StatusError)
+//      if (this->Lookup(identifier, section) == Status::Error)
 //        escape("unable to retrieve the section");
 //
 //      // check if the assignment exists.
-//      if (section->Exist(name) != StatusTrue)
+//      if (section->Exist(name) != Status::True)
 //        {
 //          // add the assignment to the section.
-//          if (section->Add(name, value) == StatusError)
+//          if (section->Add(name, value) == Status::Error)
 //            escape("unable to add the assignment");
 //        }
 //      else
 //        {
 //          // otherwise, update the assignment.
-//          if (section->Update(name, value) == StatusError)
+//          if (section->Update(name, value) == Status::Error)
 //            escape("unable to update the assignment");
 //        }
 //
-//      return StatusOk;
+//      return Status::Ok;
 //    }
 //
 //    ///
@@ -430,14 +430,14 @@ namespace elle
 //      Settings::Section*        section;
 //
 //      // retrieve the section.
-//      if (this->Lookup(identifier, section) == StatusError)
+//      if (this->Lookup(identifier, section) == Status::Error)
 //        escape("unable to retrieve the section");
 //
 //      // lookup the assignment in the section.
-//      if (section->Lookup(name, value) == StatusError)
+//      if (section->Lookup(name, value) == Status::Error)
 //        escape("unable to locate the assignment");
 //
-//      return StatusOk;
+//      return Status::Ok;
 //    }
 //
 ////
@@ -489,7 +489,7 @@ namespace elle
 //            }
 //        }
 //
-//      return StatusOk;
+//      return Status::Ok;
 //    }
 //
 ////
@@ -507,7 +507,7 @@ namespace elle
 //    //  Settings::Section*        section;
 //
 //    //  // read the content.
-//    //  if (File::Read(path, region) == StatusError)
+//    //  if (File::Read(path, region) == Status::Error)
 //    //    escape("unable to read the file");
 //
 //    //  // set up the stream.
@@ -525,7 +525,7 @@ namespace elle
 //    //      size_t                position;
 //
 //    //      // first, trim the line.
-//    //      if (Settings::Trim(line, line) == StatusError)
+//    //      if (Settings::Trim(line, line) == Status::Error)
 //    //        escape("unable to trim the line");
 //
 //    //      // if the line is empty, ignore it.
@@ -543,15 +543,15 @@ namespace elle
 //
 //    //          // extract the section name.
 //    //          if (Settings::Trim(line.substr(1, line.find(']') - 1),
-//    //                             identifier) == StatusError)
+//    //                             identifier) == Status::Error)
 //    //            escape("unable to trim the section");
 //
 //    //          // add the section.
-//    //          if (this->Add(identifier) == StatusError)
+//    //          if (this->Add(identifier) == Status::Error)
 //    //            escape("unable to add a new section");
 //
 //    //          // set the current section.
-//    //          if (this->Lookup(identifier, section) == StatusError)
+//    //          if (this->Lookup(identifier, section) == Status::Error)
 //    //            escape("unable to retrieve the section");
 //
 //    //          continue;
@@ -566,19 +566,19 @@ namespace elle
 //    //        escape("unable to add a setting without a section");
 //
 //    //      // extract the name.
-//    //      if (Settings::Trim(line.substr(0, position), name) == StatusError)
+//    //      if (Settings::Trim(line.substr(0, position), name) == Status::Error)
 //    //        escape("unable to trim the name");
 //
 //    //      // extract the value.
-//    //      if (Settings::Trim(line.substr(position + 1), value) == StatusError)
+//    //      if (Settings::Trim(line.substr(position + 1), value) == Status::Error)
 //    //        escape("unable to trim the value");
 //
 //    //      // add the assignment to the section.
-//    //      if (section->Add(name, value) == StatusError)
+//    //      if (section->Add(name, value) == Status::Error)
 //    //        escape("unable to add the setting to the section");
 //    //    }
 //
-//    //  return StatusOk;
+//    //  return Status::Ok;
 //    //}
 //
 //    /////
@@ -620,14 +620,14 @@ namespace elle
 //
 //    //  // wrap the stream in a region.
 //    //  if (region.Wrap(reinterpret_cast<const Byte*>(string.c_str()),
-//    //                  string.length()) == StatusError)
+//    //                  string.length()) == Status::Error)
 //    //    escape("unable to wrap the stream");
 //
 //    //  // write the content.
-//    //  if (File::Write(path, region) == StatusError)
+//    //  if (File::Write(path, region) == Status::Error)
 //    //    escape("unable to write the file");
 //
-//    //  return StatusOk;
+//    //  return Status::Ok;
 //    //}
 //
 //    /////
@@ -636,10 +636,10 @@ namespace elle
 //    //Status              Settings::Erase(const Path&             path) const
 //    //{
 //    //  // erase the file.
-//    //  if (File::Erase(path) == StatusError)
+//    //  if (File::Erase(path) == Status::Error)
 //    //    escape("unable to erase the file");
 //
-//    //  return StatusOk;
+//    //  return Status::Ok;
 //    //}
 //
 //    /////

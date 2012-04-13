@@ -53,10 +53,10 @@ namespace nucleus
       // ContentHashBlock, PublicKeyBlock etc.
       if (elle::cryptography::OneWay::Hash(
             parameter, parameters...,
-            *this->digest) == elle::StatusError)
+            *this->digest) == elle::Status::Error)
         escape("unable to hash the given parameter(s)");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

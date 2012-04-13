@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Natural.hh>
+#include <elle/types.hh>
 
 #include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
@@ -30,7 +30,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
   using namespace utility;
 

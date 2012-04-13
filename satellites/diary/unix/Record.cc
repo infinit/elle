@@ -74,14 +74,14 @@ namespace satellite
                __FUNCTION__,
                path, stat);
 
-      if (upcall.Create(Upcall::OperationGetattr) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationGetattr) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(path),
             elle::Region(reinterpret_cast<elle::Byte*>(stbuf),
                          sizeof (struct ::stat))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.getattr(path, stbuf);
@@ -89,13 +89,13 @@ namespace satellite
       if (upcall.Outputs(
             elle::Region(reinterpret_cast<elle::Byte*>(stbuf),
                          sizeof (struct ::stat))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -120,7 +120,7 @@ namespace satellite
                __FUNCTION__,
                path, stat);
 
-      if (upcall.Create(Upcall::OperationFgetattr) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationFgetattr) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
@@ -129,7 +129,7 @@ namespace satellite
                          sizeof (struct ::stat)),
             elle::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.fgetattr(path, stbuf, fi);
@@ -139,13 +139,13 @@ namespace satellite
                          sizeof (struct ::stat)),
             elle::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -169,25 +169,25 @@ namespace satellite
                __FUNCTION__,
                path);
 
-      if (upcall.Create(Upcall::OperationUtimens) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationUtimens) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(path),
             elle::Region(reinterpret_cast<const elle::Byte*>(ts),
                          sizeof (struct ::timespec[2]))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.utimens(path, ts);
 
-      if (upcall.Outputs() == elle::StatusError)
+      if (upcall.Outputs() == elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -211,14 +211,14 @@ namespace satellite
                __FUNCTION__,
                path, fi);
 
-      if (upcall.Create(Upcall::OperationOpendir) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationOpendir) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(path),
             elle::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.opendir(path, fi);
@@ -226,13 +226,13 @@ namespace satellite
       if (upcall.Outputs(
             elle::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -260,7 +260,7 @@ namespace satellite
                path, buf, filler,
                static_cast<elle::Natural64>(offset), fi);
 
-      if (upcall.Create(Upcall::OperationReaddir) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationReaddir) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
@@ -268,7 +268,7 @@ namespace satellite
             static_cast<elle::Natural64>(offset),
             elle::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.readdir(path, buf, filler, offset, fi);
@@ -276,13 +276,13 @@ namespace satellite
       if (upcall.Outputs(
             elle::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -307,14 +307,14 @@ namespace satellite
                __FUNCTION__,
                path, fi);
 
-      if (upcall.Create(Upcall::OperationReleasedir) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationReleasedir) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(path),
             elle::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.releasedir(path, fi);
@@ -322,13 +322,13 @@ namespace satellite
       if (upcall.Outputs(
             elle::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -352,24 +352,24 @@ namespace satellite
                __FUNCTION__,
                path, mode);
 
-      if (upcall.Create(Upcall::OperationMkdir) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationMkdir) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(path),
             static_cast<elle::Natural32>(mode)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.mkdir(path, mode);
 
-      if (upcall.Outputs() == elle::StatusError)
+      if (upcall.Outputs() == elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -392,23 +392,23 @@ namespace satellite
                __FUNCTION__,
                path);
 
-      if (upcall.Create(Upcall::OperationRmdir) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationRmdir) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(path)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.rmdir(path);
 
-      if (upcall.Outputs() == elle::StatusError)
+      if (upcall.Outputs() == elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -432,24 +432,24 @@ namespace satellite
                __FUNCTION__,
                path, mask);
 
-      if (upcall.Create(Upcall::OperationAccess) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationAccess) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(path),
             static_cast<elle::Integer32>(mask)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.access(path, mask);
 
-      if (upcall.Outputs() == elle::StatusError)
+      if (upcall.Outputs() == elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -473,24 +473,24 @@ namespace satellite
                __FUNCTION__,
                path, mode);
 
-      if (upcall.Create(Upcall::OperationChmod) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationChmod) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(path),
             static_cast<elle::Natural32>(mode)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.chmod(path, mode);
 
-      if (upcall.Outputs() == elle::StatusError)
+      if (upcall.Outputs() == elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -515,25 +515,25 @@ namespace satellite
                __FUNCTION__,
                path, uid, gid);
 
-      if (upcall.Create(Upcall::OperationChown) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationChown) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(path),
             static_cast<elle::Natural32>(uid),
             static_cast<elle::Natural32>(gid)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.chown(path, uid, gid);
 
-      if (upcall.Outputs() == elle::StatusError)
+      if (upcall.Outputs() == elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -562,7 +562,7 @@ namespace satellite
                __FUNCTION__,
                path, name, value, size, flags);
 
-      if (upcall.Create(Upcall::OperationSetxattr) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationSetxattr) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
@@ -571,18 +571,18 @@ namespace satellite
             elle::String(value),
             static_cast<elle::Natural64>(size),
             static_cast<elle::Integer32>(flags)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.setxattr(path, name, value, size, flags);
 
-      if (upcall.Outputs() == elle::StatusError)
+      if (upcall.Outputs() == elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -608,7 +608,7 @@ namespace satellite
                __FUNCTION__,
                path, name, value, size);
 
-      if (upcall.Create(Upcall::OperationGetxattr) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationGetxattr) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
@@ -616,20 +616,20 @@ namespace satellite
             elle::String(name),
             elle::String(value, size),
             static_cast<elle::Natural64>(size)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.getxattr(path, name, value, size);
 
       if (upcall.Outputs(
             elle::String(value)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -654,27 +654,27 @@ namespace satellite
                __FUNCTION__,
                path, list, size);
 
-      if (upcall.Create(Upcall::OperationListxattr) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationListxattr) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(path),
             elle::String(list, size),
             static_cast<elle::Natural64>(size)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.listxattr(path, list, size);
 
       if (upcall.Outputs(
             elle::String(list)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -698,24 +698,24 @@ namespace satellite
                __FUNCTION__,
                path, name);
 
-      if (upcall.Create(Upcall::OperationRemovexattr) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationRemovexattr) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(path),
             elle::String(name)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.removexattr(path, name);
 
-      if (upcall.Outputs() == elle::StatusError)
+      if (upcall.Outputs() == elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -743,7 +743,7 @@ namespace satellite
                __FUNCTION__,
                path, name, value, size, options, position);
 
-      if (upcall.Create(Upcall::OperationSetxattr) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationSetxattr) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
@@ -753,18 +753,18 @@ namespace satellite
             static_cast<elle::Natural64>(size),
             static_cast<elle::Integer32>(options),
             static_cast<elle::Natural32>(position)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.setxattr(path, name, value, size, options, position);
 
-      if (upcall.Outputs() == elle::StatusError)
+      if (upcall.Outputs() == elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -791,7 +791,7 @@ namespace satellite
                __FUNCTION__,
                path, name, value, size, position);
 
-      if (upcall.Create(Upcall::OperationGetxattr) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationGetxattr) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
@@ -800,20 +800,20 @@ namespace satellite
             elle::String(value, size),
             static_cast<elle::Natural64>(size),
             static_cast<elle::Natural32>(position)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.getxattr(path, name, value, size, position);
 
       if (upcall.Outputs(
             elle::String(value)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -838,27 +838,27 @@ namespace satellite
                __FUNCTION__,
                path, list, size);
 
-      if (upcall.Create(Upcall::OperationListxattr) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationListxattr) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(path),
             elle::String(list, size),
             static_cast<elle::Natural64>(size)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.listxattr(path, list, size);
 
       if (upcall.Outputs(
             elle::String(list)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -882,24 +882,24 @@ namespace satellite
                __FUNCTION__,
                path, name);
 
-      if (upcall.Create(Upcall::OperationRemovexattr) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationRemovexattr) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(path),
             elle::String(name)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.removexattr(path, name);
 
-      if (upcall.Outputs() == elle::StatusError)
+      if (upcall.Outputs() == elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -925,24 +925,24 @@ namespace satellite
                __FUNCTION__,
                to, from);
 
-      if (upcall.Create(Upcall::OperationSymlink) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationSymlink) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(to),
             elle::String(from)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.symlink(to, from);
 
-      if (upcall.Outputs() == elle::StatusError)
+      if (upcall.Outputs() == elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -967,27 +967,27 @@ namespace satellite
                __FUNCTION__,
                path, buf, static_cast<elle::Natural64>(size));
 
-      if (upcall.Create(Upcall::OperationReadlink) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationReadlink) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(path),
             elle::String(buf, size),
             static_cast<elle::Natural64>(size)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.readlink(path, buf, size);
 
       if (upcall.Outputs(
             elle::String(buf)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -1012,7 +1012,7 @@ namespace satellite
                __FUNCTION__,
                path, mode, fi);
 
-      if (upcall.Create(Upcall::OperationCreate) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationCreate) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
@@ -1020,7 +1020,7 @@ namespace satellite
             static_cast<elle::Natural32>(mode),
             elle::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.create(path, mode, fi);
@@ -1028,13 +1028,13 @@ namespace satellite
       if (upcall.Outputs(
             elle::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -1058,14 +1058,14 @@ namespace satellite
                __FUNCTION__,
                path, fi);
 
-      if (upcall.Create(Upcall::OperationOpen) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationOpen) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(path),
             elle::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.open(path, fi);
@@ -1073,13 +1073,13 @@ namespace satellite
       if (upcall.Outputs(
             elle::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -1107,7 +1107,7 @@ namespace satellite
                path, buf, static_cast<elle::Natural64>(size),
                static_cast<elle::Natural64>(offset), fi);
 
-      if (upcall.Create(Upcall::OperationWrite) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationWrite) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
@@ -1118,7 +1118,7 @@ namespace satellite
             static_cast<elle::Natural64>(offset),
             elle::Region(reinterpret_cast<const elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.write(path, buf, size, offset, fi);
@@ -1126,13 +1126,13 @@ namespace satellite
       if (upcall.Outputs(
             elle::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -1161,7 +1161,7 @@ namespace satellite
                path, buf, static_cast<elle::Natural64>(size),
                static_cast<elle::Natural64>(offset), fi);
 
-      if (upcall.Create(Upcall::OperationRead) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationRead) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
@@ -1172,7 +1172,7 @@ namespace satellite
             static_cast<elle::Natural64>(offset),
             elle::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.read(path, buf, size, offset, fi);
@@ -1180,13 +1180,13 @@ namespace satellite
       if (upcall.Outputs(
             elle::Region(reinterpret_cast<elle::Byte*>(buf),
                          size)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -1211,24 +1211,24 @@ namespace satellite
                __FUNCTION__,
                path, static_cast<elle::Natural64>(size));
 
-      if (upcall.Create(Upcall::OperationTruncate) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationTruncate) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(path),
             static_cast<elle::Natural64>(size)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.truncate(path, size);
 
-      if (upcall.Outputs() == elle::StatusError)
+      if (upcall.Outputs() == elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -1253,7 +1253,7 @@ namespace satellite
                __FUNCTION__,
                path, static_cast<elle::Natural64>(size), fi);
 
-      if (upcall.Create(Upcall::OperationFtruncate) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationFtruncate) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
@@ -1261,7 +1261,7 @@ namespace satellite
             static_cast<elle::Natural64>(size),
             elle::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.ftruncate(path, size, fi);
@@ -1269,13 +1269,13 @@ namespace satellite
       if (upcall.Outputs(
             elle::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -1299,14 +1299,14 @@ namespace satellite
                __FUNCTION__,
                path, fi);
 
-      if (upcall.Create(Upcall::OperationRelease) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationRelease) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(path),
             elle::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
 #include <elle/idiom/Close.hh>
@@ -1316,13 +1316,13 @@ namespace satellite
       if (upcall.Outputs(
             elle::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -1346,24 +1346,24 @@ namespace satellite
                __FUNCTION__,
                from, to);
 
-      if (upcall.Create(Upcall::OperationRename) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationRename) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(from),
             elle::String(to)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.rename(from, to);
 
-      if (upcall.Outputs() == elle::StatusError)
+      if (upcall.Outputs() == elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -1386,23 +1386,23 @@ namespace satellite
                __FUNCTION__,
                path);
 
-      if (upcall.Create(Upcall::OperationUnlink) == elle::StatusError)
+      if (upcall.Create(Upcall::OperationUnlink) == elle::Status::Error)
         fail("unable to create the upcall");
 
       if (upcall.Inputs(
             elle::String(path)) ==
-          elle::StatusError)
+          elle::Status::Error)
         fail("unable to specify the upcall's inputs");
 
       res = Record::Reference->fuse.unlink(path);
 
-      if (upcall.Outputs() == elle::StatusError)
+      if (upcall.Outputs() == elle::Status::Error)
         fail("unable to specify the upcall's outputs");
 
-      if (upcall.Result(res) == elle::StatusError)
+      if (upcall.Result(res) == elle::Status::Error)
         fail("unable to specify the upcall's result");
 
-      if (Record::Reference->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::Status::Error)
         fail("unable to write the diay");
 
       // debug.
@@ -1479,19 +1479,19 @@ namespace satellite
       {
         // initialize FUSE.
         if (horizon::linux::FUSE::Initialize(
-              Record::Operations) == elle::StatusError)
+              Record::Operations) == elle::Status::Error)
           escape("unable to initialize FUSE");
       }
 #elif defined(INFINIT_MACOSX)
       {
         // initialize FUSE.
         if (horizon::macosx::FUSE::Initialize(
-              Record::Operations) == elle::StatusError)
+              Record::Operations) == elle::Status::Error)
           escape("unable to initialize FUSE");
       }
 #endif
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -1501,18 +1501,18 @@ namespace satellite
     {
 #if defined(INFINIT_LINUX)
       // clean FUSE.
-      if (horizon::linux::FUSE::Clean() == elle::StatusError)
+      if (horizon::linux::FUSE::Clean() == elle::Status::Error)
         escape("unable to clean FUSE");
 #elif defined(INFINIT_MACOSX)
       // clean FUSE.
-      if (horizon::macosx::FUSE::Clean() == elle::StatusError)
+      if (horizon::macosx::FUSE::Clean() == elle::Status::Error)
         escape("unable to clean FUSE");
 #endif
 
       // reset the memoirs pointer.
       Record::Reference = NULL;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

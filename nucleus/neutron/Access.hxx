@@ -36,19 +36,19 @@ namespace nucleus
       Record*           record;
 
       // retrieve the record.
-      if (this->Lookup(subject, record) == elle::StatusError)
+      if (this->Lookup(subject, record) == elle::Status::Error)
         escape("unable to retrieve the subject's record");
 
       // update the record with the new permissions and stuff.
       if (record->Update(subject,
                          permissions,
-                         stuff) == elle::StatusError)
+                         stuff) == elle::Status::Error)
         escape("unable to update the record");
 
       // set the block as dirty.
       this->state = proton::StateDirty;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

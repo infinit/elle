@@ -31,7 +31,7 @@ namespace elle
       // assign the string.
       this->_string = string;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -42,7 +42,7 @@ namespace elle
       // assign the pattern.
       this->_string = pattern.string;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -60,7 +60,7 @@ namespace elle
           this->_string.replace(position, name.length(), value);
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -74,13 +74,13 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return StatusTrue;
+        return Status::True;
 
       // compare the internal.
       if (this->_string != element.str())
-        return StatusFalse;
+        return Status::False;
 
-      return StatusTrue;
+      return Status::True;
     }
 
     ///
@@ -103,7 +103,7 @@ namespace elle
                 << this->_string
                 << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

@@ -47,7 +47,7 @@ namespace elle
     template <template <typename...> class C>
     Status
     Signal< Parameters<T...> >::Subscribe(const C<
-                                            Status,
+                                            Status::,
                                             Parameters<T...>
                                             >                   object)
     {
@@ -64,7 +64,7 @@ namespace elle
     template <template <typename...> class C>
     Status
     Signal< Parameters<T...> >::Subscribe(const C<
-                                            Status,
+                                            Status::,
                                             Parameters<T...>
                                             >                   object,
                                           Stream&               stream)
@@ -92,7 +92,7 @@ namespace elle
           escape("unable to insert the selectoinoid in the container");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -118,7 +118,7 @@ namespace elle
       // remove the functionoid from the container.
       this->container.erase(iterator);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -139,14 +139,14 @@ namespace elle
             scoutor->second;
 
           // call the functionoid's object.
-          if (functionoid->Call(arguments...) == StatusError)
+          if (functionoid->Call(arguments...) == Status::Error)
             {
               // if an error occured, log it.
               log("an error occured while processing a signal");
             }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -173,7 +173,7 @@ namespace elle
       // clear the container.
       this->container.clear();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -193,7 +193,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Functionoids] " << this->container.size() << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //

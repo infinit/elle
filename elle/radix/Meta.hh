@@ -15,11 +15,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Void.hh>
-#include <elle/core/Natural.hh>
-#include <elle/core/Boolean.hh>
+#include <elle/types.hh>
 
-#include <elle/radix/Status.hh>
 #include <elle/radix/Trace.hh>
 
 #include <elle/idiom/Close.hh>
@@ -29,7 +26,7 @@
 
 namespace elle
 {
-  using namespace core;
+
 
   namespace radix
   {

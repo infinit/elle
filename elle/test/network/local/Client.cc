@@ -31,7 +31,7 @@ namespace elle
       // set the line.
       this->line = line;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -44,19 +44,19 @@ namespace elle
       // register the message.
       if (Network::Register(
             Procedure<TagChallenge>(
-              Callback<>::Infer(&Client::Challenge, this))) == StatusError)
+              Callback<>::Infer(&Client::Challenge, this))) == Status::Error)
         escape("unable to register the challenge message");
 
       // create the socket.
-      if (this->socket.Create() == StatusError)
+      if (this->socket.Create() == Status::Error)
         escape("unable to create the slot");
 
       // connect the socket.
       if (this->socket.Connect(this->line,
-                               AbstractSocket::ModeSynchronous) == StatusError)
+                               AbstractSocket::ModeSynchronous) == Status::Error)
         escape("unable to connect to the line");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -75,12 +75,12 @@ namespace elle
 
       // reply.
       if (this->socket.Reply(
-            Inputs<TagResponse>(response)) == StatusError)
+            Inputs<TagResponse>(response)) == Status::Error)
         escape("unable to return the response");
 
       elle::Program::Exit();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

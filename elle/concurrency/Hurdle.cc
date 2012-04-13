@@ -65,14 +65,14 @@ namespace elle
       std::cout << alignment << "[Zone]" << std::endl;
 
       // dump the hurdle.
-      if (this->hurdle.Dump(margin + 2) == StatusError)
+      if (this->hurdle.Dump(margin + 2) == Status::Error)
         escape("unable to dump the hurdle");
 
       // dump the section.
-      if (this->section.Dump(margin + 2) == StatusError)
+      if (this->section.Dump(margin + 2) == Status::Error)
         escape("unable to dump the section");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -105,7 +105,7 @@ namespace elle
           //
 
           // wait for the hurdle.
-          if (Fiber::Wait(*this) == StatusError)
+          if (Fiber::Wait(*this) == Status::Error)
             yield(_(), "an error occured while waiting on the resource");
         }
 
@@ -138,7 +138,7 @@ namespace elle
                 //
 
                 // wait for the hurdle.
-                if (Fiber::Wait(*this) == StatusError)
+                if (Fiber::Wait(*this) == Status::Error)
                   yield(_(), "an error occured while waiting on the resource");
               }
 
@@ -189,7 +189,7 @@ namespace elle
 
       // and finally, awaken the fibers potentially blocked on the
       // hurdle.
-      if (Fiber::Awaken(*this) == StatusError)
+      if (Fiber::Awaken(*this) == Status::Error)
         yield(_(), "unable to awaken the fibers");
     }
 
@@ -201,7 +201,7 @@ namespace elle
     {
       // has the lock been acquired, return false.
       if (this->locked == true)
-        return StatusFalse;
+        return Status::False;
 
       // then, depending on the mode.
       switch (mode)
@@ -219,7 +219,7 @@ namespace elle
           {
             // check the number of readers and return false if some remain.
             if (this->readers != 0)
-              return StatusFalse;
+              return Status::False;
 
             //
             // otherwise, return true.
@@ -234,7 +234,7 @@ namespace elle
           }
         }
 
-      return StatusTrue;
+      return Status::True;
     }
 
     ///
@@ -259,7 +259,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Readers] " << std::dec << this->readers << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

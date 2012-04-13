@@ -15,16 +15,15 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/String.hh>
+#include <elle/types.hh>
 
-#include <elle/radix/Status.hh>
 #include <elle/radix/Object.hh>
 
 #include <elle/io/Pattern.hh>
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
 
   namespace io

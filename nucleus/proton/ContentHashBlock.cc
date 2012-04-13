@@ -54,10 +54,10 @@ namespace nucleus
     {
       // compute the address.
       if (address.Create(this->family, this->component,
-                         *this) == elle::StatusError)
+                         *this) == elle::Status::Error)
         escape("unable to compute the CHB's address");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -84,14 +84,14 @@ namespace nucleus
       // component, K). therefore, all the blocks embed the network,
       // family and component in the address which helps prevent conflits.
       if (self.Create(this->family, this->component,
-                      *this) == elle::StatusError)
+                      *this) == elle::Status::Error)
         escape("unable to compute the CHB's address");
 
       // compare the address with the given one.
       if (address != self)
         escape("the recorded address does not correspond to this block");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -118,10 +118,10 @@ namespace nucleus
       std::cout << alignment << "[ContentHashBlock]" << std::endl;
 
       // dump the parent class.
-      if (ImmutableBlock::Dump(margin + 2) == elle::StatusError)
+      if (ImmutableBlock::Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the underlying block");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -135,10 +135,10 @@ namespace nucleus
       const
     {
       // serialize the parent class.
-      if (ImmutableBlock::Serialize(archive) == elle::StatusError)
+      if (ImmutableBlock::Serialize(archive) == elle::Status::Error)
         escape("unable to serialize the underlying block");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -147,14 +147,14 @@ namespace nucleus
     elle::Status        ContentHashBlock::Extract(elle::Archive& archive)
     {
       // extract the parent class.
-      if (ImmutableBlock::Extract(archive) == elle::StatusError)
+      if (ImmutableBlock::Extract(archive) == elle::Status::Error)
         escape("unable to extract the underlying block");
 
       // check the family.
       if (this->family != FamilyContentHashBlock)
         escape("invalid family");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

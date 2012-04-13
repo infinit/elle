@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <elle/test/network/local/Server.hh>
 #include <elle/test/network/local/Client.hh>

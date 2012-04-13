@@ -161,9 +161,9 @@ void IdentityUpdater::_OnDeviceCreated(meta::CreateDeviceResponse const& res)
 
   lune::Passport passport;
 
-  if (passport.Restore(res.passport) == elle::StatusError)
+  if (passport.Restore(res.passport) == elle::Status::Error)
     throw std::runtime_error("Cannot load the passport");
-  if (passport.Store() == elle::StatusError)
+  if (passport.Store() == elle::Status::Error)
     throw std::runtime_error("Cannot save the passport");
 
   emit identityUpdated(true);
@@ -175,10 +175,10 @@ std::string IdentityUpdater::_DecryptIdentity(std::string const& password,
   elle::Unique        id;
   lune::Identity      identity;
 
-  if (identity.Restore(identityString)  == elle::StatusError ||
-      identity.Decrypt(password)        == elle::StatusError ||
-      identity.Clear()                  == elle::StatusError ||
-      identity.Save(id)                 == elle::StatusError
+  if (identity.Restore(identityString)  == elle::Status::Error ||
+      identity.Decrypt(password)        == elle::Status::Error ||
+      identity.Clear()                  == elle::Status::Error ||
+      identity.Save(id)                 == elle::Status::Error
       )
     {
       show();
@@ -192,8 +192,8 @@ void IdentityUpdater::_StoreIdentity(std::string const& identityString)
 {
   lune::Identity        identity;
 
-  if (identity.Restore(identityString)  == elle::StatusError ||
-      identity.Store()                  == elle::StatusError)
+  if (identity.Restore(identityString)  == elle::Status::Error ||
+      identity.Store()                  == elle::Status::Error)
     {
       show();
       throw std::runtime_error("Cannot save the identity file.\n");
@@ -204,7 +204,7 @@ void IdentityUpdater::_UpdatePassport()
 {
   elle::network::Host::Container hosts;
 
-  if (elle::network::Host::Hosts(hosts) == elle::StatusError)
+  if (elle::network::Host::Hosts(hosts) == elle::Status::Error)
     throw std::runtime_error("Couldn't retreive host list");
 
   if (!hosts.size())

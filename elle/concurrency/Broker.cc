@@ -71,7 +71,7 @@ namespace elle
 # error "unsupported platform"
 #endif
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -93,7 +93,7 @@ namespace elle
 # error "unsupported platform"
 #endif
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -108,17 +108,17 @@ namespace elle
     {
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // emit the signal.
-      if (this->signal.ready.Emit(this->descriptor) == StatusError)
+      if (this->signal.ready.Emit(this->descriptor) == Status::Error)
         escape("unable to emit the signal");
 #elif defined(INFINIT_WINDOWS)
       // emit the signal.
-      if (this->signal.ready.Emit(this->notifier.handle()) == StatusError)
+      if (this->signal.ready.Emit(this->notifier.handle()) == Status::Error)
         escape("unable to emit the signal");
 #else
 # error "unsupported platform"
 #endif
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -132,7 +132,7 @@ namespace elle
     ///
     void                Broker::_trigger()
     {
-      Closure< Status,
+      Closure< Status::,
                Parameters<> >   closure(Callback<>::Infer(&Broker::Trigger,
                                                           this));
 
@@ -177,7 +177,7 @@ namespace elle
 #endif
 
       // spawn a fiber.
-      if (Fiber::Spawn(closure) == StatusError)
+      if (Fiber::Spawn(closure) == Status::Error)
         yield(_(), "unable to spawn a fiber");
     }
 

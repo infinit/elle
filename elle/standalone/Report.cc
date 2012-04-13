@@ -23,7 +23,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace package;
   using namespace concurrency;
 
@@ -53,10 +53,10 @@ namespace elle
       Report::Current = new Report;
 
       // register the govern callback to the fiber system.
-      if (Fiber::Register(Callback<>::Infer(&Report::Govern)) == StatusError)
+      if (Fiber::Register(Callback<>::Infer(&Report::Govern)) == Status::Error)
         escape("unable to register the govern callback");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -70,7 +70,7 @@ namespace elle
       // reset the pointer.
       Report::Current = NULL;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -82,11 +82,11 @@ namespace elle
     {
       // verify the report's presence.
       if (Report::Current == NULL)
-        return StatusFalse;
+        return Status::False;
 
       report = Report::Current;
 
-      return StatusTrue;
+      return Status::True;
     }
 
     ///
@@ -110,7 +110,7 @@ namespace elle
           {
             // save the report in the fiber's environment.
             if (fiber->environment->Store("report",
-                                          Report::Current) == StatusError)
+                                          Report::Current) == Status::Error)
               escape("unable to store the report in the environment");
 
             // set the pointer to NULL, for safety purposes.
@@ -122,7 +122,7 @@ namespace elle
           {
             // load the report from the environment.
             if (fiber->environment->Load("report",
-                                         Report::Current) == StatusError)
+                                         Report::Current) == Status::Error)
               escape("unable to load the report from the environment");
 
             break;
@@ -139,7 +139,7 @@ namespace elle
           }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -284,7 +284,7 @@ namespace elle
                     << std::endl;
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -300,7 +300,7 @@ namespace elle
 
       // serialize the number of messages.
       if (archive.Serialize(
-            static_cast<Natural32>(this->container.size())) == StatusError)
+            static_cast<Natural32>(this->container.size())) == Status::Error)
         escape("unable to serialize the number of messages");
 
       // go through the container.
@@ -313,11 +313,11 @@ namespace elle
           // serialize the entry.
           if (archive.Serialize(entry->location,
                                 entry->time,
-                                entry->message) == StatusError)
+                                entry->message) == Status::Error)
             escape("unable to serialize the entry");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -329,7 +329,7 @@ namespace elle
       Natural32         i;
 
       // extract the number of messages.
-      if (archive.Extract(size) == StatusError)
+      if (archive.Extract(size) == Status::Error)
         escape("unable to extract the number of messages");
 
       // iterate and recreate the messages.
@@ -343,14 +343,14 @@ namespace elle
           // extract the entry.
           if (archive.Extract(entry->location,
                               entry->time,
-                              entry->message) == StatusError)
+                              entry->message) == Status::Error)
             escape("unable to serialize the entry");
 
           // push the extract entry in the container.
           this->container.push_front(entry);
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -365,7 +365,7 @@ namespace elle
       // return the size.
       size = sizeof (Report);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -376,7 +376,7 @@ namespace elle
       // allocate the object.
       object = new Report(*this);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -413,7 +413,7 @@ namespace elle
         return (*this);
 
       // recycle the report.
-      if (this->Recycle(&element) == StatusError)
+      if (this->Recycle(&element) == Status::Error)
         yield(*this, "unable to recycle the report");
 
       return (*this);

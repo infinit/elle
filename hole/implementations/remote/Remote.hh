@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <hole/implementations/remote/Client.hh>
 #include <hole/implementations/remote/Server.hh>

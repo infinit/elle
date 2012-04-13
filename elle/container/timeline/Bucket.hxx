@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/String.hh>
+#include <elle/types.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
@@ -42,7 +42,7 @@ namespace elle
         // add the object to the container.
         this->container.push_back(object);
 
-        return StatusOk;
+        return Status::Ok;
       }
 
       ///
@@ -60,11 +60,11 @@ namespace elle
               {
                 // remove the object from the container.
                 this->container.erase(it);
-                return StatusOk;
+                return Status::Ok;
               }
           }
 
-        return StatusOk;
+        return Status::Ok;
       }
 
 //
@@ -82,7 +82,7 @@ namespace elle
         std::cout << alignment << "[Bucket] "
                   << std::dec << this->container.size() << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
 
     }

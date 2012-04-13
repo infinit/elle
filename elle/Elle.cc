@@ -12,9 +12,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Character.hh>
+#include <elle/types.hh>
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 namespace elle
 {
@@ -38,30 +38,30 @@ namespace elle
   Status                Elle::Initialize()
   {
     // initialize the system module.
-    if (System::Initialize() == StatusError)
+    if (System::Initialize() == Status::Error)
       escape("unable to initialize the system module");
 
     // initialize the radix module.
-    if (Radix::Initialize() == StatusError)
+    if (Radix::Initialize() == Status::Error)
       escape("unable to initialize the radix module");
 
     // initialize the standalone module.
-    if (Standalone::Initialize() == StatusError)
+    if (Standalone::Initialize() == Status::Error)
       escape("unable to initialize the standalone module");
 
     // initialize the crypto module.
-    if (Cryptography::Initialize() == StatusError)
+    if (Cryptography::Initialize() == Status::Error)
       escape("unable to initialize the cryptographic module");
 
     // initialize the concurrency module.
-    if (Concurrency::Initialize() == StatusError)
+    if (Concurrency::Initialize() == Status::Error)
       escape("unable to initialize the concurrency module");
 
     // initialize the network module.
-    if (Network::Initialize() == StatusError)
+    if (Network::Initialize() == Status::Error)
       escape("unable to initialize the network module");
 
-    return StatusOk;
+    return Status::Ok;
   }
 
   ///
@@ -70,30 +70,30 @@ namespace elle
   Status                Elle::Clean()
   {
     // clean the network module.
-    if (Network::Clean() == StatusError)
+    if (Network::Clean() == Status::Error)
       escape("unable to clean the network module");
 
     // clean the concurrency module.
-    if (Concurrency::Clean() == StatusError)
+    if (Concurrency::Clean() == Status::Error)
       escape("unable to clean the concurrency module");
 
     // clean the crypto module.
-    if (Cryptography::Clean() == StatusError)
+    if (Cryptography::Clean() == Status::Error)
       escape("unable to clean the cryptographic module");
 
     // clean the standalone module.
-    if (Standalone::Clean() == StatusError)
+    if (Standalone::Clean() == Status::Error)
       escape("unable to clean the standalone module");
 
     // clean the radix module.
-    if (Radix::Clean() == StatusError)
+    if (Radix::Clean() == Status::Error)
       escape("unable to clean the radix module");
 
     // clean the system module.
-    if (System::Clean() == StatusError)
+    if (System::Clean() == Status::Error)
       escape("unable to clean the system module");
 
-    return StatusOk;
+    return Status::Ok;
   }
 
 }

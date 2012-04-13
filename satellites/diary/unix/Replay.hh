@@ -23,7 +23,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <satellites/diary/unix/Upcall.hh>
 
@@ -128,7 +128,7 @@ namespace satellite
       //
       static Memoirs*           Reference;
       static elle::Entrance<
-        elle::Status,
+        elle::Status::,
         elle::Parameters<>
         >*                      Entrance;
     };

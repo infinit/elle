@@ -46,7 +46,7 @@ namespace elle
       printf("[Fiber4] Sleep()\n");
 
       // sleep.
-      if (Fiber::Sleep(3000) == StatusError)
+      if (Fiber::Sleep(3000) == Status::Error)
         escape("unable to sleep");
 
       printf("[Fiber4] /Sleep()\n");
@@ -54,14 +54,14 @@ namespace elle
       printf("[Fiber4] Awaken(ResourceA)\n");
 
       // awaken ResourceA.
-      if (Fiber::Awaken(Test::ResourceA) == StatusError)
+      if (Fiber::Awaken(Test::ResourceA) == Status::Error)
         escape("unable to awaken the fiber");
 
       printf("[Fiber4] /Awaken(ResourceA)\n");
 
       printf("[Fiber4] End\n");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -71,7 +71,7 @@ namespace elle
     ///
     Status              Fiber3()
     {
-      Closure< Status,
+      Closure< Status::,
                Parameters<> >   closure(Callback<>::Infer(&Fiber4));
 
       printf("[Fiber3] Start\n");
@@ -79,7 +79,7 @@ namespace elle
       printf("[Fiber3] Spawn(Fiber4)\n");
 
       // spawn a new fiber.
-      if (Fiber::Spawn(closure) == StatusError)
+      if (Fiber::Spawn(closure) == Status::Error)
         escape("unable to spawn the fiber");
 
       printf("[Fiber3] /Spawn(Fiber4)\n");
@@ -87,7 +87,7 @@ namespace elle
       printf("[Fiber3] Wait(ResourceC)\n");
 
       // wait ResourceC.
-      if (Fiber::Wait(Test::ResourceC) == StatusError)
+      if (Fiber::Wait(Test::ResourceC) == Status::Error)
         escape("unable to wait for the resource");
 
       printf("[Fiber3] /Wait(ResourceC)\n");
@@ -95,10 +95,10 @@ namespace elle
       printf("[Fiber3] End\n");
 
       // exit.
-      if (Program::Exit() == StatusError)
+      if (Program::Exit() == Status::Error)
         escape("unable to exit from the program");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -113,7 +113,7 @@ namespace elle
       printf("[Fiber2] Wait(ResourceB)\n");
 
       // wait for ResourceB.
-      if (Fiber::Wait(Test::ResourceB) == StatusError)
+      if (Fiber::Wait(Test::ResourceB) == Status::Error)
         escape("unable to wait for the resource");
 
       printf("[Fiber2] /Wait(ResourceB)\n");
@@ -121,14 +121,14 @@ namespace elle
       printf("[Fiber2] Awaken(ResourceC)\n");
 
       // awaken ResourceC.
-      if (Fiber::Awaken(Test::ResourceC) == StatusError)
+      if (Fiber::Awaken(Test::ResourceC) == Status::Error)
         escape("unable to awaken the resource");
 
       printf("[Fiber2] /Awaken(ResourceC)\n");
 
       printf("[Fiber2] End\n");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -143,7 +143,7 @@ namespace elle
       printf("[Fiber1] Wait(ResourceA)\n");
 
       // wait for ResourceA.
-      if (Fiber::Wait(Test::ResourceA) == StatusError)
+      if (Fiber::Wait(Test::ResourceA) == Status::Error)
         escape("unable to wait for the resource");
 
       printf("[Fiber1] /Wait(ResourceA)\n");
@@ -151,14 +151,14 @@ namespace elle
       printf("[Fiber1] Awaken(ResourceB)\n");
 
       // awaken ResourceB.
-      if (Fiber::Awaken(Test::ResourceB) == StatusError)
+      if (Fiber::Awaken(Test::ResourceB) == Status::Error)
         escape("unable to awaken the resource");
 
       printf("[Fiber1] /Awaken(ResourceB)\n");
 
       printf("[Fiber1] End\n");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -168,61 +168,61 @@ namespace elle
                              const Character*[])
     {
       // initialize the library.
-      if (Elle::Initialize() == StatusError)
+      if (Elle::Initialize() == Status::Error)
         escape("unable to initialize the library");
 
       // setup the program.
-      if (Program::Setup() == StatusError)
+      if (Program::Setup() == Status::Error)
         escape("unable to set up the program");
 
       // create the timer1.
-      if (Test::Timer1.Create(Timer::ModeSingle) == StatusError)
+      if (Test::Timer1.Create(Timer::ModeSingle) == Status::Error)
         escape("unable to create the timer");
 
       // subscribe to the timer's signal.
       if (Test::Timer1.signal.timeout.Subscribe(
-            Callback<>::Infer(&Fiber1)) == StatusError)
+            Callback<>::Infer(&Fiber1)) == Status::Error)
         escape("unable to subscribe to the signal");
 
       // start the timer1, launching the fiber1.
-      if (Test::Timer1.Start(100) == StatusError)
+      if (Test::Timer1.Start(100) == Status::Error)
         escape("unable to start the timer");
 
       // create the timer2.
-      if (Test::Timer2.Create(Timer::ModeSingle) == StatusError)
+      if (Test::Timer2.Create(Timer::ModeSingle) == Status::Error)
         escape("unable to create the timer");
 
       // subscribe to the timer's signal.
       if (Test::Timer2.signal.timeout.Subscribe(
-            Callback<>::Infer(&Fiber2)) == StatusError)
+            Callback<>::Infer(&Fiber2)) == Status::Error)
         escape("unable to subscribe to the signal");
 
       // start the timer2, launching the fiber2.
-      if (Test::Timer2.Start(1000) == StatusError)
+      if (Test::Timer2.Start(1000) == Status::Error)
         escape("unable to start the timer");
 
       // create the timer3.
-      if (Test::Timer3.Create(Timer::ModeSingle) == StatusError)
+      if (Test::Timer3.Create(Timer::ModeSingle) == Status::Error)
         escape("unable to create the timer");
 
       // subscribe to the timer's signal.
       if (Test::Timer3.signal.timeout.Subscribe(
-            Callback<>::Infer(&Fiber3)) == StatusError)
+            Callback<>::Infer(&Fiber3)) == Status::Error)
         escape("unable to subscribe to the signal");
 
       // start the timer3, launching the fiber3.
-      if (Test::Timer3.Start(10000) == StatusError)
+      if (Test::Timer3.Start(10000) == Status::Error)
         escape("unable to start the timer");
 
       // launch the program.
-      if (Program::Launch() == StatusError)
+      if (Program::Launch() == Status::Error)
         escape("an error occured in the program");
 
       // clean the library.
-      if (Elle::Clean() == StatusError)
+      if (Elle::Clean() == Status::Error)
         escape("unable to clean the library");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }
@@ -235,7 +235,7 @@ namespace elle
 int                     main(const int                          argc,
                              const char*                        argv[])
 {
-  if (elle::test::Main(argc, argv) == elle::radix::StatusError)
+  if (elle::test::Main(argc, argv) == elle::Status::Error)
     {
       show();
 

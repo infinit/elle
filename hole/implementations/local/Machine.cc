@@ -40,15 +40,15 @@ namespace hole
 
         // does the block already exist.
         if (block.Exist(Hole::Implementation->network,
-                        address) == elle::StatusTrue)
+                        address) == elle::Status::True)
           escape("this immutable block seems to already exist");
 
         // store the block.
         if (block.Store(Hole::Implementation->network,
-                        address) == elle::StatusError)
+                        address) == elle::Status::Error)
           escape("unable to store the block");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -81,11 +81,11 @@ namespace hole
                   // load the access block.
                   if (Hole::Pull(object->meta.access,
                                  nucleus::Version::Last,
-                                 access) == elle::StatusError)
+                                 access) == elle::Status::Error)
                     escape("unable to load the access block");
 
                   // validate the object, providing the
-                  if (object->Validate(address, access) == elle::StatusError)
+                  if (object->Validate(address, access) == elle::Status::Error)
                     escape("unable to validate the object");
                 }
               else
@@ -93,7 +93,7 @@ namespace hole
                   // validate the object.
                   if (object->Validate(
                         address,
-                        nucleus::Access::Null) == elle::StatusError)
+                        nucleus::Access::Null) == elle::Status::Error)
                     escape("unable to validate the object");
                 }
 
@@ -102,7 +102,7 @@ namespace hole
           default:
             {
               // validate the block through the common interface.
-              if (block.Validate(address) == elle::StatusError)
+              if (block.Validate(address) == elle::Status::Error)
                 escape("the block seems to be invalid");
 
               break;
@@ -116,10 +116,10 @@ namespace hole
 
         // store the block.
         if (block.Store(Hole::Implementation->network,
-                        address) == elle::StatusError)
+                        address) == elle::Status::Error)
           escape("unable to store the block");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -134,19 +134,19 @@ namespace hole
 
         // does the block exist.
         if (block.Exist(Hole::Implementation->network,
-                        address) == elle::StatusFalse)
+                        address) == elle::Status::False)
           escape("the block does not seem to exist");
 
         // load the block.
         if (block.Load(Hole::Implementation->network,
-                       address) == elle::StatusError)
+                       address) == elle::Status::Error)
           escape("unable to load the block");
 
         // validate the block.
-        if (block.Validate(address) == elle::StatusError)
+        if (block.Validate(address) == elle::Status::Error)
           escape("the block seems to be invalid");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -162,12 +162,12 @@ namespace hole
 
         // does the block exist.
         if (block.Exist(Hole::Implementation->network,
-                        address, version) == elle::StatusFalse)
+                        address, version) == elle::Status::False)
           escape("the block does not seem to exist");
 
         // load the block.
         if (block.Load(Hole::Implementation->network,
-                       address, version) == elle::StatusError)
+                       address, version) == elle::Status::Error)
           escape("unable to load the block");
 
         // validate the block, depending on its component.
@@ -190,11 +190,11 @@ namespace hole
                   // load the access block.
                   if (Hole::Pull(object->meta.access,
                                  nucleus::Version::Last,
-                                 access) == elle::StatusError)
+                                 access) == elle::Status::Error)
                     escape("unable to load the access block");
 
                   // validate the object, providing the
-                  if (object->Validate(address, access) == elle::StatusError)
+                  if (object->Validate(address, access) == elle::Status::Error)
                     escape("unable to validate the object");
                 }
               else
@@ -202,7 +202,7 @@ namespace hole
                   // validate the object.
                   if (object->Validate(
                         address,
-                        nucleus::Access::Null) == elle::StatusError)
+                        nucleus::Access::Null) == elle::Status::Error)
                     escape("unable to validate the object");
                 }
 
@@ -211,7 +211,7 @@ namespace hole
           default:
             {
               // validate the block through the common interface.
-              if (block.Validate(address) == elle::StatusError)
+              if (block.Validate(address) == elle::Status::Error)
                 escape("the block seems to be invalid");
 
               break;
@@ -223,7 +223,7 @@ namespace hole
             }
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -247,7 +247,7 @@ namespace hole
 
               // erase the immutable block.
               if (ib.Erase(Hole::Implementation->network,
-                           address) == elle::StatusError)
+                           address) == elle::Status::Error)
                 escape("unable to erase the block");
 
               break;
@@ -260,7 +260,7 @@ namespace hole
 
               // retrieve the mutable block.
               if (mb.Erase(Hole::Implementation->network,
-                           address) == elle::StatusError)
+                           address) == elle::Status::Error)
                 escape("unable to erase the block");
 
               break;
@@ -271,7 +271,7 @@ namespace hole
             }
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
 //
@@ -287,7 +287,7 @@ namespace hole
 
         std::cout << alignment << "[Machine]" << std::endl;
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     }

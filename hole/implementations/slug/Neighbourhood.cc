@@ -53,7 +53,7 @@ namespace hole
         if (result.second == false)
           escape("unable to insert the host in the container");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -64,10 +64,10 @@ namespace hole
         Neighbourhood::Scoutor  scoutor;
 
         // try to locate the locus.
-        if (this->Locate(locus, scoutor) == elle::StatusTrue)
-          return elle::StatusTrue;
+        if (this->Locate(locus, scoutor) == elle::Status::True)
+          return elle::Status::True;
 
-        return elle::StatusFalse;
+        return elle::Status::False;
       }
 
       ///
@@ -79,13 +79,13 @@ namespace hole
         Neighbourhood::Scoutor  scoutor;
 
         // try to locate the locus.
-        if (this->Locate(locus, scoutor) == elle::StatusFalse)
+        if (this->Locate(locus, scoutor) == elle::Status::False)
           escape("unable to locate the given locus");
 
         // return the associated host.
         host = scoutor->second;
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -96,13 +96,13 @@ namespace hole
         Neighbourhood::Iterator iterator;
 
         // try to locate the locus.
-        if (this->Locate(locus, iterator) == elle::StatusFalse)
+        if (this->Locate(locus, iterator) == elle::Status::False)
           escape("unable to locate the given locus");
 
         // erase the iterator.
         this->container.erase(iterator);
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -119,10 +119,10 @@ namespace hole
             // return the scoutor.
             scoutor = s;
 
-            return elle::StatusTrue;
+            return elle::Status::True;
           }
 
-        return elle::StatusFalse;
+        return elle::Status::False;
       }
 
       ///
@@ -139,10 +139,10 @@ namespace hole
             // return the iterator.
             iterator = i;
 
-            return elle::StatusTrue;
+            return elle::Status::True;
           }
 
-        return elle::StatusFalse;
+        return elle::Status::False;
       }
 
 //
@@ -169,15 +169,15 @@ namespace hole
                       << "[Neighbour]" << std::endl;
 
             // dump the locus.
-            if (scoutor->first.Dump(margin + 4) == elle::StatusError)
+            if (scoutor->first.Dump(margin + 4) == elle::Status::Error)
               escape("unable to dump the locus");
 
             // dump the host.
-            if (scoutor->second->Dump(margin + 4) == elle::StatusError)
+            if (scoutor->second->Dump(margin + 4) == elle::Status::Error)
               escape("unable to dump the host");
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     }

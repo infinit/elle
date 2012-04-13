@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <etoile/gear/Context.hh>
 #include <etoile/gear/Chronicle.hh>

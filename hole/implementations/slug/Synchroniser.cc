@@ -38,20 +38,20 @@ namespace hole
 
         // create the timer.
         if (this->timer.Create(
-              elle::Timer::ModeSingle) == elle::StatusError)
+              elle::Timer::ModeSingle) == elle::Status::Error)
           escape("unable to create the timer");
 
         // subscribe to the timer's signal.
         if (this->timer.signal.timeout.Subscribe(
               elle::Callback<>::Infer(&Synchroniser::Run,
-                                      this)) == elle::StatusError)
+                                      this)) == elle::Status::Error)
           escape("unable to subscribe to the signal");
 
         // start the timer.
-        if (this->timer.Start() == elle::StatusError)
+        if (this->timer.Start() == elle::Status::Error)
           escape("unable to start the timer");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
 //
@@ -83,10 +83,10 @@ namespace hole
         // XXX
 
         // emit the signal.
-        if (this->signal.synchronised.Emit() == elle::StatusError)
+        if (this->signal.synchronised.Emit() == elle::Status::Error)
           escape("unable to emit the signal");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
 //
@@ -103,10 +103,10 @@ namespace hole
         std::cout << alignment << "[Synchroniser]" << std::endl;
 
         // dump the timer.
-        if (this->timer.Dump(margin + 2) == elle::StatusError)
+        if (this->timer.Dump(margin + 2) == elle::Status::Error)
           escape("unable to dump the timer");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     }

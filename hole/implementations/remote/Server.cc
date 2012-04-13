@@ -90,7 +90,7 @@ namespace hole
                                 elle::TagNone,
                                 TagException>(
                   elle::Callback<>::Infer(
-                    &Server::Challenge, this))) == elle::StatusError)
+                    &Server::Challenge, this))) == elle::Status::Error)
             escape("unable to register the callback");
 
           // register the push message.
@@ -99,7 +99,7 @@ namespace hole
                                 elle::TagNone,
                                 TagException>(
                   elle::Callback<>::Infer(
-                    &Server::Push, this))) == elle::StatusError)
+                    &Server::Push, this))) == elle::Status::Error)
             escape("unable to register the callback");
 
           // register the pull message.
@@ -108,7 +108,7 @@ namespace hole
                                 elle::TagNone,
                                 TagException>(
                   elle::Callback<>::Infer(
-                    &Server::Pull, this))) == elle::StatusError)
+                    &Server::Pull, this))) == elle::Status::Error)
             escape("unable to register the callback");
 
           // register the wipe message.
@@ -117,7 +117,7 @@ namespace hole
                                 elle::TagNone,
                                 TagException>(
                   elle::Callback<>::Infer(
-                    &Server::Wipe, this))) == elle::StatusError)
+                    &Server::Wipe, this))) == elle::Status::Error)
             escape("unable to register the callback");
         }
 
@@ -129,11 +129,11 @@ namespace hole
           if (elle::TCPServer::Listen(
                 this->locus,
                 elle::Callback<>::Infer(
-                  &Server::Connection, this)) == elle::StatusError)
+                  &Server::Connection, this)) == elle::Status::Error)
             escape("unable to listen for TCP connections");
         }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -146,7 +146,7 @@ namespace hole
 
 
         // check if this customer already exists.
-        if (this->Locate(socket) == elle::StatusTrue)
+        if (this->Locate(socket) == elle::Status::True)
           escape("this socket has already been registered");
 
         // insert the customer in the container.
@@ -157,7 +157,7 @@ namespace hole
         if (result.second == false)
           escape("unable to insert the customer in the container");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -169,13 +169,13 @@ namespace hole
 
 
         // locate the customer.
-        if (this->Locate(socket, &iterator) == elle::StatusFalse)
+        if (this->Locate(socket, &iterator) == elle::Status::False)
           escape("unable to locate the given customer");
 
         // remove the entry from the container.
         this->container.erase(iterator);
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -188,13 +188,13 @@ namespace hole
 
 
         // locate the customer.
-        if (this->Locate(socket, &iterator) == elle::StatusFalse)
+        if (this->Locate(socket, &iterator) == elle::Status::False)
           escape("unable to locate the given customer");
 
         // retrieve the customer.
         customer = iterator->second;
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -212,10 +212,10 @@ namespace hole
             if (iterator != NULL)
               *iterator = i;
 
-            return elle::StatusTrue;
+            return elle::Status::True;
           }
 
-        return elle::StatusFalse;
+        return elle::Status::False;
       }
 
       ///
@@ -231,15 +231,15 @@ namespace hole
 
         // does the block already exist.
         if (block.Exist(Hole::Implementation->network,
-                        address) == elle::StatusTrue)
+                        address) == elle::Status::True)
           escape("this immutable block seems to already exist");
 
         // store the block.
         if (block.Store(Hole::Implementation->network,
-                        address) == elle::StatusError)
+                        address) == elle::Status::Error)
           escape("unable to store the block");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -273,11 +273,11 @@ namespace hole
                   // load the access block.
                   if (Hole::Pull(object->meta.access,
                                  nucleus::Version::Last,
-                                 access) == elle::StatusError)
+                                 access) == elle::Status::Error)
                     escape("unable to load the access block");
 
                   // validate the object, providing the
-                  if (object->Validate(address, access) == elle::StatusError)
+                  if (object->Validate(address, access) == elle::Status::Error)
                     escape("unable to validate the object");
                 }
               else
@@ -285,7 +285,7 @@ namespace hole
                   // validate the object.
                   if (object->Validate(
                         address,
-                        nucleus::Access::Null) == elle::StatusError)
+                        nucleus::Access::Null) == elle::Status::Error)
                     escape("unable to validate the object");
                 }
 
@@ -294,7 +294,7 @@ namespace hole
           default:
             {
               // validate the block through the common interface.
-              if (block.Validate(address) == elle::StatusError)
+              if (block.Validate(address) == elle::Status::Error)
                 escape("the block seems to be invalid");
 
               break;
@@ -307,10 +307,10 @@ namespace hole
 
         // store the block.
         if (block.Store(Hole::Implementation->network,
-                        address) == elle::StatusError)
+                        address) == elle::Status::Error)
           escape("unable to store the block");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -326,19 +326,19 @@ namespace hole
 
         // does the block exist.
         if (block.Exist(Hole::Implementation->network,
-                        address) == elle::StatusFalse)
+                        address) == elle::Status::False)
           escape("the block does not seem to exist");
 
         // load the block.
         if (block.Load(Hole::Implementation->network,
-                       address) == elle::StatusError)
+                       address) == elle::Status::Error)
           escape("unable to load the block");
 
         // validate the block.
-        if (block.Validate(address) == elle::StatusError)
+        if (block.Validate(address) == elle::Status::Error)
           escape("the block seems to be invalid");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -354,12 +354,12 @@ namespace hole
 
         // does the block exist.
         if (block.Exist(Hole::Implementation->network,
-                        address, version) == elle::StatusFalse)
+                        address, version) == elle::Status::False)
           escape("the block does not seem to exist");
 
         // load the block.
         if (block.Load(Hole::Implementation->network,
-                       address, version) == elle::StatusError)
+                       address, version) == elle::Status::Error)
           escape("unable to load the block");
 
         // validate the block, depending on its component.
@@ -382,11 +382,11 @@ namespace hole
                   // load the access block.
                   if (Hole::Pull(object->meta.access,
                                  nucleus::Version::Last,
-                                 access) == elle::StatusError)
+                                 access) == elle::Status::Error)
                     escape("unable to load the access block");
 
                   // validate the object, providing the
-                  if (object->Validate(address, access) == elle::StatusError)
+                  if (object->Validate(address, access) == elle::Status::Error)
                     escape("unable to validate the object");
                 }
               else
@@ -394,7 +394,7 @@ namespace hole
                   // validate the object.
                   if (object->Validate(
                         address,
-                        nucleus::Access::Null) == elle::StatusError)
+                        nucleus::Access::Null) == elle::Status::Error)
                     escape("unable to validate the object");
                 }
 
@@ -403,7 +403,7 @@ namespace hole
           default:
             {
               // validate the block through the common interface.
-              if (block.Validate(address) == elle::StatusError)
+              if (block.Validate(address) == elle::Status::Error)
                 escape("the block seems to be invalid");
 
               break;
@@ -415,7 +415,7 @@ namespace hole
             }
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -440,7 +440,7 @@ namespace hole
 
               // erase the immutable block.
               if (ib.Erase(Hole::Implementation->network,
-                           address) == elle::StatusError)
+                           address) == elle::Status::Error)
                 escape("unable to erase the block");
 
               break;
@@ -453,7 +453,7 @@ namespace hole
 
               // retrieve the mutable block.
               if (mb.Erase(Hole::Implementation->network,
-                           address) == elle::StatusError)
+                           address) == elle::Status::Error)
                 escape("unable to erase the block");
 
               break;
@@ -464,7 +464,7 @@ namespace hole
             }
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
 //
@@ -484,7 +484,7 @@ namespace hole
         auto customer = std::unique_ptr<Customer>(new Customer);
 
         // create the customer.
-        if (customer->Create(socket) == elle::StatusError)
+        if (customer->Create(socket) == elle::Status::Error)
           escape("unable to create the customer");
 
         // set the state.
@@ -495,16 +495,16 @@ namespace hole
               elle::Callback<>::Infer(
                 &Server::Sweep, this
               )
-            ) == elle::StatusError)
+            ) == elle::Status::Error)
           escape("unable to subscribe to the signal");
 
         // add the customer.
-        if (this->Add(customer->socket, customer.get()) == elle::StatusError)
+        if (this->Add(customer->socket, customer.get()) == elle::Status::Error)
           escape("unable to add the customer");
         else
           customer.release();
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -522,23 +522,23 @@ namespace hole
           printf("[hole] implementations::remote::Server::Challenge()\n");
 
         // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::StatusError)
+        if (elle::Session::Instance(session) == elle::Status::Error)
           escape("unable to retrieve the current session");
 
         // retrieve the customer.
         if (this->Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
-                           customer) == elle::StatusError)
+                           customer) == elle::Status::Error)
           escape("unable to retrieve the customer");
 
         // validate the passport.
-        if (passport.Validate(Infinit::Authority) == elle::StatusError)
+        if (passport.Validate(Infinit::Authority) == elle::Status::Error)
           {
             // remove the customer.
-            if (this->Remove(customer->socket) == elle::StatusError)
+            if (this->Remove(customer->socket) == elle::Status::Error)
               escape("unable to remove the customer");
 
             // disconnect the customer.
-            if (customer->socket->Disconnect() == elle::StatusError)
+            if (customer->socket->Disconnect() == elle::Status::Error)
               escape("unable to disconnect the customer");
 
             // bury the customer: the socket is still in use.
@@ -551,11 +551,11 @@ namespace hole
 
             // reply with the authenticated message.
             if (customer->socket->Reply(
-                  elle::Inputs<TagAuthenticated>()) == elle::StatusError)
+                  elle::Inputs<TagAuthenticated>()) == elle::Status::Error)
               escape("unable to reply to the client");
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -565,13 +565,13 @@ namespace hole
       {
 
         // remove the customer.
-        if (this->Remove(customer->socket) == elle::StatusError)
+        if (this->Remove(customer->socket) == elle::Status::Error)
           escape("unable to remove the customer");
 
         // bury it.
         bury(customer);
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -592,12 +592,12 @@ namespace hole
           printf("[hole] implementations::remote::Server::Push()\n");
 
         // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::StatusError)
+        if (elle::Session::Instance(session) == elle::Status::Error)
           escape("unable to retrieve the current session");
 
         // retrieve the customer.
         if (this->Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
-                           customer) == elle::StatusError)
+                           customer) == elle::Status::Error)
           escape("unable to retrieve the customer");
 
         // check that the client has been authenticated.
@@ -605,7 +605,7 @@ namespace hole
           escape("the customer has not been authenticated");
 
         // infer the block from the derivable.
-        if (derivable.Infer(object) == elle::StatusError)
+        if (derivable.Infer(object) == elle::Status::Error)
           escape("unable to infer the block from the derivable");
 
         // forward the request depending on the nature of the block which
@@ -620,7 +620,7 @@ namespace hole
               ib = static_cast<nucleus::ImmutableBlock*>(object);
 
               // store the immutable block.
-              if (this->Put(address, *ib) == elle::StatusError)
+              if (this->Put(address, *ib) == elle::Status::Error)
                 escape("unable to put the block");
 
               break;
@@ -635,7 +635,7 @@ namespace hole
               mb = static_cast<nucleus::MutableBlock*>(object);
 
               // store the mutable block.
-              if (this->Put(address, *mb) == elle::StatusError)
+              if (this->Put(address, *mb) == elle::Status::Error)
                 escape("unable to put the block");
 
               break;
@@ -648,10 +648,10 @@ namespace hole
 
         // acknowledge.
         if (customer->socket->Reply(
-              elle::Inputs<elle::TagOk>()) == elle::StatusError)
+              elle::Inputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to acknowledge");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -669,12 +669,12 @@ namespace hole
           printf("[hole] implementations::remote::Server::Pull()\n");
 
         // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::StatusError)
+        if (elle::Session::Instance(session) == elle::Status::Error)
           escape("unable to retrieve the current session");
 
         // retrieve the customer.
         if (this->Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
-                           customer) == elle::StatusError)
+                           customer) == elle::Status::Error)
           escape("unable to retrieve the customer");
 
         // check that the client has been authenticated.
@@ -683,7 +683,7 @@ namespace hole
 
         // build the block according to the component.
         if (nucleus::Nucleus::Factory.Build(address.component,
-                                            block) == elle::StatusError)
+                                            block) == elle::Status::Error)
           escape("unable to build the block");
 
         std::unique_ptr<nucleus::Block> guard(block);
@@ -700,7 +700,7 @@ namespace hole
               ib = static_cast<nucleus::ImmutableBlock*>(block);
 
               // retrieve the immutable block.
-              if (this->Get(address, *ib) == elle::StatusError)
+              if (this->Get(address, *ib) == elle::Status::Error)
                 escape("unable to get the block");
 
               break;
@@ -716,7 +716,7 @@ namespace hole
 
               // retrieve the mutable block.
               if (this->Get(address, version,
-                            *mb) == elle::StatusError)
+                            *mb) == elle::Status::Error)
                 escape("unable to get the block");
 
               break;
@@ -731,10 +731,10 @@ namespace hole
 
         // return the block.
         if (customer->socket->Reply(
-              elle::Inputs<TagBlock>(derivable)) == elle::StatusError)
+              elle::Inputs<TagBlock>(derivable)) == elle::Status::Error)
           escape("unable to return the block");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -750,12 +750,12 @@ namespace hole
           printf("[hole] implementations::remote::Server::Wipe()\n");
 
         // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::StatusError)
+        if (elle::Session::Instance(session) == elle::Status::Error)
           escape("unable to retrieve the current session");
 
         // retrieve the customer.
         if (this->Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
-                           customer) == elle::StatusError)
+                           customer) == elle::Status::Error)
           escape("unable to retrieve the customer");
 
         // check that the client has been authenticated.
@@ -763,15 +763,15 @@ namespace hole
           escape("the customer has not been authenticated");
 
         // forward the kill request to the implementation.
-        if (this->Kill(address) == elle::StatusError)
+        if (this->Kill(address) == elle::Status::Error)
           escape("unable to erase the block");
 
         // acknowledge.
         if (customer->socket->Reply(
-              elle::Inputs<elle::TagOk>()) == elle::StatusError)
+              elle::Inputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to acknowledge");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
 //
@@ -789,7 +789,7 @@ namespace hole
         std::cout << alignment << "[Server]" << std::endl;
 
         // dump the locus.
-        if (this->locus.Dump(margin + 2) == elle::StatusError)
+        if (this->locus.Dump(margin + 2) == elle::Status::Error)
           escape("unable to dump the locus");
 
         std::cout << alignment << elle::Dumpable::Shift
@@ -803,11 +803,11 @@ namespace hole
             Customer*   customer = scoutor->second;
 
             // dump the customer.
-            if (customer->Dump(margin + 4) == elle::StatusError)
+            if (customer->Dump(margin + 4) == elle::Status::Error)
               escape("unable to dump the customer");
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     }

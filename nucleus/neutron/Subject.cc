@@ -59,7 +59,7 @@ namespace nucleus
               // set the type.
               type = Subject::Descriptors[i].type;
 
-              return elle::StatusOk;
+              return elle::Status::Ok;
             }
         }
 
@@ -83,7 +83,7 @@ namespace nucleus
               // set the name.
               name = Subject::Descriptors[i].name;
 
-              return elle::StatusOk;
+              return elle::Status::Ok;
             }
         }
 
@@ -176,7 +176,7 @@ namespace nucleus
       // allocate and copy the key.
       this->user = new elle::PublicKey(K);
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -190,7 +190,7 @@ namespace nucleus
       // allocate the address.
       this->group = new proton::Address(descriptor);
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -204,11 +204,11 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return elle::Status::True;
 
       // compare the type.
       if (this->type != element.type)
-        return elle::StatusFalse;
+        return elle::Status::False;
 
       // compare the identifier.
       switch (this->type)
@@ -227,7 +227,7 @@ namespace nucleus
           }
         }
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -261,7 +261,7 @@ namespace nucleus
                       << "[Identifier]" << std::endl;
 
             // dump the user public key.
-            if (this->user->Dump(margin + 4) == elle::StatusError)
+            if (this->user->Dump(margin + 4) == elle::Status::Error)
               escape("unable to dump the user's public key");
 
             break;
@@ -272,7 +272,7 @@ namespace nucleus
                       << "[Identifier]" << std::endl;
 
             // dump the group address.
-            if (this->group->Dump(margin + 4) == elle::StatusError)
+            if (this->group->Dump(margin + 4) == elle::Status::Error)
               escape("unable to dump the group address");
 
             break;
@@ -283,7 +283,7 @@ namespace nucleus
           }
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -297,7 +297,7 @@ namespace nucleus
     {
       // serialize the type.
       if (archive.Serialize(static_cast<elle::Natural8>(this->type)) ==
-          elle::StatusError)
+          elle::Status::Error)
         escape("unable to serialize the type");
 
       // serialize the identifier.
@@ -306,7 +306,7 @@ namespace nucleus
         case Subject::TypeUser:
           {
             // serialize the user public key.
-            if (archive.Serialize(*this->user) == elle::StatusError)
+            if (archive.Serialize(*this->user) == elle::Status::Error)
               escape("unable to serialize the user public key");
 
             break;
@@ -314,7 +314,7 @@ namespace nucleus
         case Subject::TypeGroup:
           {
             // serialize the group address.
-            if (archive.Serialize(*this->group) == elle::StatusError)
+            if (archive.Serialize(*this->group) == elle::Status::Error)
               escape("unable to serialize the group address");
 
             break;
@@ -325,7 +325,7 @@ namespace nucleus
           }
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -335,7 +335,7 @@ namespace nucleus
     {
       // extract the type.
       if (archive.Extract(reinterpret_cast<elle::Natural8&>(this->type)) ==
-          elle::StatusError)
+          elle::Status::Error)
         escape("unable to extract the type");
 
       // extract the identifier.
@@ -347,7 +347,7 @@ namespace nucleus
             this->user = new elle::PublicKey;
 
             // extract the user public key.
-            if (archive.Extract(*this->user) == elle::StatusError)
+            if (archive.Extract(*this->user) == elle::Status::Error)
               escape("unable to extract the user public key");
 
             break;
@@ -358,7 +358,7 @@ namespace nucleus
             this->group = new proton::Address;
 
             // extract the group address.
-            if (archive.Extract(*this->group) == elle::StatusError)
+            if (archive.Extract(*this->group) == elle::Status::Error)
               escape("unable to extract the group address");
 
             break;
@@ -369,7 +369,7 @@ namespace nucleus
           }
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

@@ -30,12 +30,12 @@ int     main(int ac, char* av[])
   return EXIT_FAILURE;
 }
 
-#include "elle/Elle.hh"
+#include <elle/types.hh>
 #include "lune/Lune.hh"
 
 static void _initAll()
 {
-  if (elle::Elle::Initialize() == elle::StatusError ||
-      lune::Lune::Initialize() == elle::StatusError)
+  if (elle::Elle::Initialize() == elle::Status::Error ||
+      lune::Lune::Initialize() == elle::Status::Error)
     throw std::runtime_error("Couldn't initialize !");
 }

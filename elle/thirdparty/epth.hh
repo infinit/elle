@@ -29,7 +29,7 @@
 
 #include <elle/system/Platform.hh>
 
-#include <elle/core/Natural.hh>
+#include <elle/types.hh>
 
 #include <elle/radix/Status.hh>
 
@@ -51,14 +51,14 @@
 // ---------- prototypes ------------------------------------------------------
 //
 
-elle::radix::Status     epth_initialize(const elle::core::Natural32,
+elle::Status     epth_initialize(const elle::Natural32,
                                         t_epth&);
-elle::radix::Status     epth_clean();
-elle::radix::Status     epth_spawn(void* (*)(void*),
+elle::Status     epth_clean();
+elle::Status     epth_spawn(void* (*)(void*),
                                    void*,
                                    t_epth&);
-elle::radix::Status     epth_switch(const t_epth&,
+elle::Status     epth_switch(const t_epth&,
                                     const t_epth&);
-elle::radix::Status     epth_abort(const t_epth&);
+elle::Status     epth_abort(const t_epth&);
 
 #endif

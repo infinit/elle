@@ -60,14 +60,14 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return elle::Status::True;
 
       // compare the name and value.
       if ((this->name != element.name) ||
           (this->value != element.value))
-        return elle::StatusFalse;
+        return elle::Status::False;
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -96,7 +96,7 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Value] " << this->value << std::endl;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -110,10 +110,10 @@ namespace nucleus
     {
       // serialize the attributes.
       if (archive.Serialize(this->name,
-                            this->value) == elle::StatusError)
+                            this->value) == elle::Status::Error)
         escape("unable to serialize the trait");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -123,10 +123,10 @@ namespace nucleus
     {
       // extract the attributes.
       if (archive.Extract(this->name,
-                          this->value) == elle::StatusError)
+                          this->value) == elle::Status::Error)
         escape("unable to extract the trait");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //

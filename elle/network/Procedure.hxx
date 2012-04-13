@@ -44,15 +44,15 @@ namespace elle
               const Tag O,
               const Tag E>
     Procedure<I, O, E>::Procedure(const Callback<
-                                    Status,
+                                    Status::,
                                     R
                                     >                           routine,
                                   const Callback<
-                                    Status,
+                                    Status::,
                                     Parameters<>
                                     >                           prolog,
                                   const Callback<
-                                    Status,
+                                    Status::,
                                     Parameters<>
                                     >                           epilog):
       routine(routine),
@@ -75,7 +75,7 @@ namespace elle
     Status              Procedure<I, O, E>::Skeleton(Archive&   archive) const
     {
       Callback<
-        Status,
+        Status::,
         typename Trait::Reference<
           typename Message<I>::P
           >::Type
@@ -94,7 +94,7 @@ namespace elle
       Session*          session;
 
       // retrieve the session.
-      if (Session::Instance(session) == StatusError)
+      if (Session::Instance(session) == Status::Error)
         escape("unable to retrieve the session instance");
 
       // check the session.
@@ -102,12 +102,12 @@ namespace elle
         escape("unable to proceed with a null session");
 
       // call the prolog.
-      if (this->prolog.Call() == StatusError)
+      if (this->prolog.Call() == Status::Error)
         escape("an error occured in the procedure's prolog");
 
       // extract the values from the archive given the types required
       // for the callback.
-      if (inputs.Call(extract) == StatusError)
+      if (inputs.Call(extract) == Status::Error)
         escape("unable to extract from the archive");
 
       // check that the end of the archive has been reached i.e all
@@ -137,13 +137,13 @@ namespace elle
       status = arguments.Call(this->routine);
 
       // call the epilog.
-      if (this->epilog.Call() == StatusError)
+      if (this->epilog.Call() == Status::Error)
         escape("an error occured in the procedure's epilog");
 
       //
       // send back the report to the client if an error occured.
       //
-      if (status == StatusError)
+      if (status == Status::Error)
         {
           //
           // serialize the report and send it to the caller.
@@ -155,20 +155,20 @@ namespace elle
             escape("unable to reply with a null socket");
 
           // retrieve the report.
-          if (Report::Instance(report) == StatusFalse)
+          if (Report::Instance(report) == Status::False)
             escape("unable to retrieve the report");
 
           // reply with the report.
           if (session->socket->Reply(
                 Inputs<E>(*report),
-                session) == StatusError)
+                session) == Status::Error)
             escape("unable to reply with the status");
 
           // flush the report since it has been sent
           // to the sender.
           report->Flush();
 
-          return StatusOk;
+          return Status::Ok;
         }
 
       // reply according to the output tag.
@@ -198,14 +198,14 @@ namespace elle
 
             // reply with the output bundle.
             if (session->socket->Reply(bundle,
-                                       session) == StatusError)
+                                       session) == Status::Error)
               escape("unable to reply to the caller");
 
             break;
           }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -240,24 +240,24 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Routine]" << std::endl;
 
-      if (this->routine.Dump(margin + 2) == StatusError)
+      if (this->routine.Dump(margin + 2) == Status::Error)
         escape("unable to dump the callback");
 
       // dump the callback.
       std::cout << alignment << Dumpable::Shift
                 << "[Prolog]" << std::endl;
 
-      if (this->prolog.Dump(margin + 2) == StatusError)
+      if (this->prolog.Dump(margin + 2) == Status::Error)
         escape("unable to dump the callback");
 
       // dump the epilog.
       std::cout << alignment << Dumpable::Shift
                 << "[Epilog]" << std::endl;
 
-      if (this->epilog.Dump(margin + 2) == StatusError)
+      if (this->epilog.Dump(margin + 2) == Status::Error)
         escape("unable to dump the callback");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

@@ -14,7 +14,7 @@
 
 #include <elle/concurrency/Routine.hh>
 
-#include <elle/core/String.hh>
+#include <elle/types.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
@@ -70,7 +70,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Scheme] " << this->scheme << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

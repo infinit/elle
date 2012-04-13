@@ -142,15 +142,15 @@ namespace elle
       if (!QDir().mkpath(QString::fromStdString(path.str())))
         escape("failed to mkpath: %s", path.str().c_str());
 
-      return StatusOk;
+      return Status::Ok;
 
 #if 0
       // does the directory already exist.
-      if (Directory::Exist(path) == StatusTrue)
+      if (Directory::Exist(path) == Status::True)
         escape("the directory seems to already exist");
 
       // dig the directory which will hold the target directory.
-      if (Directory::Dig(path) == StatusError)
+      if (Directory::Dig(path) == Status::Error)
         escape("unable to dig the chain of directories");
 
       // create the directory.
@@ -165,7 +165,7 @@ namespace elle
 # error "unsupported platform"
 #endif
 
-      return StatusOk;
+      return Status::Ok;
 #endif
     }
 
@@ -175,13 +175,13 @@ namespace elle
     Status              Directory::Remove(const Path&           path)
     {
       // does the directory exist.
-      if (Directory::Exist(path) == StatusFalse)
+      if (Directory::Exist(path) == Status::False)
         escape("the directory does not seem to exist");
 
       // remove the directory.
       ::rmdir(path.str().c_str());
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -193,13 +193,13 @@ namespace elle
 
       // does the path points to something.
       if (::stat(path.str().c_str(), &stat) != 0)
-        return StatusFalse;
+        return Status::False;
 
       // does the path points to a directory.
       if (!S_ISDIR(stat.st_mode))
-        return StatusFalse;
+        return Status::False;
 
-      return StatusTrue;
+      return Status::True;
     }
 
     ///
@@ -213,7 +213,7 @@ namespace elle
       if (!QDir().mkpath(QString::fromStdString(directory)))
         escape("failed to mkpath: %s", directory.c_str());
 
-      return StatusOk;
+      return Status::Ok;
 
 #if 0
       String            target(::strdup(path.string.c_str()));
@@ -237,15 +237,15 @@ namespace elle
 
           // retrieve information on the path. should this operation fail
           // would mean that the target directory does not exist.
-          if (Directory::Exist(chemin) == StatusFalse)
+          if (Directory::Exist(chemin) == Status::False)
             {
               // create the intermediate directory.
-              if (Directory::Create(chemin) == StatusError)
+              if (Directory::Create(chemin) == Status::Error)
                 escape("unable to create the intermediate directory");
             }
         }
 
-      return StatusOk;
+      return Status::Ok;
 #endif
     }
 
@@ -256,7 +256,7 @@ namespace elle
     Status              Directory::Clear(const Path&            path)
     {
       // is the path pointing to a valid directory.
-      if (Directory::Exist(path) == StatusFalse)
+      if (Directory::Exist(path) == Status::False)
         escape("the path does not reference a directory");
 
       _Directory directory(path);
@@ -278,7 +278,7 @@ namespace elle
 
           // create the target path.
           String path_str(path.str() + System::Path::Separator + *it);
-          if (target.Create(path_str) == StatusError)
+          if (target.Create(path_str) == Status::Error)
             escape("unable to create the target path");
 
           // stat the entry as entry->d_type is not standard
@@ -298,24 +298,24 @@ namespace elle
           if (S_ISDIR(stat.st_mode))
             {
               // empty it as well.
-              if (Directory::Clear(target) == StatusError)
+              if (Directory::Clear(target) == Status::Error)
                 escape("unable to empty a subdirectory");
 
               // remove the directory.
-              if (Directory::Remove(target) == StatusError)
+              if (Directory::Remove(target) == Status::Error)
                 escape("unable to remove the subdirectory");
             }
           else if (S_ISREG(stat.st_mode))
             {
               // remove the file.
-              if (File::Erase(target) == StatusError)
+              if (File::Erase(target) == Status::Error)
                 escape("unable to remove the file");
             }
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
           else if (S_ISLNK(stat.st_mode))
             {
               // remove the link.
-              if (Link::Erase(target) == StatusError)
+              if (Link::Erase(target) == Status::Error)
                 escape("unable to remove the link");
             }
 #endif
@@ -323,7 +323,7 @@ namespace elle
             escape("unhandled file system object type");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -348,7 +348,7 @@ namespace elle
             set.push_back(*it);
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

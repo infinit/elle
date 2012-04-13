@@ -15,7 +15,7 @@
 
 #include "elle/cryptography/KeyPair.hh"
 #include "elle/io/Path.hh"
-#include "elle/core/String.hh"
+#include <elle/types.hh>
 #include "elle/io/Unique.hh"
 
 #include "hole/Model.hh"
@@ -51,33 +51,33 @@ static elle::Unique generate_network_descriptor(elle::String const& name,
   lune::Authority     authority;
   elle::Path          authority_path;
 
-  if (authority_path.Create(authority_file) == elle::StatusError)
+  if (authority_path.Create(authority_file) == elle::Status::Error)
     throw std::runtime_error("unable to create authority path");
 
-  if (authority.Load(authority_path) == elle::StatusError)
+  if (authority.Load(authority_path) == elle::Status::Error)
     throw std::runtime_error("unable to load the authority file");
 
-  if (authority.Decrypt(authority_password) == elle::StatusError)
+  if (authority.Decrypt(authority_password) == elle::Status::Error)
     throw std::runtime_error("unable to decrypt the authority");
 
-  if (model.Create(model_name) != elle::StatusOk)
+  if (model.Create(model_name) != elle::Status::Ok)
     throw std::runtime_error("unable to create model");
 
-  if (address.Restore(root_address) != elle::StatusOk)
+  if (address.Restore(root_address) != elle::Status::Ok)
     throw std::runtime_error("Unable to restore root address");
 
   if (descriptor.Create(name, model, address,
                         lune::Descriptor::History,
                         lune::Descriptor::Extent,
                         lune::Descriptor::Contention,
-                        lune::Descriptor::Balancing) != elle::StatusOk)
+                        lune::Descriptor::Balancing) != elle::Status::Ok)
     throw std::runtime_error("Unable to create the network descriptor");
 
-  if (descriptor.Seal(authority) != elle::StatusOk)
+  if (descriptor.Seal(authority) != elle::Status::Ok)
     throw std::runtime_error("Unable to seal the network descriptor");
 
   elle::Unique unique;
-  if (descriptor.Save(unique) != elle::StatusOk)
+  if (descriptor.Save(unique) != elle::Status::Ok)
     throw std::runtime_error("Unable to save the network descriptor");
 
   return unique;
@@ -140,17 +140,17 @@ static bool check_root_block_signature(elle::Unique const& root_block,
             << "GOT root block: " << root_block << "\n"
             << "GOT root address: " << root_address << "\n";
 
-  if (K.Restore(public_key) != elle::StatusOk)
+  if (K.Restore(public_key) != elle::Status::Ok)
     throw std::runtime_error("Unable to restore public key");
 
-  if (address.Restore(root_address) == elle::StatusError)
+  if (address.Restore(root_address) == elle::Status::Error)
     throw std::runtime_error("Unable to restore root address");
 
-  if (directory.Restore(root_block) == elle::StatusError)
+  if (directory.Restore(root_block) == elle::Status::Error)
     throw std::runtime_error("Unable to restore root block: <" + root_block + ">");
 
   auto access = nucleus::neutron::Access::Null;
-  if (directory.Validate(address, access) != elle::StatusOk)
+  if (directory.Validate(address, access) != elle::Status::Ok)
     return false;
 
   if (directory.owner.K != K)

@@ -74,16 +74,16 @@
 //      String    string;
 //
 //      // transform the value into a string-based format.
-//      if (Variable::Convert(value, string) == StatusFalse)
+//      if (Variable::Convert(value, string) == Status::False)
 //        escape("unable to convert the value for '%s' to the section '%s'",
 //               name.c_str(), identifier.c_str());
 //
 //      // write the value.
-//      if (settings.Write(identifier, name, string) == StatusError)
+//      if (settings.Write(identifier, name, string) == Status::Error)
 //        escape("unable to write the value '%s' for '%s' to the section '%s'",
 //               string.c_str(), name.c_str(), identifier.c_str());
 //
-//      return StatusOk;
+//      return Status::Ok;
 //    }
 //
 //    ///
@@ -98,21 +98,21 @@
 //      String    string;
 //
 //      // if the item does not exist, return the default value.
-//      if (settings.Find(identifier, name) == StatusFalse)
+//      if (settings.Find(identifier, name) == Status::False)
 //        escape("unable to locate the value for '%s' in section '%s'",
 //               name.c_str(), identifier.c_str());
 //
 //      // otherwise, read the item from the settings.
-//      if (settings.Read(identifier, name, string) == StatusError)
+//      if (settings.Read(identifier, name, string) == Status::Error)
 //        escape("unable to read the value for '%s' to the section '%s'",
 //               name.c_str(), identifier.c_str());
 //
 //      // convert the string into the type.
-//      if (Variable::Convert(string, value) == StatusFalse)
+//      if (Variable::Convert(string, value) == Status::False)
 //        escape("unable to convert the value '%s' for '%s' to the section '%s'",
 //               string.c_str(), name.c_str(), identifier.c_str());
 //
-//      return StatusOk;
+//      return Status::Ok;
 //    }
 //
 //    ///
@@ -128,25 +128,25 @@
 //      String    string;
 //
 //      // if the item does not exist, return the default value.
-//      if (settings.Find(identifier, name) == StatusFalse)
+//      if (settings.Find(identifier, name) == Status::False)
 //        {
 //          // set the value with the default.
 //          value = D;
 //
-//          return StatusOk;
+//          return Status::Ok;
 //        }
 //
 //      // otherwise, read the item from the settings.
-//      if (settings.Read(identifier, name, string) == StatusError)
+//      if (settings.Read(identifier, name, string) == Status::Error)
 //        escape("unable to read the value for '%s' to the section '%s'",
 //               name.c_str(), identifier.c_str());
 //
 //      // convert the string into the type.
-//      if (Variable::Convert(string, value) == StatusFalse)
+//      if (Variable::Convert(string, value) == Status::False)
 //        escape("unable to convert the value '%s' for '%s' to the section '%s'",
 //               string.c_str(), name.c_str(), identifier.c_str());
 //
-//      return StatusOk;
+//      return Status::Ok;
 //    }
 //
 //    ///
@@ -166,16 +166,16 @@
 //      Unique    unique;
 //
 //      // save the object in a unique representation.
-//      if (object.Save(unique) == StatusError)
+//      if (object.Save(unique) == Status::Error)
 //        escape("unable to save the object for '%s' to the section '%s'",
 //               name.c_str(), identifier.c_str());
 //
 //      // write the value.
-//      if (settings.Write(identifier, name, unique) == StatusError)
+//      if (settings.Write(identifier, name, unique) == Status::Error)
 //        escape("unable to write the value '%s' for '%s' to the section '%s'",
 //               unique.c_str(), name.c_str(), identifier.c_str());
 //
-//      return StatusOk;
+//      return Status::Ok;
 //    }
 //
 //    ///
@@ -192,22 +192,22 @@
 //      Unique    unique;
 //
 //      // if the item does not exist, return the default value.
-//      if (settings.Find(identifier, name) == StatusFalse)
+//      if (settings.Find(identifier, name) == Status::False)
 //        escape("unable to locate the item for '%s' to the section '%s'",
 //               name.c_str(), identifier.c_str());
 //
 //      // otherwise, read the item from the settings.
-//      if (settings.Read(identifier, name, unique) == StatusError)
+//      if (settings.Read(identifier, name, unique) == Status::Error)
 //        escape("unable to read the value for '%s' to the section '%s'",
 //               name.c_str(), identifier.c_str());
 //
 //      // restore the object.
-//      if (object.Restore(unique) == StatusError)
+//      if (object.Restore(unique) == Status::Error)
 //        escape("unable to restore the object '%s' for '%s' to the "
 //               "section '%s'",
 //               unique.c_str(), name.c_str(), identifier.c_str());
 //
-//      return StatusOk;
+//      return Status::Ok;
 //    }
 //
 //    ///
@@ -225,35 +225,35 @@
 //      Unique    unique;
 //
 //      // if the item does not exist, return the default value.
-//      if (settings.Find(identifier, name) == StatusFalse)
+//      if (settings.Find(identifier, name) == Status::False)
 //        {
 //          // save the default value.
-//          if (D.Save(unique) == StatusError)
+//          if (D.Save(unique) == Status::Error)
 //            escape("unable to save the default value for '%s' to the "
 //                   "section '%s'",
 //                   name.c_str(), identifier.c_str());
 //
 //          // restore the object with the default unique.
-//          if (object.Restore(unique) == StatusError)
+//          if (object.Restore(unique) == Status::Error)
 //            escape("unable to restore the object for '%s' to the "
 //                   "section '%s'",
 //                   name.c_str(), identifier.c_str());
 //
-//          return StatusOk;
+//          return Status::Ok;
 //        }
 //
 //      // otherwise, read the item from the settings.
-//      if (settings.Read(identifier, name, unique) == StatusError)
+//      if (settings.Read(identifier, name, unique) == Status::Error)
 //        escape("unable to read the value for '%s' to the section '%s'",
 //               name.c_str(), identifier.c_str());
 //
 //      // restore the object.
-//      if (object.Restore(unique) == StatusError)
+//      if (object.Restore(unique) == Status::Error)
 //        escape("unable to restore the object '%s' for '%s' to the "
 //               "section '%s'",
 //               unique.c_str(), name.c_str(), identifier.c_str());
 //
-//      return StatusOk;
+//      return Status::Ok;
 //    }
 //
 ////

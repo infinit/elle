@@ -111,12 +111,12 @@ elle::Status            Handle::Load()
 
   assert(this->block == nullptr);
 
-  if (Porcupine<>::Load.Call(*this) == elle::StatusError)
+  if (Porcupine<>::Load.Call(*this) == elle::Status::Error)
     escape("unable to load the block");
 
   this->state = Handle::StateLoaded;
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -133,12 +133,12 @@ elle::Status            Handle::Unload()
 
   assert(this->block != nullptr);
 
-  if (Porcupine<>::Unload.Call(*this) == elle::StatusError)
+  if (Porcupine<>::Unload.Call(*this) == elle::Status::Error)
     escape("unable to unload the block");
 
   this->state = Handle::StateUnloaded;
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 //
@@ -152,7 +152,7 @@ elle::Boolean           Handle::operator==(const Handle&        element) const
 {
   // check the address as this may actually be the same object.
   if (this == &element)
-    return elle::StatusTrue;
+    return elle::Status::True;
 
   // compare the placements, if possible.
   if ((this->placement != Placement::Null) &&
@@ -171,7 +171,7 @@ elle::Boolean           Handle::operator==(const Handle&        element) const
       //
 
       if (this->placement != element.placement)
-        return elle::StatusFalse;
+        return elle::Status::False;
     }
   else
     {
@@ -200,10 +200,10 @@ elle::Boolean           Handle::operator==(const Handle&        element) const
       //
 
       if (this->address != element.address)
-        return elle::StatusFalse;
+        return elle::Status::False;
     }
 
-  return elle::StatusTrue;
+  return elle::Status::True;
 }
 
 ///
@@ -229,15 +229,15 @@ elle::Status            Handle::Dump(const elle::Natural32      margin) const
             << "[State] " << std::dec << this->state << std::endl;
 
   // dump the placement.
-  if (this->placement.Dump(margin + 2) == elle::StatusError)
+  if (this->placement.Dump(margin + 2) == elle::Status::Error)
     escape("unable to dump the placement");
 
   // dump the address.
-  if (this->address.Dump(margin + 2) == elle::StatusError)
+  if (this->address.Dump(margin + 2) == elle::Status::Error)
     escape("unable to dump the address");
 
   // dump the secret.
-  if (this->secret.Dump(margin + 2) == elle::StatusError)
+  if (this->secret.Dump(margin + 2) == elle::Status::Error)
     escape("unable to dump the secret");
 
   // dump the block.
@@ -247,7 +247,7 @@ elle::Status            Handle::Dump(const elle::Natural32      margin) const
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Block]" << std::endl;
 
-      if (this->block->Dump(margin + 4) == elle::StatusError)
+      if (this->block->Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the nodule");
     }
   else
@@ -256,7 +256,7 @@ elle::Status            Handle::Dump(const elle::Natural32      margin) const
                 << "[Block] " << elle::none << std::endl;
     }
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 //
@@ -269,10 +269,10 @@ elle::Status            Handle::Dump(const elle::Natural32      margin) const
 elle::Status            Handle::Serialize(elle::Archive&        archive) const
 {
   if (archive.Serialize(this->address,
-                        this->secret) == elle::StatusError)
+                        this->secret) == elle::Status::Error)
     escape("unable to serialize the attribtues");
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -281,8 +281,8 @@ elle::Status            Handle::Serialize(elle::Archive&        archive) const
 elle::Status            Handle::Extract(elle::Archive&          archive)
 {
   if (archive.Extract(this->address,
-                      this->secret) == elle::StatusError)
+                      this->secret) == elle::Status::Error)
     escape("unable to extract the attribtues");
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }

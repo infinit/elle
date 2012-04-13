@@ -40,7 +40,7 @@ namespace elle
     ///
     LocalServerPorter::LocalServerPorter(const
                                            Callback<
-                                             Status,
+                                             Status::,
                                              Parameters<LocalSocket*>
                                              >&                 callback):
       server(NULL),
@@ -94,7 +94,7 @@ namespace elle
                         this, SLOT(_accept())) == false)
         escape("unable to connect the signal");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     //
@@ -108,7 +108,7 @@ namespace elle
     {
       // nothing to do.
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -129,7 +129,7 @@ namespace elle
           delete porter;
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -145,21 +145,21 @@ namespace elle
     Status              LocalServer::Listen(const String&       name,
                                             const
                                               Callback<
-                                                Status,
+                                                Status::,
                                                 Parameters<LocalSocket*>
                                                 >&              callback)
     {
       typedef std::unique_ptr<LocalServerPorter> ServerPtr;
 
       // check if this name is not already listened on.
-      if (LocalServer::Locate(name) == StatusTrue)
+      if (LocalServer::Locate(name) == Status::True)
         escape("this name seems to have already been registered");
 
       // allocate a new porter.
       auto porter = ServerPtr(new LocalServerPorter(callback));
 
       // create the porter.
-      if (porter->Create(name) == StatusError)
+      if (porter->Create(name) == Status::Error)
         escape("unable to create the porter");
 
       // insert the porter in the container.
@@ -173,7 +173,7 @@ namespace elle
       // stop tracking porter.
       porter.release();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -186,7 +186,7 @@ namespace elle
       LocalServerPorter*        porter;
 
       // locate the porter.
-      if (LocalServer::Locate(name, &iterator) == StatusFalse)
+      if (LocalServer::Locate(name, &iterator) == Status::False)
         escape("unable to locate the given porter");
 
       // retrieve the porter.
@@ -198,7 +198,7 @@ namespace elle
       // remove the entry from the container.
       LocalServer::Porters.erase(iterator);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -210,13 +210,13 @@ namespace elle
       LocalServer::Iterator     iterator;
 
       // locate the porter.
-      if (LocalServer::Locate(name, &iterator) == StatusFalse)
+      if (LocalServer::Locate(name, &iterator) == Status::False)
         escape("unable to locate the given porter");
 
       // retrieve the porter.
       porter = iterator->second;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -234,10 +234,10 @@ namespace elle
           if (iterator != NULL)
             *iterator = i;
 
-          return StatusTrue;
+          return Status::True;
         }
 
-      return StatusFalse;
+      return Status::False;
     }
 
 //
@@ -266,10 +266,10 @@ namespace elle
                 << this->server->fullServerName().toStdString() << std::endl;
 
       // dump the callback.
-      if (this->callback.Dump(margin + 2) == StatusError)
+      if (this->callback.Dump(margin + 2) == Status::Error)
         escape("unable to dump the callback");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     //
@@ -294,11 +294,11 @@ namespace elle
           LocalServerPorter*    porter = scoutor->second;
 
           // dump the porter.
-          if (porter->Dump(margin + 2) == StatusError)
+          if (porter->Dump(margin + 2) == Status::Error)
             escape("unable to dump the porter");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -320,17 +320,17 @@ namespace elle
       auto socket = std::unique_ptr<LocalSocket>(new LocalSocket);
 
       // create a socket with the specific connection.
-      if (socket->Create(connection) == StatusError)
+      if (socket->Create(connection) == Status::Error)
         escape("unable to create the socket");
 
       // call the callback.
-      if (this->callback.Call(socket.get()) == StatusError)
+      if (this->callback.Call(socket.get()) == Status::Error)
         escape("an error occured in the callback");
 
       // stop tracking socket as it has been handed to the callback.
       socket.release();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -344,13 +344,13 @@ namespace elle
     void                LocalServerPorter::_accept()
     {
       Closure<
-        Status,
+        Status::,
         Parameters<>
         >               closure(Callback<>::Infer(
                                   &LocalServerPorter::Accept, this));
 
       // spawn a fiber.
-      if (Fiber::Spawn(closure) == StatusError)
+      if (Fiber::Spawn(closure) == Status::Error)
         yield(_(), "unable to spawn a fiber");
     }
 

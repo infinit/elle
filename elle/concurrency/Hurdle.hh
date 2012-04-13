@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Void.hh>
+#include <elle/types.hh>
 
 #include <elle/radix/Status.hh>
 #include <elle/radix/Object.hh>
@@ -27,7 +27,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
 
   namespace concurrency

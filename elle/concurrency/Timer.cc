@@ -73,7 +73,7 @@ namespace elle
                         this, SLOT(_timeout())) == false)
         escape("unable to connect the timeout signal");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -84,7 +84,7 @@ namespace elle
       // start the timer.
       this->timer->start(duration);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -95,7 +95,7 @@ namespace elle
       // stop the timer.
       this->timer->stop();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -106,7 +106,7 @@ namespace elle
       // restart the timer.
       this->timer->start(duration);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -120,10 +120,10 @@ namespace elle
     Status              Timer::Timeout()
     {
       // emit the signal.
-      if (this->signal.timeout.Emit() == StatusError)
+      if (this->signal.timeout.Emit() == Status::Error)
         escape("unable to emit the signal");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -148,10 +148,10 @@ namespace elle
                 << this->timer->interval() << std::endl;
 
       // dump the signal.
-      if (this->signal.timeout.Dump(margin + 2) == StatusError)
+      if (this->signal.timeout.Dump(margin + 2) == Status::Error)
         escape("unable to dump the signal");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -163,12 +163,12 @@ namespace elle
     ///
     void                Timer::_timeout()
     {
-      Closure< Status,
+      Closure< Status::,
                Parameters<> >   closure(Callback<>::Infer(&Timer::Timeout,
                                                           this));
 
       // trigger the callback in a new fiber.
-      if (Fiber::Spawn(closure) == StatusError)
+      if (Fiber::Spawn(closure) == Status::Error)
         yield(_(), "unable to spawn a fiber");
     }
 

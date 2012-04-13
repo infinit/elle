@@ -91,11 +91,11 @@ namespace nucleus
           this->code = new elle::Code;
 
           // encrypt the given secret key with the given public key.
-          if (K.Encrypt(key, *this->code) == elle::StatusError)
+          if (K.Encrypt(key, *this->code) == elle::Status::Error)
             escape("unable to encrypt the key");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -109,10 +109,10 @@ namespace nucleus
         escape("unable to retrieve the key out of a null token");
 
       // decrypt the code.
-      if (k.Decrypt(*this->code, key) == elle::StatusError)
+      if (k.Decrypt(*this->code, key) == elle::Status::Error)
         escape("unable to decrypt the token's content");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -126,21 +126,21 @@ namespace nucleus
     {
       // check if the objects are the same.
       if (this == &element)
-        return elle::StatusTrue;
+        return elle::Status::True;
 
       // compare the code.
       if ((this->code == NULL) || (element.code == NULL))
         {
           if (this->code != element.code)
-            return elle::StatusFalse;
+            return elle::Status::False;
         }
       else
         {
           if (*this->code != *element.code)
-            return elle::StatusFalse;
+            return elle::Status::False;
         }
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -164,7 +164,7 @@ namespace nucleus
       // dump the code.
       if (this->code != NULL)
         {
-          if (this->code->Dump(margin + 2) == elle::StatusError)
+          if (this->code->Dump(margin + 2) == elle::Status::Error)
             escape("unable to dump the parent Code class");
         }
       else
@@ -173,7 +173,7 @@ namespace nucleus
                     << "[Code] " << elle::none << std::endl;
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -188,17 +188,17 @@ namespace nucleus
       // serialize the code.
       if (this->code != NULL)
         {
-          if (archive.Serialize(*this->code) == elle::StatusError)
+          if (archive.Serialize(*this->code) == elle::Status::Error)
             escape("unable to serialize the code");
         }
       else
         {
           // serialize 'none'.
-          if (archive.Serialize(elle::none) == elle::StatusError)
+          if (archive.Serialize(elle::none) == elle::Status::Error)
             escape("unable to serialize 'none'");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -209,13 +209,13 @@ namespace nucleus
       elle::Archive::Type       type;
 
       // fetch the next element's type.
-      if (archive.Fetch(type) == elle::StatusError)
+      if (archive.Fetch(type) == elle::Status::Error)
         escape("unable to fetch the next element's type");
 
       if (type == elle::Archive::TypeNull)
         {
           // nothing to do, keep the code to NULL.
-          if (archive.Extract(elle::none) == elle::StatusError)
+          if (archive.Extract(elle::none) == elle::Status::Error)
             escape("unable to extract null");
         }
       else
@@ -224,11 +224,11 @@ namespace nucleus
           this->code = new elle::Code;
 
           // extract the code.
-          if (archive.Extract(*this->code) == elle::StatusError)
+          if (archive.Extract(*this->code) == elle::Status::Error)
             escape("unable to extract the code");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

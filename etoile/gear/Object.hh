@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 #include <nucleus/Nucleus.hh>
 
 #include <etoile/gear/Context.hh>
@@ -77,7 +77,7 @@ namespace etoile
       typedef wall::Object                      W;
       typedef automaton::Object                 A;
       typedef elle::Callback<
-                elle::Status,
+                elle::Status::,
                 elle::Parameters<
                   Object&
                   >

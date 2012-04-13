@@ -55,7 +55,7 @@ namespace satellite
     {
       // nothing to do.
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -79,7 +79,7 @@ namespace satellite
       // clear the container.
       Live::Items.clear();
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -97,7 +97,7 @@ namespace satellite
       // stop tracking.
       item.release();
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -122,7 +122,7 @@ namespace satellite
             {
               active = item->active;
 
-              return elle::StatusOk;
+              return elle::Status::Ok;
             }
         }
 
@@ -152,7 +152,7 @@ namespace satellite
               // remove it from the container.
               Live::Items.erase(iterator);
 
-              return elle::StatusOk;
+              return elle::Status::Ok;
             }
         }
 
@@ -187,7 +187,7 @@ namespace satellite
                     << std::hex << item->active << std::endl;
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

@@ -113,18 +113,18 @@ namespace nucleus
       this->cipher = new elle::Cipher;
 
       // create the archive.
-      if (archive.Create() == elle::StatusError)
+      if (archive.Create() == elle::Status::Error)
         escape("unable to create the archive");
 
       // serialize the block.
-      if (this->content->Serialize(archive) == elle::StatusError)
+      if (this->content->Serialize(archive) == elle::Status::Error)
         escape("unable to serialize the block");
 
       // encrypt the archive with the given secret key.
-      if (key.Encrypt(archive, *cipher) == elle::StatusError)
+      if (key.Encrypt(archive, *cipher) == elle::Status::Error)
         escape("unable to encrypt the archived block");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -149,22 +149,22 @@ namespace nucleus
       this->content = new T(*this);
 
       // decrypt the cipher.
-      if (key.Decrypt(*this->cipher, clear) == elle::StatusError)
+      if (key.Decrypt(*this->cipher, clear) == elle::Status::Error)
         escape("unable to decrypt the cipher");
 
       // prepare the archive with the clear, which is basically a region.
-      if (archive.Acquire(clear) == elle::StatusError)
+      if (archive.Acquire(clear) == elle::Status::Error)
         escape("unable to prepare the archive");
 
       // detach the 'clear' region as it will be taken over by the archive.
-      if (clear.Detach() == elle::StatusError)
+      if (clear.Detach() == elle::Status::Error)
         escape("unable to detach the region from the clear");
 
       // extract the block.
-      if (archive.Extract(*this->content) == elle::StatusError)
+      if (archive.Extract(*this->content) == elle::Status::Error)
         escape("unable to extract the block");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -190,10 +190,10 @@ namespace nucleus
       this->content = new T(*this);
 
       // create the content.
-      if (this->content->Create() == elle::StatusError)
+      if (this->content->Create() == elle::Status::Error)
         escape("unable to create the content");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -207,7 +207,7 @@ namespace nucleus
       std::cout << alignment << "[Contents]" << std::endl;
 
       // dump the parent class.
-      if (proton::ContentHashBlock::Dump(margin + 2) == elle::StatusError)
+      if (proton::ContentHashBlock::Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the underlying block");
 
       // if present, dump the content.
@@ -216,7 +216,7 @@ namespace nucleus
           std::cout << alignment << elle::Dumpable::Shift
                     << "[Content]" << std::endl;
 
-          if (this->content->Dump(margin + 4) == elle::StatusError)
+          if (this->content->Dump(margin + 4) == elle::Status::Error)
             escape("unable to dump the content");
         }
       else
@@ -231,7 +231,7 @@ namespace nucleus
           std::cout << alignment << elle::Dumpable::Shift
                     << "[Cipher]" << std::endl;
 
-          if (this->cipher->Dump(margin + 4) == elle::StatusError)
+          if (this->cipher->Dump(margin + 4) == elle::Status::Error)
             escape("unable to dump the cipher");
         }
       else
@@ -240,7 +240,7 @@ namespace nucleus
                     << "[Cipher] " << elle::none << std::endl;
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -260,14 +260,14 @@ namespace nucleus
         escape("unable to serialize an unciphered content");
 
       // call the parent class.
-      if (proton::ContentHashBlock::Serialize(archive) == elle::StatusError)
+      if (proton::ContentHashBlock::Serialize(archive) == elle::Status::Error)
         escape("unable to serialize the underlying CHB");
 
       // just serialize the cipher in the archive.
-      if (archive.Serialize(*this->cipher) == elle::StatusError)
+      if (archive.Serialize(*this->cipher) == elle::Status::Error)
         escape("unable to serialize the cipher");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -278,7 +278,7 @@ namespace nucleus
     elle::Status        Contents<T>::Extract(elle::Archive&     archive)
     {
       // call the parent class.
-      if (proton::ContentHashBlock::Extract(archive) == elle::StatusError)
+      if (proton::ContentHashBlock::Extract(archive) == elle::Status::Error)
         escape("unable to extract the underlying CHB");
 
       /* XXX[to remove]
@@ -291,10 +291,10 @@ namespace nucleus
       this->cipher = new elle::Cipher;
 
       // extract the cipher from the archive.
-      if (archive.Extract(*this->cipher) == elle::StatusError)
+      if (archive.Extract(*this->cipher) == elle::Status::Error)
         escape("unable to serialize the cipher");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

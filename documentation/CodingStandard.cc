@@ -101,7 +101,7 @@ Status              CodingStandard::Method1()
 
   delete list;
 
-  return (StatusOk);
+  return Status::Ok;
 }
 
 //
@@ -136,7 +136,7 @@ Real                CodingStandard::attribute1()
    * a keyword very much as if (...), sizeof (...), for (...) etc.
    *
    * however, this rule is relatively flexible as most
-   * 'return StatusOk' are performed without parentheses.
+   * 'return Status::Ok' are performed without parentheses.
    */
   return (this->_attribute1);
 }
@@ -190,7 +190,7 @@ Status              CodingStandard::Method(SomeOtherClass&          soc,
   soc.ComputeSomething(index,
                        static_cast<Natural64>(this->_attribute2));
 
-  return (StatusOk);
+  return Status::Ok;
 }
 
 ///
@@ -245,5 +245,5 @@ Status              CodingStandard::Method4(const String&           input1,
       output3 = 0.2;
     }
 
-  return (StatusOk);
+  return Status::Ok;
 }

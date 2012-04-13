@@ -41,14 +41,14 @@ int     main(int ac, char* av[])
 }
 
 
-#include "elle/Elle.hh"
+#include <elle/types.hh>
 #include "lune/Lune.hh"
 #include "nucleus/Nucleus.hh"
 
 static void _initAll()
 {
-  if (elle::Elle::Initialize() == elle::StatusError ||
-      lune::Lune::Initialize() == elle::StatusError ||
-      nucleus::Nucleus::Initialize() == elle::StatusError)
+  if (elle::Elle::Initialize() == elle::Status::Error ||
+      lune::Lune::Initialize() == elle::Status::Error ||
+      nucleus::Nucleus::Initialize() == elle::Status::Error)
     throw std::runtime_error("Couldn't initialize !");
 }

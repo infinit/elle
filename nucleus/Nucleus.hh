@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 #include <elle/utility/Factory.hh>
 
 namespace elle
@@ -58,7 +58,6 @@ namespace nucleus
 // ---------- includes --------------------------------------------------------
 //
 
-#include <nucleus/miscellaneous/Miscellaneous.hh>
 #include <nucleus/neutron/Neutron.hh>
 #include <nucleus/proton/Proton.hh>
 

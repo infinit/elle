@@ -29,10 +29,10 @@ namespace elle
     Status              Client::Setup(const String&             line)
     {
       // create the locus.
-      if (this->locus.Create(line) == StatusError)
+      if (this->locus.Create(line) == Status::Error)
         escape("unable to create the locus");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -45,18 +45,18 @@ namespace elle
       // register the message.
       if (Network::Register(
             Procedure<TagChallenge>(
-              Callback<>::Infer(&Client::Challenge, this))) == StatusError)
+              Callback<>::Infer(&Client::Challenge, this))) == Status::Error)
         escape("unable to register the challenge message");
 
       // create the socket.
-      if (this->socket.Create() == StatusError)
+      if (this->socket.Create() == Status::Error)
         escape("unable to create the socket");
 
       // connect the socket.
-      if (this->socket.Connect(this->locus) == StatusError)
+      if (this->socket.Connect(this->locus) == Status::Error)
         escape("unable to connect to the bridge");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -75,12 +75,12 @@ namespace elle
 
       // reply.
       if (this->socket.Reply(
-            Inputs<TagResponse>(response)) == StatusError)
+            Inputs<TagResponse>(response)) == Status::Error)
         escape("unable to return the response");
 
       elle::Program::Exit();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

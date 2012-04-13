@@ -44,14 +44,14 @@ namespace elle
 
       // request the HTTP GET method.
       if (HTTP::Get(uri,
-                    content, code) == StatusError)
+                    content, code) == Status::Error)
         escape("unable to GET the given URI");
 
       // decode the JSON document based on the given content.
-      if (JSON::Decode(content, response) == StatusError)
+      if (JSON::Decode(content, response) == Status::Error)
         escape("unable to decode the response");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -66,20 +66,20 @@ namespace elle
       String            string;
 
       // encode the request into a string.
-      if (JSON::Encode(request, string) == StatusError)
+      if (JSON::Encode(request, string) == Status::Error)
         escape("unable to encore the request");
 
       // request the HTTP POST method.
       if (HTTP::Post(uri,
                      JSON::Document::Type, string,
-                     content, code) == StatusError)
+                     content, code) == Status::Error)
         escape("unable to POST the given URI");
 
       // decode the JSON document based on the given content.
-      if (JSON::Decode(content, response) == StatusError)
+      if (JSON::Decode(content, response) == Status::Error)
         escape("unable to decode the response");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -94,20 +94,20 @@ namespace elle
       String            string;
 
       // encode the request into a string.
-      if (JSON::Encode(request, string) == StatusError)
+      if (JSON::Encode(request, string) == Status::Error)
         escape("unable to encore the request");
 
       // request the HTTP PUT method.
       if (HTTP::Put(uri,
                     JSON::Document::Type, string,
-                    content, code) == StatusError)
+                    content, code) == Status::Error)
         escape("unable to PUT the given URI");
 
       // decode the JSON document based on the given content.
-      if (JSON::Decode(content, response) == StatusError)
+      if (JSON::Decode(content, response) == Status::Error)
         escape("unable to decode the response");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -121,14 +121,14 @@ namespace elle
 
       // request the HTTP DELETE method.
       if (HTTP::Delete(uri,
-                       content, code) == StatusError)
+                       content, code) == Status::Error)
         escape("unable to DELETE the given URI");
 
       // decode the JSON document based on the given content.
-      if (JSON::Decode(content, response) == StatusError)
+      if (JSON::Decode(content, response) == Status::Error)
         escape("unable to decode the response");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

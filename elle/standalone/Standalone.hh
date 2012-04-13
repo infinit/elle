@@ -1,26 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun may  2 10:57:51 2010]
-//
-
 #ifndef ELLE_STANDALONE_HH
-#define ELLE_STANDALONE_HH
+# define ELLE_STANDALONE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/radix/Status.hh>
+# include <elle/types.hh>
 
 namespace elle
 {
-  using namespace radix;
-
   ///
   /// this namespace contains classes that must depend on _almost_ nothing
   /// as the whole Elle library relies on them.
@@ -28,34 +12,14 @@ namespace elle
   namespace standalone
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
-    ///
-    /// this class manages the standalone module.
-    ///
     class Standalone
     {
     public:
-      //
-      // static methods
-      //
       static Status     Initialize();
       static Status     Clean();
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/standalone/Log.hh>
-#include <elle/standalone/Maid.hh>
-#include <elle/standalone/Morgue.hh>
-#include <elle/standalone/Region.hh>
-#include <elle/standalone/Report.hh>
 
 #endif

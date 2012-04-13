@@ -35,7 +35,7 @@ namespace nucleus
       this->master = master;
       this->slave = slave;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -45,10 +45,10 @@ namespace nucleus
     {
       // sign the attributes.
       if (k.Sign(this->master, this->slave,
-                 this->signature) == elle::StatusError)
+                 this->signature) == elle::Status::Error)
         escape("unable to sign the attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -60,10 +60,10 @@ namespace nucleus
       // sign the attributes.
       if (Infinit::Authority.K.Verify(
             this->signature,
-            this->master, this->slave) == elle::StatusError)
+            this->master, this->slave) == elle::Status::Error)
         escape("this stamp seems not to have been issued by the oracle");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -77,15 +77,15 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return elle::Status::True;
 
       // compare the attributes.
       if ((this->master != element.master) ||
           (this->slave != element.slave) ||
           (this->signature != element.signature))
-        return elle::StatusFalse;
+        return elle::Status::False;
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -111,7 +111,7 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Master]" << std::endl;
 
-      if (this->master.Dump(margin + 4) == elle::StatusError)
+      if (this->master.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the master");
 
       // dump the master.
@@ -119,14 +119,14 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Slave]" << std::endl;
 
-      if (this->slave.Dump(margin + 4) == elle::StatusError)
+      if (this->slave.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the slave");
 
       // dump the signature.
-      if (this->signature.Dump(margin + 2) == elle::StatusError)
+      if (this->signature.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the signature");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -141,10 +141,10 @@ namespace nucleus
       // serialize the attributes.
       if (archive.Serialize(this->master,
                             this->slave,
-                            this->signature) == elle::StatusError)
+                            this->signature) == elle::Status::Error)
         escape("unable to serialize the attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -155,10 +155,10 @@ namespace nucleus
       // extract the attributes.
       if (archive.Extract(this->master,
                           this->slave,
-                          this->signature) == elle::StatusError)
+                          this->signature) == elle::Status::Error)
         escape("unable to extract the attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

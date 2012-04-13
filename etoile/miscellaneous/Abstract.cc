@@ -86,7 +86,7 @@ namespace etoile
       this->versions.meta = object.meta.version;
       this->versions.data = object.data.version;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -101,7 +101,7 @@ namespace etoile
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return elle::Status::True;
 
       // compare the attributes.
       if ((this->genre != element.genre) ||
@@ -113,9 +113,9 @@ namespace etoile
           (this->permissions.owner != element.permissions.owner) ||
           (this->versions.meta != element.versions.meta) ||
           (this->versions.data != element.versions.data))
-        return elle::StatusFalse;
+        return elle::Status::False;
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -152,7 +152,7 @@ namespace etoile
                   << elle::Dumpable::Shift
                   << "[Creation]" << std::endl;
 
-        if (this->stamps.creation.Dump(margin + 6) == elle::StatusError)
+        if (this->stamps.creation.Dump(margin + 6) == elle::Status::Error)
           escape("unable to dump the creation time");
 
         // dump the modification time.
@@ -160,7 +160,7 @@ namespace etoile
                   << elle::Dumpable::Shift
                   << "[Modification]" << std::endl;
 
-        if (this->stamps.modification.Dump(margin + 6) == elle::StatusError)
+        if (this->stamps.modification.Dump(margin + 6) == elle::Status::Error)
           escape("unable to dump the modification time");
       }
 
@@ -180,7 +180,7 @@ namespace etoile
                   << elle::Dumpable::Shift
                   << "[Owner]" << std::endl;
 
-        if (this->keys.owner.Dump(margin + 6) == elle::StatusError)
+        if (this->keys.owner.Dump(margin + 6) == elle::Status::Error)
           escape("unable to dump the owner public key");
 
         // dump the author public key.
@@ -188,7 +188,7 @@ namespace etoile
                   << elle::Dumpable::Shift
                   << "[Author]" << std::endl;
 
-        if (this->keys.author.Dump(margin + 6) == elle::StatusError)
+        if (this->keys.author.Dump(margin + 6) == elle::Status::Error)
           escape("unable to dump the author public key");
       }
 
@@ -223,7 +223,7 @@ namespace etoile
                   << "[Data] " << std::dec << this->versions.data << std::endl;
       }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -244,10 +244,10 @@ namespace etoile
                             this->keys.author,
                             this->permissions.owner,
                             this->versions.meta,
-                            this->versions.data) == elle::StatusError)
+                            this->versions.data) == elle::Status::Error)
         escape("unable to serialize the attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -264,10 +264,10 @@ namespace etoile
                           this->keys.author,
                           this->permissions.owner,
                           this->versions.meta,
-                          this->versions.data) == elle::StatusError)
+                          this->versions.data) == elle::Status::Error)
         escape("unable to extract the attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

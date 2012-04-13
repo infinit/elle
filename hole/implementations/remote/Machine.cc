@@ -91,7 +91,7 @@ namespace hole
           auto client = std::unique_ptr<Client>(new Client(locus));
 
           // launch the client.
-          if (client->Launch() == elle::StatusOk)
+          if (client->Launch() == elle::Status::Ok)
             {
               // set the client as the host.
               this->client = client.release();
@@ -100,10 +100,10 @@ namespace hole
               this->role = Machine::RoleClient;
 
               // set the hole as ready to receive requests.
-              if (Hole::Ready() == elle::StatusError)
+              if (Hole::Ready() == elle::Status::Error)
                 escape("unable to set the hole online");
 
-              return elle::StatusOk;
+              return elle::Status::Ok;
             }
         }
 
@@ -116,7 +116,7 @@ namespace hole
           auto server = std::unique_ptr<Server>(new Server(locus));
 
           // launch the server.
-          if (server->Launch() == elle::StatusOk)
+          if (server->Launch() == elle::Status::Ok)
             {
               // set the server as the host.
               this->server = server.release();
@@ -124,7 +124,7 @@ namespace hole
               // set the role.
               this->role = Machine::RoleServer;
 
-              return elle::StatusOk;
+              return elle::Status::Ok;
             }
         }
 
@@ -154,7 +154,7 @@ namespace hole
           case Machine::RoleServer:
             {
               // dump the server.
-              if (this->server->Dump(margin + 2) == elle::StatusError)
+              if (this->server->Dump(margin + 2) == elle::Status::Error)
                 escape("unable to dump the server");
 
               break;
@@ -162,7 +162,7 @@ namespace hole
           case Machine::RoleClient:
             {
               // dump the client.
-              if (this->client->Dump(margin + 2) == elle::StatusError)
+              if (this->client->Dump(margin + 2) == elle::Status::Error)
                 escape("unable to dump the client");
 
               break;
@@ -175,7 +175,7 @@ namespace hole
             }
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     }

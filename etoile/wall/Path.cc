@@ -48,18 +48,18 @@ namespace etoile
         printf("[etoile] wall::Path::Resolve()\n");
 
       // create a route from the way.
-      if (route.Create(way) == elle::StatusError)
+      if (route.Create(way) == elle::Status::Error)
         escape("unable to create the route");
 
       // resolve the route.
-      if (path::Path::Resolve(route, venue) == elle::StatusError)
+      if (path::Path::Resolve(route, venue) == elle::Status::Error)
         escape("unable to resolve the route");
 
       // create the chemin.
-      if (chemin.Create(route, venue) == elle::StatusError)
+      if (chemin.Create(route, venue) == elle::Status::Error)
         escape("unable to create the chemin");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -87,7 +87,7 @@ namespace etoile
       if (relative.path.empty() == true)
         relative.path = elle::System::Path::Root;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

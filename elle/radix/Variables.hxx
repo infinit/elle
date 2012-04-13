@@ -128,7 +128,7 @@ namespace elle
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -245,7 +245,7 @@ namespace elle
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -387,7 +387,7 @@ namespace elle
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -556,7 +556,7 @@ namespace elle
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -757,7 +757,7 @@ namespace elle
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -994,7 +994,7 @@ namespace elle
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -1275,7 +1275,7 @@ namespace elle
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -1602,7 +1602,7 @@ namespace elle
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -1979,7 +1979,7 @@ namespace elle
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -2410,7 +2410,7 @@ namespace elle
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 

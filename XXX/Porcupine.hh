@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
@@ -180,26 +180,26 @@ namespace nucleus
       //
       static elle::Status       Initialize(
         const elle::Callback<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<
             Block*,
             Handle&
             >
           >&,
         const elle::Callback<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<
             Handle&
             >
           >&,
         const elle::Callback<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<
             Handle&
             >
           >&,
         const elle::Callback<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<
             Handle&
             >
@@ -211,7 +211,7 @@ namespace nucleus
       //
       static
       elle::Callback<
-        elle::Status,
+        elle::Status::,
         elle::Parameters<
           Block*,
           Handle&
@@ -219,21 +219,21 @@ namespace nucleus
         >                       Attach;
       static
       elle::Callback<
-        elle::Status,
+        elle::Status::,
         elle::Parameters<
           Handle&
           >
         >                       Detach;
       static
       elle::Callback<
-        elle::Status,
+        elle::Status::,
         elle::Parameters<
           Handle&
           >
         >                       Load;
       static
       elle::Callback<
-        elle::Status,
+        elle::Status::,
         elle::Parameters<
           Handle&
           >

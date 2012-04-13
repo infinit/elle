@@ -35,12 +35,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationStatfs:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Statfs),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -48,12 +48,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationGetattr:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Getattr),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -61,12 +61,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationFgetattr:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Fgetattr),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -74,12 +74,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationUtimens:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Utimens),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
     
         break;
@@ -87,12 +87,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationOpendir:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Opendir),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -100,12 +100,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationReaddir:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Readdir),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -113,12 +113,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationReleasedir:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Releasedir),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -126,12 +126,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationMkdir:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Mkdir),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -139,12 +139,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationRmdir:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Rmdir),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -152,12 +152,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationAccess:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Access),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -165,12 +165,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationChmod:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Chmod),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -178,12 +178,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationChown:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Chown),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -191,12 +191,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationSetxattr:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Setxattr),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -204,12 +204,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationGetxattr:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Getxattr),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -217,12 +217,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationListxattr:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Listxattr),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -230,12 +230,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationRemovexattr:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Removexattr),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -243,12 +243,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationSymlink:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Symlink),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -256,12 +256,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationReadlink:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Readlink),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -269,12 +269,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationCreate:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Create),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -282,12 +282,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationOpen:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Open),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -295,12 +295,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationWrite:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Write),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -308,12 +308,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationRead:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Read),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -321,12 +321,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationTruncate:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Truncate),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -334,12 +334,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationFtruncate:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Ftruncate),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -347,12 +347,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationRelease:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Release),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -360,12 +360,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationRename:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Rename),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -373,12 +373,12 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationUnlink:
       {
         elle::Closure<
-          elle::Status,
+          elle::Status::,
           elle::Parameters<Event*>
           >             closure(elle::Callback<>::Infer(&Broker::Unlink),
                                 event);
 
-        if (elle::Fiber::Spawn(closure) == elle::StatusError)
+        if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
 
         break;
@@ -425,7 +425,7 @@ elle::Status            Broker::Statfs(Event*                   event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Getattr(Event*                  event)
@@ -439,7 +439,7 @@ elle::Status            Broker::Getattr(Event*                  event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Fgetattr(Event*                 event)
@@ -454,7 +454,7 @@ elle::Status            Broker::Fgetattr(Event*                 event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Utimens(Event*                  event)
@@ -469,7 +469,7 @@ elle::Status            Broker::Utimens(Event*                  event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Opendir(Event*                  event)
@@ -483,7 +483,7 @@ elle::Status            Broker::Opendir(Event*                  event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Readdir(Event*                  event)
@@ -500,7 +500,7 @@ elle::Status            Broker::Readdir(Event*                  event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Releasedir(Event*               event)
@@ -514,7 +514,7 @@ elle::Status            Broker::Releasedir(Event*               event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Mkdir(Event*                    event)
@@ -528,7 +528,7 @@ elle::Status            Broker::Mkdir(Event*                    event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Rmdir(Event*                    event)
@@ -541,7 +541,7 @@ elle::Status            Broker::Rmdir(Event*                    event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Access(Event*                   event)
@@ -555,7 +555,7 @@ elle::Status            Broker::Access(Event*                   event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Chmod(Event*                    event)
@@ -569,7 +569,7 @@ elle::Status            Broker::Chmod(Event*                    event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Chown(Event*                    event)
@@ -584,7 +584,7 @@ elle::Status            Broker::Chown(Event*                    event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Setxattr(Event*                 event)
@@ -601,7 +601,7 @@ elle::Status            Broker::Setxattr(Event*                 event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Getxattr(Event*                 event)
@@ -617,7 +617,7 @@ elle::Status            Broker::Getxattr(Event*                 event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Listxattr(Event*                event)
@@ -632,7 +632,7 @@ elle::Status            Broker::Listxattr(Event*                event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Removexattr(Event*              event)
@@ -646,7 +646,7 @@ elle::Status            Broker::Removexattr(Event*              event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Symlink(Event*                  event)
@@ -660,7 +660,7 @@ elle::Status            Broker::Symlink(Event*                  event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Readlink(Event*                 event)
@@ -676,7 +676,7 @@ elle::Status            Broker::Readlink(Event*                 event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Create(Event*                   event)
@@ -691,7 +691,7 @@ elle::Status            Broker::Create(Event*                   event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Open(Event*                     event)
@@ -705,7 +705,7 @@ elle::Status            Broker::Open(Event*                     event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Write(Event*                    event)
@@ -723,7 +723,7 @@ elle::Status            Broker::Write(Event*                    event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Read(Event*                     event)
@@ -741,7 +741,7 @@ elle::Status            Broker::Read(Event*                     event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Truncate(Event*                 event)
@@ -755,7 +755,7 @@ elle::Status            Broker::Truncate(Event*                 event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Ftruncate(Event*                event)
@@ -770,7 +770,7 @@ elle::Status            Broker::Ftruncate(Event*                event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Release(Event*                  event)
@@ -784,7 +784,7 @@ elle::Status            Broker::Release(Event*                  event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Rename(Event*                   event)
@@ -798,7 +798,7 @@ elle::Status            Broker::Rename(Event*                   event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 elle::Status            Broker::Unlink(Event*                   event)
@@ -811,5 +811,5 @@ elle::Status            Broker::Unlink(Event*                   event)
 
   semaphore->post();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
