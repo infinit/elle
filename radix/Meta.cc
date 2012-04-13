@@ -26,7 +26,7 @@
 namespace elle
 {
   using namespace system;
-  using namespace core;
+
   using namespace standalone;
   using namespace io;
 
@@ -68,16 +68,16 @@ namespace elle
         {
 #if defined(INFINIT_LINUX)
           // initialize the traces.
-          if (Trace::Initialize() == StatusError)
+          if (Trace::Initialize() == Status::Error)
             escape("unable to initialize the trace system");
 #endif
 
           // enable the logging.
-          if (Meta::Enable() == StatusError)
+          if (Meta::Enable() == Status::Error)
             escape("unable to enable the meta logging");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -89,21 +89,21 @@ namespace elle
       if (Meta::Debug::Status == true)
         {
           // disable the logging.
-          if (Meta::Disable() == StatusError)
+          if (Meta::Disable() == Status::Error)
             escape("unable to disable the meta logging");
 
           // show the traces.
-          if (Meta::Show() == StatusError)
+          if (Meta::Show() == Status::Error)
             escape("unable to show the meta");
 
 #if defined(INFINIT_LINUX)
           // clean the traces.
-          if (Trace::Clean() == StatusError)
+          if (Trace::Clean() == Status::Error)
             escape("unable to clean the trace system");
 #endif
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -114,7 +114,7 @@ namespace elle
       // set the state.
       Meta::Debug::State = true;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -125,7 +125,7 @@ namespace elle
       // set the state.
       Meta::Debug::State = false;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -142,12 +142,12 @@ namespace elle
         {
 #if defined(INFINIT_LINUX)
           // show the traces.
-          if (Trace::Show(margin + 2) == StatusError)
+          if (Trace::Show(margin + 2) == Status::Error)
             escape("unable to show the traces");
 #endif
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -184,7 +184,7 @@ namespace elle
         {
 #if defined(INFINIT_LINUX)
           // store the trace.
-          if (Trace::Store(address) == StatusError)
+          if (Trace::Store(address) == Status::Error)
             {
               log("unable to store the trace for %p",
                   address);
@@ -228,7 +228,7 @@ namespace elle
         {
 #if defined(INFINIT_LINUX)
           // store the trace.
-          if (Trace::Store(address) == StatusError)
+          if (Trace::Store(address) == Status::Error)
             {
               log("unable to store the trace for %p",
                   address);
@@ -264,7 +264,7 @@ namespace elle
         {
 #if defined(INFINIT_LINUX)
           // erase the trace.
-          if (Trace::Erase(address) == StatusError)
+          if (Trace::Erase(address) == Status::Error)
             {
               log("unable to erase the trace for %p",
                   address);

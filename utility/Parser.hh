@@ -15,10 +15,10 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Natural.hh>
-#include <elle/core/Character.hh>
-#include <elle/core/String.hh>
-#include <elle/core/Type.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
 
 #include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
@@ -35,7 +35,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
 
   namespace utility

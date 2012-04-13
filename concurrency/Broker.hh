@@ -17,7 +17,7 @@
 
 #include <elle/system/Platform.hh>
 
-#include <elle/core/Natural.hh>
+#include <elle/types.hh>
 
 #include <elle/radix/Status.hh>
 #include <elle/radix/Parameters.hh>
@@ -36,7 +36,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
 
   namespace concurrency

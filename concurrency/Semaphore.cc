@@ -65,14 +65,14 @@ namespace elle
       std::cout << alignment << "[Zone]" << std::endl;
 
       // dump the semaphore.
-      if (this->semaphore.Dump(margin + 2) == StatusError)
+      if (this->semaphore.Dump(margin + 2) == Status::Error)
         escape("unable to dump the semaphore");
 
       // dump the section.
-      if (this->section.Dump(margin + 2) == StatusError)
+      if (this->section.Dump(margin + 2) == Status::Error)
         escape("unable to dump the section");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -104,7 +104,7 @@ namespace elle
           //
 
           // wait for the semaphore.
-          if (Fiber::Wait(*this) == StatusError)
+          if (Fiber::Wait(*this) == Status::Error)
             yield(_(), "an error occured while waiting on the resource");
         }
 
@@ -124,7 +124,7 @@ namespace elle
 
       // and finally, awaken the fibers potentially blocked on the
       // semaphore.
-      if (Fiber::Awaken(*this) == StatusError)
+      if (Fiber::Awaken(*this) == Status::Error)
         yield(_(), "unable to awaken the fibers");
     }
 
@@ -136,9 +136,9 @@ namespace elle
     {
       // are there enough resources to be acquired...
       if (this->available < n)
-        return StatusFalse;
+        return Status::False;
 
-      return StatusTrue;
+      return Status::True;
     }
 
     ///
@@ -163,7 +163,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Available] " << std::dec << this->available << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

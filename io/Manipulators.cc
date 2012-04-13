@@ -32,8 +32,8 @@ namespace std
   ///
   ///   std::cout << chop("chiche") << std::endl;
   ///
-  elle::core::String    chop(const elle::core::String&          string,
-                             const elle::core::Natural32        limit)
+  elle::String    chop(const elle::String&          string,
+                             const elle::Natural32        limit)
   {
     std::ostringstream  stream;
 
@@ -63,13 +63,13 @@ namespace std
   ///   std::cout << chop(k) << std::endl;
   ///
   template <const elle::io::Format F>
-  elle::core::String    chop(const elle::io::Uniquable<F>&      uniquable,
-                             const elle::core::Natural32        limit)
+  elle::String    chop(const elle::io::Uniquable<F>&      uniquable,
+                             const elle::Natural32        limit)
   {
     elle::io::Unique    unique;
 
     // generate the unique identifier.
-    if (uniquable.Save(unique) == elle::radix::StatusError)
+    if (uniquable.Save(unique) == elle::Status::Error)
       yield(unique, "unable to save the object");
 
     // display a chopped uniquable.

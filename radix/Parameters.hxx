@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Natural.hh>
+#include <elle/types.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
@@ -26,7 +26,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace standalone;
   using namespace radix;
 

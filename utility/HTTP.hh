@@ -15,9 +15,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Character.hh>
-#include <elle/core/String.hh>
-#include <elle/core/Natural.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
 
 #include <elle/radix/Status.hh>
 
@@ -41,7 +41,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
 
   namespace utility

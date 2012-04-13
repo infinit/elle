@@ -15,8 +15,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Natural.hh>
-#include <elle/core/Character.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
 
 #include <elle/standalone/Report.hh>
 

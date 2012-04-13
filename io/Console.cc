@@ -62,7 +62,7 @@ namespace elle
           }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

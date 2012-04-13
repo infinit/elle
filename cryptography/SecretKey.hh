@@ -15,9 +15,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Character.hh>
-#include <elle/core/String.hh>
-#include <elle/core/Natural.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
 
 #include <elle/radix/Status.hh>
 #include <elle/radix/Object.hh>
@@ -37,7 +37,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
   using namespace package;
 
@@ -133,18 +133,18 @@ namespace elle
         Clear           clear;
 
         // decrypt the cipher into the clear.
-        if (this->Decrypt(cipher, clear) == StatusError)
+        if (this->Decrypt(cipher, clear) == Status::Error)
           escape("unable to decrypt the cipher");
 
         // give the clear to the archive.
-        if (archive.Acquire(clear) == StatusError)
+        if (archive.Acquire(clear) == Status::Error)
           escape("unable to acquire the region");
 
         // detach the region so that it does not get released twice.
-        if (clear.Detach() == StatusError)
+        if (clear.Detach() == Status::Error)
           escape("unable to detach the region");
 
-        return StatusOk;
+        return Status::Ok;
       }
 
       //

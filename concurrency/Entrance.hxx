@@ -36,16 +36,16 @@ namespace elle
       closure(closure)
     {
       // create the timer.
-      if (this->timer.Create(Timer::ModeSingle) == StatusError)
+      if (this->timer.Create(Timer::ModeSingle) == Status::Error)
         yield(_(), "unable to create the timer");
 
       // subscribe to the timer's signal.
       if (this->timer.signal.timeout.Subscribe(
-            Callback<>::Infer(&Entrance::Timeout, this)) == StatusError)
+            Callback<>::Infer(&Entrance::Timeout, this)) == Status::Error)
         yield(_(), "unable to subscribe to the signal");
 
       // start the timer.
-      if (this->timer.Start() == StatusError)
+      if (this->timer.Start() == Status::Error)
         yield(_(), "unable to start the timer");
     }
 
@@ -66,14 +66,14 @@ namespace elle
       std::cout << alignment << "[Entrance]" << std::endl;
 
       // dump the closure.
-      if (this->closure.Dump(margin + 2) == StatusError)
+      if (this->closure.Dump(margin + 2) == Status::Error)
         escape("unable to dump the closure");
 
       // dump the timer.
-      if (this->timer.Dump(margin + 2) == StatusError)
+      if (this->timer.Dump(margin + 2) == Status::Error)
         escape("unable to dump the timer");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -90,10 +90,10 @@ namespace elle
     Entrance< R, Parameters<T...> >::Timeout()
     {
       // trigger the closure.
-      if (this->closure.Call() == StatusError)
+      if (this->closure.Call() == Status::Error)
         escape("an error occured in the closure");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

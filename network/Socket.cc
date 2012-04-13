@@ -59,7 +59,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Type] " << std::dec << this->type << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -72,10 +72,10 @@ namespace elle
     Status              Socket::Ship(std::shared_ptr<Parcel>& parcel)
     {
       // otherwise, trigger the network dispatching mechanism.
-      if (Network::Dispatch(parcel) == StatusError)
+      if (Network::Dispatch(parcel) == Status::Error)
         log("an error occured while dispatching a message");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

@@ -60,7 +60,7 @@ namespace elle
       Natural32         roffset = 0;
 
       // does the file exist.
-      if (File::Exist(path) == StatusFalse)
+      if (File::Exist(path) == Status::False)
         escape("the file does not seem to exist");
 
       // retrieve information.
@@ -68,7 +68,7 @@ namespace elle
         escape(::strerror(errno));
 
       // prepare the data.
-      if (data.Prepare(static_cast<Natural32>(status.st_size)) == StatusError)
+      if (data.Prepare(static_cast<Natural32>(status.st_size)) == Status::Error)
         escape("unable to prepare the region");
 
       // open the file.
@@ -105,7 +105,7 @@ namespace elle
       // close the file.
       ::close(fd);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -118,7 +118,7 @@ namespace elle
       Natural32         woffset = 0;
 
       // dig the directory which will hold the target file.
-      if (File::Dig(path) == StatusError)
+      if (File::Dig(path) == Status::Error)
         escape("unable to dig the chain of directories");
 
       // open the file.
@@ -153,7 +153,7 @@ namespace elle
       // close the file.
       ::close(fd);
 
-      return StatusOk;
+      return Status::Ok;
     }
 #elif defined(INFINIT_WINDOWS)
     ///
@@ -167,7 +167,7 @@ namespace elle
       DWORD             roffset = 0;
 
       // does the file exist.
-      if (File::Exist(path) == StatusFalse)
+      if (File::Exist(path) == Status::False)
         escape("the file does not seem to exist");
 
       // retrieve information.
@@ -175,7 +175,7 @@ namespace elle
         escape(::strerror(errno));
 
       // prepare the data.
-      if (data.Prepare(static_cast<Natural32>(status.st_size)) == StatusError)
+      if (data.Prepare(static_cast<Natural32>(status.st_size)) == Status::Error)
         escape("unable to prepare the region");
 
       // open the file.
@@ -215,7 +215,7 @@ namespace elle
       // close the file.
       ::CloseHandle(fd);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -228,7 +228,7 @@ namespace elle
       DWORD             woffset = 0;
 
       // dig the directory which will hold the target file.
-      if (File::Dig(path) == StatusError)
+      if (File::Dig(path) == Status::Error)
         escape("unable to dig the chain of directories");
 
       // open the file.
@@ -265,7 +265,7 @@ namespace elle
       // close the file.
       ::CloseHandle(fd);
 
-      return StatusOk;
+      return Status::Ok;
     }
 #else
 # error "unsupported platform"
@@ -277,13 +277,13 @@ namespace elle
     Status              File::Erase(const Path&                 path)
     {
       // does the file exist.
-      if (File::Exist(path) == StatusFalse)
+      if (File::Exist(path) == Status::False)
         escape("the file does not seem to exist");
 
       // unlink the file.
       ::unlink(path.str().c_str());
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -295,13 +295,13 @@ namespace elle
 
       // does the path points to something.
       if (::stat(path.str().c_str(), &stat) != 0)
-        return StatusFalse;
+        return Status::False;
 
       // does the path points to a regular file.
       if (!S_ISREG(stat.st_mode))
-        return StatusFalse;
+        return Status::False;
 
-      return StatusTrue;
+      return Status::True;
     }
 
     ///
@@ -334,15 +334,15 @@ namespace elle
 
           // retrieve information on the path. should this operation fail
           // would mean that the target directory does not exist.
-          if (Directory::Exist(chemin) == StatusFalse)
+          if (Directory::Exist(chemin) == Status::False)
             {
               // create the intermediate directory.
-              if (Directory::Create(chemin) == StatusError)
+              if (Directory::Create(chemin) == Status::Error)
                 escape("unable to create the intermediate directory");
             }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

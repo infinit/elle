@@ -62,14 +62,14 @@ namespace elle
       std::cout << alignment << "[Zone]" << std::endl;
 
       // dump the mutex.
-      if (this->mutex.Dump(margin + 2) == StatusError)
+      if (this->mutex.Dump(margin + 2) == Status::Error)
         escape("unable to dump the mutex");
 
       // dump the section.
-      if (this->section.Dump(margin + 2) == StatusError)
+      if (this->section.Dump(margin + 2) == Status::Error)
         escape("unable to dump the section");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -99,7 +99,7 @@ namespace elle
           //
 
           // wait for the mutex.
-          if (Fiber::Wait(*this) == StatusError)
+          if (Fiber::Wait(*this) == Status::Error)
             yield(_(), "an error occured while waiting on the resource");
         }
 
@@ -118,7 +118,7 @@ namespace elle
 
       // and finally, awaken the fibers potentially blocked on the
       // mutex.
-      if (Fiber::Awaken(*this) == StatusError)
+      if (Fiber::Awaken(*this) == Status::Error)
         yield(_(), "unable to awaken the fibers");
     }
 
@@ -130,9 +130,9 @@ namespace elle
     {
       // has the lock been acquired, return false.
       if (this->locked == true)
-        return StatusFalse;
+        return Status::False;
 
-      return StatusTrue;
+      return Status::True;
     }
 
     ///
@@ -153,7 +153,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Locked] " << this->locked << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

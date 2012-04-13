@@ -1,31 +1,12 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun may  2 11:00:51 2010]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/standalone/Standalone.hh>
+#include <elle/standalone/Standalong.hh>
+#include <elle/standalone/Report.hh>
 
 namespace elle
 {
   namespace standalone
   {
 
-//
-// ---------- static methods --------------------------------------------------
-//
-
-    ///
-    /// this method initializes the module.
-    ///
     Status              Standalone::Initialize()
     {
       // initialize the report.
@@ -43,9 +24,6 @@ namespace elle
       return StatusOk;
     }
 
-    ///
-    /// this method cleans the module.
-    ///
     Status              Standalone::Clean()
     {
       // clean the morgue class.

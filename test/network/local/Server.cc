@@ -31,7 +31,7 @@ namespace elle
       // set the line.
       this->line = line;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -44,10 +44,10 @@ namespace elle
       // listen for incoming connections.
       if (LocalServer::Listen(this->line,
                               Callback<>::Infer(&Server::Connection,
-                                                this)) == StatusError)
+                                                this)) == Status::Error)
         escape("unable to listen for local connections");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -66,7 +66,7 @@ namespace elle
 
       // call the challenge.
       if (socket->Call(Inputs<TagChallenge>(challenge),
-                       Outputs<TagResponse>(response)) == StatusError)
+                       Outputs<TagResponse>(response)) == Status::Error)
         escape("unable to call the challenge");
 
       std::cout << "[response] " << response << std::endl;
@@ -77,7 +77,7 @@ namespace elle
 
       elle::Program::Exit();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

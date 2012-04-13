@@ -15,13 +15,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/String.hh>
-#include <elle/core/Void.hh>
+#include <elle/types.hh>
 
-#include <elle/radix/Status.hh>
 #include <elle/radix/Meta.hh>
-
-#include <elle/package/Archivable.hh>
 
 #include <elle/io/Dumpable.hh>
 
@@ -68,7 +64,7 @@ namespace elle
     class Fiber;
   }
 
-  using namespace core;
+
   using namespace radix;
   using namespace package;
   using namespace io;
@@ -109,7 +105,7 @@ namespace elle
     ///
     class Report:
       public Meta,
-      public virtual Dumpable, public virtual Archivable
+      public Dumpable
     {
     public:
       //

@@ -32,19 +32,19 @@ namespace elle
       this->node = node;
 
       // create a timer.
-      if (this->timer.Create(Timer::ModeRepetition) == StatusError)
+      if (this->timer.Create(Timer::ModeRepetition) == Status::Error)
         escape("unable to create the timer");
 
       // subscribe to the timer's signal.
       if (this->timer.signal.timeout.Subscribe(
-            Callback<>::Infer(&Table::Renew, this)) == StatusError)
+            Callback<>::Infer(&Table::Renew, this)) == Status::Error)
         escape("unable to subscribe to the signal");
 
       // start the timer.
-      if (this->timer.Start(Node::Rate) == StatusError)
+      if (this->timer.Start(Node::Rate) == Status::Error)
         escape("unable to start the timer");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -56,10 +56,10 @@ namespace elle
       Table::Iterator   iterator;
 
       // try to locate a previous entry.
-      if (this->Locate(locus, iterator) == StatusOk)
+      if (this->Locate(locus, iterator) == Status::Ok)
         {
           // update the neighbour.
-          if ((*iterator)->Update(name) == StatusError)
+          if ((*iterator)->Update(name) == Status::Error)
             escape("unable to refresh the node");
         }
       else
@@ -70,14 +70,14 @@ namespace elle
           neighbour = new Neighbour;
 
           // create a new neighbour.
-          if (neighbour->Create(this->node, locus, name) == StatusError)
+          if (neighbour->Create(this->node, locus, name) == Status::Error)
             escape("unable to create the neighbour");
 
           // add the neighbour to the list.
           this->container.push_back(neighbour);
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -88,14 +88,14 @@ namespace elle
       Table::Iterator   iterator;
 
       // locate the neighbour.
-      if (this->Locate(locus, iterator) != StatusOk)
+      if (this->Locate(locus, iterator) != Status::Ok)
         escape("unable to locate the given locus");
 
       // refresh the neighbour.
-      if ((*iterator)->Refresh() == StatusError)
+      if ((*iterator)->Refresh() == Status::Error)
         escape("unable to refresh the node");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -106,7 +106,7 @@ namespace elle
       Table::Iterator   iterator;
 
       // try to locate a previous entry.
-      if (this->Locate(locus, iterator) == StatusError)
+      if (this->Locate(locus, iterator) == Status::Error)
         escape("unable to locate this neighbour");
 
       // delete the neighbour.
@@ -115,7 +115,7 @@ namespace elle
       // remove the element from the list.
       this->container.erase(iterator);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -131,7 +131,7 @@ namespace elle
         {
           // if the locus is found, return.
           if ((*iterator)->locus == locus)
-            return StatusOk;
+            return Status::Ok;
         }
 
       escape("unable to locate the given neighbour");
@@ -151,11 +151,11 @@ namespace elle
         {
           // add/update the table.
           if (this->Update((*scoutor)->locus,
-                           (*scoutor)->name) == StatusError)
+                           (*scoutor)->name) == Status::Error)
             escape("unable to update the table");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -171,7 +171,7 @@ namespace elle
 
       // serialize the number of neighbours.
       if (archive.Serialize(static_cast<Natural32>(this->container.size())) ==
-          StatusError)
+          Status::Error)
         escape("unable to serialize the neighbour");
 
       // serialize the table by going through it.
@@ -180,11 +180,11 @@ namespace elle
            scoutor++)
         {
           // serialize the neighbour.
-          if (archive.Serialize(*(*scoutor)) == StatusError)
+          if (archive.Serialize(*(*scoutor)) == Status::Error)
             escape("unable to serialize the neighbour");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -196,7 +196,7 @@ namespace elle
       Natural32         i;
 
       // extract the number of elements.
-      if (archive.Extract(n) == StatusError)
+      if (archive.Extract(n) == Status::Error)
         escape("unable to extract the internal numbers");
 
       // iterate.
@@ -208,14 +208,14 @@ namespace elle
           neighbour = new Neighbour;
 
           // extract the neighbour.
-          if (archive.Extract(*neighbour) == StatusError)
+          if (archive.Extract(*neighbour) == Status::Error)
             escape("unable to extract the neighbour");
 
           // add the neighbour to the table.
           this->container.push_back(neighbour);
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -237,11 +237,11 @@ namespace elle
            scoutor++)
         {
           // dump the neighbour.
-          if ((*scoutor)->Dump(margin + 2) == StatusError)
+          if ((*scoutor)->Dump(margin + 2) == Status::Error)
             escape("unable to dump the neighbour");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -258,7 +258,7 @@ namespace elle
       //
       // first, dump the table.
       //
-      if (this->Dump() == StatusError)
+      if (this->Dump() == Status::Error)
         escape("unable to dump the table");
 
       //
@@ -272,11 +272,11 @@ namespace elle
           if (this->node->socket.Send(
                 (*scoutor)->locus,
                 Inputs<TagProbe>(this->node->name,
-                                 this->node->table)) == StatusError)
+                                 this->node->table)) == Status::Error)
               escape("unable to send a probe");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

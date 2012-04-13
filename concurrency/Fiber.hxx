@@ -39,7 +39,7 @@ namespace elle
       // trigger the closure and, should there are errors, display them.
       //
 
-      if (closure->Call() == StatusError)
+      if (closure->Call() == Status::Error)
         yield(_(), "an error occured in the fiber");
 
       //
@@ -53,7 +53,7 @@ namespace elle
       // removing the parent from the waiting list and set
       // its state as awken.
 
-      if (Fiber::Remove(Fiber::Current->link) == StatusError)
+      if (Fiber::Remove(Fiber::Current->link) == Status::Error)
         yield(_(), "unable to remove the fiber");
 
       Fiber::Current->link->state = Fiber::StateAwaken;
@@ -63,7 +63,7 @@ namespace elle
       //
 
       if (::epth_switch(Fiber::Current->context,
-                        Fiber::Program->context) == StatusError)
+                        Fiber::Program->context) == Status::Error)
         yield(_(), "unable to switch back to the program thread");
     }
 
@@ -80,10 +80,10 @@ namespace elle
 
       if (Fiber::Current != Fiber::Program)
         {
-          if (closure.Call() == StatusError)
+          if (closure.Call() == Status::Error)
             escape("an error occured in the fiber");
 
-          return StatusOk;
+          return Status::Ok;
         }
 
       //
@@ -98,14 +98,14 @@ namespace elle
       // save the current fiber's environment i.e report, session etc.
       //
 
-      if (Fiber::Trigger(PhaseSave) == StatusError)
+      if (Fiber::Trigger(PhaseSave) == Status::Error)
         escape("unable to save the environment");
 
       //
       // add the current fiber to the waiting list.
       //
 
-      if (Fiber::Add(Fiber::Current) == StatusError)
+      if (Fiber::Add(Fiber::Current) == Status::Error)
         escape("unable to add the fiber to the container");
 
       //
@@ -120,7 +120,7 @@ namespace elle
       // allocate a new fiber and initialize it.
       //
 
-      if (Fiber::New(fiber) == StatusError)
+      if (Fiber::New(fiber) == Status::Error)
         escape("unable to allocate a new fiber");
 
       fiber->link = Fiber::Current;
@@ -132,7 +132,7 @@ namespace elle
 
       if (::epth_spawn(reinterpret_cast<void* (*)(void*)>(launch),
                        &closure,
-                       fiber->context) == StatusError)
+                       fiber->context) == Status::Error)
         escape("unable to spawn the thread");
 
       //
@@ -145,7 +145,7 @@ namespace elle
       // initialize the new fiber's environment.
       //
 
-      if (Fiber::Trigger(PhaseInitialize) == StatusError)
+      if (Fiber::Trigger(PhaseInitialize) == Status::Error)
         escape("unable to initialize the environment");
 
       //
@@ -153,13 +153,13 @@ namespace elle
       //
 
       if (::epth_switch(Fiber::Program->context,
-                        Fiber::Current->context) == StatusError)
+                        Fiber::Current->context) == Status::Error)
         escape("unable to switch to the new thread");
 
       // XXX Why not return the _CheckCurrentFiber() value ??
       Fiber::_CheckCurrentFiber();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 
@@ -171,15 +171,15 @@ namespace elle
     template <typename T>
     Status Fiber::Wait(const Event& event, std::shared_ptr<T>& data)
     {
-      if (Fiber::Wait(event) == StatusError)
-        return StatusError;
+      if (Fiber::Wait(event) == Status::Error)
+        return Status::Error;
 
       // retrieve the data.
       // XXX Meta -> User type : Y U NO DYNAMIC_CAST ?
       data = std::static_pointer_cast<T>(Fiber::Current->data);
       // XXX Reset fiber data ?
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -194,15 +194,15 @@ namespace elle
     template <typename T>
     Status Fiber::Wait(Resource const& resource, std::shared_ptr<T>& data)
     {
-      if (Fiber::Wait(resource) == StatusError)
-        return StatusError;
+      if (Fiber::Wait(resource) == Status::Error)
+        return Status::Error;
 
       // retrieve the data.
       // XXX Meta -> User type : Y U NO DYNAMIC_CAST ?
       data = std::static_pointer_cast<T>(Fiber::Current->data);
       // XXX Reset fiber data ?
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -216,7 +216,7 @@ namespace elle
 
       // check if there are blocked fibers.
       if (Fiber::Waiting.empty() == true)
-        return StatusFalse;
+        return Status::False;
 
       // set the boolean to false meaning that no fiber has been woken up.
       awaken = false;
@@ -245,9 +245,9 @@ namespace elle
 
       // return true if at least one fiber has been awaken.
       if (awaken == true)
-        return StatusTrue;
+        return Status::True;
 
-      return StatusFalse;
+      return Status::False;
     }
 
     ///
@@ -261,7 +261,7 @@ namespace elle
 
       // check if there are blocked fibers.
       if (Fiber::Waiting.empty() == true)
-        return StatusFalse;
+        return Status::False;
 
       // set the boolean to false meaning that no fiber has been woken up.
       awaken = false;
@@ -289,9 +289,9 @@ namespace elle
 
       // return true if at least one fiber has been awaken.
       if (awaken == true)
-        return StatusTrue;
+        return Status::True;
 
-      return StatusFalse;
+      return Status::False;
     }
 
   }

@@ -52,7 +52,7 @@ PublicKey::PublicKey(const PublicKey& K) :
   Object(K), _key(nullptr)
 {
   // re-create the public key by duplicate the internal numbers.
-  if (this->Create(K._key) == StatusError)
+  if (this->Create(K._key) == Status::Error)
     fail("unable to duplicate the public key");
 }
 
@@ -89,10 +89,10 @@ Status PublicKey::Create(::EVP_PKEY const* key)
 
   // call the creation method.
   if (this->Create(::BN_dup(key->pkey.rsa->n),
-                   ::BN_dup(key->pkey.rsa->e)) == StatusError)
+                   ::BN_dup(key->pkey.rsa->e)) == Status::Error)
     escape("unable to create the public key");
 
-  return StatusOk;
+  return Status::Ok;
 }
 
 ///
@@ -182,7 +182,7 @@ Status PublicKey::Create(Large* n, Large* e)
 
   assert(this->_key != nullptr);
 
-  return StatusOk;
+  return Status::Ok;
 }
 
 ///
@@ -211,14 +211,14 @@ Status              PublicKey::Encrypt(const Plain&         plain,
   // (i)
   {
     // generate a secret key.
-    if (secret.Generate() == StatusError)
+    if (secret.Generate() == Status::Error)
       escape("unable to generate the secret key");
   }
 
   // (ii)
   {
     // cipher the plain text with the secret key.
-    if (secret.Encrypt(plain, data) == StatusError)
+    if (secret.Encrypt(plain, data) == Status::Error)
       escape("unable to cipher the plain text with the secret key");
   }
 
@@ -228,11 +228,11 @@ Status              PublicKey::Encrypt(const Plain&         plain,
     size_t          size;
 
     // first, create an archive.
-    if (archive.Create() == StatusError)
+    if (archive.Create() == Status::Error)
       escape("unable to create an achive");
 
     // then, serialize the secret key.
-    if (archive.Serialize(secret) == StatusError)
+    if (archive.Serialize(secret) == Status::Error)
       escape("unable to serialize the secret key");
 
     // compute the size of the archived symmetric key.
@@ -246,7 +246,7 @@ Status              PublicKey::Encrypt(const Plain&         plain,
 
     // allocate memory so the key can receive the upcoming
     // encrypted portion.
-    if (key.region.Prepare(size) == StatusError)
+    if (key.region.Prepare(size) == Status::Error)
       escape("unable to prepare the key");
 
     // actually encrypt the secret key's archive, storing the encrypted
@@ -268,21 +268,21 @@ Status              PublicKey::Encrypt(const Plain&         plain,
     Archive         archive;
 
     // create the main archive.
-    if (archive.Create() == StatusError)
+    if (archive.Create() == Status::Error)
       escape("unable to create the archive");
 
     // serialize the key.
-    if (archive.Serialize(key, data) == StatusError)
+    if (archive.Serialize(key, data) == Status::Error)
       escape("unable to serialize the asymetrically-encrypted secret key "
              "and the symetrically-encrypted data");
 
     // duplicate the archive's content.
     if (code.region.Duplicate(archive.contents,
-                              archive.size) == StatusError)
+                              archive.size) == Status::Error)
       escape("unable to duplicate the archive's content");
   }
 
-  return StatusOk;
+  return Status::Ok;
 }
 
 ///
@@ -299,7 +299,7 @@ Status              PublicKey::Verify(const Signature&      signature,
   Digest            digest;
 
   // compute the plain's digest.
-  if (OneWay::Hash(plain, digest) == StatusError)
+  if (OneWay::Hash(plain, digest) == Status::Error)
     escape("unable to hash the plain");
 
   // verify.
@@ -311,7 +311,7 @@ Status              PublicKey::Verify(const Signature&      signature,
         digest.region.size) <= 0)
     escape(::ERR_error_string(ERR_get_error(), nullptr));
 
-  return StatusOk;
+  return Status::Ok;
 }
 
 ///
@@ -343,11 +343,11 @@ Status              PublicKey::Decrypt(const Code&          code,
   // (i)
   {
     // prepare the archive.
-    if (archive.Wrap(code.region) == StatusError)
+    if (archive.Wrap(code.region) == Status::Error)
       escape("unable to prepare the archive");
 
     // extract the secret key and data, in their encrypted form.
-    if (archive.Extract(key, data) == StatusError)
+    if (archive.Extract(key, data) == Status::Error)
       escape("unable to extract the asymetrically-encrypted secret key "
              "and the symetrically-encrypted data");
   }
@@ -368,7 +368,7 @@ Status              PublicKey::Decrypt(const Code&          code,
       escape(::ERR_error_string(ERR_get_error(), nullptr));
 
     // allocate the required memory for the region object.
-    if (region.Prepare(size) == StatusError)
+    if (region.Prepare(size) == Status::Error)
       escape("unable to allocate the required memory");
 
     // perform the decrypt operation.
@@ -388,27 +388,27 @@ Status              PublicKey::Decrypt(const Code&          code,
     region.size = size;
 
     // prepare the archive.
-    if (archive.Acquire(region) == StatusError)
+    if (archive.Acquire(region) == Status::Error)
       escape("unable to prepare the archive");
 
     // detach the data from the region so that the data
     // is not release twice by both 'region' and 'archive'.
-    if (region.Detach() == StatusError)
+    if (region.Detach() == Status::Error)
       escape("unable to detach the data from the region");
 
     // extract the secret key.
-    if (archive.Extract(secret) == StatusError)
+    if (archive.Extract(secret) == Status::Error)
       escape("unable to extract the secret key from the archive");
   }
 
   // (iii)
   {
     // finally, decrypt the data with the secret key.
-    if (secret.Decrypt(data, clear) == StatusError)
+    if (secret.Decrypt(data, clear) == Status::Error)
       escape("unable to decrypt the data with the secret key");
   }
 
-  return StatusOk;
+  return Status::Ok;
 }
 
 //
@@ -422,24 +422,24 @@ Boolean PublicKey::operator==(const PublicKey& element) const
 {
   // check the address as this may actually be the same object.
   if (this == &element)
-    return StatusTrue;
+    return Status::True;
 
   // if one of the key is null....
   if ((this->_key == nullptr) || (element._key == nullptr))
     {
       // compare the addresses.
       if (this->_key != element._key)
-        return StatusFalse;
+        return Status::False;
     }
   else
     {
       // compare the internal numbers.
       if ((::BN_cmp(this->_key->pkey.rsa->n, element._key->pkey.rsa->n) != 0) ||
           (::BN_cmp(this->_key->pkey.rsa->e, element._key->pkey.rsa->e) != 0))
-        return StatusFalse;
+        return Status::False;
     }
 
-  return StatusTrue;
+  return Status::True;
 }
 
 ///
@@ -475,7 +475,7 @@ Status              PublicKey::Dump(const Natural32         margin) const
                 << *this->_key->pkey.rsa->e << std::endl;
     }
 
-  return StatusOk;
+  return Status::Ok;
 }
 
 //
@@ -494,10 +494,10 @@ Status          PublicKey::Serialize(Archive&           archive) const
 
   // serialize the internal numbers.
   if (archive.Serialize(*this->_key->pkey.rsa->n,
-                        *this->_key->pkey.rsa->e) == StatusError)
+                        *this->_key->pkey.rsa->e) == Status::Error)
     escape("unable to serialize the internal numbers");
 
-  return StatusOk;
+  return Status::Ok;
 }
 
 ///
@@ -523,16 +523,16 @@ Status          PublicKey::Extract(Archive&             archive)
 
 
   // extract the numbers.
-  if (archive.Extract(scope.n, scope.e) == StatusError)
+  if (archive.Extract(scope.n, scope.e) == Status::Error)
     escape("unable to extract the internal numbers");
 
   scope.track = true;
 
   // create the EVP_PKEY object from the extract numbers.
   if (this->Create(::BN_dup(&scope.n),
-                   ::BN_dup(&scope.e)) == StatusError)
+                   ::BN_dup(&scope.e)) == Status::Error)
     escape("unable to create the public key from the archive");
 
-  return StatusOk;
+  return Status::Ok;
 }
 

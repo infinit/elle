@@ -25,7 +25,7 @@
 
 namespace elle
 {
-  using namespace core;
+
 
   namespace standalone
   {
@@ -50,7 +50,7 @@ namespace elle
     {
       // nothing to do.
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -62,7 +62,7 @@ namespace elle
       if (Log::Current != NULL)
         delete Log::Current;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -74,7 +74,7 @@ namespace elle
       // allocate the log for the initial thread/fiber.
       Log::Current = new Log(path);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -86,11 +86,11 @@ namespace elle
     {
       // verify the log's presence.
       if (Log::Current == NULL)
-        return StatusFalse;
+        return Status::False;
 
       log = Log::Current;
 
-      return StatusTrue;
+      return Status::True;
     }
 
 //
@@ -135,7 +135,7 @@ namespace elle
       //
 
       // retrieve the report.
-      if (Report::Instance(report) == StatusTrue)
+      if (Report::Instance(report) == Status::True)
         {
           Report::Scoutor       scoutor;
 

@@ -17,7 +17,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace standalone;
 
   namespace concurrency
@@ -112,10 +112,10 @@ namespace elle
       //
 
       if (::epth_initialize(Fiber::Size,
-                            Fiber::Program->context) == StatusError)
+                            Fiber::Program->context) == Status::Error)
         escape("unable to initialize the epth library");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -127,7 +127,7 @@ namespace elle
       // clean the epth library.
       //
 
-      if (::epth_clean() == StatusError)
+      if (::epth_clean() == Status::Error)
         escape("unable to clean the epth library");
 
       //
@@ -182,7 +182,7 @@ namespace elle
         delete Fiber::Program;
       }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -202,23 +202,23 @@ namespace elle
 
       Fiber::Current->timer = new Timer;
 
-      if (Fiber::Current->timer->Create(Timer::ModeSingle) == StatusError)
+      if (Fiber::Current->timer->Create(Timer::ModeSingle) == Status::Error)
         escape("unable to create the timer");
 
       if (Fiber::Current->timer->signal.timeout.Subscribe(
-            Callback<>::Infer(&Fiber::Timeout, Fiber::Current)) == StatusError)
+            Callback<>::Infer(&Fiber::Timeout, Fiber::Current)) == Status::Error)
         escape("unable to subscribe to the signal");
 
-      if (Fiber::Current->timer->Start(duration) == StatusError)
+      if (Fiber::Current->timer->Start(duration) == Status::Error)
         escape("unable to start the timer");
 
       //
       // wait for the resource represented by the timer's address.
       assert(Fiber::Current->timer != nullptr);
-      if (Fiber::Wait(*Fiber::Current->timer) == StatusError)
+      if (Fiber::Wait(*Fiber::Current->timer) == Status::Error)
         escape("unable to wait for the resource");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -238,10 +238,10 @@ namespace elle
       // will stop executing the fiber and put it right back in the queue.
       //
 
-      if (Fiber::Sleep(0) == StatusError)
+      if (Fiber::Sleep(0) == Status::Error)
         escape("an error occured while sleeping");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -250,21 +250,21 @@ namespace elle
     ///
     Status              Fiber::Register(const
                                           Callback<
-                                            Status,
+                                            Status::,
                                             Parameters<Phase, Fiber*>
                                             >                   c)
     {
-      Callback< Status,
+      Callback< Status::,
                 Parameters<Phase, Fiber*> >*    callback;
 
       // clone the callback.
-      callback = new Callback< Status,
+      callback = new Callback< Status::,
                                Parameters<Phase, Fiber*> >(c);
 
       // store in the container.
       Fiber::Phases.push_back(callback);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -280,11 +280,11 @@ namespace elle
            scoutor++)
         {
           // trigger the callback, passing the current fiber.
-          if ((*scoutor)->Call(phase, Fiber::Current) == StatusError)
+          if ((*scoutor)->Call(phase, Fiber::Current) == Status::Error)
             escape("an error occured in the callback");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -317,7 +317,7 @@ namespace elle
 
       // if there is not fibers, return.
       if (Fiber::Waiting.empty() == true)
-        return StatusOk;
+        return Status::Ok;
 
       // We are now scheduling
       Guard             guard(Fiber::IsScheduling, false);
@@ -335,11 +335,11 @@ namespace elle
           if (fiber->state == Fiber::StateAwaken)
             {
               // remove the fiber from the container.
-              if (Fiber::Remove(fiber) == StatusError)
+              if (Fiber::Remove(fiber) == Status::Error)
                   escape("unable to remove the fiber");
 
               // save the environment.
-              if (Fiber::Trigger(PhaseSave) == StatusError)
+              if (Fiber::Trigger(PhaseSave) == Status::Error)
                 escape("unable to save the environment");
 
               // set the current fiber as suspended.
@@ -355,12 +355,12 @@ namespace elle
               Fiber::Current->state = Fiber::StateActive;
 
               // restore the environment.
-              if (Fiber::Trigger(PhaseRestore) == StatusError)
+              if (Fiber::Trigger(PhaseRestore) == Status::Error)
                 escape("unable to restore the environment");
 
               // switch to the thread to resume.
               if (::epth_switch(Fiber::Program->context,
-                                Fiber::Current->context) == StatusError)
+                                Fiber::Current->context) == Status::Error)
                 escape("unable to switch to the thread to resume");
 
               // check if the current fiber state
@@ -372,7 +372,7 @@ namespace elle
             iterator++;
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -402,7 +402,7 @@ namespace elle
       // initialize the context's memory.
       ::memset(&fiber->context, 0x0, sizeof (fiber->context));
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -433,7 +433,7 @@ namespace elle
           delete fiber;
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -444,12 +444,12 @@ namespace elle
       // ignore the program fiber which is special as it is
       // used as the root fiber.
       if (fiber == Fiber::Program)
-        return StatusOk;
+        return Status::Ok;
 
       // push the fiber.
       Fiber::Waiting.push_front(fiber);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -462,7 +462,7 @@ namespace elle
       // ignore the program fiber which is special as it is
       // used as the root fiber.
       if (fiber == Fiber::Program)
-        return StatusOk;
+        return Status::Ok;
 
       // iterate over the container.
       for (iterator = Fiber::Waiting.begin();
@@ -479,7 +479,7 @@ namespace elle
               // return since a fiber cannot be waiting for another
               // event or resource hence cannot be located twice in
               // the containers.
-              return StatusOk;
+              return Status::Ok;
             }
         }
 
@@ -504,10 +504,10 @@ namespace elle
           if ((fiber->state == Fiber::StateSuspended) &&
               (fiber->type == Fiber::TypeEvent) &&
               (*fiber->event == event))
-            return StatusTrue;
+            return Status::True;
         }
 
-      return StatusFalse;
+      return Status::False;
     }
 
     ///
@@ -528,10 +528,10 @@ namespace elle
           if ((fiber->state == Fiber::StateSuspended) &&
               (fiber->type == Fiber::TypeResource) &&
               (fiber->resource == resource))
-            return StatusTrue;
+            return Status::True;
         }
 
-      return StatusFalse;
+      return Status::False;
     }
 
     ///
@@ -557,7 +557,7 @@ namespace elle
             Fiber*      fiber = *scoutor;
 
             // dump the fiber.
-            if (fiber->Dump(margin + 4) == StatusError)
+            if (fiber->Dump(margin + 4) == Status::Error)
               escape("unable to dump the fiber");
           }
       }
@@ -566,14 +566,14 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Program]" << std::endl;
 
-      if (Fiber::Program->Dump(margin + 4) == StatusError)
+      if (Fiber::Program->Dump(margin + 4) == Status::Error)
         escape("unable to dump the program fiber");
 
       // dump the current fiber.
       std::cout << alignment << Dumpable::Shift << "[Current]"
                 << std::endl;
 
-      if (Fiber::Current->Dump(margin + 4) == StatusError)
+      if (Fiber::Current->Dump(margin + 4) == Status::Error)
         escape("unable to dump the current fiber");
 
       // dump the cache.
@@ -594,7 +594,7 @@ namespace elle
           }
       }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -640,7 +640,7 @@ namespace elle
     Status              Fiber::Timeout()
     {
       // awaken the fiber.
-      if (Fiber::Awaken(*this->timer) != StatusTrue)
+      if (Fiber::Awaken(*this->timer) != Status::True)
         escape("unable to awaken the fiber");
 
       // don't delete the timer because it is in use
@@ -650,7 +650,7 @@ namespace elle
       // reset the pointer.
       this->timer = NULL;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -673,7 +673,7 @@ namespace elle
       // dump the frame.
       if (this->frame != NULL)
         {
-          if (this->frame->Dump(margin + 2) == StatusError)
+          if (this->frame->Dump(margin + 2) == Status::Error)
             escape("unable to dump the frame");
         }
       else
@@ -693,7 +693,7 @@ namespace elle
         case Fiber::TypeEvent:
           {
             // dump the event.
-            if (this->event->Dump(margin + 4) == StatusError)
+            if (this->event->Dump(margin + 4) == Status::Error)
               escape("unable to dump the event");
 
             break;
@@ -714,7 +714,7 @@ namespace elle
         }
 
       // dump the environment.
-      if (this->environment->Dump(margin + 2) == StatusError)
+      if (this->environment->Dump(margin + 2) == Status::Error)
         escape("unable to dump the environment");
 
       // dump the data value.
@@ -724,7 +724,7 @@ namespace elle
       // dump the timer.
       if (this->timer != NULL)
         {
-          if (this->timer->Dump(margin + 2) == StatusError)
+          if (this->timer->Dump(margin + 2) == Status::Error)
             escape("unable to dump the timer");
         }
       else
@@ -734,7 +734,7 @@ namespace elle
                     << none << std::endl;
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status              Fiber::_CheckCurrentFiber()
@@ -753,15 +753,15 @@ namespace elle
         case Fiber::StateCompleted:
           {
             // abort the completed thread.
-            if (::epth_abort(Fiber::Current->context) == StatusError)
+            if (::epth_abort(Fiber::Current->context) == Status::Error)
               escape("unable to abort the completed thread");
 
             // clean the environment.
-            if (Fiber::Trigger(PhaseClean) == StatusError)
+            if (Fiber::Trigger(PhaseClean) == Status::Error)
               escape("unable to initialize the environment");
 
             // if the fiber has completed, delete it.
-            if (Fiber::Delete(Fiber::Current) == StatusError)
+            if (Fiber::Delete(Fiber::Current) == Status::Error)
               escape("unable to delete the fiber");
 
             break;
@@ -789,13 +789,13 @@ namespace elle
       Fiber::Current->state = Fiber::StateActive;
 
       // restore the environment.
-      if (Fiber::Trigger(PhaseRestore) == StatusError)
+      if (Fiber::Trigger(PhaseRestore) == Status::Error)
         escape("unable to restore the environment");
 
       if (!Fiber::IsScheduling)
         Schedule();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status Fiber::_PrepareWait()
@@ -807,17 +807,17 @@ namespace elle
       // set the fiber has been suspended.
       Fiber::Current->state = Fiber::StateSuspended;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status Fiber::_DoWait()
     {
       // save the environment.
-      if (Fiber::Trigger(PhaseSave) == StatusError)
+      if (Fiber::Trigger(PhaseSave) == Status::Error)
         escape("unable to save the environment");
 
       // add the current fiber to the container.
-      if (Fiber::Add(Fiber::Current) == StatusError)
+      if (Fiber::Add(Fiber::Current) == Status::Error)
         escape("unable to add the fiber to the container");
 
       // set the state of the program's fiber as awaken as we
@@ -828,17 +828,17 @@ namespace elle
       // in order to carry on at this point when woken up.
       // XXX
       if (::epth_switch(Fiber::Current->context,
-                        Fiber::Program->context) == StatusError)
+                        Fiber::Program->context) == Status::Error)
       // XXX                                        ^^^^^^^^^^^ ?
         escape("unable to switch back to the program thread");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status Fiber::Wait(const Event& event)
     {
-      if (Fiber::_PrepareWait() == StatusError)
-        return StatusError;
+      if (Fiber::_PrepareWait() == Status::Error)
+        return Status::Error;
 
       Fiber::Current->type = Fiber::TypeEvent;
       Fiber::Current->event = new Event(event);
@@ -848,8 +848,8 @@ namespace elle
 
     Status Fiber::Wait(Resource const& resource)
     {
-      if (Fiber::_PrepareWait() == StatusError)
-        return StatusError;
+      if (Fiber::_PrepareWait() == Status::Error)
+        return Status::Error;
 
       Fiber::Current->type = Fiber::TypeResource;
       Fiber::Current->resource = &resource;

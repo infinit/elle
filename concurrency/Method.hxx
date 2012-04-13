@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/String.hh>
+#include <elle/types.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
@@ -90,7 +90,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift << "[Handler] "
                 << std::hex << this->handler << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -200,10 +200,10 @@ namespace elle
       std::cout << alignment << "[Method]" << std::endl;
 
       // dump the shell.
-      if (this->shell->Dump(margin) == StatusError)
+      if (this->shell->Dump(margin) == Status::Error)
         escape("unable to dump the shell");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //

@@ -26,11 +26,11 @@ ELSEIF(INFINIT_WINDOWS)
 ENDIF()
 
 ADD_LIBRARY(elle
-  core/Integer.cc
-  core/Large.cc
-  core/Null.cc
-  core/Natural.cc
-  core/Type.cc
+	#core/Integer.cc
+	#core/Large.cc
+	#core/Null.cc
+	#core/Natural.cc
+	#core/Type.cc
 
   standalone/Log.cc
   standalone/Maid.cc
@@ -54,9 +54,9 @@ ADD_LIBRARY(elle
   io/Piece.cc
   io/Path.cc
 
-  package/Archivable.cc
-  package/Archive.cc
-  package/Footprint.cc
+  #package/Archivable.cc
+  #package/Archive.cc
+  #package/Footprint.cc
 
   system/System.cc
 

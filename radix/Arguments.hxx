@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Void.hh>
+#include <elle/types.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
@@ -28,7 +28,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace standalone;
   using namespace radix;
   using namespace concurrency;
@@ -134,7 +134,7 @@ namespace elle
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -246,7 +246,7 @@ namespace elle
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -384,7 +384,7 @@ namespace elle
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -548,7 +548,7 @@ namespace elle
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -744,7 +744,7 @@ namespace elle
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -976,7 +976,7 @@ namespace elle
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -1252,7 +1252,7 @@ namespace elle
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -1574,7 +1574,7 @@ namespace elle
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -1946,7 +1946,7 @@ namespace elle
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -2372,7 +2372,7 @@ namespace elle
                   << "[Arguments " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 

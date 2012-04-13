@@ -38,11 +38,11 @@ namespace elle
         }
 
       // init the library.
-      if (Elle::Initialize() == StatusError)
+      if (Elle::Initialize() == Status::Error)
         escape("unable to initialize the Elle library");
 
       // set up the program
-      if (Program::Setup() == StatusError)
+      if (Program::Setup() == Status::Error)
         escape("unable to set up the program");
 
       // set up the node
@@ -50,22 +50,22 @@ namespace elle
                      String(argv[2]),
                      static_cast<Port>(::strtoul(argv[3],
                                                  NULL,
-                                                 0))) == StatusError)
+                                                 0))) == Status::Error)
         escape("unable to start the node");
 
       // start the node.
-      if (node.Run() == StatusError)
+      if (node.Run() == Status::Error)
         escape("unable to start the node");
 
       // launch the program.
-      if (Program::Launch() == StatusError)
+      if (Program::Launch() == Status::Error)
         escape("an error occured during the event processing");
 
       // clean the library.
-      if (Elle::Clean() == StatusError)
+      if (Elle::Clean() == Status::Error)
         escape("unable to clean the Elle library");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }
@@ -78,7 +78,7 @@ namespace elle
 int                     main(const int                          argc,
                              const char*                        argv[])
 {
-  if (elle::test::Main(argc, argv) == elle::radix::StatusError)
+  if (elle::test::Main(argc, argv) == elle::Status::Error)
     {
       show();
 

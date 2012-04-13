@@ -17,8 +17,8 @@
 
 #include <elle/system/Platform.hh>
 
-#include <elle/core/Natural.hh>
-#include <elle/core/Void.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
 
 #include <elle/radix/Status.hh>
 #include <elle/radix/Meta.hh>
@@ -41,7 +41,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
 
   namespace concurrency
@@ -141,7 +141,7 @@ namespace elle
       {
         typedef std::vector<
           Callback<
-            Status,
+            Status::,
             Parameters<Phase, Fiber*> >* >              Container;
         typedef Container::iterator                     Iterator;
         typedef Container::const_iterator               Scoutor;
@@ -195,7 +195,7 @@ namespace elle
 
       static Status     Register(const
                                    Callback<
-                                     Status,
+                                     Status::,
                                      Parameters<Phase, Fiber*>
                                      >);
       static Status     Trigger(Phase);

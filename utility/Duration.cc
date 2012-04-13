@@ -54,9 +54,9 @@ namespace elle
       // compare the attributes.
       if ((this->unit != element.unit) ||
           (this->value != element.value))
-        return StatusFalse;
+        return Status::False;
 
-      return StatusTrue;
+      return Status::True;
     }
 
     ///
@@ -84,7 +84,7 @@ namespace elle
                 << std::nouppercase << std::dec 
                 << this->value << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -98,10 +98,10 @@ namespace elle
     {
       // serialize the internal attributes.
       if (archive.Serialize(static_cast<Natural8>(this->unit),
-                            this->value) == StatusError)
+                            this->value) == Status::Error)
         escape("unable to serialize the attributes");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -111,10 +111,10 @@ namespace elle
     {
       // extract the internal attributes.
       if (archive.Extract(reinterpret_cast<Natural8&>(this->unit),
-                          this->value) == StatusError)
+                          this->value) == Status::Error)
         escape("unable to extract the attributes");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

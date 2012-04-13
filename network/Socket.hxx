@@ -92,7 +92,7 @@ namespace elle
           }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -127,7 +127,7 @@ namespace elle
           }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -159,7 +159,7 @@ namespace elle
           }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

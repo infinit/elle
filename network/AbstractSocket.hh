@@ -28,7 +28,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Natural.hh>
+#include <elle/types.hh>
 
 #include <elle/standalone/Region.hh>
 
@@ -45,7 +45,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace standalone;
   using namespace radix;
   using namespace concurrency;

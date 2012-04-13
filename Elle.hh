@@ -62,7 +62,6 @@ namespace elle
 
 #include <elle/system/Platform.hh>
 
-#include <elle/core/Core.hh>
 #include <elle/system/System.hh>
 #include <elle/standalone/Standalone.hh>
 #include <elle/radix/Radix.hh>
@@ -84,7 +83,6 @@ namespace elle
 
 namespace elle
 {
-  using namespace core;
   using namespace system;
   using namespace standalone;
   using namespace radix;

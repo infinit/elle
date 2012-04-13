@@ -15,14 +15,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Boolean.hh>
-#include <elle/core/Natural.hh>
-#include <elle/core/Large.hh>
+#include <elle/types.hh>
 
-#include <elle/radix/Status.hh>
 #include <elle/radix/Object.hh>
-
-#include <elle/package/Archive.hh>
 
 #include <elle/cryptography/Plain.hh>
 #include <elle/cryptography/Code.hh>
@@ -38,9 +33,8 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
-  using namespace package;
 
   namespace cryptography
   {
@@ -94,8 +88,9 @@ namespace elle
       Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status            Serialize(Archive&) const;
-      Status            Extract(Archive&);
+      // XXX
+      //Status            Serialize(Archive&) const;
+      //Status            Extract(Archive&);
 
       //
       // attributes
@@ -125,40 +120,41 @@ namespace elle
       /// build archives and we are already receiving an archive.
       ///
 
-      Status            Encrypt(const Archive&          archive,
-                                Code&                   code) const
-      {
-        return (this->Encrypt(Plain(archive.contents, archive.size),
-                              code));
-      }
+      // XXX
+      //Status            Encrypt(const Archive&          archive,
+      //                          Code&                   code) const
+      //{
+      //  return (this->Encrypt(Plain(archive.contents, archive.size),
+      //                        code));
+      //}
 
-      Status            Verify(const Signature&         signature,
-                               const Archive&           archive) const
-      {
-        return (this->Verify(signature,
-                             Plain(archive.contents, archive.size)));
-      }
+      //Status            Verify(const Signature&         signature,
+      //                         const Archive&           archive) const
+      //{
+      //  return (this->Verify(signature,
+      //                       Plain(archive.contents, archive.size)));
+      //}
 
-      Status            Decrypt(const Code&             code,
-                                Archive&                archive) const
-      {
-        Clear           clear;
+      //Status            Decrypt(const Code&             code,
+      //                          Archive&                archive) const
+      //{
+      //  Clear           clear;
 
-        // decrypt the code.
-        if (this->Decrypt(code, clear) == StatusError)
-          escape("unable to decrypt the code");
+      //  // decrypt the code.
+      //  if (this->Decrypt(code, clear) == Status::Error)
+      //    escape("unable to decrypt the code");
 
-        // prepare the archive.
-        if (archive.Acquire(clear) == StatusError)
-          escape("unable to prepare the archive");
+      //  // prepare the archive.
+      //  if (archive.Acquire(clear) == Status::Error)
+      //    escape("unable to prepare the archive");
 
-        // detach the data so that not both the clear and archive
-        // release the data.
-        if (clear.Detach() == StatusError)
-          escape("unable to detach the clear's data");
+      //  // detach the data so that not both the clear and archive
+      //  // release the data.
+      //  if (clear.Detach() == Status::Error)
+      //    escape("unable to detach the clear's data");
 
-        return StatusOk;
-      }
+      //  return Status::Ok;
+      //}
 
       //
       // variadic templates

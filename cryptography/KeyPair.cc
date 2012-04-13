@@ -16,7 +16,7 @@
 #include <elle/cryptography/Cipher.hh>
 #include <elle/cryptography/SecretKey.hh>
 
-#include <elle/core/Byte.hh>
+#include <elle/types.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
@@ -96,7 +96,7 @@ namespace elle
       if (::EVP_PKEY_keygen_init(KeyPair::Contexts::Generate) <= 0)
         escape("unable to initialise the generation context");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -107,7 +107,7 @@ namespace elle
       // release the generation context.
       ::EVP_PKEY_CTX_free(KeyPair::Contexts::Generate);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -115,10 +115,10 @@ namespace elle
     ///
     Status              KeyPair::Generate()
     {
-      if (this->Generate(KeyPair::Default::Length) == StatusError)
+      if (this->Generate(KeyPair::Default::Length) == Status::Error)
         escape("unable to generate the key pair");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -148,18 +148,18 @@ namespace elle
       assert(scope.key != nullptr);
 
       // create the actual public key according to the EVP structure.
-      if (this->K.Create(scope.key) == StatusError)
+      if (this->K.Create(scope.key) == Status::Error)
         escape("unable to create the public key");
 
       assert(this->K.key() != nullptr);
 
       // create the actual private key according to the EVP structure.
-      if (this->k.Create(scope.key) == StatusError)
+      if (this->k.Create(scope.key) == Status::Error)
         escape("unable to create the private key");
 
       assert(this->k.key() != nullptr);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -175,7 +175,7 @@ namespace elle
       assert(this->K.key() != nullptr);
       assert(this->k.key() != nullptr);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -220,14 +220,14 @@ namespace elle
       scope.rsa = nullptr;
 
       // create the rotated public key according to the EVP structure.
-      if (kp.K.Create(scope.key) == StatusError)
+      if (kp.K.Create(scope.key) == Status::Error)
         escape("unable to create the public key");
 
       // create the rotated private key according to the EVP structure.
-      if (kp.k.Create(scope.key) == StatusError)
+      if (kp.k.Create(scope.key) == Status::Error)
         escape("unable to create the private key");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -241,13 +241,13 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return StatusTrue;
+        return Status::True;
 
       // compare the internal keys.
       if ((this->K != element.K) || (this->k != element.k))
-        return StatusFalse;
+        return Status::False;
 
-      return StatusTrue;
+      return Status::True;
     }
 
     ///
@@ -269,14 +269,14 @@ namespace elle
       std::cout << alignment << "[KeyPair]" << std::endl;
 
       // dump the public key.
-      if (this->K.Dump(margin + 2) == StatusError)
+      if (this->K.Dump(margin + 2) == Status::Error)
         escape("unable to dump the public key");
 
       // dump the private key.
-      if (this->k.Dump(margin + 2) == StatusError)
+      if (this->k.Dump(margin + 2) == Status::Error)
         escape("unable to dump the public key");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -292,10 +292,10 @@ namespace elle
       assert(this->k.key() != nullptr);
 
       // serialize the internal keys.
-      if (archive.Serialize(this->K, this->k) == StatusError)
+      if (archive.Serialize(this->K, this->k) == Status::Error)
         escape("unable to serialize the internal keys");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -304,10 +304,10 @@ namespace elle
     Status              KeyPair::Extract(Archive&               archive)
     {
       // extract the internal keys.
-      if (archive.Extract(this->K, this->k) == StatusError)
+      if (archive.Extract(this->K, this->k) == Status::Error)
         escape("unable to extract the internal keys");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -325,24 +325,24 @@ namespace elle
       SecretKey         key;
 
       // read the file.
-      if (File::Read(path, region) == StatusError)
+      if (File::Read(path, region) == Status::Error)
         escape("unable to read the file");
 
       // decode and extract the cipher.
       if (Base64::Decode(
             String(reinterpret_cast<char*>(region.contents), region.size),
-            cipher) == StatusError)
+            cipher) == Status::Error)
         escape("unable to decode the cipher");
 
       // create the key based on the given pass.
-      if (key.Create(pass) == StatusError)
+      if (key.Create(pass) == Status::Error)
         escape("unable to create the key");
 
       // decrypt the cipher file content with the secret key.
-      if (key.Decrypt(cipher, *this) == StatusError)
+      if (key.Decrypt(cipher, *this) == Status::Error)
         escape("unable to decrypt the keypair");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -358,27 +358,27 @@ namespace elle
       Region            region;
 
       // create a secret key with this pass.
-      if (key.Create(pass) == StatusError)
+      if (key.Create(pass) == Status::Error)
         escape("unable to create the secret key");
 
       // encrypt the keypair.
-      if (key.Encrypt(*this, cipher) == StatusError)
+      if (key.Encrypt(*this, cipher) == Status::Error)
         escape("unable to decrypt the keypair");
 
       // encode in base64.
-      if (Base64::Encode(cipher, string) == StatusError)
+      if (Base64::Encode(cipher, string) == Status::Error)
         escape("unable to encode in base64");
 
       // wrap the string.
       if (region.Wrap(reinterpret_cast<const Byte*>(string.c_str()),
-                      string.length()) == StatusError)
+                      string.length()) == Status::Error)
         escape("unable to wrap the string");
 
       // write the file.
-      if (File::Write(path, region) == StatusError)
+      if (File::Write(path, region) == Status::Error)
         escape("unable to write the file");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -387,10 +387,10 @@ namespace elle
     Status              KeyPair::Erase(const Path&              path) const
     {
       // erase the file.
-      if (File::Erase(path) == StatusError)
+      if (File::Erase(path) == Status::Error)
         escape("unable to erase the file");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///

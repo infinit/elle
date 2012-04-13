@@ -37,19 +37,19 @@ namespace elle
       this->name = name;
 
       // create the timer.
-      if (this->timer.Create(Timer::ModeSingle) == StatusError)
+      if (this->timer.Create(Timer::ModeSingle) == Status::Error)
         escape("unable to create the timer");
 
       // subscribe to the timer's signal.
       if (this->timer.signal.timeout.Subscribe(
-            Callback<>::Infer(&Neighbour::Discard, this)) == StatusError)
+            Callback<>::Infer(&Neighbour::Discard, this)) == Status::Error)
         escape("unable to subscribe to the signal");
 
       // start the timer.
-      if (this->timer.Start(Neighbour::Timeout) == StatusError)
+      if (this->timer.Start(Neighbour::Timeout) == Status::Error)
         escape("unable to start the timer");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -60,7 +60,7 @@ namespace elle
       // update the name.
       this->name = name;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -69,10 +69,10 @@ namespace elle
     Status              Neighbour::Refresh()
     {
       // re-set the timer.
-      if (this->timer.Restart(Neighbour::Timeout) == StatusError)
+      if (this->timer.Restart(Neighbour::Timeout) == Status::Error)
         escape("unable to restart the timer");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -86,10 +86,10 @@ namespace elle
     {
       // serialize the locus and name.
       if (archive.Serialize(this->locus,
-                            this->name) == StatusError)
+                            this->name) == Status::Error)
         escape("unable to serialize the neighbour attributes");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -99,10 +99,10 @@ namespace elle
     {
       // extract the locus and name.
       if (archive.Extract(this->locus,
-                          this->name) == StatusError)
+                          this->name) == Status::Error)
         escape("unable to extract the neighbour attributes");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -119,14 +119,14 @@ namespace elle
       std::cout << alignment << "[Neighbour]" << std::endl;
 
       // dump the locus.
-      if (this->locus.Dump(margin + 2) == StatusError)
+      if (this->locus.Dump(margin + 2) == Status::Error)
         escape("unable to dump the locus");
 
       // dump the name.
       std::cout << alignment << Dumpable::Shift
                 << "[Name] " << this->name << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -139,10 +139,10 @@ namespace elle
     Status              Neighbour::Discard()
     {
       // discard the current neighbour as it has not been refreshed in time.
-      if (this->node->table.Remove(this->locus) == StatusError)
+      if (this->node->table.Remove(this->locus) == Status::Error)
         escape("unable to remove the current neighbour");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

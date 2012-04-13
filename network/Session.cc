@@ -43,10 +43,10 @@ namespace elle
     Status              Session::Initialize()
     {
       // register the govern callback to the fiber system.
-      if (Fiber::Register(Callback<>::Infer(&Session::Govern)) == StatusError)
+      if (Fiber::Register(Callback<>::Infer(&Session::Govern)) == Status::Error)
         escape("unable to register the govern callback");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -56,7 +56,7 @@ namespace elle
     {
       // nothing to do.
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -67,7 +67,7 @@ namespace elle
       // return the current session.
       session = Session::Current;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -78,7 +78,7 @@ namespace elle
       // set the current session.
       Session::Current = session;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -90,7 +90,7 @@ namespace elle
       // clear the locuser.
       Session::Current = NULL;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -113,7 +113,7 @@ namespace elle
           {
             // save the session in the fiber's environment.
             if (fiber->environment->Store("session",
-                                          Session::Current) == StatusError)
+                                          Session::Current) == Status::Error)
               escape("unable to store the session in the environment");
 
             // set the locuser to NULL, for safety purposes.
@@ -125,7 +125,7 @@ namespace elle
           {
             // restore the session from the fiber's environment.
             if (fiber->environment->Load("session",
-                                         Session::Current) == StatusError)
+                                         Session::Current) == Status::Error)
               escape("unable to load the session from the environment");
 
             break;
@@ -145,7 +145,7 @@ namespace elle
           }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -176,7 +176,7 @@ namespace elle
       this->locus = locus;
       this->event = event;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -200,14 +200,14 @@ namespace elle
         }
 
       // dump the locus.
-      if (this->locus.Dump(margin + 2) == StatusError)
+      if (this->locus.Dump(margin + 2) == Status::Error)
         escape("unable to dump the locus");
 
       // dump the event.
-      if (this->event.Dump(margin + 2) == StatusError)
+      if (this->event.Dump(margin + 2) == Status::Error)
         escape("unable to dump the event");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

@@ -81,7 +81,7 @@ namespace elle
 
       // subscribe to the signal.
       if (this->signal.ready.Subscribe(
-            Callback<>::Infer(&LocalSocket::Dispatch, this)) == StatusError)
+            Callback<>::Infer(&LocalSocket::Dispatch, this)) == Status::Error)
         escape("unable to subscribe to the signal");
 
       // connect the QT signals.
@@ -104,7 +104,7 @@ namespace elle
             SLOT(_error(const QLocalSocket::LocalSocketError))) == false)
         escape("unable to connect to signal");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -117,7 +117,7 @@ namespace elle
 
       // subscribe to the signal.
       if (this->signal.ready.Subscribe(
-            Callback<>::Infer(&LocalSocket::Dispatch, this)) == StatusError)
+            Callback<>::Infer(&LocalSocket::Dispatch, this)) == Status::Error)
         escape("unable to subscribe to the signal");
 
       // connect the QT signals.
@@ -143,7 +143,7 @@ namespace elle
       // update the state.
       this->state = AbstractSocket::StateConnected;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -169,16 +169,16 @@ namespace elle
             this->timer = new Timer;
 
             // create a timer.
-            if (this->timer->Create(Timer::ModeSingle) == StatusError)
+            if (this->timer->Create(Timer::ModeSingle) == Status::Error)
               escape("unable to create the callback");
 
             // subscribe to the timer's signal.
             if (this->timer->signal.timeout.Subscribe(
-                  Callback<>::Infer(&LocalSocket::Abort, this)) == StatusError)
+                  Callback<>::Infer(&LocalSocket::Abort, this)) == Status::Error)
               escape("unable to subscribe to the signal");
 
             // start the timer.
-            if (this->timer->Start(LocalSocket::Timeout) == StatusError)
+            if (this->timer->Start(LocalSocket::Timeout) == Status::Error)
               escape("unable to start the timer");
 
             break;
@@ -193,7 +193,7 @@ namespace elle
           }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -204,7 +204,7 @@ namespace elle
       // disconnect the socket from the server.
       this->socket->disconnectFromServer();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -231,7 +231,7 @@ namespace elle
       // flush to start sending data immediately.
       this->socket->flush();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -254,7 +254,7 @@ namespace elle
 
         // check if there is data to be read.
         if (size == 0)
-          return StatusOk;
+          return Status::Ok;
 
         // adjust the buffer.
         if (this->buffer == NULL)
@@ -263,13 +263,13 @@ namespace elle
             this->buffer = new Region;
 
             // prepare the capacity.
-            if (this->buffer->Prepare(size) == StatusError)
+            if (this->buffer->Prepare(size) == Status::Error)
               escape("unable to prepare the buffer");
           }
         else
           {
             // adjust the buffer.
-            if (this->buffer->Adjust(this->buffer->size + size) == StatusError)
+            if (this->buffer->Adjust(this->buffer->size + size) == Status::Error)
               escape("unable to adjust the buffer");
           }
 
@@ -284,7 +284,7 @@ namespace elle
         this->buffer->size = this->buffer->size + size;
       }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -303,18 +303,18 @@ namespace elle
 
           // create the frame based on the previously extracted raw.
           if (frame.Wrap(this->buffer->contents + this->offset,
-                         this->buffer->size - this->offset) == StatusError)
+                         this->buffer->size - this->offset) == Status::Error)
             escape("unable to wrap a frame in the raw");
 
           // prepare the packet based on the frame.
-          if (packet.Wrap(frame) == StatusError)
+          if (packet.Wrap(frame) == Status::Error)
             escape("unable to prepare the packet");
 
           // allocate the parcel.
           auto parcel = std::unique_ptr<Parcel>(new Parcel);
 
           // extract the header.
-          if (parcel->header->Extract(packet) == StatusError)
+          if (parcel->header->Extract(packet) == Status::Error)
             escape("unable to extract the header");
 
           // act depending on the amount of data required against
@@ -344,14 +344,14 @@ namespace elle
               //
 
               // extract the data.
-              if (packet.Extract(*parcel->data) == StatusError)
+              if (packet.Extract(*parcel->data) == Status::Error)
                 escape("unable to extract the data");
 
               // create the session.
               if (parcel->session->Create(
                     this,
                     Locus::Null,
-                    parcel->header->event) == StatusError)
+                    parcel->header->event) == Status::Error)
                 escape("unable to create the session");
 
               // add the parcel to the container.
@@ -401,7 +401,7 @@ namespace elle
           }
       }
 
-      return StatusOk;
+      return Status::Ok;
 
     _disconnect:
       // purge the errors message.
@@ -410,7 +410,7 @@ namespace elle
       // disconnect the socket.
       this->Disconnect();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -425,7 +425,7 @@ namespace elle
       // retrieve the server name.
       name = this->socket->serverName().toStdString();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -442,7 +442,7 @@ namespace elle
       std::cout << alignment << "[LocalSocket]" << std::endl;
 
       // dump the abstract socket.
-      if (AbstractSocket::Dump(margin + 2) == StatusError)
+      if (AbstractSocket::Dump(margin + 2) == Status::Error)
         escape("unable to dump the abstract socket");
 
       // dump the state.
@@ -457,7 +457,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift << "[Peer] "
                 << this->socket->serverName().toStdString() << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -470,11 +470,11 @@ namespace elle
     Status              LocalSocket::Dispatch()
     {
       // first read from the socket.
-      if (this->Read() == StatusError)
+      if (this->Read() == Status::Error)
         escape("unable to read from the socket");
 
       // then, fetch the parcels from the buffer.
-      if (this->Fetch() == StatusError)
+      if (this->Fetch() == Status::Error)
         escape("unable to fetch the parcels from the buffer");
 
       // process the queued parcels.
@@ -487,11 +487,11 @@ namespace elle
           this->queue.pop_front();
 
           // trigger the network shipment mechanism.
-          if (Socket::Ship(parcel) == StatusError)
+          if (Socket::Ship(parcel) == Status::Error)
             log("an error occured while shipping the parcel");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -510,11 +510,11 @@ namespace elle
       if (this->state != AbstractSocket::StateConnected)
         {
           // disconnect the socket.
-          if (this->Disconnect() == StatusError)
+          if (this->Disconnect() == Status::Error)
             escape("unable to disconnect the socket");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -527,7 +527,7 @@ namespace elle
     void                LocalSocket::_connected()
     {
       Closure<
-        Status,
+        Status::,
         Parameters<>
         >               closure(Callback<>::Infer(&Signal<
                                                     Parameters<>
@@ -538,7 +538,7 @@ namespace elle
       this->state = AbstractSocket::StateConnected;
 
       // spawn a fiber.
-      if (Fiber::Spawn(closure) == StatusError)
+      if (Fiber::Spawn(closure) == Status::Error)
         yield(_(), "unable to spawn a fiber");
     }
 
@@ -548,7 +548,7 @@ namespace elle
     void                LocalSocket::_disconnected()
     {
       Closure<
-        Status,
+        Status::,
         Parameters<>
         >               closure(Callback<>::Infer(&Signal<
                                                     Parameters<>
@@ -559,7 +559,7 @@ namespace elle
       this->state = AbstractSocket::StateDisconnected;
 
       // spawn a fiber.
-      if (Fiber::Spawn(closure) == StatusError)
+      if (Fiber::Spawn(closure) == Status::Error)
         yield(_(), "unable to spawn a fiber");
     }
 
@@ -569,7 +569,7 @@ namespace elle
     void                LocalSocket::_ready()
     {
       Closure<
-        Status,
+        Status::,
         Parameters<>
         >               closure(Callback<>::Infer(&Signal<
                                                     Parameters<>
@@ -577,7 +577,7 @@ namespace elle
                                                   &this->signal.ready));
 
       // spawn a fiber.
-      if (Fiber::Spawn(closure) == StatusError)
+      if (Fiber::Spawn(closure) == Status::Error)
         yield(_(), "unable to spawn a fiber");
     }
 
@@ -593,7 +593,7 @@ namespace elle
     {
       String            cause(this->socket->errorString().toStdString());
       Closure<
-        Status,
+        Status::,
         Parameters<
           const String&
           >
@@ -606,7 +606,7 @@ namespace elle
                                 cause);
 
       // spawn a fiber.
-      if (Fiber::Spawn(closure) == StatusError)
+      if (Fiber::Spawn(closure) == Status::Error)
         yield(_(), "unable to spawn a fiber");
     }
 

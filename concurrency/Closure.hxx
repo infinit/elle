@@ -74,14 +74,14 @@ namespace elle
       std::cout << alignment << "[Closure]" << std::endl;
 
       // dump the callback.
-      if (this->callback.Dump(margin + 2) == StatusError)
+      if (this->callback.Dump(margin + 2) == Status::Error)
         escape("unable to dump the callback");
 
       // dump the arguments.
-      if (this->arguments.Dump(margin + 2) == StatusError)
+      if (this->arguments.Dump(margin + 2) == Status::Error)
         escape("unable to dump the arguments");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -155,14 +155,14 @@ namespace elle
       std::cout << alignment << "[Closure]" << std::endl;
 
       // dump the callback.
-      if (this->callback.Dump(margin + 2) == StatusError)
+      if (this->callback.Dump(margin + 2) == Status::Error)
         escape("unable to dump the callback");
 
       // dump the arguments.
-      if (this->arguments.Dump(margin + 2) == StatusError)
+      if (this->arguments.Dump(margin + 2) == Status::Error)
         escape("unable to dump the arguments");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //

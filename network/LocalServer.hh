@@ -29,8 +29,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Natural.hh>
-#include <elle/core/String.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
 
 #include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
@@ -47,7 +47,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
   using namespace concurrency;
 
@@ -87,7 +87,7 @@ namespace elle
       // constructors & destructors
       //
       LocalServerPorter(const Callback<
-                          Status,
+                          Status::,
                           Parameters<LocalSocket*>
                           >&);
       ~LocalServerPorter();
@@ -115,7 +115,7 @@ namespace elle
       String                    name;
       ::QLocalServer*           server;
       Callback<
-        Status,
+        Status::,
         Parameters<LocalSocket*>
         >                       callback;
 
@@ -148,7 +148,7 @@ namespace elle
       static Status     Clean();
 
       static Status     Listen(const String&,
-                               const Callback< Status,
+                               const Callback< Status::,
                                                Parameters<LocalSocket*> >&);
       static Status     Block(const String&);
       static Status     Retrieve(const String&,

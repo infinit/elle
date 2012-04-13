@@ -76,7 +76,7 @@ namespace elle
                     Parameters<T...> >::Serialize(Archive&      archive) const
     {
       Callback<
-        Status,
+        Status::,
         typename Trait::Reference<
           typename Trait::Constant<
             typename Message<G>::P
@@ -85,10 +85,10 @@ namespace elle
         >               callback(&Archive::Serialize, &archive);
 
       // trigger the serialization callback.
-      if (this->arguments.Call(callback) == StatusError)
+      if (this->arguments.Call(callback) == Status::Error)
         escape("unable to serialize the arguments");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -122,10 +122,10 @@ namespace elle
                 << "[Tag] " << static_cast<Natural32>(this->tag) << std::endl;
 
       // dump the arguments.
-      if (this->arguments.Dump() == StatusError)
+      if (this->arguments.Dump() == Status::Error)
         escape("unable to dump the arguments");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -188,17 +188,17 @@ namespace elle
                      Parameters<T...> >::Extract(Archive&       archive)
     {
       Callback<
-        Status,
+        Status::,
         typename Trait::Reference<
           typename Message<G>::P
           >::Type
         >               callback(&Archive::Extract, &archive);
 
       // trigger the serialization callback.
-      if (this->arguments.Call(callback) == StatusError)
+      if (this->arguments.Call(callback) == Status::Error)
         escape("unable to extract the arguments");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 
@@ -221,10 +221,10 @@ namespace elle
                 << "[Tag] " << static_cast<Natural32>(this->tag) << std::endl;
 
       // dump the arguments.
-      if (this->arguments.Dump() == StatusError)
+      if (this->arguments.Dump() == Status::Error)
         escape("unable to dump the arguments");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

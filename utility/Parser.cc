@@ -96,7 +96,7 @@ namespace elle
                     << "[Value] " << none << std::endl;
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -152,7 +152,7 @@ namespace elle
       // set the description.
       this->description = description;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -176,7 +176,7 @@ namespace elle
       // add the option to the vector of options.
       this->options.push_back(option);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -187,7 +187,7 @@ namespace elle
       // add the example.
       this->examples.push_back(example);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -208,11 +208,11 @@ namespace elle
               // set the pointer.
               option = this->options[i];
 
-              return StatusTrue;
+              return Status::True;
             }
         }
 
-      return StatusFalse;
+      return Status::False;
     }
 
     ///
@@ -233,11 +233,11 @@ namespace elle
               // set the pointer.
               option = this->options[i];
 
-              return StatusTrue;
+              return Status::True;
             }
         }
 
-      return StatusFalse;
+      return Status::False;
     }
 
     ///
@@ -373,7 +373,7 @@ namespace elle
             }
 
           // locate the option.
-          if (this->Locate(character, option) == StatusFalse)
+          if (this->Locate(character, option) == Status::False)
             escape("unable to locate the option");
 
           // activate the option.
@@ -412,7 +412,7 @@ namespace elle
             }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -424,14 +424,14 @@ namespace elle
       Parser::Option*   option;
 
       // locate the option.
-      if (this->Locate(name, option) == StatusFalse)
+      if (this->Locate(name, option) == Status::False)
         escape("unable to locate the option");
 
       // return true if the option has been activated.
       if (option->state == Parser::StateActivated)
-        return StatusTrue;
+        return Status::True;
 
-      return StatusFalse;
+      return Status::False;
     }
 
     ///
@@ -443,7 +443,7 @@ namespace elle
       Parser::Option*   option;
 
       // locate the option.
-      if (this->Locate(name, option) == StatusFalse)
+      if (this->Locate(name, option) == Status::False)
         escape("unable to locate the option");
 
       // return true if the option has been activated.
@@ -452,9 +452,9 @@ namespace elle
 
       // return true if an argument has been provided.
       if (option->value != NULL)
-        return StatusTrue;
+        return Status::True;
 
-      return StatusFalse;
+      return Status::False;
     }
 
     ///
@@ -604,7 +604,7 @@ namespace elle
       for (i = 0; i < this->options.size(); i++)
         {
           // dump the option.
-          if (this->options[i]->Dump(margin + 4) == StatusError)
+          if (this->options[i]->Dump(margin + 4) == Status::Error)
             escape("unable to dump the option");
         }
 
@@ -619,7 +619,7 @@ namespace elle
                     << this->examples[i] << std::endl;
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

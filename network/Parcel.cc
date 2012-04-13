@@ -82,14 +82,14 @@ namespace elle
       // dump the session.
       if (this->session != NULL)
         {
-          if (this->session->Dump(margin + 2) == StatusError)
+          if (this->session->Dump(margin + 2) == Status::Error)
             escape("unable to dump the session");
         }
 
       // dump the header.
       if (this->header != NULL)
         {
-          if (this->header->Dump(margin + 2) == StatusError)
+          if (this->header->Dump(margin + 2) == Status::Error)
             escape("unable to dump the header");
         }
 
@@ -98,11 +98,11 @@ namespace elle
         {
           std::cout << alignment << Dumpable::Shift << "[Data]" << std::endl;
 
-          if (this->data->Dump(margin + 4) == StatusError)
+          if (this->data->Dump(margin + 4) == Status::Error)
             escape("unable to dump the data");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

@@ -68,7 +68,7 @@ namespace elle
 
       // subscribe to the signal.
       if (this->signal.ready.Subscribe(
-            Callback<>::Infer(&UDPSocket::Dispatch, this)) == StatusError)
+            Callback<>::Infer(&UDPSocket::Dispatch, this)) == Status::Error)
         escape("unable to subscribe to the signal");
 
       // connect the QT signals, depending on the mode.
@@ -83,7 +83,7 @@ namespace elle
             SLOT(_error(const QAbstractSocket::SocketError))) == false)
         escape("unable to connect to signal");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -103,7 +103,7 @@ namespace elle
 
       // subscribe to the signal.
       if (this->signal.ready.Subscribe(
-            Callback<>::Infer(&UDPSocket::Dispatch, this)) == StatusError)
+            Callback<>::Infer(&UDPSocket::Dispatch, this)) == Status::Error)
         escape("unable to subscribe to the signal");
 
       // connect the QT signals.
@@ -118,7 +118,7 @@ namespace elle
             SLOT(_error(const QAbstractSocket::SocketError))) == false)
         escape("unable to connect to signal");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -136,7 +136,7 @@ namespace elle
             locus.port) != static_cast<qint64>(packet.size))
         escape(this->socket->errorString().toStdString().c_str());
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -164,14 +164,14 @@ namespace elle
 
       // check if there is data to be read.
       if (size == 0)
-        return StatusOk;
+        return Status::Ok;
 
       // set the locus as being an IP locus.
-      if (locus.host.Create(Host::TypeIP) == StatusError)
+      if (locus.host.Create(Host::TypeIP) == Status::Error)
         escape("unable to create an IP locus");
 
       // prepare the raw
-      if (raw.Prepare(size) == StatusError)
+      if (raw.Prepare(size) == Status::Error)
         escape("unable to prepare the raw");
 
       // read the datagram from the socket.
@@ -185,7 +185,7 @@ namespace elle
       // set the raw's size.
       raw.size = size;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -202,10 +202,10 @@ namespace elle
       std::cout << alignment << "[UDPSocket]" << std::endl;
 
       // dump the socket.
-      if (Socket::Dump(margin + 2) == StatusError)
+      if (Socket::Dump(margin + 2) == Status::Error)
         escape("unable to dump the socket");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -222,7 +222,7 @@ namespace elle
       Raw               raw;
 
       // read from the socket.
-      if (this->Read(locus, raw) == StatusError)
+      if (this->Read(locus, raw) == Status::Error)
         escape("unable to read from the socket");
 
       // initialize the offset.
@@ -239,18 +239,18 @@ namespace elle
 
           // create the frame based on the previously extracted raw.
           if (frame.Wrap(raw.contents + offset,
-                         raw.size - offset) == StatusError)
+                         raw.size - offset) == Status::Error)
             escape("unable to wrap a frame in the raw");
 
           // prepare the packet based on the frame.
-          if (packet.Wrap(frame) == StatusError)
+          if (packet.Wrap(frame) == Status::Error)
             escape("unable to prepare the packet");
 
           // allocate the parcel.
           auto parcel = std::shared_ptr<Parcel>(new Parcel);
 
           // extract the header.
-          if (parcel->header->Extract(packet) == StatusError)
+          if (parcel->header->Extract(packet) == Status::Error)
             escape("unable to extract the header");
 
           // if there is not enough data in the raw to complete the parcel...
@@ -263,7 +263,7 @@ namespace elle
             }
 
           // extract the data.
-          if (packet.Extract(*parcel->data) == StatusError)
+          if (packet.Extract(*parcel->data) == Status::Error)
             escape("unable to extract the data");
 
           // move to the next frame by setting the offset at the end of
@@ -273,15 +273,15 @@ namespace elle
           // create the session.
           if (parcel->session->Create(this,
                                       locus,
-                                      parcel->header->event) == StatusError)
+                                      parcel->header->event) == Status::Error)
             escape("unable to create the session");
 
           // trigger the network shipment mechanism.
-          if (Socket::Ship(parcel) == StatusError)
+          if (Socket::Ship(parcel) == Status::Error)
             log("an error occured while shipping the parcel");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -294,7 +294,7 @@ namespace elle
     void                UDPSocket::_ready()
     {
       Closure<
-        Status,
+        Status::,
         Parameters<>
         >               closure(Callback<>::Infer(&Signal<
                                                     Parameters<>
@@ -302,7 +302,7 @@ namespace elle
                                                   &this->signal.ready));
 
       // spawn a fiber.
-      if (Fiber::Spawn(closure) == StatusError)
+      if (Fiber::Spawn(closure) == Status::Error)
         yield(_(), "unable to spawn a fiber");
     }
 
@@ -318,7 +318,7 @@ namespace elle
     {
       String            cause(this->socket->errorString().toStdString());
       Closure<
-        Status,
+        Status::,
         Parameters<
           const String&
           >
@@ -331,7 +331,7 @@ namespace elle
                                 cause);
 
       // spawn a fiber.
-      if (Fiber::Spawn(closure) == StatusError)
+      if (Fiber::Spawn(closure) == Status::Error)
         yield(_(), "unable to spawn a fiber");
     }
 

@@ -30,7 +30,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
   using namespace package;
   using namespace concurrency;
@@ -98,7 +98,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Procedure(const Callback< Status,
+      Procedure(const Callback< Status::,
                                 R >,
                 const BaseCallback = BaseCallback::Null,
                 const BaseCallback = BaseCallback::Null);
@@ -122,16 +122,16 @@ namespace elle
       // attributes
       //
       Callback<
-        Status,
+        Status::,
         R
         >               routine;
 
       Callback<
-        Status,
+        Status::,
         Parameters<>
         >               prolog;
       Callback<
-        Status,
+        Status::,
         Parameters<>
         >               epilog;
     };

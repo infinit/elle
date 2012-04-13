@@ -15,10 +15,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Void.hh>
-#include <elle/core/Natural.hh>
+#include <elle/types.hh>
 
-#include <elle/radix/Status.hh>
 #include <elle/radix/Meta.hh>
 
 #include <elle/concurrency/Timer.hh>
@@ -29,7 +27,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace concurrency;
 
   namespace standalone
