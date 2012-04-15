@@ -1,31 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed apr 28 11:11:05 2010]
-//
-
 #ifndef ELLE_UTILITY_PARSER_HH
-#define ELLE_UTILITY_PARSER_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
+# define ELLE_UTILITY_PARSER_HH
 
 #include <elle/types.hh>
-#include <elle/types.hh>
-#include <elle/types.hh>
-#include <elle/types.hh>
 
-#include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
-
-#include <elle/io/Format.hh>
-#include <elle/io/Uniquable.hh>
-#include <elle/io/Unique.hh>
 
 #include <elle/idiom/Close.hh>
 # include <vector>
@@ -35,8 +13,6 @@
 
 namespace elle
 {
-
-  using namespace radix;
 
   namespace utility
   {
