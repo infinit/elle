@@ -1,29 +1,12 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sat mar 19 13:41:49 2011]
-//
-
 #ifndef ELLE_CRYPTOGRAPHY_SEED_HH
-#define ELLE_CRYPTOGRAPHY_SEED_HH
+# define ELLE_CRYPTOGRAPHY_SEED_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Object.hh>
-
-#include <elle/package/Archive.hh>
-
-#include <elle/cryptography/PublicKey.hh>
-#include <elle/cryptography/PrivateKey.hh>
+# include <elle/cryptography/PublicKey.hh>
+# include <elle/cryptography/PrivateKey.hh>
 
 namespace elle
 {

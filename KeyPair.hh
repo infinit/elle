@@ -1,47 +1,20 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sat oct 27 18:00:55 2007]
-//
-
 #ifndef ELLE_CRYPTOGRAPHY_KEYPAIR_HH
-#define ELLE_CRYPTOGRAPHY_KEYPAIR_HH
+# define ELLE_CRYPTOGRAPHY_KEYPAIR_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-#include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Object.hh>
+# include <elle/io/Fileable.hh>
 
-#include <elle/package/Archive.hh>
-
-#include <elle/io/Fileable.hh>
-#include <elle/io/Format.hh>
-
-#include <elle/cryptography/PublicKey.hh>
-#include <elle/cryptography/PrivateKey.hh>
-#include <elle/cryptography/Seed.hh>
+# include <elle/cryptography/PublicKey.hh>
+# include <elle/cryptography/PrivateKey.hh>
+# include <elle/cryptography/Seed.hh>
 
 namespace elle
 {
-
-  using namespace package;
-  using namespace io;
-
   namespace cryptography
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a cryptographic key pair _i.e_ a pair of public
@@ -96,7 +69,7 @@ namespace elle
 
       // object
       declare(KeyPair);
-      Boolean           operator==(const KeyPair&) const;
+      Boolean           operator ==(const KeyPair&) const;
 
       // dumpable
       Status            Dump(const Natural32 = 0) const;

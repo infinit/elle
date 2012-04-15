@@ -16,13 +16,8 @@
 //
 
 #include <elle/types.hh>
-#include <elle/types.hh>
-#include <elle/types.hh>
 
-#include <elle/radix/Status.hh>
 #include <elle/radix/Object.hh>
-
-#include <elle/package/Archive.hh>
 
 #include <elle/cryptography/Plain.hh>
 #include <elle/cryptography/Code.hh>
@@ -41,9 +36,6 @@
 
 namespace elle
 {
-
-  using namespace radix;
-  using namespace package;
 
   namespace cryptography
   {
