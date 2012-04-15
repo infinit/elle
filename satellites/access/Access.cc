@@ -636,7 +636,7 @@ namespace satellite
             {
             case nucleus::Subject::TypeUser:
               {
-                elle::PublicKey         K;
+                elle::cryptography::PublicKey         K;
 
                 // retrieve the identifier which is supposed to
                 // represent a user identity i.e a public key.
@@ -749,7 +749,7 @@ namespace satellite
             {
             case nucleus::Subject::TypeUser:
               {
-                elle::PublicKey         K;
+                elle::cryptography::PublicKey         K;
 
                 // retrieve the identifier which is supposed to
                 // represent a user identity i.e a public key.
@@ -843,7 +843,7 @@ namespace satellite
             {
             case nucleus::Subject::TypeUser:
               {
-                elle::PublicKey         K;
+                elle::cryptography::PublicKey         K;
 
                 // retrieve the identifier which is supposed to
                 // represent a user identity i.e a public key.

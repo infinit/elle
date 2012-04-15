@@ -56,7 +56,7 @@ namespace nucleus
     ///
     /// this method creates an imprint based on the given owner's public key.
     ///
-    elle::Status        ImprintBlock::Create(const elle::PublicKey& owner)
+    elle::Status        ImprintBlock::Create(elle::cryptography::PublicKey const& owner)
     {
       // retrieve the current time.
       if (this->stamp.Current() == elle::Status::Error)

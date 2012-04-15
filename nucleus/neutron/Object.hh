@@ -77,7 +77,7 @@ namespace nucleus
       // methods
       //
       elle::Status      Create(const Genre,
-                               const elle::PublicKey&);
+                               elle::cryptography::PublicKey const&);
 
       elle::Status      Update(const Author&,
                                const proton::Address&,
@@ -87,7 +87,7 @@ namespace nucleus
       elle::Status      Administrate(const Attributes&,
                                      const Permissions&);
 
-      elle::Status      Seal(const elle::PrivateKey&,
+      elle::Status      Seal(elle::cryptography::PrivateKey const&,
                              const Access&);
 
       elle::Status      Validate(const proton::Address&) const;
@@ -126,14 +126,14 @@ namespace nucleus
         }                       owner;
 
         Genre                   genre;
-        elle::Time              stamp;
+        elle::utility::Time              stamp;
 
         Attributes              attributes;
 
         proton::Address         access;
 
         proton::Version         version;
-        elle::Signature         signature;
+        elle::cryptography::Signature         signature;
 
         proton::State           state;
       }                         meta;
@@ -145,10 +145,10 @@ namespace nucleus
         proton::Address         contents;
 
         Size                    size;
-        elle::Time              stamp;
+        elle::utility::Time              stamp;
 
         proton::Version         version;
-        elle::Signature         signature;
+        elle::cryptography::Signature         signature;
 
         proton::State           state;
       }                         data;

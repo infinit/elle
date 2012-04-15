@@ -47,9 +47,9 @@ namespace nucleus
     ///
     /// this method creates an OKB based on the given owner's public key.
     ///
-    elle::Status        OwnerKeyBlock::Create(const elle::PublicKey& owner)
+    elle::Status        OwnerKeyBlock::Create(elle::cryptography::PublicKey const& owner)
     {
-      elle::KeyPair     pair;
+      elle::cryptography::KeyPair     pair;
 
       // retrieve the current time.
       if (this->stamp.Current() == elle::Status::Error)

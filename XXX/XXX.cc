@@ -66,7 +66,7 @@ int main(int argc, char** argv)
 
       sprintf(buffer, "%d", i);
 
-      elle::Digest digest;
+      elle::cryptography::Digest digest;
 
       elle::OneWay::Hash(elle::Region((elle::Byte*)buffer, strlen(buffer)),
                          digest);
@@ -120,7 +120,7 @@ int main(int argc, char** argv)
                nucleus::PinKey) == elle::Status::Error)
     fail("XXX");
 
-  elle::SecretKey sk;
+  elle::cryptography::SecretKey sk;
 
   if (sk.Generate(128) == elle::Status::Error)
     fail("XXX");

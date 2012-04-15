@@ -54,7 +54,7 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status      Create(const elle::PublicKey&);
+      elle::Status      Create(elle::cryptography::PublicKey const&);
 
       elle::Status      Bind(Address&) const;
       elle::Status      Validate(const Address&) const;
@@ -76,7 +76,7 @@ namespace nucleus
       //
       // attributes
       //
-      elle::PublicKey   K;
+      elle::cryptography::PublicKey   K;
     };
 
   }

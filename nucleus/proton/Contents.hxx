@@ -97,10 +97,8 @@ namespace nucleus
     /// and encrypts the archive.
     ///
     template <typename T>
-    elle::Status        Contents<T>::Encrypt(const elle::SecretKey& key)
+    elle::Status Contents<T>::Encrypt(elle::cryptography::SecretKey const& key)
     {
-      elle::Archive     archive;
-
       // if there is no block, this operation cannot be performed.
       if (this->content == NULL)
         escape("unable to encrypt a non-existing block");
@@ -110,18 +108,14 @@ namespace nucleus
         delete this->cipher;
 
       // allocate a new cipher.
-      this->cipher = new elle::Cipher;
+      this->cipher = new elle::cryptography::Cipher;
 
       // create the archive.
       if (archive.Create() == elle::Status::Error)
         escape("unable to create the archive");
 
-      // serialize the block.
-      if (this->content->Serialize(archive) == elle::Status::Error)
-        escape("unable to serialize the block");
-
       // encrypt the archive with the given secret key.
-      if (key.Encrypt(archive, *cipher) == elle::Status::Error)
+      if (key.Encrypt(*this->content, *cipher) == elle::Status::Error)
         escape("unable to encrypt the archived block");
 
       return elle::Status::Ok;
@@ -132,10 +126,9 @@ namespace nucleus
     /// given key, creating a new block.
     ///
     template <typename T>
-    elle::Status        Contents<T>::Decrypt(const elle::SecretKey& key)
+    elle::Status Contents<T>::Decrypt(elle::cryptography::SecretKey const& key)
     {
-      elle::Archive     archive;
-      elle::Clear       clear;
+      elle::cryptograpy::Clear       clear;
 
       // if there is no cipher, this operation cannot be performed.
       if (this->cipher == NULL)
@@ -184,7 +177,7 @@ namespace nucleus
     /// this method simply allocates the fundamental attributes.
     ///
     template <typename T>
-    elle::Status        Contents<T>::Create()
+    elle::Status Contents<T>::Create()
     {
       // allocate the block.
       this->content = new T(*this);
@@ -288,7 +281,7 @@ namespace nucleus
       */
 
       // allocate a new cipher.
-      this->cipher = new elle::Cipher;
+      this->cipher = new elle::cryptography::Cipher;
 
       // extract the cipher from the archive.
       if (archive.Extract(*this->cipher) == elle::Status::Error)

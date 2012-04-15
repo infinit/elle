@@ -28,7 +28,7 @@ namespace nucleus
     /// this method creates a base according to a version and digest.
     ///
     elle::Status        Base::Create(const Version&             version,
-                                     const elle::Digest&        digest)
+                                     elle::cryptography::Digest const&        digest)
     {
       // set the attributes.
       this->version = version;
@@ -58,7 +58,7 @@ namespace nucleus
     ///
     elle::Status        Base::Match(const MutableBlock&         block) const
     {
-      elle::Digest      digest;
+      elle::cryptography::Digest      digest;
 
       // check the versions.
       if (this->version != block.version)

@@ -38,7 +38,7 @@ namespace satellite
   {
     elle::String        prompt;
     elle::String        pass;
-    elle::KeyPair       pair;
+    elle::cryptography::KeyPair       pair;
     lune::Authority     authority;
     lune::Identity      identity;
     lune::Dictionary    dictionary;
@@ -181,7 +181,7 @@ namespace satellite
     elle::String        prompt;
     elle::String        pass;
     lune::Identity      identity;
-    elle::PublicKey     K;
+    elle::cryptography::PublicKey     K;
     elle::Unique        unique;
 
     // check the argument.

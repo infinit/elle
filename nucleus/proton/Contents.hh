@@ -61,8 +61,8 @@ namespace nucleus
       //
       elle::Status      Create();
 
-      elle::Status      Encrypt(const elle::SecretKey&);
-      elle::Status      Decrypt(const elle::SecretKey&);
+      elle::Status Encrypt(elle::cryptography::SecretKey const& key);
+      elle::Status Decrypt(elle::cryptography::SecretKey const& key);
 
       //
       // interfaces
@@ -83,7 +83,7 @@ namespace nucleus
       //
       T*                content;
 
-      elle::Cipher*     cipher;
+      elle::cryptography::Cipher*     cipher;
     };
 
   }

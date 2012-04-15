@@ -56,7 +56,7 @@ namespace etoile
                                        const nucleus::Subject&);
 
       static elle::Status       Upgrade(gear::Object&,
-                                        const elle::SecretKey&);
+                                        elle::cryptography::SecretKey const&);
       static elle::Status       Downgrade(gear::Object&);
 
       static elle::Status       Destroy(gear::Object&);

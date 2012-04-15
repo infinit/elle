@@ -41,7 +41,7 @@ namespace nucleus
     ///
     /// this method seals the stamp with the oracle's private key.
     ///
-    elle::Status        Stamp::Seal(const elle::PrivateKey&     k)
+    elle::Status        Stamp::Seal(elle::cryptography::PrivateKey const&     k)
     {
       // sign the attributes.
       if (k.Sign(this->master, this->slave,

@@ -23,6 +23,11 @@ LINUX64=OFF
 WIN32=OFF
 MACOSX64=OFF
 
+[ -z "${CC}" ] && CC=gcc
+[ -z "${CXX}" ] && CXX=g++
+
+echo "CC=${CC}"
+
 function usage()
 {
     echo -n "usage: $0
@@ -135,9 +140,14 @@ fi
 
 if [[ "$DISTCC" = ON ]] ; then
     DISTCC="$(which distcc) "
+    CC="${DISTCC}${CC}"
+    CXX="${DISTCC}${CXX}"
 else
     DISTCC=""
 fi
+
+echo "---[ C compiler is ${CC}"
+echo "---[ C++ compiler is ${CXX}"
 
 CPPFLAGS="${CPPFLAGS}"
 CFLAGS="${CPPFLAGS} ${CFLAGS}"
@@ -165,7 +175,7 @@ MACHINE=$(uname -m)
 
 if [[ $LINUX32 = ON ]] ; then
     BUILDDIRS="$BUILDDIRS build/linux32"
-    (CC="${DISTCC}gcc" CXX="${DISTCC}g++" \
+    (CC="${CC}" CXX="${CXX}" \
         CFLAGS="${CFLAGS} -m32" CXXFLAGS="${CXXFLAGS} -m32" \
         BUILDDIR=build/linux32 gen_build_dir)
 fi

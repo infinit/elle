@@ -57,7 +57,7 @@ namespace lune
   /// this method creates an identity based on the given key pair.
   ///
   elle::Status          Identity::Create(const elle::String&    name,
-                                         const elle::KeyPair&   pair)
+                                         elle::cryptography::KeyPair const&   pair)
   {
     // One does not simply ...
     assert(pair.k.key() != nullptr);
@@ -77,14 +77,14 @@ namespace lune
   ///
   elle::Status          Identity::Encrypt(const elle::String&   pass)
   {
-    elle::SecretKey     key;
+    elle::cryptography::SecretKey     key;
 
     // create a secret key with this pass.
     if (key.Create(pass) == elle::Status::Error)
       escape("unable to create the secret key");
 
     // allocate the cipher.
-    this->cipher = new elle::Cipher;
+    this->cipher = new elle::cryptography::Cipher;
 
     // encrypt the authority.
     if (key.Encrypt(this->pair,
@@ -99,7 +99,7 @@ namespace lune
   ///
   elle::Status          Identity::Decrypt(const elle::String&   pass)
   {
-    elle::SecretKey     key;
+    elle::cryptography::SecretKey     key;
 
     // check the cipher.
     if (this->cipher == NULL)
@@ -261,7 +261,7 @@ namespace lune
     elle::Byte          mode;
 
     // allocate the cipher.
-    this->cipher = new elle::Cipher;
+    this->cipher = new elle::cryptography::Cipher;
 
     // extract the mode.
     if (archive.Extract(mode) == elle::Status::Error)

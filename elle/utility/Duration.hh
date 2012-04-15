@@ -1,31 +1,14 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu aug 11 10:40:35 2011]
-//
-
 #ifndef ELLE_UTILITY_DURATION_HH
-#define ELLE_UTILITY_DURATION_HH
+# define ELLE_UTILITY_DURATION_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-
-#include <elle/radix/Object.hh>
-
-#include <elle/package/Archive.hh>
+# include <elle/radix/Object.hh>
 
 namespace elle
 {
 
   using namespace radix;
-  using namespace package;
 
   namespace utility
   {
@@ -75,8 +58,8 @@ namespace elle
       Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status            Serialize(Archive&) const;
-      Status            Extract(Archive&);
+      //Status            Serialize(Archive&) const;
+      //Status            Extract(Archive&);
 
       //
       // attributes

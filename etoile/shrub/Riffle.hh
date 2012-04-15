@@ -90,7 +90,7 @@ namespace etoile
       path::Slab                slab;
       nucleus::Location         location;
 
-      elle::Time                timestamp;
+      elle::utility::Time                timestamp;
 
       Riffle*                   parent;
       Container                 children;

@@ -154,7 +154,7 @@ namespace nucleus
                                       Handle&,
                                       const Pins = PinAll);
       elle::Status              Traverse(const elle::Natural32 = 0);
-      elle::Status              Seal(const elle::SecretKey&,
+      elle::Status              Seal(elle::cryptography::SecretKey const&,
                                      Address&);
 
       // dumpable

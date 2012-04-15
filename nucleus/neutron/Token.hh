@@ -50,10 +50,10 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status      Update(const elle::SecretKey&,
-                               const elle::PublicKey&);
-      elle::Status      Extract(const elle::PrivateKey&,
-                                elle::SecretKey&) const;
+      elle::Status      Update(elle::cryptography::SecretKey&,
+                               elle::cryptography::PublicKey const&);
+      elle::Status      Extract(elle::cryptography::PrivateKey const&,
+                                elle::cryptography::SecretKey&) const;
 
       //
       // interfaces
@@ -73,7 +73,7 @@ namespace nucleus
       //
       // attributes
       //
-      elle::Code*       code;
+      elle::cryptography::Code*       code;
     };
 
   }

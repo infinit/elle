@@ -66,7 +66,7 @@ namespace lune
     // methods
     //
     elle::Status        Create(const elle::String&,
-                               const elle::cryptography::KeyPair&);
+                               elle::cryptography::KeyPair const&);
 
     elle::Status        Encrypt(const elle::String&);
     elle::Status        Decrypt(const elle::String&);

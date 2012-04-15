@@ -71,16 +71,16 @@ namespace etoile
 
       struct
       {
-        elle::Time              creation;
-        elle::Time              modification;
+        elle::utility::Time              creation;
+        elle::utility::Time              modification;
       }                         stamps;
 
       nucleus::Offset           size;
 
       struct
       {
-        elle::PublicKey         owner;
-        elle::PublicKey         author;
+        elle::cryptography::PublicKey         owner;
+        elle::cryptography::PublicKey         author;
       }                         keys;
 
       struct

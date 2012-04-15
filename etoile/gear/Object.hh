@@ -113,7 +113,7 @@ namespace etoile
       {
         nucleus::Role           role;
         nucleus::Permissions    permissions;
-        elle::SecretKey         key;
+        elle::cryptography::SecretKey         key;
         nucleus::Record         record;
       }                         rights;
       nucleus::Author           author;

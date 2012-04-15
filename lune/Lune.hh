@@ -1,22 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [fri apr 30 12:55:13 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#ifndef LUNE_LUNE_HH
+# define LUNE_LUNE_HH
 
 #include <elle/types.hh>
 #include <elle/io/Pattern.hh>
-
-#ifndef LUNE_LUNE_HH
-#define LUNE_LUNE_HH
 
 ///
 /// this namespace contains everything necessary to manipulate information on
@@ -24,10 +10,6 @@
 ///
 namespace lune
 {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
   ///
   /// this class provides functionalities for manipulating the lune

@@ -198,8 +198,8 @@ namespace etoile
       elle::Duration            lifespan(
         elle::Duration::UnitSeconds,
         Infinit::Configuration.etoile.shrub.lifespan);
-      elle::Time                current;
-      elle::Time                threshold;
+      elle::utility::Time                current;
+      elle::utility::Time                threshold;
 
       // make sure the shrub has been activated, return otherwise.
       if (Infinit::Configuration.etoile.shrub.status == false)
@@ -478,8 +478,8 @@ namespace etoile
     {
       elle::Duration    lifespan(elle::Duration::UnitSeconds,
                                  Infinit::Configuration.etoile.shrub.lifespan);
-      elle::Time        current;
-      elle::Time        threshold;
+      elle::utility::Time        current;
+      elle::utility::Time        threshold;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)

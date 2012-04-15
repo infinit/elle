@@ -93,7 +93,7 @@ namespace lune
     elle::Natural32     extent;
     elle::Real          contention;
     elle::Real          balancing;
-    elle::Signature     signature;
+    elle::cryptography::Signature     signature;
   };
 
 }

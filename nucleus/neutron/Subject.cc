@@ -117,7 +117,7 @@ namespace nucleus
         case Subject::TypeUser:
           {
             // copy the user public key.
-            this->user = new elle::PublicKey(*subject.user);
+            this->user = new elle::cryptography::PublicKey(*subject.user);
 
             break;
           }
@@ -168,13 +168,13 @@ namespace nucleus
     ///
     /// this method creates a user subject.
     ///
-    elle::Status        Subject::Create(const elle::PublicKey&  K)
+    elle::Status        Subject::Create(elle::cryptography::PublicKey const&  K)
     {
       // set the type.
       this->type = Subject::TypeUser;
 
       // allocate and copy the key.
-      this->user = new elle::PublicKey(K);
+      this->user = new elle::cryptography::PublicKey(K);
 
       return elle::Status::Ok;
     }
@@ -344,7 +344,7 @@ namespace nucleus
         case Subject::TypeUser:
           {
             // allocate a new public key.
-            this->user = new elle::PublicKey;
+            this->user = new elle::cryptography::PublicKey;
 
             // extract the user public key.
             if (archive.Extract(*this->user) == elle::Status::Error)

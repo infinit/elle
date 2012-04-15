@@ -107,7 +107,7 @@ namespace etoile
     elle::Status        Contents::Close(
                           T&                                    context)
     {
-      elle::SecretKey   key;
+      elle::cryptography::SecretKey   key;
       nucleus::Size     size;
 
       //

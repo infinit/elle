@@ -69,11 +69,11 @@ namespace nucleus
       elle::Status      Consult(const Index&,
                                 const Size&,
                                 Range<Record>&) const;
-      elle::Status      Upgrade(const elle::SecretKey&);
+      elle::Status      Upgrade(elle::cryptography::SecretKey const&);
       elle::Status      Downgrade();
       elle::Status      Remove(const Subject&);
       elle::Status      Capacity(Size&) const;
-      elle::Status      Fingerprint(elle::Digest&) const;
+      elle::Status      Fingerprint(elle::cryptography::Digest&) const;
 
       //
       // interfaces

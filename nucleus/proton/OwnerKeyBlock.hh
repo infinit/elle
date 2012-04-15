@@ -54,7 +54,7 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status      Create(const elle::PublicKey&);
+      elle::Status      Create(elle::cryptography::PublicKey const&);
 
       elle::Status      Bind(Address&) const;
       elle::Status      Validate(const Address&) const;
@@ -76,15 +76,15 @@ namespace nucleus
       //
       // attributes
       //
-      elle::PublicKey           K;
+      elle::cryptography::PublicKey           K;
 
-      elle::Time                stamp;
+      elle::utility::Time                stamp;
 
       struct
       {
-        elle::PublicKey         K;
+        elle::cryptography::PublicKey         K;
 
-        elle::Signature         signature;
+        elle::cryptography::Signature         signature;
 
         neutron::Subject        subject;
       }                         owner;

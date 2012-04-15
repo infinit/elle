@@ -1,16 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       infinit
-//
-// license       infinit
-//
-// author        julien quintard   [tue may  4 22:01:45 2010]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/utility/Time.hh>
 
 #include <Infinit.hh>
 
@@ -86,11 +75,11 @@ elle::Status            Infinit::Initialize()
   // create the autority.
   //
   {
-    elle::PublicKey     K;
+    elle::cryptography::PublicKey     K;
 
     // ignore this step if the key is empty.
     //
-    // this is especially useful whenever the authority must be author 
+    // this is especially useful whenever the authority must be author
     // the very first time.
     if (Infinit::Key.empty() == false)
       {

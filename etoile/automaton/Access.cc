@@ -392,7 +392,7 @@ namespace etoile
     ///
     elle::Status        Access::Upgrade(
                           gear::Object&                         context,
-                          const elle::SecretKey&                key)
+                          elle::cryptography::SecretKey const&                key)
     {
       nucleus::Token    token;
 

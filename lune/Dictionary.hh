@@ -70,7 +70,7 @@ namespace lune
     //
     // attributes
     //
-    Map<elle::PublicKey>        users;
+    Map<elle::cryptography::PublicKey>        users;
     Map<nucleus::Address>       groups;
   };
 

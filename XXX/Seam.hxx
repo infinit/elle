@@ -782,7 +782,7 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    elle::Status        Seam<V>::Seal(const elle::SecretKey&    secret,
+    elle::Status        Seam<V>::Seal(elle::cryptography::SecretKey const&    secret,
                                       Address&                  address)
     {
       auto              iterator = this->container.begin();

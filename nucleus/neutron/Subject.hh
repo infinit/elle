@@ -1,39 +1,21 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 14 16:26:10 2009]
-//
-
 #ifndef NUCLEUS_NEUTRON_SUBJECT_HH
-#define NUCLEUS_NEUTRON_SUBJECT_HH
+# define NUCLEUS_NEUTRON_SUBJECT_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-
-#include <nucleus/proton/Address.hh>
+# include <nucleus/proton/Address.hh>
 
 namespace nucleus
 {
   namespace neutron
   {
 
-//
-// ---------- structures ------------------------------------------------------
-//
-
     ///
     /// this class is used to represents a subject i.e an entity which
     /// can be granted access such as a user or a group.
     ///
-    class Subject:
-      public elle::Object
+    class Subject
+      : public elle::Object
     {
     public:
       //
@@ -81,7 +63,7 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status      Create(const elle::PublicKey&);
+      elle::Status      Create(elle::cryptography::PublicKey const&);
       elle::Status      Create(const proton::Address&);
 
       //
@@ -106,7 +88,7 @@ namespace nucleus
 
       union
       {
-        elle::PublicKey*        user;
+        elle::cryptography::PublicKey*        user;
         proton::Address*        group;
       };
     };

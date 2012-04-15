@@ -77,7 +77,7 @@ namespace hole
     //
     // attributes
     //
-    elle::Digest*       digest;
+    elle::cryptography::Digest*       digest;
   };
 
 }

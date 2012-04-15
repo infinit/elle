@@ -30,7 +30,7 @@ namespace hole
       delete this->digest;
 
     // allocate the digest object.
-    this->digest = new elle::Digest;
+    this->digest = new elle::cryptography::Digest;
 
     // compute the digest based on the parameters including the family.
     if (elle::OneWay::Hash(parameter,

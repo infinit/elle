@@ -1367,7 +1367,7 @@ namespace nucleus
     /// constituent blocks to be stored.
     ///
     template <typename V>
-    elle::Status        Porcupine<V>::Seal(const elle::SecretKey&       secret)
+    elle::Status        Porcupine<V>::Seal(elle::cryptography::SecretKey const&       secret)
     {
       // ignore empty trees.
       if (this->root == Handle::Null)

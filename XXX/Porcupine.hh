@@ -138,7 +138,7 @@ namespace nucleus
       elle::Status              Check(const Pins = PinAll);
       elle::Status              Traverse(const elle::Natural32 = 0);
 
-      elle::Status              Seal(const elle::SecretKey&);
+      elle::Status              Seal(elle::cryptography::SecretKey const&);
 
       //
       // interfaces
@@ -172,7 +172,7 @@ namespace nucleus
       {
         static const elle::Natural32            Length;
 
-        static elle::SecretKey                  Secret;
+        static elle::cryptography::SecretKey                  Secret;
       };
 
       //

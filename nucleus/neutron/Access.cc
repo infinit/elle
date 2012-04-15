@@ -177,7 +177,7 @@ namespace nucleus
     /// this method updates the records with the given secret key by
     /// encrypted the given key with every subject's public key.
     ///
-    elle::Status        Access::Upgrade(const elle::SecretKey&  key)
+    elle::Status        Access::Upgrade(elle::cryptography::SecretKey const&  key)
     {
       Range<Record>::Iterator   iterator;
 
@@ -203,7 +203,7 @@ namespace nucleus
                 // capable of decrypting it.
                 //
 
-                elle::PublicKey*        K = record->subject.user;
+                elle::cryptography::PublicKey*        K = record->subject.user;
 
                 // update the token.
                 if (record->token.Update(key, *K) == elle::Status::Error)
@@ -298,7 +298,7 @@ namespace nucleus
     ///
     /// this is required by the object class for access control purposes.
     ///
-    elle::Status        Access::Fingerprint(elle::Digest&       digest) const
+    elle::Status        Access::Fingerprint(elle::cryptography::Digest&       digest) const
     {
       elle::Archive             archive;
       Range<Record>::Scoutor    scoutor;

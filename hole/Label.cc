@@ -47,7 +47,7 @@ namespace hole
     // copy the digest, if present.
     if (label.digest != NULL)
       {
-        this->digest = new elle::Digest(*label.digest);
+        this->digest = new elle::cryptography::Digest(*label.digest);
       }
     else
       {
@@ -197,7 +197,7 @@ namespace hole
     else
       {
         // allocate a digest.
-        this->digest = new elle::Digest;
+        this->digest = new elle::cryptography::Digest;
 
         // extract the internal digest.
         if (archive.Extract(*this->digest) == elle::Status::Error)

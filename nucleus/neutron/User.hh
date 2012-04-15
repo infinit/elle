@@ -38,7 +38,7 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status      Create(const elle::PublicKey&);
+      elle::Status      Create(elle::cryptography::PublicKey const&);
 
       //
       // interfaces

@@ -578,7 +578,7 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    elle::Status        Quill<V>::Seal(const elle::SecretKey&   secret,
+    elle::Status        Quill<V>::Seal(elle::cryptography::SecretKey const&   secret,
                                        Address&                 address)
     {
       auto              iterator = this->container.begin();

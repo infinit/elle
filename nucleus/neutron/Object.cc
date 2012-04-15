@@ -58,7 +58,7 @@ namespace nucleus
     /// part by setting the owner as the author.
     ///
     elle::Status        Object::Create(const Genre              genre,
-                                       const elle::PublicKey&   owner)
+                                       elle::cryptography::PublicKey const&   owner)
     {
       // (i)
       {
@@ -185,7 +185,7 @@ namespace nucleus
     ///
     /// this method seals the data and meta data by signing them.
     ///
-    elle::Status        Object::Seal(const elle::PrivateKey&    k,
+    elle::Status        Object::Seal(elle::cryptography::PrivateKey const&    k,
                                      const Access&              access)
     {
       // re-sign the data if required.
@@ -229,7 +229,7 @@ namespace nucleus
               // access records is computed which is then included in
               // the meta signature.
               //
-              elle::Digest      fingerprint;
+              elle::cryptography::Digest      fingerprint;
 
               // test if there is an access block.
               if (access == Access::Null)
@@ -310,7 +310,7 @@ namespace nucleus
                                          const Access&          access)
       const
     {
-      elle::PublicKey   author;
+      elle::cryptography::PublicKey   author;
 
       // (i)
       {
@@ -323,7 +323,7 @@ namespace nucleus
       {
         if (this->meta.access != proton::Address::Null)
           {
-            elle::Digest        fingerprint;
+            elle::cryptography::Digest        fingerprint;
 
             // test if there is an access block.
             if (access == Access::Null)

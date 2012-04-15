@@ -60,7 +60,7 @@ namespace nucleus
     ///
     elle::Status        Record::Update(const Subject&           subject,
                                        const Permissions&       permissions,
-                                       const elle::SecretKey&   key)
+                                       elle::cryptography::SecretKey const&   key)
     {
       // set the subject.
       this->subject = subject;

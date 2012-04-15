@@ -56,7 +56,7 @@ namespace nucleus
       // methods
       //
       elle::Status      Create(const Version&,
-                               const elle::Digest&);
+                               elle::cryptography::Digest const&);
       elle::Status      Create(const MutableBlock&);
 
       elle::Status      Match(const MutableBlock&) const;
@@ -80,7 +80,7 @@ namespace nucleus
       // attributes
       //
       Version           version;
-      elle::Digest      digest;
+      elle::cryptography::Digest      digest;
     };
 
   }

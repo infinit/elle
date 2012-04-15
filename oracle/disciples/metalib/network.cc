@@ -134,7 +134,7 @@ static bool check_root_block_signature(elle::Unique const& root_block,
 {
   nucleus::Object       directory;
   nucleus::Address      address;
-  elle::PublicKey       K;
+  elle::cryptography::PublicKey       K;
 
   std::cerr << "GOT pub key: " << public_key << "\n"
             << "GOT root block: " << root_block << "\n"

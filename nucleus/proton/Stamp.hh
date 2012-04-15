@@ -54,7 +54,7 @@ namespace nucleus
       elle::Status      Create(const Location&,
                                const Location&);
 
-      elle::Status      Seal(const elle::PrivateKey&);
+      elle::Status      Seal(elle::cryptography::PrivateKey const&);
       elle::Status      Validate();
 
       //
@@ -79,7 +79,7 @@ namespace nucleus
       Location          master;
       Location          slave;
 
-      elle::Signature   signature;
+      elle::cryptography::Signature   signature;
     };
 
   }

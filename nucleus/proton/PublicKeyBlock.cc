@@ -47,7 +47,7 @@ namespace nucleus
     ///
     /// this method creates a PKB based on the given public key.
     ///
-    elle::Status        PublicKeyBlock::Create(const elle::PublicKey& K)
+    elle::Status        PublicKeyBlock::Create(elle::cryptography::PublicKey const& K)
     {
       // copy the public key.
       this->K = K;

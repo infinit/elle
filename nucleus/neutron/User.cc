@@ -26,7 +26,7 @@ namespace nucleus
     ///
     /// this method creates the user given the user's public key.
     ///
-    elle::Status        User::Create(const elle::PublicKey&     K)
+    elle::Status        User::Create(elle::cryptography::PublicKey const&     K)
     {
       // create the underlying public key block.
       if (PublicKeyBlock::Create(K) == elle::Status::Error)

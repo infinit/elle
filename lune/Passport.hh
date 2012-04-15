@@ -78,7 +78,7 @@ namespace lune
     // XXX[temporary: mongodb id]
     elle::String        id;
 
-    elle::Signature     signature;
+    elle::cryptography::Signature     signature;
   };
 
 }

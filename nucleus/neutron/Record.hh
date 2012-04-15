@@ -62,7 +62,7 @@ namespace nucleus
       //
       elle::Status      Update(const Subject&,
                                const Permissions&,
-                               const elle::SecretKey&);
+                               elle::cryptography::SecretKey const&);
       elle::Status      Update(const Subject&,
                                const Permissions&,
                                const Token&);

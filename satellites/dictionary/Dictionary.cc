@@ -68,7 +68,7 @@ namespace satellite
       {
       case Dictionary::TypeUser:
         {
-          elle::PublicKey       K;
+          elle::cryptography::PublicKey       K;
 
           // restore the public key from the identifier.
           if (K.Restore(identifier) == elle::Status::Error)
@@ -219,14 +219,14 @@ namespace satellite
       {
       case Dictionary::TypeUser:
         {
-          lune::Map<elle::PublicKey>::Scoutor scoutor;
+          lune::Map<elle::cryptography::PublicKey>::Scoutor scoutor;
 
           // go through the user dictionary.
           for (scoutor = dictionary.users.container.begin();
                scoutor != dictionary.users.container.end();
                scoutor++)
             {
-              lune::Map<elle::PublicKey>::Entry* entry = *scoutor;
+              lune::Map<elle::cryptography::PublicKey>::Entry* entry = *scoutor;
 
               std::cout << entry->name << " :: "
                         << entry->value << std::endl;
@@ -298,7 +298,7 @@ namespace satellite
       {
       case Dictionary::TypeUser:
         {
-          elle::PublicKey*      K;
+          elle::cryptography::PublicKey*      K;
           elle::Unique          unique;
 
           // retrieve the entry.

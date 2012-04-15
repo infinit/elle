@@ -1,36 +1,19 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [sat may  7 23:26:59 2011]
-//
-
 #ifndef NUCLEUS_PROTON_IMPRINTBLOCK_HH
-#define NUCLEUS_PROTON_IMPRINTBLOCK_HH
+# define NUCLEUS_PROTON_IMPRINTBLOCK_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/utility/fwd.hh>
 
-#include <elle/types.hh>
+# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/MutableBlock.hh>
 
-#include <nucleus/proton/Address.hh>
-#include <nucleus/proton/MutableBlock.hh>
-
-#include <nucleus/neutron/Component.hh>
-#include <nucleus/neutron/Subject.hh>
+# include <nucleus/neutron/Component.hh>
+# include <nucleus/neutron/Subject.hh>
 
 namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class associates an owner to the mutable block.
@@ -64,7 +47,7 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status      Create(const elle::PublicKey&);
+      elle::Status      Create(elle::cryptography::PublicKey const&);
 
       elle::Status      Bind(Address&) const;
       elle::Status      Validate(const Address&) const;
@@ -80,18 +63,18 @@ namespace nucleus
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status      Serialize(elle::Archive&) const;
-      elle::Status      Extract(elle::Archive&);
+      //elle::Status      Serialize(elle::Archive&) const;
+      //elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      elle::Time                stamp;
+      elle::utility::Time       stamp;
       elle::Natural64           salt;
 
       struct
       {
-        elle::PublicKey         K;
+        elle::cryptography::PublicKey         K;
 
         neutron::Subject        subject;
       }                         owner;

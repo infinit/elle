@@ -44,7 +44,7 @@ namespace satellite
   {
     elle::String        prompt;
     elle::String        pass;
-    elle::KeyPair       pair;
+    elle::cryptography::KeyPair       pair;
     lune::Authority     authority;
 
     // prompt the user for the passphrase.
@@ -81,7 +81,7 @@ namespace satellite
   elle::Status          Authority::Destroy()
   {
     elle::String        prompt;
-    elle::KeyPair       pair;
+    elle::cryptography::KeyPair       pair;
     lune::Authority     authority;
 
     // erase the authority file.

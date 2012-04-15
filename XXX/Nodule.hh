@@ -94,7 +94,7 @@ namespace nucleus
                                       Handle&,
                                       const Pins = PinNone) = 0;
       virtual elle::Status      Traverse(const elle::Natural32 = 0) = 0;
-      virtual elle::Status      Seal(const elle::SecretKey&,
+      virtual elle::Status      Seal(elle::cryptography::SecretKey const&,
                                      Address&) = 0;
 
       //

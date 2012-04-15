@@ -1,30 +1,13 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar 31 23:36:12 2010]
-//
-
 #ifndef NUCLEUS_NEUTRON_RANGE_HXX
-#define NUCLEUS_NEUTRON_RANGE_HXX
+# define NUCLEUS_NEUTRON_RANGE_HXX
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <nucleus/neutron/Index.hh>
+# include <elle/standalone/Log.hh>
+# include <nucleus/neutron/Index.hh>
 
 namespace nucleus
 {
   namespace neutron
   {
-
-//
-// ---------- constructors & destructors --------------------------------------
-//
 
     ///
     /// default constructor.
@@ -282,11 +265,11 @@ namespace nucleus
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::Status::True;
+        return true;
 
       // compare the sizes.
       if (this->container.size() != element.container.size())
-        return elle::Status::False;
+        return false;
 
       // go through the elements.
       for (s = this->container.begin(), t = element.container.begin();
@@ -295,10 +278,10 @@ namespace nucleus
         {
           // compare the entries.
           if (*s != *t)
-            return elle::Status::False;
+            return false;
         }
 
-      return elle::Status::True;
+      return true;
     }
 
     ///
@@ -348,66 +331,66 @@ namespace nucleus
     ///
     /// this method serializes the range object.
     ///
-    template <typename T>
-    elle::Status        Range<T>::Serialize(elle::Archive&      archive) const
-    {
-      Range<T>::Scoutor scoutor;
-      Size              size;
+    //template <typename T>
+    //elle::Status        Range<T>::Serialize(elle::Archive&      archive) const
+    //{
+    //  Range<T>::Scoutor scoutor;
+    //  Size              size;
 
-      // retrieve the number of items.
-      size = this->container.size();
+    //  // retrieve the number of items.
+    //  size = this->container.size();
 
-      // serialize the number of items.
-      if (archive.Serialize(size) == elle::Status::Error)
-        escape("unable to serialize the number of items");
+    //  // serialize the number of items.
+    //  if (archive.Serialize(size) == elle::Status::Error)
+    //    escape("unable to serialize the number of items");
 
-      // serialize every item.
-      for (scoutor = this->container.begin();
-           scoutor != this->container.end();
-           scoutor++)
-        {
-          T*            item = *scoutor;
+    //  // serialize every item.
+    //  for (scoutor = this->container.begin();
+    //       scoutor != this->container.end();
+    //       scoutor++)
+    //    {
+    //      T*            item = *scoutor;
 
-          // serialize the item.
-          if (archive.Serialize(*item) == elle::Status::Error)
-            escape("unable to serialize the item");
-        }
+    //      // serialize the item.
+    //      if (archive.Serialize(*item) == elle::Status::Error)
+    //        escape("unable to serialize the item");
+    //    }
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
     ///
     /// this method extracts the range object.
     ///
-    template <typename T>
-    elle::Status        Range<T>::Extract(elle::Archive&        archive)
-    {
-      Size              size;
-      Index             i;
+    //template <typename T>
+    //elle::Status        Range<T>::Extract(elle::Archive&        archive)
+    //{
+    //  Size              size;
+    //  Index             i;
 
-      // extract the number of items.
-      if (archive.Extract(size) == elle::Status::Error)
-        escape("unable to extract the number of items");
+    //  // extract the number of items.
+    //  if (archive.Extract(size) == elle::Status::Error)
+    //    escape("unable to extract the number of items");
 
-      // extract every item.
-      for (i = 0; i < size; i++)
-        {
-          // allocate a new item.
-          auto item = new T;
+    //  // extract every item.
+    //  for (i = 0; i < size; i++)
+    //    {
+    //      // allocate a new item.
+    //      auto item = new T;
 
-          // extract the item.
-          if (archive.Extract(*item) == elle::Status::Error)
-            {
-              delete item;
-              escape("unable to extract the item");
-            }
+    //      // extract the item.
+    //      if (archive.Extract(*item) == elle::Status::Error)
+    //        {
+    //          delete item;
+    //          escape("unable to extract the item");
+    //        }
 
-          // add the item to the container.
-          this->container.push_back(item);
-        }
+    //      // add the item to the container.
+    //      this->container.push_back(item);
+    //    }
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

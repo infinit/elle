@@ -50,7 +50,7 @@ namespace nucleus
       if (token.code != NULL)
         {
           // duplicate the code.
-          this->code = new elle::Code(*token.code);
+          this->code = new elle::cryptography::Code(*token.code);
         }
       else
         this->code = NULL;
@@ -73,22 +73,22 @@ namespace nucleus
     ///
     /// this method creates or update the token.
     ///
-    elle::Status        Token::Update(const elle::SecretKey&    key,
-                                      const elle::PublicKey&    K)
+    elle::Status        Token::Update(elle::cryptography::SecretKey const&    key,
+                                      elle::cryptography::PublicKey const&    K)
     {
       // delete the previous code.
       if (this->code != NULL)
         delete this->code;
 
       // if the secret key is null, reinitialize to the default null token.
-      if (key == elle::SecretKey::Null)
+      if (key == elle::cryptography::SecretKey::Null)
         {
           this->code = NULL;
         }
       else
         {
           // allocate a new code.
-          this->code = new elle::Code;
+          this->code = new elle::cryptography::Code;
 
           // encrypt the given secret key with the given public key.
           if (K.Encrypt(key, *this->code) == elle::Status::Error)
@@ -101,8 +101,8 @@ namespace nucleus
     ///
     /// this method extracts the secret key from the token.
     ///
-    elle::Status        Token::Extract(const elle::PrivateKey&  k,
-                                       elle::SecretKey&         key) const
+    elle::Status        Token::Extract(elle::cryptography::PrivateKey const&  k,
+                                       elle::cryptography::SecretKey&         key) const
     {
       // check the code.
       if (this->code == NULL)
@@ -221,7 +221,7 @@ namespace nucleus
       else
         {
           // allocate a code.
-          this->code = new elle::Code;
+          this->code = new elle::cryptography::Code;
 
           // extract the code.
           if (archive.Extract(*this->code) == elle::Status::Error)

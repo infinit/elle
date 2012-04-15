@@ -28,7 +28,7 @@ const elle::Natural32                   Porcupine<>::Default::Length = 16;
 ///
 /// XXX
 ///
-elle::SecretKey                         Porcupine<>::Default::Secret;
+elle::cryptography::SecretKey                         Porcupine<>::Default::Secret;
 
 //
 // ---------- definitions -----------------------------------------------------

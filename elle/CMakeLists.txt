@@ -100,12 +100,9 @@ ADD_LIBRARY(elle
   network/TCPSocket.cc
   network/UDPSocket.cc
 
-  utility/Base64.cc
   utility/Duration.cc
   utility/Factory.cc
-  utility/Hexadecimal.cc
   utility/HTTP.cc
-  utility/JSON.cc
   utility/Parser.cc
   utility/REST.cc
   utility/Settings.cc

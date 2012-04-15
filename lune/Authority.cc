@@ -70,7 +70,7 @@ namespace lune
     this->K = pair.K;
 
     // allocate the private key.
-    this->k = new elle::PrivateKey(pair.k);
+    this->k = new elle::cryptography::PrivateKey(pair.k);
 
     return elle::Status::Ok;
   }
@@ -94,14 +94,14 @@ namespace lune
   ///
   elle::Status          Authority::Encrypt(const elle::String&          pass)
   {
-    elle::SecretKey     key;
+    elle::cryptography::SecretKey     key;
 
     // create a secret key with this pass.
     if (key.Create(pass) == elle::Status::Error)
       escape("unable to create the secret key");
 
     // allocate the cipher.
-    this->cipher = new elle::Cipher;
+    this->cipher = new elle::cryptography::Cipher;
 
     // encrypt depending on the type.
     switch (this->type)
@@ -139,7 +139,7 @@ namespace lune
   ///
   elle::Status          Authority::Decrypt(const elle::String&          pass)
   {
-    elle::SecretKey     key;
+    elle::cryptography::SecretKey     key;
 
     // check the cipher.
     if (this->cipher == NULL)
@@ -155,7 +155,7 @@ namespace lune
       case Authority::TypePair:
         {
           // allocate the private key.
-          this->k = new elle::PrivateKey;
+          this->k = new elle::cryptography::PrivateKey;
 
           // decrypt the authority.
           if (key.Decrypt(*this->cipher,
@@ -261,7 +261,7 @@ namespace lune
     elle::Natural8      type;
 
     // allocate the cipher.
-    this->cipher = new elle::Cipher;
+    this->cipher = new elle::cryptography::Cipher;
 
     // extract the type and cipher.
     if (archive.Extract(type, *this->cipher) == elle::Status::Error)
