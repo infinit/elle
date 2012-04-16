@@ -1,6 +1,8 @@
 #ifndef  ELLE_SERIALIZE_UNIQUABLE_HXX
 # define ELLE_SERIALIZE_UNIQUABLE_HXX
 
+# include <elle/idiom/Close.hh>
+
 # include <sstream>
 
 # include <elle/serialize/Base64Archive.hh>
@@ -9,6 +11,7 @@
 
 # include <elle/standalone/Log.hh>
 # include <elle/standalone/Report.hh>
+
 # include <elle/idiom/Open.hh>
 
 namespace elle
@@ -55,6 +58,7 @@ namespace elle
   }
 }
 
+# include <elle/idiom/Close.hh>
 
 #endif
 

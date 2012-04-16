@@ -209,7 +209,7 @@ namespace elle
     /// this method wakes up the fiber waiting for the given event.
     ///
     template <typename DataType>
-    Status Fiber::Awaken(const Event& event, std::shared_ptr<DataType> data)
+    Status Fiber::Awaken(const Event& event, std::shared_ptr<DataType> const& data)
     {
       Fiber::W::Iterator        iterator;
       Boolean                   awaken;
@@ -254,7 +254,7 @@ namespace elle
     /// this method wakes up the fibers waiting for the given resource.
     ///
     template <typename DataType>
-    Status Fiber::Awaken(const Resource& resource, std::shared_ptr<DataType> data)
+    Status Fiber::Awaken(const Resource& resource, std::shared_ptr<DataType> const& data)
     {
       Fiber::W::Iterator iterator;
       Boolean            awaken;
@@ -275,7 +275,7 @@ namespace elle
           awaken = true;
 
           // set the data.
-          fiber->data = data;
+          fiber->data = std::static_pointer_cast<DataType>(data);
 
           // set the state as awaken.
           fiber->state = Fiber::StateAwaken;
