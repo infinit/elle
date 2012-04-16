@@ -19,6 +19,8 @@
 
 #include <elle/radix/Object.hh>
 
+#include <elle/serialize/Uniquable.hh>
+
 #include <elle/cryptography/Plain.hh>
 #include <elle/cryptography/Code.hh>
 #include <elle/cryptography/Clear.hh>
@@ -47,7 +49,8 @@ namespace elle
     /// this class represents a public key.
     ///
     class PublicKey:
-      public Object
+        public Object
+      , public elle::serialize::Uniquable<PublicKey>
     {
     public:
       //
