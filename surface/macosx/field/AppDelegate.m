@@ -33,9 +33,9 @@
     statusItem = [[[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength] retain];
     [statusItem setMenu:statusMenu];
     [statusItem setTitle:@"∞"];
-    //[statusItem setImage:[[NSImage alloc] initWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Infinit-status-dark" ofType:@"png"]]];
+    [statusItem setImage:[[NSImage alloc] initWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Infinit" ofType:@"icns"]]];
     [statusItem setHighlightMode:YES];
-    //[statusItem setLength:20];
+    [statusItem setLength:20];
 }
 
 -(IBAction)installInjectBundle:(id)sender

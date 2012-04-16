@@ -37,13 +37,13 @@ typedef enum {
 @property(readonly) NSImage                 *syncedImage;
 @property(readonly) NSImage                 *disconnectedImage;
 
-@property(retain) NSMutableDictionary *nodesStatusDict;
+@property(retain) NSMutableDictionary       *nodesStatusDict;
 
 + (OOIconOverlay*) instance;
 
 - (IconRef) iconRefWithNodeStatus:(OONodeStatus)arg1;
 - (NSImage *) imageWithNodeStatus:(OONodeStatus)arg1;
-- (IconRef)iconRefForURL:(NSURL *)arg1;
+- (IconRef) iconRefForURL:(NSURL *)arg1;
 - (void) addStatusOpperationToQueue:(id)arg1;
 
 @end

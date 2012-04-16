@@ -12,18 +12,15 @@
 
 @interface OOFavorites : NSObject
 {
-    NSImage *sidebarImage;
+    NSImage                 *sidebarImage;
+    NSString                *infinitMountPath;
 }
 
-@property(readonly) NSImage *sideBarImage;
+@property(retain) NSImage   *sideBarImage;
+@property(retain) NSString  *infinitMountPath;
 
 + (OOFavorites*) instance;
 
-+(id)nodeRefWithFENode:(TFENode*)fn;
-+(TFENode*)feNodeWithNodeRef:(void*)fn;
-+(TFENode*)feNodeWithPath:(NSString*)path;
-+(TFENode*)feNodeWithFINode:(id)nd;
-
-+(void) addToFavorite;
+- (void) addToFavorite;
 
 @end

@@ -84,8 +84,8 @@
             
             TFENode *nouveauNode = (TFENode*)malloc(sizeof(TFENode));
             unsigned long long i = [ccc unsignedLongLongValue];
-            struct TFENode selectedNode =[bbb nodeAtIndex:i];
-            NSURL *path = [NSURL fileURLWithPath:[[NSClassFromString(@"NSNavFBENode") _nodeWithFBENode:(selectedNode)->fNodeRef] path]];
+            //struct TFENode selectedNode =[bbb nodeAtIndex:i];
+            //NSURL *path = [NSURL fileURLWithPath:[[NSClassFromString(@"NSNavFBENode") _nodeWithFBENode:(selectedNode)->fNodeRef] path]];
             int dsds = 0;
         }
     }
