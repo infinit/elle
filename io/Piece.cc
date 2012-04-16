@@ -1,18 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       infinit
-//
-// license       elle
-//
-// author        julien quintard   [mon apr 25 11:56:16 2011]
-//
-
-//
-// ---------- include ---------------------------------------------------------
-//
 
 #include <elle/io/Piece.hh>
+
+#include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -51,13 +43,13 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return Status::True;
+        return true;
 
       // compare the internal.
       if ((this->name != element.name) || (this->value != element.value))
-        return Status::False;
+        return false;
 
-      return Status::True;
+      return true;
     }
 
     ///

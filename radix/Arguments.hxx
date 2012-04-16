@@ -1,30 +1,15 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed feb 24 08:36:00 2010]
-//
-
 #ifndef ELLE_RADIX_ARGUMENTS_HXX
-#define ELLE_RADIX_ARGUMENTS_HXX
+# define ELLE_RADIX_ARGUMENTS_HXX
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
+# include <elle/standalone/Maid.hh>
+# include <elle/standalone/Report.hh>
 
-#include <elle/standalone/Maid.hh>
-#include <elle/standalone/Report.hh>
+# include <elle/radix/Entity.hh>
+# include <elle/radix/Allege.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Entity.hh>
-#include <elle/radix/Allege.hh>
-
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {

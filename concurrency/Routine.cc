@@ -1,23 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar 24 21:12:54 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/concurrency/Routine.hh>
 
 #include <elle/types.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 
 namespace elle
 {

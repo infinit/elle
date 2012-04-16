@@ -1,38 +1,23 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun may 29 13:15:23 2011]
-//
-
 #ifndef ELLE_CONCURRENCY_BROKER_HH
-#define ELLE_CONCURRENCY_BROKER_HH
+# define ELLE_CONCURRENCY_BROKER_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/system/Platform.hh>
 
-#include <elle/system/Platform.hh>
+# include <elle/types.hh>
 
-#include <elle/types.hh>
+# include <elle/radix/Parameters.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Parameters.hh>
+# include <elle/concurrency/Callback.hh>
+# include <elle/concurrency/Signal.hh>
 
-#include <elle/concurrency/Callback.hh>
-#include <elle/concurrency/Signal.hh>
-
-#include <elle/idiom/Close.hh>
-# include <QObject>
-# if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
-#  include <QSocketNotifier>
-# elif defined(INFINIT_WINDOWS)
-#  include <private/qwineventnotifier_p.h>
-# endif
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  include <QObject>
+#  if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
+#   include <QSocketNotifier>
+#  elif defined(INFINIT_WINDOWS)
+#   include <private/qwineventnotifier_p.h>
+#  endif
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -41,10 +26,6 @@ namespace elle
 
   namespace concurrency
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a broker of event which can be attached to

@@ -25,8 +25,6 @@
 #include <elle/io/Path.hh>
 #include <elle/io/Directory.hh>
 
-#include <elle/utility/Hexadecimal.hh>
-
 #include <elle/idiom/Close.hh>
 # include <sys/stat.h>
 # include <unistd.h>
@@ -38,7 +36,6 @@
 
 namespace elle
 {
-  using namespace utility;
 
   namespace radix
   {

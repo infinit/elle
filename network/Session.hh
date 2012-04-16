@@ -17,7 +17,6 @@
 
 #include <elle/types.hh>
 
-#include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
 
 #include <elle/concurrency/Fiber.hh>

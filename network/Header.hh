@@ -1,39 +1,20 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon feb 22 23:48:40 2010]
-//
-
 #ifndef ELLE_NETWORK_HEADER_HH
-#define ELLE_NETWORK_HEADER_HH
+# define ELLE_NETWORK_HEADER_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-#include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Object.hh>
+# include <elle/concurrency/Event.hh>
 
-#include <elle/package/Archive.hh>
+# include <elle/network/Tag.hh>
 
-#include <elle/concurrency/Event.hh>
-
-#include <elle/network/Tag.hh>
-
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
 
   using namespace radix;
-  using namespace package;
   using namespace concurrency;
 
   namespace network
@@ -79,8 +60,8 @@ namespace elle
       Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status            Serialize(Archive&) const;
-      Status            Extract(Archive&);
+      //Status            Serialize(Archive&) const;
+      //Status            Extract(Archive&);
 
       //
       // attributes

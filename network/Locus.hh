@@ -1,38 +1,19 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sat nov 28 12:55:38 2009]
-//
-
 #ifndef ELLE_NETWORK_LOCUS_HH
-#define ELLE_NETWORK_LOCUS_HH
+# define ELLE_NETWORK_LOCUS_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-#include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Object.hh>
+# include <elle/network/Host.hh>
+# include <elle/network/Port.hh>
 
-#include <elle/package/Archive.hh>
-
-#include <elle/network/Host.hh>
-#include <elle/network/Port.hh>
-
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
 
   using namespace radix;
-  using namespace package;
 
   namespace network
   {
@@ -76,8 +57,8 @@ namespace elle
       Boolean           operator>(const Locus&) const;
 
       // archivable
-      Status            Serialize(Archive&) const;
-      Status            Extract(Archive&);
+      //Status            Serialize(Archive&) const;
+      //Status            Extract(Archive&);
 
       // dumpable
       Status            Dump(const Natural32 = 0) const;

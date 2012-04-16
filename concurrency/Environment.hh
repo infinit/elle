@@ -1,31 +1,15 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu apr  8 14:13:51 2010]
-//
-
 #ifndef ELLE_CONCURRENCY_ENVIRONMENT_HH
-#define ELLE_CONCURRENCY_ENVIRONMENT_HH
+# define ELLE_CONCURRENCY_ENVIRONMENT_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
 
-#include <elle/types.hh>
-#include <elle/types.hh>
-#include <elle/types.hh>
+# include <elle/types.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Meta.hh>
-#include <elle/radix/Entity.hh>
+# include <elle/radix/Meta.hh>
+# include <elle/radix/Entity.hh>
 
-#include <elle/idiom/Close.hh>
-# include <vector>
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  include <vector>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {

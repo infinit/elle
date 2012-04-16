@@ -1,25 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu may 27 16:17:26 2010]
-//
-
 #ifndef ELLE_IO_FILE_HH
-#define ELLE_IO_FILE_HH
+# define ELLE_IO_FILE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/standalone/Region.hh>
 
-#include <elle/standalone/Region.hh>
-
-#include <elle/radix/Status.hh>
-
-#include <elle/io/Path.hh>
+# include <elle/io/Path.hh>
 
 namespace elle
 {
@@ -28,10 +12,6 @@ namespace elle
 
   namespace io
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class abstracts the local file operations.

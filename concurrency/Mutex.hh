@@ -1,28 +1,13 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun mar  7 17:15:14 2010]
-//
-
 #ifndef ELLE_CONCURRENCY_MUTEX_HH
-#define ELLE_CONCURRENCY_MUTEX_HH
+# define ELLE_CONCURRENCY_MUTEX_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
+# include <elle/radix/Object.hh>
+# include <elle/radix/Parameters.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Object.hh>
-#include <elle/radix/Parameters.hh>
-
-#include <elle/concurrency/Closure.hh>
-#include <elle/concurrency/Section.hh>
+# include <elle/concurrency/Closure.hh>
+# include <elle/concurrency/Section.hh>
 
 namespace elle
 {
@@ -31,10 +16,6 @@ namespace elle
 
   namespace concurrency
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents the simplest concurrency control mechanism:

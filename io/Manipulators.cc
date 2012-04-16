@@ -62,18 +62,18 @@ namespace std
   ///
   ///   std::cout << chop(k) << std::endl;
   ///
-  template <const elle::io::Format F>
-  elle::String    chop(const elle::io::Uniquable<F>&      uniquable,
-                             const elle::Natural32        limit)
-  {
-    elle::io::Unique    unique;
+  //template <const elle::io::Format F>
+  //elle::String    chop(const elle::io::Uniquable<F>&      uniquable,
+  //                           const elle::Natural32        limit)
+  //{
+  //  elle::io::Unique    unique;
 
-    // generate the unique identifier.
-    if (uniquable.Save(unique) == elle::Status::Error)
-      yield(unique, "unable to save the object");
+  //  // generate the unique identifier.
+  //  if (uniquable.Save(unique) == elle::Status::Error)
+  //    yield(unique, "unable to save the object");
 
-    // display a chopped uniquable.
-    return (std::chop(unique, limit));
-  }
+  //  // display a chopped uniquable.
+  //  return (std::chop(unique, limit));
+  //}
 
 }

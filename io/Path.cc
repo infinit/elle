@@ -1,17 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       infinit
-//
-// license       elle
-//
-// author        julien quintard   [mon apr 25 11:12:59 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
+#include <elle/standalone/Log.hh>
 #include <elle/io/Path.hh>
 
 namespace elle
@@ -74,13 +62,13 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return Status::True;
+        return true;
 
       // compare the internal.
       if (this->_string != element.str())
-        return Status::False;
+        return false;
 
-      return Status::True;
+      return true;
     }
 
     ///

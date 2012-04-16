@@ -1,21 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar  3 13:55:58 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/concurrency/Event.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 
 #include <elle/cryptography/Random.hh>
 
@@ -78,13 +65,13 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return Status::True;
+        return true;
 
       // compare the identifier.
       if (this->identifier != element.identifier)
-        return Status::False;
+        return false;
 
-      return Status::True;
+      return true;
     }
 
     ///
@@ -104,29 +91,29 @@ namespace elle
 // ---------- archivable ------------------------------------------------------
 //
 
-    ///
-    /// this method serializes the event.
-    ///
-    Status              Event::Serialize(Archive&               archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(this->identifier) == Status::Error)
-        escape("unable to serialize the event attributes");
+    /////
+    ///// this method serializes the event.
+    /////
+    //Status              Event::Serialize(Archive&               archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(this->identifier) == Status::Error)
+    //    escape("unable to serialize the event attributes");
 
-      return Status::Ok;
-    };
+    //  return Status::Ok;
+    //};
 
-    ///
-    /// this method extracts the event.
-    ///
-    Status              Event::Extract(Archive&                 archive)
-    {
-      // extract the attributes.
-      if (archive.Extract(this->identifier) == Status::Error)
-        escape("unable to extract the event attributes");
+    /////
+    ///// this method extracts the event.
+    /////
+    //Status              Event::Extract(Archive&                 archive)
+    //{
+    //  // extract the attributes.
+    //  if (archive.Extract(this->identifier) == Status::Error)
+    //    escape("unable to extract the event attributes");
 
-      return Status::Ok;
-    };
+    //  return Status::Ok;
+    //};
 
 //
 // ---------- dumpable --------------------------------------------------------

@@ -1,21 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon feb  2 22:22:12 2009]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <elle/cryptography/Code.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 
 namespace elle
 {
@@ -70,13 +58,9 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return Status::True;
+        return true;
 
-      // compare the regions.
-      if (this->region != element.region)
-        return Status::False;
-
-      return Status::True;
+      return (this->region != element.region);
     }
 
     ///
@@ -119,26 +103,26 @@ namespace elle
     ///
     /// this method serializes a code object.
     ///
-    Status              Code::Serialize(Archive&                archive) const
-    {
-      // serialize the region.
-      if (archive.Serialize(this->region) == Status::Error)
-        escape("unable to serialize the region");
+    //Status              Code::Serialize(Archive&                archive) const
+    //{
+    //  // serialize the region.
+    //  if (archive.Serialize(this->region) == Status::Error)
+    //    escape("unable to serialize the region");
 
-      return Status::Ok;
-    }
+    //  return Status::Ok;
+    //}
 
-    ///
-    /// this method extracts a code object.
-    ///
-    Status              Code::Extract(Archive&          archive)
-    {
-      // extract the content.
-      if (archive.Extract(this->region) == Status::Error)
-        escape("unable to extract the region");
+    /////
+    ///// this method extracts a code object.
+    /////
+    //Status              Code::Extract(Archive&          archive)
+    //{
+    //  // extract the content.
+    //  if (archive.Extract(this->region) == Status::Error)
+    //    escape("unable to extract the region");
 
-      return Status::Ok;
-    }
+    //  return Status::Ok;
+    //}
 
   }
 }

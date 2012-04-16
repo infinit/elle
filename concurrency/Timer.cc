@@ -163,7 +163,7 @@ namespace elle
     ///
     void                Timer::_timeout()
     {
-      Closure< Status::,
+      Closure< Status,
                Parameters<> >   closure(Callback<>::Infer(&Timer::Timeout,
                                                           this));
 

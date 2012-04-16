@@ -1,40 +1,19 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [tue nov  1 16:11:44 2011]
-//
-
 #ifndef ELLE_CONCURRENCY_ENTRANCE_HH
-#define ELLE_CONCURRENCY_ENTRANCE_HH
+# define ELLE_CONCURRENCY_ENTRANCE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
+# include <elle/radix/Object.hh>
+# include <elle/radix/Parameters.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Object.hh>
-#include <elle/radix/Parameters.hh>
-
-#include <elle/concurrency/Closure.hh>
-#include <elle/concurrency/Timer.hh>
+# include <elle/concurrency/Closure.hh>
+# include <elle/concurrency/Timer.hh>
 
 namespace elle
 {
 
-  using namespace radix;
-
   namespace concurrency
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this generic class enables specializations.

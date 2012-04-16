@@ -1,19 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sat mar 19 14:10:58 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <elle/cryptography/Seed.hh>
 #include <elle/cryptography/Random.hh>
+#include <elle/standalone/Log.hh>
 
 namespace elle
 {
@@ -121,13 +109,13 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return Status::True;
+        return true;
 
       // compare the internal region.
       if (this->region != element.region)
-        return Status::False;
+        return false;
 
-      return Status::True;
+      return true;
     }
 
     ///
@@ -162,26 +150,26 @@ namespace elle
     ///
     /// this method serializes a seed object.
     ///
-    Status              Seed::Serialize(Archive&                archive) const
-    {
-      // serialize the internal region.
-      if (archive.Serialize(this->region) == Status::Error)
-        escape("unable to serialize the internal region");
+    //Status              Seed::Serialize(Archive&                archive) const
+    //{
+    //  // serialize the internal region.
+    //  if (archive.Serialize(this->region) == Status::Error)
+    //    escape("unable to serialize the internal region");
 
-      return Status::Ok;
-    }
+    //  return Status::Ok;
+    //}
 
-    ///
-    /// this method extract a seed from the given archive.
-    ///
-    Status              Seed::Extract(Archive&                  archive)
-    {
-      // extract the region.
-      if (archive.Extract(this->region) == Status::Error)
-        escape("unable to extract the internal region");
+    /////
+    ///// this method extract a seed from the given archive.
+    /////
+    //Status              Seed::Extract(Archive&                  archive)
+    //{
+    //  // extract the region.
+    //  if (archive.Extract(this->region) == Status::Error)
+    //    escape("unable to extract the internal region");
 
-      return Status::Ok;
-    }
+    //  return Status::Ok;
+    //}
 
   }
 }

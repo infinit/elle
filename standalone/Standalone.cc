@@ -1,6 +1,8 @@
 
-#include <elle/standalone/Standalong.hh>
+#include <elle/standalone/Standalone.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
+#include <elle/standalone/Morgue.hh>
 
 namespace elle
 {
@@ -10,35 +12,35 @@ namespace elle
     Status              Standalone::Initialize()
     {
       // initialize the report.
-      if (Report::Initialize() == StatusError)
+      if (Report::Initialize() == Status::Error)
         escape("unable to initialize the report");
 
       // initialize the log.
-      if (Log::Initialize() == StatusError)
+      if (Log::Initialize() == Status::Error)
         escape("unable to initialize the log");
 
       // initialize the morgue.
-      if (Morgue::Initialize() == StatusError)
+      if (Morgue::Initialize() == Status::Error)
         escape("unable to initialize the morgue");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status              Standalone::Clean()
     {
       // clean the morgue class.
-      if (Morgue::Clean() == StatusError)
+      if (Morgue::Clean() == Status::Error)
         escape("unable to clean the morgue");
 
       // clean the log.
-      if (Log::Clean() == StatusError)
+      if (Log::Clean() == Status::Error)
         escape("unable to clean the log");
 
       // clean the report.
-      if (Report::Clean() == StatusError)
+      if (Report::Clean() == Status::Error)
         escape("unable to clean the report");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

@@ -17,11 +17,8 @@
 
 #include <elle/types.hh>
 
-#include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
 #include <elle/radix/Trait.hh>
-
-#include <elle/package/Archive.hh>
 
 #include <elle/network/Tag.hh>
 #include <elle/network/Parcel.hh>

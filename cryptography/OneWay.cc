@@ -39,14 +39,14 @@ namespace elle
       unsigned int      size;
 
       // allocate the digest's contents.
-      if (digest.region.Prepare(EVP_MD_size(OneWay::Algorithm)) == Status::Error)
+      if (digest.region.Prepare(EVP_MD_size(Algorithm)) == Status::Error)
         escape("unable to allocate memory for the digest");
 
       // initialise the context.
       ::EVP_MD_CTX_init(&context);
 
       // initialise the digest.
-      if (::EVP_DigestInit_ex(&context, OneWay::Algorithm, NULL) <= 0 ||
+      if (::EVP_DigestInit_ex(&context, Algorithm, NULL) <= 0 ||
       // update the digest with the given data.
           ::EVP_DigestUpdate(&context,
                              plain.contents,

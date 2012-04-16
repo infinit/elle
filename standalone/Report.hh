@@ -38,19 +38,6 @@
 namespace elle
 {
 
-  namespace package
-  {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    ///
-    /// the Archive must be forward declared to prevent conflicts.
-    ///
-    class Archive;
-  }
-
   namespace concurrency
   {
 
@@ -66,7 +53,6 @@ namespace elle
 
 
   using namespace radix;
-  using namespace package;
   using namespace io;
   using namespace concurrency;
 
@@ -177,9 +163,9 @@ namespace elle
       // dumpable
       Status            Dump(const Natural32 = 0) const;
 
-      // archivable
-      Status            Serialize(Archive&) const;
-      Status            Extract(Archive&);
+      //// archivable
+      //Status            Serialize(Archive&) const;
+      //Status            Extract(Archive&);
 
       // object-like
       template <typename T>

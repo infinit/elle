@@ -16,6 +16,7 @@
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QNetworkInterface>
@@ -166,14 +167,14 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return Status::True;
+        return true;
 
       // compare the internal values.
       if ((this->type != element.type) ||
           (this->location != element.location))
-        return Status::False;
+        return false;
 
-      return Status::True;
+      return true;
     }
 
     ///
@@ -183,13 +184,13 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return Status::False;
+        return false;
 
       // compare the type
       if (this->type < element.type)
-        return Status::True;
+        return true;
       else if (this->type > element.type)
-        return Status::False;
+        return false;
       else
         {
           ::QString     first;
@@ -201,12 +202,12 @@ namespace elle
 
           // compare the string.
           if (first < second)
-            return Status::True;
+            return true;
           else if (first > second)
-            return Status::False;
+            return false;
         }
 
-      return Status::False;
+      return false;
     }
 
     ///
@@ -229,38 +230,38 @@ namespace elle
     ///
     /// this method serializes the host.
     ///
-    Status              Host::Serialize(Archive&                archive) const
-    {
-      String            host(this->location.toString().toStdString());
+    //Status              Host::Serialize(Archive&                archive) const
+    //{
+    //  String            host(this->location.toString().toStdString());
 
-      // serialize the host and port.
-      if (archive.Serialize(static_cast<Natural8>(this->type),
-                            host) == Status::Error)
-        escape("unable to serialize the host");
+    //  // serialize the host and port.
+    //  if (archive.Serialize(static_cast<Natural8>(this->type),
+    //                        host) == Status::Error)
+    //    escape("unable to serialize the host");
 
-      return Status::Ok;
-    }
+    //  return Status::Ok;
+    //}
 
-    ///
-    /// this method extracts a host.
-    ///
-    Status              Host::Extract(Archive&                  archive)
-    {
-      Natural8          type;
-      String            host;
+    /////
+    ///// this method extracts a host.
+    /////
+    //Status              Host::Extract(Archive&                  archive)
+    //{
+    //  Natural8          type;
+    //  String            host;
 
-      // extract the host.
-      if (archive.Extract(type, host) == Status::Error)
-        escape("unable to extract the host");
+    //  // extract the host.
+    //  if (archive.Extract(type, host) == Status::Error)
+    //    escape("unable to extract the host");
 
-      // set the type.
-      this->type = static_cast<Host::Type>(type);
+    //  // set the type.
+    //  this->type = static_cast<Host::Type>(type);
 
-      // set the location.
-      this->location.setAddress(host.c_str());
+    //  // set the location.
+    //  this->location.setAddress(host.c_str());
 
-      return Status::Ok;
-    }
+    //  return Status::Ok;
+    //}
 
 //
 // ---------- dumpable --------------------------------------------------------

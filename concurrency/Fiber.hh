@@ -1,43 +1,27 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun mar 21 23:09:07 2010]
-//
-
 #ifndef ELLE_CONCURRENCY_FIBER_HH
-#define ELLE_CONCURRENCY_FIBER_HH
+# define ELLE_CONCURRENCY_FIBER_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/system/Platform.hh>
 
-#include <elle/system/Platform.hh>
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-#include <elle/types.hh>
+# include <elle/radix/Meta.hh>
+# include <elle/radix/Parameters.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Meta.hh>
-#include <elle/radix/Parameters.hh>
+# include <elle/concurrency/Callback.hh>
+# include <elle/concurrency/Closure.hh>
+# include <elle/concurrency/Event.hh>
+# include <elle/concurrency/Resource.hh>
+# include <elle/concurrency/Phase.hh>
+# include <elle/concurrency/Frame.hh>
+# include <elle/concurrency/Environment.hh>
+# include <elle/concurrency/Timer.hh>
 
-#include <elle/concurrency/Callback.hh>
-#include <elle/concurrency/Closure.hh>
-#include <elle/concurrency/Event.hh>
-#include <elle/concurrency/Resource.hh>
-#include <elle/concurrency/Phase.hh>
-#include <elle/concurrency/Frame.hh>
-#include <elle/concurrency/Environment.hh>
-#include <elle/concurrency/Timer.hh>
-
-#include <elle/idiom/Close.hh>
-# include <elle/thirdparty/epth.hh>
-# include <list>
-# include <memory>
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  include <elle/thirdparty/epth.hh>
+#  include <list>
+#  include <memory>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -141,7 +125,7 @@ namespace elle
       {
         typedef std::vector<
           Callback<
-            Status::,
+            Status,
             Parameters<Phase, Fiber*> >* >              Container;
         typedef Container::iterator                     Iterator;
         typedef Container::const_iterator               Scoutor;
@@ -195,7 +179,7 @@ namespace elle
 
       static Status     Register(const
                                    Callback<
-                                     Status::,
+                                     Status,
                                      Parameters<Phase, Fiber*>
                                      >);
       static Status     Trigger(Phase);

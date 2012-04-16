@@ -1,26 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [tue mar 16 12:04:48 2010]
-//
-
 #ifndef ELLE_NETWORK_PARCEL_HH
-#define ELLE_NETWORK_PARCEL_HH
+# define ELLE_NETWORK_PARCEL_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
+# include <elle/radix/Entity.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Entity.hh>
-
-#include <elle/network/Data.hh>
+# include <elle/network/Data.hh>
 
 namespace elle
 {
