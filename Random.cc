@@ -18,6 +18,7 @@
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/standalone/Region.hh>
 
 #include <elle/idiom/Close.hh>
 # include <openssl/engine.h>
@@ -35,6 +36,8 @@
 
 namespace elle
 {
+  using namespace standalone;
+
   namespace cryptography
   {
 

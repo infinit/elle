@@ -12,7 +12,6 @@ namespace elle
 {
 
   using namespace radix;
-  using namespace package;
 
   namespace cryptography
   {
@@ -68,8 +67,8 @@ namespace elle
       Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status            Serialize(Archive&) const;
-      Status            Extract(Archive&);
+      //Status            Serialize(Archive&) const;
+      //Status            Extract(Archive&);
 
       //
       // attributes

@@ -1,45 +1,25 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu nov  1 11:38:37 2007]
-//
-
 #ifndef ELLE_CRYPTOGRAPHY_SECRETKEY_HH
-#define ELLE_CRYPTOGRAPHY_SECRETKEY_HH
+# define ELLE_CRYPTOGRAPHY_SECRETKEY_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-#include <elle/types.hh>
-#include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Object.hh>
+# include <elle/cryptography/Plain.hh>
+# include <elle/cryptography/Cipher.hh>
+# include <elle/cryptography/Clear.hh>
 
-#include <elle/package/Archive.hh>
-
-#include <elle/cryptography/Plain.hh>
-#include <elle/cryptography/Cipher.hh>
-#include <elle/cryptography/Clear.hh>
-
-#include <elle/idiom/Close.hh>
-# include <openssl/evp.h>
-# include <openssl/err.h>
-# include <openssl/rand.h>
-# include <fcntl.h>
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  include <openssl/evp.h>
+#  include <openssl/err.h>
+#  include <openssl/rand.h>
+#  include <fcntl.h>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
 
   using namespace radix;
-  using namespace package;
 
   namespace cryptography
   {
@@ -103,8 +83,8 @@ namespace elle
       Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status            Serialize(Archive&) const;
-      Status            Extract(Archive&);
+      //Status            Serialize(Archive&) const;
+      //Status            Extract(Archive&);
 
       //
       // attributes
@@ -120,32 +100,32 @@ namespace elle
       /// calls.
       ///
 
-      Status            Encrypt(const Archive&          archive,
-                                Cipher&                 cipher) const
-      {
-        return (this->Encrypt(Plain(archive.contents, archive.size),
-                              cipher));
-      }
+      //Status            Encrypt(const Archive&          archive,
+      //                          Cipher&                 cipher) const
+      //{
+      //  return (this->Encrypt(Plain(archive.contents, archive.size),
+      //                        cipher));
+      //}
 
-      Status            Decrypt(const Cipher&           cipher,
-                                Archive&                archive) const
-      {
-        Clear           clear;
+      //Status            Decrypt(const Cipher&           cipher,
+      //                          Archive&                archive) const
+      //{
+      //  Clear           clear;
 
-        // decrypt the cipher into the clear.
-        if (this->Decrypt(cipher, clear) == Status::Error)
-          escape("unable to decrypt the cipher");
+      //  // decrypt the cipher into the clear.
+      //  if (this->Decrypt(cipher, clear) == Status::Error)
+      //    escape("unable to decrypt the cipher");
 
-        // give the clear to the archive.
-        if (archive.Acquire(clear) == Status::Error)
-          escape("unable to acquire the region");
+      //  // give the clear to the archive.
+      //  if (archive.Acquire(clear) == Status::Error)
+      //    escape("unable to acquire the region");
 
-        // detach the region so that it does not get released twice.
-        if (clear.Detach() == Status::Error)
-          escape("unable to detach the region");
+      //  // detach the region so that it does not get released twice.
+      //  if (clear.Detach() == Status::Error)
+      //    escape("unable to detach the region");
 
-        return Status::Ok;
-      }
+      //  return Status::Ok;
+      //}
 
       //
       // variadic templates

@@ -1,37 +1,12 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu aug 11 16:08:47 2011]
-//
-
 #ifndef ELLE_CRYPTOGRAPHY_RANDOM_HH
-#define ELLE_CRYPTOGRAPHY_RANDOM_HH
+# define ELLE_CRYPTOGRAPHY_RANDOM_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-#include <elle/types.hh>
-#include <elle/types.hh>
-#include <elle/types.hh>
-#include <elle/types.hh>
-#include <elle/types.hh>
-#include <elle/types.hh>
-
-#include <elle/standalone/Region.hh>
-
-#include <elle/radix/Status.hh>
+# include <elle/standalone/Region.hh>
 
 namespace elle
 {
-
-  using namespace standalone;
-  using namespace radix;
 
   namespace cryptography
   {
@@ -76,7 +51,7 @@ namespace elle
                                  const Natural32 = Bits);
       static Status     Generate(String&,
                                  const Natural32 = Length);
-      static Status     Generate(Region&,
+      static Status     Generate(standalone::Region&,
                                  const Natural32 = Size);
     };
 
