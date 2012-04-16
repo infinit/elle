@@ -78,7 +78,6 @@ namespace elle
                                const Plain&) const;
       Status            Decrypt(const Code&,
                                 Clear&) const;
-
       //
       // interfaces
       //

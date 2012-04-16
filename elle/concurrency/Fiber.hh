@@ -168,11 +168,11 @@ namespace elle
 
       template <typename DataType = Meta>
       static Status     Awaken(const Event& event,
-                               std::shared_ptr<DataType> data = nullptr);
+                               std::shared_ptr<DataType> const& data = nullptr);
 
       template <typename DataType = Meta>
       static Status     Awaken(const Resource& resource,
-                               std::shared_ptr<DataType> data = nullptr);
+                               std::shared_ptr<DataType> const& data = nullptr);
 
       static Status     Sleep(const Natural32);
       static Status     Yield();

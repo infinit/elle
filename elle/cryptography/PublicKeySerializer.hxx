@@ -3,6 +3,10 @@
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
+# include <elle/cryptography/LargeSerializer.hxx>
+
+# include <elle/cryptography/PublicKey.hh>
+
 ELLE_SERIALIZE_SPLIT(elle::cryptography::PublicKey)
 
 ELLE_SERIALIZE_SPLIT_LOAD(elle::cryptography::PublicKey,
@@ -15,7 +19,9 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::cryptography::PublicKey,
     {
       void operator() (Large* l)
         {
-          ::BN_clear_free(l);
+          // We didn't use BN_clear_free because public key is not a sensitive
+          // data, no need to waste time in clearing it.
+          ::BN_free(l);
         }
     };
   typedef std::unique_ptr<Large, LargeDeleter> LargePtr;
@@ -31,15 +37,14 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::cryptography::PublicKey,
   LargePtr n(::BN_dup(&n_));
   LargePtr e(::BN_dup(&e_));
 
-  ::BN_clear(&n_);
-  ::BN_clear(&e_);
+  ::BN_free(&n_);
+  ::BN_free(&e_);
 
   if (!n || !e)
     throw std::bad_alloc();
 
-
-  if (value->Create(::BN_dup(n.get()),
-                    ::BN_dup(e.get())) == Status::Error)
+  if (value.Create(::BN_dup(n.get()),
+                   ::BN_dup(e.get())) == Status::Error)
     {
       throw std::runtime_error(
           "unable to create the public key from the archive"
@@ -50,6 +55,20 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::cryptography::PublicKey,
       n.release();
       e.release();
     }
+}
+
+ELLE_SERIALIZE_SPLIT_SAVE(elle::cryptography::PublicKey,
+                          archive,
+                          value,
+                          version)
+{
+// XXX assert(this->_key != nullptr);
+// XXX[to remove]
+  if (value.key() == nullptr)
+    throw std::runtime_error("XXX: should not happen !");
+
+  archive << *this->key()->pkey.rsa->n
+          << *this->key()->pkey.rsa->e;
 }
 
 #endif

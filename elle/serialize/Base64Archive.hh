@@ -36,7 +36,6 @@ namespace elle { namespace serialize {
       Base64Archive(StreamType& stream);
       ~Base64Archive();
 
-    protected:
       void SaveBinary(void const* data, size_t size);
     };
 
@@ -53,9 +52,8 @@ namespace elle { namespace serialize {
 
     public:
        Base64Archive(StreamType& stream);
-
-    protected:
       void LoadBinary(void* data, size_t size);
+
     private:
       static char _DecodeChar(unsigned char c);
     };
