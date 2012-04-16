@@ -56,8 +56,8 @@ namespace nucleus
       elle::Boolean             operator<(const Placement&) const;
 
       // archivable
-      elle::Status              Serialize(elle::Archive&) const;
-      elle::Status              Extract(elle::Archive&);
+      //elle::Status              Serialize(elle::Archive&) const;
+      //elle::Status              Extract(elle::Archive&);
 
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;

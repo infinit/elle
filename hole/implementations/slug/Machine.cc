@@ -81,7 +81,7 @@ namespace hole
       ///
       elle::Status      Machine::Launch()
       {
-        elle::Locus     locus;
+        elle::network::Locus     locus;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -196,7 +196,7 @@ namespace hole
         // finally, listen for incoming connections.
         //
         {
-          elle::Locus   locus;
+          elle::network::Locus   locus;
           elle::Host    host;
 
           // create a host.
@@ -1285,7 +1285,7 @@ namespace hole
                scoutor != cluster.container.end();
                scoutor++)
             {
-              elle::Locus       locus = *scoutor;
+              elle::network::Locus       locus = *scoutor;
 
               // check if this locus is already registered.
               if (this->neighbourhood.Exist(locus) == elle::Status::True)

@@ -7,7 +7,7 @@
 //
 // author        julien quintard   [tue jun 28 14:58:51 2011]
 //
- 
+
 #ifndef DIARY_UNIX_UPCALL_HH
 #define DIARY_UNIX_UPCALL_HH
 
@@ -90,8 +90,8 @@ namespace satellite
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status      Serialize(elle::Archive&) const;
-      elle::Status      Extract(elle::Archive&);
+      //elle::Status      Serialize(elle::Archive&) const;
+      //elle::Status      Extract(elle::Archive&);
 
       //
       // attributes

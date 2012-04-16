@@ -1,21 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [tue mar  6 15:01:36 2012]
-//
+#ifndef  LUNE_SET_HH
+# define LUNE_SET_HH
 
-#ifndef LUNE_SET_HH
-#define LUNE_SET_HH
+# include <elle/types.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
+# include <elle/network/Locus.hh>
 
 namespace lune
 {
@@ -41,14 +29,14 @@ namespace lune
     //
     // types
     //
-    // XXX use std::set<elle::Locus> !
-    typedef std::vector<elle::Locus>    Container;
+    // XXX use std::set<elle::network::Locus> !
+    typedef std::vector<elle::network::Locus>    Container;
 
     //
     // methods
     //
-    elle::Status        Add(const elle::Locus&);
-    elle::Status        Remove(const elle::Locus&);
+    elle::Status        Add(const elle::network::Locus&);
+    elle::Status        Remove(const elle::network::Locus&);
 
     //
     // interfaces
@@ -61,8 +49,8 @@ namespace lune
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // archivable
-    elle::Status        Serialize(elle::Archive&) const;
-    elle::Status        Extract(elle::Archive&);
+    //elle::Status        Serialize(elle::Archive&) const;
+    //elle::Status        Extract(elle::Archive&);
 
     // fileable
     elle::Status        Load(const elle::String&);

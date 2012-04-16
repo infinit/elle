@@ -60,7 +60,7 @@ namespace hole
         //
         // methods
         //
-        elle::Status    Create(const elle::Locus&);
+        elle::Status    Create(const elle::network::Locus&);
         elle::Status    Create(elle::Gate*);
 
         elle::Status    Connect();
@@ -84,7 +84,7 @@ namespace hole
         //
         State           state;
 
-        elle::Locus     locus;
+        elle::network::Locus     locus;
         Label           label;
 
         elle::Port      port;

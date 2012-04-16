@@ -52,7 +52,7 @@ namespace hole
              scoutor++)
           {
             Neighbour*          neighbour = scoutor->second;
-            elle::Locus         locus;
+            elle::network::Locus         locus;
 
             // create a locus with the port on which the peer is listening
             // for incoming connections.
@@ -101,7 +101,7 @@ namespace hole
              scoutor != this->container.end();
              scoutor++)
           {
-            elle::Locus         locus = *scoutor;
+            elle::network::Locus         locus = *scoutor;
 
             // serialize the locus.
             if (archive.Serialize(locus) == elle::Status::Error)
@@ -126,7 +126,7 @@ namespace hole
         // go through the entries.
         for (i = 0; i < size; i++)
           {
-            elle::Locus locus;
+            elle::network::Locus locus;
 
             // extract the locus.
             if (archive.Extract(locus) == elle::Status::Error)
@@ -159,7 +159,7 @@ namespace hole
              scoutor != this->container.end();
              scoutor++)
           {
-            elle::Locus         locus = *scoutor;
+            elle::network::Locus         locus = *scoutor;
 
             // dump the locus.
             if (locus.Dump(margin + 2) == elle::Status::Error)

@@ -53,7 +53,7 @@ namespace hole
         //
         // constructors & destructors
         //
-        Server(const elle::Locus&);
+        Server(const elle::network::Locus&);
         ~Server();
 
         //
@@ -106,7 +106,7 @@ namespace hole
         //
         // attributes
         //
-        elle::Locus             locus;
+        elle::network::Locus             locus;
 
         Container               container;
       };

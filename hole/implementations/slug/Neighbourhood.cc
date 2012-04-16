@@ -41,7 +41,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status      Neighbourhood::Add(const elle::Locus&   locus,
+      elle::Status      Neighbourhood::Add(const elle::network::Locus&   locus,
                                            Host*                host)
       {
         std::pair<Neighbourhood::Iterator, elle::Boolean>       result;
@@ -59,7 +59,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status      Neighbourhood::Exist(const elle::Locus& locus) const
+      elle::Status      Neighbourhood::Exist(const elle::network::Locus& locus) const
       {
         Neighbourhood::Scoutor  scoutor;
 
@@ -73,7 +73,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status      Neighbourhood::Retrieve(const elle::Locus& locus,
+      elle::Status      Neighbourhood::Retrieve(const elle::network::Locus& locus,
                                                 Host*&          host) const
       {
         Neighbourhood::Scoutor  scoutor;
@@ -91,7 +91,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status      Neighbourhood::Remove(const elle::Locus& locus)
+      elle::Status      Neighbourhood::Remove(const elle::network::Locus& locus)
       {
         Neighbourhood::Iterator iterator;
 
@@ -108,7 +108,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status      Neighbourhood::Locate(const elle::Locus& locus,
+      elle::Status      Neighbourhood::Locate(const elle::network::Locus& locus,
                                               Scoutor&          scoutor) const
       {
         Neighbourhood::Scoutor  s;
@@ -128,7 +128,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status      Neighbourhood::Locate(const elle::Locus& locus,
+      elle::Status      Neighbourhood::Locate(const elle::network::Locus& locus,
                                               Iterator&         iterator)
       {
         Neighbourhood::Iterator i;

@@ -33,7 +33,7 @@ namespace hole
       ///
       /// default constructor.
       ///
-      Client::Client(const elle::Locus&                         locus):
+      Client::Client(const elle::network::Locus&                         locus):
         state(Client::StateUnknown),
         locus(locus),
         socket(NULL)

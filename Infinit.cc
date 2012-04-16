@@ -1,4 +1,5 @@
 
+#include <elle/cryptography/PublicKeySerializer.hxx>
 #include <elle/utility/Time.hh>
 
 #include <Infinit.hh>

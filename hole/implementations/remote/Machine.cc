@@ -74,7 +74,7 @@ namespace hole
       ///
       elle::Status      Machine::Launch()
       {
-        elle::Locus     locus;
+        elle::network::Locus     locus;
 
         // check the number of loci in the set: it should be one for
         // this implementation.

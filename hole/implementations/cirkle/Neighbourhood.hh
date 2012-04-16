@@ -41,7 +41,7 @@ namespace hole
         //
         // types
         //
-        typedef std::map<const elle::Locus, Neighbour*> Container;
+        typedef std::map<const elle::network::Locus, Neighbour*> Container;
         typedef typename Container::iterator            Iterator;
         typedef typename Container::const_iterator      Scoutor;
 
@@ -53,13 +53,13 @@ namespace hole
         //
         // methods
         //
-        elle::Status            Add(const elle::Locus&,
+        elle::Status            Add(const elle::network::Locus&,
                                     Neighbour*);
-        elle::Status            Exist(const elle::Locus&);
-        elle::Status            Retrieve(const elle::Locus&,
+        elle::Status            Exist(const elle::network::Locus&);
+        elle::Status            Retrieve(const elle::network::Locus&,
                                          Neighbour*&);
-        elle::Status            Remove(const elle::Locus&);
-        elle::Status            Locate(const elle::Locus&,
+        elle::Status            Remove(const elle::network::Locus&);
+        elle::Status            Locate(const elle::network::Locus&,
                                        Iterator* = NULL);
 
         //

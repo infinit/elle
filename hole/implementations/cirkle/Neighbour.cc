@@ -68,7 +68,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status      Neighbour::Create(const elle::Locus&    locus)
+      elle::Status      Neighbour::Create(const elle::network::Locus&    locus)
       {
         // set the locus.
         this->locus = locus;

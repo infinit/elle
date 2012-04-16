@@ -63,7 +63,7 @@ namespace hole
       ///
       elle::Status      Machine::Launch()
       {
-        elle::Locus     locus;
+        elle::network::Locus     locus;
 
 
         //
@@ -170,7 +170,7 @@ namespace hole
         // listen for incoming connections
         //
         {
-          elle::Locus                   locus;
+          elle::network::Locus                   locus;
           elle::Host                    host;
 
           // create a host.
@@ -642,7 +642,7 @@ namespace hole
              scoutor != cluster.container.end();
              scoutor++)
           {
-            elle::Locus         locus = *scoutor;
+            elle::network::Locus         locus = *scoutor;
             Neighbour*          neighbour;
 
             enterx(instance(neighbour));

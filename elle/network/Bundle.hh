@@ -81,8 +81,8 @@ namespace elle
         //
 
         // archivable
-        Status          Serialize(Archive&) const;
-        Status          Extract(Archive&);
+        //Status          Serialize(Archive&) const;
+        //Status          Extract(Archive&);
 
         // dumpable
         Status          Dump(const Natural32 = 0) const;
@@ -131,8 +131,8 @@ namespace elle
         //
 
         // archivable
-        Status          Serialize(Archive&) const;
-        Status          Extract(Archive&);
+        //Status          Serialize(Archive&) const;
+        //Status          Extract(Archive&);
 
         // dumpable
         Status          Dump(const Natural32 = 0) const;

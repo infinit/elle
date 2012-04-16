@@ -24,7 +24,7 @@
 #include <etoile/automaton/Object.hh>
 
 #include <etoile/wall/Object.hh>
- 
+
 namespace etoile
 {
   namespace gear
@@ -98,8 +98,8 @@ namespace etoile
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status      Serialize(elle::Archive&) const;
-      elle::Status      Extract(elle::Archive&);
+      //elle::Status      Serialize(elle::Archive&) const;
+      //elle::Status      Extract(elle::Archive&);
 
       //
       // attributes

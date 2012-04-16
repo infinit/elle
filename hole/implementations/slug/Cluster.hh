@@ -45,7 +45,7 @@ namespace hole
         //
         // types
         //
-        typedef std::list<elle::Locus>                  Container;
+        typedef std::list<elle::network::Locus>                  Container;
         typedef typename Container::iterator            Iterator;
         typedef typename Container::const_iterator      Scoutor;
 
@@ -70,8 +70,8 @@ namespace hole
         elle::Status            Dump(const elle::Natural32 = 0) const;
 
         // archivable
-        elle::Status            Serialize(elle::Archive&) const;
-        elle::Status            Extract(elle::Archive&);
+        //elle::Status            Serialize(elle::Archive&) const;
+        //elle::Status            Extract(elle::Archive&);
 
         //
         // attributes

@@ -68,8 +68,8 @@ namespace elle
       Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status            Serialize(Archive&) const;
-      Status            Extract(Archive&);
+      //Status            Serialize(Archive&) const;
+      //Status            Extract(Archive&);
 
       //
       // callbacks

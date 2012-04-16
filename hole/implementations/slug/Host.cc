@@ -70,7 +70,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status      Host::Create(const elle::Locus&         locus)
+      elle::Status      Host::Create(const elle::network::Locus&         locus)
       {
         // set the locus.
         this->locus = locus;

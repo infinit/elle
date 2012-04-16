@@ -7,7 +7,7 @@
 //
 // author        julien quintard   [thu may 26 10:21:46 2011]
 //
- 
+
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_CLIENT_HH
 #define HOLE_IMPLEMENTATIONS_REMOTE_CLIENT_HH
 
@@ -51,7 +51,7 @@ namespace hole
         //
         // constructors & destructors
         //
-        Client(const elle::Locus&);
+        Client(const elle::network::Locus&);
         ~Client();
 
         //
@@ -92,7 +92,7 @@ namespace hole
         //
         State                   state;
 
-        elle::Locus             locus;
+        elle::network::Locus             locus;
         elle::TCPSocket*        socket;
       };
 

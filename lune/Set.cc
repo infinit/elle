@@ -33,7 +33,7 @@ const elle::String            Set::Extension = ".set";
 ///
 /// this method adds a locus to the set.
 ///
-elle::Status          Set::Add(const elle::Locus&               locus)
+elle::Status          Set::Add(const elle::network::Locus&               locus)
 {
   if (std::find(this->loci.begin(),
                 this->loci.end(),
@@ -48,7 +48,7 @@ elle::Status          Set::Add(const elle::Locus&               locus)
 ///
 /// this method removes a locus from the set.
 ///
-elle::Status          Set::Remove(const elle::Locus&            locus)
+elle::Status          Set::Remove(const elle::network::Locus&            locus)
 {
   auto                iterator =
     std::find(this->loci.begin(),
@@ -136,7 +136,7 @@ elle::Status          Set::Extract(elle::Archive&          archive)
 
   for (i = 0; i < size; i++)
     {
-      elle::Locus     locus;
+      elle::network::Locus     locus;
 
       if (archive.Extract(locus) == elle::Status::Error)
         escape("unable to extract the attributes");
@@ -181,7 +181,7 @@ elle::Status          Set::Load(const elle::String&        network)
   // for every string-based locus in the string.
   while (std::getline(stream, element, ' '))
     {
-      elle::Locus       locus;
+      elle::network::Locus       locus;
 
       // build the host locus.
       if (locus.Create(element) == elle::Status::Error)

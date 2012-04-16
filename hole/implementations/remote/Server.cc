@@ -35,7 +35,7 @@ namespace hole
       ///
       /// default constructor.
       ///
-      Server::Server(const elle::Locus&                         locus):
+      Server::Server(const elle::network::Locus&                         locus):
         locus(locus)
       {
       }
