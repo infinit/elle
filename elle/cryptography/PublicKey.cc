@@ -17,6 +17,8 @@
 #include <elle/cryptography/OneWay.hh>
 #include <elle/cryptography/SecretKey.hh>
 
+#include <elle/standalone/Log.hh>
+
 using namespace elle;
 using namespace elle::cryptography;
 
@@ -200,90 +202,90 @@ Status PublicKey::Create(Large* n, Large* e)
 /// computation is performed. otherwise, (2) the data is symmetrically
 /// encrypted.
 ///
-Status              PublicKey::Encrypt(const Plain&         plain,
-                                       Code&                code) const
-{
-  SecretKey         secret;
-
-  Code              key;
-  Cipher            data;
-
-  // (i)
-  {
-    // generate a secret key.
-    if (secret.Generate() == Status::Error)
-      escape("unable to generate the secret key");
-  }
-
-  // (ii)
-  {
-    // cipher the plain text with the secret key.
-    if (secret.Encrypt(plain, data) == Status::Error)
-      escape("unable to cipher the plain text with the secret key");
-  }
-
-  // (iii)
-  {
-    Archive         archive;
-    size_t          size;
-
-    // first, create an archive.
-    if (archive.Create() == Status::Error)
-      escape("unable to create an achive");
-
-    // then, serialize the secret key.
-    if (archive.Serialize(secret) == Status::Error)
-      escape("unable to serialize the secret key");
-
-    // compute the size of the archived symmetric key.
-    if (::EVP_PKEY_encrypt(
-          this->_contexts.encrypt,
-          nullptr,
-          &size,
-          reinterpret_cast<const unsigned char*>(archive.contents),
-          archive.size) <= 0)
-      escape(::ERR_error_string(ERR_get_error(), nullptr));
-
-    // allocate memory so the key can receive the upcoming
-    // encrypted portion.
-    if (key.region.Prepare(size) == Status::Error)
-      escape("unable to prepare the key");
-
-    // actually encrypt the secret key's archive, storing the encrypted
-    // portion directly into the key object, without any re-copy.
-    if (::EVP_PKEY_encrypt(
-          this->_contexts.encrypt,
-          reinterpret_cast<unsigned char*>(key.region.contents),
-          &size,
-          reinterpret_cast<const unsigned char*>(archive.contents),
-          archive.size) <= 0)
-      escape(::ERR_error_string(ERR_get_error(), nullptr));
-
-    // set the key size.
-    key.region.size = size;
-  }
-
-  // (iv)
-  {
-    Archive         archive;
-
-    // create the main archive.
-    if (archive.Create() == Status::Error)
-      escape("unable to create the archive");
-
-    // serialize the key.
-    if (archive.Serialize(key, data) == Status::Error)
-      escape("unable to serialize the asymetrically-encrypted secret key "
-             "and the symetrically-encrypted data");
-
-    // duplicate the archive's content.
-    if (code.region.Duplicate(archive.contents,
-                              archive.size) == Status::Error)
-      escape("unable to duplicate the archive's content");
-  }
-
-  return Status::Ok;
-}
+//Status              PublicKey::Encrypt(const Plain&         plain,
+//                                       Code&                code) const
+//{
+//  SecretKey         secret;
+//
+//  Code              key;
+//  Cipher            data;
+//
+//  // (i)
+//  {
+//    // generate a secret key.
+//    if (secret.Generate() == Status::Error)
+//      escape("unable to generate the secret key");
+//  }
+//
+//  // (ii)
+//  {
+//    // cipher the plain text with the secret key.
+//    if (secret.Encrypt(plain, data) == Status::Error)
+//      escape("unable to cipher the plain text with the secret key");
+//  }
+//
+//  // (iii)
+//  {
+//    Archive         archive;
+//    size_t          size;
+//
+//    // first, create an archive.
+//    if (archive.Create() == Status::Error)
+//      escape("unable to create an achive");
+//
+//    // then, serialize the secret key.
+//    if (archive.Serialize(secret) == Status::Error)
+//      escape("unable to serialize the secret key");
+//
+//    // compute the size of the archived symmetric key.
+//    if (::EVP_PKEY_encrypt(
+//          this->_contexts.encrypt,
+//          nullptr,
+//          &size,
+//          reinterpret_cast<const unsigned char*>(archive.contents),
+//          archive.size) <= 0)
+//      escape(::ERR_error_string(ERR_get_error(), nullptr));
+//
+//    // allocate memory so the key can receive the upcoming
+//    // encrypted portion.
+//    if (key.region.Prepare(size) == Status::Error)
+//      escape("unable to prepare the key");
+//
+//    // actually encrypt the secret key's archive, storing the encrypted
+//    // portion directly into the key object, without any re-copy.
+//    if (::EVP_PKEY_encrypt(
+//          this->_contexts.encrypt,
+//          reinterpret_cast<unsigned char*>(key.region.contents),
+//          &size,
+//          reinterpret_cast<const unsigned char*>(archive.contents),
+//          archive.size) <= 0)
+//      escape(::ERR_error_string(ERR_get_error(), nullptr));
+//
+//    // set the key size.
+//    key.region.size = size;
+//  }
+//
+//  // (iv)
+//  {
+//    Archive         archive;
+//
+//    // create the main archive.
+//    if (archive.Create() == Status::Error)
+//      escape("unable to create the archive");
+//
+//    // serialize the key.
+//    if (archive.Serialize(key, data) == Status::Error)
+//      escape("unable to serialize the asymetrically-encrypted secret key "
+//             "and the symetrically-encrypted data");
+//
+//    // duplicate the archive's content.
+//    if (code.region.Duplicate(archive.contents,
+//                              archive.size) == Status::Error)
+//      escape("unable to duplicate the archive's content");
+//  }
+//
+//  return Status::Ok;
+//}
 
 ///
 /// this method verifies that the non-signed text is equal to the
@@ -331,85 +333,85 @@ Status              PublicKey::Verify(const Signature&      signature,
 /// with the public key and (iii) decipher the data with the
 /// symmetric key.
 ///
-Status              PublicKey::Decrypt(const Code&          code,
-                                       Clear&               clear) const
-{
-  SecretKey         secret;
-
-  Archive           archive;
-  Code              key;
-  Cipher            data;
-
-  // (i)
-  {
-    // prepare the archive.
-    if (archive.Wrap(code.region) == Status::Error)
-      escape("unable to prepare the archive");
-
-    // extract the secret key and data, in their encrypted form.
-    if (archive.Extract(key, data) == Status::Error)
-      escape("unable to extract the asymetrically-encrypted secret key "
-             "and the symetrically-encrypted data");
-  }
-
-  // (ii)
-  {
-    Archive         archive;
-    Region          region;
-    size_t          size;
-
-    // compute the size of the decrypted portion to come.
-    if (::EVP_PKEY_verify_recover(
-          this->_contexts.decrypt,
-          nullptr,
-          &size,
-          reinterpret_cast<const unsigned char*>(key.region.contents),
-          key.region.size) <= 0)
-      escape(::ERR_error_string(ERR_get_error(), nullptr));
-
-    // allocate the required memory for the region object.
-    if (region.Prepare(size) == Status::Error)
-      escape("unable to allocate the required memory");
-
-    // perform the decrypt operation.
-    //
-    // note that since the encryption with the private key relies
-    // upon the sign() EVP functionality, the verify_recover()
-    // function is used here.
-    if (::EVP_PKEY_verify_recover(
-          this->_contexts.decrypt,
-          reinterpret_cast<unsigned char*>(region.contents),
-          &size,
-          reinterpret_cast<const unsigned char*>(key.region.contents),
-          key.region.size) <= 0)
-      escape(::ERR_error_string(ERR_get_error(), nullptr));
-
-    // set the region size.
-    region.size = size;
-
-    // prepare the archive.
-    if (archive.Acquire(region) == Status::Error)
-      escape("unable to prepare the archive");
-
-    // detach the data from the region so that the data
-    // is not release twice by both 'region' and 'archive'.
-    if (region.Detach() == Status::Error)
-      escape("unable to detach the data from the region");
-
-    // extract the secret key.
-    if (archive.Extract(secret) == Status::Error)
-      escape("unable to extract the secret key from the archive");
-  }
-
-  // (iii)
-  {
-    // finally, decrypt the data with the secret key.
-    if (secret.Decrypt(data, clear) == Status::Error)
-      escape("unable to decrypt the data with the secret key");
-  }
-
-  return Status::Ok;
-}
+//Status              PublicKey::Decrypt(const Code&          code,
+//                                       Clear&               clear) const
+//{
+//  SecretKey         secret;
+//
+//  Archive           archive;
+//  Code              key;
+//  Cipher            data;
+//
+//  // (i)
+//  {
+//    // prepare the archive.
+//    if (archive.Wrap(code.region) == Status::Error)
+//      escape("unable to prepare the archive");
+//
+//    // extract the secret key and data, in their encrypted form.
+//    if (archive.Extract(key, data) == Status::Error)
+//      escape("unable to extract the asymetrically-encrypted secret key "
+//             "and the symetrically-encrypted data");
+//  }
+//
+//  // (ii)
+//  {
+//    Archive         archive;
+//    Region          region;
+//    size_t          size;
+//
+//    // compute the size of the decrypted portion to come.
+//    if (::EVP_PKEY_verify_recover(
+//          this->_contexts.decrypt,
+//          nullptr,
+//          &size,
+//          reinterpret_cast<const unsigned char*>(key.region.contents),
+//          key.region.size) <= 0)
+//      escape(::ERR_error_string(ERR_get_error(), nullptr));
+//
+//    // allocate the required memory for the region object.
+//    if (region.Prepare(size) == Status::Error)
+//      escape("unable to allocate the required memory");
+//
+//    // perform the decrypt operation.
+//    //
+//    // note that since the encryption with the private key relies
+//    // upon the sign() EVP functionality, the verify_recover()
+//    // function is used here.
+//    if (::EVP_PKEY_verify_recover(
+//          this->_contexts.decrypt,
+//          reinterpret_cast<unsigned char*>(region.contents),
+//          &size,
+//          reinterpret_cast<const unsigned char*>(key.region.contents),
+//          key.region.size) <= 0)
+//      escape(::ERR_error_string(ERR_get_error(), nullptr));
+//
+//    // set the region size.
+//    region.size = size;
+//
+//    // prepare the archive.
+//    if (archive.Acquire(region) == Status::Error)
+//      escape("unable to prepare the archive");
+//
+//    // detach the data from the region so that the data
+//    // is not release twice by both 'region' and 'archive'.
+//    if (region.Detach() == Status::Error)
+//      escape("unable to detach the data from the region");
+//
+//    // extract the secret key.
+//    if (archive.Extract(secret) == Status::Error)
+//      escape("unable to extract the secret key from the archive");
+//  }
+//
+//  // (iii)
+//  {
+//    // finally, decrypt the data with the secret key.
+//    if (secret.Decrypt(data, clear) == Status::Error)
+//      escape("unable to decrypt the data with the secret key");
+//  }
+//
+//  return Status::Ok;
+//}
 
 //
 // ---------- object ----------------------------------------------------------
@@ -422,24 +424,24 @@ Boolean PublicKey::operator==(const PublicKey& element) const
 {
   // check the address as this may actually be the same object.
   if (this == &element)
-    return Status::True;
+    return true;
 
   // if one of the key is null....
   if ((this->_key == nullptr) || (element._key == nullptr))
     {
       // compare the addresses.
       if (this->_key != element._key)
-        return Status::False;
+        return false;
     }
   else
     {
       // compare the internal numbers.
       if ((::BN_cmp(this->_key->pkey.rsa->n, element._key->pkey.rsa->n) != 0) ||
           (::BN_cmp(this->_key->pkey.rsa->e, element._key->pkey.rsa->e) != 0))
-        return Status::False;
+        return false;
     }
 
-  return Status::True;
+  return true;
 }
 
 ///
@@ -484,55 +486,55 @@ Status              PublicKey::Dump(const Natural32         margin) const
 
 ///
 /// this method serializes a public key object.
-///
-Status          PublicKey::Serialize(Archive&           archive) const
-{
-  // XXX assert(this->_key != nullptr);
-  // XXX[to remove]
-  if (this->_key == nullptr)
-    escape("XXX");
-
-  // serialize the internal numbers.
-  if (archive.Serialize(*this->_key->pkey.rsa->n,
-                        *this->_key->pkey.rsa->e) == Status::Error)
-    escape("unable to serialize the internal numbers");
-
-  return Status::Ok;
-}
+/////
+//Status          PublicKey::Serialize(Archive&           archive) const
+//{
+//  // XXX assert(this->_key != nullptr);
+//  // XXX[to remove]
+//  if (this->_key == nullptr)
+//    escape("XXX");
+//
+//  // serialize the internal numbers.
+//  if (archive.Serialize(*this->_key->pkey.rsa->n,
+//                        *this->_key->pkey.rsa->e) == Status::Error)
+//    escape("unable to serialize the internal numbers");
+//
+//  return Status::Ok;
+//}
 
 ///
 /// this method extract a public key from the given archive.
 ///
-Status          PublicKey::Extract(Archive&             archive)
-{
-  struct Scope
-  {
-    bool              track;
-    Large             n;
-    Large             e;
-    Scope() : track(false) {}
-    ~Scope()
-    {
-      if (this->track)
-        {
-          ::BN_clear_free(&this->n);
-          ::BN_clear_free(&this->e);
-        }
-    }
-  } scope;
-
-
-  // extract the numbers.
-  if (archive.Extract(scope.n, scope.e) == Status::Error)
-    escape("unable to extract the internal numbers");
-
-  scope.track = true;
-
-  // create the EVP_PKEY object from the extract numbers.
-  if (this->Create(::BN_dup(&scope.n),
-                   ::BN_dup(&scope.e)) == Status::Error)
-    escape("unable to create the public key from the archive");
-
-  return Status::Ok;
-}
-
+//Status          PublicKey::Extract(Archive&             archive)
+//{
+//  struct Scope
+//  {
+//    bool              track;
+//    Large             n;
+//    Large             e;
+//    Scope() : track(false) {}
+//    ~Scope()
+//    {
+//      if (this->track)
+//        {
+//          ::BN_clear_free(&this->n);
+//          ::BN_clear_free(&this->e);
+//        }
+//    }
+//  } scope;
+//
+//
+//  // extract the numbers.
+//  if (archive.Extract(scope.n, scope.e) == Status::Error)
+//    escape("unable to extract the internal numbers");
+//
+//  scope.track = true;
+//
+//  // create the EVP_PKEY object from the extract numbers.
+//  if (this->Create(::BN_dup(&scope.n),
+//                   ::BN_dup(&scope.e)) == Status::Error)
+//    escape("unable to create the public key from the archive");
+//
+//  return Status::Ok;
+//}
+//

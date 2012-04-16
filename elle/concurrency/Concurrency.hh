@@ -1,35 +1,15 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun mar  7 17:14:02 2010]
-//
-
 #ifndef ELLE_CONCURRENCY_CONCURRENCY_HH
-#define ELLE_CONCURRENCY_CONCURRENCY_HH
+# define ELLE_CONCURRENCY_CONCURRENCY_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/radix/Status.hh>
+# include <elle/types.hh>
 
 namespace elle
 {
-  using namespace radix;
-
   ///
   /// this namespace contains functionalities for concurrency purposes.
   ///
   namespace concurrency
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class provides control over the concurrency module.

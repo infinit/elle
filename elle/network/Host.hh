@@ -1,39 +1,19 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [fri oct 16 04:10:36 2009]
-//
-
 #ifndef ELLE_NETWORK_HOST_HH
-#define ELLE_NETWORK_HOST_HH
+# define ELLE_NETWORK_HOST_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-#include <elle/types.hh>
-#include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Object.hh>
-
-#include <elle/package/Archive.hh>
-
-#include <elle/idiom/Close.hh>
-# include <QHostAddress>
-# include <QString>
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  include <QHostAddress>
+#  include <QString>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
 
   using namespace radix;
-  using namespace package;
 
   namespace network
   {
@@ -101,8 +81,8 @@ namespace elle
       Boolean           operator>(const Host&) const;
 
       // archivable
-      Status            Serialize(Archive&) const;
-      Status            Extract(Archive&);
+      //Status            Serialize(Archive&) const;
+      //Status            Extract(Archive&);
 
       // dumpable
       Status            Dump(const Natural32 = 0) const;

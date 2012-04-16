@@ -132,7 +132,7 @@ namespace elle
     ///
     void                Broker::_trigger()
     {
-      Closure< Status::,
+      Closure< Status,
                Parameters<> >   closure(Callback<>::Infer(&Broker::Trigger,
                                                           this));
 

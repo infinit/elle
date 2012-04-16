@@ -50,7 +50,7 @@ namespace elle
     ///
     class Region:
       public Meta,
-      public virtual Dumpable
+      public Dumpable
     {
     public:
       //

@@ -32,8 +32,6 @@
 
 #include <elle/standalone/Region.hh>
 
-#include <elle/radix/Status.hh>
-
 #include <elle/concurrency/Event.hh>
 
 #include <elle/network/Socket.hh>

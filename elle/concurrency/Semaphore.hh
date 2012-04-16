@@ -1,40 +1,19 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun mar  7 17:15:14 2010]
-//
-
 #ifndef ELLE_CONCURRENCY_SEMAPHORE_HH
-#define ELLE_CONCURRENCY_SEMAPHORE_HH
+# define ELLE_CONCURRENCY_SEMAPHORE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
+# include <elle/radix/Object.hh>
+# include <elle/radix/Parameters.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Object.hh>
-#include <elle/radix/Parameters.hh>
-
-#include <elle/concurrency/Closure.hh>
-#include <elle/concurrency/Section.hh>
+# include <elle/concurrency/Closure.hh>
+# include <elle/concurrency/Section.hh>
 
 namespace elle
 {
 
-  using namespace radix;
-
   namespace concurrency
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a semaphore from which resources can be

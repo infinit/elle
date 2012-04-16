@@ -446,17 +446,17 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return Status::True;
+        return true;
 
       // check the size.
       if (this->size != element.size)
-        return Status::False;
+        return false;
 
       // check the content.
       if (::memcmp(this->contents, element.contents, element.size) == 0)
-        return Status::True;
+        return true;
 
-      return Status::False;
+      return false;
     }
 
     ///
@@ -466,17 +466,17 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return Status::True;
+        return true;
 
       // check the size.
       if (this->size != element.size)
-        return Status::False;
+        return false;
 
       // check the content.
       if (::memcmp(this->contents, element.contents, element.size) < 0)
-        return Status::True;
+        return true;
 
-      return Status::False;
+      return false;
     }
 
     ///

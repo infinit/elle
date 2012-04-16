@@ -53,6 +53,35 @@ namespace elle {
         Ok = 42,
         Error = 666
       };
+
+    inline bool operator ==(Status s, Boolean b)
+      {
+        if (b == true)
+          return s == Status::True;
+        else
+          return s == Status::False;
+      }
+    inline bool operator !=(Status s, Boolean b)
+      {
+        if (b == true)
+          return s == Status::False;
+        else
+          return s == Status::True;
+      }
+    inline bool operator ==(Boolean b, Status s)
+      {
+        if (b == true)
+          return s == Status::True;
+        else
+          return s == Status::False;
+      }
+    inline bool operator !=(Boolean b, Status s)
+      {
+        if (b == true)
+          return s == Status::False;
+        else
+          return s == Status::True;
+      }
 }
 
 #endif /* ! TYPES_HH */

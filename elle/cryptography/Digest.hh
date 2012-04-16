@@ -1,34 +1,17 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [tue oct 30 01:16:28 2007]
-//
-
 #ifndef ELLE_CRYPTOGRAPHY_DIGEST_HH
-#define ELLE_CRYPTOGRAPHY_DIGEST_HH
+# define ELLE_CRYPTOGRAPHY_DIGEST_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
+# include <elle/standalone/Region.hh>
 
-#include <elle/standalone/Region.hh>
-
-#include <elle/radix/Object.hh>
-
-#include <elle/idiom/Open.hh>
+# include <elle/radix/Object.hh>
 
 namespace elle
 {
 
   using namespace standalone;
   using namespace radix;
-  using namespace package;
 
   namespace cryptography
   {
@@ -67,8 +50,8 @@ namespace elle
       Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status            Serialize(Archive&) const;
-      Status            Extract(Archive&);
+      //Status            Serialize(Archive&) const;
+      //Status            Extract(Archive&);
 
       //
       // attributes

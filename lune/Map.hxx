@@ -224,64 +224,64 @@ namespace lune
   ///
   /// this method serializes a map.
   ///
-  template <typename T>
-  elle::Status          Map<T>::Serialize(elle::Archive&        archive) const
-  {
-    Map<T>::Scoutor     scoutor;
+  //template <typename T>
+  //elle::Status          Map<T>::Serialize(elle::Archive&        archive) const
+  //{
+  //  Map<T>::Scoutor     scoutor;
 
-    // serialize the number of entries.
-    if (archive.Serialize(
-          static_cast<elle::Natural32>(
-            this->container.size())) == elle::Status::Error)
-      escape("unable to serialize the number of entries");
+  //  // serialize the number of entries.
+  //  if (archive.Serialize(
+  //        static_cast<elle::Natural32>(
+  //          this->container.size())) == elle::Status::Error)
+  //    escape("unable to serialize the number of entries");
 
-    // go through the entries.
-    for (scoutor = this->container.begin();
-         scoutor != this->container.end();
-         scoutor++)
-      {
-        Map<T>::Entry*  entry = *scoutor;
+  //  // go through the entries.
+  //  for (scoutor = this->container.begin();
+  //       scoutor != this->container.end();
+  //       scoutor++)
+  //    {
+  //      Map<T>::Entry*  entry = *scoutor;
 
-        // serialize the entry.
-        if (archive.Serialize(entry->name,
-                              entry->value) == elle::Status::Error)
-          escape("unable to serialize the entry");
-      }
+  //      // serialize the entry.
+  //      if (archive.Serialize(entry->name,
+  //                            entry->value) == elle::Status::Error)
+  //        escape("unable to serialize the entry");
+  //    }
 
-    return elle::Status::Ok;
-  }
+  //  return elle::Status::Ok;
+  //}
 
-  ///
-  /// this method extracts a map.
-  ///
-  template <typename T>
-  elle::Status          Map<T>::Extract(elle::Archive&          archive)
-  {
-    elle::Natural32             size;
-    elle::Natural32             i;
+  /////
+  ///// this method extracts a map.
+  /////
+  //template <typename T>
+  //elle::Status          Map<T>::Extract(elle::Archive&          archive)
+  //{
+  //  elle::Natural32             size;
+  //  elle::Natural32             i;
 
-    // extract the number of entries.
-    if (archive.Extract(size) == elle::Status::Error)
-      escape("unable to extract the number of entries");
+  //  // extract the number of entries.
+  //  if (archive.Extract(size) == elle::Status::Error)
+  //    escape("unable to extract the number of entries");
 
-    // until all the entries have been extract.
-    for (i = 0; i < size; i++)
-      {
-        Map<T>::Entry*  entry;
+  //  // until all the entries have been extract.
+  //  for (i = 0; i < size; i++)
+  //    {
+  //      Map<T>::Entry*  entry;
 
-        // allocate a new entry.
-        entry = new Map<T>::Entry;
+  //      // allocate a new entry.
+  //      entry = new Map<T>::Entry;
 
-        // extract the entry.
-        if (archive.Extract(entry->name, entry->value) == elle::Status::Error)
-          escape("unable to extract the entry");
+  //      // extract the entry.
+  //      if (archive.Extract(entry->name, entry->value) == elle::Status::Error)
+  //        escape("unable to extract the entry");
 
-        // add a new entry.
-        this->container.push_back(entry);
-      }
+  //      // add a new entry.
+  //      this->container.push_back(entry);
+  //    }
 
-    return elle::Status::Ok;
-  }
+  //  return elle::Status::Ok;
+  //}
 
 }
 

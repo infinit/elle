@@ -1,41 +1,20 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [tue oct 25 12:35:02 2011]
-//
-
 #ifndef ELLE_CONCURRENCY_HH
-#define ELLE_CONCURRENCY_HH
+# define ELLE_CONCURRENCY_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
+# include <elle/radix/Object.hh>
+# include <elle/radix/Parameters.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Object.hh>
-#include <elle/radix/Parameters.hh>
-
-#include <elle/concurrency/Mode.hh>
-#include <elle/concurrency/Closure.hh>
-#include <elle/concurrency/Section.hh>
+# include <elle/concurrency/Mode.hh>
+# include <elle/concurrency/Closure.hh>
+# include <elle/concurrency/Section.hh>
 
 namespace elle
 {
 
-  using namespace radix;
-
   namespace concurrency
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a read-write mutex for which the caller

@@ -1,16 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon mar 22 02:22:43 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <elle/standalone/Morgue.hh>
 #include <elle/concurrency/Fiber.hh>
@@ -22,10 +9,6 @@ namespace elle
 
   namespace concurrency
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
 
     ///
     /// this value defines fibers' stack size, in bytes: 2MB
@@ -250,15 +233,15 @@ namespace elle
     ///
     Status              Fiber::Register(const
                                           Callback<
-                                            Status::,
+                                            Status,
                                             Parameters<Phase, Fiber*>
                                             >                   c)
     {
-      Callback< Status::,
+      Callback< Status,
                 Parameters<Phase, Fiber*> >*    callback;
 
       // clone the callback.
-      callback = new Callback< Status::,
+      callback = new Callback< Status,
                                Parameters<Phase, Fiber*> >(c);
 
       // store in the container.

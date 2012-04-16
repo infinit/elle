@@ -1,33 +1,18 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon mar 15 20:37:49 2010]
-//
-
 #ifndef ELLE_CONCURRENCY_PROGRAM_HH
-#define ELLE_CONCURRENCY_PROGRAM_HH
+# define ELLE_CONCURRENCY_PROGRAM_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/radix/Entity.hh>
+# include <elle/radix/Parameters.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Entity.hh>
-#include <elle/radix/Parameters.hh>
+# include <elle/concurrency/Callback.hh>
+# include <elle/concurrency/Broker.hh>
 
-#include <elle/concurrency/Callback.hh>
-#include <elle/concurrency/Broker.hh>
-
-#include <elle/idiom/Close.hh>
-# include <QCoreApplication>
-# include <QAbstractEventDispatcher>
-# include <list>
-# include <signal.h>
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  include <QCoreApplication>
+#  include <QAbstractEventDispatcher>
+#  include <list>
+#  include <signal.h>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {

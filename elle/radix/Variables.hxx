@@ -18,7 +18,6 @@
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
-#include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
 #include <elle/radix/Parameters.hh>
 
@@ -77,7 +76,7 @@ namespace elle
       }
 
       //
-      // methods 
+      // methods
       //
 
       template <typename C,
@@ -2417,7 +2416,7 @@ namespace elle
 //
 // ---------- methods ---------------------------------------------------------
 //
- 
+
     ///
     /// this method merges an ensemble with another hence returning
     /// an Variables class referencing the inner elements of the two

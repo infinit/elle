@@ -14,6 +14,7 @@
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 
 #include <elle/io/Pattern.hh>
 
@@ -50,13 +51,13 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return Status::True;
+        return true;
 
       // compare the internal.
       if (this->string != element.string)
-        return Status::False;
+        return false;
 
-      return Status::True;
+      return true;
     }
 
     ///

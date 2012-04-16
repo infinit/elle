@@ -1,15 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [fri sep  2 14:12:04 2011]
-//
-
 #ifndef ELLE_CONCURRENCY_SIGNAL_HXX
-#define ELLE_CONCURRENCY_SIGNAL_HXX
+# define ELLE_CONCURRENCY_SIGNAL_HXX
+
+# include <elle/standalone/Log.hh>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -47,7 +40,7 @@ namespace elle
     template <template <typename...> class C>
     Status
     Signal< Parameters<T...> >::Subscribe(const C<
-                                            Status::,
+                                            Status,
                                             Parameters<T...>
                                             >                   object)
     {
@@ -64,7 +57,7 @@ namespace elle
     template <template <typename...> class C>
     Status
     Signal< Parameters<T...> >::Subscribe(const C<
-                                            Status::,
+                                            Status,
                                             Parameters<T...>
                                             >                   object,
                                           Stream&               stream)

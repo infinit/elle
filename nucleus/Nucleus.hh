@@ -67,7 +67,6 @@ namespace nucleus
 
 namespace nucleus
 {
-  using namespace miscellaneous;
   using namespace neutron;
   using namespace proton;
 }

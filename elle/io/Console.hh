@@ -1,35 +1,13 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sat jun 18 11:09:29 2011]
-//
-
 #ifndef ELLE_IO_CONSOLE_HH
-#define ELLE_IO_CONSOLE_HH
+# define ELLE_IO_CONSOLE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
-
-#include <elle/radix/Status.hh>
+# include <elle/types.hh>
 
 namespace elle
 {
 
-  using namespace radix;
-
   namespace io
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this static class provides functionalities related to the console.

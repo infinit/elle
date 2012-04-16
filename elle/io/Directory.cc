@@ -1,16 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu may 27 16:18:11 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <elle/io/Directory.hh>
 #include <elle/io/File.hh>
@@ -24,6 +11,7 @@
 
 #include <vector>
 #include <sstream>
+#include <stdexcept>
 
 #include <elle/idiom/Close.hh>
 

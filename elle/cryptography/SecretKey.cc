@@ -1,21 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu nov  1 12:24:32 2007]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/Digest.hh>
 #include <elle/cryptography/OneWay.hh>
 #include <elle/cryptography/Random.hh>
+
+#include <elle/standalone/Log.hh>
 
 namespace elle
 {
@@ -300,13 +289,10 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return Status::True;
+        return true;
 
       // compare the internal region.
-      if (this->region != element.region)
-        return Status::False;
-
-      return Status::True;
+      return (this->region != element.region);
     }
 
     ///
@@ -349,26 +335,26 @@ namespace elle
     ///
     /// this method serializes a secret key object.
     ///
-    Status              SecretKey::Serialize(Archive&           archive) const
-    {
-      // serialize the internal key.
-      if (archive.Serialize(this->region) == Status::Error)
-        escape("unable to serialize the internal key");
+    //Status              SecretKey::Serialize(Archive&           archive) const
+    //{
+    //  // serialize the internal key.
+    //  if (archive.Serialize(this->region) == Status::Error)
+    //    escape("unable to serialize the internal key");
 
-      return Status::Ok;
-    }
+    //  return Status::Ok;
+    //}
 
-    ///
-    /// this method extract a secret key from the given archive.
-    ///
-    Status              SecretKey::Extract(Archive&             archive)
-    {
-      // extract the key.
-      if (archive.Extract(this->region) == Status::Error)
-        escape("unable to extract the internal key");
+    /////
+    ///// this method extract a secret key from the given archive.
+    /////
+    //Status              SecretKey::Extract(Archive&             archive)
+    //{
+    //  // extract the key.
+    //  if (archive.Extract(this->region) == Status::Error)
+    //    escape("unable to extract the internal key");
 
-      return Status::Ok;
-    }
+    //  return Status::Ok;
+    //}
 
   }
 }

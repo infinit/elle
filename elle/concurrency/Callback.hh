@@ -1,28 +1,13 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar 24 15:49:05 2010]
-//
-
 #ifndef ELLE_CONCURRENCY_CALLBACK_HH
-#define ELLE_CONCURRENCY_CALLBACK_HH
+# define ELLE_CONCURRENCY_CALLBACK_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
+# include <elle/radix/Parameters.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Parameters.hh>
-
-#include <elle/concurrency/Routine.hh>
-#include <elle/concurrency/Function.hh>
-#include <elle/concurrency/Method.hh>
+# include <elle/concurrency/Routine.hh>
+# include <elle/concurrency/Function.hh>
+# include <elle/concurrency/Method.hh>
 
 namespace elle
 {
