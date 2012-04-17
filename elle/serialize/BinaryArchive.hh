@@ -22,10 +22,10 @@ namespace elle { namespace serialize {
         , template<ArchiveMode, typename>
             class StreamTypeSelect = DefaultStreamTypeSelect
       >
-      class BinaryArchive
+      class BaseBinaryArchive
         : public BaseArchive<
               mode
-            , BinaryArchive<mode>
+            , BaseBinaryArchive<mode>
             , CharType
             , StreamTypeSelect
           >
@@ -33,12 +33,32 @@ namespace elle { namespace serialize {
       private:
         typedef BaseArchive<
             mode
-          , BinaryArchive<mode>
+          , BaseBinaryArchive<mode>
           , CharType
           , StreamTypeSelect
         >                                         BaseClass;
         typedef typename BaseClass::StreamType    StreamType;
 
+      public:
+        BaseBinaryArchive(StreamType& stream)
+          : BaseClass(stream)
+        {}
+
+        template<typename T> BaseBinaryArchive(StreamType& stream, T& value)
+          : BaseClass(stream, value)
+        {}
+      public:
+        using BaseClass::SaveBinary;
+        using BaseClass::LoadBinary;
+      };
+
+    template<ArchiveMode mode>
+      class BinaryArchive
+        : public BaseBinaryArchive<mode>
+      {
+      private:
+        typedef BaseBinaryArchive<mode>           BaseClass;
+        typedef typename BaseClass::StreamType    StreamType;
       public:
         BinaryArchive(StreamType& stream)
           : BaseClass(stream)
@@ -47,10 +67,8 @@ namespace elle { namespace serialize {
         template<typename T> BinaryArchive(StreamType& stream, T& value)
           : BaseClass(stream, value)
         {}
-      public:
-        using BaseClass::SaveBinary;
-        using BaseClass::LoadBinary;
       };
+
 
 }} // !elle::serialize
 

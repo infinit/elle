@@ -12,10 +12,7 @@ namespace elle
 
     template<
         ArchiveMode mode
-      , typename CharType = DefaultCharType
-      , template<ArchiveMode, typename>
-          class StreamTypeSelect = DefaultStreamTypeSelect
-      > class BinaryArchive;
+    > class BinaryArchive;
 
     typedef BinaryArchive<ArchiveMode::Output> OutputBinaryArchive;
     typedef BinaryArchive<ArchiveMode::Input>  InputBinaryArchive;

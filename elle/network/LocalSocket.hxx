@@ -21,6 +21,7 @@
 #include <elle/utility/BufferStream.hh>
 
 #include <elle/serialize/BufferArchive.hh>
+#include <elle/serialize/BaseArchive.hxx>
 
 #include <elle/network/Packet.hh>
 #include <elle/network/Header.hh>
@@ -60,9 +61,11 @@ namespace elle
         escape("unable to create the header");
 
       // serialize the the header and data.
-      BufferArchive(packet) << header << data;
-      if (packet.Serialize(header, data) == Status::Error)
-        escape("unable to serialize the header and data");
+      elle::utility::OutputBufferStream os(packet);
+      elle::serialize::OutputBufferArchive ar(os);
+
+      ar << header;
+      ar << data;
 
       // write the socket.
       if (this->Write(packet) == Status::Error)

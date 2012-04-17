@@ -19,8 +19,6 @@ namespace elle
         typename T
       , template<
             elle::serialize::ArchiveMode
-          , typename CharType
-          , template<elle::serialize::ArchiveMode mode__, typename> class ST
         > class DefaultArchive = elle::serialize::BinaryArchive
     > class Fileable
     {
