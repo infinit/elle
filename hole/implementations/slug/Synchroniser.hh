@@ -1,21 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [mon dec  5 14:21:56 2011]
-//
-
 #ifndef HOLE_IMPLEMENTATIONS_SLUG_SYNCHRONISER_HH
-#define HOLE_IMPLEMENTATIONS_SLUG_SYNCHRONISER_HH
+# define HOLE_IMPLEMENTATIONS_SLUG_SYNCHRONISER_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/concurrency/Timer.hh>
 
-#include <elle/types.hh>
+# include <elle/types.hh>
 
 namespace hole
 {
@@ -23,10 +11,6 @@ namespace hole
   {
     namespace slug
     {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
       ///
       /// XXX

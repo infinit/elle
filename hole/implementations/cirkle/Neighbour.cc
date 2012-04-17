@@ -190,7 +190,7 @@ namespace hole
             {
               // challenge the peer.
               if (this->gate->Send(
-                    elle::Inputs<TagChallenge>()) == elle::Status::Error)
+                    elle::network::Inputs<TagChallenge>()) == elle::Status::Error)
                 escape("unable to send the challenge");
 
               break;

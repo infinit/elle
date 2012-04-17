@@ -1,16 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [thu may 12 10:27:04 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/utility/Time.hh>
 
 #include <hole/implementations/local/Local.hh>
 

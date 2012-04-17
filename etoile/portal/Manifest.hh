@@ -16,6 +16,7 @@
 //
 
 #include <elle/types.hh>
+#include <elle/Manifest.hh>
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 
@@ -76,7 +77,7 @@ namespace etoile
     enum Tag
       {
         // general
-        TagAuthenticate = elle::Range<Component>::First + 1,
+        TagAuthenticate = elle::network::Range<Component>::First + 1,
         TagAuthenticated,
         TagIdentifier,
 

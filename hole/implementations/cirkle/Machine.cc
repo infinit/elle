@@ -234,7 +234,7 @@ namespace hole
         /* XXX
         // transfer to the remote.
         if (this->gate->Call(
-              elle::Inputs<TagPush>(address,
+              elle::network::Inputs<TagPush>(address,
                                     derivable),
               elle::Outputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to transfer the request");
@@ -264,7 +264,7 @@ namespace hole
         /*
         // transfer to the remote.
         if (this->gate->Call(
-              elle::Inputs<TagPush>(address,
+              elle::network::Inputs<TagPush>(address,
                                     derivable),
               elle::Outputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to transfer the request");
@@ -293,7 +293,7 @@ namespace hole
         /*
         // transfer to the remote.
         if (this->gate->Call(
-              elle::Inputs<TagPull>(address,
+              elle::network::Inputs<TagPull>(address,
                                     nucleus::Version::Any),
               elle::Outputs<TagBlock>(derivable)) == elle::Status::Error)
           escape("unable to transfer the request");
@@ -323,7 +323,7 @@ namespace hole
         /*
         // transfer to the remote.
         if (this->gate->Call(
-              elle::Inputs<TagPull>(address,
+              elle::network::Inputs<TagPull>(address,
                                     version),
               elle::Outputs<TagBlock>(derivable)) == elle::Status::Error)
           escape("unable to transfer the request");
@@ -349,7 +349,7 @@ namespace hole
         /*
         // transfer to the remote.
         if (this->gate->Call(
-              elle::Inputs<TagWipe>(address),
+              elle::network::Inputs<TagWipe>(address),
               elle::Outputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to transfer the request");
         */
@@ -392,7 +392,7 @@ namespace hole
 
         // challenge the neighbour.
         if (neighbour->gate->Send(
-              elle::Inputs<TagChallenge>()) == elle::Status::Error)
+              elle::network::Inputs<TagChallenge>()) == elle::Status::Error)
           escape("unable to send the challenge");
 
         // waive.
@@ -426,12 +426,12 @@ namespace hole
 
         // send the passport.
         if (neighbour->gate->Send(
-              elle::Inputs<TagPassport>(Hole::Passport)) == elle::Status::Error)
+              elle::network::Inputs<TagPassport>(Hole::Passport)) == elle::Status::Error)
           escape("unable to send the passport");
 
         // also indicate the listening port.
         if (neighbour->gate->Send(
-              elle::Inputs<TagPort>(this->port)) == elle::Status::Error)
+              elle::network::Inputs<TagPort>(this->port)) == elle::Status::Error)
           escape("unable to send the passport");
 
         return elle::Status::Ok;
@@ -511,7 +511,7 @@ namespace hole
 
             // acknowledge the authentication.
             if (neighbour->gate->Reply(
-                  elle::Inputs<TagAuthenticated>()) == elle::Status::Error)
+                  elle::network::Inputs<TagAuthenticated>()) == elle::Status::Error)
               escape("unable to acknowledge the authentication");
 
             // XXX
@@ -566,7 +566,7 @@ namespace hole
 
             // acknowledge the authentication.
             if (neighbour->gate->Reply(
-                  elle::Inputs<TagAuthenticated>()) == elle::Status::Error)
+                  elle::network::Inputs<TagAuthenticated>()) == elle::Status::Error)
               escape("unable to acknowledge the authentication");
 
             // XXX
@@ -704,7 +704,7 @@ namespace hole
 
             // send the cluster to the neighbour.
             if (neighbour->gate->Send(
-                  elle::Inputs<TagUpdate>(cluster)) == elle::Status::Error)
+                  elle::network::Inputs<TagUpdate>(cluster)) == elle::Status::Error)
               escape("unable to send the cluster");
           }
 

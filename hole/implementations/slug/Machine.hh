@@ -90,15 +90,14 @@ namespace hole
 
         elle::Status            Connection(elle::network::TCPSocket*);
         elle::Status            Authenticate(const lune::Passport&,
-                                             const elle::Port&);
+                                             const elle::network::Port&);
         elle::Status            Authenticated(const Cluster&);
 
         elle::Status            Sweep(Host*);
         elle::Status            Synchronised();
 
         elle::Status            Push(const nucleus::Address&,
-                                     const
-                                       nucleus::Derivable<nucleus::Block>&);
+                                     const nucleus::Block&);
         elle::Status            Pull(const nucleus::Address&,
                                      const nucleus::Version&);
         elle::Status            Wipe(const nucleus::Address&);
@@ -114,7 +113,7 @@ namespace hole
         // attributes
         //
         State                   state;
-        elle::Port              port;
+        elle::network::Port     port;
 
         Guestlist               guestlist;
         Neighbourhood           neighbourhood;

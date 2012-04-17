@@ -1,5 +1,6 @@
 
 #include <elle/utility/Time.hh>
+#include <elle/concurrency/Timer.hh>
 
 #include <hole/implementations/local/Implementation.hh>
 #include <hole/implementations/local/Local.hh>

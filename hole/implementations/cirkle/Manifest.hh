@@ -75,7 +75,7 @@ namespace hole
       //
       enum Tag
         {
-          TagChallenge = elle::Range<Component>::First + 1,
+          TagChallenge = elle::network::Range<Component>::First + 1,
           TagPassport,
           TagPort,
           TagAuthenticated,

@@ -90,8 +90,7 @@ namespace hole
         elle::Status            Sweep(Customer*);
 
         elle::Status            Push(const nucleus::Address&,
-                                     const
-                                       nucleus::Derivable<nucleus::Block>&);
+                                     const nucleus::Block&);
         elle::Status            Pull(const nucleus::Address&,
                                      const nucleus::Version&);
         elle::Status            Wipe(const nucleus::Address&);

@@ -125,7 +125,7 @@ namespace satellite
     {
       // send the user's network-specific phrase.
       if (Access::Socket.Call(
-            elle::Inputs<etoile::portal::TagAuthenticate>(phrase.pass),
+            elle::network::Inputs<etoile::portal::TagAuthenticate>(phrase.pass),
             elle::Outputs<etoile::portal::TagAuthenticated>()) ==
           elle::Status::Error)
         escape("unable to authenticate to Etoile");
@@ -151,28 +151,28 @@ namespace satellite
 
     // resolve the path.
     if (Access::Socket.Call(
-          elle::Inputs<etoile::portal::TagPathResolve>(way),
+          elle::network::Inputs<etoile::portal::TagPathResolve>(way),
           elle::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
         elle::Status::Error)
       goto _error;
 
     // load the object.
     if (Access::Socket.Call(
-          elle::Inputs<etoile::portal::TagObjectLoad>(chemin),
+          elle::network::Inputs<etoile::portal::TagObjectLoad>(chemin),
           elle::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
         elle::Status::Error)
       goto _error;
 
     // lookup the access record.
     if (Access::Socket.Call(
-          elle::Inputs<etoile::portal::TagAccessLookup>(identifier, subject),
+          elle::network::Inputs<etoile::portal::TagAccessLookup>(identifier, subject),
           elle::Outputs<etoile::portal::TagAccessRecord>(record)) ==
         elle::Status::Error)
       goto _error;
 
     // discard the object.
     if (Access::Socket.Call(
-          elle::Inputs<etoile::portal::TagObjectDiscard>(identifier),
+          elle::network::Inputs<etoile::portal::TagObjectDiscard>(identifier),
           elle::Outputs<elle::TagOk>()) == elle::Status::Error)
       goto _error;
 
@@ -182,7 +182,7 @@ namespace satellite
   _error:
     // release the object.
     Access::Socket.Send(
-      elle::Inputs<etoile::portal::TagObjectDiscard>(
+      elle::network::Inputs<etoile::portal::TagObjectDiscard>(
         identifier));
 
     // expose the potential errors.
@@ -209,21 +209,21 @@ namespace satellite
 
     // resolve the path.
     if (Access::Socket.Call(
-          elle::Inputs<etoile::portal::TagPathResolve>(way),
+          elle::network::Inputs<etoile::portal::TagPathResolve>(way),
           elle::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
         elle::Status::Error)
       goto _error;
 
     // load the object.
     if (Access::Socket.Call(
-          elle::Inputs<etoile::portal::TagObjectLoad>(chemin),
+          elle::network::Inputs<etoile::portal::TagObjectLoad>(chemin),
           elle::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
         elle::Status::Error)
       goto _error;
 
     // consult the object access.
     if (Access::Socket.Call(
-          elle::Inputs<etoile::portal::TagAccessConsult>(
+          elle::network::Inputs<etoile::portal::TagAccessConsult>(
             identifier,
             elle::Type<nucleus::Index>::Minimum,
             elle::Type<nucleus::Size>::Maximum),
@@ -233,7 +233,7 @@ namespace satellite
 
     // discard the object.
     if (Access::Socket.Call(
-          elle::Inputs<etoile::portal::TagObjectDiscard>(identifier),
+          elle::network::Inputs<etoile::portal::TagObjectDiscard>(identifier),
           elle::Outputs<elle::TagOk>()) == elle::Status::Error)
       goto _error;
 
@@ -243,7 +243,7 @@ namespace satellite
   _error:
     // release the object.
     Access::Socket.Send(
-      elle::Inputs<etoile::portal::TagObjectDiscard>(
+      elle::network::Inputs<etoile::portal::TagObjectDiscard>(
         identifier));
 
     // expose the potential errors.
@@ -273,7 +273,7 @@ namespace satellite
 
     // locate the path i.e is the way located in the Infinit file system.
     if (Access::Socket.Call(
-          elle::Inputs<etoile::portal::TagPathLocate>(way),
+          elle::network::Inputs<etoile::portal::TagPathLocate>(way),
           elle::Outputs<etoile::portal::TagPathWay>(path)) ==
         elle::Status::Error)
       goto _error;
@@ -285,21 +285,21 @@ namespace satellite
 
     // resolve the path.
     if (Access::Socket.Call(
-          elle::Inputs<etoile::portal::TagPathResolve>(path),
+          elle::network::Inputs<etoile::portal::TagPathResolve>(path),
           elle::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
         elle::Status::Error)
       goto _error;
 
     // load the object.
     if (Access::Socket.Call(
-          elle::Inputs<etoile::portal::TagObjectLoad>(chemin),
+          elle::network::Inputs<etoile::portal::TagObjectLoad>(chemin),
           elle::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
         elle::Status::Error)
       goto _error;
 
     // lookup the access record.
     if (Access::Socket.Call(
-          elle::Inputs<etoile::portal::TagAccessGrant>(identifier,
+          elle::network::Inputs<etoile::portal::TagAccessGrant>(identifier,
                                                        subject,
                                                        permissions),
           elle::Outputs<elle::TagOk>()) == elle::Status::Error)
@@ -307,14 +307,14 @@ namespace satellite
 
     // store the object.
     if (Access::Socket.Call(
-          elle::Inputs<etoile::portal::TagObjectStore>(identifier),
+          elle::network::Inputs<etoile::portal::TagObjectStore>(identifier),
           elle::Outputs<elle::TagOk>()) == elle::Status::Error)
       goto _error;
 
   _error:
     // release the object.
     Access::Socket.Send(
-      elle::Inputs<etoile::portal::TagObjectDiscard>(
+      elle::network::Inputs<etoile::portal::TagObjectDiscard>(
         identifier));
 
     // expose the potential errors.
@@ -342,34 +342,34 @@ namespace satellite
 
     // resolve the path.
     if (Access::Socket.Call(
-          elle::Inputs<etoile::portal::TagPathResolve>(way),
+          elle::network::Inputs<etoile::portal::TagPathResolve>(way),
           elle::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
         elle::Status::Error)
       goto _error;
 
     // load the object.
     if (Access::Socket.Call(
-          elle::Inputs<etoile::portal::TagObjectLoad>(chemin),
+          elle::network::Inputs<etoile::portal::TagObjectLoad>(chemin),
           elle::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
         elle::Status::Error)
       goto _error;
 
     // revoke the access for the given subject.
     if (Access::Socket.Call(
-          elle::Inputs<etoile::portal::TagAccessRevoke>(identifier, subject),
+          elle::network::Inputs<etoile::portal::TagAccessRevoke>(identifier, subject),
           elle::Outputs<elle::TagOk>()) == elle::Status::Error)
       goto _error;
 
     // store the object.
     if (Access::Socket.Call(
-          elle::Inputs<etoile::portal::TagObjectStore>(identifier),
+          elle::network::Inputs<etoile::portal::TagObjectStore>(identifier),
           elle::Outputs<elle::TagOk>()) == elle::Status::Error)
       goto _error;
 
   _error:
     // release the object.
     Access::Socket.Send(
-      elle::Inputs<etoile::portal::TagObjectDiscard>(
+      elle::network::Inputs<etoile::portal::TagObjectDiscard>(
         identifier));
 
     // expose the potential errors.

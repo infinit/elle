@@ -551,7 +551,7 @@ namespace hole
 
             // reply with the authenticated message.
             if (customer->socket->Reply(
-                  elle::Inputs<TagAuthenticated>()) == elle::Status::Error)
+                  elle::network::Inputs<TagAuthenticated>()) == elle::Status::Error)
               escape("unable to reply to the client");
           }
 
@@ -648,7 +648,7 @@ namespace hole
 
         // acknowledge.
         if (customer->socket->Reply(
-              elle::Inputs<elle::TagOk>()) == elle::Status::Error)
+              elle::network::Inputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to acknowledge");
 
         return elle::Status::Ok;
@@ -731,7 +731,7 @@ namespace hole
 
         // return the block.
         if (customer->socket->Reply(
-              elle::Inputs<TagBlock>(derivable)) == elle::Status::Error)
+              elle::network::Inputs<TagBlock>(derivable)) == elle::Status::Error)
           escape("unable to return the block");
 
         return elle::Status::Ok;
@@ -768,7 +768,7 @@ namespace hole
 
         // acknowledge.
         if (customer->socket->Reply(
-              elle::Inputs<elle::TagOk>()) == elle::Status::Error)
+              elle::network::Inputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to acknowledge");
 
         return elle::Status::Ok;

@@ -1,16 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [thu may 26 10:22:03 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/network/Locus.hh>
+#include <elle/network/Range.hh>
+#include <elle/network/TCPSocket.hh>
+#include <elle/utility/Time.hh>
+#include <elle/network/Network.hh>
 
 #include <hole/implementations/remote/Client.hh>
 #include <hole/implementations/remote/Manifest.hh>
@@ -68,15 +61,15 @@ namespace hole
         //
         {
           // register the message.
-          if (elle::Network::Register(
-                elle::Procedure<TagAuthenticated>(
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagAuthenticated>(
                   elle::Callback<>::Infer(
                     &Client::Authenticated, this))) == elle::Status::Error)
             escape("unable to register the callback");
 
           // register the message.
-          if (elle::Network::Register(
-                elle::Procedure<TagException>(
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagException>(
                   elle::Callback<>::Infer(
                     &Client::Exception, this))) == elle::Status::Error)
             escape("unable to register the callback");
@@ -113,7 +106,7 @@ namespace hole
 
           // connect the socket.
           if (this->socket->Connect(this->locus,
-                                    elle::AbstractSocket::ModeSynchronous) ==
+                                    elle::network::AbstractSocket::ModeSynchronous) ==
               elle::Status::Error)
             escape("unable to connect to the bridge");
         }
@@ -124,7 +117,7 @@ namespace hole
         {
           // send the passport.
           if (this->socket->Send(
-                elle::Inputs<TagChallenge>(Hole::Passport)) ==
+                elle::network::Inputs<TagChallenge>(Hole::Passport)) ==
               elle::Status::Error)
             escape("unable to send the challenge");
         }
@@ -138,8 +131,8 @@ namespace hole
       elle::Status      Client::Put(const nucleus::Address&     address,
                                     const nucleus::ImmutableBlock& block)
       {
-        nucleus::Derivable<nucleus::Block>      derivable(address.component,
-                                                          block);
+        //nucleus::Derivable<nucleus::Block>      derivable(address.component,
+        //                                                  block);
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -151,8 +144,8 @@ namespace hole
 
         // transfer to the remote.
         if (this->socket->Call(
-              elle::Inputs<TagPush>(address, derivable),
-              elle::Outputs<elle::TagOk>()) == elle::Status::Error)
+              elle::network::Inputs<TagPush>(address, block),
+              elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to transfer the request");
 
         return elle::Status::Ok;
@@ -164,8 +157,8 @@ namespace hole
       elle::Status      Client::Put(const nucleus::Address&     address,
                                     const nucleus::MutableBlock& block)
       {
-        nucleus::Derivable<nucleus::Block>      derivable(address.component,
-                                                          block);
+        //nucleus::Derivable<nucleus::Block>      derivable(address.component,
+        //                                                  block);
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -177,9 +170,8 @@ namespace hole
 
         // transfer to the remote.
         if (this->socket->Call(
-              elle::Inputs<TagPush>(address,
-                                    derivable),
-              elle::Outputs<elle::TagOk>()) == elle::Status::Error)
+              elle::network::Inputs<TagPush>(address, block),
+              elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to transfer the request");
 
         return elle::Status::Ok;
@@ -191,7 +183,7 @@ namespace hole
       elle::Status      Client::Get(const nucleus::Address&     address,
                                     nucleus::ImmutableBlock&    block)
       {
-        nucleus::Derivable<nucleus::Block>      derivable(block);
+        //nucleus::Derivable<nucleus::Block>      derivable(block);
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -203,9 +195,9 @@ namespace hole
 
         // transfer to the remote.
         if (this->socket->Call(
-              elle::Inputs<TagPull>(address,
+              elle::network::Inputs<TagPull>(address,
                                     nucleus::Version::Any),
-              elle::Outputs<TagBlock>(derivable)) == elle::Status::Error)
+              elle::network::Outputs<TagBlock>(block)) == elle::Status::Error)
           escape("unable to transfer the request");
 
         return elle::Status::Ok;
@@ -230,7 +222,7 @@ namespace hole
 
         // transfer to the remote.
         if (this->socket->Call(
-              elle::Inputs<TagPull>(address,
+              elle::network::Inputs<TagPull>(address,
                                     version),
               elle::Outputs<TagBlock>(derivable)) == elle::Status::Error)
           escape("unable to transfer the request");
@@ -253,7 +245,7 @@ namespace hole
 
         // transfer to the remote.
         if (this->socket->Call(
-              elle::Inputs<TagWipe>(address),
+              elle::network::network::Inputs<TagWipe>(address),
               elle::Outputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to transfer the request");
 

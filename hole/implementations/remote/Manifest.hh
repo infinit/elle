@@ -1,29 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [thu may 26 12:59:43 2011]
-//
+#ifndef  HOLE_IMPLEMENTATIONS_REMOTE_MANIFEST_HH
+# define HOLE_IMPLEMENTATIONS_REMOTE_MANIFEST_HH
 
-#ifndef HOLE_IMPLEMENTATIONS_REMOTE_MANIFEST_HH
-#define HOLE_IMPLEMENTATIONS_REMOTE_MANIFEST_HH
+# include <elle/types.hh>
+# include <nucleus/Nucleus.hh>
+# include <lune/Lune.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
-#include <lune/Lune.hh>
-
-#include <etoile/Manifest.hh>
-
-//
-// ---------- constants -------------------------------------------------------
-//
+# include <etoile/Manifest.hh>
 
 namespace hole
 {
@@ -74,7 +56,7 @@ namespace hole
       //
       enum Tag
         {
-          TagChallenge = elle::Range<Component>::First + 1,
+          TagChallenge = elle::network::Range<Component>::First + 1,
           TagAuthenticated,
 
           TagPush,
@@ -103,13 +85,12 @@ message(hole::implementations::remote::TagAuthenticated,
         parameters());
 
 message(hole::implementations::remote::TagPush,
-        parameters(nucleus::Address&,
-                   nucleus::Derivable<nucleus::Block>&));
+        parameters(nucleus::Address&, nucleus::Block&));
 message(hole::implementations::remote::TagPull,
         parameters(nucleus::Address&,
                    nucleus::Version&));
 message(hole::implementations::remote::TagBlock,
-        parameters(nucleus::Derivable<nucleus::Block>&));
+        parameters(nucleus::Block&));
 message(hole::implementations::remote::TagWipe,
         parameters(nucleus::Address&));
 

@@ -278,7 +278,7 @@ namespace hole
 
                     // send the block to the host.
                     host->socket->Send(
-                      elle::Inputs<TagPush>(address, derivable));
+                      elle::network::Inputs<TagPush>(address, derivable));
                     // XXX do not check the success!
 
                     // ignore the error messages and continue with the
@@ -405,7 +405,7 @@ namespace hole
 
                     // send the block to the host.
                     host->socket->Send(
-                      elle::Inputs<TagPush>(address, derivable));
+                      elle::network::Inputs<TagPush>(address, derivable));
                     // XXX do not check the success!
 
                     // ignore the error messages and continue with the
@@ -491,7 +491,7 @@ namespace hole
 
                       // request the host.
                       if (host->socket->Call(
-                            elle::Inputs<TagPull>(address,
+                            elle::network::Inputs<TagPull>(address,
                                                   nucleus::Version::Any),
                             elle::Outputs<TagBlock>(derivable)) ==
                           elle::Status::Ok)
@@ -592,7 +592,7 @@ namespace hole
 
                       // request the host.
                       if (host->socket->Call(
-                            elle::Inputs<TagPull>(address,
+                            elle::network::Inputs<TagPull>(address,
                                                   version),
                             elle::Outputs<TagBlock>(derivable)) ==
                           elle::Status::Ok)
@@ -780,7 +780,7 @@ namespace hole
 
                           // request the host.
                           if (host->socket->Call(
-                                elle::Inputs<TagPull>(address,
+                                elle::network::Inputs<TagPull>(address,
                                                       version),
                                 elle::Outputs<TagBlock>(derivable)) ==
                               elle::Status::Ok)
@@ -1039,7 +1039,7 @@ namespace hole
                     // send the request to the host.
                     // XXX do not check the success!
                     host->socket->Send(
-                      elle::Inputs<TagWipe>(address));
+                      elle::network::Inputs<TagWipe>(address));
 
                     // ignore the error messages and continue with the
                     // next neighbour.
@@ -1137,7 +1137,7 @@ namespace hole
               // also authenticate to this host now that it is considered a
               // potentiel peer.
               if (h->socket->Send(
-                    elle::Inputs<TagAuthenticate>(
+                    elle::network::Inputs<TagAuthenticate>(
                       Hole::Passport,
                       this->port)) == elle::Status::Error)
                 escape("unable to send a message");
@@ -1220,13 +1220,13 @@ namespace hole
 
             // reply.
             if (host->socket->Reply(
-                  elle::Inputs<TagAuthenticated>(
+                  elle::network::Inputs<TagAuthenticated>(
                     cluster)) == elle::Status::Error)
               escape("unable to reply to the caller");
 
             // also authenticate to this host.
             if (host->socket->Send(
-                  elle::Inputs<TagAuthenticate>(
+                  elle::network::Inputs<TagAuthenticate>(
                     Hole::Passport,
                     this->port)) == elle::Status::Error)
               escape("unable to send a message");
@@ -1726,7 +1726,7 @@ namespace hole
 
         // return the block.
         if (host->socket->Reply(
-              elle::Inputs<TagBlock>(derivable)) == elle::Status::Error)
+              elle::network::Inputs<TagBlock>(derivable)) == elle::Status::Error)
           escape("unable to return the block");
 
         return elle::Status::Ok;

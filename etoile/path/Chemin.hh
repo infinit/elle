@@ -1,25 +1,13 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [tue jun 14 13:24:13 2011]
-//
-
 #ifndef ETOILE_PATH_CHEMIN_HH
-#define ETOILE_PATH_CHEMIN_HH
+# define ETOILE_PATH_CHEMIN_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <limits>
 
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
+# include <elle/types.hh>
+# include <nucleus/Nucleus.hh>
 
-#include <etoile/path/Route.hh>
-#include <etoile/path/Venue.hh>
+# include <etoile/path/Route.hh>
+# include <etoile/path/Venue.hh>
 
 namespace etoile
 {
@@ -57,7 +45,7 @@ namespace etoile
       elle::Status              Create(const Route&,
                                        const Venue&,
                                        const nucleus::Size =
-                                         elle::Type<nucleus::Size>::Maximum);
+                                         std::numeric_limits<nucleus::Size>::max());
 
       elle::Status              Derives(const Chemin&) const;
 
