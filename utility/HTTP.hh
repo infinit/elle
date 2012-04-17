@@ -1,49 +1,29 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [tue nov 22 09:06:08 2011]
-//
-
 #ifndef ELLE_UTILITY_HTTP_HH
-#define ELLE_UTILITY_HTTP_HH
+# define ELLE_UTILITY_HTTP_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
 
-#include <elle/types.hh>
-#include <elle/types.hh>
-#include <elle/types.hh>
+# include <elle/types.hh>
 
-#include <elle/radix/Status.hh>
+# include <elle/utility/URI.hh>
 
-#include <elle/utility/URI.hh>
-
-#include <elle/idiom/Close.hh>
-# if defined(INFINIT_MACOSX)
-   ///
-   /// a bug exists in which, on MacOS X, curl includes <osreldate.h> if
-   /// __FreeBSD__ is defined, which it has to be for FUSE.
-   ///
-   /// therefore, __FreeBSD__ is undefined before including <curl/curl.h>
-   ///
-#  undef __FreeBSD__
-#  include <curl/curl.h>
-#  define __FreeBSD__ 10
-# else
-#  include <curl/curl.h>
-# endif
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  if defined(INFINIT_MACOSX)
+    ///
+    /// a bug exists in which, on MacOS X, curl includes <osreldate.h> if
+    /// __FreeBSD__ is defined, which it has to be for FUSE.
+    ///
+    /// therefore, __FreeBSD__ is undefined before including <curl/curl.h>
+    ///
+#   undef __FreeBSD__
+#   include <curl/curl.h>
+#   define __FreeBSD__ 10
+#  else
+#   include <curl/curl.h>
+#  endif
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
-
-  using namespace radix;
-
   namespace utility
   {
 

@@ -20,6 +20,7 @@
 
 #include <elle/radix/Entity.hh>
 #include <elle/radix/Parameters.hh>
+#include <elle/radix/Allege.hh>
 
 #include <elle/idiom/Open.hh>
 

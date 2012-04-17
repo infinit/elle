@@ -66,9 +66,9 @@ protected:
   friend class json::detail::BasicObject<bool>;
   friend class json::detail::BasicObject<double>;
   friend class json::detail::BasicObject<std::string>;
-  friend struct json::Null;
-  friend struct json::Array;
-  friend struct json::Dictionary;
+  friend class json::Null;
+  friend class json::Array;
+  friend class json::Dictionary;
 
 protected:
   using BaseClass::operator <<;

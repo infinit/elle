@@ -25,13 +25,14 @@
 #include <elle/network/Message.hh>
 #include <elle/network/Procedure.hh>
 
+#include <elle/utility/Buffer.hh>
+
 #include <elle/idiom/Open.hh>
 
 namespace elle
 {
 
   using namespace radix;
-  using namespace package;
   using namespace utility;
 
   ///
@@ -83,7 +84,7 @@ namespace elle
         //
         // methods
         //
-        virtual Status  Call(Archive&) const = 0;
+        virtual Status  Call(elle::utility::Buffer&) const = 0;
       };
 
       ///
@@ -103,7 +104,7 @@ namespace elle
         //
         // methods
         //
-        Status          Call(Archive&) const;
+        Status          Call(elle::utility::Buffer&) const;
 
         //
         // interfaces

@@ -1,15 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun jun 26 21:23:03 2011]
-//
-
 #ifndef ELLE_UTILITY_PARSER_HXX
-#define ELLE_UTILITY_PARSER_HXX
+# define ELLE_UTILITY_PARSER_HXX
+
+# include <elle/radix/Variables.hh>
+
+# include <elle/standalone/Report.hh>
+# include <elle/standalone/Log.hh>
 
 namespace elle
 {
@@ -69,35 +64,35 @@ namespace elle
     /// note however that if the option has not been activated or provided
     /// with an argument, the method returns an error.
     ///
-    template <typename T, Boolean C>
-    Status      Parser::Behaviour<T, C>::Value(Parser&          parser,
-                                               const String&    name,
-                                               T&               value)
-    {
-      Parser::Option*   option;
+    //template <typename T, Boolean C>
+    //Status      Parser::Behaviour<T, C>::Value(Parser&          parser,
+    //                                           const String&    name,
+    //                                           T&               value)
+    //{
+    //  Parser::Option*   option;
 
-      // locate the option.
-      if (parser.Locate(name, option) == Status::False)
-        escape("unable to locate the option '%s'",
-               name.c_str());
+    //  // locate the option.
+    //  if (parser.Locate(name, option) == Status::False)
+    //    escape("unable to locate the option '%s'",
+    //           name.c_str());
 
-      // if the option has not been activated, return an error.
-      if (option->state == Parser::StateDeactivated)
-        escape("the option '%s' has not been activated",
-               name.c_str());
+    //  // if the option has not been activated, return an error.
+    //  if (option->state == Parser::StateDeactivated)
+    //    escape("the option '%s' has not been activated",
+    //           name.c_str());
 
-      // if no argument has been provided, return an error.
-      if (option->value == NULL)
-        escape("the option '%s' has not been provided with an argument",
-               name.c_str());
+    //  // if no argument has been provided, return an error.
+    //  if (option->value == NULL)
+    //    escape("the option '%s' has not been provided with an argument",
+    //           name.c_str());
 
-      // convert the string-based argument to the given type, if possible.
-      if (Variable::Convert(*option->value, value) == Status::False)
-        escape("unable to convert the argument '%s' for the option '%s'",
-               option->value->c_str(), name.c_str());
+    //  // convert the string-based argument to the given type, if possible.
+    //  if (Variable::Convert(*option->value, value) == Status::False)
+    //    escape("unable to convert the argument '%s' for the option '%s'",
+    //           option->value->c_str(), name.c_str());
 
-      return Status::Ok;
-    }
+    //  return Status::Ok;
+    //}
 
     ///
     /// this method tries to retrieve the argument associated with the
@@ -107,114 +102,114 @@ namespace elle
     /// with an argument, the method still returns properly by taking care
     /// to assign the default value.
     ///
-    template <typename T, Boolean C>
-    Status      Parser::Behaviour<T, C>::Value(Parser&          parser,
-                                               const String&    name,
-                                               T&               value,
-                                               const T          D)
-    {
-      Parser::Option*   option;
+    //template <typename T, Boolean C>
+    //Status      Parser::Behaviour<T, C>::Value(Parser&          parser,
+    //                                           const String&    name,
+    //                                           T&               value,
+    //                                           const T          D)
+    //{
+    //  Parser::Option*   option;
 
-      // locate the option.
-      if ((parser.Locate(name, option) == Status::True) &&
-          (option->value != NULL))
-        {
-          // convert the string-based argument to the given type, if possible.
-          if (Variable::Convert(*option->value, value) == Status::False)
-            escape("unable to convert the argument '%s' for the option '%s'",
-                   option->value->c_str(), name.c_str());
-        }
-      else
-        {
-          // set the default value.
-          value = D;
-        }
+    //  // locate the option.
+    //  if ((parser.Locate(name, option) == Status::True) &&
+    //      (option->value != NULL))
+    //    {
+    //      // convert the string-based argument to the given type, if possible.
+    //      if (Variable::Convert(*option->value, value) == Status::False)
+    //        escape("unable to convert the argument '%s' for the option '%s'",
+    //               option->value->c_str(), name.c_str());
+    //    }
+    //  else
+    //    {
+    //      // set the default value.
+    //      value = D;
+    //    }
 
-      return Status::Ok;
-    }
+    //  return Status::Ok;
+    //}
 
-    ///
-    /// this method retrieves a compound argument.
-    ///
-    /// note however that if the option has not been activated or provided
-    /// with an argument, the method returns an error.
-    ///
-    template <typename T>
-    template <const Format F>
-    Status      Parser::Behaviour<T, true>::Value(
-                  Parser&                                       parser,
-                  const String&                                 name,
-                  Uniquable<F>&                                 object)
-    {
-      Parser::Option*   option;
+    /////
+    ///// this method retrieves a compound argument.
+    /////
+    ///// note however that if the option has not been activated or provided
+    ///// with an argument, the method returns an error.
+    /////
+    //template <typename T>
+    //template <const Format F>
+    //Status      Parser::Behaviour<T, true>::Value(
+    //              Parser&                                       parser,
+    //              const String&                                 name,
+    //              Uniquable<F>&                                 object)
+    //{
+    //  Parser::Option*   option;
 
-      // locate the option.
-      if (parser.Locate(name, option) == Status::False)
-        escape("unable to locate the option '%s'",
-               name.c_str());
+    //  // locate the option.
+    //  if (parser.Locate(name, option) == Status::False)
+    //    escape("unable to locate the option '%s'",
+    //           name.c_str());
 
-      // if the option has not been activated, return an error.
-      if (option->state == Parser::StateDeactivated)
-        escape("the option '%s' has not been activated",
-               name.c_str());
+    //  // if the option has not been activated, return an error.
+    //  if (option->state == Parser::StateDeactivated)
+    //    escape("the option '%s' has not been activated",
+    //           name.c_str());
 
-      // if no argument has been provided, return an error.
-      if (option->value == NULL)
-        escape("the option '%s' has not been provided with an argument",
-               name.c_str());
+    //  // if no argument has been provided, return an error.
+    //  if (option->value == NULL)
+    //    escape("the option '%s' has not been provided with an argument",
+    //           name.c_str());
 
-      // restore the object.
-      if (object.Restore(*option->value) == Status::Error)
-        escape("unable to restore the object '%s' for the option '%s'",
-               option->value->c_str(), name.c_str());
+    //  // restore the object.
+    //  if (object.Restore(*option->value) == Status::Error)
+    //    escape("unable to restore the object '%s' for the option '%s'",
+    //           option->value->c_str(), name.c_str());
 
-      return Status::Ok;
-    }
+    //  return Status::Ok;
+    //}
 
-    ///
-    /// this method retrieves a compound argument, with a potential
-    /// default value.
-    ///
-    /// however, should have the option not been activated or not provided
-    /// with an argument, the method still returns properly by taking care
-    /// to assign the default value.
-    ///
-    template <typename T>
-    template <const Format F>
-    Status      Parser::Behaviour<T, true>::Value(
-                  Parser&                                       parser,
-                  const String&                                 name,
-                  Uniquable<F>&                                 object,
-                  const Uniquable<F>                            D)
-    {
-      Parser::Option*   option;
+    /////
+    ///// this method retrieves a compound argument, with a potential
+    ///// default value.
+    /////
+    ///// however, should have the option not been activated or not provided
+    ///// with an argument, the method still returns properly by taking care
+    ///// to assign the default value.
+    /////
+    //template <typename T>
+    //template <const Format F>
+    //Status      Parser::Behaviour<T, true>::Value(
+    //              Parser&                                       parser,
+    //              const String&                                 name,
+    //              Uniquable<F>&                                 object,
+    //              const Uniquable<F>                            D)
+    //{
+    //  Parser::Option*   option;
 
-      // locate the option.
-      if ((parser.Locate(name, option) == Status::True) &&
-          (option->value != NULL))
-        {
-          // restore the object.
-          if (object.Restore(*option->value) == Status::Error)
-            escape("unable to restore the object '%s' for the option '%s'",
-                   option->value->c_str(), name.c_str());
-        }
-      else
-        {
-          Unique        unique;
+    //  // locate the option.
+    //  if ((parser.Locate(name, option) == Status::True) &&
+    //      (option->value != NULL))
+    //    {
+    //      // restore the object.
+    //      if (object.Restore(*option->value) == Status::Error)
+    //        escape("unable to restore the object '%s' for the option '%s'",
+    //               option->value->c_str(), name.c_str());
+    //    }
+    //  else
+    //    {
+    //      Unique        unique;
 
-          // save the default value.
-          if (D.Save(unique) == Status::Error)
-            escape("unable to save the default value for the option '%s'",
-                   name.c_str());
+    //      // save the default value.
+    //      if (D.Save(unique) == Status::Error)
+    //        escape("unable to save the default value for the option '%s'",
+    //               name.c_str());
 
-          // restore the object.
-          if (object.Restore(unique) == Status::Error)
-            escape("unable to restore the object '%s' for the option '%s'",
-                   unique.c_str(), name.c_str());
-        }
+    //      // restore the object.
+    //      if (object.Restore(unique) == Status::Error)
+    //        escape("unable to restore the object '%s' for the option '%s'",
+    //               unique.c_str(), name.c_str());
+    //    }
 
-      return Status::Ok;
-    }
+    //  return Status::Ok;
+    //}
 
 //
 // ---------- methods ---------------------------------------------------------

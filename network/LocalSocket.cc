@@ -1,17 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sat feb  6 04:30:24 2010]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/utility/BufferSerializer.hxx>
 
+#include <elle/network/HeaderSerializer.hxx>
 #include <elle/network/LocalSocket.hh>
 #include <elle/network/Packet.hh>
 #include <elle/network/Inputs.hh>
@@ -218,14 +208,14 @@ namespace elle
 
       // check the size of the packet to make sure the receiver will
       // have a buffer large enough to read it.
-      if (packet.size > AbstractSocket::Capacity)
+      if (packet.Size() > AbstractSocket::Capacity)
         escape("the packet seems to be too large %qu bytes",
-               static_cast<Natural64>(packet.size));
+               static_cast<Natural64>(packet.Size()));
 
       // push the packet to the socket.
       if (this->socket->write(
-            reinterpret_cast<const char*>(packet.contents),
-            packet.size) != static_cast<qint64>(packet.size))
+            reinterpret_cast<const char*>(packet.Contents()),
+            packet.Size()) != static_cast<qint64>(packet.Size()))
         escape("unable to write the packet");
 
       // flush to start sending data immediately.
@@ -298,28 +288,20 @@ namespace elle
       //
       while ((this->buffer->size - this->offset) > 0)
         {
-          Packet        packet;
-          Region        frame;
 
-          // create the frame based on the previously extracted raw.
-          if (frame.Wrap(this->buffer->contents + this->offset,
-                         this->buffer->size - this->offset) == Status::Error)
-            escape("unable to wrap a frame in the raw");
+          elle::utility::WeakBuffer packet(
+              this->buffer->contents + this->offset,
+              this->buffer->size - this->offset
+          );
 
-          // prepare the packet based on the frame.
-          if (packet.Wrap(frame) == Status::Error)
-            escape("unable to prepare the packet");
+          auto reader = packet.Reader();
 
-          // allocate the parcel.
           auto parcel = std::unique_ptr<Parcel>(new Parcel);
-
-          // extract the header.
-          if (parcel->header->Extract(packet) == Status::Error)
-            escape("unable to extract the header");
+          reader >> *(parcel->header);
 
           // act depending on the amount of data required against
           // the amount of data received.
-          if ((packet.size - packet.offset) < parcel->header->size)
+          if (reader.Stream().BytesLeft() < parcel->header->size)
             {
               //
               // in this case, the future packet requires more data than
@@ -343,9 +325,7 @@ namespace elle
               // the parcel.
               //
 
-              // extract the data.
-              if (packet.Extract(*parcel->data) == Status::Error)
-                escape("unable to extract the data");
+              reader >> *(parcel->data);
 
               // create the session.
               if (parcel->session->Create(
@@ -362,7 +342,7 @@ namespace elle
 
               // move to the next frame by setting the offset at the end of
               // the extracted frame.
-              this->offset = this->offset + packet.offset;
+              this->offset += reader.Stream().Offset();
             }
         }
 
@@ -527,7 +507,7 @@ namespace elle
     void                LocalSocket::_connected()
     {
       Closure<
-        Status::,
+        Status,
         Parameters<>
         >               closure(Callback<>::Infer(&Signal<
                                                     Parameters<>
@@ -548,7 +528,7 @@ namespace elle
     void                LocalSocket::_disconnected()
     {
       Closure<
-        Status::,
+        Status,
         Parameters<>
         >               closure(Callback<>::Infer(&Signal<
                                                     Parameters<>
@@ -569,7 +549,7 @@ namespace elle
     void                LocalSocket::_ready()
     {
       Closure<
-        Status::,
+        Status,
         Parameters<>
         >               closure(Callback<>::Infer(&Signal<
                                                     Parameters<>
@@ -593,7 +573,7 @@ namespace elle
     {
       String            cause(this->socket->errorString().toStdString());
       Closure<
-        Status::,
+        Status,
         Parameters<
           const String&
           >

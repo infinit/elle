@@ -1,24 +1,38 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar  3 23:26:52 2010]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/system/Platform.hh>
+#include <elle/system/System.hh>
 
-#include <elle/types.hh>
+#include <elle/standalone/Log.hh>
+#include <elle/standalone/Report.hh>
+#include <elle/standalone/Standalone.hh>
 
-#include <elle/types.hh>
+#include <elle/cryptography/Cryptography.hh>
+
+#include <elle/concurrency/Concurrency.hh>
+
+#include <elle/network/Network.hh>
+
+#include <elle/radix/Radix.hh>
+
+#include <elle/Elle.hh>
+
+#include <elle/idiom/Open.hh>
+
 
 namespace elle
 {
 
+  using namespace system;
+  using namespace standalone;
+  using namespace radix;
+//  using namespace package;
+//  using namespace container;
+//  using namespace io;
+  using namespace cryptography;
+//  using namespace concurrency;
+  using namespace network;
+//  using namespace utility;
+//  using namespace thirdparty;
 //
 // ---------- definitions -----------------------------------------------------
 //

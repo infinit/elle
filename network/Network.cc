@@ -1,17 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed feb  3 16:49:46 2010]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
+#include <elle/standalone/ReportSerializer.hxx>
 #include <elle/network/Network.hh>
 
 namespace elle
@@ -122,9 +110,7 @@ namespace elle
               {
                 Report  report;
 
-                // extract the error message.
-                if (report.Extract(*parcel->data) == Status::Error)
-                  escape("unable to extract the error message");
+                parcel->data->Reader() >> report;
 
                 // report the remote error.
                 transpose(report);

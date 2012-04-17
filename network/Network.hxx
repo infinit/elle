@@ -81,9 +81,9 @@ namespace elle
     /// Skeleton() method.
     ///
     template <typename P>
-    Status      Network::Selectionoid<P>::Call(Archive&         archive) const
+    Status      Network::Selectionoid<P>::Call(elle::utility::Buffer& buffer) const
     {
-      return (this->procedure.Skeleton(archive));
+      return (this->procedure.Skeleton(buffer));
     }
 
     ///

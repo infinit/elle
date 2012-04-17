@@ -1,22 +1,18 @@
 #ifndef  ELLE_SERIALIZE_BUFFERARCHIVE_HH
 # define ELLE_SERIALIZE_BUFFERARCHIVE_HH
 
+# include <elle/utility/fwd.hh>
+
 # include <elle/serialize/BinaryArchive.hh>
-# include <elle/serialize/detail/MergeArchive.hh>
 
 namespace elle
 {
-  namespace utility
-  {
-    class InputBufferStream;
-    class OutputBufferStream;
-  }
-
   namespace serialize
   {
 
     namespace detail
     {
+
       template<ArchiveMode mode, typename CharType>
         struct BufferStreamSelect;
 
@@ -28,27 +24,39 @@ namespace elle
         struct BufferStreamSelect<ArchiveMode::Output, DefaultCharType>
           { typedef elle::utility::OutputBufferStream type; };
 
+    } // !namespace detail
 
-    }
+    template<ArchiveMode mode>
+    class BufferArchive
+      : public BaseBinaryArchive<
+          mode
+        , BufferArchive<mode>
+        , DefaultCharType
+        , detail::BufferStreamSelect
+      >
+    {
+    private:
+      typedef BaseBinaryArchive<
+          mode
+        , BufferArchive<mode>
+        , DefaultCharType
+        , detail::BufferStreamSelect
+      >                                       BaseClass;
+      typedef typename BaseClass::StreamType  StreamType;
 
-    typedef BaseBinaryArchive<
-        ArchiveMode::Input
-      , DefaultCharType
-      , detail::BufferStreamSelect
-    >                               InputBufferArchive;
+    private:
+      StreamType    _stream;
 
-    typedef BaseBinaryArchive<
-        ArchiveMode::Output
-      , DefaultCharType
-      , detail::BufferStreamSelect
-    >                               OutputBufferArchive;
+    public:
+      BufferArchive(StreamType const& stream);
+      BufferArchive(BufferArchive const& other);
 
-    ELLE_SERIALIZE_MERGE_ARCHIVES(
-        BufferArchive,
-        InputBufferArchive,
-        OutputBufferArchive
-    );
+    public:
+      StreamType& Stream() { return _stream; }
+    };
 
+    typedef BufferArchive<ArchiveMode::Input>  InputBufferArchive;
+    typedef BufferArchive<ArchiveMode::Output> OutputBufferArchive;
   }
 }
 

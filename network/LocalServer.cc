@@ -40,7 +40,7 @@ namespace elle
     ///
     LocalServerPorter::LocalServerPorter(const
                                            Callback<
-                                             Status::,
+                                             Status,
                                              Parameters<LocalSocket*>
                                              >&                 callback):
       server(NULL),
@@ -145,7 +145,7 @@ namespace elle
     Status              LocalServer::Listen(const String&       name,
                                             const
                                               Callback<
-                                                Status::,
+                                                Status,
                                                 Parameters<LocalSocket*>
                                                 >&              callback)
     {
@@ -344,7 +344,7 @@ namespace elle
     void                LocalServerPorter::_accept()
     {
       Closure<
-        Status::,
+        Status,
         Parameters<>
         >               closure(Callback<>::Infer(
                                   &LocalServerPorter::Accept, this));

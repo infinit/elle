@@ -1,13 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed feb  3 21:04:37 2010]
-//
-
 ///
 /// this very special include is required as Socket needs to know UDPSocket
 /// while UDPSocket inherits Socket.
@@ -24,16 +14,9 @@
 #ifndef ELLE_NETWORK_UDPSOCKET_HH
 #define ELLE_NETWORK_UDPSOCKET_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
 #include <elle/types.hh>
 
 #include <elle/standalone/Region.hh>
-
-#include <elle/radix/Status.hh>
 
 #include <elle/concurrency/Event.hh>
 #include <elle/concurrency/Signal.hh>
