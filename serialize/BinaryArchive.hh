@@ -3,8 +3,6 @@
 
 # include "BaseArchive.hh"
 
-# include "BinaryArchive.fwd.hh"
-
 namespace elle { namespace serialize {
 
     ///
@@ -18,13 +16,28 @@ namespace elle { namespace serialize {
     ///
     /// @see elle::serialize::BaseArchive for general informations about archives
     ///
-    template<ArchiveMode mode>
-      class BinaryArchive :
-        public BaseArchive<mode, BinaryArchive<mode>>
+    template<
+          ArchiveMode mode
+        , typename CharType = DefaultCharType
+        , template<ArchiveMode, typename>
+            class StreamTypeSelect = DefaultStreamTypeSelect
+      >
+      class BinaryArchive
+        : public BaseArchive<
+              mode
+            , BinaryArchive<mode>
+            , CharType
+            , StreamTypeSelect
+          >
       {
       private:
-        typedef BaseArchive<mode, BinaryArchive<mode>> BaseClass;
-        typedef typename BaseClass::StreamType StreamType;
+        typedef BaseArchive<
+            mode
+          , BinaryArchive<mode>
+          , CharType
+          , StreamTypeSelect
+        >                                         BaseClass;
+        typedef typename BaseClass::StreamType    StreamType;
 
       public:
         BinaryArchive(StreamType& stream)

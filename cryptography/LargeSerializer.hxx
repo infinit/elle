@@ -10,16 +10,19 @@
 // macros).
 
 // serialization of a Large max size
-# define ELLE_LARGE_MAX_BIN_SIZE    256
+# define ELLE_LARGE_MAX_BIN_SIZE    255
 
 // type used to store the size
 # define ELLE_LARGE_BIN_SIZE_TYPE   uint8_t
 
-# define _ASSERT_ELLE_LARGE_SIZE_TYPE_IS_VALID()                              \
+# define __ASSERT_ELLE_LARGE_SIZE_TYPE_IS_VALID(Type)                         \
   static_assert(                                                              \
-      ELLE_MAX_BIN_SIZE <= static_cast<ELLE_LARGE_SIZE_TYPE>(-1),             \
-      "The size cannot be stored in a " #ELLE_LARGE_SIZE_TYPE                 \
+      ELLE_LARGE_MAX_BIN_SIZE <= static_cast<Type>(-1),                       \
+      "The size cannot be stored in a " #Type                                 \
   )                                                                           \
+
+# define _ASSERT_ELLE_LARGE_SIZE_TYPE_IS_VALID()                              \
+  __ASSERT_ELLE_LARGE_SIZE_TYPE_IS_VALID(ELLE_LARGE_BIN_SIZE_TYPE)            \
 
 ELLE_SERIALIZE_SPLIT(elle::Large)
 
@@ -31,7 +34,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::Large,
   _ASSERT_ELLE_LARGE_SIZE_TYPE_IS_VALID();
 
   char unsigned tab[ELLE_LARGE_MAX_BIN_SIZE];
-  ELLE_LARGE_SIZE_TYPE size;
+  ELLE_LARGE_BIN_SIZE_TYPE size;
   archive >> size;
   archive.LoadBinary(tab, size);
   ::BN_bin2bn(tab, size, &n);

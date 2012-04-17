@@ -41,7 +41,7 @@ namespace elle { namespace serialize {
         InputIniArchive& operator >>(elle::format::ini::File& file);
       };
 
-      ELLE_SERIALIZE_MERGE_ARCHIVE(IniArchive, InputIniArchive, OutputIniArchive);
+      ELLE_SERIALIZE_MERGE_ARCHIVES(IniArchive, InputIniArchive, OutputIniArchive);
 }}
 
 

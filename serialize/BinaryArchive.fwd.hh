@@ -3,14 +3,25 @@
 
 # include <elle/serialize/ArchiveMode.hh>
 
-namespace elle { namespace serialize {
+namespace elle
+{
+  namespace serialize
+  {
+    typedef char DefaultCharType;
+    template<ArchiveMode, typename> struct DefaultStreamTypeSelect;
 
-    template<ArchiveMode mode> class BinaryArchive;
+    template<
+        ArchiveMode mode
+      , typename CharType = DefaultCharType
+      , template<ArchiveMode, typename>
+          class StreamTypeSelect = DefaultStreamTypeSelect
+      > class BinaryArchive;
 
     typedef BinaryArchive<ArchiveMode::Output> OutputBinaryArchive;
     typedef BinaryArchive<ArchiveMode::Input>  InputBinaryArchive;
 
-}} // !namespace elle::serialize
+  }
+} // !namespace elle::serialize
 
 #endif /* ! BINARYARCHIVE_FWD_HH */
 

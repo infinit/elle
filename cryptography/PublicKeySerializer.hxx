@@ -67,8 +67,8 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::cryptography::PublicKey,
   if (value.key() == nullptr)
     throw std::runtime_error("XXX: should not happen !");
 
-  archive << *this->key()->pkey.rsa->n
-          << *this->key()->pkey.rsa->e;
+  archive << *(value.key()->pkey.rsa->n)
+          << *(value.key()->pkey.rsa->e);
 }
 
 #endif

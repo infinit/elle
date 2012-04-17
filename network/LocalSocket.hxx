@@ -18,6 +18,10 @@
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
+#include <elle/utility/BufferStream.hh>
+
+#include <elle/serialize/BufferArchive.hh>
+
 #include <elle/network/Packet.hh>
 #include <elle/network/Header.hh>
 #include <elle/network/Data.hh>
@@ -45,10 +49,6 @@ namespace elle
       Data              data;
       Header            header;
 
-      // create an data for the inputs.
-      if (data.Create() == Status::Error)
-        escape("unable to create the data");
-
       // serialize the inputs.
       if (inputs.Serialize(data) == Status::Error)
         escape("unable to serialize the inputs");
@@ -56,14 +56,11 @@ namespace elle
       // create the header now that we know that final archive's size.
       if (header.Create(event,
                         inputs.tag,
-                        data.size) == Status::Error)
+                        data.Size()) == Status::Error)
         escape("unable to create the header");
 
-      // prepare the packet.
-      if (packet.Create() == Status::Error)
-        escape("unable to create the packet");
-
       // serialize the the header and data.
+      BufferArchive(packet) << header << data;
       if (packet.Serialize(header, data) == Status::Error)
         escape("unable to serialize the header and data");
 

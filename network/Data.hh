@@ -1,6 +1,8 @@
 #ifndef ELLE_NETWORK_DATA_HH
 # define ELLE_NETWORK_DATA_HH
 
+# include <elle/utility/Buffer.hh>
+
 namespace elle
 {
   namespace network
@@ -10,7 +12,7 @@ namespace elle
     /// this type represents a message's data section which contains the
     /// arguments.
     ///
-    //typedef Archive             Data;
+    typedef elle::utility::Buffer             Data;
 
   }
 }
