@@ -22,26 +22,26 @@ namespace elle
 
       template<>
         struct BufferStreamSelect<ArchiveMode::Input, DefaultCharType>
-          { typedef elle::utility::InputBufferStream type; }
+          { typedef elle::utility::InputBufferStream type; };
 
       template<>
-        struct BufferStreamSelect<ArchiveMode::Input, DefaultCharType>
-          { typedef elle::utility::OutputBufferStream type; }
+        struct BufferStreamSelect<ArchiveMode::Output, DefaultCharType>
+          { typedef elle::utility::OutputBufferStream type; };
 
 
     }
 
-    typedef BinaryArchive<
+    typedef BaseBinaryArchive<
         ArchiveMode::Input
       , DefaultCharType
-      , BufferStreamSelect
-    >                               InputBufferArchive
+      , detail::BufferStreamSelect
+    >                               InputBufferArchive;
 
-    typedef BinaryArchive<
+    typedef BaseBinaryArchive<
         ArchiveMode::Output
       , DefaultCharType
-      , BufferStreamSelect
-    >                               OutputBufferArchive
+      , detail::BufferStreamSelect
+    >                               OutputBufferArchive;
 
     ELLE_SERIALIZE_MERGE_ARCHIVES(
         BufferArchive,

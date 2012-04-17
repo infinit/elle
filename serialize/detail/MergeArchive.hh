@@ -27,9 +27,6 @@ namespace elle { namespace serialize { namespace detail {
 #define ELLE_SERIALIZE_MERGE_ARCHIVES(class_name, InputArchive, OutputArchive)\
   template<                                                                   \
         ArchiveMode mode_                                                     \
-      , typename CharType = DefaultCharType                                   \
-      , template<ArchiveMode __mode, typename CT>                             \
-          class StreamTypeSelect = DefaultStreamTypeSelect                    \
   >                                                                           \
     class class_name                                                          \
     : public elle::serialize::detail::_ArchiveSelector<                       \
