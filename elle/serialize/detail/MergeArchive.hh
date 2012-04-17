@@ -7,9 +7,11 @@
 
 namespace elle { namespace serialize { namespace detail {
 
-    template<typename InputArchive,
-             typename OutputArchive,
-             elle::serialize::ArchiveMode mode>
+    template<
+        typename InputArchive
+      , typename OutputArchive
+      , elle::serialize::ArchiveMode mode
+    >
       struct _ArchiveSelector
       {
         typedef typename boost::mpl::if_c<
@@ -22,8 +24,13 @@ namespace elle { namespace serialize { namespace detail {
 }}}
 
 /// Utility macro to declare a templated generic archive from Splitted classes
-#define ELLE_SERIALIZE_MERGE_ARCHIVE(class_name, InputArchive, OutputArchive) \
-  template<ArchiveMode mode_>                                                 \
+#define ELLE_SERIALIZE_MERGE_ARCHIVES(class_name, InputArchive, OutputArchive)\
+  template<                                                                   \
+        ArchiveMode mode_                                                     \
+      , typename CharType = DefaultCharType                                   \
+      , template<ArchiveMode __mode, typename CT>                             \
+          class StreamTypeSelect = DefaultStreamTypeSelect                    \
+  >                                                                           \
     class class_name                                                          \
     : public elle::serialize::detail::_ArchiveSelector<                       \
         InputArchive                                                          \
@@ -49,7 +56,7 @@ namespace elle { namespace serialize { namespace detail {
       class_name(typename BaseClass::StreamType& stream,                      \
                  T const& value) : BaseClass(stream, value)                   \
         {}                                                                    \
-    };                                                                        \
+    }                                                                         \
 
 #endif /* ! SPLITARCHIVE_HH */
 

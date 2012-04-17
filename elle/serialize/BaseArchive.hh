@@ -83,8 +83,24 @@ namespace elle { namespace serialize {
         static bool const value = true;
       };
 
-    // Helper to select to right stream type depending on the archive mode
-    template<ArchiveMode mode, typename CharType> struct _TypeToStreamType;
+    /// Default stream type selector. Select the right stream type depending on
+    /// the archive mode.
+    template<
+        ArchiveMode mode
+      , typename CharType
+    > struct DefaultStreamTypeSelect;
+
+    template<typename CharType>
+      struct DefaultStreamTypeSelect<ArchiveMode::Input, CharType>
+        { typedef std::basic_istream<CharType> type; };
+
+    template<typename CharType>
+      struct DefaultStreamTypeSelect<ArchiveMode::Output, CharType>
+        { typedef std::basic_ostream<CharType> type; };
+
+
+    /// Default char type used in BaseArchive
+    typedef char DefaultCharType;
 
     ///
     /// The base archive class implements portable raw binary operations, but
@@ -93,13 +109,31 @@ namespace elle { namespace serialize {
     /// c string are not supported by default, but you can make your own archive
     /// and add methods Load(char const*) and Save(char const*) to achieve that.
     ///
-    /// STL containers and strings are fully supported with some limitations :
+    /// STL containers and strings are fully supported with some limitations:
     ///   - string size is limited to the maximum number contained in
     ///     BaseArchive::StringSizeType
     ///   - list size is limited to the maximum number  contained in
     ///     BaseArchive::SequenceSizeType
     ///
-    template<ArchiveMode mode_, typename Archive, typename CharType_ = char>
+    /// Template parameters:
+    ///   - mode_: an archive can only in Input mode, or in Output mode.
+    ///   - Archive: the child class (SRTP)
+    ///   - CharType_: expected character type for the stream
+    ///   - StreamTypeSelect: allows to select any kind of stream types. See
+    ///     the default value DefaultStreamTypeSelect for an example.
+    ///
+    /// A stream type has to implement some of `std::[io]stream' methods in
+    /// order to be compatible with archive types. Fortunatly, most of them
+    /// only need that streams provide the two methods `read(char*, size_t)'
+    /// and `write(char const*, size_t)'.
+    ///
+    template<
+        ArchiveMode mode_
+      , typename Archive
+      , typename CharType_ = DefaultCharType
+      , template<ArchiveMode mode__, typename CharType__>
+          class StreamTypeSelect = DefaultStreamTypeSelect
+    >
     class BaseArchive : private boost::noncopyable
     {
     public:
@@ -110,9 +144,10 @@ namespace elle { namespace serialize {
       typedef CharType_                                     CharType;
 
       /// The StreamType might be overriden by a derived class
-      typedef typename _TypeToStreamType<
-          mode_, CharType_
-      >::StreamType                                         StreamType;
+      typedef typename StreamTypeSelect<
+          mode_
+        , CharType_
+      >::type                                               StreamType;
 
       // String type
       typedef std::basic_string<CharType_>                  StringType;
@@ -325,17 +360,6 @@ namespace elle { namespace serialize {
       //inline void Save(wchar_t const* val)
       //  { this->self().Save(std::wstring(val)); }
     };
-
-    template<typename CharType>
-      struct _TypeToStreamType<ArchiveMode::Input, CharType>
-      {
-        typedef std::basic_istream<CharType> StreamType;
-      };
-    template<typename CharType>
-      struct _TypeToStreamType<ArchiveMode::Output, CharType>
-      {
-        typedef std::basic_ostream<CharType> StreamType;
-      };
 
 }} // !namespace elle::serialize
 
