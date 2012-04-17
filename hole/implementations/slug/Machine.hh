@@ -88,7 +88,7 @@ namespace hole
         //
         elle::Status            Alone();
 
-        elle::Status            Connection(elle::TCPSocket*);
+        elle::Status            Connection(elle::network::TCPSocket*);
         elle::Status            Authenticate(const lune::Passport&,
                                              const elle::Port&);
         elle::Status            Authenticated(const Cluster&);
@@ -119,7 +119,7 @@ namespace hole
         Guestlist               guestlist;
         Neighbourhood           neighbourhood;
 
-        elle::Timer*            timer;
+        elle::concurrency::Timer*            timer;
 
         Synchroniser*           synchroniser;
       };

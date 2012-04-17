@@ -40,7 +40,7 @@ namespace elle
     ///
     TCPServerPorter::TCPServerPorter(const
                                        Callback<
-                                         Status::,
+                                         Status,
                                          Parameters<TCPSocket*>
                                          >&                     callback):
       server(NULL),
@@ -142,7 +142,7 @@ namespace elle
     Status              TCPServer::Listen(const Locus&          locus,
                                           const
                                             Callback<
-                                              Status::,
+                                              Status,
                                               Parameters<TCPSocket*>
                                               >&                callback)
     {
@@ -342,7 +342,7 @@ namespace elle
     void                TCPServerPorter::_accept()
     {
       Closure<
-        Status::,
+        Status,
         Parameters<>
         >               closure(Callback<>::Infer(
                                   &TCPServerPorter::Accept, this));

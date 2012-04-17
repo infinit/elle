@@ -74,10 +74,10 @@ namespace hole
         this->locus = locus;
 
         // allocate the timer.
-        this->timer = new elle::Timer;
+        this->timer = new elle::concurrency::Timer;
 
         // create the timer.
-        if (this->timer->Create(elle::Timer::ModeSingle) == elle::Status::Error)
+        if (this->timer->Create(elle::concurrency::Timer::ModeSingle) == elle::Status::Error)
           escape("unable to create the timer");
 
         // XXX -discard +abort

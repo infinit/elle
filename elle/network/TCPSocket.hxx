@@ -45,10 +45,6 @@ namespace elle
       Data              data;
       Header            header;
 
-      // create an data for the inputs.
-      if (data.Create() == Status::Error)
-        escape("unable to create the data");
-
       // serialize the inputs.
       if (inputs.Serialize(data) == Status::Error)
         escape("unable to serialize the inputs");
@@ -56,16 +52,17 @@ namespace elle
       // create the header now that we know that final archive's size.
       if (header.Create(event,
                         inputs.tag,
-                        data.size) == Status::Error)
+                        data.Size()) == Status::Error)
         escape("unable to create the header");
 
-      // prepare the packet.
-      if (packet.Create() == Status::Error)
-        escape("unable to create the packet");
-
-      // serialize the the header and data.
-      if (packet.Serialize(header, data) == Status::Error)
-        escape("unable to serialize the header and data");
+      try
+        {
+          packet.Writer() << header << data;
+        }
+      catch (std::exception const& err)
+        {
+          escape(err.what());
+        }
 
       // write the socket.
       if (this->Write(packet) == Status::Error)
@@ -104,9 +101,7 @@ namespace elle
             {
               Report    report;
 
-              // extract the error message.
-              if (report.Extract(*parcel->data) == Status::Error)
-                escape("unable to extract the error message");
+              parcel->data->Reader() >> report;
 
               // report the remote error.
               transpose(report);

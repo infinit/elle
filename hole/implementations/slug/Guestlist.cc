@@ -52,7 +52,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status      Guestlist::Add(elle::TCPSocket*         socket,
+      elle::Status      Guestlist::Add(elle::network::TCPSocket*         socket,
                                        Host*                    host)
       {
         std::pair<Guestlist::Iterator, elle::Boolean>   result;
@@ -70,7 +70,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status      Guestlist::Exist(elle::TCPSocket*       socket) const
+      elle::Status      Guestlist::Exist(elle::network::TCPSocket*       socket) const
       {
         Guestlist::Scoutor      scoutor;
 
@@ -84,7 +84,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status      Guestlist::Retrieve(elle::TCPSocket*    socket,
+      elle::Status      Guestlist::Retrieve(elle::network::TCPSocket*    socket,
                                             Host*&              host)
         const
       {
@@ -103,7 +103,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status      Guestlist::Remove(elle::TCPSocket*      socket)
+      elle::Status      Guestlist::Remove(elle::network::TCPSocket*      socket)
       {
         Guestlist::Iterator     iterator;
 
@@ -120,7 +120,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status      Guestlist::Locate(elle::TCPSocket*      socket,
+      elle::Status      Guestlist::Locate(elle::network::TCPSocket*      socket,
                                           Scoutor&              scoutor) const
       {
         Guestlist::Scoutor      s;
@@ -140,7 +140,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status      Guestlist::Locate(elle::TCPSocket*      socket,
+      elle::Status      Guestlist::Locate(elle::network::TCPSocket*      socket,
                                           Iterator&             iterator)
       {
         Guestlist::Iterator     i;

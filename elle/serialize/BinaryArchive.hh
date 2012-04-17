@@ -18,6 +18,7 @@ namespace elle { namespace serialize {
     ///
     template<
           ArchiveMode mode
+        , typename Archive
         , typename CharType = DefaultCharType
         , template<ArchiveMode, typename>
             class StreamTypeSelect = DefaultStreamTypeSelect
@@ -25,7 +26,7 @@ namespace elle { namespace serialize {
       class BaseBinaryArchive
         : public BaseArchive<
               mode
-            , BaseBinaryArchive<mode>
+            , Archive
             , CharType
             , StreamTypeSelect
           >
@@ -33,10 +34,11 @@ namespace elle { namespace serialize {
       private:
         typedef BaseArchive<
             mode
-          , BaseBinaryArchive<mode>
+          , Archive
           , CharType
           , StreamTypeSelect
         >                                         BaseClass;
+      protected:
         typedef typename BaseClass::StreamType    StreamType;
 
       public:
@@ -52,13 +54,16 @@ namespace elle { namespace serialize {
         using BaseClass::LoadBinary;
       };
 
+    ///
+    /// Simple binary archive.
+    ///
     template<ArchiveMode mode>
       class BinaryArchive
-        : public BaseBinaryArchive<mode>
+        : public BaseBinaryArchive<mode, BinaryArchive<mode>>
       {
       private:
-        typedef BaseBinaryArchive<mode>           BaseClass;
-        typedef typename BaseClass::StreamType    StreamType;
+        typedef BaseBinaryArchive<mode, BinaryArchive<mode>>  BaseClass;
+        typedef typename BaseClass::StreamType                StreamType;
       public:
         BinaryArchive(StreamType& stream)
           : BaseClass(stream)

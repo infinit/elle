@@ -549,7 +549,7 @@ namespace etoile
 
       // create the supervisor timer.
       if (this->timer.Create(
-            elle::Timer::ModeRepetition) == elle::Status::Error)
+            elle::concurrency::Timer::ModeRepetition) == elle::Status::Error)
         escape("unable to create the timer");
 
       // subscribe to the timer's signal.

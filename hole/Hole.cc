@@ -55,7 +55,7 @@ namespace hole
   ///
   /// XXX[to replace by a new signal]
   ///
-  elle::Signal<
+  elle::concurrency::Signal<
     elle::Parameters<>
     >                           Hole::ready;
 

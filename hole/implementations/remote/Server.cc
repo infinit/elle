@@ -139,7 +139,7 @@ namespace hole
       ///
       /// this method adds the given customer to the set of customers.
       ///
-      elle::Status      Server::Add(elle::TCPSocket*            socket,
+      elle::Status      Server::Add(elle::network::TCPSocket*            socket,
                                     Customer*                   customer)
       {
         std::pair<Server::Iterator, elle::Boolean>      result;
@@ -151,7 +151,7 @@ namespace hole
 
         // insert the customer in the container.
         result = this->container.insert(
-                   std::pair<elle::TCPSocket*, Customer*>(socket, customer));
+                   std::pair<elle::network::TCPSocket*, Customer*>(socket, customer));
 
         // check if the insertion was successful.
         if (result.second == false)
@@ -163,7 +163,7 @@ namespace hole
       ///
       /// this method removes a customer from the set.
       ///
-      elle::Status      Server::Remove(elle::TCPSocket*         socket)
+      elle::Status      Server::Remove(elle::network::TCPSocket*         socket)
       {
         Server::Iterator        iterator;
 
@@ -181,7 +181,7 @@ namespace hole
       ///
       /// this method returns the customer associated with the given socket.
       ///
-      elle::Status      Server::Retrieve(elle::TCPSocket*       socket,
+      elle::Status      Server::Retrieve(elle::network::TCPSocket*       socket,
                                          Customer*&             customer)
       {
         Server::Iterator        iterator;
@@ -200,7 +200,7 @@ namespace hole
       ///
       /// this method locates the customer associated with the given socket.
       ///
-      elle::Status      Server::Locate(elle::TCPSocket*         socket,
+      elle::Status      Server::Locate(elle::network::TCPSocket*         socket,
                                        Iterator*                iterator)
       {
         Server::Iterator        i;
@@ -474,7 +474,7 @@ namespace hole
       ///
       /// this callback handles new connections.
       ///
-      elle::Status      Server::Connection(elle::TCPSocket*     socket)
+      elle::Status      Server::Connection(elle::network::TCPSocket*     socket)
       {
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -526,7 +526,7 @@ namespace hole
           escape("unable to retrieve the current session");
 
         // retrieve the customer.
-        if (this->Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
+        if (this->Retrieve(dynamic_cast<elle::network::TCPSocket*>(session->socket),
                            customer) == elle::Status::Error)
           escape("unable to retrieve the customer");
 
@@ -596,7 +596,7 @@ namespace hole
           escape("unable to retrieve the current session");
 
         // retrieve the customer.
-        if (this->Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
+        if (this->Retrieve(dynamic_cast<elle::network::TCPSocket*>(session->socket),
                            customer) == elle::Status::Error)
           escape("unable to retrieve the customer");
 
@@ -673,7 +673,7 @@ namespace hole
           escape("unable to retrieve the current session");
 
         // retrieve the customer.
-        if (this->Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
+        if (this->Retrieve(dynamic_cast<elle::network::TCPSocket*>(session->socket),
                            customer) == elle::Status::Error)
           escape("unable to retrieve the customer");
 
@@ -754,7 +754,7 @@ namespace hole
           escape("unable to retrieve the current session");
 
         // retrieve the customer.
-        if (this->Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
+        if (this->Retrieve(dynamic_cast<elle::network::TCPSocket*>(session->socket),
                            customer) == elle::Status::Error)
           escape("unable to retrieve the customer");
 

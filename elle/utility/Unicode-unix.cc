@@ -1,14 +1,6 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [fri jan 13 19:26:19 2012]
-//
-
 #include <elle/types.hh>
+#include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 
 #include <elle/idiom/Close.hh>
 # include <iconv.h>

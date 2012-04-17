@@ -174,11 +174,11 @@ namespace hole
         //
         {
           // allocate a timer.
-          this->timer = new elle::Timer;
+          this->timer = new elle::concurrency::Timer;
 
           // create the timer.
           if (this->timer->Create(
-                elle::Timer::ModeSingle) == elle::Status::Error)
+                elle::concurrency::Timer::ModeSingle) == elle::Status::Error)
             escape("unable to create the timer");
 
           // subscribe to the timer's signal.
@@ -1101,7 +1101,7 @@ namespace hole
       ///
       /// this method handles new connections.
       ///
-      elle::Status      Machine::Connection(elle::TCPSocket*    socket)
+      elle::Status      Machine::Connection(elle::network::TCPSocket*    socket)
       {
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -1180,14 +1180,14 @@ namespace hole
 
         // if the host exists in the guestlist, handle its authentication.
         if (this->guestlist.Exist(
-              static_cast<elle::TCPSocket*>(session->socket)) ==
+              static_cast<elle::network::TCPSocket*>(session->socket)) ==
             elle::Status::True)
           {
             Cluster     cluster;
 
             // retrieve the host from the guestlist.
             if (this->guestlist.Retrieve(
-                  static_cast<elle::TCPSocket*>(session->socket),
+                  static_cast<elle::network::TCPSocket*>(session->socket),
                   host) == elle::Status::Error)
               escape("unable to retrieve the host");
 
@@ -1424,7 +1424,7 @@ namespace hole
 
         // retrieve the host from the guestlist.
         if (this->guestlist.Retrieve(
-              static_cast<elle::TCPSocket*>(session->socket),
+              static_cast<elle::network::TCPSocket*>(session->socket),
               host) == elle::Status::Error)
           escape("unable to retrieve the host");
 
@@ -1598,7 +1598,7 @@ namespace hole
 
         // retrieve the host from the guestlist.
         if (this->guestlist.Retrieve(
-              static_cast<elle::TCPSocket*>(session->socket),
+              static_cast<elle::network::TCPSocket*>(session->socket),
               host) == elle::Status::Error)
           escape("unable to retrieve the host");
 
@@ -1750,7 +1750,7 @@ namespace hole
 
         // retrieve the host from the guestlist.
         if (this->guestlist.Retrieve(
-              static_cast<elle::TCPSocket*>(session->socket),
+              static_cast<elle::network::TCPSocket*>(session->socket),
               host) == elle::Status::Error)
           escape("unable to retrieve the host");
 

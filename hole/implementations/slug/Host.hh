@@ -1,23 +1,12 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [wed aug 24 10:33:01 2011]
-//
-
 #ifndef HOLE_IMPLEMENTATIONS_SLUG_HOST_HH
-#define HOLE_IMPLEMENTATIONS_SLUG_HOST_HH
+# define HOLE_IMPLEMENTATIONS_SLUG_HOST_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/network/fwd.hh>
+# include <elle/concurrency/fwd.hh>
 
-#include <elle/types.hh>
+# include <hole/Label.hh>
 
-#include <hole/Label.hh>
 
 namespace hole
 {
@@ -25,10 +14,6 @@ namespace hole
   {
     namespace slug
     {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
       ///
       /// XXX
@@ -63,7 +48,7 @@ namespace hole
         // methods
         //
         elle::Status    Create(const elle::network::Locus&);
-        elle::Status    Create(elle::TCPSocket*);
+        elle::Status    Create(elle::network::TCPSocket*);
 
         elle::Status    Connect();
         elle::Status    Disconnect();
@@ -90,7 +75,7 @@ namespace hole
         //
         struct
         {
-          elle::Signal<
+          elle::concurrency::Signal<
             elle::Parameters<
               Host*
               >
@@ -104,9 +89,9 @@ namespace hole
 
         elle::network::Locus             locus;
 
-        elle::TCPSocket*        socket;
+        elle::network::TCPSocket*        socket;
 
-        elle::Timer*            timer;
+        elle::concurrency::Timer*            timer;
       };
 
     }

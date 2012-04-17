@@ -76,17 +76,17 @@ namespace hole
         this->locus = locus;
 
         // allocate a socket.
-        this->socket = new elle::TCPSocket;
+        this->socket = new elle::network::TCPSocket;
 
         // create the socket.
         if (this->socket->Create() == elle::Status::Error)
           escape("unable to create the socket");
 
         // allocate the timer.
-        this->timer = new elle::Timer;
+        this->timer = new elle::concurrency::Timer;
 
         // create the timer.
-        if (this->timer->Create(elle::Timer::ModeSingle) == elle::Status::Error)
+        if (this->timer->Create(elle::concurrency::Timer::ModeSingle) == elle::Status::Error)
           escape("unable to create the timer");
 
         // subscribe to the timer's signal.
@@ -105,7 +105,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status      Host::Create(elle::TCPSocket*           socket)
+      elle::Status      Host::Create(elle::network::TCPSocket*           socket)
       {
         // set the socket.
         this->socket = socket;

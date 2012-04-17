@@ -69,7 +69,7 @@ namespace hole
       ///
       /// this method creates a customer from the given socket.
       ///
-      elle::Status      Customer::Create(elle::TCPSocket*       socket)
+      elle::Status      Customer::Create(elle::network::TCPSocket*       socket)
       {
         // register the client.
         this->socket = socket;
@@ -87,10 +87,10 @@ namespace hole
           escape("unable to subscribe to the signal");
 
         // allocate a new timer.
-        this->timer = new elle::Timer;
+        this->timer = new elle::concurrency::Timer;
 
         // create the timer.
-        if (this->timer->Create(elle::Timer::ModeSingle) == elle::Status::Error)
+        if (this->timer->Create(elle::concurrency::Timer::ModeSingle) == elle::Status::Error)
           escape("unable to create the timer");
 
         // subscribe to the timer's signal.

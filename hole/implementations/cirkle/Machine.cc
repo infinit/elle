@@ -194,7 +194,7 @@ namespace hole
         //
         {
           // create the timer.
-          if (this->timer.Create(elle::Timer::ModeRepetition) ==
+          if (this->timer.Create(elle::concurrency::Timer::ModeRepetition) ==
               elle::Status::Error)
             escape("unable to create the timer");
 

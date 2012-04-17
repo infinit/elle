@@ -64,8 +64,7 @@ namespace elle
       elle::utility::OutputBufferStream os(packet);
       elle::serialize::OutputBufferArchive ar(os);
 
-      ar << header;
-      ar << data;
+      packet.Writer() << header << data;
 
       // write the socket.
       if (this->Write(packet) == Status::Error)
@@ -102,9 +101,7 @@ namespace elle
             {
               Report    report;
 
-              // extract the error message.
-              if (report.Extract(*parcel->data) == Status::Error)
-                escape("unable to extract the error message");
+              parcel->data->Reader() >> report;
 
               // report the remote error.
               transpose(report);

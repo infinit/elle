@@ -61,7 +61,7 @@ namespace hole
         //
         // methods
         //
-        elle::Status            Create(elle::TCPSocket*);
+        elle::Status            Create(elle::network::TCPSocket*);
 
         //
         // callbacks
@@ -83,7 +83,7 @@ namespace hole
         //
         struct
         {
-          elle::Signal<
+          elle::concurrency::Signal<
             elle::Parameters<
               Customer*
               >
@@ -95,8 +95,8 @@ namespace hole
         //
         State                   state;
 
-        elle::TCPSocket*        socket;
-        elle::Timer*            timer;
+        elle::network::TCPSocket*        socket;
+        elle::concurrency::Timer*            timer;
       };
 
     }

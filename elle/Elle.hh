@@ -1,21 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon feb 16 19:12:33 2009]
-//
-
 #ifndef ELLE_ELLE_HH
-#define ELLE_ELLE_HH
+# define ELLE_ELLE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/radix/Status.hh>
+#include <elle/types.hh>
 
 ///
 /// the elle namespace is composed of multiple modules, often regarded
@@ -31,11 +17,6 @@
 ///
 namespace elle
 {
-  using namespace radix;
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
   ///
   /// this class represents the main class which contains methods
@@ -54,46 +35,6 @@ namespace elle
     static Status       Clean();
   };
 
-}
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/system/Platform.hh>
-
-#include <elle/system/System.hh>
-#include <elle/standalone/Standalone.hh>
-#include <elle/radix/Radix.hh>
-#include <elle/package/Package.hh>
-#include <elle/container/Container.hh>
-#include <elle/io/IO.hh>
-#include <elle/cryptography/Cryptography.hh>
-#include <elle/concurrency/Concurrency.hh>
-#include <elle/network/Network.hh>
-#include <elle/utility/Utility.hh>
-#include <elle/thirdparty/Thirdparty.hh>
-#include <elle/idiom/Idiom.hh>
-
-#include <elle/Manifest.hh>
-
-//
-// ---------- namespaces ------------------------------------------------------
-//
-
-namespace elle
-{
-  using namespace system;
-  using namespace standalone;
-  using namespace radix;
-  using namespace package;
-  using namespace container;
-  using namespace io;
-  using namespace cryptography;
-  using namespace concurrency;
-  using namespace network;
-  using namespace utility;
-  using namespace thirdparty;
-}
+} // !namespace elle
 
 #endif

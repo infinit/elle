@@ -1,16 +1,6 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed feb  3 21:52:30 2010]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/utility/BufferSerializer.hxx>
+#include <elle/network/HeaderSerializer.hxx>
 
 #include <elle/network/UDPSocket.hh>
 #include <elle/network/Raw.hh>
@@ -130,10 +120,10 @@ namespace elle
     {
       // push the datagram into the socket.
       if (this->socket->writeDatagram(
-            reinterpret_cast<const char*>(packet.contents),
-            packet.size,
+            reinterpret_cast<const char*>(packet.Contents()),
+            packet.Size(),
             locus.host.location,
-            locus.port) != static_cast<qint64>(packet.size))
+            locus.port) != static_cast<qint64>(packet.Size()))
         escape(this->socket->errorString().toStdString().c_str());
 
       return Status::Ok;
@@ -230,31 +220,24 @@ namespace elle
 
       while (true)
         {
-          Packet        packet;
-          Region        frame;
 
           // check the remaining data.
           if ((raw.size - offset) == 0)
             break;
 
-          // create the frame based on the previously extracted raw.
-          if (frame.Wrap(raw.contents + offset,
-                         raw.size - offset) == Status::Error)
-            escape("unable to wrap a frame in the raw");
-
-          // prepare the packet based on the frame.
-          if (packet.Wrap(frame) == Status::Error)
-            escape("unable to prepare the packet");
+          elle::utility::WeakBuffer packet(
+              raw.contents + offset,
+              raw.size - offset
+          );
+          auto reader = packet.Reader();
 
           // allocate the parcel.
           auto parcel = std::shared_ptr<Parcel>(new Parcel);
 
-          // extract the header.
-          if (parcel->header->Extract(packet) == Status::Error)
-            escape("unable to extract the header");
+          reader >> *(parcel->header);
 
           // if there is not enough data in the raw to complete the parcel...
-          if ((packet.size - packet.offset) < parcel->header->size)
+          if (reader.Stream().BytesLeft() < parcel->header->size)
             {
               log("this should not haappen in normal conditions");
 
@@ -262,13 +245,11 @@ namespace elle
               break;
             }
 
-          // extract the data.
-          if (packet.Extract(*parcel->data) == Status::Error)
-            escape("unable to extract the data");
+          reader >> *(parcel->data);
 
           // move to the next frame by setting the offset at the end of
           // the extracted frame.
-          offset = offset + packet.offset;
+          offset += reader.Stream().Offset();
 
           // create the session.
           if (parcel->session->Create(this,
@@ -294,7 +275,7 @@ namespace elle
     void                UDPSocket::_ready()
     {
       Closure<
-        Status::,
+        Status,
         Parameters<>
         >               closure(Callback<>::Infer(&Signal<
                                                     Parameters<>
@@ -318,7 +299,7 @@ namespace elle
     {
       String            cause(this->socket->errorString().toStdString());
       Closure<
-        Status::,
+        Status,
         Parameters<
           const String&
           >

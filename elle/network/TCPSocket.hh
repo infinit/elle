@@ -1,13 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed may 25 10:49:12 2011]
-//
-
 ///
 /// this very special include is required as AbstractSocket needs to know
 /// LocalSocket/TCPSocket while LocalSocket/TCPSocket inherit AbstractSocket.
@@ -25,16 +15,9 @@
 #ifndef ELLE_NETWORK_TCPSOCKET_HH
 #define ELLE_NETWORK_TCPSOCKET_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
 #include <elle/types.hh>
 
 #include <elle/standalone/Region.hh>
-
-#include <elle/radix/Status.hh>
 
 #include <elle/concurrency/Event.hh>
 #include <elle/concurrency/Signal.hh>

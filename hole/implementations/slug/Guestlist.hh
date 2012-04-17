@@ -40,8 +40,8 @@ namespace hole
         //
         // types
         //
-        typedef std::pair<elle::TCPSocket*, Host*>      Value;
-        typedef std::map<elle::TCPSocket*, Host*>       Container;
+        typedef std::pair<elle::network::TCPSocket*, Host*>      Value;
+        typedef std::map<elle::network::TCPSocket*, Host*>       Container;
         typedef typename Container::iterator            Iterator;
         typedef typename Container::const_iterator      Scoutor;
 
@@ -53,15 +53,15 @@ namespace hole
         //
         // methods
         //
-        elle::Status            Add(elle::TCPSocket*,
+        elle::Status            Add(elle::network::TCPSocket*,
                                     Host*);
-        elle::Status            Exist(elle::TCPSocket*) const;
-        elle::Status            Retrieve(elle::TCPSocket*,
+        elle::Status            Exist(elle::network::TCPSocket*) const;
+        elle::Status            Retrieve(elle::network::TCPSocket*,
                                          Host*&) const;
-        elle::Status            Remove(elle::TCPSocket*);
-        elle::Status            Locate(elle::TCPSocket*,
+        elle::Status            Remove(elle::network::TCPSocket*);
+        elle::Status            Locate(elle::network::TCPSocket*,
                                        Scoutor&) const;
-        elle::Status            Locate(elle::TCPSocket*,
+        elle::Status            Locate(elle::network::TCPSocket*,
                                        Iterator&);
 
         //

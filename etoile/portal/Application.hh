@@ -89,7 +89,7 @@ namespace etoile
       State                     state;
       Processing                processing;
 
-      elle::Timer*              timer;
+      elle::concurrency::Timer*              timer;
       elle::LocalSocket*        socket;
     };
 

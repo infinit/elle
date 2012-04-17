@@ -109,7 +109,7 @@ namespace etoile
       static Riffle*                    Riffles;
 
       static elle::Timeline<Riffle*>    Queue;
-      static elle::Timer                Timer;
+      static elle::concurrency::Timer                Timer;
     };
 
   }

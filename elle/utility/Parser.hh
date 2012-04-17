@@ -179,19 +179,19 @@ namespace elle
                               const T);
       };
 
-      template <typename T>
-      struct            Behaviour<T, true>
-      {
-        template <const Format F>
-        static Status   Value(Parser&,
-                              const String&,
-                              Uniquable<F>&);
-        template <const Format F>
-        static Status   Value(Parser&,
-                              const String&,
-                              Uniquable<F>&,
-                              const Uniquable<F>);
-      };
+      //template <typename T>
+      //struct            Behaviour<T, true>
+      //{
+      //  template <const Format F>
+      //  static Status   Value(Parser&,
+      //                        const String&,
+      //                        Uniquable<F>&);
+      //  template <const Format F>
+      //  static Status   Value(Parser&,
+      //                        const String&,
+      //                        Uniquable<F>&,
+      //                        const Uniquable<F>);
+      //};
 
       Void              Usage();
 

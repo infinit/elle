@@ -43,7 +43,7 @@ namespace etoile
     ///
     /// this timer triggers the sweeper on a regular basis.
     ///
-    elle::Timer                         Shrub::Timer;
+    elle::concurrency::Timer                         Shrub::Timer;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -60,7 +60,7 @@ namespace etoile
 
       // create the sweeper timer.
       if (Shrub::Timer.Create(
-            elle::Timer::ModeRepetition) == elle::Status::Error)
+            elle::concurrency::Timer::ModeRepetition) == elle::Status::Error)
         escape("unable to create the timer");
 
       // subscribe to the timer's signal.

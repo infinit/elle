@@ -1,38 +1,20 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [fri jul 15 11:55:49 2011]
-//
-
 #ifndef ELLE_NETWORK_PROCEDURE_HH
-#define ELLE_NETWORK_PROCEDURE_HH
+# define ELLE_NETWORK_PROCEDURE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/radix/Parameters.hh>
+# include <elle/radix/Trait.hh>
+# include <elle/radix/Set.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Parameters.hh>
-#include <elle/radix/Trait.hh>
-#include <elle/radix/Set.hh>
+# include <elle/network/Message.hh>
 
-#include <elle/package/Archive.hh>
+# include <elle/concurrency/Callback.hh>
 
-#include <elle/network/Message.hh>
-
-#include <elle/concurrency/Callback.hh>
-
-#include <elle/Manifest.hh>
+# include <elle/Manifest.hh>
 
 namespace elle
 {
 
   using namespace radix;
-  using namespace package;
   using namespace concurrency;
 
   namespace network
@@ -98,7 +80,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Procedure(const Callback< Status::,
+      Procedure(const Callback< Status,
                                 R >,
                 const BaseCallback = BaseCallback::Null,
                 const BaseCallback = BaseCallback::Null);
@@ -106,7 +88,7 @@ namespace elle
       //
       // methods
       //
-      Status            Skeleton(Archive&) const;
+      //Status            Skeleton(Archive&) const;
 
       //
       // interfaces
@@ -122,16 +104,16 @@ namespace elle
       // attributes
       //
       Callback<
-        Status::,
+        Status,
         R
         >               routine;
 
       Callback<
-        Status::,
+        Status,
         Parameters<>
         >               prolog;
       Callback<
-        Status::,
+        Status,
         Parameters<>
         >               epilog;
     };

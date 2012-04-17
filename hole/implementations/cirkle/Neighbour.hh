@@ -91,7 +91,7 @@ namespace hole
 
         elle::Gate*     gate;
 
-        elle::Timer*    timer;
+        elle::concurrency::Timer*    timer;
       };
 
     }

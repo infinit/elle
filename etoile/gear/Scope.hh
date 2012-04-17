@@ -173,7 +173,7 @@ namespace etoile
       // attributes
       //
       State             state;
-      elle::Timer       timer;
+      elle::concurrency::Timer       timer;
 
       path::Chemin      chemin;
 

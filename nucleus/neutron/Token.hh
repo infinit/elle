@@ -1,21 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri jul 24 16:28:56 2009]
-//
-
 #ifndef NUCLEUS_NEUTRON_TOKEN_HH
-#define NUCLEUS_NEUTRON_TOKEN_HH
+# define NUCLEUS_NEUTRON_TOKEN_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
+# include <elle/cryptography/fwd.hh>
 
 namespace nucleus
 {

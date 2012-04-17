@@ -116,7 +116,7 @@ namespace hole
         Neighbourhood           neighbourhood;
         RoutingTable            routingtable;
 
-        elle::Timer             timer;
+        elle::concurrency::Timer             timer;
 
         elle::Port              port;
       };

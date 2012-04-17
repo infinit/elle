@@ -1,13 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed may 25 15:53:18 2011]
-//
-
 ///
 /// this very special include is required as AbstractSocket needs to know
 /// LocalSocket/TCPSocket while LocalSocket/TCPSocket inherit AbstractSocket.
@@ -25,14 +15,8 @@
 #ifndef ELLE_NETWORK_TCPSERVER_HH
 #define ELLE_NETWORK_TCPSERVER_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
 #include <elle/types.hh>
 
-#include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
 #include <elle/radix/Parameters.hh>
 
@@ -87,7 +71,7 @@ namespace elle
       // constructors & destructors
       //
       TCPServerPorter(const Callback<
-                        Status::,
+                        Status,
                         Parameters<TCPSocket*>
                         >&);
       ~TCPServerPorter();
@@ -115,7 +99,7 @@ namespace elle
       Locus                     locus;
       ::QTcpServer*             server;
       Callback<
-        Status::,
+        Status,
         Parameters<TCPSocket*>
         >                       callback;
 
@@ -146,7 +130,7 @@ namespace elle
       static Status     Clean();
 
       static Status     Listen(const Locus&,
-                               const Callback< Status::,
+                               const Callback< Status,
                                                Parameters<TCPSocket*> >&);
       static Status     Block(const Locus&);
       static Status     Retrieve(const Locus&,

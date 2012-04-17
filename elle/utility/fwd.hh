@@ -16,6 +16,9 @@ namespace elle
     class Unicode;
     class URI;
 
+    class Buffer;
+    class InputBufferStream;
+    class OutputBufferStream;
   }
 }
 

@@ -18,6 +18,7 @@
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 
 namespace elle
 {
@@ -96,14 +97,14 @@ namespace elle
     {
       // check the locus as this may actually be the same object.
       if (this == &element)
-        return Status::True;
+        return true;
 
       // compare the internal values.
       if ((this->host != element.host) ||
           (this->port != element.port))
-        return Status::False;
+        return false;
 
-      return Status::True;
+      return true;
     }
 
     ///
@@ -113,21 +114,21 @@ namespace elle
     {
       // check the locus as this may actually be the same object.
       if (this == &element)
-        return Status::False;
+        return false;
 
       // compare the host.
       if (this->host < element.host)
-        return Status::True;
+        return true;
       else if (this->host > element.host)
-        return Status::False;
+        return false;
 
       // compare the port.
       if (this->port < element.port)
-        return Status::True;
+        return true;
       else if (this->port > element.port)
-        return Status::False;
+        return false;
 
-      return Status::False;
+      return false;
     }
 
     ///
@@ -150,28 +151,28 @@ namespace elle
     ///
     /// this method serializes the locus.
     ///
-    Status              Locus::Serialize(Archive&               archive) const
-    {
-      // serialize the host and port.
-      if (archive.Serialize(this->host,
-                            this->port) == Status::Error)
-        escape("unable to serialize the locus attributes");
+    //Status              Locus::Serialize(Archive&               archive) const
+    //{
+    //  // serialize the host and port.
+    //  if (archive.Serialize(this->host,
+    //                        this->port) == Status::Error)
+    //    escape("unable to serialize the locus attributes");
 
-      return Status::Ok;
-    }
+    //  return Status::Ok;
+    //}
 
-    ///
-    /// this method extracts an locus.
-    ///
-    Status              Locus::Extract(Archive&                 archive)
-    {
-      // extract the locus.
-      if (archive.Extract(this->host,
-                          this->port) == Status::Error)
-        escape("unable to extract the locus attributes");
+    /////
+    ///// this method extracts an locus.
+    /////
+    //Status              Locus::Extract(Archive&                 archive)
+    //{
+    //  // extract the locus.
+    //  if (archive.Extract(this->host,
+    //                      this->port) == Status::Error)
+    //    escape("unable to extract the locus attributes");
 
-      return Status::Ok;
-    }
+    //  return Status::Ok;
+    //}
 
 //
 // ---------- dumpable --------------------------------------------------------

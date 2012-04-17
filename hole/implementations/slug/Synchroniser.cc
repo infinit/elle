@@ -38,7 +38,7 @@ namespace hole
 
         // create the timer.
         if (this->timer.Create(
-              elle::Timer::ModeSingle) == elle::Status::Error)
+              elle::concurrency::Timer::ModeSingle) == elle::Status::Error)
           escape("unable to create the timer");
 
         // subscribe to the timer's signal.

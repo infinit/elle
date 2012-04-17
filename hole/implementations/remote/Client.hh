@@ -93,7 +93,7 @@ namespace hole
         State                   state;
 
         elle::network::Locus             locus;
-        elle::TCPSocket*        socket;
+        elle::network::TCPSocket*        socket;
       };
 
     }

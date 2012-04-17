@@ -3,6 +3,8 @@
 
 # include <elle/types.hh>
 
+# include <elle/cryptography/PublicKey.hh>
+
 # include <nucleus/proton/Address.hh>
 
 namespace nucleus

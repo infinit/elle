@@ -57,7 +57,7 @@ namespace hole
         //
         struct
         {
-          elle::Signal<
+          elle::concurrency::Signal<
             elle::Parameters<
               >
             >                   synchronised;
@@ -66,7 +66,7 @@ namespace hole
         //
         // attributes
         //
-        elle::Timer             timer;
+        elle::concurrency::Timer             timer;
       };
 
     }

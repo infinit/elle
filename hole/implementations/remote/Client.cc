@@ -87,7 +87,7 @@ namespace hole
         //
         {
           // allocate the socket.
-          this->socket = new elle::TCPSocket;
+          this->socket = new elle::network::TCPSocket;
 
           // create the socket.
           if (this->socket->Create() == elle::Status::Error)
