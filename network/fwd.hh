@@ -8,6 +8,7 @@ namespace elle
 
     class TCPSocket;
     class UDPSocket;
+    class Locus;
 
   }
 }
