@@ -75,7 +75,7 @@ namespace elle
       if (response != elle::String("RESPONSE"))
         std::cerr << "unexpected response '" << response << "'" << std::endl;
 
-      elle::Program::Exit();
+      elle::concurrency::Program::Exit();
 
       return Status::Ok;
     }

@@ -78,7 +78,7 @@ namespace elle
             Inputs<TagResponse>(response)) == Status::Error)
         escape("unable to return the response");
 
-      elle::Program::Exit();
+      elle::concurrency::Program::Exit();
 
       return Status::Ok;
     }

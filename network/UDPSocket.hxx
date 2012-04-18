@@ -48,9 +48,14 @@ namespace elle
       Data              data;
       Header            header;
 
-      // serialize the inputs.
-      if (inputs.Serialize(data) == Status::Error)
-        escape("unable to serialize the inputs");
+      try
+        {
+          data.Writer() << inputs;
+        }
+      catch (std::exception const& err)
+        {
+          escape(err.what());
+        }
 
       // create the header now that we know that final archive's size.
       if (header.Create(event,

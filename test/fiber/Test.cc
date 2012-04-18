@@ -71,7 +71,7 @@ namespace elle
     ///
     Status              Fiber3()
     {
-      Closure< Status::,
+      Closure< Status,
                Parameters<> >   closure(Callback<>::Infer(&Fiber4));
 
       printf("[Fiber3] Start\n");

@@ -30,7 +30,7 @@ namespace elle
     ///
     template <typename... T>
     class Signal< Parameters<T...> >:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

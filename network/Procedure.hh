@@ -1,6 +1,8 @@
 #ifndef ELLE_NETWORK_PROCEDURE_HH
 # define ELLE_NETWORK_PROCEDURE_HH
 
+# include <elle/utility/fwd.hh>
+
 # include <elle/radix/Parameters.hh>
 # include <elle/radix/Trait.hh>
 # include <elle/radix/Set.hh>
@@ -88,7 +90,7 @@ namespace elle
       //
       // methods
       //
-      //Status            Skeleton(Archive&) const;
+      Status            Skeleton(elle::utility::Buffer&) const;
 
       //
       // interfaces
