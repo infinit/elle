@@ -31,7 +31,7 @@ namespace nucleus
     /// the versions related to a mutable block.
     ///
     class Version:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

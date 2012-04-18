@@ -50,9 +50,14 @@ namespace elle
       Data              data;
       Header            header;
 
-      // serialize the inputs.
-      if (inputs.Serialize(data) == Status::Error)
-        escape("unable to serialize the inputs");
+      try
+        {
+          data.Writer() << inputs;
+        }
+      catch (std::exception const& err)
+        {
+          escape(err.what());
+        }
 
       // create the header now that we know that final archive's size.
       if (header.Create(event,
@@ -60,11 +65,17 @@ namespace elle
                         data.Size()) == Status::Error)
         escape("unable to create the header");
 
-      // serialize the the header and data.
-      elle::utility::OutputBufferStream os(packet);
-      elle::serialize::OutputBufferArchive ar(os);
+      try
+        {
+          elle::utility::OutputBufferStream os(packet);
+          elle::serialize::OutputBufferArchive ar(os);
 
-      packet.Writer() << header << data;
+          packet.Writer() << header << data;
+        }
+      catch (std::exception const& err)
+        {
+          escape(err.what());
+        }
 
       // write the socket.
       if (this->Write(packet) == Status::Error)

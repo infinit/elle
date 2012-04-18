@@ -49,7 +49,7 @@ namespace nucleus
     /// Catalog for directories, Data for files etc.
     ///
     class Reference:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

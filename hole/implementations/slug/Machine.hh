@@ -39,7 +39,7 @@ namespace hole
       /// XXX represents the current host
       ///
       class Machine:
-        public elle::Entity
+        public elle::radix::Entity
       {
       public:
         //

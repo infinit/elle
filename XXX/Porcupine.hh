@@ -103,7 +103,7 @@ namespace nucleus
     ///
     template <typename V>
     class Porcupine<V>:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //
@@ -179,28 +179,28 @@ namespace nucleus
       // static methods
       //
       static elle::Status       Initialize(
-        const elle::Callback<
-          elle::Status::,
-          elle::Parameters<
+        const elle::concurrency::Callback<
+          elle::Status,
+          elle::radix::Parameters<
             Block*,
             Handle&
             >
           >&,
-        const elle::Callback<
-          elle::Status::,
-          elle::Parameters<
+        const elle::concurrency::Callback<
+          elle::Status,
+          elle::radix::Parameters<
             Handle&
             >
           >&,
-        const elle::Callback<
-          elle::Status::,
-          elle::Parameters<
+        const elle::concurrency::Callback<
+          elle::Status,
+          elle::radix::Parameters<
             Handle&
             >
           >&,
-        const elle::Callback<
-          elle::Status::,
-          elle::Parameters<
+        const elle::concurrency::Callback<
+          elle::Status,
+          elle::radix::Parameters<
             Handle&
             >
           >&);
@@ -210,31 +210,31 @@ namespace nucleus
       // static attributes
       //
       static
-      elle::Callback<
-        elle::Status::,
-        elle::Parameters<
+      elle::concurrency::Callback<
+        elle::Status,
+        elle::radix::Parameters<
           Block*,
           Handle&
           >
         >                       Attach;
       static
-      elle::Callback<
-        elle::Status::,
-        elle::Parameters<
+      elle::concurrency::Callback<
+        elle::Status,
+        elle::radix::Parameters<
           Handle&
           >
         >                       Detach;
       static
-      elle::Callback<
-        elle::Status::,
-        elle::Parameters<
+      elle::concurrency::Callback<
+        elle::Status,
+        elle::radix::Parameters<
           Handle&
           >
         >                       Load;
       static
-      elle::Callback<
-        elle::Status::,
-        elle::Parameters<
+      elle::concurrency::Callback<
+        elle::Status,
+        elle::radix::Parameters<
           Handle&
           >
         >                       Unload;

@@ -58,7 +58,7 @@ namespace etoile
     /// and used by the application for referencing the actor.
     ///
     class Actor:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

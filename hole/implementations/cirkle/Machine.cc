@@ -71,37 +71,37 @@ namespace hole
         //
         {
           // register the message.
-          if (elle::Network::Register(
-                elle::Procedure<TagChallenge>(
-                  elle::Callback<>::Infer(
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagChallenge>(
+                  elle::concurrency::Callback<>::Infer(
                     &Machine::Challenge, this))) == elle::Status::Error)
             escape("unable to register the callback");
 
           // register the message.
-          if (elle::Network::Register(
-                elle::Procedure<TagPassport>(
-                  elle::Callback<>::Infer(
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagPassport>(
+                  elle::concurrency::Callback<>::Infer(
                     &Machine::Passport, this))) == elle::Status::Error)
             escape("unable to register the callback");
 
           // register the message.
-          if (elle::Network::Register(
-                elle::Procedure<TagPort>(
-                  elle::Callback<>::Infer(
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagPort>(
+                  elle::concurrency::Callback<>::Infer(
                     &Machine::Port, this))) == elle::Status::Error)
             escape("unable to register the callback");
 
           // register the message.
-          if (elle::Network::Register(
-                elle::Procedure<TagAuthenticated>(
-                  elle::Callback<>::Infer(
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagAuthenticated>(
+                  elle::concurrency::Callback<>::Infer(
                     &Machine::Authenticated, this))) == elle::Status::Error)
             escape("unable to register the callback");
 
           // register the message.
-          if (elle::Network::Register(
-                elle::Procedure<TagUpdate>(
-                  elle::Callback<>::Infer(
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagUpdate>(
+                  elle::concurrency::Callback<>::Infer(
                     &Machine::Update, this))) == elle::Status::Error)
             escape("unable to register the callback");
         }
@@ -183,7 +183,7 @@ namespace hole
 
           // listen for incoming connections.
           if (elle::Bridge::Listen(locus,
-                                   elle::Callback<>::Infer(
+                                   elle::concurrency::Callback<>::Infer(
                                      &Machine::Connection, this)) ==
               elle::Status::Error)
             escape("unable to listen for bridge connections");
@@ -200,7 +200,7 @@ namespace hole
 
           // subscribe to the timer's signal.
           if (this->timer->signal.timeout.Subscribe(
-                elle::Callback<>::Infer(&Machine::Gossip,
+                elle::concurrency::Callback<>::Infer(&Machine::Gossip,
                                         this)) == elle::Status::Error)
             escape("unable to subscribe to the signal");
 
@@ -236,7 +236,7 @@ namespace hole
         if (this->gate->Call(
               elle::network::Inputs<TagPush>(address,
                                     derivable),
-              elle::Outputs<elle::TagOk>()) == elle::Status::Error)
+              elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to transfer the request");
         */
         return elle::Status::Ok;
@@ -266,7 +266,7 @@ namespace hole
         if (this->gate->Call(
               elle::network::Inputs<TagPush>(address,
                                     derivable),
-              elle::Outputs<elle::TagOk>()) == elle::Status::Error)
+              elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to transfer the request");
         */
         return elle::Status::Ok;
@@ -295,7 +295,7 @@ namespace hole
         if (this->gate->Call(
               elle::network::Inputs<TagPull>(address,
                                     nucleus::Version::Any),
-              elle::Outputs<TagBlock>(derivable)) == elle::Status::Error)
+              elle::network::Outputs<TagBlock>(derivable)) == elle::Status::Error)
           escape("unable to transfer the request");
         */
         return elle::Status::Ok;
@@ -325,7 +325,7 @@ namespace hole
         if (this->gate->Call(
               elle::network::Inputs<TagPull>(address,
                                     version),
-              elle::Outputs<TagBlock>(derivable)) == elle::Status::Error)
+              elle::network::Outputs<TagBlock>(derivable)) == elle::Status::Error)
           escape("unable to transfer the request");
         */
         return elle::Status::Ok;
@@ -350,7 +350,7 @@ namespace hole
         // transfer to the remote.
         if (this->gate->Call(
               elle::network::Inputs<TagWipe>(address),
-              elle::Outputs<elle::TagOk>()) == elle::Status::Error)
+              elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to transfer the request");
         */
         return elle::Status::Ok;
@@ -407,7 +407,7 @@ namespace hole
       elle::Status      Machine::Challenge()
       {
         Neighbour*      neighbour;
-        elle::Session*  session;
+        elle::network::Session*  session;
 
 
         // debug.
@@ -416,7 +416,7 @@ namespace hole
                     << std::endl;
 
         // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::Status::Error)
+        if (elle::network::Session::Instance(session) == elle::Status::Error)
           escape("unable to retrieve the current session");
 
         // retrieve the neighbour from the neigbourhood.
@@ -443,7 +443,7 @@ namespace hole
       elle::Status      Machine::Passport(const lune::Passport& passport)
       {
         Neighbour*      neighbour;
-        elle::Session*  session;
+        elle::network::Session*  session;
 
 
         // debug.
@@ -452,7 +452,7 @@ namespace hole
                     << std::endl;
 
         // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::Status::Error)
+        if (elle::network::Session::Instance(session) == elle::Status::Error)
           escape("unable to retrieve the current session");
 
         // retrieve the neighbour from the neighbourhood.
@@ -527,7 +527,7 @@ namespace hole
       elle::Status      Machine::Port(const elle::Port&         port)
       {
         Neighbour*      neighbour;
-        elle::Session*  session;
+        elle::network::Session*  session;
 
 
         // debug.
@@ -536,7 +536,7 @@ namespace hole
                     << std::endl;
 
         // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::Status::Error)
+        if (elle::network::Session::Instance(session) == elle::Status::Error)
           escape("unable to retrieve the current session");
 
         // retrieve the neighbour from the neighbourhood.
@@ -582,7 +582,7 @@ namespace hole
       elle::Status      Machine::Authenticated()
       {
         Neighbour*      neighbour;
-        elle::Session*  session;
+        elle::network::Session*  session;
 
 
         // debug.
@@ -591,7 +591,7 @@ namespace hole
                     << std::endl;
 
         // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::Status::Error)
+        if (elle::network::Session::Instance(session) == elle::Status::Error)
           escape("unable to retrieve the current session");
 
         // retrieve the neighbour from the neighbourhood.
@@ -611,7 +611,7 @@ namespace hole
       elle::Status      Machine::Update(const Cluster&          cluster)
       {
         Neighbour*              neighbour;
-        elle::Session*          session;
+        elle::network::Session*          session;
         Cluster::Scoutor        scoutor;
 
 
@@ -621,7 +621,7 @@ namespace hole
                     << std::endl;
 
         // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::Status::Error)
+        if (elle::network::Session::Instance(session) == elle::Status::Error)
           escape("unable to retrieve the current session");
 
         // retrieve the neighbour from the neighbourhood.

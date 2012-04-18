@@ -35,7 +35,7 @@ namespace hole
       /// XXX
       ///
       class Neighbourhood:
-        public elle::Entity
+        public elle::radix::Entity
       {
       public:
         //

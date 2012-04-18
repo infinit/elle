@@ -50,7 +50,7 @@ namespace hole
       escape("unable to initialize Infinit");
 
     // set up the program.
-    if (elle::Program::Setup() == elle::Status::Error)
+    if (elle::concurrency::Program::Setup() == elle::Status::Error)
       escape("unable to set up the program");
 
     // allocate a new parser.
@@ -111,7 +111,7 @@ namespace hole
       escape("unable to initialize Hole");
 
     // launch the program.
-    if (elle::Program::Launch() == elle::Status::Error)
+    if (elle::concurrency::Program::Launch() == elle::Status::Error)
       escape("an error occured while processing events");
 
     // delete the parser.

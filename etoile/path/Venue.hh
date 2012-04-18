@@ -38,7 +38,7 @@ namespace etoile
     /// of which indicates the address and version number of the component.
     ///
     class Venue:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

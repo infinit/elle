@@ -33,7 +33,7 @@ namespace nucleus
     /// composed of a name and its object's corresponding address.
     ///
     class Entry:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

@@ -31,7 +31,7 @@ namespace etoile
     /// to act on scopes.
     ///
     class Identifier:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

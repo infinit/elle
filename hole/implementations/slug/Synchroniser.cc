@@ -43,7 +43,7 @@ namespace hole
 
         // subscribe to the timer's signal.
         if (this->timer.signal.timeout.Subscribe(
-              elle::Callback<>::Infer(&Synchroniser::Run,
+              elle::concurrency::Callback<>::Infer(&Synchroniser::Run,
                                       this)) == elle::Status::Error)
           escape("unable to subscribe to the signal");
 

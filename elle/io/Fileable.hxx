@@ -9,6 +9,8 @@
 # include "Fileable.hh"
 # include "Path.hh"
 
+# include <elle/idiom/Open.hh>
+
 namespace elle { namespace io {
 
     template<typename T, template<elle::serialize::ArchiveMode> class DefaultArchive>
@@ -18,7 +20,7 @@ namespace elle { namespace io {
         std::ifstream in(path.str(), std::ios_base::in | std::ios_base::binary);
         if (!in.good())
           {
-            return elle::Status::Error;
+            escape("Cannot open in file '%s'", path.str().c_str());
             //throw std::runtime_error("Cannot read '"+  path.str().c_str() +"'");
           }
 
@@ -45,7 +47,8 @@ namespace elle { namespace io {
         std::ofstream out(path.str(), std::ios_base::out | std::ios_base::binary);
         if (!out.good())
           {
-            return elle::Status::Error;
+            escape("Cannot open out file '%s'", path.str().c_str());
+
             //throw std::runtime_error("Cannot read '"+  path.str().c_str() +"'");
           }
 
@@ -314,5 +317,7 @@ namespace elle { namespace io {
 //
 
 }} // !namespace elle::io;
+
+# include <elle/idiom/Close.hh>
 
 #endif

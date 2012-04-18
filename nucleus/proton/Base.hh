@@ -49,7 +49,7 @@ namespace nucleus
     /// not been author .
     ///
     class Base:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

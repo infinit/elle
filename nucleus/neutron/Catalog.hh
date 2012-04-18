@@ -52,7 +52,7 @@ namespace nucleus
     /// Catalog for directories, Data for files etc.
     ///
     class Catalog:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

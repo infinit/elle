@@ -34,7 +34,7 @@ namespace nucleus
     /// pushed/wiped to/from the storage layer.
     ///
     class Action:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

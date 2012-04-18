@@ -33,7 +33,7 @@ namespace etoile
     /// this class represents a string-based path i.e a way.
     ///
     class Way:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

@@ -49,7 +49,7 @@ namespace satellite
     expose();
 
     // exit.
-    elle::Program::Exit();
+    elle::concurrency::Program::Exit();
 
     return elle::Status::Ok;
   }
@@ -66,7 +66,7 @@ namespace satellite
     expose();
 
     // exit.
-    elle::Program::Exit();
+    elle::concurrency::Program::Exit();
 
     return elle::Status::Ok;
   }
@@ -102,13 +102,13 @@ namespace satellite
 
       // subscribe to the signal.
       if (Access::Socket.signal.disconnected.Subscribe(
-            elle::Callback<>::Infer(
+            elle::concurrency::Callback<>::Infer(
               &Access::Disconnected)) == elle::Status::Error)
         escape("unable to subscribe to the signal");
 
       // subscribe to the signal.
       if (Access::Socket.signal.error.Subscribe(
-            elle::Callback<>::Infer(
+            elle::concurrency::Callback<>::Infer(
               &Access::Error)) == elle::Status::Error)
         escape("unable to subscribe to the signal");
 
@@ -126,7 +126,7 @@ namespace satellite
       // send the user's network-specific phrase.
       if (Access::Socket.Call(
             elle::network::Inputs<etoile::portal::TagAuthenticate>(phrase.pass),
-            elle::Outputs<etoile::portal::TagAuthenticated>()) ==
+            elle::network::Outputs<etoile::portal::TagAuthenticated>()) ==
           elle::Status::Error)
         escape("unable to authenticate to Etoile");
     }
@@ -152,28 +152,28 @@ namespace satellite
     // resolve the path.
     if (Access::Socket.Call(
           elle::network::Inputs<etoile::portal::TagPathResolve>(way),
-          elle::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
+          elle::network::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
         elle::Status::Error)
       goto _error;
 
     // load the object.
     if (Access::Socket.Call(
           elle::network::Inputs<etoile::portal::TagObjectLoad>(chemin),
-          elle::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
+          elle::network::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
         elle::Status::Error)
       goto _error;
 
     // lookup the access record.
     if (Access::Socket.Call(
           elle::network::Inputs<etoile::portal::TagAccessLookup>(identifier, subject),
-          elle::Outputs<etoile::portal::TagAccessRecord>(record)) ==
+          elle::network::Outputs<etoile::portal::TagAccessRecord>(record)) ==
         elle::Status::Error)
       goto _error;
 
     // discard the object.
     if (Access::Socket.Call(
           elle::network::Inputs<etoile::portal::TagObjectDiscard>(identifier),
-          elle::Outputs<elle::TagOk>()) == elle::Status::Error)
+          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
       goto _error;
 
     // dump the record.
@@ -189,7 +189,7 @@ namespace satellite
     expose();
 
     // exit the program.
-    elle::Program::Exit();
+    elle::concurrency::Program::Exit();
 
     return elle::Status::Ok;
   }
@@ -210,14 +210,14 @@ namespace satellite
     // resolve the path.
     if (Access::Socket.Call(
           elle::network::Inputs<etoile::portal::TagPathResolve>(way),
-          elle::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
+          elle::network::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
         elle::Status::Error)
       goto _error;
 
     // load the object.
     if (Access::Socket.Call(
           elle::network::Inputs<etoile::portal::TagObjectLoad>(chemin),
-          elle::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
+          elle::network::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
         elle::Status::Error)
       goto _error;
 
@@ -227,14 +227,14 @@ namespace satellite
             identifier,
             elle::Type<nucleus::Index>::Minimum,
             elle::Type<nucleus::Size>::Maximum),
-          elle::Outputs<etoile::portal::TagAccessRange>(range)) ==
+          elle::network::Outputs<etoile::portal::TagAccessRange>(range)) ==
         elle::Status::Error)
       goto _error;
 
     // discard the object.
     if (Access::Socket.Call(
           elle::network::Inputs<etoile::portal::TagObjectDiscard>(identifier),
-          elle::Outputs<elle::TagOk>()) == elle::Status::Error)
+          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
       goto _error;
 
     // dump the range.
@@ -250,7 +250,7 @@ namespace satellite
     expose();
 
     // exit the program.
-    elle::Program::Exit();
+    elle::concurrency::Program::Exit();
 
     return elle::Status::Ok;
   }
@@ -274,7 +274,7 @@ namespace satellite
     // locate the path i.e is the way located in the Infinit file system.
     if (Access::Socket.Call(
           elle::network::Inputs<etoile::portal::TagPathLocate>(way),
-          elle::Outputs<etoile::portal::TagPathWay>(path)) ==
+          elle::network::Outputs<etoile::portal::TagPathWay>(path)) ==
         elle::Status::Error)
       goto _error;
 
@@ -286,14 +286,14 @@ namespace satellite
     // resolve the path.
     if (Access::Socket.Call(
           elle::network::Inputs<etoile::portal::TagPathResolve>(path),
-          elle::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
+          elle::network::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
         elle::Status::Error)
       goto _error;
 
     // load the object.
     if (Access::Socket.Call(
           elle::network::Inputs<etoile::portal::TagObjectLoad>(chemin),
-          elle::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
+          elle::network::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
         elle::Status::Error)
       goto _error;
 
@@ -302,13 +302,13 @@ namespace satellite
           elle::network::Inputs<etoile::portal::TagAccessGrant>(identifier,
                                                        subject,
                                                        permissions),
-          elle::Outputs<elle::TagOk>()) == elle::Status::Error)
+          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
       goto _error;
 
     // store the object.
     if (Access::Socket.Call(
           elle::network::Inputs<etoile::portal::TagObjectStore>(identifier),
-          elle::Outputs<elle::TagOk>()) == elle::Status::Error)
+          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
       goto _error;
 
   _error:
@@ -321,7 +321,7 @@ namespace satellite
     expose();
 
     // exit the program.
-    elle::Program::Exit();
+    elle::concurrency::Program::Exit();
 
     return elle::Status::Ok;
   }
@@ -343,27 +343,27 @@ namespace satellite
     // resolve the path.
     if (Access::Socket.Call(
           elle::network::Inputs<etoile::portal::TagPathResolve>(way),
-          elle::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
+          elle::network::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
         elle::Status::Error)
       goto _error;
 
     // load the object.
     if (Access::Socket.Call(
           elle::network::Inputs<etoile::portal::TagObjectLoad>(chemin),
-          elle::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
+          elle::network::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
         elle::Status::Error)
       goto _error;
 
     // revoke the access for the given subject.
     if (Access::Socket.Call(
           elle::network::Inputs<etoile::portal::TagAccessRevoke>(identifier, subject),
-          elle::Outputs<elle::TagOk>()) == elle::Status::Error)
+          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
       goto _error;
 
     // store the object.
     if (Access::Socket.Call(
           elle::network::Inputs<etoile::portal::TagObjectStore>(identifier),
-          elle::Outputs<elle::TagOk>()) == elle::Status::Error)
+          elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
       goto _error;
 
   _error:
@@ -376,7 +376,7 @@ namespace satellite
     expose();
 
     // exit the program.
-    elle::Program::Exit();
+    elle::concurrency::Program::Exit();
 
     return elle::Status::Ok;
   }
@@ -400,7 +400,7 @@ namespace satellite
       escape("unable to initialize Elle");
 
     // set up the program.
-    if (elle::Program::Setup() == elle::Status::Error)
+    if (elle::concurrency::Program::Setup() == elle::Status::Error)
       escape("unable to set up the program");
 
     // initialize the nucleus library.
@@ -668,23 +668,23 @@ namespace satellite
           // declare additional local variables.
           etoile::path::Way             way(path);
           elle::Closure<
-            elle::Status::,
-            elle::Parameters<
+            elle::Status,
+            elle::radix::Parameters<
               const etoile::path::Way&,
               const nucleus::Subject&
               >
             >                           closure(&Access::Lookup,
                                                 way, subject);
           elle::Entrance<
-            elle::Status::,
-            elle::Parameters<
+            elle::Status,
+            elle::radix::Parameters<
               const etoile::path::Way&,
               const nucleus::Subject&
               >
             >                           entrance(closure);
 
           // launch the program.
-          if (elle::Program::Launch() == elle::Status::Error)
+          if (elle::concurrency::Program::Launch() == elle::Status::Error)
             escape("an error occured while processing events");
 
           break;
@@ -701,21 +701,21 @@ namespace satellite
           // declare additional local variables.
           etoile::path::Way             way(path);
           elle::Closure<
-            elle::Status::,
-            elle::Parameters<
+            elle::Status,
+            elle::radix::Parameters<
               const etoile::path::Way&
               >
             >                           closure(&Access::Consult,
                                                 way);
           elle::Entrance<
-            elle::Status::,
-            elle::Parameters<
+            elle::Status,
+            elle::radix::Parameters<
               const etoile::path::Way&
               >
             >                           entrance(closure);
 
           // launch the program.
-          if (elle::Program::Launch() == elle::Status::Error)
+          if (elle::concurrency::Program::Launch() == elle::Status::Error)
             escape("an error occured while processing events");
 
           break;
@@ -792,8 +792,8 @@ namespace satellite
           // declare additional local variables.
           etoile::path::Way             way(path);
           elle::Closure<
-            elle::Status::,
-            elle::Parameters<
+            elle::Status,
+            elle::radix::Parameters<
               const etoile::path::Way&,
               const nucleus::Subject&,
               const nucleus::Permissions
@@ -801,8 +801,8 @@ namespace satellite
             >                           closure(&Access::Grant,
                                                 way, subject, permissions);
           elle::Entrance<
-            elle::Status::,
-            elle::Parameters<
+            elle::Status,
+            elle::radix::Parameters<
               const etoile::path::Way&,
               const nucleus::Subject&,
               const nucleus::Permissions
@@ -810,7 +810,7 @@ namespace satellite
             >                           entrance(closure);
 
           // launch the program.
-          if (elle::Program::Launch() == elle::Status::Error)
+          if (elle::concurrency::Program::Launch() == elle::Status::Error)
             escape("an error occured while processing events");
 
           break;
@@ -875,23 +875,23 @@ namespace satellite
           // declare additional local variables.
           etoile::path::Way             way(path);
           elle::Closure<
-            elle::Status::,
-            elle::Parameters<
+            elle::Status,
+            elle::radix::Parameters<
               const etoile::path::Way&,
               const nucleus::Subject&
               >
             >                           closure(&Access::Revoke,
                                                 way, subject);
           elle::Entrance<
-            elle::Status::,
-            elle::Parameters<
+            elle::Status,
+            elle::radix::Parameters<
               const etoile::path::Way&,
               const nucleus::Subject&
               >
             >                           entrance(closure);
 
           // launch the program.
-          if (elle::Program::Launch() == elle::Status::Error)
+          if (elle::concurrency::Program::Launch() == elle::Status::Error)
             escape("an error occured while processing events");
 
           break;

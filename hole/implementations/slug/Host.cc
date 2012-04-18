@@ -1,16 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [wed aug 24 13:12:46 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/network/Locus.hh>
+#include <elle/network/TCPSocket.hh>
+#include <elle/concurrency/Callback.hh>
+#include <elle/utility/Time.hh>
+#include <elle/standalone/Morgue.hh>
 
 #include <hole/implementations/slug/Host.hh>
 #include <hole/implementations/slug/Slug.hh>
@@ -91,7 +84,7 @@ namespace hole
 
         // subscribe to the timer's signal.
         if (this->timer->signal.timeout.Subscribe(
-              elle::Callback<>::Infer(&Host::Abort,
+              elle::concurrency::Callback<>::Infer(&Host::Abort,
                                       this)) == elle::Status::Error)
           escape("unable to subscribe to the signal");
 
@@ -115,13 +108,13 @@ namespace hole
 
         // subscribe to the signal.
         if (this->socket->signal.disconnected.Subscribe(
-              elle::Callback<>::Infer(&Host::Disconnected,
+              elle::concurrency::Callback<>::Infer(&Host::Disconnected,
                                       this)) == elle::Status::Error)
           escape("unable to subscribe the signal");
 
         // subscribe to the signal.
         if (this->socket->signal.error.Subscribe(
-              elle::Callback<>::Infer(&Host::Error,
+              elle::concurrency::Callback<>::Infer(&Host::Error,
                                       this)) == elle::Status::Error)
           escape("unable to subscribe the signal");
 
@@ -135,19 +128,19 @@ namespace hole
       {
         // subscribe to the signal.
         if (this->socket->signal.connected.Subscribe(
-              elle::Callback<>::Infer(&Host::Connected,
+              elle::concurrency::Callback<>::Infer(&Host::Connected,
                                       this)) == elle::Status::Error)
           escape("unable to subscribe the signal");
 
         // subscribe to the signal.
         if (this->socket->signal.disconnected.Subscribe(
-              elle::Callback<>::Infer(&Host::Disconnected,
+              elle::concurrency::Callback<>::Infer(&Host::Disconnected,
                                       this)) == elle::Status::Error)
           escape("unable to subscribe the signal");
 
         // subscribe to the signal.
         if (this->socket->signal.error.Subscribe(
-              elle::Callback<>::Infer(&Host::Error,
+              elle::concurrency::Callback<>::Infer(&Host::Error,
                                       this)) == elle::Status::Error)
           escape("unable to subscribe the signal");
 

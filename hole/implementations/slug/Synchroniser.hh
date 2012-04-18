@@ -16,7 +16,7 @@ namespace hole
       /// XXX
       ///
       class Synchroniser:
-        public elle::Entity
+        public elle::radix::Entity
       {
       public:
         //
@@ -42,7 +42,7 @@ namespace hole
         struct
         {
           elle::concurrency::Signal<
-            elle::Parameters<
+            elle::radix::Parameters<
               >
             >                   synchronised;
         }                       signal;

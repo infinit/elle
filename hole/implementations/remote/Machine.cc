@@ -1,16 +1,6 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [wed aug 31 01:02:08 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/utility/Time.hh>
+#include <elle/network/Locus.hh>
 
 #include <hole/implementations/remote/Machine.hh>
 

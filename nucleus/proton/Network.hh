@@ -26,7 +26,7 @@ namespace nucleus
     /// this class identifies a network through a unique name.
     ///
     class Network:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

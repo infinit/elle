@@ -59,7 +59,7 @@ namespace elle
     //                Parameters<T...> >::Serialize(Archive&      archive) const
     //{
     //  Callback<
-    //    Status::,
+    //    Status,
     //    typename Trait::Reference<
     //      typename Trait::Constant<
     //        typename Message<G>::P
@@ -171,7 +171,7 @@ namespace elle
     //                 Parameters<T...> >::Extract(Archive&       archive)
     //{
     //  Callback<
-    //    Status::,
+    //    Status,
     //    typename Trait::Reference<
     //      typename Message<G>::P
     //      >::Type

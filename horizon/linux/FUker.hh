@@ -58,7 +58,7 @@ namespace horizon
     /// result of the operation.
     ///
     class FUker:
-      public elle::Entity
+      public elle::radix::Entity
     {
     public:
       //

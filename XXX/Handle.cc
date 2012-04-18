@@ -83,7 +83,7 @@ Handle::Handle(const Address&                                   address):
 /// to force the cloned handle to be loaded before being used.
 ///
 Handle::Handle(const Handle&                                    element):
-  elle::Object(element),
+  elle::radix::Object(element),
 
   state(StateUnloaded),
   placement(element.placement),

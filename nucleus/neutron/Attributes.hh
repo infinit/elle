@@ -36,7 +36,7 @@ namespace nucleus
     /// used for storing object-specific extra information.
     ///
     class Attributes:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

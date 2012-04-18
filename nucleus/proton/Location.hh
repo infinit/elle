@@ -36,7 +36,7 @@ namespace nucleus
     /// also the number of the object's version which it relates to.
     ///
     class Location:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

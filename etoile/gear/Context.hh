@@ -44,7 +44,7 @@ namespace etoile
     /// because the most important operation always superseed the others.
     ///
     class Context:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

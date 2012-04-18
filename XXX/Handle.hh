@@ -59,7 +59,7 @@ namespace nucleus
     ///     block(version inline chargee en RAM)
     ///
     class Handle:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

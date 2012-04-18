@@ -32,7 +32,7 @@ namespace satellite
   /// this class represents the diary in its archived form.
   ///
   class Memoirs:
-    public elle::Object,
+    public elle::radix::Object,
     public elle::io::Dumpable,
     public elle::io::Fileable<Memoirs>
   {

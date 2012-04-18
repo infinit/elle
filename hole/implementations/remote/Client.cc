@@ -1,4 +1,10 @@
 
+#include <elle/standalone/ReportSerializer.hxx>
+#include <elle/network/BundleSerializer.hxx>
+#include <elle/utility/BufferSerializer.hxx>
+#include <elle/network/HeaderSerializer.hxx>
+
+#include <elle/concurrency/Program.hh>
 #include <elle/network/Locus.hh>
 #include <elle/network/Range.hh>
 #include <elle/network/TCPSocket.hh>
@@ -63,14 +69,14 @@ namespace hole
           // register the message.
           if (elle::network::Network::Register(
                 elle::network::Procedure<TagAuthenticated>(
-                  elle::Callback<>::Infer(
+                  elle::concurrency::Callback<>::Infer(
                     &Client::Authenticated, this))) == elle::Status::Error)
             escape("unable to register the callback");
 
           // register the message.
           if (elle::network::Network::Register(
                 elle::network::Procedure<TagException>(
-                  elle::Callback<>::Infer(
+                  elle::concurrency::Callback<>::Infer(
                     &Client::Exception, this))) == elle::Status::Error)
             escape("unable to register the callback");
         }
@@ -88,19 +94,19 @@ namespace hole
 
           // subscribe to the signal.
           if (this->socket->signal.connected.Subscribe(
-                elle::Callback<>::Infer(&Client::Connected,
+                elle::concurrency::Callback<>::Infer(&Client::Connected,
                                         this)) == elle::Status::Error)
             escape("unable to subscribe to the signal");
 
           // subscribe to the signal.
           if (this->socket->signal.disconnected.Subscribe(
-                elle::Callback<>::Infer(&Client::Disconnected,
+                elle::concurrency::Callback<>::Infer(&Client::Disconnected,
                                         this)) == elle::Status::Error)
             escape("unable to subscribe to the signal");
 
           // subscribe to the signal.
           if (this->socket->signal.error.Subscribe(
-                elle::Callback<>::Infer(&Client::Error,
+                elle::concurrency::Callback<>::Infer(&Client::Error,
                                         this)) == elle::Status::Error)
             escape("unable to subscribe to the signal");
 
@@ -210,7 +216,7 @@ namespace hole
                                     const nucleus::Version&     version,
                                     nucleus::MutableBlock&      block)
       {
-        nucleus::Derivable<nucleus::Block>      derivable(block);
+        //nucleus::Derivable<nucleus::Block>      derivable(block);
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -222,9 +228,8 @@ namespace hole
 
         // transfer to the remote.
         if (this->socket->Call(
-              elle::network::Inputs<TagPull>(address,
-                                    version),
-              elle::Outputs<TagBlock>(derivable)) == elle::Status::Error)
+              elle::network::Inputs<TagPull>(address, version),
+              elle::network::Outputs<TagBlock>(block)) == elle::Status::Error)
           escape("unable to transfer the request");
 
         return elle::Status::Ok;
@@ -245,8 +250,8 @@ namespace hole
 
         // transfer to the remote.
         if (this->socket->Call(
-              elle::network::network::Inputs<TagWipe>(address),
-              elle::Outputs<elle::TagOk>()) == elle::Status::Error)
+              elle::network::Inputs<TagWipe>(address),
+              elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to transfer the request");
 
         return elle::Status::Ok;
@@ -293,7 +298,7 @@ namespace hole
             show();
 
             // exit the program.
-            if (elle::Program::Exit() == elle::Status::Error)
+            if (elle::concurrency::Program::Exit() == elle::Status::Error)
               escape("unable to exit the program");
           }
 

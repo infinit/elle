@@ -1,34 +1,21 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [thu mar  5 16:04:08 2009]
-//
-
 #ifndef NUCLEUS_NEUTRON_OBJECT_HH
-#define NUCLEUS_NEUTRON_OBJECT_HH
+# define NUCLEUS_NEUTRON_OBJECT_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/utility/Time.hh>
 
-#include <elle/types.hh>
+# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/ImprintBlock.hh>
+# include <nucleus/proton/Version.hh>
 
-#include <nucleus/proton/Address.hh>
-#include <nucleus/proton/ImprintBlock.hh>
-#include <nucleus/proton/Version.hh>
-
-#include <nucleus/neutron/Genre.hh>
-#include <nucleus/neutron/Author.hh>
-#include <nucleus/neutron/Size.hh>
-#include <nucleus/neutron/Permissions.hh>
-#include <nucleus/neutron/Token.hh>
-#include <nucleus/neutron/Attributes.hh>
-#include <nucleus/neutron/Access.hh>
-#include <nucleus/neutron/Role.hh>
+# include <nucleus/neutron/Genre.hh>
+# include <nucleus/neutron/Author.hh>
+# include <nucleus/neutron/Size.hh>
+# include <nucleus/neutron/Permissions.hh>
+# include <nucleus/neutron/Token.hh>
+# include <nucleus/neutron/Attributes.hh>
+# include <nucleus/neutron/Access.hh>
+# include <nucleus/neutron/Role.hh>
 
 namespace nucleus
 {

@@ -34,7 +34,7 @@ namespace etoile
     /// use the message interface.
     ///
     class Application:
-      public elle::Entity
+      public elle::radix::Entity
     {
     public:
       //

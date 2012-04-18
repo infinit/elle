@@ -11,7 +11,7 @@ namespace elle
     class PrivateKey;
     class Cipher;
     class KeyPair;
-
+    class Digest;
   }
 }
 

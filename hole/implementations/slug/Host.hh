@@ -4,6 +4,7 @@
 # include <elle/types.hh>
 # include <elle/network/fwd.hh>
 # include <elle/concurrency/fwd.hh>
+# include <elle/concurrency/Signal.hh>
 
 # include <hole/Label.hh>
 
@@ -19,7 +20,7 @@ namespace hole
       /// XXX
       ///
       class Host:
-        public elle::Entity
+        public elle::radix::Entity
       {
       public:
         //
@@ -76,7 +77,7 @@ namespace hole
         struct
         {
           elle::concurrency::Signal<
-            elle::Parameters<
+            elle::radix::Parameters<
               Host*
               >
             >                   dead;

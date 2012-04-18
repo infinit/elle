@@ -37,9 +37,9 @@ elle::cryptography::SecretKey                         Porcupine<>::Default::Secr
 ///
 /// XXX
 ///
-elle::Callback<
-  elle::Status::,
-  elle::Parameters<
+elle::concurrency::Callback<
+  elle::Status,
+  elle::radix::Parameters<
     Block*,
     Handle&
     >
@@ -48,9 +48,9 @@ elle::Callback<
 ///
 /// XXX
 ///
-elle::Callback<
-  elle::Status::,
-  elle::Parameters<
+elle::concurrency::Callback<
+  elle::Status,
+  elle::radix::Parameters<
     Handle&
     >
   >                                     Porcupine<>::Detach;
@@ -58,9 +58,9 @@ elle::Callback<
 ///
 /// XXX
 ///
-elle::Callback<
-  elle::Status::,
-  elle::Parameters<
+elle::concurrency::Callback<
+  elle::Status,
+  elle::radix::Parameters<
     Handle&
     >
   >                                     Porcupine<>::Load;
@@ -68,9 +68,9 @@ elle::Callback<
 ///
 /// XXX
 ///
-elle::Callback<
-  elle::Status::,
-  elle::Parameters<
+elle::concurrency::Callback<
+  elle::Status,
+  elle::radix::Parameters<
     Handle&
     >
   >                                     Porcupine<>::Unload;
@@ -83,28 +83,28 @@ elle::Callback<
 /// this method initializes the porcupine.
 ///
 elle::Status        Porcupine<>::Initialize(
-  const elle::Callback<
-  elle::Status::,
-  elle::Parameters<
+  const elle::concurrency::Callback<
+  elle::Status,
+  elle::radix::Parameters<
     Block*,
     Handle&
     >
   >&                                                        attach,
-  const elle::Callback<
-  elle::Status::,
-  elle::Parameters<
+  const elle::concurrency::Callback<
+  elle::Status,
+  elle::radix::Parameters<
     Handle&
     >
   >&                                                        detach,
-  const elle::Callback<
-  elle::Status::,
-  elle::Parameters<
+  const elle::concurrency::Callback<
+  elle::Status,
+  elle::radix::Parameters<
     Handle&
     >
   >&                                                        load,
-  const elle::Callback<
-  elle::Status::,
-  elle::Parameters<
+  const elle::concurrency::Callback<
+  elle::Status,
+  elle::radix::Parameters<
     Handle&
     >
   >&                                                        unload)

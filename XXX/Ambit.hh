@@ -34,7 +34,7 @@ namespace nucleus
     ///
     template <typename T>
     class Ambit:
-      public elle::Entity
+      public elle::radix::Entity
     {
     public:
       //

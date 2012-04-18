@@ -1,16 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [sun aug 28 17:53:05 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/concurrency/Timer.hh>
+#include <elle/network/Locus.hh>
+#include <elle/network/TCPSocket.hh>
+#include <elle/utility/Time.hh>
 
 #include <hole/implementations/remote/Customer.hh>
 #include <hole/implementations/remote/Remote.hh>
@@ -76,13 +68,13 @@ namespace hole
 
         // subscribe to the signal.
         if (this->socket->signal.disconnected.Subscribe(
-              elle::Callback<>::Infer(&Customer::Disconnected,
+              elle::concurrency::Callback<>::Infer(&Customer::Disconnected,
                                       this)) == elle::Status::Error)
           escape("unable to subscribe to the signal");
 
         // subscribe to the signal.
         if (this->socket->signal.error.Subscribe(
-              elle::Callback<>::Infer(&Customer::Error,
+              elle::concurrency::Callback<>::Infer(&Customer::Error,
                                       this)) == elle::Status::Error)
           escape("unable to subscribe to the signal");
 
@@ -95,7 +87,7 @@ namespace hole
 
         // subscribe to the timer's signal.
         if (this->timer->signal.timeout.Subscribe(
-              elle::Callback<>::Infer(&Customer::Abort,
+              elle::concurrency::Callback<>::Infer(&Customer::Abort,
                                       this)) == elle::Status::Error)
           escape("unable to subscribe to the signal");
 

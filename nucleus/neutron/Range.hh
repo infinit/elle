@@ -45,7 +45,7 @@ namespace nucleus
     ///
     template <typename T>
     class Range:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

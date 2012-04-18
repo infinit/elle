@@ -32,7 +32,7 @@ namespace satellite
     /// code, the inputs and outputs arguments along with the returned value.
     ///
     class Upcall:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

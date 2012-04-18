@@ -62,7 +62,7 @@ namespace hole
     static State                state;
     static
     elle::concurrency::Signal<
-      elle::Parameters<>
+      elle::radix::Parameters<>
       >                         ready;
   };
 

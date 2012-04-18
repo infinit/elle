@@ -1,16 +1,6 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [mon nov  7 12:39:09 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/network/Locus.hh>
+#include <elle/utility/Time.hh>
 
 #include <hole/implementations/slug/Guestlist.hh>
 

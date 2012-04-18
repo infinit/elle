@@ -45,6 +45,7 @@ if __name__ == '__main__':
         r"%(sed)s -e 's/const %(from_ns)s::\(%(joined_names)s\)\([^a-zA-Z0-9_]\)/%(to_ns)s::\1\2 const/g' %(filename)s",
         r"%(sed)s -e 's/const %(to_ns)s::\(%(joined_names)s\)/%(to_ns)s::\1 const/g' %(filename)s",
         r"%(sed)s -e 's/%(from_ns)s::\(%(joined_names)s\)\([^a-zA-Z0-9_]\)/%(to_ns)s::\1\2/g' %(filename)s",
+        r"%(sed)s -e 's/%(from_ns)s::\(%(joined_names)s\)$/%(to_ns)s::\1/g' %(filename)s",
     ]
     params = {
         'sed': args.replace and 'sed -i' or 'sed',

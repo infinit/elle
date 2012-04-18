@@ -25,7 +25,7 @@ namespace hole
   /// this class defines the interface hole implementation should implement.
   ///
   class Holeable:
-    public elle::Entity
+    public elle::radix::Entity
   {
   public:
     //

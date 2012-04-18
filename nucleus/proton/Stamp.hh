@@ -45,7 +45,7 @@ namespace nucleus
     /// their memberships or permissions.
     ///
     class Stamp:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

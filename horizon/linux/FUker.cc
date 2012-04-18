@@ -184,7 +184,7 @@ namespace horizon
         log(::strerror(errno));
 
       // now that FUSE has stopped, make sure the program is exiting.
-      if (elle::Program::Exit() == elle::Status::Error)
+      if (elle::concurrency::Program::Exit() == elle::Status::Error)
         log("unable to exit the program");
 
       return (NULL);

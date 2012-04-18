@@ -30,7 +30,7 @@ namespace lune
   ///
   template <typename T>
   class Map:
-    public elle::Object
+    public elle::radix::Object
   {
   public:
     //

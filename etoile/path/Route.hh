@@ -41,7 +41,7 @@ namespace etoile
     /// the root directory even though its slab is empty.
     ///
     class Route:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

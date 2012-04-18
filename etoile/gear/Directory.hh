@@ -57,9 +57,9 @@ namespace etoile
       //
       typedef wall::Directory                   W;
       typedef automaton::Directory              A;
-      typedef elle::Callback<
-                elle::Status::,
-                elle::Parameters<
+      typedef elle::concurrency::Callback<
+                elle::Status,
+                elle::radix::Parameters<
                   Directory&
                   >
                 >                               S;

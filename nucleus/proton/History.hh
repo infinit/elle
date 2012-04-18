@@ -37,7 +37,7 @@ namespace nucleus
     /// a given mutable block.
     ///
     class History:
-      public elle::Object,
+      public elle::radix::Object,
       public elle::io::Fileable<History>
     {
     public:

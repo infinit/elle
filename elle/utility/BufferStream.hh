@@ -21,8 +21,8 @@ namespace elle
       size_t BytesLeft() const  { return this->_buffer.Size() - this->_idx; }
       size_t Offset() const     { return this->_idx; }
 
+    /// The following methods make this class "std::istream like".
     public:
-    /// The following methods makes this class "std::istream like".
       void read(char* out, std::streamsize size);
 
     };
@@ -35,6 +35,10 @@ namespace elle
     public:
       OutputBufferStream(Buffer& output);
       OutputBufferStream(OutputBufferStream& other);
+
+    /// The following methods make this class "std::ostream like".
+    public:
+      void write(char const* out, std::streamsize size);
     };
 
   }

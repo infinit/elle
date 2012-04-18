@@ -35,7 +35,7 @@ namespace hole
       /// XXX
       ///
       class RoutingTable:
-        public elle::Entity
+        public elle::radix::Entity
       {
       public:
         //

@@ -37,7 +37,7 @@ namespace nucleus
     /// is associated with it.
     ///
     class Trait:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

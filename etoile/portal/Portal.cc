@@ -60,9 +60,9 @@ namespace etoile
         //
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagAuthenticate>(
-                elle::Callback<>::Infer(
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagAuthenticate>(
+                elle::concurrency::Callback<>::Infer(
                   &Portal::Authenticate))) == elle::Status::Error)
           escape("unable to register the callback");
 
@@ -71,22 +71,22 @@ namespace etoile
         //
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagPathResolve,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagPathResolve,
                               TagPathChemin>(
-                elle::Callback<>::Infer(&wall::Path::Resolve),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Path::Resolve),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
             elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagPathLocate,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagPathLocate,
                               TagPathWay>(
-                elle::Callback<>::Infer(&wall::Path::Locate),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Path::Locate),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
             elle::Status::Error)
           escape("unable to register the callback");
 
@@ -95,52 +95,52 @@ namespace etoile
         //
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagObjectLoad,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagObjectLoad,
                               TagIdentifier>(
-                elle::Callback<>::Infer(&wall::Object::Load),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Object::Load),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
             elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagObjectInformation,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagObjectInformation,
                               TagObjectAbstract>(
-                elle::Callback<>::Infer(&wall::Object::Information),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Object::Information),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagObjectDiscard,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagObjectDiscard,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::Object::Discard),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Object::Discard),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagObjectStore,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagObjectStore,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::Object::Store),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Object::Store),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagObjectDestroy,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagObjectDestroy,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::Object::Destroy),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Object::Destroy),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
@@ -149,82 +149,82 @@ namespace etoile
         //
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagFileCreate,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagFileCreate,
                               TagIdentifier>(
-                elle::Callback<>::Infer(&wall::File::Create),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::File::Create),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagFileLoad,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagFileLoad,
                               TagIdentifier>(
-                elle::Callback<>::Infer(&wall::File::Load),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::File::Load),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagFileWrite,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagFileWrite,
                               elle::TagOk>(
-                elle::Callback<>::Infer( &wall::File::Write),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer( &wall::File::Write),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagFileRead,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagFileRead,
                               TagFileRegion>(
-                elle::Callback<>::Infer(&wall::File::Read),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::File::Read),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagFileAdjust,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagFileAdjust,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::File::Adjust),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::File::Adjust),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagFileDiscard,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagFileDiscard,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::File::Discard),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::File::Discard),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagFileStore,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagFileStore,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::File::Store),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::File::Store),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagFileDestroy,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagFileDestroy,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::File::Destroy),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::File::Destroy),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
@@ -233,102 +233,102 @@ namespace etoile
         //
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagDirectoryCreate,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagDirectoryCreate,
                               TagIdentifier>(
-                elle::Callback<>::Infer(&wall::Directory::Create),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Directory::Create),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagDirectoryLoad,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagDirectoryLoad,
                               TagIdentifier>(
-                elle::Callback<>::Infer(&wall::Directory::Load),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Directory::Load),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagDirectoryAdd,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagDirectoryAdd,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::Directory::Add),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Directory::Add),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagDirectoryLookup,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagDirectoryLookup,
                               TagDirectoryEntry>(
-                elle::Callback<>::Infer(&Wrapper::Directory::Lookup),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&Wrapper::Directory::Lookup),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagDirectoryConsult,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagDirectoryConsult,
                               TagDirectoryRange>(
-                elle::Callback<>::Infer(&Wrapper::Directory::Consult),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&Wrapper::Directory::Consult),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagDirectoryRename,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagDirectoryRename,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::Directory::Rename),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Directory::Rename),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagDirectoryRemove,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagDirectoryRemove,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::Directory::Remove),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Directory::Remove),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagDirectoryDiscard,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagDirectoryDiscard,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::Directory::Discard),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Directory::Discard),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagDirectoryStore,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagDirectoryStore,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::Directory::Store),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Directory::Store),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagDirectoryDestroy,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagDirectoryDestroy,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::Directory::Destroy),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Directory::Destroy),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
@@ -337,72 +337,72 @@ namespace etoile
         //
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagLinkCreate,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagLinkCreate,
                               TagIdentifier>(
-                elle::Callback<>::Infer(&wall::Link::Create),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Link::Create),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagLinkLoad,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagLinkLoad,
                               TagIdentifier>(
-                elle::Callback<>::Infer(&wall::Link::Load),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Link::Load),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagLinkBind,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagLinkBind,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::Link::Bind),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Link::Bind),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagLinkResolve,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagLinkResolve,
                               TagLinkWay>(
-                elle::Callback<>::Infer(&wall::Link::Resolve),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Link::Resolve),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagLinkDiscard,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagLinkDiscard,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::Link::Discard),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Link::Discard),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagLinkStore,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagLinkStore,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::Link::Store),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Link::Store),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagLinkDestroy,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagLinkDestroy,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::Link::Destroy),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Link::Destroy),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
@@ -411,42 +411,42 @@ namespace etoile
         //
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagAccessLookup,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagAccessLookup,
                               TagAccessRecord>(
-                elle::Callback<>::Infer(&Wrapper::Access::Lookup),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&Wrapper::Access::Lookup),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagAccessConsult,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagAccessConsult,
                               TagAccessRange>(
-                elle::Callback<>::Infer(&Wrapper::Access::Consult),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&Wrapper::Access::Consult),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagAccessGrant,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagAccessGrant,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::Access::Grant),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Access::Grant),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagAccessRevoke,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagAccessRevoke,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::Access::Revoke),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Access::Revoke),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
@@ -455,42 +455,42 @@ namespace etoile
         //
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagAttributesSet,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagAttributesSet,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::Attributes::Set),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Attributes::Set),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagAttributesGet,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagAttributesGet,
                               TagAttributesTrait>(
-                elle::Callback<>::Infer(&Wrapper::Attributes::Get),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&Wrapper::Attributes::Get),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagAttributesFetch,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagAttributesFetch,
                               TagAttributesRange>(
-                elle::Callback<>::Infer(&Wrapper::Attributes::Fetch),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&Wrapper::Attributes::Fetch),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
 
         // register the message.
-        if (elle::Network::Register(
-              elle::Procedure<TagAttributesOmit,
+        if (elle::network::Network::Register(
+              elle::network::Procedure<TagAttributesOmit,
                               elle::TagOk>(
-                elle::Callback<>::Infer(&wall::Attributes::Omit),
-                elle::Callback<>::Infer(&Portal::Prolog),
-                elle::Callback<>::Infer(&Portal::Epilog))) ==
+                elle::concurrency::Callback<>::Infer(&wall::Attributes::Omit),
+                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
+                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
           escape("unable to register the callback");
       }
@@ -498,7 +498,7 @@ namespace etoile
       // listen for incoming connection.
       if (elle::LocalServer::Listen(
             Portal::Line,
-            elle::Callback<>::Infer(
+            elle::concurrency::Callback<>::Infer(
               &Portal::Connection)) == elle::Status::Error)
         escape("unable to listen for local connections");
 
@@ -651,7 +651,7 @@ namespace etoile
     ///
     elle::Status        Portal::Authenticate(const elle::String&        pass)
     {
-      elle::Session*    session;
+      elle::network::Session*    session;
       Application*      application;
 
       // debug.
@@ -660,7 +660,7 @@ namespace etoile
                   << std::endl;
 
       // retrieve the network session.
-      if (elle::Session::Instance(session) == elle::Status::Error)
+      if (elle::network::Session::Instance(session) == elle::Status::Error)
         escape("unable to retrieve the current session");
 
       // retrieve the application associated with the current socket.
@@ -677,7 +677,7 @@ namespace etoile
 
       // reply with the Authenticated message.
       if (application->socket->Reply(
-            elle::Inputs<TagAuthenticated>()) == elle::Status::Error)
+            elle::network::Inputs<TagAuthenticated>()) == elle::Status::Error)
         escape("unable to reply to the application");
 
       return elle::Status::Ok;
@@ -692,11 +692,11 @@ namespace etoile
     ///
     elle::Status        Portal::Prolog()
     {
-      elle::Session*    session;
+      elle::network::Session*    session;
       Application*      application;
 
       // retrieve the network session.
-      if (elle::Session::Instance(session) == elle::Status::Error)
+      if (elle::network::Session::Instance(session) == elle::Status::Error)
         escape("unable to retrieve the current session");
 
       // retrieve the application associated with the current socket.
@@ -727,11 +727,11 @@ namespace etoile
     ///
     elle::Status        Portal::Epilog()
     {
-      elle::Session*    session;
+      elle::network::Session*    session;
       Application*      application;
 
       // retrieve the network session.
-      if (elle::Session::Instance(session) == elle::Status::Error)
+      if (elle::network::Session::Instance(session) == elle::Status::Error)
         escape("unable to retrieve the current session");
 
       // retrieve the application associated with the current socket.

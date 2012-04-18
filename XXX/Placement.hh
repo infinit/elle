@@ -26,7 +26,7 @@ namespace nucleus
     /// XXX
     ///
     class Placement:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

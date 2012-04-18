@@ -39,7 +39,7 @@ namespace hole
       /// XXX
       ///
       class Cluster:
-        public elle::Object
+        public elle::radix::Object
       {
       public:
         //

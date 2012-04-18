@@ -37,7 +37,7 @@ elle::Status            Main(elle::Natural32                    argc,
     escape("unable to initialize Elle");
 
   // set up the program.
-  if (elle::Program::Setup() == elle::Status::Error)
+  if (elle::concurrency::Program::Setup() == elle::Status::Error)
     escape("unable to set up the program");
 
   // allocate a new parser.
@@ -169,7 +169,7 @@ elle::Status            Main(elle::Natural32                    argc,
     escape("unable to initialize the horizon");
 
   // launch the program.
-  if (elle::Program::Launch() == elle::Status::Error)
+  if (elle::concurrency::Program::Launch() == elle::Status::Error)
     escape("an error occured while processing events");
 
   // delete the parser.

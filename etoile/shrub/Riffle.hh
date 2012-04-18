@@ -46,7 +46,7 @@ namespace etoile
     /// variable, it would have been too much burden for no benefit.
     ///
     class Riffle:
-      public elle::Entity
+      public elle::radix::Entity
     {
     public:
       //

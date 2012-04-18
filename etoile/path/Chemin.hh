@@ -26,7 +26,7 @@ namespace etoile
     /// along with its associated venue.
     ///
     class Chemin:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

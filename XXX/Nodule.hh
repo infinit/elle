@@ -56,7 +56,7 @@ namespace nucleus
     ///
     template <typename V>
     class Nodule:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

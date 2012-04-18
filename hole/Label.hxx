@@ -1,15 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [thu aug 11 14:27:39 2011]
-//
-
 #ifndef HOLE_LABEL_HXX
-#define HOLE_LABEL_HXX
+# define HOLE_LABEL_HXX
+
+# include <elle/standalone/Report.hh>
+# include <elle/cryptography/Digest.hh>
+# include <elle/cryptography/OneWay.hh>
 
 namespace hole
 {

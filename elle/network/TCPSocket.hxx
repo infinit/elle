@@ -45,9 +45,14 @@ namespace elle
       Data              data;
       Header            header;
 
-      // serialize the inputs.
-      if (inputs.Serialize(data) == Status::Error)
-        escape("unable to serialize the inputs");
+      try
+        {
+          data.Writer() << inputs;
+        }
+      catch (std::exception const& err)
+        {
+          escape(err.what());
+        }
 
       // create the header now that we know that final archive's size.
       if (header.Create(event,
@@ -115,13 +120,17 @@ namespace elle
             }
 
           // in any case, return an error from the Receive() method.
-          escape("received a packet with an unexpected tag '%u'",
-                 tag);
+          escape("received a packet with an unexpected tag '%u'", tag);
         }
 
-      // extract the arguments.
-      if (outputs.Extract(*parcel->data) == Status::Error)
-        escape("unable to extract the arguments");
+      try
+        {
+          parcel->data->Writer() << outputs;
+        }
+      catch (std::exception const& err)
+        {
+          escape(err.what());
+        }
 
       return Status::Ok;
     }

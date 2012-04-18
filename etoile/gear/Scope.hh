@@ -50,7 +50,7 @@ namespace etoile
     /// structure for as long as necessary.
     ///
     class Scope:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

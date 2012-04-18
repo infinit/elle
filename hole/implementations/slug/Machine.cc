@@ -92,37 +92,37 @@ namespace hole
         //
         {
           // register the message.
-          if (elle::Network::Register(
-                elle::Procedure<TagAuthenticate>(
-                  elle::Callback<>::Infer(
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagAuthenticate>(
+                  elle::concurrency::Callback<>::Infer(
                     &Machine::Authenticate, this))) == elle::Status::Error)
             escape("unable to register the callback");
 
           // register the message.
-          if (elle::Network::Register(
-                elle::Procedure<TagAuthenticated>(
-                  elle::Callback<>::Infer(
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagAuthenticated>(
+                  elle::concurrency::Callback<>::Infer(
                     &Machine::Authenticated, this))) == elle::Status::Error)
             escape("unable to register the callback");
 
           // register the message.
-          if (elle::Network::Register(
-                elle::Procedure<TagPush>(
-                  elle::Callback<>::Infer(
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagPush>(
+                  elle::concurrency::Callback<>::Infer(
                     &Machine::Push, this))) == elle::Status::Error)
             escape("unable to register the callback");
 
           // register the message.
-          if (elle::Network::Register(
-                elle::Procedure<TagPull>(
-                  elle::Callback<>::Infer(
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagPull>(
+                  elle::concurrency::Callback<>::Infer(
                     &Machine::Pull, this))) == elle::Status::Error)
             escape("unable to register the callback");
 
           // register the message.
-          if (elle::Network::Register(
-                elle::Procedure<TagWipe>(
-                  elle::Callback<>::Infer(
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagWipe>(
+                  elle::concurrency::Callback<>::Infer(
                     &Machine::Wipe, this))) == elle::Status::Error)
             escape("unable to register the callback");
         }
@@ -150,7 +150,7 @@ namespace hole
 
               // subscribe to the signal.
               if (host->signal.dead.Subscribe(
-                    elle::Callback<>::Infer(&Machine::Sweep,
+                    elle::concurrency::Callback<>::Infer(&Machine::Sweep,
                                             this)) == elle::Status::Error)
                 escape("unable to subscribe to the signal");
 
@@ -183,7 +183,7 @@ namespace hole
 
           // subscribe to the timer's signal.
           if (this->timer->signal.timeout.Subscribe(
-                elle::Callback<>::Infer(&Machine::Alone,
+                elle::concurrency::Callback<>::Infer(&Machine::Alone,
                                         this)) == elle::Status::Error)
             escape("unable to subscribe to the signal");
 
@@ -208,9 +208,9 @@ namespace hole
             escape("unable to create the locus");
 
           // listen for incoming connections.
-          if (elle::TCPServer::Listen(
+          if (elle::network::TCPServer::Listen(
                 locus,
-                elle::Callback<>::Infer(
+                elle::concurrency::Callback<>::Infer(
                   &Machine::Connection, this)) == elle::Status::Error)
             escape("unable to listen for TCP connections");
         }
@@ -493,7 +493,7 @@ namespace hole
                       if (host->socket->Call(
                             elle::network::Inputs<TagPull>(address,
                                                   nucleus::Version::Any),
-                            elle::Outputs<TagBlock>(derivable)) ==
+                            elle::network::Outputs<TagBlock>(derivable)) ==
                           elle::Status::Ok)
                         {
                           // validate the block.
@@ -594,7 +594,7 @@ namespace hole
                       if (host->socket->Call(
                             elle::network::Inputs<TagPull>(address,
                                                   version),
-                            elle::Outputs<TagBlock>(derivable)) ==
+                            elle::network::Outputs<TagBlock>(derivable)) ==
                           elle::Status::Ok)
                         {
                           // validate the block, depending on its component.
@@ -782,7 +782,7 @@ namespace hole
                           if (host->socket->Call(
                                 elle::network::Inputs<TagPull>(address,
                                                       version),
-                                elle::Outputs<TagBlock>(derivable)) ==
+                                elle::network::Outputs<TagBlock>(derivable)) ==
                               elle::Status::Ok)
                             {
                               // validate the block, depending on its
@@ -1121,7 +1121,7 @@ namespace hole
 
               // subscribe to the signal.
               if (host->signal.dead.Subscribe(
-                    elle::Callback<>::Infer(&Machine::Sweep,
+                    elle::concurrency::Callback<>::Infer(&Machine::Sweep,
                                             this)) == elle::Status::Error)
                 escape("unable to subscribe to the signal");
 
@@ -1168,14 +1168,14 @@ namespace hole
                                               const elle::Port& port)
       {
         Host*           host;
-        elle::Session*  session;
+        elle::network::Session*  session;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Machine::Authenticate()\n");
 
         // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::Status::Error)
+        if (elle::network::Session::Instance(session) == elle::Status::Error)
           escape("unable to retrieve the current session");
 
         // if the host exists in the guestlist, handle its authentication.
@@ -1245,14 +1245,14 @@ namespace hole
       ///
       elle::Status      Machine::Authenticated(const Cluster&   cluster)
       {
-        elle::Session*  session;
+        elle::network::Session*  session;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Machine::Authenticated()\n");
 
         // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::Status::Error)
+        if (elle::network::Session::Instance(session) == elle::Status::Error)
           escape("unable to retrieve the current session");
 
         // set the machine as being authenticated and is therefore now
@@ -1300,7 +1300,7 @@ namespace hole
 
               // subscribe to the signal.
               if (host->signal.dead.Subscribe(
-                    elle::Callback<>::Infer(&Machine::Sweep,
+                    elle::concurrency::Callback<>::Infer(&Machine::Sweep,
                                             this)) == elle::Status::Error)
                 escape("unable to subscribe to the signal");
 
@@ -1327,7 +1327,7 @@ namespace hole
 
           // subscribe to the signal.
           if (this->synchroniser->signal.synchronised.Subscribe(
-                elle::Callback<>::Infer(&Machine::Synchronised,
+                elle::concurrency::Callback<>::Infer(&Machine::Synchronised,
                                         this)) == elle::Status::Error)
             escape("unable to subscribe to the signal");
 
@@ -1411,7 +1411,7 @@ namespace hole
                                           <nucleus::Block>&     derivable)
       {
         Host*           host;
-        elle::Session*  session;
+        elle::network::Session*  session;
         nucleus::Block* object;
 
         // debug.
@@ -1419,7 +1419,7 @@ namespace hole
           printf("[hole] implementations::slug::Machine::Push()\n");
 
         // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::Status::Error)
+        if (elle::network::Session::Instance(session) == elle::Status::Error)
           escape("unable to retrieve the current session");
 
         // retrieve the host from the guestlist.
@@ -1585,7 +1585,7 @@ namespace hole
                                       const nucleus::Version&   version)
       {
         Host*           host;
-        elle::Session*  session;
+        elle::network::Session*  session;
         nucleus::Block* block;
 
         // debug.
@@ -1593,7 +1593,7 @@ namespace hole
           printf("[hole] implementations::slug::Machine::Pull()\n");
 
         // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::Status::Error)
+        if (elle::network::Session::Instance(session) == elle::Status::Error)
           escape("unable to retrieve the current session");
 
         // retrieve the host from the guestlist.
@@ -1738,14 +1738,14 @@ namespace hole
       elle::Status      Machine::Wipe(const nucleus::Address&   address)
       {
         Host*           host;
-        elle::Session*  session;
+        elle::network::Session*  session;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Machine::Wipe()\n");
 
         // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::Status::Error)
+        if (elle::network::Session::Instance(session) == elle::Status::Error)
           escape("unable to retrieve the current session");
 
         // retrieve the host from the guestlist.

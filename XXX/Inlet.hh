@@ -51,7 +51,7 @@ namespace nucleus
     template <typename V,
               typename T>
     class Inlet:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

@@ -554,7 +554,7 @@ namespace etoile
 
       // subscribe to the timer's signal.
       if (this->timer.signal.timeout.Subscribe(
-            elle::Callback<>::Infer(&Scope::Supervisor,
+            elle::concurrency::Callback<>::Infer(&Scope::Supervisor,
                                     this)) == elle::Status::Error)
         escape("unable to subscribe to the signal");
 
@@ -1085,9 +1085,9 @@ namespace etoile
       // fiber.
       zone.Lock();
       {
-        elle::Callback<
-          elle::Status::,
-          elle::Parameters<
+        elle::concurrency::Callback<
+          elle::Status,
+          elle::radix::Parameters<
             T&
             >
           >             callback;

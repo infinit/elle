@@ -31,7 +31,7 @@ namespace etoile
     /// this class describes an object's meta data.
     ///
     class Abstract:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

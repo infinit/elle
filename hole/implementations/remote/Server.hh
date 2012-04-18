@@ -40,7 +40,7 @@ namespace hole
       /// parallel.
       ///
       class Server:
-        public elle::Entity
+        public elle::radix::Entity
       {
       public:
         //

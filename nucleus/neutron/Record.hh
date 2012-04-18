@@ -36,7 +36,7 @@ namespace nucleus
     /// to access the data.
     ///
     class Record:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

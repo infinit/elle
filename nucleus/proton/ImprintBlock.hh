@@ -2,7 +2,8 @@
 # define NUCLEUS_PROTON_IMPRINTBLOCK_HH
 
 # include <elle/types.hh>
-# include <elle/utility/fwd.hh>
+
+# include <elle/utility/Time.hh>
 
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/MutableBlock.hh>

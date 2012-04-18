@@ -65,7 +65,7 @@ namespace etoile
 
       // subscribe to the timer's signal.
       if (Shrub::Timer.signal.timeout.Subscribe(
-            elle::Callback<>::Infer(&Shrub::Sweeper)) == elle::Status::Error)
+            elle::concurrency::Callback<>::Infer(&Shrub::Sweeper)) == elle::Status::Error)
         escape("unable to subscribe to the signal");
 
       // start the timer.

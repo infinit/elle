@@ -128,8 +128,8 @@ namespace satellite
       //
       static Memoirs*           Reference;
       static elle::Entrance<
-        elle::Status::,
-        elle::Parameters<>
+        elle::Status,
+        elle::radix::Parameters<>
         >*                      Entrance;
     };
 

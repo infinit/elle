@@ -48,7 +48,7 @@ namespace nucleus
     /// the generation of the address' digest.
     ///
     class Address:
-      public elle::Object,
+      public elle::radix::Object,
       public elle::io::Fileable<Address, elle::serialize::Base64Archive>
     {
     public:

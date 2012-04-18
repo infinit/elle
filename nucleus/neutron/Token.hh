@@ -20,7 +20,7 @@ namespace nucleus
     /// use this key, it is encrypted with the user's public key.
     ///
     class Token:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

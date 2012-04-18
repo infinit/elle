@@ -28,7 +28,7 @@ namespace lune
   /// this class represents the local log file.
   ///
   class Log:
-    public elle::Object
+    public elle::radix::Object
   {
   public:
     //

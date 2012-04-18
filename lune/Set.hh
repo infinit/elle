@@ -17,7 +17,7 @@ namespace lune
   /// a hole implementation to initiate connections.
   ///
   class Set:
-    public elle::Object,
+    public elle::radix::Object,
     public elle::Fileable<Set>
   {
   public:

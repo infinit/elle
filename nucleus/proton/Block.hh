@@ -1,36 +1,19 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [mon feb 16 18:47:31 2009]
-//
-
 #ifndef NUCLEUS_PROTON_BLOCK_HH
-#define NUCLEUS_PROTON_BLOCK_HH
+# define NUCLEUS_PROTON_BLOCK_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/serialize/SerializableMixin.hh>
 
+# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/Network.hh>
+# include <nucleus/proton/Family.hh>
+# include <nucleus/proton/State.hh>
 
-#include <nucleus/proton/Address.hh>
-#include <nucleus/proton/Network.hh>
-#include <nucleus/proton/Family.hh>
-#include <nucleus/proton/State.hh>
-
-#include <nucleus/neutron/Component.hh>
+# include <nucleus/neutron/Component.hh>
 
 namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class abstracts the notion of storable block of data.
@@ -45,9 +28,10 @@ namespace nucleus
     /// other methods depend on the nature of the block: mutable or
     /// immutable.
     ///
-    class Block:
-      public elle::Object,
-      public elle::io::Fileable<Block>
+    class Block
+      : public elle::radix::Object
+      , public elle::io::Fileable<Block>
+      , public elle::serialize::SerializableMixin<Block>
     {
     public:
       //

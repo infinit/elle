@@ -35,9 +35,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationStatfs:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Statfs),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Statfs),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -48,9 +48,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationGetattr:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Getattr),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Getattr),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -61,9 +61,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationFgetattr:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Fgetattr),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Fgetattr),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -74,22 +74,22 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationUtimens:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Utimens),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Utimens),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
           yield(_(true), "unable to spawn a fiber");
-    
+
         break;
       }
     case Event::OperationOpendir:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Opendir),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Opendir),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -100,9 +100,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationReaddir:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Readdir),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Readdir),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -113,9 +113,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationReleasedir:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Releasedir),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Releasedir),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -126,9 +126,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationMkdir:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Mkdir),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Mkdir),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -139,9 +139,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationRmdir:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Rmdir),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Rmdir),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -152,9 +152,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationAccess:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Access),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Access),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -165,9 +165,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationChmod:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Chmod),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Chmod),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -178,9 +178,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationChown:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Chown),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Chown),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -191,9 +191,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationSetxattr:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Setxattr),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Setxattr),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -204,9 +204,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationGetxattr:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Getxattr),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Getxattr),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -217,9 +217,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationListxattr:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Listxattr),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Listxattr),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -230,9 +230,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationRemovexattr:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Removexattr),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Removexattr),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -243,9 +243,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationSymlink:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Symlink),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Symlink),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -256,9 +256,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationReadlink:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Readlink),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Readlink),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -269,9 +269,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationCreate:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Create),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Create),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -282,9 +282,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationOpen:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Open),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Open),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -295,9 +295,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationWrite:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Write),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Write),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -308,9 +308,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationRead:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Read),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Read),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -321,9 +321,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationTruncate:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Truncate),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Truncate),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -334,9 +334,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationFtruncate:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Ftruncate),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Ftruncate),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -347,9 +347,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationRelease:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Release),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Release),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -360,9 +360,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationRename:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Rename),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Rename),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)
@@ -373,9 +373,9 @@ bool            Broker::event(QEvent*                           qevent)
     case Event::OperationUnlink:
       {
         elle::Closure<
-          elle::Status::,
-          elle::Parameters<Event*>
-          >             closure(elle::Callback<>::Infer(&Broker::Unlink),
+          elle::Status,
+          elle::radix::Parameters<Event*>
+          >             closure(elle::concurrency::Callback<>::Infer(&Broker::Unlink),
                                 event);
 
         if (elle::Fiber::Spawn(closure) == elle::Status::Error)

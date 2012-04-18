@@ -34,7 +34,7 @@ namespace etoile
     /// XXX
     ///
     class Pod:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

@@ -28,7 +28,7 @@ namespace hole
   /// this class defines the model of a network i.e its implementation.
   ///
   class Model:
-    public elle::Object
+    public elle::radix::Object
   {
   public:
     //

@@ -1,16 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [thu may 26 09:58:52 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/network/BundleSerializer.hxx>
+#include <elle/standalone/ReportSerializer.hxx>
+#include <elle/utility/BufferSerializer.hxx>
+#include <elle/network/HeaderSerializer.hxx>
+
+#include <elle/network/Network.hh>
+#include <elle/standalone/Morgue.hh>
 
 #include <hole/implementations/remote/Server.hh>
 #include <hole/implementations/remote/Manifest.hh>
@@ -85,38 +80,38 @@ namespace hole
         //
         {
           // register the challenge message.
-          if (elle::Network::Register(
-                elle::Procedure<TagChallenge,
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagChallenge,
                                 elle::TagNone,
                                 TagException>(
-                  elle::Callback<>::Infer(
+                  elle::concurrency::Callback<>::Infer(
                     &Server::Challenge, this))) == elle::Status::Error)
             escape("unable to register the callback");
 
           // register the push message.
-          if (elle::Network::Register(
-                elle::Procedure<TagPush,
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagPush,
                                 elle::TagNone,
                                 TagException>(
-                  elle::Callback<>::Infer(
+                  elle::concurrency::Callback<>::Infer(
                     &Server::Push, this))) == elle::Status::Error)
             escape("unable to register the callback");
 
           // register the pull message.
-          if (elle::Network::Register(
-                elle::Procedure<TagPull,
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagPull,
                                 elle::TagNone,
                                 TagException>(
-                  elle::Callback<>::Infer(
+                  elle::concurrency::Callback<>::Infer(
                     &Server::Pull, this))) == elle::Status::Error)
             escape("unable to register the callback");
 
           // register the wipe message.
-          if (elle::Network::Register(
-                elle::Procedure<TagWipe,
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagWipe,
                                 elle::TagNone,
                                 TagException>(
-                  elle::Callback<>::Infer(
+                  elle::concurrency::Callback<>::Infer(
                     &Server::Wipe, this))) == elle::Status::Error)
             escape("unable to register the callback");
         }
@@ -126,9 +121,9 @@ namespace hole
         //
         {
           // listen for incoming connections.
-          if (elle::TCPServer::Listen(
+          if (elle::network::TCPServer::Listen(
                 this->locus,
-                elle::Callback<>::Infer(
+                elle::concurrency::Callback<>::Infer(
                   &Server::Connection, this)) == elle::Status::Error)
             escape("unable to listen for TCP connections");
         }
@@ -492,7 +487,7 @@ namespace hole
 
         // subscribe to the signal.
         if (customer->signal.dead.Subscribe(
-              elle::Callback<>::Infer(
+              elle::concurrency::Callback<>::Infer(
                 &Server::Sweep, this
               )
             ) == elle::Status::Error)
@@ -514,7 +509,7 @@ namespace hole
       elle::Status      Server::Challenge(const lune::Passport& passport)
       {
         Customer*       customer;
-        elle::Session*  session;
+        elle::network::Session*  session;
 
 
         // debug.
@@ -522,7 +517,7 @@ namespace hole
           printf("[hole] implementations::remote::Server::Challenge()\n");
 
         // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::Status::Error)
+        if (elle::network::Session::Instance(session) == elle::Status::Error)
           escape("unable to retrieve the current session");
 
         // retrieve the customer.
@@ -577,22 +572,18 @@ namespace hole
       ///
       /// this method stores the given block.
       ///
-      elle::Status      Server::Push(const nucleus::Address&    address,
-                                     const
-                                       nucleus::Derivable
-                                         <nucleus::Block>&      derivable)
+      elle::Status      Server::Push(nucleus::Address const&    address,
+                                     nucleus::Block const&      block)
       {
         Customer*       customer;
-        elle::Session*  session;
-        nucleus::Block* object;
-
+        elle::network::Session*  session;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Server::Push()\n");
 
         // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::Status::Error)
+        if (elle::network::Session::Instance(session) == elle::Status::Error)
           escape("unable to retrieve the current session");
 
         // retrieve the customer.
@@ -604,23 +595,17 @@ namespace hole
         if (customer->state != Customer::StateAuthenticated)
           escape("the customer has not been authenticated");
 
-        // infer the block from the derivable.
-        if (derivable.Infer(object) == elle::Status::Error)
-          escape("unable to infer the block from the derivable");
-
         // forward the request depending on the nature of the block which
         // the addres indicates.
         switch (address.family)
           {
           case nucleus::FamilyContentHashBlock:
             {
-              nucleus::ImmutableBlock*  ib;
-
-              // cast to an immutable block.
-              ib = static_cast<nucleus::ImmutableBlock*>(object);
+              nucleus::ImmutableBlock const& ib =
+                static_cast<nucleus::ImmutableBlock const&>(block);
 
               // store the immutable block.
-              if (this->Put(address, *ib) == elle::Status::Error)
+              if (this->Put(address, ib) == elle::Status::Error)
                 escape("unable to put the block");
 
               break;
@@ -629,13 +614,11 @@ namespace hole
           case nucleus::FamilyOwnerKeyBlock:
           case nucleus::FamilyImprintBlock:
             {
-              nucleus::MutableBlock*    mb;
-
-              // cast to a mutable block.
-              mb = static_cast<nucleus::MutableBlock*>(object);
+              nucleus::MutableBlock const&  mb =
+                static_cast<nucleus::MutableBlock const&>(block);
 
               // store the mutable block.
-              if (this->Put(address, *mb) == elle::Status::Error)
+              if (this->Put(address, mb) == elle::Status::Error)
                 escape("unable to put the block");
 
               break;
@@ -661,7 +644,7 @@ namespace hole
                                      const nucleus::Version&    version)
       {
         Customer*       customer;
-        elle::Session*  session;
+        elle::network::Session*  session;
         nucleus::Block* block;
 
         // debug.
@@ -669,7 +652,7 @@ namespace hole
           printf("[hole] implementations::remote::Server::Pull()\n");
 
         // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::Status::Error)
+        if (elle::network::Session::Instance(session) == elle::Status::Error)
           escape("unable to retrieve the current session");
 
         // retrieve the customer.
@@ -727,11 +710,11 @@ namespace hole
             }
           }
 
-        nucleus::Derivable<nucleus::Block> derivable(address.component, *block);
+        //nucleus::Derivable<nucleus::Block> derivable(address.component, *block);
 
         // return the block.
         if (customer->socket->Reply(
-              elle::network::Inputs<TagBlock>(derivable)) == elle::Status::Error)
+              elle::network::Inputs<TagBlock>(*block)) == elle::Status::Error)
           escape("unable to return the block");
 
         return elle::Status::Ok;
@@ -743,14 +726,14 @@ namespace hole
       elle::Status      Server::Wipe(const nucleus::Address&    address)
       {
         Customer*       customer;
-        elle::Session*  session;
+        elle::network::Session*  session;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Server::Wipe()\n");
 
         // retrieve the network session.
-        if (elle::Session::Instance(session) == elle::Status::Error)
+        if (elle::network::Session::Instance(session) == elle::Status::Error)
           escape("unable to retrieve the current session");
 
         // retrieve the customer.

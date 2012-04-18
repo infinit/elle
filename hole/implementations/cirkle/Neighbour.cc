@@ -84,7 +84,7 @@ namespace hole
 
         // subscribe to the timer's signal.
         if (this->timer->signal.timeout.Subscribe(
-              elle::Callback<>::Infer(&Neighbour::Discard,
+              elle::concurrency::Callback<>::Infer(&Neighbour::Discard,
                                       this)) == elle::Status::Error)
           escape("unable to subscribe to the signal");
 
@@ -100,9 +100,9 @@ namespace hole
       ///
       elle::Status      Neighbour::Create(elle::Gate*           gate)
       {
-        elle::Callback<
-          elle::Status::,
-          elle::Parameters<>
+        elle::concurrency::Callback<
+          elle::Status,
+          elle::radix::Parameters<>
           >             monitor(&Neighbour::Monitor, this);
 
         // set the gate.
@@ -122,9 +122,9 @@ namespace hole
       ///
       elle::Status      Neighbour::Connect()
       {
-        elle::Callback<
-          elle::Status::,
-          elle::Parameters<>
+        elle::concurrency::Callback<
+          elle::Status,
+          elle::radix::Parameters<>
           >                             monitor(&Neighbour::Monitor, this);
 
         // allocate a gate.

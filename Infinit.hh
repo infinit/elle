@@ -1,21 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       infinit
-//
-// license       infinit
-//
-// author        julien quintard   [tue may  4 22:00:42 2010]
-//
 
 #ifndef INFINIT_HH
 #define INFINIT_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/types.hh>
+#include <elle/utility/fwd.hh>
+
 #include <lune/Lune.hh>
 
 //
@@ -38,7 +27,7 @@ public:
   static lune::Authority                Authority;
   static lune::Configuration            Configuration;
 
-  static elle::Parser*                  Parser;
+  static elle::utility::Parser*         Parser;
 
   static elle::String                   User;
   static elle::String                   Network;

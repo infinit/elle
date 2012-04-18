@@ -17,7 +17,7 @@ namespace nucleus
     /// can be granted access such as a user or a group.
     ///
     class Subject
-      : public elle::Object
+      : public elle::radix::Object
     {
     public:
       //

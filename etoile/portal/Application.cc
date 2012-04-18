@@ -78,13 +78,13 @@ namespace etoile
 
       // subscribe to the signal.
       if (this->socket->signal.disconnected.Subscribe(
-            elle::Callback<>::Infer(&Application::Disconnected,
+            elle::concurrency::Callback<>::Infer(&Application::Disconnected,
                                     this)) == elle::Status::Error)
         escape("unable to subscribe to the signal");
 
       // subscribe to the signal.
       if (this->socket->signal.error.Subscribe(
-            elle::Callback<>::Infer(&Application::Error,
+            elle::concurrency::Callback<>::Infer(&Application::Error,
                                     this)) == elle::Status::Error)
         escape("unable to subscribe to the signal");
 
@@ -97,7 +97,7 @@ namespace etoile
 
       // subscribe to the timer's signal.
       if (this->timer->signal.timeout.Subscribe(
-            elle::Callback<>::Infer(&Application::Abort,
+            elle::concurrency::Callback<>::Infer(&Application::Abort,
                                     this)) == elle::Status::Error)
         escape("unable to subscribe to the signal");
 

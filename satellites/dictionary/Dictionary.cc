@@ -363,7 +363,7 @@ namespace satellite
       escape("unable to initialize Elle");
 
     // set up the program.
-    if (elle::Program::Setup() == elle::Status::Error)
+    if (elle::concurrency::Program::Setup() == elle::Status::Error)
       escape("unable to set up the program");
 
     // initialize the nucleus library.

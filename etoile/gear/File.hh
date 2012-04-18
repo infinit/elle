@@ -55,9 +55,9 @@ namespace etoile
       //
       typedef wall::File                        W;
       typedef automaton::File                   A;
-      typedef elle::Callback<
-                elle::Status::,
-                elle::Parameters<
+      typedef elle::concurrency::Callback<
+                elle::Status,
+                elle::radix::Parameters<
                   File&
                   >
                 >                               S;

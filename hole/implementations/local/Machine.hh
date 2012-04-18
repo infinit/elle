@@ -37,7 +37,7 @@ namespace hole
       /// the machine.
       ///
       class Machine:
-        public elle::Entity
+        public elle::radix::Entity
       {
       public:
         //

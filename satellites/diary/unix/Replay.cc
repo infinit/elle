@@ -41,8 +41,8 @@ namespace satellite
     /// this variable contains the entrance which triggers the replay.
     ///
     elle::Entrance<
-      elle::Status::,
-      elle::Parameters<>
+      elle::Status,
+      elle::radix::Parameters<>
       >*                                Replay::Entrance = NULL;
 
 //
@@ -1600,12 +1600,12 @@ namespace satellite
       // allocate the entrance.
       Replay::Entrance =
         new elle::Entrance<
-          elle::Status::,
-          elle::Parameters<>
+          elle::Status,
+          elle::radix::Parameters<>
           >(elle::Closure<
-              elle::Status::,
-              elle::Parameters<>
-              >(elle::Callback<>::Infer(&Replay::Process)));
+              elle::Status,
+              elle::radix::Parameters<>
+              >(elle::concurrency::Callback<>::Infer(&Replay::Process)));
 
 #if defined(INFINIT_LINUX)
       {
@@ -1896,7 +1896,7 @@ namespace satellite
                 << std::endl;
 
       // exit the program.
-      elle::Program::Exit();
+      elle::concurrency::Program::Exit();
 
       return elle::Status::Ok;
 
@@ -1911,7 +1911,7 @@ namespace satellite
                 << std::endl;
 
       // exit the program.
-      elle::Program::Exit();
+      elle::concurrency::Program::Exit();
 
       return elle::Status::Ok;
     }

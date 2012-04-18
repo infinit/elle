@@ -48,7 +48,7 @@ namespace nucleus
     /// Catalog for directories, Data for files etc.
     ///
     class Data:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

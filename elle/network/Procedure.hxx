@@ -1,29 +1,17 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon jul 18 17:40:44 2011]
-//
-
 #ifndef ELLE_NETWORK_PROCEDURE_HXX
-#define ELLE_NETWORK_PROCEDURE_HXX
+# define ELLE_NETWORK_PROCEDURE_HXX
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/radix/Arguments.hh>
+# include <elle/radix/Variables.hh>
 
-#include <elle/radix/Arguments.hh>
-#include <elle/radix/Variables.hh>
+# include <elle/network/Session.hh>
+# include <elle/network/Bundle.hh>
+# include <elle/network/Inputs.hh>
 
-#include <elle/network/Session.hh>
-#include <elle/network/Bundle.hh>
-#include <elle/network/Inputs.hh>
+# include <elle/standalone/Maid.hh>
+# include <elle/standalone/Report.hh>
 
-#include <elle/standalone/Maid.hh>
-#include <elle/standalone/Report.hh>
+# include <elle/serialize/BufferArchive.hh>
 
 namespace elle
 {
@@ -69,144 +57,177 @@ namespace elle
     /// this method is called by the network manager whenever a message
     /// of tag I is received.
     ///
-    //template <const Tag I,
-    //          const Tag O,
-    //          const Tag E>
-    //Status              Procedure<I, O, E>::Skeleton(Archive&   archive) const
-    //{
-    //  Callback<
-    //    Status,
-    //    typename Trait::Reference<
-    //      typename Message<I>::P
-    //      >::Type
-    //    >               extract(&Archive::Extract, &archive);
-    //  Variables<
-    //    typename Trait::Bare<
-    //      typename Message<I>::P
-    //      >::Type
-    //    >               inputs;
-    //  Variables<
-    //    typename Trait::Bare<
-    //      typename Message<O>::P
-    //      >::Type
-    //    >               outputs;
-    //  Status            status;
-    //  Session*          session;
+    template <const Tag I,
+              const Tag O,
+              const Tag E>
+    Status Procedure<I, O, E>::Skeleton(elle::utility::Buffer& buffer) const
+    {
 
-    //  // retrieve the session.
-    //  if (Session::Instance(session) == Status::Error)
-    //    escape("unable to retrieve the session instance");
+      struct Extractor
+      {
+      private:
+        elle::serialize::InputBufferArchive& archive;
 
-    //  // check the session.
-    //  if (session == NULL)
-    //    escape("unable to proceed with a null session");
+      public:
+        Extractor(elle::serialize::InputBufferArchive& archive)
+          : archive(archive)
+        {}
 
-    //  // call the prolog.
-    //  if (this->prolog.Call() == Status::Error)
-    //    escape("an error occured in the procedure's prolog");
+        elle::Status Load()
+        {
+          return elle::Status::Ok;
+        }
 
-    //  // extract the values from the archive given the types required
-    //  // for the callback.
-    //  if (inputs.Call(extract) == Status::Error)
-    //    escape("unable to extract from the archive");
+        //template<template<typename...> class P, typename ...T>
+        //elle::Status Load(P<T...>& value)
+        //{
+        //  //static_assert(false, "NON1");
+        //}
+        template<typename ...T>
+        elle::Status Load(T&... value)
+        {
+          //static_assert(false, "NON1");
+        }
+      };
 
-    //  // check that the end of the archive has been reached i.e all
-    //  // the information has been extracted. this step ensures that
-    //  // the archive does not contain more variables that extracted.
-    //  if (archive.offset != archive.size)
-    //    escape("the archive seems to contain additional information");
+      elle::serialize::InputBufferArchive archive(buffer);
+      Extractor extractor(archive);
 
-    //  // at this point, an Arguments is created which references both
-    //  // the inputs and outputs. thus no copy is made while the
-    //  // outputs can still be accessed through the _outputs_ variable.
-    //  Arguments<
-    //    typename
-    //      Set::Union<
-    //        typename
-    //          Trait::Bare<
-    //            typename Message<I>::P
-    //            >::Type,
-    //        typename
-    //          Trait::Bare<
-    //            typename Message<O>::P
-    //            >::Type
-    //        >::Type
-    //    >               arguments = Arguments<>::Union(inputs, outputs);
 
-    //  // call the routine.
-    //  status = arguments.Call(this->routine);
+      Callback<
+          Status,
+          typename Trait::Reference<
+              typename Message<I>::P
+          >::Type
+      >               extract(&Extractor::Load, &extractor);
 
-    //  // call the epilog.
-    //  if (this->epilog.Call() == Status::Error)
-    //    escape("an error occured in the procedure's epilog");
+      Variables<
+        typename Trait::Bare<
+          typename Message<I>::P
+          >::Type
+        >               inputs;
+      Variables<
+        typename Trait::Bare<
+          typename Message<O>::P
+          >::Type
+        >               outputs;
+      Status            status;
+      Session*          session;
 
-    //  //
-    //  // send back the report to the client if an error occured.
-    //  //
-    //  if (status == Status::Error)
-    //    {
-    //      //
-    //      // serialize the report and send it to the caller.
-    //      //
-    //      Report*               report;
+      // retrieve the session.
+      if (Session::Instance(session) == Status::Error)
+        escape("unable to retrieve the session instance");
 
-    //      // check the socket.
-    //      if (session->socket == NULL)
-    //        escape("unable to reply with a null socket");
+      // check the session.
+      if (session == NULL)
+        escape("unable to proceed with a null session");
 
-    //      // retrieve the report.
-    //      if (Report::Instance(report) == Status::False)
-    //        escape("unable to retrieve the report");
+      // call the prolog.
+      if (this->prolog.Call() == Status::Error)
+        escape("an error occured in the procedure's prolog");
 
-    //      // reply with the report.
-    //      if (session->socket->Reply(
-    //            Inputs<E>(*report),
-    //            session) == Status::Error)
-    //        escape("unable to reply with the status");
+      // extract the values from the archive given the types required
+      // for the callback.
+      if (inputs.Call(extract) == Status::Error)
+        escape("unable to extract from the archive");
 
-    //      // flush the report since it has been sent
-    //      // to the sender.
-    //      report->Flush();
+      // check that the end of the archive has been reached i.e all
+      // the information has been extracted. this step ensures that
+      // the archive does not contain more variables that extracted.
+      if (archive.Stream().BytesLeft() > 0)
+        escape("the archive seems to contain additional information");
 
-    //      return Status::Ok;
-    //    }
+      // at this point, an Arguments is created which references both
+      // the inputs and outputs. thus no copy is made while the
+      // outputs can still be accessed through the _outputs_ variable.
+      Arguments<
+        typename
+          Set::Union<
+            typename
+              Trait::Bare<
+                typename Message<I>::P
+                >::Type,
+            typename
+              Trait::Bare<
+                typename Message<O>::P
+                >::Type
+            >::Type
+        >               arguments = Arguments<>::Union(inputs, outputs);
 
-    //  // reply according to the output tag.
-    //  switch (O)
-    //    {
-    //    case TagNone:
-    //      {
-    //        //
-    //        // nothing to do in this case.
-    //        //
+      // call the routine.
+      status = arguments.Call(this->routine);
 
-    //        break;
-    //      }
-    //    default:
-    //      {
-    //        //
-    //        // in this case the procedure's outputs are serialized and
-    //        // sent back to the caller.
-    //        //
+      // call the epilog.
+      if (this->epilog.Call() == Status::Error)
+        escape("an error occured in the procedure's epilog");
 
-    //        typename
-    //          Message<O>::B::Inputs     bundle(outputs);
+      //
+      // send back the report to the client if an error occured.
+      //
+      if (status == Status::Error)
+        {
+          //
+          // serialize the report and send it to the caller.
+          //
+          Report*               report;
 
-    //        // check the socket.
-    //        if (session->socket == NULL)
-    //          escape("unable to reply with a null socket");
+          // check the socket.
+          if (session->socket == NULL)
+            escape("unable to reply with a null socket");
 
-    //        // reply with the output bundle.
-    //        if (session->socket->Reply(bundle,
-    //                                   session) == Status::Error)
-    //          escape("unable to reply to the caller");
+          // retrieve the report.
+          if (Report::Instance(report) == Status::False)
+            escape("unable to retrieve the report");
 
-    //        break;
-    //      }
-    //    }
+          // reply with the report.
+          if (session->socket->Reply(
+                Inputs<E>(*report),
+                session) == Status::Error)
+            escape("unable to reply with the status");
 
-    //  return Status::Ok;
-    //}
+          // flush the report since it has been sent
+          // to the sender.
+          report->Flush();
+
+          return Status::Ok;
+        }
+
+      // reply according to the output tag.
+      switch (O)
+        {
+        case TagNone:
+          {
+            //
+            // nothing to do in this case.
+            //
+
+            break;
+          }
+        default:
+          {
+            //
+            // in this case the procedure's outputs are serialized and
+            // sent back to the caller.
+            //
+
+            typename
+              Message<O>::B::Inputs     bundle(outputs);
+
+            // check the socket.
+            if (session->socket == NULL)
+              escape("unable to reply with a null socket");
+
+            // reply with the output bundle.
+            if (session->socket->Reply(bundle,
+                                       session) == Status::Error)
+              escape("unable to reply to the caller");
+
+            break;
+          }
+        }
+
+      return Status::Ok;
+    }
 
 //
 // ---------- object ----------------------------------------------------------

@@ -38,10 +38,10 @@ int main(int argc, char** argv)
 
   // XXX
   nucleus::Porcupine<>::Initialize(
-    elle::Callback<>::Infer(&etoile::Nest::Attach),
-    elle::Callback<>::Infer(&etoile::Nest::Detach),
-    elle::Callback<>::Infer(&etoile::Nest::Load),
-    elle::Callback<>::Infer(&etoile::Nest::Unload));
+    elle::concurrency::Callback<>::Infer(&etoile::Nest::Attach),
+    elle::concurrency::Callback<>::Infer(&etoile::Nest::Detach),
+    elle::concurrency::Callback<>::Infer(&etoile::Nest::Load),
+    elle::concurrency::Callback<>::Infer(&etoile::Nest::Unload));
 
   nucleus::Porcupine<nucleus::Catalog>* p =
     new nucleus::Porcupine<nucleus::Catalog>;

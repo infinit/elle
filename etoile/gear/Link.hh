@@ -55,9 +55,9 @@ namespace etoile
       //
       typedef wall::Link                        W;
       typedef automaton::Link                   A;
-      typedef elle::Callback<
-                elle::Status::,
-                elle::Parameters<
+      typedef elle::concurrency::Callback<
+                elle::Status,
+                elle::radix::Parameters<
                   Link&
                   >
                 >                               S;

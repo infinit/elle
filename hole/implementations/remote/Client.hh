@@ -24,7 +24,7 @@ namespace hole
       /// i.e the server.
       ///
       class Client:
-        public elle::Entity
+        public elle::radix::Entity
       {
       public:
         //

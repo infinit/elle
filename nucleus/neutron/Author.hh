@@ -34,7 +34,7 @@ namespace nucleus
     /// the author.
     ///
     class Author:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //
