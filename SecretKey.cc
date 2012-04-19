@@ -5,6 +5,7 @@
 #include <elle/cryptography/Random.hh>
 
 #include <elle/standalone/Log.hh>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
