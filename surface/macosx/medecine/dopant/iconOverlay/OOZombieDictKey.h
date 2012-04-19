@@ -1,6 +1,6 @@
 //
-//  ZombieDictKey.h
-//  medecine
+//  OOZombieDictKey.h
+//  Dopant
 //
 //  Created by Charles Guillot on 02/04/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "OOCellDictKey-Protocol.h"
+
 
 @interface OOZombieDictKey : NSObject
 {

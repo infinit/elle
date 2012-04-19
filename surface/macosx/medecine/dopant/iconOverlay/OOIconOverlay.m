@@ -1,6 +1,6 @@
 //
-//  FIIconOverlay.m
-//  HelperTools
+//  OOIconOverlay.m
+//  Dopant
 //
 //  Created by Charles Guillot on 27/03/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
@@ -22,8 +22,6 @@
 @synthesize syncingImage;
 @synthesize syncedImage;
 @synthesize disconnectedImage;
-
-@synthesize nodesStatusDict;
 
 + (void) initialize
 {
@@ -91,6 +89,7 @@
     
     return theIconRef;
 }  
+
 - (void) addStatusOpperationToQueue:(id)arg1
 {
     if (arg1 != nil)

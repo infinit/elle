@@ -1,6 +1,6 @@
 //
-//  FITableCellDictKey.m
-//  HelperTools
+//  OOCellDictKey.m
+//  Dopant
 //
 //  Created by Charles Guillot on 28/03/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
