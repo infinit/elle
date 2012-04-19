@@ -1,30 +1,16 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon nov 12 23:19:13 2007]
-//
-
 #ifndef ELLE_STANDALONE_REGION_HH
-#define ELLE_STANDALONE_REGION_HH
+# define ELLE_STANDALONE_REGION_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
+# include <elle/radix/Meta.hh>
 
-#include <elle/radix/Meta.hh>
+# include <elle/io/Dumpable.hh>
 
-#include <elle/io/Dumpable.hh>
-
-#include <elle/idiom/Close.hh>
-# include <iostream>
-# include <iomanip>
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  include <iostream>
+#  include <iomanip>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -34,10 +20,6 @@ namespace elle
 
   namespace standalone
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a memory area.

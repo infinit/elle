@@ -66,7 +66,8 @@ namespace elle { namespace serialize {
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
     template<typename T>
-      inline void BaseArchive<mode_, Archive, CT, STS>::Save(T const& val)
+    inline typename std::enable_if<std::is_enum<T>::value == false>::type
+      BaseArchive<mode_, Archive, CT, STS>::Save(T const& val)
       {
         if (StoreClassVersion<T>::value == true)
             Access::Save(this->self(), ClassVersionType(ArchivableClass<T>::version));
@@ -84,7 +85,8 @@ namespace elle { namespace serialize {
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
     template<typename T>
-      inline void BaseArchive<mode_, Archive, CT, STS>::Load(T& val)
+    inline typename std::enable_if<std::is_enum<T>::value == false>::type
+      BaseArchive<mode_, Archive, CT, STS>::Load(T& val)
       {
         ClassVersionType classVersion(0);
         if (StoreClassVersion<T>::value == true)
@@ -315,6 +317,29 @@ namespace elle { namespace serialize {
       {
         Access::Load(this->self(), classVersion.version);
       }
+
+
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+    template<typename T>
+      inline typename std::enable_if<std::is_enum<T>::value == true>::type
+      BaseArchive<mode_, Archive, CT, STS>::Save(T value)
+      {
+        assert(static_cast<unsigned int>(value) < 65536);
+        Access::Save(this->self(), static_cast<uint16_t>(value));
+      }
+
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+    template<typename T>
+      inline typename std::enable_if<std::is_enum<T>::value == true>::type
+      BaseArchive<mode_, Archive, CT, STS>::Load(T& value)
+      {
+        uint16_t value_;
+        Access::Load(this->self(), value_);
+        value = static_cast<T>(value);
+      }
+
 
       /// This is the last method called by any serialization method
       /// You may want to override it to change the serialization format

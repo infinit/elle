@@ -27,7 +27,7 @@ namespace elle
   }
 }
 
-# include <elle/serialize/SerializableMixin.hxx>
+//# include <elle/serialize/SerializableMixin.hxx>
 
 #endif /* ! SERIALIZABLEMIXIN_HH */
 

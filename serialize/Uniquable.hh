@@ -3,6 +3,8 @@
 
 # include <elle/types.hh>
 
+# include <elle/serialize/fwd.hh>
+
 # include <elle/io/Unique.hh>
 
 namespace elle
@@ -21,7 +23,7 @@ namespace elle
     ///
     /// Uses the Strangly Recurring Template Pattern.
     ///
-    template<typename T>
+    template<typename T, template<ArchiveMode> class DefaultArchive = Base64Archive>
     class Uniquable
     {
     public:
@@ -29,13 +31,15 @@ namespace elle
       /// this method returns in the Unique, the string-based representation of
       /// the object's archive.
       ///
-      Status            Save(Unique& out) const;
+      template<template<ArchiveMode> class Archive = DefaultArchive>
+      Status            Save(elle::io::Unique& out) const;
 
       ///
       /// this method reconstructs the living object based on the unique string
       /// representation.
       ///
-      Status            Restore(Unique const& in);
+      template<template<ArchiveMode> class Archive = DefaultArchive>
+      Status            Restore(elle::io::Unique const& in);
     };
 
   }

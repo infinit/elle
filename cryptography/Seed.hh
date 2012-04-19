@@ -5,8 +5,10 @@
 
 # include <elle/radix/Object.hh>
 
-# include <elle/cryptography/PublicKey.hh>
-# include <elle/cryptography/PrivateKey.hh>
+# include <elle/cryptography/fwd.hh>
+# include <elle/standalone/Region.hh>
+
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -15,21 +17,6 @@ namespace elle
 
   namespace cryptography
   {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    ///
-    /// the PublicKey and PrivateKey must be forward declared to prevent
-    /// conflicts.
-    ///
-    class PublicKey;
-    class PrivateKey;
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a seed which can especially be used for
@@ -73,10 +60,12 @@ namespace elle
       //
       // attributes
       //
-      Region            region;
+      standalone::Region            region;
     };
 
   }
 }
+
+# include <elle/idiom/Close.hh>
 
 #endif

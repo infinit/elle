@@ -19,14 +19,15 @@ namespace elle
   namespace serialize
   {
 
-    template<typename T>
-      Status Uniquable<T>::Save(Unique& out) const
+    template<typename T, template<ArchiveMode> class DefaultArchive>
+      template<template<ArchiveMode> class Archive>
+      Status Uniquable<T, DefaultArchive>::Save(elle::io::Unique& out) const
       {
-        T const& self = *this;
+        T const& self = static_cast<T const&>(*this);
         std::ostringstream ss;
         try
           {
-            elle::serialize::OutputBase64Archive(ss, self);
+            Archive<ArchiveMode::Output>(ss, self);
           }
         catch (std::exception const& err)
           {
@@ -37,15 +38,15 @@ namespace elle
         return Status::Ok;
       }
 
-    template<typename T>
-      Status Uniquable<T>::Restore(Unique const& in)
+    template<typename T, template<ArchiveMode> class DefaultArchive>
+      template<template<ArchiveMode> class Archive>
+      Status Uniquable<T, DefaultArchive>::Restore(elle::io::Unique const& in)
       {
         T& self = static_cast<T&>(*this);
         std::istringstream ss(in);
         try
           {
-            elle::serialize::InputBase64Archive archive(ss);
-            archive >> self;
+            Archive<ArchiveMode::Input>(ss) >> self;
           }
         catch (std::exception const& err)
           {

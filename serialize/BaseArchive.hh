@@ -334,7 +334,12 @@ namespace elle { namespace serialize {
       inline void Save(double val);
       inline void Save(std::string const& val);
       inline void Save(ClassVersionType const& classVersion);
-      template<typename T> inline void Save(T const& val);
+      template<typename T>
+        inline typename std::enable_if<std::is_enum<T>::value == true>::type
+        Save(T value);
+      template<typename T>
+        inline typename std::enable_if<std::is_enum<T>::value == false>::type
+        Save(T const& value);
       inline void SaveBinary(void const* data, std::streamsize size);
 
       inline void Load(char& val);
@@ -350,7 +355,12 @@ namespace elle { namespace serialize {
       inline void Load(double& val);
       inline void Load(std::string& val);
       inline void Load(ClassVersionType& classVersion);
-      template<typename T> inline void Load(T& val);
+      template<typename T>
+        inline typename std::enable_if<std::is_enum<T>::value == true>::type
+        Load(T& value);
+      template<typename T>
+        inline typename std::enable_if<std::is_enum<T>::value == false>::type
+        Load(T& val);
       template<typename T> inline void LoadConstruct(T* ptr);
       inline void LoadBinary(void* data, std::streamsize size);
 

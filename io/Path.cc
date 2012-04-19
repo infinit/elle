@@ -2,6 +2,8 @@
 #include <elle/standalone/Log.hh>
 #include <elle/io/Path.hh>
 
+#include <elle/idiom/Open.hh>
+
 namespace elle
 {
   namespace io

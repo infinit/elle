@@ -14,7 +14,7 @@ namespace elle
     >
     void SerializableMixin<T, Archive>::LoadFrom(InputArchive& archive)
     {
-      archive >> *this;
+      archive >> static_cast<T&>(*this);
     }
 
     template<
@@ -23,7 +23,7 @@ namespace elle
     >
     void SerializableMixin<T, Archive>::SaveTo(OutputArchive& archive) const
     {
-      archive << *this;
+      archive << static_cast<T const&>(*this);
     }
 
   }

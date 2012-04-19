@@ -4,6 +4,7 @@
 # include <elle/types.hh>
 
 # include <elle/io/Dumpable.hh>
+# include <elle/serialize/Uniquable.hxx>
 
 # include <elle/serialize/fwd.hh>
 
@@ -19,6 +20,7 @@ namespace elle
     /// @see WeakBuffer for a buffer that doesn't own the data
     class Buffer
       : public elle::io::Dumpable
+      , public elle::serialize::Uniquable<Buffer>
     {
       friend elle::serialize::ArchiveSerializer<Buffer>;
     private:
@@ -61,6 +63,7 @@ namespace elle
 
 
     class WeakBuffer
+      : public elle::serialize::Uniquable<WeakBuffer>
     {
     private:
       elle::Byte const*   _contents;

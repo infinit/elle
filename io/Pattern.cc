@@ -1,22 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       infinit
-//
-// license       elle
-//
-// author        julien quintard   [mon apr 25 11:37:13 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Log.hh>
 
 #include <elle/io/Pattern.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -24,10 +12,6 @@ namespace elle
 
   namespace io
   {
-
-//
-// ---------- methods ---------------------------------------------------------
-//
 
     ///
     /// this method creates a pattern.
@@ -39,10 +23,6 @@ namespace elle
 
       return Status::Ok;
     }
-
-//
-// ---------- object ----------------------------------------------------------
-//
 
     ///
     /// this method check if two objects match.

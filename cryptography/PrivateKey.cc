@@ -1,18 +1,6 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [tue oct 30 10:07:31 2007]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <elle/cryptography/PrivateKey.hh>
+#include <elle/cryptography/PublicKey.hh>
 #include <elle/cryptography/OneWay.hh>
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/standalone/Log.hh>

@@ -14,6 +14,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::utility::Buffer,
                           value,
                           version)
 {
+  assert(version == 0);
   uint64_t size;
   archive >> size;
   if (sizeof(uint64_t) > sizeof(size_t))
@@ -23,6 +24,18 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::utility::Buffer,
     }
   value.Size(size);
   archive.LoadBinary(value._contents, size);
+}
+
+ELLE_SERIALIZE_SPLIT(elle::utility::WeakBuffer)
+
+ELLE_SERIALIZE_SPLIT_SAVE(elle::utility::WeakBuffer,
+                          archive,
+                          value,
+                          version)
+{
+  assert(version == 0);
+  archive << value.Size();
+  archive.SaveBinary(value.Contents(), value.Size());
 }
 
 #endif
