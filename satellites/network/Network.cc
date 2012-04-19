@@ -208,7 +208,7 @@ namespace satellite
         escape("unable to create the path");
 
       // complete the path with the network name.
-      if (path.Complete(elle::Piece("%NETWORK%", name)) == elle::Status::Error)
+      if (path.Complete(elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
         escape("unable to complete the path");
 
       // if the reserve exists, clear it and remove it.
@@ -235,7 +235,7 @@ namespace satellite
         escape("unable to create the path");
 
       // complete the path with the network name.
-      if (path.Complete(elle::Piece("%NETWORK%", name)) == elle::Status::Error)
+      if (path.Complete(elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
         escape("unable to complete the path");
 
       // if the shelter exists, clear it and remove it.
@@ -262,7 +262,7 @@ namespace satellite
         escape("unable to create the path");
 
       // complete the path with the network name.
-      if (path.Complete(elle::Piece("%NETWORK%", name)) == elle::Status::Error)
+      if (path.Complete(elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
         escape("unable to complete the path");
 
       // clear the network directory content.

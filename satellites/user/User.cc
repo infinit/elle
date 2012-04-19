@@ -158,7 +158,7 @@ namespace satellite
         escape("unable to create the path");
 
       // complete the path with the user name.
-      if (path.Complete(elle::Piece("%USER%", name)) == elle::Status::Error)
+      if (path.Complete(elle::io::Piece("%USER%", name)) == elle::Status::Error)
         escape("unable to complete the path");
 
       // clear the user directory content.

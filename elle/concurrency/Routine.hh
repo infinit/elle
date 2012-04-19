@@ -5,6 +5,8 @@
 
 # include <elle/radix/Object.hh>
 
+# include <elle/idiom/Open.hh>
+
 namespace elle
 {
 
@@ -56,5 +58,7 @@ namespace elle
 
   }
 }
+
+# include <elle/idiom/Close.hh>
 
 #endif

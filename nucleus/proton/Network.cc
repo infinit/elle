@@ -120,26 +120,26 @@ namespace nucleus
     ///
     /// this method serializes the network object.
     ///
-    elle::Status        Network::Serialize(elle::Archive&       archive) const
-    {
-      // serialize the internal.
-      if (archive.Serialize(this->name) == elle::Status::Error)
-        escape("unable to serialize the name");
+    //elle::Status        Network::Serialize(elle::Archive&       archive) const
+    //{
+    //  // serialize the internal.
+    //  if (archive.Serialize(this->name) == elle::Status::Error)
+    //    escape("unable to serialize the name");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the network object.
-    ///
-    elle::Status        Network::Extract(elle::Archive&         archive)
-    {
-      // extract the internal.
-      if (archive.Extract(this->name) == elle::Status::Error)
-        escape("unable to extract the name");
+    /////
+    ///// this method extracts the network object.
+    /////
+    //elle::Status        Network::Extract(elle::Archive&         archive)
+    //{
+    //  // extract the internal.
+    //  if (archive.Extract(this->name) == elle::Status::Error)
+    //    escape("unable to extract the name");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

@@ -1,16 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [mon dec  5 14:27:18 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/concurrency/Callback.hh>
 
 #include <hole/implementations/slug/Synchroniser.hh>
 

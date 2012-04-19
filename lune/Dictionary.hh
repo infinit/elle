@@ -7,18 +7,15 @@
 //
 // author        julien quintard   [mon may 10 15:52:06 2010]
 //
-
 #ifndef LUNE_DICTIONARY_HH
-#define LUNE_DICTIONARY_HH
+# define LUNE_DICTIONARY_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <nucleus/Nucleus.hh>
 
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
+# include <lune/Map.hh>
 
-#include <lune/Map.hh>
+# include <elle/idiom/Open.hh>
 
 namespace lune
 {

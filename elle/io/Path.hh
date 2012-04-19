@@ -21,6 +21,8 @@
 
 #include <elle/io/Pattern.hh>
 
+#include <elle/idiom/Open.hh>
+
 namespace elle
 {
 
@@ -89,5 +91,7 @@ namespace elle
 //
 
 #include <elle/io/Path.hxx>
+
+#include <elle/idiom/Close.hh>
 
 #endif

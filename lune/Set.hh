@@ -5,6 +5,8 @@
 
 # include <elle/network/Locus.hh>
 
+# include <elle/idiom/Open.hh>
+
 namespace lune
 {
 
@@ -18,7 +20,7 @@ namespace lune
   ///
   class Set:
     public elle::radix::Object,
-    public elle::Fileable<Set>
+    public elle::io::Fileable<Set>
   {
   public:
     //

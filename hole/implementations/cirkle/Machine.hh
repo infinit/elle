@@ -88,7 +88,7 @@ namespace hole
 
         elle::Status            Challenge();
         elle::Status            Passport(const lune::Passport&);
-        elle::Status            Port(const elle::Port&);
+        elle::Status            Port(const elle::network::Port&);
         elle::Status            Authenticated();
         elle::Status            Update(const Cluster&);
 
@@ -118,7 +118,7 @@ namespace hole
 
         elle::concurrency::Timer             timer;
 
-        elle::Port              port;
+        elle::network::Port              port;
       };
 
     }

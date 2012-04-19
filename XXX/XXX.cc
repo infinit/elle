@@ -68,7 +68,7 @@ int main(int argc, char** argv)
 
       elle::cryptography::Digest digest;
 
-      elle::OneWay::Hash(elle::Region((elle::Byte*)buffer, strlen(buffer)),
+      elle::cryptography::OneWay::Hash(elle::Region((elle::Byte*)buffer, strlen(buffer)),
                          digest);
 
       elle::String s;

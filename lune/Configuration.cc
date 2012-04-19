@@ -278,7 +278,7 @@ namespace lune
       escape("unable to create the path");
 
     // erase the file.
-    if (elle::File::Erase(path) == elle::Status::Error)
+    if (elle::io::File::Erase(path) == elle::Status::Error)
       escape("unable to erase the file");
 
     return elle::Status::Ok;
@@ -296,7 +296,7 @@ namespace lune
       escape("unable to create the path");
 
     // test the file.
-    if (elle::File::Exist(path) == elle::Status::False)
+    if (elle::io::File::Exist(path) == elle::Status::False)
       return elle::Status::False;
 
     return elle::Status::True;

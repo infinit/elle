@@ -1,29 +1,13 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [sat may  1 12:52:01 2010]
-//
-
 #ifndef LUNE_PHRASE_HH
-#define LUNE_PHRASE_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
+# define LUNE_PHRASE_HH
 
 # include <elle/radix/Object.hh>
 # include <elle/io/Fileable.hh>
 
+# include <elle/idiom/Open.hh>
+
 namespace lune
 {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
   ///
   /// this class represents a phrase i.e a string enabling applications
@@ -82,5 +66,7 @@ namespace lune
   };
 
 }
+
+# include <elle/idiom/Close.hh>
 
 #endif

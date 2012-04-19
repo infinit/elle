@@ -1,16 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [thu aug 25 12:19:28 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/network/Locus.hh>
 
 #include <hole/implementations/slug/Neighbourhood.hh>
 

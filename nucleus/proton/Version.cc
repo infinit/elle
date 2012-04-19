@@ -180,26 +180,26 @@ namespace nucleus
     ///
     /// this method serializes the version attributes.
     ///
-    elle::Status        Version::Serialize(elle::Archive&       archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(this->number) == elle::Status::Error)
-        escape("unable to serialize the version's attributes");
+    //elle::Status        Version::Serialize(elle::Archive&       archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(this->number) == elle::Status::Error)
+    //    escape("unable to serialize the version's attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the attributes.
-    ///
-    elle::Status        Version::Extract(elle::Archive&         archive)
-    {
-      // extracts the attributes.
-      if (archive.Extract(this->number) == elle::Status::Error)
-        escape("unable to extract the version's attributes");
+    /////
+    ///// this method extracts the attributes.
+    /////
+    //elle::Status        Version::Extract(elle::Archive&         archive)
+    //{
+    //  // extracts the attributes.
+    //  if (archive.Extract(this->number) == elle::Status::Error)
+    //    escape("unable to extract the version's attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

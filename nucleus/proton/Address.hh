@@ -23,6 +23,8 @@
 
 #include <nucleus/neutron/Component.hh>
 
+#include <elle/idiom/Open.hh>
+
 namespace nucleus
 {
   namespace proton
@@ -115,5 +117,7 @@ namespace nucleus
 //
 
 #include <nucleus/proton/Address.hxx>
+
+#include <elle/idiom/Open.hh>
 
 #endif

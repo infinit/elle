@@ -11,6 +11,8 @@
 # include <elle/cryptography/PrivateKey.hh>
 # include <elle/cryptography/Seed.hh>
 
+# include <elle/idiom/Open.hh>
+
 namespace elle
 {
   namespace cryptography
@@ -100,5 +102,7 @@ namespace elle
 
   }
 }
+
+# include <elle/idiom/Close.hh>
 
 #endif

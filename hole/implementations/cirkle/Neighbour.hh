@@ -87,7 +87,7 @@ namespace hole
         elle::network::Locus     locus;
         Label           label;
 
-        elle::Port      port;
+        elle::network::Port      port;
 
         elle::Gate*     gate;
 

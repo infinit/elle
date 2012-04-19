@@ -1,21 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [sun may  8 01:21:07 2011]
-//
+#ifndef  NUCLEUS_PROTON_NETWORK_HH
+# define NUCLEUS_PROTON_NETWORK_HH
 
-#ifndef NUCLEUS_PROTON_NETWORK_HH
-#define NUCLEUS_PROTON_NETWORK_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
 namespace nucleus
 {

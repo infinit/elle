@@ -1,19 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri jun 17 14:34:48 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/standalone/Log.hh>
 
 #include <nucleus/proton/Base.hh>
 #include <nucleus/proton/MutableBlock.hh>
+#include <nucleus/proton/MutableBlockSerializer.hxx>
 
 namespace nucleus
 {
@@ -46,7 +36,7 @@ namespace nucleus
       this->version = block.version;
 
       // compute the block's digest.
-      if (elle::OneWay::Hash(block, this->digest) == elle::Status::Error)
+      if (elle::cryptography::OneWay::Hash(block, this->digest) == elle::Status::Error)
         escape("unable to hash the mutable block");
 
       return elle::Status::Ok;
@@ -65,7 +55,7 @@ namespace nucleus
         return elle::Status::False;
 
       // compute the block's digest.
-      if (elle::OneWay::Hash(block, digest) == elle::Status::Error)
+      if (elle::cryptography::OneWay::Hash(block, digest) == elle::Status::Error)
         flee("unable to hash the mutable block");
 
       // compare the digests.
@@ -86,14 +76,14 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::Status::True;
+        return true;
 
       // compare the attributes.
       if ((this->version != element.version) ||
           (this->digest != element.digest))
-        return elle::Status::False;
+        return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///
@@ -132,28 +122,28 @@ namespace nucleus
     ///
     /// this method serializes the base.
     ///
-    elle::Status        Base::Serialize(elle::Archive&          archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(this->version,
-                            this->digest) == elle::Status::Error)
-        escape("unable to serialize the attributes");
+    //elle::Status        Base::Serialize(elle::Archive&          archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(this->version,
+    //                        this->digest) == elle::Status::Error)
+    //    escape("unable to serialize the attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the base.
-    ///
-    elle::Status        Base::Extract(elle::Archive&            archive)
-    {
-      // extract the attributes.
-      if (archive.Extract(this->version,
-                          this->digest) == elle::Status::Error)
-        escape("unable to extract the attributes");
+    /////
+    ///// this method extracts the base.
+    /////
+    //elle::Status        Base::Extract(elle::Archive&            archive)
+    //{
+    //  // extract the attributes.
+    //  if (archive.Extract(this->version,
+    //                      this->digest) == elle::Status::Error)
+    //    escape("unable to extract the attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

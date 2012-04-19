@@ -167,11 +167,11 @@ elle::Status          Set::Load(const elle::String&        network)
     escape("unable to create the path");
 
   // complete the path's pattern.
-  if (path.Complete(elle::Piece("%NETWORK%", network)) == elle::Status::Error)
+  if (path.Complete(elle::io::Piece("%NETWORK%", network)) == elle::Status::Error)
     escape("unable to complete the path");
 
   // read the file's content.
-  if (elle::File::Read(path, region) == elle::Status::Error)
+  if (elle::io::File::Read(path, region) == elle::Status::Error)
     escape("unable to read the file's content");
 
   // set up the stream.
@@ -226,7 +226,7 @@ elle::Status          Set::Store(const elle::String&       network) const
     escape("unable to create the path");
 
   // complete the path's pattern.
-  if (path.Complete(elle::Piece("%NETWORK%", network)) == elle::Status::Error)
+  if (path.Complete(elle::io::Piece("%NETWORK%", network)) == elle::Status::Error)
     escape("unable to complete the path");
 
   // wrap the string.
@@ -235,7 +235,7 @@ elle::Status          Set::Store(const elle::String&       network) const
     escape("unable to wrap the string in a region");
 
   // write the file's content.
-  if (elle::File::Write(path, region) == elle::Status::Error)
+  if (elle::io::File::Write(path, region) == elle::Status::Error)
     escape("unable to write the file's content");
 
   return elle::Status::Ok;
@@ -253,11 +253,11 @@ elle::Status          Set::Erase(const elle::String&       network) const
     escape("unable to create the path");
 
   // complete the path's pattern.
-  if (path.Complete(elle::Piece("%NETWORK%", network)) == elle::Status::Error)
+  if (path.Complete(elle::io::Piece("%NETWORK%", network)) == elle::Status::Error)
     escape("unable to complete the path");
 
   // erase the file.
-  if (elle::File::Erase(path) == elle::Status::Error)
+  if (elle::io::File::Erase(path) == elle::Status::Error)
     escape("unable to erase the file");
 
   return elle::Status::Ok;
@@ -275,11 +275,11 @@ elle::Status          Set::Exist(const elle::String&       network) const
     escape("unable to create the path");
 
   // complete the path's pattern.
-  if (path.Complete(elle::Piece("%NETWORK%", network)) == elle::Status::Error)
+  if (path.Complete(elle::io::Piece("%NETWORK%", network)) == elle::Status::Error)
     escape("unable to complete the path");
 
   // test the file.
-  if (elle::File::Exist(path) == elle::Status::False)
+  if (elle::io::File::Exist(path) == elle::Status::False)
     return elle::Status::False;
 
   return elle::Status::True;

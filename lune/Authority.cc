@@ -285,7 +285,7 @@ namespace lune
     elle::Region        region;
 
     // read the file's content.
-    if (elle::File::Read(path, region) == elle::Status::Error)
+    if (elle::io::File::Read(path, region) == elle::Status::Error)
       escape("unable to read the file's content");
 
     // decode and extract the object.
@@ -338,7 +338,7 @@ namespace lune
       escape("unable to wrap the string in a region");
 
     // write the file's content.
-    if (elle::File::Write(path, region) == elle::Status::Error)
+    if (elle::io::File::Write(path, region) == elle::Status::Error)
       escape("unable to write the file's content");
 
     return elle::Status::Ok;
@@ -356,7 +356,7 @@ namespace lune
       escape("unable to create the path");
 
     // erase the file.
-    if (elle::File::Erase(path) == elle::Status::Error)
+    if (elle::io::File::Erase(path) == elle::Status::Error)
       escape("unable to erase the file");
 
     return elle::Status::Ok;
@@ -374,7 +374,7 @@ namespace lune
       escape("unable to create the path");
 
     // test the file.
-    if (elle::File::Exist(path) == elle::Status::False)
+    if (elle::io::File::Exist(path) == elle::Status::False)
       return elle::Status::False;
 
     return elle::Status::True;

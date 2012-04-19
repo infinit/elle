@@ -105,7 +105,7 @@ message(hole::implementations::cirkle::TagChallenge,
 message(hole::implementations::cirkle::TagPassport,
         parameters(lune::Passport))
 message(hole::implementations::cirkle::TagPort,
-        parameters(elle::Port))
+        parameters(elle::network::Port))
 message(hole::implementations::cirkle::TagAuthenticated,
         parameters())
 

@@ -1,26 +1,17 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [sun may  8 00:10:37 2011]
-//
-
 #ifndef NUCLEUS_PROTON_ADDRESS_HXX
-#define NUCLEUS_PROTON_ADDRESS_HXX
+# define NUCLEUS_PROTON_ADDRESS_HXX
 
-#include <elle/cryptography/OneWay.hh>
+# include <tuple>
+
+# include <elle/cryptography/OneWay.hxx>
+# include <elle/serialize/TupleSerializer.hxx>
+
+# include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
     ///
     /// create the address based on an object by serializing it before
@@ -52,7 +43,7 @@ namespace nucleus
       // in the parameters as well. for examples, please refer to
       // ContentHashBlock, PublicKeyBlock etc.
       if (elle::cryptography::OneWay::Hash(
-            parameter, parameters...,
+            std::make_tuple(parameter, parameters...),
             *this->digest) == elle::Status::Error)
         escape("unable to hash the given parameter(s)");
 
@@ -61,5 +52,7 @@ namespace nucleus
 
   }
 }
+
+# include <elle/idiom/Open.hh>
 
 #endif

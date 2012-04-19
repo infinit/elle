@@ -171,10 +171,10 @@ namespace hole
         //
         {
           elle::network::Locus                   locus;
-          elle::Host                    host;
+          elle::network::Host                    host;
 
           // create a host.
-          if (host.Create(elle::Host::TypeAny) == elle::Status::Error)
+          if (host.Create(elle::network::Host::TypeAny) == elle::Status::Error)
             escape("unable to create the host");
 
           // create the listening locus.
@@ -524,7 +524,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status      Machine::Port(const elle::Port&         port)
+      elle::Status      Machine::Port(const elle::network::Port&         port)
       {
         Neighbour*      neighbour;
         elle::network::Session*  session;

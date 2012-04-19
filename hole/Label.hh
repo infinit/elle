@@ -5,6 +5,8 @@
 # include <elle/radix/Object.hh>
 # include <elle/cryptography/fwd.hh>
 
+# include <elle/idiom/Open.hh>
+
 namespace hole
 {
 
@@ -75,5 +77,7 @@ namespace hole
 //
 
 #include <hole/Label.hxx>
+
+# include <elle/idiom/Close.hh>
 
 #endif

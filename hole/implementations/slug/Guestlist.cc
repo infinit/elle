@@ -4,6 +4,8 @@
 
 #include <hole/implementations/slug/Guestlist.hh>
 
+#include <elle/idiom/Open.hh>
+
 namespace hole
 {
   namespace implementations

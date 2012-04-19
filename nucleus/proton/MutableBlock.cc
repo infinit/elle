@@ -89,34 +89,34 @@ namespace nucleus
     ///
     /// this method archives the block attributes.
     ///
-    elle::Status        MutableBlock::Serialize(elle::Archive&  archive) const
-    {
-      // serialize the parent class.
-      if (Block::Serialize(archive) == elle::Status::Error)
-        escape("unable to serialize the underlying block");
+    //elle::Status        MutableBlock::Serialize(elle::Archive&  archive) const
+    //{
+    //  // serialize the parent class.
+    //  if (Block::Serialize(archive) == elle::Status::Error)
+    //    escape("unable to serialize the underlying block");
 
-      // serialize the attributes.
-      if (archive.Serialize(this->version) == elle::Status::Error)
-        escape("unable to serialize the attributess");
+    //  // serialize the attributes.
+    //  if (archive.Serialize(this->version) == elle::Status::Error)
+    //    escape("unable to serialize the attributess");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the attributes.
-    ///
-    elle::Status        MutableBlock::Extract(elle::Archive&    archive)
-    {
-      // extract the parent class.
-      if (Block::Extract(archive) == elle::Status::Error)
-        escape("unable to extract the underlying block");
+    /////
+    ///// this method extracts the attributes.
+    /////
+    //elle::Status        MutableBlock::Extract(elle::Archive&    archive)
+    //{
+    //  // extract the parent class.
+    //  if (Block::Extract(archive) == elle::Status::Error)
+    //    escape("unable to extract the underlying block");
 
-      // extracts the attributes.
-      if (archive.Extract(this->version) == elle::Status::Error)
-        escape("unable to extract the attributes");
+    //  // extracts the attributes.
+    //  if (archive.Extract(this->version) == elle::Status::Error)
+    //    escape("unable to extract the attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
 //
 // ---------- fileable --------------------------------------------------------
@@ -154,14 +154,14 @@ namespace nucleus
           elle::Archive archive;
 
           // complete the path with the network name.
-          if (path.Complete(elle::Piece("%NETWORK%", network.name),
-                            elle::Piece("%ADDRESS%", unique),
-                            elle::Piece("%VERSION%", "@")) ==
+          if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
+                            elle::io::Piece("%ADDRESS%", unique),
+                            elle::io::Piece("%VERSION%", "@")) ==
               elle::Status::Error)
             escape("unable to complete the path");
 
           // read the file's content.
-          if (elle::File::Read(path, region) == elle::Status::Error)
+          if (elle::io::File::Read(path, region) == elle::Status::Error)
             escape("unable to read the file's content");
 
           // wrap the region into an archive.
@@ -188,14 +188,14 @@ namespace nucleus
               link = path;
 
               // complete the link path.
-              if (link.Complete(elle::Piece("%NETWORK%", network.name),
-                                elle::Piece("%ADDRESS%", unique),
-                                elle::Piece("%VERSION%", "@")) ==
+              if (link.Complete(elle::io::Piece("%NETWORK%", network.name),
+                                elle::io::Piece("%ADDRESS%", unique),
+                                elle::io::Piece("%VERSION%", "@")) ==
                   elle::Status::Error)
                 escape("unable to complete the path");
 
               // read the file's content.
-              if (elle::File::Read(link, r) == elle::Status::Error)
+              if (elle::io::File::Read(link, r) == elle::Status::Error)
                 escape("unable to read the file's content");
 
               // set the number of the latest version.
@@ -211,14 +211,14 @@ namespace nucleus
             }
 
           // complete the path with the network name.
-          if (path.Complete(elle::Piece("%NETWORK%", network.name),
-                            elle::Piece("%ADDRESS%", unique),
-                            elle::Piece("%VERSION%", number)) ==
+          if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
+                            elle::io::Piece("%ADDRESS%", unique),
+                            elle::io::Piece("%VERSION%", number)) ==
               elle::Status::Error)
             escape("unable to complete the path");
 
           // read the file's content.
-          if (elle::File::Read(path, region) == elle::Status::Error)
+          if (elle::io::File::Read(path, region) == elle::Status::Error)
             escape("unable to read the file's content");
 
           // wrap the region into an archive.
@@ -259,8 +259,8 @@ namespace nucleus
         escape("unable to create the path");
 
       // complete the path with the network name.
-      if (file.Complete(elle::Piece("%NETWORK%", network.name),
-                        elle::Piece("%ADDRESS%", unique)) == elle::Status::Error)
+      if (file.Complete(elle::io::Piece("%NETWORK%", network.name),
+                        elle::io::Piece("%ADDRESS%", unique)) == elle::Status::Error)
         escape("unable to complete the path");
 
       // operate depending on the network's support of history.
@@ -275,7 +275,7 @@ namespace nucleus
           MutableBlock          block;
 
           // complete the file path.
-          if (file.Complete(elle::Piece("%VERSION%", "@")) ==
+          if (file.Complete(elle::io::Piece("%VERSION%", "@")) ==
               elle::Status::Error)
             escape("unable to complete the path");
 
@@ -313,7 +313,7 @@ namespace nucleus
             escape("unable to wrap the archive in a region");
 
           // write the file's content.
-          if (elle::File::Write(file, region) == elle::Status::Error)
+          if (elle::io::File::Write(file, region) == elle::Status::Error)
             escape("unable to write the file's content");
         }
       else
@@ -339,7 +339,7 @@ namespace nucleus
           link = file;
 
           // complete the file path.
-          if (file.Complete(elle::Piece("%VERSION%", number)) ==
+          if (file.Complete(elle::io::Piece("%VERSION%", number)) ==
               elle::Status::Error)
             escape("unable to complete the path");
 
@@ -358,25 +358,25 @@ namespace nucleus
             escape("unable to wrap the archive in a region");
 
           // write the file's content.
-          if (elle::File::Write(file, region) == elle::Status::Error)
+          if (elle::io::File::Write(file, region) == elle::Status::Error)
             escape("unable to write the file's content");
 
           // complete the link path.
-          if (link.Complete(elle::Piece("%VERSION%", "@")) ==
+          if (link.Complete(elle::io::Piece("%VERSION%", "@")) ==
               elle::Status::Error)
             escape("unable to complete the path");
 
           // if there is a link, remove it.
-          if (elle::File::Exist(link) == elle::Status::True)
+          if (elle::io::File::Exist(link) == elle::Status::True)
             {
               // delete the file which references the latest version since a
               // new version has been created.
-              if (elle::File::Erase(link) == elle::Status::Error)
+              if (elle::io::File::Erase(link) == elle::Status::Error)
                 escape("unable to erase the block link");
             }
 
           // finally, create the block link.
-          if (elle::File::Write(
+          if (elle::io::File::Write(
                 link,
                 elle::Region(
                   reinterpret_cast<const elle::Byte*>(number.c_str()),
@@ -442,17 +442,17 @@ namespace nucleus
       if (hole::Hole::Descriptor.history == false)
         {
           // complete the path with the network name.
-          if (path.Complete(elle::Piece("%NETWORK%", network.name),
-                            elle::Piece("%ADDRESS%", unique),
-                            elle::Piece("%VERSION%", "@")) ==
+          if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
+                            elle::io::Piece("%ADDRESS%", unique),
+                            elle::io::Piece("%VERSION%", "@")) ==
               elle::Status::Error)
             escape("unable to complete the path");
 
           // is the file present...
-          if (elle::File::Exist(path) == elle::Status::True)
+          if (elle::io::File::Exist(path) == elle::Status::True)
             {
               // erase the file.
-              if (elle::File::Erase(path) == elle::Status::Error)
+              if (elle::io::File::Erase(path) == elle::Status::Error)
                 escape("unable to erase the file");
             }
         }
@@ -463,8 +463,8 @@ namespace nucleus
           Version::Type i;
 
           // complete the path with the network name.
-          if (path.Complete(elle::Piece("%NETWORK%", network.name),
-                            elle::Piece("%ADDRESS%", unique)) ==
+          if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
+                            elle::io::Piece("%ADDRESS%", unique)) ==
               elle::Status::Error)
             escape("unable to complete the path");
 
@@ -496,29 +496,29 @@ namespace nucleus
               file = path;
 
               // complete the path with the version number.
-              if (file.Complete(elle::Piece("%VERSION%",
+              if (file.Complete(elle::io::Piece("%VERSION%",
                                             number)) == elle::Status::Error)
                 escape("unable to complete the path");
 
               // is the file present...
-              if (elle::File::Exist(file) == elle::Status::True)
+              if (elle::io::File::Exist(file) == elle::Status::True)
                 {
                   // erase the file.
-                  if (elle::File::Erase(file) == elle::Status::Error)
+                  if (elle::io::File::Erase(file) == elle::Status::Error)
                     escape("unable to erase the file");
                 }
             }
 
           // complete the path with the last version pointer.
-          if (path.Complete(elle::Piece("%VERSION%", "@")) ==
+          if (path.Complete(elle::io::Piece("%VERSION%", "@")) ==
               elle::Status::Error)
             escape("unable to complete the path");
 
           // is the file present...
-          if (elle::File::Exist(path) == elle::Status::True)
+          if (elle::io::File::Exist(path) == elle::Status::True)
             {
               // delete the link which references the latest version.
-              if (elle::File::Erase(path) == elle::Status::Error)
+              if (elle::io::File::Erase(path) == elle::Status::Error)
                 escape("unable to erase the block link");
             }
 
@@ -560,14 +560,14 @@ namespace nucleus
       if (hole::Hole::Descriptor.history == false)
         {
           // complete the path with the network name.
-          if (path.Complete(elle::Piece("%NETWORK%", network.name),
-                            elle::Piece("%ADDRESS%", unique),
-                            elle::Piece("%VERSION%", "@")) ==
+          if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
+                            elle::io::Piece("%ADDRESS%", unique),
+                            elle::io::Piece("%VERSION%", "@")) ==
               elle::Status::Error)
             flee("unable to complete the path");
 
           // test the file.
-          if (elle::File::Exist(path) == elle::Status::True)
+          if (elle::io::File::Exist(path) == elle::Status::True)
             return elle::Status::True;
         }
       else
@@ -584,14 +584,14 @@ namespace nucleus
               link = path;
 
               // complete the link path.
-              if (link.Complete(elle::Piece("%NETWORK%", network.name),
-                                elle::Piece("%ADDRESS%", unique),
-                                elle::Piece("%VERSION%", "@")) ==
+              if (link.Complete(elle::io::Piece("%NETWORK%", network.name),
+                                elle::io::Piece("%ADDRESS%", unique),
+                                elle::io::Piece("%VERSION%", "@")) ==
                   elle::Status::Error)
                 flee("unable to complete the path");
 
               // read the file's content.
-              if (elle::File::Read(link, r) == elle::Status::Error)
+              if (elle::io::File::Read(link, r) == elle::Status::Error)
                 flee("unable to read the file's content");
 
               // set the number of the latest version.
@@ -607,14 +607,14 @@ namespace nucleus
             }
 
           // complete the path with the network name.
-          if (path.Complete(elle::Piece("%NETWORK%", network.name),
-                            elle::Piece("%ADDRESS%", unique),
-                            elle::Piece("%VERSION%", number)) ==
+          if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
+                            elle::io::Piece("%ADDRESS%", unique),
+                            elle::io::Piece("%VERSION%", number)) ==
               elle::Status::Error)
             flee("unable to complete the path");
 
           // test the file.
-          if (elle::File::Exist(path) == elle::Status::True)
+          if (elle::io::File::Exist(path) == elle::Status::True)
             return elle::Status::True;
         }
 

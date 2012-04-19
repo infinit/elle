@@ -1,22 +1,13 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [mon jun 27 09:15:33 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <iostream>
+#include <algorithm>
+#include <string>
+
+#include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 
 #include <hole/Model.hh>
 
-#include <elle/idiom/Close.hh>
-# include <algorithm>
-# include <string>
 #include <elle/idiom/Open.hh>
 
 namespace hole
@@ -159,13 +150,13 @@ namespace hole
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::Status::True;
+        return true;
 
       // check the attributes.
       if (this->type != element.type)
-        return elle::Status::False;
+        return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///
@@ -197,27 +188,27 @@ namespace hole
     ///
     /// this method serializes the model object.
     ///
-    elle::Status        Model::Serialize(elle::Archive& archive) const
-    {
-      // serialize the internal digest.
-      if (archive.Serialize(static_cast<elle::Natural8>(this->type)) ==
-          elle::Status::Error)
-        escape("unable to serialize the attributes");
+    //elle::Status        Model::Serialize(elle::Archive& archive) const
+    //{
+    //  // serialize the internal digest.
+    //  if (archive.Serialize(static_cast<elle::Natural8>(this->type)) ==
+    //      elle::Status::Error)
+    //    escape("unable to serialize the attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the model object.
-    ///
-    elle::Status        Model::Extract(elle::Archive&           archive)
-    {
-      // extract the internal digest.
-      if (archive.Extract(reinterpret_cast<elle::Natural8&>(this->type)) ==
-          elle::Status::Error)
-        escape("unable to extract the attributes");
+    /////
+    ///// this method extracts the model object.
+    /////
+    //elle::Status        Model::Extract(elle::Archive&           archive)
+    //{
+    //  // extract the internal digest.
+    //  if (archive.Extract(reinterpret_cast<elle::Natural8&>(this->type)) ==
+    //      elle::Status::Error)
+    //    escape("unable to extract the attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
 }

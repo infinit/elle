@@ -1,18 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri sep 11 22:44:58 2009]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/standalone/Log.hh>
 
 #include <nucleus/proton/Block.hh>
+#include <nucleus/proton/BlockSerializer.hxx>
 
 namespace nucleus
 {
@@ -122,33 +112,33 @@ namespace nucleus
     ///
     /// this method archives the block attributes.
     ///
-    elle::Status        Block::Serialize(elle::Archive& archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(
-            this->network,
-            static_cast<elle::Natural8>(this->family),
-            static_cast<elle::Natural8>(this->component)) == elle::Status::Error)
-        escape("unable to serialize the block's attributes");
+    //elle::Status        Block::Serialize(elle::Archive& archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(
+    //        this->network,
+    //        static_cast<elle::Natural8>(this->family),
+    //        static_cast<elle::Natural8>(this->component)) == elle::Status::Error)
+    //    escape("unable to serialize the block's attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the attributes.
-    ///
-    elle::Status        Block::Extract(elle::Archive&           archive)
-    {
-      // extracts the attributes.
-      if (archive.Extract(
-            this->network,
-            reinterpret_cast<elle::Natural8&>(this->family),
-            reinterpret_cast<elle::Natural8&>(this->component)) ==
-          elle::Status::Error)
-        escape("unable to extract the block's attributes");
+    /////
+    ///// this method extracts the attributes.
+    /////
+    //elle::Status        Block::Extract(elle::Archive&           archive)
+    //{
+    //  // extracts the attributes.
+    //  if (archive.Extract(
+    //        this->network,
+    //        reinterpret_cast<elle::Natural8&>(this->family),
+    //        reinterpret_cast<elle::Natural8&>(this->component)) ==
+    //      elle::Status::Error)
+    //    escape("unable to extract the block's attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
 //
 // ---------- fileable --------------------------------------------------------

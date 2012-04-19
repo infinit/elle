@@ -1,30 +1,15 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 14 16:24:48 2009]
-//
-
 #ifndef NUCLEUS_PROTON_VERSION_HH
-#define NUCLEUS_PROTON_VERSION_HH
+# define NUCLEUS_PROTON_VERSION_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/types.hh>
+# include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a version number which are used to distinguish

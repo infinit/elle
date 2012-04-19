@@ -1,25 +1,12 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [tue may  4 23:35:57 2010]
-//
-
 #ifndef LUNE_AUTHORITY_HH
-#define LUNE_AUTHORITY_HH
+# define LUNE_AUTHORITY_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/cryptography.fwd.hh>
+# include <elle/cryptography/PublicKey.hh>
+# include <elle/io/Fileable.hh>
+# include <elle/radix/Object.hh>
 
-
-#include <elle/cryptography.fwd.hh>
-#include <elle/cryptography/PublicKey.hh>
-#include <elle/io/Fileable.hh>
-#include <elle/radix/Object.hh>
+# include <elle/idiom/Open.hh>
 
 namespace lune
 {
@@ -104,5 +91,7 @@ namespace lune
   };
 
 }
+
+# include <elle/idiom/Close.hh>
 
 #endif

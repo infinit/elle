@@ -1,21 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [fri may 20 17:46:53 2011]
-//
-
 #ifndef HOLE_MODEL_HH
-#define HOLE_MODEL_HH
+# define HOLE_MODEL_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/types.hh>
+# include <elle/idiom/Open.hh>
 
 namespace hole
 {
@@ -104,5 +93,7 @@ namespace hole
   };
 
 }
+
+# include <elle/idiom/Close.hh>
 
 #endif

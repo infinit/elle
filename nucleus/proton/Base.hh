@@ -1,23 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [sat may 21 13:21:51 2011]
-//
-
 #ifndef NUCLEUS_PROTON_BASE_HH
-#define NUCLEUS_PROTON_BASE_HH
+# define NUCLEUS_PROTON_BASE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/cryptography/Digest.hh>
 
-#include <elle/types.hh>
-
-#include <nucleus/proton/Version.hh>
+# include <nucleus/proton/Version.hh>
 
 namespace nucleus
 {

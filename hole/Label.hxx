@@ -5,6 +5,8 @@
 # include <elle/cryptography/Digest.hh>
 # include <elle/cryptography/OneWay.hh>
 
+# include <elle/idiom/Open.hh>
+
 namespace hole
 {
 
@@ -35,5 +37,7 @@ namespace hole
   }
 
 }
+
+# include <elle/idiom/Close.hh>
 
 #endif

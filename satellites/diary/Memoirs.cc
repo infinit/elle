@@ -84,7 +84,7 @@ namespace satellite
   //  elle::Region        region;
 
   //  // read the file's content.
-  //  if (elle::File::Read(path, region) == elle::Status::Error)
+  //  if (elle::io::File::Read(path, region) == elle::Status::Error)
   //    escape("unable to read the file's content");
 
   //  // prepare the archive.
@@ -109,7 +109,7 @@ namespace satellite
   //  const
   //{
   //  // write the file's content.
-  //  if (elle::File::Write(
+  //  if (elle::io::File::Write(
   //        path,
   //        elle::Region(
   //          this->archive.contents,

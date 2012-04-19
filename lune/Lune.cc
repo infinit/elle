@@ -454,7 +454,7 @@ namespace lune
         escape("unable to create the path");
 
       // complete the path.
-      if (path.Complete(elle::Piece("%NETWORK%",
+      if (path.Complete(elle::io::Piece("%NETWORK%",
                                     Infinit::Network)) == elle::Status::Error)
         escape("unable to complete the path");
 

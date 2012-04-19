@@ -21,6 +21,8 @@
 
 #include <lune/Authority.hh>
 
+#include <elle/idiom/Open.hh>
+
 namespace lune
 {
 
@@ -97,5 +99,7 @@ namespace lune
   };
 
 }
+
+#include <elle/idiom/Close.hh>
 
 #endif

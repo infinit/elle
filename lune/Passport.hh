@@ -1,30 +1,14 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [thu aug 11 13:13:51 2011]
-//
-
 #ifndef LUNE_PASSPORT_HH
-#define LUNE_PASSPORT_HH
+# define LUNE_PASSPORT_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <lune/Authority.hh>
 
-#include <lune/Authority.hh>
+# include <hole/Label.hh>
 
-#include <hole/Label.hh>
+# include <elle/idiom/Open.hh>
 
 namespace lune
 {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
   ///
   /// this class uniquely identify a device through a label which is
@@ -82,5 +66,7 @@ namespace lune
   };
 
 }
+
+# include <elle/idiom/Close.hh>
 
 #endif

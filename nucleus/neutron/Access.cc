@@ -321,7 +321,7 @@ namespace nucleus
         }
 
       // hash the archive.
-      if (elle::OneWay::Hash(archive, digest) == elle::Status::Error)
+      if (elle::cryptography::OneWay::Hash(archive, digest) == elle::Status::Error)
         escape("unable to hash the set of archived tuples");
 
       return elle::Status::Ok;

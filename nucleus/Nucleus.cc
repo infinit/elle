@@ -1,17 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [thu jan 28 22:01:03 2010]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/serialize/BinaryArchive.hh>
 
+#include <nucleus/proton/BlockSerializer.hxx>
 #include <nucleus/Nucleus.hh>
 
 #include <hole/Hole.hh>
