@@ -27,7 +27,6 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Author,
     break;
   case RoleVassal:
     assert(false && "XXX: Not implemented");
-    break;
   default:
     throw std::runtime_error("unknown role");
   }
