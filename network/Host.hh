@@ -12,21 +12,12 @@
 
 namespace elle
 {
-
-  using namespace radix;
-
   namespace network
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
-    ///
-    /// this class represents a network host.
-    ///
-    class Host:
-      public Object
+    /// This class represents a network host.
+    class Host
+      : public elle::radix::Object
     {
     public:
       //
