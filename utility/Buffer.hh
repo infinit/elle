@@ -1,6 +1,8 @@
 #ifndef  ELLE_UTILITY_BUFFER_HH
 # define ELLE_UTILITY_BUFFER_HH
 
+# include <memory>
+
 # include <elle/types.hh>
 
 # include <elle/io/Dumpable.hh>
@@ -14,6 +16,16 @@ namespace elle
   namespace utility
   {
 
+    namespace detail
+    {
+      struct MallocDeleter
+      {
+        void operator() (void* data);
+      };
+    }
+
+    class WeakBuffer;
+
     /// Manage a memory zone. Note that this class owns the pointed
     /// memory at every moment.
     ///
@@ -23,6 +35,10 @@ namespace elle
       , public elle::serialize::Uniquable<Buffer>
     {
       friend elle::serialize::ArchiveSerializer<Buffer>;
+    public:
+      typedef elle::Byte                                          ContentType;
+      typedef std::unique_ptr<ContentType, detail::MallocDeleter> ContentPtr;
+      typedef std::pair<ContentPtr, size_t>                       ContentPair;
     private:
       elle::Byte*       _contents;
       size_t            _size;
@@ -52,6 +68,8 @@ namespace elle
       size_t              Size() const { return this->_size; }
       elle::Byte const*   Contents() const { return this->_contents; }
 
+      ContentPair         Release();
+
       elle::serialize::OutputBufferArchive Writer();
       elle::serialize::InputBufferArchive  Reader() const;
 
@@ -73,6 +91,11 @@ namespace elle
       WeakBuffer(void const* data, size_t size)
         : _contents(static_cast<elle::Byte const*>(data))
         , _size(size)
+      {}
+
+      WeakBuffer(Buffer const& buffer)
+        : _contents(buffer.Contents())
+        , _size(buffer.Size())
       {}
 
       WeakBuffer(WeakBuffer&& other)

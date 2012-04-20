@@ -82,28 +82,28 @@ namespace elle
     ///
     /// this method serializes a neighbour.
     ///
-    Status              Neighbour::Serialize(Archive&           archive) const
-    {
-      // serialize the locus and name.
-      if (archive.Serialize(this->locus,
-                            this->name) == Status::Error)
-        escape("unable to serialize the neighbour attributes");
+    //Status              Neighbour::Serialize(Archive&           archive) const
+    //{
+    //  // serialize the locus and name.
+    //  if (archive.Serialize(this->locus,
+    //                        this->name) == Status::Error)
+    //    escape("unable to serialize the neighbour attributes");
 
-      return Status::Ok;
-    }
+    //  return Status::Ok;
+    //}
 
-    ///
-    /// this method extracts a neighbour.
-    ///
-    Status              Neighbour::Extract(Archive&             archive)
-    {
-      // extract the locus and name.
-      if (archive.Extract(this->locus,
-                          this->name) == Status::Error)
-        escape("unable to extract the neighbour attributes");
+    /////
+    ///// this method extracts a neighbour.
+    /////
+    //Status              Neighbour::Extract(Archive&             archive)
+    //{
+    //  // extract the locus and name.
+    //  if (archive.Extract(this->locus,
+    //                      this->name) == Status::Error)
+    //    escape("unable to extract the neighbour attributes");
 
-      return Status::Ok;
-    }
+    //  return Status::Ok;
+    //}
 
 //
 // ---------- dumpable --------------------------------------------------------

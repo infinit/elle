@@ -1,11 +1,20 @@
 
+#include <iomanip>
+#include <memory>
 #include <stdexcept>
 
 #include <elle/serialize/BufferArchive.hh>
 
+#include <elle/utility/BufferStream.hh>
 #include <elle/utility/Buffer.hh>
 
 using namespace elle::utility;
+
+void detail::MallocDeleter::operator ()(void* data)
+{
+  ::free(data);
+}
+
 
 
 Buffer::Buffer()
@@ -24,7 +33,7 @@ Buffer::Buffer(size_t size)
     throw std::bad_alloc();
 }
 
-Buffer::Buffer(Buffer&& other) :
+Buffer::Buffer(Buffer&& other)
   : _contents(other._contents)
   , _size(other._size)
   , _buffer_size(other._buffer_size)
@@ -36,22 +45,24 @@ Buffer::Buffer(Buffer&& other) :
 #endif
 }
 
-Buffer::Buffer& operator =(Buffer&& other);
+//Buffer& Buffer::operator =(Buffer&& other);
 
 Buffer::~Buffer()
 {
   ::free(this->_contents);
 }
 
-void Buffer::Append(void const* data, size_t size)
+void Buffer::Append(void const* data_, size_t size)
 {
+  elle::Byte const* data = static_cast<elle::Byte const*>(data_);
   elle::Byte* ptr = &this->_contents[this->_size];
+
   size_t new_size = this->_size + size;
   if (new_size > this->_buffer_size)
     this->Size(new_size);
   else
     this->_size = new_size;
-  std::unitialized_copy(data, size, ptr);
+  std::uninitialized_copy(data, data + size, ptr);
 }
 
 void Buffer::Size(size_t size)
@@ -59,13 +70,21 @@ void Buffer::Size(size_t size)
   if (this->_buffer_size < size)
     {
       size_t next_size = Buffer::_NextSize(size);
-      ContentPtr::element_type* tmp = ::realloc(_contents, next_size);
+      void* tmp = ::realloc(_contents, next_size);
       if (tmp == nullptr)
         throw std::bad_alloc();
-      this->_contents = tmp;
+      this->_contents = static_cast<unsigned char*>(tmp);
       this->_buffer_size = next_size;
     }
   this->_size = size;
+}
+
+Buffer::ContentPair Buffer::Release()
+{
+  ContentPair res = std::make_pair(this->_contents, this->_size);
+  this->_contents = nullptr;
+  this->_size = 0;
+  return res;
 }
 
 elle::serialize::OutputBufferArchive Buffer::Writer()
@@ -73,12 +92,12 @@ elle::serialize::OutputBufferArchive Buffer::Writer()
   return elle::serialize::OutputBufferArchive(*this);
 }
 
-elle::serialize::InputBufferArchive  Buffer::Reader();
+elle::serialize::InputBufferArchive  Buffer::Reader() const
 {
   return elle::serialize::InputBufferArchive(*this);
 }
 
-Status Buffer::Dump(const Natural32 shift = 0) const
+elle::Status Buffer::Dump(const Natural32 margin) const
 {
   Natural32         space = 78 - margin - Dumpable::Shift.length();
   String            alignment(margin, ' ');
@@ -99,7 +118,6 @@ Status Buffer::Dump(const Natural32 shift = 0) const
   std::cout.fill('0');
 
   // display the region.
-  size_t i;
   for (i = 0; i < (this->_size / space); i++)
     {
       std::cout << alignment << Dumpable::Shift;
@@ -129,7 +147,7 @@ Status Buffer::Dump(const Natural32 shift = 0) const
   return Status::Ok;
 }
 
-static size_t _NextSize(size_t size)
+size_t Buffer::_NextSize(size_t size)
 {
   if (size < 32)
     return 32;
@@ -138,7 +156,7 @@ static size_t _NextSize(size_t size)
   return (size + size  / 2);
 }
 
-elle::serialize::InputBufferArchive  WeakBuffer::Reader();
+elle::serialize::InputBufferArchive  WeakBuffer::Reader() const
 {
   return elle::serialize::InputBufferArchive(*this);
 }

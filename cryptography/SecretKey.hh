@@ -9,6 +9,7 @@
 # include <elle/cryptography/Cipher.hh>
 # include <elle/cryptography/Clear.hh>
 
+// XXX use pimpl pattern and hide openssl headers
 # include <elle/idiom/Close.hh>
 #  include <openssl/evp.h>
 #  include <openssl/err.h>

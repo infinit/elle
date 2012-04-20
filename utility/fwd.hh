@@ -17,6 +17,7 @@ namespace elle
     class URI;
 
     class Buffer;
+    class WeakBuffer;
     class InputBufferStream;
     class OutputBufferStream;
   }

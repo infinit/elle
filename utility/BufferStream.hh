@@ -1,6 +1,7 @@
 #ifndef  ELLE_UTILITY_BUFFERSTREAM_HH
 # define ELLE_UTILITY_BUFFERSTREAM_HH
 
+# include <iosfwd>
 # include <elle/utility/fwd.hh>
 
 namespace elle
@@ -11,14 +12,15 @@ namespace elle
     class InputBufferStream
     {
     private:
-      Buffer const& _buffer;
-      size_t        _idx;
+      WeakBuffer const& _buffer;
+      size_t            _idx;
 
     public:
       InputBufferStream(Buffer const& input);
+      InputBufferStream(WeakBuffer const& input);
       InputBufferStream(InputBufferStream const& other);
 
-      size_t BytesLeft() const  { return this->_buffer.Size() - this->_idx; }
+      size_t BytesLeft() const;
       size_t Offset() const     { return this->_idx; }
 
     /// The following methods make this class "std::istream like".
@@ -45,4 +47,3 @@ namespace elle
 }
 
 #endif
-
