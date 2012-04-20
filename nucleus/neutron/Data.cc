@@ -167,26 +167,26 @@ namespace nucleus
     ///
     /// this method serializes the block object.
     ///
-    elle::Status        Data::Serialize(elle::Archive&          archive) const
-    {
-      // serialize the internal region.
-      if (archive.Serialize(this->region) == elle::Status::Error)
-        escape("unable to serialize the internal region");
+    //elle::Status        Data::Serialize(elle::Archive&          archive) const
+    //{
+    //  // serialize the internal region.
+    //  if (archive.Serialize(this->region) == elle::Status::Error)
+    //    escape("unable to serialize the internal region");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the block object.
-    ///
-    elle::Status        Data::Extract(elle::Archive&            archive)
-    {
-      // extract the region.
-      if (archive.Extract(this->region) == elle::Status::Error)
-        escape("unable to extract the region");
+    /////
+    ///// this method extracts the block object.
+    /////
+    //elle::Status        Data::Extract(elle::Archive&            archive)
+    //{
+    //  // extract the region.
+    //  if (archive.Extract(this->region) == elle::Status::Error)
+    //    escape("unable to extract the region");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

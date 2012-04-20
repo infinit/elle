@@ -106,28 +106,28 @@ namespace nucleus
     ///
     /// this method serializes the trait object.
     ///
-    elle::Status        Trait::Serialize(elle::Archive&         archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(this->name,
-                            this->value) == elle::Status::Error)
-        escape("unable to serialize the trait");
+    //elle::Status        Trait::Serialize(elle::Archive&         archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(this->name,
+    //                        this->value) == elle::Status::Error)
+    //    escape("unable to serialize the trait");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the trait object.
-    ///
-    elle::Status        Trait::Extract(elle::Archive&           archive)
-    {
-      // extract the attributes.
-      if (archive.Extract(this->name,
-                          this->value) == elle::Status::Error)
-        escape("unable to extract the trait");
+    /////
+    ///// this method extracts the trait object.
+    /////
+    //elle::Status        Trait::Extract(elle::Archive&           archive)
+    //{
+    //  // extract the attributes.
+    //  if (archive.Extract(this->name,
+    //                      this->value) == elle::Status::Error)
+    //    escape("unable to extract the trait");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
 //
 // ---------- rangeable -------------------------------------------------------

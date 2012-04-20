@@ -106,28 +106,28 @@ namespace nucleus
     ///
     /// this method serializes the entry object.
     ///
-    elle::Status        Entry::Serialize(elle::Archive&         archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(this->name,
-                            this->address) == elle::Status::Error)
-        escape("unable to serialize the entry");
+    //elle::Status        Entry::Serialize(elle::Archive&         archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(this->name,
+    //                        this->address) == elle::Status::Error)
+    //    escape("unable to serialize the entry");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the entry object.
-    ///
-    elle::Status        Entry::Extract(elle::Archive&           archive)
-    {
-      // extract the attributes.
-      if (archive.Extract(this->name,
-                          this->address) == elle::Status::Error)
-        escape("unable to extract the entry");
+    /////
+    ///// this method extracts the entry object.
+    /////
+    //elle::Status        Entry::Extract(elle::Archive&           archive)
+    //{
+    //  // extract the attributes.
+    //  if (archive.Extract(this->name,
+    //                      this->address) == elle::Status::Error)
+    //    escape("unable to extract the entry");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
 //
 // ---------- rangeable -------------------------------------------------------

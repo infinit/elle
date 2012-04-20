@@ -113,28 +113,28 @@ namespace nucleus
     ///
     /// this method serializes the location attributes.
     ///
-    elle::Status        Location::Serialize(elle::Archive&      archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(this->address,
-                            this->version) == elle::Status::Error)
-        escape("unable to serialize the location's attributes");
+    //elle::Status        Location::Serialize(elle::Archive&      archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(this->address,
+    //                        this->version) == elle::Status::Error)
+    //    escape("unable to serialize the location's attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the attributes.
-    ///
-    elle::Status        Location::Extract(elle::Archive&        archive)
-    {
-      // extracts the attributes.
-      if (archive.Extract(this->address,
-                          this->version) == elle::Status::Error)
-        escape("unable to extract the location's attributes");
+    /////
+    ///// this method extracts the attributes.
+    /////
+    //elle::Status        Location::Extract(elle::Archive&        archive)
+    //{
+    //  // extracts the attributes.
+    //  if (archive.Extract(this->address,
+    //                      this->version) == elle::Status::Error)
+    //    escape("unable to extract the location's attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

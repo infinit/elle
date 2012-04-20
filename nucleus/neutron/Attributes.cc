@@ -193,26 +193,26 @@ namespace nucleus
     ///
     /// this method serializes the attributes object.
     ///
-    elle::Status        Attributes::Serialize(elle::Archive&    archive) const
-    {
-      // serialize the range.
-      if (archive.Serialize(this->range) == elle::Status::Error)
-        escape("unable to serialize the range");
+    //elle::Status        Attributes::Serialize(elle::Archive&    archive) const
+    //{
+    //  // serialize the range.
+    //  if (archive.Serialize(this->range) == elle::Status::Error)
+    //    escape("unable to serialize the range");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the attributes object.
-    ///
-    elle::Status        Attributes::Extract(elle::Archive&      archive)
-    {
-      // extract the range.
-      if (archive.Extract(this->range) == elle::Status::Error)
-        escape("unable to extract the range");
+    /////
+    ///// this method extracts the attributes object.
+    /////
+    //elle::Status        Attributes::Extract(elle::Archive&      archive)
+    //{
+    //  // extract the range.
+    //  if (archive.Extract(this->range) == elle::Status::Error)
+    //    escape("unable to extract the range");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

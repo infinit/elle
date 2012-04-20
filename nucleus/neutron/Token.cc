@@ -183,53 +183,53 @@ namespace nucleus
     ///
     /// this method serializes the block object.
     ///
-    elle::Status        Token::Serialize(elle::Archive&         archive) const
-    {
-      // serialize the code.
-      if (this->code != NULL)
-        {
-          if (archive.Serialize(*this->code) == elle::Status::Error)
-            escape("unable to serialize the code");
-        }
-      else
-        {
-          // serialize 'none'.
-          if (archive.Serialize(elle::none) == elle::Status::Error)
-            escape("unable to serialize 'none'");
-        }
+    //elle::Status        Token::Serialize(elle::Archive&         archive) const
+    //{
+    //  // serialize the code.
+    //  if (this->code != NULL)
+    //    {
+    //      if (archive.Serialize(*this->code) == elle::Status::Error)
+    //        escape("unable to serialize the code");
+    //    }
+    //  else
+    //    {
+    //      // serialize 'none'.
+    //      if (archive.Serialize(elle::none) == elle::Status::Error)
+    //        escape("unable to serialize 'none'");
+    //    }
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
     ///
     /// this method extracts the block object.
     ///
-    elle::Status        Token::Extract(elle::Archive&           archive)
-    {
-      elle::Archive::Type       type;
+    //elle::Status        Token::Extract(elle::Archive&           archive)
+    //{
+    //  elle::Archive::Type       type;
 
-      // fetch the next element's type.
-      if (archive.Fetch(type) == elle::Status::Error)
-        escape("unable to fetch the next element's type");
+    //  // fetch the next element's type.
+    //  if (archive.Fetch(type) == elle::Status::Error)
+    //    escape("unable to fetch the next element's type");
 
-      if (type == elle::Archive::TypeNull)
-        {
-          // nothing to do, keep the code to NULL.
-          if (archive.Extract(elle::none) == elle::Status::Error)
-            escape("unable to extract null");
-        }
-      else
-        {
-          // allocate a code.
-          this->code = new elle::cryptography::Code;
+    //  if (type == elle::Archive::TypeNull)
+    //    {
+    //      // nothing to do, keep the code to NULL.
+    //      if (archive.Extract(elle::none) == elle::Status::Error)
+    //        escape("unable to extract null");
+    //    }
+    //  else
+    //    {
+    //      // allocate a code.
+    //      this->code = new elle::cryptography::Code;
 
-          // extract the code.
-          if (archive.Extract(*this->code) == elle::Status::Error)
-            escape("unable to extract the code");
-        }
+    //      // extract the code.
+    //      if (archive.Extract(*this->code) == elle::Status::Error)
+    //        escape("unable to extract the code");
+    //    }
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

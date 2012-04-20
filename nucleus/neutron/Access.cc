@@ -379,38 +379,38 @@ namespace nucleus
     ///
     /// this method serializes the access object.
     ///
-    elle::Status        Access::Serialize(elle::Archive&        archive) const
-    {
-      // call the parent class.
-      if (proton::ContentHashBlock::Serialize(archive) == elle::Status::Error)
-        escape("unable to serialize the underlying CHB");
+    //elle::Status        Access::Serialize(elle::Archive&        archive) const
+    //{
+    //  // call the parent class.
+    //  if (proton::ContentHashBlock::Serialize(archive) == elle::Status::Error)
+    //    escape("unable to serialize the underlying CHB");
 
-      // serialize the range.
-      if (archive.Serialize(this->range) == elle::Status::Error)
-        escape("unable to serialize the range");
+    //  // serialize the range.
+    //  if (archive.Serialize(this->range) == elle::Status::Error)
+    //    escape("unable to serialize the range");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the access object.
-    ///
-    elle::Status        Access::Extract(elle::Archive&          archive)
-    {
-      // call the parent class.
-      if (proton::ContentHashBlock::Extract(archive) == elle::Status::Error)
-        escape("unable to extract the underlying CHB");
+    /////
+    ///// this method extracts the access object.
+    /////
+    //elle::Status        Access::Extract(elle::Archive&          archive)
+    //{
+    //  // call the parent class.
+    //  if (proton::ContentHashBlock::Extract(archive) == elle::Status::Error)
+    //    escape("unable to extract the underlying CHB");
 
-      // compare the component.
-      if (this->component != ComponentAccess)
-        escape("the archive does not seem to contain an access");
+    //  // compare the component.
+    //  if (this->component != ComponentAccess)
+    //    escape("the archive does not seem to contain an access");
 
-      // extract the range.
-      if (archive.Extract(this->range) == elle::Status::Error)
-        escape("unable to extract the range");
+    //  // extract the range.
+    //  if (archive.Extract(this->range) == elle::Status::Error)
+    //    escape("unable to extract the range");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

@@ -110,26 +110,26 @@ namespace nucleus
     ///
     /// this method serializes the object.
     ///
-    elle::Status        Reference::Serialize(elle::Archive&     archive) const
-    {
-      // serialize the target.
-      if (archive.Serialize(this->target) == elle::Status::Error)
-        escape("unable to serialize the target");
+    //elle::Status        Reference::Serialize(elle::Archive&     archive) const
+    //{
+    //  // serialize the target.
+    //  if (archive.Serialize(this->target) == elle::Status::Error)
+    //    escape("unable to serialize the target");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the object.
-    ///
-    elle::Status        Reference::Extract(elle::Archive&       archive)
-    {
-      // extract the target.
-      if (archive.Extract(this->target) == elle::Status::Error)
-        escape("unable to extract the target");
+    /////
+    ///// this method extracts the object.
+    /////
+    //elle::Status        Reference::Extract(elle::Archive&       archive)
+    //{
+    //  // extract the target.
+    //  if (archive.Extract(this->target) == elle::Status::Error)
+    //    escape("unable to extract the target");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }
