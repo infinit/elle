@@ -35,8 +35,10 @@ static NSString *machBundleName = @"/mach_inject_bundle_stub.bundle";
 
 - (BOOL)injectWithAppPath:(NSString *)arg1;
 - (BOOL)injectWithAppPath:(NSString *)arg1 forceInstall:(BOOL)arg2;
-- (BOOL)createDirectory;
-- (BOOL)installFinderBundle;
-- (BOOL)installMachBundle;
+
+- (BOOL)destinationFilesExist;
+- (BOOL)sourceFilesExist;
+- (BOOL)copyDestinationFiles;
+- (BOOL)removeDestinationFiles;
 
 @end

@@ -16,7 +16,7 @@
 
 static NSMutableSet *items = nil;
 
-+ (id)iconCellDictKeyWithCell:(id)arg1
++ (id) iconCellDictKeyWithCell:(id)arg1
 {
     @synchronized(items)
     {
@@ -58,14 +58,14 @@ static NSMutableSet *items = nil;
     return self;
 }
 
-- (unsigned long long)hash
+- (unsigned long long) hash
 {
     if (self.cell == nil)
         return 0;
     return [self.cell hash];
 }
 
-- (BOOL)isEqual:(id)arg1
+- (BOOL) isEqual:(id)arg1
 {
     if (arg1 == self)
         return YES;

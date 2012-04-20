@@ -14,14 +14,14 @@
 
 @synthesize nodeStatus;
 
-- (unsigned long long)hash
+- (unsigned long long) hash
 {
     [NSException raise:NSInternalInconsistencyException 
                        format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
     return 0;
 }
 
-- (BOOL)isEqual:(id)arg1
+- (BOOL) isEqual:(id)arg1
 {
     [NSException raise:NSInternalInconsistencyException 
                 format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
@@ -79,7 +79,7 @@
 
 static char zombieReleaserKey;
 
-- (void)runAtDealloc:(id)arg1
+- (void) runAtDealloc:(id)arg1
 {
     OOZombieDictKey *zombieReleaser = objc_getAssociatedObject(self, &zombieReleaserKey);
     

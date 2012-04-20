@@ -19,7 +19,7 @@
     /**
      The linked cell
      */
-    id  cell;
+    id                  cell;
 }
 
 @property(assign) id    cell;

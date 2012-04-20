@@ -29,22 +29,15 @@
     self.sourceFinderBundleFullPath = [sourceDir stringByAppendingString:finderBundleName];
     self.sourceMachBundleFullPath = [sourceDir stringByAppendingString:machBundleName];
     
-    if (![[NSFileManager defaultManager] fileExistsAtPath:destinationDirFullPath] && arg2)
+    if (arg2 || ![self destinationFilesExist])
     {
-        if (![self createDirectory])
+        if (![self copyDestinationFiles]) {
             return NO;
+        }
     }
-    if (![[NSFileManager defaultManager] fileExistsAtPath:destinationFinderBundleFullPath] && arg2)
-    {
-        if (![self installFinderBundle])
-            return NO;
-    }
-    if (![[NSFileManager defaultManager] fileExistsAtPath:destinationMachBundleFullPath] && arg2)
-    {
-        if (![self installMachBundle])
-            return NO;
-    }
+    
     pid_t finder_pid = [OONurseAssistant getFinderPid];
+    
     if (finder_pid < 0) 
     {
         NSLog(@"Finder can't be find : %@ \n", finder_pid);
@@ -67,70 +60,55 @@
     }
     return YES;
 }
-- (BOOL)createDirectory
+
+- (BOOL)destinationFilesExist
 {
-    @try {
-        if ([[NSFileManager defaultManager] createDirectoryAtPath:destinationDirFullPath withIntermediateDirectories:YES attributes:nil error:nil])
-            syslog(LOG_NOTICE, "PrivilegiedDirectory created");
-        return [[NSFileManager defaultManager] fileExistsAtPath:destinationDirFullPath];
-    }
-    @catch (NSException *exception) {
-        syslog(LOG_NOTICE, "Exception: %s", [[exception name] UTF8String]);
-        return NO;
-    }
+    return [[NSFileManager defaultManager] fileExistsAtPath:destinationDirFullPath]
+        && [[NSFileManager defaultManager] fileExistsAtPath:destinationFinderBundleFullPath]
+        && [[NSFileManager defaultManager] fileExistsAtPath:destinationMachBundleFullPath];
 }
-- (BOOL)installFinderBundle
+
+- (BOOL)sourceFilesExist
 {
-    @try {
-        if ( [[NSFileManager defaultManager] isReadableFileAtPath:self.sourceFinderBundleFullPath] )
-        {
-            if ([[NSFileManager defaultManager] fileExistsAtPath:destinationFinderBundleFullPath])
-            {
-                if ([[NSFileManager defaultManager] removeItemAtPath:destinationFinderBundleFullPath error:nil])
-                {
-                    syslog(LOG_NOTICE, "Finder bundle removed");
-                }
-                else
-                {
-                    return NO;
-                }
-            }
-            if ([[NSFileManager defaultManager] copyItemAtPath:self.sourceFinderBundleFullPath toPath:destinationFinderBundleFullPath error:nil])
-                syslog(LOG_NOTICE, "Finder bundle copied");
-        }
-        return [[NSFileManager defaultManager] fileExistsAtPath:destinationFinderBundleFullPath];
-    }
-    @catch (NSException *exception) {
-        syslog(LOG_NOTICE, "Exception: %s", [[exception name] UTF8String]);
-        return NO;
-    }
+    return [[NSFileManager defaultManager] fileExistsAtPath:self.sourceFinderBundleFullPath]
+        && [[NSFileManager defaultManager] fileExistsAtPath:self.sourceMachBundleFullPath];
 }
-- (BOOL)installMachBundle
+
+- (BOOL)copyDestinationFiles
 {
-    @try {
-        if ( [[NSFileManager defaultManager] isReadableFileAtPath:self.sourceMachBundleFullPath] )
-        {
-            if ([[NSFileManager defaultManager] fileExistsAtPath:destinationMachBundleFullPath])
-            {
-                if ([[NSFileManager defaultManager] removeItemAtPath:destinationMachBundleFullPath error:nil])
-                {
-                    syslog(LOG_NOTICE, "Mach bundle removed");
-                }
-                else
-                {
-                    return NO;
-                }
-            }
-            if ([[NSFileManager defaultManager] copyItemAtPath:self.sourceMachBundleFullPath toPath:destinationMachBundleFullPath error:nil])
-                syslog(LOG_NOTICE, "Mach bundle copied");
-        }
-        return [[NSFileManager defaultManager] fileExistsAtPath:destinationMachBundleFullPath];
-    }
-    @catch (NSException *exception) {
-        syslog(LOG_NOTICE, "Exception: %s", [[exception name] UTF8String]);
+    BOOL returnValue;
+    returnValue = [self removeDestinationFiles];
+    if (!returnValue)
+    {
+        syslog(LOG_NOTICE, "Can't delete files & folders");
         return NO;
     }
     
+    returnValue = [[NSFileManager defaultManager] createDirectoryAtPath:destinationDirFullPath withIntermediateDirectories:NO attributes:nil error:nil];
+    if (!returnValue)
+    {
+        syslog(LOG_NOTICE, "PrivilegiedDirectory created");
+        return NO;
+    }
     
+    returnValue = [[NSFileManager defaultManager] copyItemAtPath:self.sourceFinderBundleFullPath toPath:destinationFinderBundleFullPath error:nil];
+    if (!returnValue)
+    {
+        syslog(LOG_NOTICE, "Finder bundle copied");
+        return NO;
+    }
+    
+    returnValue = [[NSFileManager defaultManager] copyItemAtPath:self.sourceMachBundleFullPath toPath:destinationMachBundleFullPath error:nil];
+    
+    if (!returnValue)
+        syslog(LOG_NOTICE, "Mach bundle copied");
+    return YES;
 }
+
+- (BOOL)removeDestinationFiles
+{
+    [[NSFileManager defaultManager] removeItemAtPath:destinationDirFullPath error:nil];
+    return ![self destinationFilesExist];
+}
+
 @end

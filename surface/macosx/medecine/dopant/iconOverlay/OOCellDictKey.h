@@ -18,7 +18,7 @@
     /**
      The status of the node
      */
-    OONodeStatus    nodeStatus;
+    OONodeStatus        nodeStatus;
 }
 
 @property OONodeStatus  nodeStatus;

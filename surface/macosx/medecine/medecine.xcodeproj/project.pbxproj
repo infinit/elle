@@ -214,9 +214,9 @@
 		1CDEC3141533543E001EFEC0 /* iconOverlay */ = {
 			isa = PBXGroup;
 			children = (
-				1CDEC3161533543E001EFEC0 /* OOCellDictKey-Protocol.h */,
 				1CDEC31B1533543E001EFEC0 /* OOIconOverlay.h */,
 				1CDEC31C1533543E001EFEC0 /* OOIconOverlay.m */,
+				1CDEC3161533543E001EFEC0 /* OOCellDictKey-Protocol.h */,
 				1CDEC3171533543E001EFEC0 /* OOCellDictKey.h */,
 				1CDEC3181533543E001EFEC0 /* OOCellDictKey.m */,
 				1CDEC3191533543E001EFEC0 /* OOIconCellDictKey.h */,

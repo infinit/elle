@@ -19,17 +19,17 @@
     /**
      The row index
      */
-    long long       rowIndex;
+    long long           rowIndex;
     
     /**
      The column identifier
      */
-    NSTableColumn   *columnIdentifier;
+    NSTableColumn       *columnIdentifier;
     
     /**
      The linked node
      */
-    TFENode         *node;
+    TFENode             *node;
 }
 
 @property long long     rowIndex;

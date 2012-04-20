@@ -19,16 +19,16 @@
     /**
      The siblings cells
      */
-    NSMutableArray  *linkedDictKeys;
+    NSMutableArray                  *linkedDictKeys;
     
     /**
      The parent cell
      */
-    id              parent;
+    id                              parent;
 }
 
-@property(retain) NSMutableArray *linkedDictKeys;
-@property(assign) id parent;
+@property(retain) NSMutableArray    *linkedDictKeys;
+@property(assign) id                parent;
 
 /**
  Add a cell dictionary key

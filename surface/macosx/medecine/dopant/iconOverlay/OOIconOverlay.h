@@ -28,33 +28,33 @@ typedef enum {
     /**
      The operation queue
      */
-    NSOperationQueue        *nodeStatusOperationQueue;
+    NSOperationQueue                        *nodeStatusOperationQueue;
     
     /**
      The icon ref for the syncing status
      */
-    struct OpaqueIconRef    *syncingIconRef;
+    struct OpaqueIconRef                    *syncingIconRef;
     /**
      The icon ref for the synced status
      */
-    struct OpaqueIconRef    *syncedIconRef;
+    struct OpaqueIconRef                    *syncedIconRef;
     /**
      The icon ref for the disconnected status
      */
-    struct OpaqueIconRef    *disconnectedIconRef;
+    struct OpaqueIconRef                    *disconnectedIconRef;
     
     /**
      The image for the syncing status
      */
-    NSImage                 *syncingImage;
+    NSImage                                 *syncingImage;
     /**
      The image for the synced status
      */
-    NSImage                 *syncedImage;
+    NSImage                                 *syncedImage;
     /**
      The image for the disconnected status
      */
-    NSImage                 *disconnectedImage;
+    NSImage                                 *disconnectedImage;
 }
 
 @property(readonly) NSOperationQueue        *nodeStatusOperationQueue;
