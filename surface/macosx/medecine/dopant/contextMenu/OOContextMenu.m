@@ -1,6 +1,6 @@
 //
-//  IHFDrawIconWithFrame.m
-//  InfinitHelperTools
+//  OOContextMenu.m
+//  Dopant
 //
 //  Created by Charles Guillot - Infinit on 3/5/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
