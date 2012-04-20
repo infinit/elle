@@ -1,386 +1,230 @@
-./elle/standalone/Log.hh
-./elle/standalone/Morgue.hh
-./elle/standalone/Region.hh
-./elle/standalone/Standalone.hh
-./elle/standalone/Maid.hh
-./elle/radix.hh
-./elle/container/Container.hh
-./elle/container/timeline/Bucket.hh
-./elle/container/timeline/Timeline.hh
-./elle/thirdparty/epth.hh
-./elle/thirdparty/Thirdparty.hh
-./elle/thirdparty/epth-windows.hh
-./elle/thirdparty/epth-macosx.hh
-./elle/thirdparty/epth-linux.hh
-./elle/cryptography/SecretKey.hh
-./elle/cryptography/Code.hh
-./elle/cryptography/Random.hh
-./elle/cryptography/PrivateKey.hh
-./elle/cryptography/Seed.hh
-./elle/cryptography/Plain.hh
-./elle/cryptography/Clear.hh
-./elle/cryptography/KeyPair.hh
-./elle/cryptography/Cipher.hh
-./elle/cryptography/Cryptography.hh
-./elle/cryptography/fwd.hh
-./elle/cryptography/OneWay.hh
-./elle/cryptography/Signature.hh
-./elle/cryptography/Digest.hh
-./elle/idiom/Idiom.hh
-./elle/idiom/Close.hh
-./elle/idiom/Open.hh
-./elle/cryptography.fwd.hh
-./elle/test/cryptography/Random.hh
-./elle/test/cryptography/Test.hh
-./elle/test/fiber/QtObj.hh
-./elle/test/fiber/Test.hh
-./elle/test/network/udp/Table.hh
-./elle/test/network/udp/Manifest.hh
-./elle/test/network/udp/Node.hh
-./elle/test/network/udp/Test.hh
-./elle/test/network/udp/Neighbour.hh
-./elle/test/network/tcp/Manifest.hh
-./elle/test/network/tcp/Server.hh
-./elle/test/network/tcp/Client.hh
-./elle/test/network/tcp/Test.hh
-./elle/test/network/local/Manifest.hh
-./elle/test/network/local/Server.hh
-./elle/test/network/local/Client.hh
-./elle/test/network/local/Test.hh
-./elle/test/package/Pack.hh
-./elle/test/package/Random.hh
-./elle/test/package/Generator.hh
-./elle/test/package/Referee.hh
-./elle/test/package/Test.hh
-./elle/Manifest.hh
-./elle/radix/Entity.hh
-./elle/radix/Set.hh
-./elle/radix/Meta.hh
-./elle/radix/Parameters.hh
-./elle/radix/Allege.hh
-./elle/radix/Trait.hh
-./elle/radix/Trace.hh
-./elle/radix/Arguments.hh
-./elle/radix/Object.hh
-./elle/radix/Variables.hh
-./elle/radix/Radix.hh
-./elle/io/Piece.hh
-./elle/io/Fileable.hh
-./elle/io/Path.hh
-./elle/io/Manipulators.hh
-./elle/io/IO.hh
-./elle/io/Unique.hh
-./elle/io/Directory.hh
-./elle/io/Console.hh
-./elle/io/Dumpable.hh
-./elle/io/Link.hh
-./elle/io/Pattern.hh
-./elle/io/File.hh
-./elle/system/Platform.hh
-./elle/system/System.hh
-./elle/format/ini.hh
-./elle/format/json/Bool.hh
-./elle/format/json/String.hh
-./elle/format/json/Float.hh
-./elle/format/json/Null.hh
-./elle/format/json/Array.hh
-./elle/format/json/Integer.hh
-./elle/format/json/Object.hh
-./elle/format/json/Parser.hh
-./elle/format/json/_detail.hh
-./elle/format/json/Dictionary.hh
-./elle/format/json.hh
-./elle/format/ini.fwd.hh
-./elle/format/json.fwd.hh
-./elle/format/ini/Section.hh
-./elle/format/ini/File.hh
-./elle/reactor/tests/reactor/backend/test.hh
-./elle/reactor/tests/reactor/test.hh
-./elle/reactor/tests/reactor/network/test.hh
-./elle/reactor/src/reactor/scheduler.hh
-./elle/reactor/src/reactor/asio.hh
-./elle/reactor/src/reactor/debug.hh
-./elle/reactor/src/reactor/operation.hh
-./elle/reactor/src/reactor/backend/coro_io/thread.hh
-./elle/reactor/src/reactor/backend/coro_io/libcoroutine/coroutine.hh
-./elle/reactor/src/reactor/backend/thread.hh
-./elle/reactor/src/reactor/backend/pthread/pthread.hh
-./elle/reactor/src/reactor/thread.hh
-./elle/reactor/src/reactor/signal.hh
-./elle/reactor/src/reactor/network/server.hh
-./elle/reactor/src/reactor/network/tcp-socket.hh
-./elle/reactor/src/reactor/network/socket-operation.hh
-./elle/reactor/src/reactor/network/udp-server.hh
-./elle/reactor/src/reactor/network/tcp-server.hh
-./elle/reactor/src/reactor/network/udp-socket.hh
-./elle/reactor/src/reactor/network/buffer.hh
-./elle/reactor/src/reactor/network/exception.hh
-./elle/reactor/src/reactor/network/resolve.hh
-./elle/reactor/src/reactor/network/udp-server-socket.hh
-./elle/reactor/src/reactor/network/fwd.hh
-./elle/reactor/src/reactor/network/socket.hh
-./elle/reactor/src/reactor/exception.hh
-./elle/reactor/src/reactor/waitable.hh
-./elle/reactor/src/reactor/sleep.hh
-./elle/reactor/src/reactor/fwd.hh
-./elle/network/Message.hh
-./elle/network/LocalServer.hh
-./elle/network/Inputs.hh
-./elle/network/LocalSocket.hh
-./elle/network/AbstractSocket.hh
-./elle/network/Parcel.hh
-./elle/network/Outputs.hh
-./elle/network/Procedure.hh
-./elle/network/Locus.hh
-./elle/network/Socket.hh
-./elle/network/Port.hh
-./elle/network/UDPSocket.hh
-./elle/network/Session.hh
-./elle/network/Tag.hh
-./elle/network/Host.hh
-./elle/network/TCPServer.hh
-./elle/network/Raw.hh
-./elle/network/TCPSocket.hh
-./elle/network/Packet.hh
-./elle/network/Network.hh
-./elle/network/Data.hh
-./elle/network/fwd.hh
-./elle/network/Range.hh
-./elle/types.hh
-./elle/benchmark/cryptography/Benchmark.hh
-./elle/benchmark/cryptography/Time.hh
-./elle/concurrency/Resource.hh
-./elle/concurrency/Mode.hh
-./elle/concurrency/Closure.hh
-./elle/concurrency/Routine.hh
-./elle/concurrency/Concurrency.hh
-./elle/concurrency/Callback.hh
-./elle/concurrency/Timer.hh
-./elle/concurrency/Fiber.hh
-./elle/concurrency/Function.hh
-./elle/concurrency/Thread.hh
-./elle/concurrency/Method.hh
-./elle/concurrency/Signal.hh
-./elle/concurrency/Mutex.hh
-./elle/concurrency/Program.hh
-./elle/concurrency/Section.hh
-./elle/concurrency/Entrance.hh
-./elle/concurrency/Broker.hh
-./elle/concurrency/Semaphore.hh
-./elle/concurrency/Environment.hh
-./elle/concurrency/Frame.hh
-./elle/concurrency/Phase.hh
-./elle/concurrency/fwd.hh
-./elle/concurrency/Hurdle.hh
-./elle/utility/Product.hh
-./elle/utility/Duration.hh
-./elle/utility/Utility.hh
-./elle/utility/REST.hh
-./elle/utility/URI.hh
-./elle/utility/BufferStream.hh
-./elle/utility/Factory.hh
-./elle/utility/Unicode.hh
-./elle/utility/Time.hh
-./elle/utility/HTTP.hh
-./elle/utility/fwd.hh
-./elle/utility/Parser.hh
-./elle/package/Derivable.hh
-./elle/Elle.hh
-./Infinit.hh
-./nucleus/neutron/Component.hh
-./nucleus/neutron/Record.hh
-./nucleus/neutron/Index.hh
-./nucleus/neutron/Permissions.hh
-./nucleus/neutron/Attributes.hh
-./nucleus/neutron/Neutron.hh
-./nucleus/neutron/Entry.hh
-./nucleus/neutron/Offset.hh
-./nucleus/neutron/Token.hh
-./nucleus/neutron/Role.hh
-./nucleus/neutron/Genre.hh
-./nucleus/neutron/Size.hh
-./nucleus/neutron/User.hh
-./nucleus/neutron/Access.hh
-./nucleus/neutron/Author.hh
-./nucleus/neutron/Trait.hh
-./nucleus/neutron/Catalog.hh
-./nucleus/neutron/Reference.hh
-./nucleus/neutron/Data.hh
-./nucleus/neutron/Object.hh
-./nucleus/neutron/Subject.hh
-./nucleus/neutron/Range.hh
-./nucleus/proton/ImprintBlock.hh
-./nucleus/proton/Location.hh
-./nucleus/proton/Base.hh
-./nucleus/proton/Contents.hh
-./nucleus/proton/PublicKeyBlock.hh
-./nucleus/proton/History.hh
-./nucleus/proton/Proton.hh
-./nucleus/proton/OwnerKeyBlock.hh
-./nucleus/proton/Stamp.hh
-./nucleus/proton/Action.hh
-./nucleus/proton/Family.hh
-./nucleus/proton/Transcript.hh
-./nucleus/proton/Address.hh
-./nucleus/proton/State.hh
-./nucleus/Nucleus.hh
-./etoile/Etoile.hh
-./etoile/Manifest.hh
-./etoile/path/Chemin.hh
-./etoile/path/Slice.hh
-./etoile/path/Slab.hh
-./etoile/path/Path.hh
-./etoile/path/Way.hh
-./etoile/path/Route.hh
-./etoile/path/Length.hh
-./etoile/path/Venue.hh
-./etoile/journal/Journal.hh
-./etoile/wall/Wall.hh
-./etoile/wall/Attributes.hh
-./etoile/wall/Path.hh
-./etoile/wall/Access.hh
-./etoile/wall/Directory.hh
-./etoile/wall/Object.hh
-./etoile/wall/Link.hh
-./etoile/wall/File.hh
-./etoile/automaton/Contents.hh
-./etoile/automaton/Attributes.hh
-./etoile/automaton/Automaton.hh
-./etoile/automaton/Access.hh
-./etoile/automaton/Author.hh
-./etoile/automaton/Directory.hh
-./etoile/automaton/Object.hh
-./etoile/automaton/Link.hh
-./etoile/automaton/File.hh
-./etoile/automaton/Rights.hh
-./etoile/depot/Depot.hh
-./etoile/miscellaneous/Abstract.hh
-./etoile/miscellaneous/Miscellaneous.hh
-./etoile/nest/Nest.hh
-./etoile/nest/Pod.hh
-./etoile/shrub/Riffle.hh
-./etoile/shrub/Shrub.hh
-./etoile/gear/Identifier.hh
-./etoile/gear/Actor.hh
-./etoile/gear/Transaction.hh
-./etoile/gear/Guard.hh
-./etoile/gear/Gear.hh
-./etoile/gear/Operation.hh
-./etoile/gear/Chronicle.hh
-./etoile/gear/Directory.hh
-./etoile/gear/Scope.hh
-./etoile/gear/Nature.hh
-./etoile/gear/Object.hh
-./etoile/gear/Link.hh
-./etoile/gear/Context.hh
-./etoile/gear/File.hh
-./etoile/portal/Wrapper.hh
-./etoile/portal/Manifest.hh
-./etoile/portal/Application.hh
-./etoile/portal/Portal.hh
-./dependencies/platforms/linux32/build/qjson/src/position.hh
-./dependencies/platforms/linux32/build/qjson/src/json_parser.hh
-./dependencies/platforms/linux32/build/qjson/src/location.hh
-./dependencies/platforms/linux32/build/qjson/src/stack.hh
-./satellites/passport/Passport.hh
-./satellites/shell/Shell.hh
-./satellites/user/User.hh
-./satellites/access/Access.hh
-./satellites/setup/Setup.hh
-./satellites/diary/unix/Record.hh
-./satellites/diary/unix/Crux.hh
-./satellites/diary/unix/Memoirs.hh
-./satellites/diary/unix/Replay.hh
-./satellites/diary/unix/UNIX.hh
-./satellites/diary/unix/Upcall.hh
-./satellites/diary/unix/Live.hh
-./satellites/diary/Diary.hh
-./satellites/network/Network.hh
-./satellites/dictionary/Dictionary.hh
-./satellites/authority/Authority.hh
-./hole/Model.hh
-./hole/Holeable.hh
-./hole/Manifest.hh
-./hole/Hole.hh
-./hole/algorithms/assignment/Assignment.hh
-./hole/Label.hh
-./hole/implementations/slug/Neighbourhood.hh
-./hole/implementations/slug/Synchroniser.hh
-./hole/implementations/slug/Machine.hh
-./hole/implementations/slug/Slug.hh
-./hole/implementations/slug/Implementation.hh
-./hole/implementations/slug/Bank.hh
-./hole/implementations/slug/Manifest.hh
-./hole/implementations/slug/Guestlist.hh
-./hole/implementations/slug/Host.hh
-./hole/implementations/slug/Cluster.hh
-./hole/implementations/Implementations.hh
-./hole/implementations/remote/Machine.hh
-./hole/implementations/remote/Implementation.hh
-./hole/implementations/remote/Manifest.hh
-./hole/implementations/remote/Server.hh
-./hole/implementations/remote/Client.hh
-./hole/implementations/remote/Customer.hh
-./hole/implementations/remote/Remote.hh
-./hole/implementations/cirkle/Neighbourhood.hh
-./hole/implementations/cirkle/Machine.hh
-./hole/implementations/cirkle/Implementation.hh
-./hole/implementations/cirkle/RoutingTable.hh
-./hole/implementations/cirkle/Cirkle.hh
-./hole/implementations/cirkle/Manifest.hh
-./hole/implementations/cirkle/Cluster.hh
-./hole/implementations/cirkle/Neighbour.hh
-./hole/implementations/local/Machine.hh
-./hole/implementations/local/Implementation.hh
-./hole/implementations/local/Local.hh
-./XXX/Seam.hh
-./XXX/Quill.hh
-./XXX/Nodule.hh
-./XXX/Inlet.hh
-./XXX/Placement.hh
-./XXX/Handle.hh
-./XXX/Ambit.hh
-./XXX/Pins.hh
-./XXX/Porcupine.hh
-./lune/Passport.hh
-./lune/Phrase.hh
-./lune/Log.hh
-./lune/Set.hh
-./lune/Descriptor.hh
-./lune/Lune.hh
-./lune/Configuration.hh
-./lune/Authority.hh
-./lune/Map.hh
-./lune/Dictionary.hh
-./lune/Identity.hh
-./documentation/CodingStandard.hh
-./config.hh
-./horizon/windows/Windows.hh
-./horizon/Horizon.hh
-./horizon/macosx/FUSE.hh
-./horizon/macosx/Crux.hh
-./horizon/macosx/Event.hh
-./horizon/macosx/Handle.hh
-./horizon/macosx/Broker.hh
-./horizon/macosx/FUker.hh
-./horizon/macosx/Janitor.hh
-./horizon/macosx/MacOSX.hh
-./horizon/macosx/Crib.hh
-./horizon/linux/Linux.hh
-./horizon/linux/FUSE.hh
-./horizon/linux/Crux.hh
-./horizon/linux/Event.hh
-./horizon/linux/Handle.hh
-./horizon/linux/Broker.hh
-./horizon/linux/FUker.hh
-./horizon/linux/Janitor.hh
-./horizon/linux/Crib.hh
-./agent/Agent.hh
-./oracle/disciples/metalib/metalib.hh
-./oracle/disciples/metalib/network.hh
-./oracle/disciples/metalib/identity.hh
-./oracle/disciples/metalib/passport.hh
-./comet/BN.hh
-./comet/RAND.hh
-./comet/Comet.hh
-./comet/RSA.hh
+- IMPORTANT:
+ - umount auto marche pas sous linux
+ - bencher avec parallel contre sans et avec -j3
+ - tester compile kernel linux
+ - faire en sorte que ca umount automatiquement avec le thread fuse: ameliorer cela car parfois ca plante si on est en train de faire des operations -> faire un ticket
+ - quand on copier infinit-new, il n'arrive pas a copier les attributs
+ - virer Broker dans elle: plus necessaire
+
+general:
+ - mettre le Infinit::Configuration dans Hole::Configuration du coup.
+ - prevoir pour que plusieurs users puissent se logguer: lien symbolique cree par updater.
+ - dans Crux, si le fichier owner c'est le user en cours, utiliser son UID
+
+- porcupine
+ - dechiffrer automatiquement un block recupere du reseau i.e dans Nest::Load.
+ - utiliser Encipher/Decipher pour distinguer de Encrypt/Decrypt de Contents
+ - du coup, nodule ne derive plus CHB mais Object
+ - lorsque l'arbre est vide, on devrait avoir le handle root qui pointe vers une valeur unique: de cette maniere pour un directory on aurait Object qui contient Porcupine qui ne contient qu'un handle qui pointe vers un autre block: les entrees du directory => faire ca avec une union { Porcupine; Handle; }. meme si ca complique pas mal le code, c'est vriament necessaire, surtout pour les petits directories. voire faire l'union dans porcupine avec un mode qui nous dit ou en en est et lors d'un Add etc. ca le prend en compte: soit ca va chopper le Quill, soit ca Grow() pour faire le Search.
+ - verifier que lorsque l'on seal, on ne seale que les blocs qui en ont besoin
+ - ajouter le nombre d'entrees par repertoire, et le propager up to the root
+ - si on garde sur disque les blocs non chiffres, alors il faut les supprimer si on quitte Infinit.
+ - faire une methode avec callback genre Fill qui appelle le callback pour chaque value
+>>>>>>> fuse
+
+- register/auth
+ - creer le login/pass localement et envoyer le hash a meta
+ - ensuite auth via HTTPS
+
+- bugs:
+ - Infinit segfault sometimes with slug, at the startup.
+ - Broker: select() == 0
+ - regler ca en passant a un nouveau core: asio
+
+- serialization
+ - renommer package en serialization
+ - utiliser boost::serialization
+ - pour cela il ne faudra plus acceder a contents et size
+
+- tests
+ - rename un fichier A en B tout en gardant le scope A ouvert et en faisant
+   un nouveau open sur A (qui n'existe plus) on ne doit pas etre capable
+   d'etre raccroche au scope existant, un autre doit etre cree.
+ - creer un fichier en lecture seule et ecrire dedans puis close. ca doit
+   marcher.
+ - open/read/write concurrents entre plusieurs instances d'infinit; sans
+   faire de close on doit quand meme recuperer les donnees ecrites.
+
+#
+# ---------- bugs -------------------------------------------------------------
+#
+
+- linux ne compile pas correctement: A REVOIR!
+- si on fait un umount, Infinit crash
+
+#
+# ---------- porcupine --------------------------------------------------------
+#
+
+3 actions: creer, charger, decharger
+
+- un nodule/block est soit: nouveau ou existant.
+- un nodule vit soit: en memoire soit sur le disk
+
+- lorsque l'arbre est scelle, il faut calculer l'adresse de chaque block
+  modifie mais EGALEMENT mettre a jour les blocks qui le reference: voisins,
+  parent, fils.
+
+New Blocks
+  Nest::Register
+Existing Blocks
+  Nest::Load
+  Next::Unload
+
+---
+
+- dans le nest: discard (si plus de place) les blocs non modifies
+
+- ajouter first/next/previous/last etc.
+
+- pour un Catalog, il faut que le Porcupine garde dans l'arbre le nombre
+  d'entrees pour facilement retrouve par index!
+
+- balance dans insert/delete
+- collecter les blocs qui se font derouilles avant le Seal
+
+- coder un Handle pour PorcupineLoader
+
+- il est possible qu'on ait une merde: en deletant une entree, on delete
+  le block, donc on met a jour les left/right nodules pour qu'ils ne pointent
+  plus sur le nodule deleted. donc on load les right/left. malheureusement,
+  si plus tard une operation load le(s) parent(s) qui veulent loader le meme
+  nodule, le systeme ne va pas faire le lien et le meme nodule va etre loade
+  deux fois. pour resoudre ce probleme:
+  -> soit on garde dans Porcupine un set Address/Nodule* des nodules loades
+     dans le system.
+  -> soit on load et unload immediatement et ensuite ca va dans un cache
+     qui lui aura une limite de taille max (donc c'est mieux car system-wide)
+     et (i) il ecrit sur disque si modifie et plus de place (ii) on a plus
+     le probleme en question puisqu'on reload lorsque necessaire.
+     => dans ce cas c'est Journal qui va s'occuper de ca. il recoit des blocks
+        les garde pour un certain temps (ou si la taille max est atteinte)
+        et les decharge si necessaire: appellant Depot si les blocs ont
+        ete modifies.
+     => donc chaque load doit etre suivi d'un unload une fois le block utilise
+     => a noter que puisque les scopes gerent deja les multiples acces, journal
+        peut considerer que ses blocs sont uniques. ainsi si un block est
+	demande, celui-ci peut tout simplement le refiler sans se soucier de
+	quoi que ce soit (attention tout de meme aux objects qui devrait
+	surement reset les states etc. puisque sealed i.e faire que Consistent
+	= Clean a la limite)
+===> en fait j'opte pour l'option: on stocke temporairement sur le disque
+  les blocs (comme un cache) jusqu'a ce que le bloc soit ferme. ainsi on
+  evite 3 choses: (i) pas besoin de calculer l'adresse du bloc a chaque modif
+  pour que si le cache le vire il puisse etre stocke tout en ayant le porcupine
+  qui le reference correctement (ii) on a pas besoin de se faire chier a
+  regulierement decharge sur le reseau pour liberer de la RAM et (iii) si
+  on decharge un block qui est ensuite re-modifie, pour faire les choses
+  proprement il faudrait delete l'ancienne version temporaire
+  -> petit probleme: pour decharger sur le disque, il faut tout de meme un
+     identifiant de reference: adresse de stockage ou autre.
+
+- check footprint in hole::Push (XXX)
+
+- pour simplifier la suppression de blocs: on peut linker chaque bloc
+  a l'Object et dans Object mettre une permission suppression.
+
+- mettre les attributs dans un autre block? voire seulement si ca depasse
+  un nombre d'entrees/footprint?
+
+- pour les liens freres: c'est la merde car lorsque l'on charge un block
+  il faut genre trouver le frere en remontant et redescandant dans
+  la hierarchie: pas pratique.
+  -> peut etre autant faire direct un parcours via cette methode?
+
+- Block a une Footprint classe qui contient la taille et un state.
+ -> si l'instance est modifie, on ivnalide le footprint. et quand on appelle
+    Footprint(), c'est recompute que si necessaire.
+
+- make Catalog, Data, Link and Access derive CHB
+
+- coder Porcupine dans elle/
+  - virer les Null sur les callbacks
+  - eventuellement: changer les vecteurs en map dans quill/seam
+- resoudre probleme avec les size_t sur 64-bit -> warnings
+
+- Contents<T> contient un Porcupine dependant de T
+- chaque Contents<T> a un comportement specifique
+
+[Data]
+
+- operations:
+  - Write
+  - Read
+  - Adjust
+  - Capacity
+- Contents contient un Porcupine<Offset, Data>: indexe par l'offset de la donnee
+- comportement:
+  - Read:
+    1) locate entree qui contient l'offset de depart
+    2) utiliser le lien frere pour passer au suivant jusqu'a ce que toutes les
+       donnees soient lues ou le fin des donnees soient atteintes
+  - Write:
+    1) locate entree qui contient l'offset
+      a) si elle n'existe pas
+        i) si assez de place a gauche, a droite ou sur les deux:
+          -> distribuer les ecritures sur les blocs voisins
+        ii) sinon:
+          -> creer un ou plusieurs nouveaux blocs (GCD sur la taille totale
+             a inserer et la taille nominale d'un block: a faire a la main
+             surement)
+          -> inserer le ou les blocs
+      b) si elle existe
+        - ecraser les donnees existantes en passant aux blocs suivant via
+          le lien frere
+    2) continuer avec la suite des donnees en utilisant soit le cas: le
+       block existe ou pas
+
+[Catalog]
+
+- operations:
+  - Add
+  - Exist
+  - Lookup
+  - Consult
+  - Rename
+  - Remove
+  - Capacity
+- Contents contient un Porcupine<Slice, Catalog>: indexe par le nom de l'entree
+- comportement:
+  - Add:
+    1) locate le catalog pour ce slice
+    2) si il reste de la place...
+      i) sur le catalog courant: ajouter
+      ii) sur un voisin: ajouter
+      iii) sinon prendre le plus gros, ajouter et splitter
+  - Exist
+    1) locate entree
+  - Lookup
+    1) locate entree
+  - Consult
+    1) locate node pour l'index de debut: LINEAIRE (au pire faire remonter dans
+       l'arbre le nombre d'entrees par catalogue pour pouvoir facilement retrouver)
+    2) ensuite utiliser le lien frere pour passer les entrees jusqu'a l'index
+       de fin.
+  - Rename
+    1) locate entree
+  - Remove
+    1) locate entree
+    2) la supprimer
+    3) si le catalogue devient trop petit, redistribuer sur les noeuds voisins
+       (si possible)
+
+[Reference]
+
+- operations:
+  - Bind
+  - Resolve
+  - Capacity
+- Contents contient une Reference
+
+!WARNING!: il faut essayer de garantir une taille mini des blocs, sauf dans le
+  cas d'un unique block avec peu de donnees: cela dit ca c'est complique puisque
+  rien que les blocs de noeuds peuvent ne contenir qu'une entree!
+
+=> l'idee en tout cas c'est d'avoir des blocs de taille moyenne
+=> il faut que les limites soient bien choisies pour que le split donne naissance
+   a deux blocs dont la taille est superieure a la limite basse. meme chose
+   quand on remove une entree directory, le bloc devient trop petit, il faut
+   qu'il puisse etre redistribuer sur les voisins sans split (sans si il est
+   le dernier).

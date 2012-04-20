@@ -37,7 +37,7 @@ print("#endif")
 EOF
 }
 
-for f in `cat TODO` ; do
+for f in `cat TODO.serialize` ; do
 	[ ! -f ${f%.*}Serializer.hxx ] && prepare ${f%.*}Serializer.hxx $f
 	vim ${f%.*}Serializer.hxx ${f%.*}.cc ${f%.*}.hxx $f -p
 	sleep 2
