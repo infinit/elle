@@ -179,26 +179,26 @@ namespace etoile
     ///
     /// this method serializes the object.
     ///
-    elle::Status        Way::Serialize(elle::Archive&   archive) const
-    {
-      // serialize the target.
-      if (archive.Serialize(this->path) == elle::Status::Error)
-        escape("unable to serialize the path");
+    //elle::Status        Way::Serialize(elle::Archive&   archive) const
+    //{
+    //  // serialize the target.
+    //  if (archive.Serialize(this->path) == elle::Status::Error)
+    //    escape("unable to serialize the path");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the object.
-    ///
-    elle::Status        Way::Extract(elle::Archive&     archive)
-    {
-      // extract the target.
-      if (archive.Extract(this->path) == elle::Status::Error)
-        escape("unable to extract the path");
+    /////
+    ///// this method extracts the object.
+    /////
+    //elle::Status        Way::Extract(elle::Archive&     archive)
+    //{
+    //  // extract the target.
+    //  if (archive.Extract(this->path) == elle::Status::Error)
+    //    escape("unable to extract the path");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

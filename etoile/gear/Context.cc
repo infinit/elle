@@ -73,31 +73,31 @@ namespace etoile
     ///
     /// this method serializes the context object.
     ///
-    elle::Status        Context::Serialize(elle::Archive&       archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(
-            static_cast<elle::Natural8>(this->nature),
-            static_cast<elle::Natural8>(this->state)) == elle::Status::Error)
-        escape("unable to serialize the attributes");
+    //elle::Status        Context::Serialize(elle::Archive&       archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(
+    //        static_cast<elle::Natural8>(this->nature),
+    //        static_cast<elle::Natural8>(this->state)) == elle::Status::Error)
+    //    escape("unable to serialize the attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the context object.
-    ///
-    elle::Status        Context::Extract(elle::Archive&         archive)
-    {
-      // extract the attributes.
-      if (archive.Extract(
-            reinterpret_cast<elle::Natural8&>(this->nature),
-            reinterpret_cast<elle::Natural8&>(this->state)) ==
-          elle::Status::Error)
-        escape("unable to extract the attributes");
+    /////
+    ///// this method extracts the context object.
+    /////
+    //elle::Status        Context::Extract(elle::Archive&         archive)
+    //{
+    //  // extract the attributes.
+    //  if (archive.Extract(
+    //        reinterpret_cast<elle::Natural8&>(this->nature),
+    //        reinterpret_cast<elle::Natural8&>(this->state)) ==
+    //      elle::Status::Error)
+    //    escape("unable to extract the attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

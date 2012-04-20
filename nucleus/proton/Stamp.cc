@@ -136,30 +136,30 @@ namespace nucleus
     ///
     /// this method serializes the stamp.
     ///
-    elle::Status        Stamp::Serialize(elle::Archive&         archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(this->master,
-                            this->slave,
-                            this->signature) == elle::Status::Error)
-        escape("unable to serialize the attributes");
+    //elle::Status        Stamp::Serialize(elle::Archive&         archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(this->master,
+    //                        this->slave,
+    //                        this->signature) == elle::Status::Error)
+    //    escape("unable to serialize the attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the stamp.
-    ///
-    elle::Status        Stamp::Extract(elle::Archive&           archive)
-    {
-      // extract the attributes.
-      if (archive.Extract(this->master,
-                          this->slave,
-                          this->signature) == elle::Status::Error)
-        escape("unable to extract the attributes");
+    /////
+    ///// this method extracts the stamp.
+    /////
+    //elle::Status        Stamp::Extract(elle::Archive&           archive)
+    //{
+    //  // extract the attributes.
+    //  if (archive.Extract(this->master,
+    //                      this->slave,
+    //                      this->signature) == elle::Status::Error)
+    //    escape("unable to extract the attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

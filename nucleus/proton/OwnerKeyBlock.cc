@@ -198,48 +198,48 @@ namespace nucleus
     ///
     /// this method serializes the block object.
     ///
-    elle::Status        OwnerKeyBlock::Serialize(elle::Archive& archive) const
-    {
-      // serialize the parent class.
-      if (MutableBlock::Serialize(archive) == elle::Status::Error)
-        escape("unable to serialize the underlying block");
+    //elle::Status        OwnerKeyBlock::Serialize(elle::Archive& archive) const
+    //{
+    //  // serialize the parent class.
+    //  if (MutableBlock::Serialize(archive) == elle::Status::Error)
+    //    escape("unable to serialize the underlying block");
 
-      // serialize the owner part.
-      if (archive.Serialize(this->K,
-                            this->stamp,
-                            this->owner.K,
-                            this->owner.signature) == elle::Status::Error)
-        escape("unable to serialize the owner part");
+    //  // serialize the owner part.
+    //  if (archive.Serialize(this->K,
+    //                        this->stamp,
+    //                        this->owner.K,
+    //                        this->owner.signature) == elle::Status::Error)
+    //    escape("unable to serialize the owner part");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the block object.
-    ///
-    elle::Status        OwnerKeyBlock::Extract(elle::Archive&   archive)
-    {
-      // extract the parent class.
-      if (MutableBlock::Extract(archive) == elle::Status::Error)
-        escape("unable to extract the underlying block");
+    /////
+    ///// this method extracts the block object.
+    /////
+    //elle::Status        OwnerKeyBlock::Extract(elle::Archive&   archive)
+    //{
+    //  // extract the parent class.
+    //  if (MutableBlock::Extract(archive) == elle::Status::Error)
+    //    escape("unable to extract the underlying block");
 
-      // check the family.
-      if (this->family != FamilyOwnerKeyBlock)
-        escape("invalid family");
+    //  // check the family.
+    //  if (this->family != FamilyOwnerKeyBlock)
+    //    escape("invalid family");
 
-      // extract the owner part.
-      if (archive.Extract(this->K,
-                          this->stamp,
-                          this->owner.K,
-                          this->owner.signature) == elle::Status::Error)
-        escape("unable to extract the owner part");
+    //  // extract the owner part.
+    //  if (archive.Extract(this->K,
+    //                      this->stamp,
+    //                      this->owner.K,
+    //                      this->owner.signature) == elle::Status::Error)
+    //    escape("unable to extract the owner part");
 
-      // compute the owner subject.
-      if (this->owner.subject.Create(this->owner.K) == elle::Status::Error)
-        escape("unable to create the owner subject");
+    //  // compute the owner subject.
+    //  if (this->owner.subject.Create(this->owner.K) == elle::Status::Error)
+    //    escape("unable to create the owner subject");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

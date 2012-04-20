@@ -107,26 +107,26 @@ namespace etoile
     ///
     /// this method serializes the identifier.
     ///
-    elle::Status        Identifier::Serialize(elle::Archive&    archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(this->value) == elle::Status::Error)
-        escape("unable to serialize the identifier attributes");
+    //elle::Status        Identifier::Serialize(elle::Archive&    archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(this->value) == elle::Status::Error)
+    //    escape("unable to serialize the identifier attributes");
 
-      return elle::Status::Ok;
-    };
+    //  return elle::Status::Ok;
+    //};
 
-    ///
-    /// this method extracts the identifier.
-    ///
-    elle::Status        Identifier::Extract(elle::Archive&      archive)
-    {
-      // extract the attributes.
-      if (archive.Extract(this->value) == elle::Status::Error)
-        escape("unable to extract the identifier attributes");
+    /////
+    ///// this method extracts the identifier.
+    /////
+    //elle::Status        Identifier::Extract(elle::Archive&      archive)
+    //{
+    //  // extract the attributes.
+    //  if (archive.Extract(this->value) == elle::Status::Error)
+    //    escape("unable to extract the identifier attributes");
 
-      return elle::Status::Ok;
-    };
+    //  return elle::Status::Ok;
+    //};
 
 //
 // ---------- dumpable --------------------------------------------------------

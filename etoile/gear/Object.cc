@@ -138,83 +138,83 @@ namespace etoile
     ///
     /// this method serializes the object.
     ///
-    elle::Status        Object::Serialize(elle::Archive&        archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(this->location,
-                            this->object) == elle::Status::Error)
-        escape("unable to serialize the attributes");
+    //elle::Status        Object::Serialize(elle::Archive&        archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(this->location,
+    //                        this->object) == elle::Status::Error)
+    //    escape("unable to serialize the attributes");
 
-      // serialize the access.
-      if (this->access == NULL)
-        {
-          // serialize the access.
-          if (archive.Serialize(*this->access) == elle::Status::Error)
-            escape("unable to serialize the access");
-        }
-      else
-        {
-          // serialize 'none'.
-          if (archive.Serialize(elle::none) == elle::Status::Error)
-            escape("unable to serialize 'none'");
-        }
+    //  // serialize the access.
+    //  if (this->access == NULL) // <<< oups, fonction jamais testée ?
+    //    {
+    //      // serialize the access.
+    //      if (archive.Serialize(*this->access) == elle::Status::Error)
+    //        escape("unable to serialize the access");
+    //    }
+    //  else
+    //    {
+    //      // serialize 'none'.
+    //      if (archive.Serialize(elle::none) == elle::Status::Error)
+    //        escape("unable to serialize 'none'");
+    //    }
 
-      // serialize the attributes.
-      if (archive.Serialize(
-            static_cast<elle::Natural8>(this->rights.role),
-            static_cast<elle::Natural8>(this->rights.permissions),
-            this->rights.key,
-            this->rights.record,
-            this->author) == elle::Status::Error)
-        escape("unable to serialize the attributes");
+    //  // serialize the attributes.
+    //  if (archive.Serialize(
+    //        static_cast<elle::Natural8>(this->rights.role),
+    //        static_cast<elle::Natural8>(this->rights.permissions),
+    //        this->rights.key,
+    //        this->rights.record,
+    //        this->author) == elle::Status::Error)
+    //    escape("unable to serialize the attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the object.
-    ///
-    elle::Status        Object::Extract(elle::Archive&          archive)
-    {
-      elle::Archive::Type       type;
+    /////
+    ///// this method extracts the object.
+    /////
+    //elle::Status        Object::Extract(elle::Archive&          archive)
+    //{
+    //  elle::Archive::Type       type;
 
-      // extract the attributes.
-      if (archive.Extract(this->location,
-                          this->object) == elle::Status::Error)
-        escape("unable to extract the attributes");
+    //  // extract the attributes.
+    //  if (archive.Extract(this->location,
+    //                      this->object) == elle::Status::Error)
+    //    escape("unable to extract the attributes");
 
-      // fetch the next element's type.
-      if (archive.Fetch(type) == elle::Status::Error)
-        escape("unable to fetch the next element's type");
+    //  // fetch the next element's type.
+    //  if (archive.Fetch(type) == elle::Status::Error)
+    //    escape("unable to fetch the next element's type");
 
-      // extract the access.
-      if (type == elle::Archive::TypeNull)
-        {
-          // extract 'none'.
-          if (archive.Extract(elle::none) == elle::Status::Error)
-            escape("unable to extract 'none'");
-        }
-      else
-        {
-          // allocate an access.
-          this->access = new nucleus::Access;
+    //  // extract the access.
+    //  if (type == elle::Archive::TypeNull)
+    //    {
+    //      // extract 'none'.
+    //      if (archive.Extract(elle::none) == elle::Status::Error)
+    //        escape("unable to extract 'none'");
+    //    }
+    //  else
+    //    {
+    //      // allocate an access.
+    //      this->access = new nucleus::Access;
 
-          // extract the access.
-          if (archive.Extract(*this->access) == elle::Status::Error)
-            escape("unable to extract the access");
-        }
+    //      // extract the access.
+    //      if (archive.Extract(*this->access) == elle::Status::Error)
+    //        escape("unable to extract the access");
+    //    }
 
-      // extract the attributes.
-      if (archive.Extract(
-            reinterpret_cast<elle::Natural8&>(this->rights.role),
-            reinterpret_cast<elle::Natural8&>(this->rights.permissions),
-            this->rights.key,
-            this->rights.record,
-            this->author) == elle::Status::Error)
-        escape("unable to extract the attributes");
+    //  // extract the attributes.
+    //  if (archive.Extract(
+    //        reinterpret_cast<elle::Natural8&>(this->rights.role),
+    //        reinterpret_cast<elle::Natural8&>(this->rights.permissions),
+    //        this->rights.key,
+    //        this->rights.record,
+    //        this->author) == elle::Status::Error)
+    //    escape("unable to extract the attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

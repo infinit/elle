@@ -205,28 +205,28 @@ namespace etoile
     ///
     /// this method serializes the object.
     ///
-    elle::Status        Chemin::Serialize(elle::Archive&        archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(this->route,
-                            this->venue) == elle::Status::Error)
-        escape("unable to serialize the attribtues");
+    //elle::Status        Chemin::Serialize(elle::Archive&        archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(this->route,
+    //                        this->venue) == elle::Status::Error)
+    //    escape("unable to serialize the attribtues");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the object.
-    ///
-    elle::Status        Chemin::Extract(elle::Archive&  archive)
-    {
-      // extract the attributes.
-      if (archive.Extract(this->route,
-                          this->venue) == elle::Status::Error)
-        escape("unable to extract the attributes");
+    /////
+    ///// this method extracts the object.
+    /////
+    //elle::Status        Chemin::Extract(elle::Archive&  archive)
+    //{
+    //  // extract the attributes.
+    //  if (archive.Extract(this->route,
+    //                      this->venue) == elle::Status::Error)
+    //    escape("unable to extract the attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

@@ -97,8 +97,9 @@ namespace satellite
       // attributes
       //
       Operation         operation;
-      elle::Archive     inputs;
-      elle::Archive     outputs;
+      //XXX
+      //elle::Archive     inputs;
+      //elle::Archive     outputs;
       elle::Integer32   result;
     };
 
