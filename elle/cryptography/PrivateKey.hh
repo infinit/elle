@@ -25,6 +25,7 @@
 #include <elle/cryptography/Clear.hh>
 #include <elle/cryptography/Seed.hh>
 
+// XXX remove openssl include from headers
 #include <elle/idiom/Close.hh>
 # include <openssl/rsa.h>
 # include <openssl/engine.h>

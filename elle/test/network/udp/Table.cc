@@ -165,58 +165,58 @@ namespace elle
     ///
     /// this method serializes a table.
     ///
-    Status              Table::Serialize(Archive&               archive) const
-    {
-      Table::Scoutor    scoutor;
+    //Status              Table::Serialize(Archive&               archive) const
+    //{
+    //  Table::Scoutor    scoutor;
 
-      // serialize the number of neighbours.
-      if (archive.Serialize(static_cast<Natural32>(this->container.size())) ==
-          Status::Error)
-        escape("unable to serialize the neighbour");
+    //  // serialize the number of neighbours.
+    //  if (archive.Serialize(static_cast<Natural32>(this->container.size())) ==
+    //      Status::Error)
+    //    escape("unable to serialize the neighbour");
 
-      // serialize the table by going through it.
-      for (scoutor = this->container.begin();
-           scoutor != this->container.end();
-           scoutor++)
-        {
-          // serialize the neighbour.
-          if (archive.Serialize(*(*scoutor)) == Status::Error)
-            escape("unable to serialize the neighbour");
-        }
+    //  // serialize the table by going through it.
+    //  for (scoutor = this->container.begin();
+    //       scoutor != this->container.end();
+    //       scoutor++)
+    //    {
+    //      // serialize the neighbour.
+    //      if (archive.Serialize(*(*scoutor)) == Status::Error)
+    //        escape("unable to serialize the neighbour");
+    //    }
 
-      return Status::Ok;
-    }
+    //  return Status::Ok;
+    //}
 
-    ///
-    /// this method extracts a table.
-    ///
-    Status              Table::Extract(Archive&         archive)
-    {
-      Natural32         n;
-      Natural32         i;
+    /////
+    ///// this method extracts a table.
+    /////
+    //Status              Table::Extract(Archive&         archive)
+    //{
+    //  Natural32         n;
+    //  Natural32         i;
 
-      // extract the number of elements.
-      if (archive.Extract(n) == Status::Error)
-        escape("unable to extract the internal numbers");
+    //  // extract the number of elements.
+    //  if (archive.Extract(n) == Status::Error)
+    //    escape("unable to extract the internal numbers");
 
-      // iterate.
-      for (i = 0; i < n; i++)
-        {
-          Neighbour*    neighbour;
+    //  // iterate.
+    //  for (i = 0; i < n; i++)
+    //    {
+    //      Neighbour*    neighbour;
 
-          // allocate a neighbour.
-          neighbour = new Neighbour;
+    //      // allocate a neighbour.
+    //      neighbour = new Neighbour;
 
-          // extract the neighbour.
-          if (archive.Extract(*neighbour) == Status::Error)
-            escape("unable to extract the neighbour");
+    //      // extract the neighbour.
+    //      if (archive.Extract(*neighbour) == Status::Error)
+    //        escape("unable to extract the neighbour");
 
-          // add the neighbour to the table.
-          this->container.push_back(neighbour);
-        }
+    //      // add the neighbour to the table.
+    //      this->container.push_back(neighbour);
+    //    }
 
-      return Status::Ok;
-    }
+    //  return Status::Ok;
+    //}
 
 //
 // ---------- dumpable --------------------------------------------------------
