@@ -26,6 +26,21 @@ namespace elle
         Pointer(Pointer&& other) : _ptr(other._ptr) {}
       };
 
+    ///
+    /// Alive pointer acts the same as Pointer<T> class, except it will throw
+    /// an error if the pointer is null.
+    ///
+    template<typename T>
+      class AlivePointer
+      {
+        friend class ArchiveSerializer<AlivePointer<T>>;
+      private:
+        T*& _ptr;
+      public:
+        AlivePointer(T*& ptr) : _ptr(ptr) {}
+        AlivePointer(Pointer&& other) : _ptr(other._ptr) {}
+      };
+
     /// Infer the Pointer<T> type.
     template<typename T>
       Pointer<T> pointer(T*& ptr)
@@ -33,6 +48,12 @@ namespace elle
         return Pointer<T>(ptr);
       }
 
+    /// Infer the AlivePointer<T> type.
+    template<typename T>
+      AlivePointer<T> alive_pointer(T*& ptr)
+      {
+        return AlivePointer<T>(ptr);
+      }
   }
 }
 
