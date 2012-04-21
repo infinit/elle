@@ -73,7 +73,7 @@ elle::Status          Etoile::Initialize()
   {
     elle::String string;
 
-    if (elle::Random::Generate(string) == elle::Status::Error)
+    if (cryptography::Random::Generate(string) == elle::Status::Error)
       escape("unable to generate a random string");
 
     if (Etoile::Phrase.Create(string,

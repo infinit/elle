@@ -34,7 +34,7 @@ namespace elle
       : public elle::io::Dumpable
       , public elle::serialize::Uniquable<Buffer>
     {
-      friend elle::serialize::ArchiveSerializer<Buffer>;
+      friend class elle::serialize::ArchiveSerializer<Buffer>;
     public:
       typedef elle::Byte                                          ContentType;
       typedef std::unique_ptr<ContentType, detail::MallocDeleter> ContentPtr;

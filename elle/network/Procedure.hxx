@@ -53,23 +53,14 @@ namespace elle
 // ---------- methods ---------------------------------------------------------
 //
 
-    ///
-    /// this method is called by the network manager whenever a message
-    /// of tag I is received.
-    ///
-    template <const Tag I,
-              const Tag O,
-              const Tag E>
-    Status Procedure<I, O, E>::Skeleton(elle::utility::Buffer& buffer) const
-    {
-
-      struct Extractor
+    namespace {
+      struct ProcedureSkeletonExtractor
       {
       private:
         elle::serialize::InputBufferArchive& archive;
 
       public:
-        Extractor(elle::serialize::InputBufferArchive& archive)
+        ProcedureSkeletonExtractor(elle::serialize::InputBufferArchive& archive)
           : archive(archive)
         {}
 
@@ -89,9 +80,20 @@ namespace elle
           //static_assert(false, "NON1");
         }
       };
+    }
+    ///
+    /// this method is called by the network manager whenever a message
+    /// of tag I is received.
+    ///
+    template <const Tag I,
+              const Tag O,
+              const Tag E>
+    Status Procedure<I, O, E>::Skeleton(elle::utility::Buffer& buffer) const
+    {
+
 
       elle::serialize::InputBufferArchive archive(buffer);
-      Extractor extractor(archive);
+      ProcedureSkeletonExtractor extractor(archive);
 
 
       Callback<
@@ -99,7 +101,7 @@ namespace elle
           typename Trait::Reference<
               typename Message<I>::P
           >::Type
-      >               extract(&Extractor::Load, &extractor);
+      >               extract(&ProcedureSkeletonExtractor::Load, &extractor);
 
       Variables<
         typename Trait::Bare<

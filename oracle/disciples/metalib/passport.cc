@@ -59,7 +59,7 @@ static lune::Passport create_passport(elle::String const& id,
     elle::Region              region;
 
     // generate a random region.
-    if (elle::Random::Generate(region) == elle::Status::Error)
+    if (cryptography::Random::Generate(region) == elle::Status::Error)
       throw std::runtime_error("unable to generate a random region");
 
     // create a label.

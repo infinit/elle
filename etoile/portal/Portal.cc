@@ -50,7 +50,7 @@ namespace etoile
     {
       // build an arbitrary line for applications to connect to
       // the portal and issue requests.
-      if (elle::Random::Generate(Portal::Line, 16) == elle::Status::Error)
+      if (cryptography::Random::Generate(Portal::Line, 16) == elle::Status::Error)
         escape("unable to generate a random portal line");
 
       // register the messages.

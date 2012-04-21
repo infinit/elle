@@ -54,7 +54,7 @@ int main(int argc, char** argv)
     {
       elle::String s;
 
-      elle::Random::Generate(s, 16);
+      cryptography::Random::Generate(s, 16);
 
       v[i] = s;
     }

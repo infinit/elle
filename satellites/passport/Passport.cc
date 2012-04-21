@@ -81,11 +81,11 @@ namespace satellite
       elle::String              id;
 
       // generate a random string.
-      if (elle::Random::Generate(id) == elle::Status::Error)
+      if (cryptography::Random::Generate(id) == elle::Status::Error)
         escape("unable to generate a random string");
 
       // generate a random region.
-      if (elle::Random::Generate(region) == elle::Status::Error)
+      if (cryptography::Random::Generate(region) == elle::Status::Error)
         escape("unable to generate a random region");
 
       // create a label.

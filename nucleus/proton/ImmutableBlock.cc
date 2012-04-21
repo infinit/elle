@@ -77,6 +77,7 @@ namespace nucleus
         }
 
       }
+
     ///
     /// this method loads the block.
     ///
@@ -132,7 +133,7 @@ namespace nucleus
                         elle::io::Piece("%ADDRESS%", unique)) == elle::Status::Error)
         escape("unable to complete the path");
 
-      return elle::io::Fileable<History>::Store(path);
+      return elle::io::Fileable<ImmutableBlock>::Store(path);
     }
 
     ///

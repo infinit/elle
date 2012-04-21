@@ -1,17 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [sat may  7 23:41:32 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
+#include <elle/cryptography/Random.hh>
+#include <elle/cryptography/PublicKeySerializer.hxx>
+#include <elle/utility/TimeSerializer.hxx>
+#include <nucleus/proton/NetworkSerializer.hxx>
 #include <nucleus/proton/ImprintBlock.hh>
 #include <nucleus/proton/Family.hh>
 
@@ -63,7 +54,7 @@ namespace nucleus
         escape("unable to retrieve the current time");
 
       // generate a random number.
-      if (elle::Random::Generate(this->salt) == elle::Status::Error)
+      if (elle::cryptography::Random::Generate(this->salt) == elle::Status::Error)
         escape("unable to generate the seed");
 
       // set the owner public key.
@@ -176,46 +167,46 @@ namespace nucleus
     ///
     /// this method serializes the block object.
     ///
-    elle::Status        ImprintBlock::Serialize(elle::Archive& archive) const
-    {
-      // serialize the parent class.
-      if (MutableBlock::Serialize(archive) == elle::Status::Error)
-        escape("unable to serialize the underlying block");
+    //elle::Status        ImprintBlock::Serialize(elle::Archive& archive) const
+    //{
+    //  // serialize the parent class.
+    //  if (MutableBlock::Serialize(archive) == elle::Status::Error)
+    //    escape("unable to serialize the underlying block");
 
-      // serialize the owner part.
-      if (archive.Serialize(this->stamp,
-                            this->salt,
-                            this->owner.K) == elle::Status::Error)
-        escape("unable to serialize the block's content");
+    //  // serialize the owner part.
+    //  if (archive.Serialize(this->stamp,
+    //                        this->salt,
+    //                        this->owner.K) == elle::Status::Error)
+    //    escape("unable to serialize the block's content");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the block object.
-    ///
-    elle::Status        ImprintBlock::Extract(elle::Archive&    archive)
-    {
-      // extract the parent class.
-      if (MutableBlock::Extract(archive) == elle::Status::Error)
-        escape("unable to extract the underlying block");
+    /////
+    ///// this method extracts the block object.
+    /////
+    //elle::Status        ImprintBlock::Extract(elle::Archive&    archive)
+    //{
+    //  // extract the parent class.
+    //  if (MutableBlock::Extract(archive) == elle::Status::Error)
+    //    escape("unable to extract the underlying block");
 
-      // check the family.
-      if (this->family != FamilyImprintBlock)
-        escape("invalid family");
+    //  // check the family.
+    //  if (this->family != FamilyImprintBlock)
+    //    escape("invalid family");
 
-      // extract the owner part.
-      if (archive.Extract(this->stamp,
-                          this->salt,
-                          this->owner.K) == elle::Status::Error)
-        escape("unable to extract the block's content");
+    //  // extract the owner part.
+    //  if (archive.Extract(this->stamp,
+    //                      this->salt,
+    //                      this->owner.K) == elle::Status::Error)
+    //    escape("unable to extract the block's content");
 
-      // compute the owner subject.
-      if (this->owner.subject.Create(this->owner.K) == elle::Status::Error)
-        escape("unable to create the owner subject");
+    //  // compute the owner subject.
+    //  if (this->owner.subject.Create(this->owner.K) == elle::Status::Error)
+    //    escape("unable to create the owner subject");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

@@ -133,8 +133,7 @@ namespace nucleus
       elle::String      unique;
 
       // first, turn the block's address into a hexadecimal string.
-      if (elle::Hexadecimal::Encode(address.digest->region,
-                                    unique) == elle::Status::Error)
+      if (address.digest->Save(unique) == elle::Status::Error)
         escape("unable to convert the address in its hexadecimal form");
 
       // debug.
