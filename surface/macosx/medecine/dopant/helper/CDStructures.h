@@ -1,11 +1,5 @@
 #import <Foundation/Foundation.h>
 
-/**
- * Types de données utilisés par Finder et dont on a besoin à un moment
- * ou à un autre...
- * Il y a beaucoup de void* car on cherche juste à avoir la taille de ces
- * structures.
- */
 struct _NSSize {
     float width;
     float height;

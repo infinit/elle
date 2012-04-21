@@ -1,18 +1,15 @@
 //
-//  AddInfinitToFavorite.h
-//  HelperTools
+//  OONodeHelper.h
+//  medecine
 //
-//  Created by Charles Guillot - Infinit on 3/19/12.
+//  Created by Charles Guillot on 11/04/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
-#import "OOSwizzle.h"
+#import <Foundation/Foundation.h>
 #import "CDStructures.h"
 
-@interface OOAddToFavorites : NSObject
-
-+ (OOAddToFavorites*) instance;
+@interface OONodeHelper : NSObject
 
 +(id)nodeRefWithFENode:(TFENode*)fn;
 +(TFENode*)feNodeWithNodeRef:(void*)fn;

@@ -25,7 +25,7 @@
     }
     // Connect to D
     NSConnection *c = [NSConnection connectionWithRegisteredName:@"io.infinit.Nurse.helper" host:nil]; 
-    OOInjectorHelper *proxy = (OOInjectorHelper *)[c rootProxy];
+    OONurseInjector *proxy = (OONurseInjector *)[c rootProxy];
     
     NSString *currentDir = [[NSFileManager defaultManager] currentDirectoryPath];
 

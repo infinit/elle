@@ -9,14 +9,14 @@
 #import "OODopantLoader.h"
 #import "OOContextMenu.h"
 #import "OOIconOverlay.h"
-#import "OOAddToFavorites.h"
+#import "OOFavorites.h"
 
 @implementation OODopantLoader
 
 + (void) load
 {
     [OOIconOverlay instance];
-    [OOAddToFavorites instance];
+    [OOFavorites instance];
     [OOContextMenu instance];
 }
 

@@ -1,6 +1,6 @@
 //
-//  FIListCellDictKey.m
-//  HelperTools
+//  OOListCellDictKey.m
+//  Dopant
 //
 //  Created by Charles Guillot on 30/03/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
@@ -57,12 +57,14 @@ static NSMutableSet *items = nil;
     
     return self;
 }
+
 - (unsigned long long)hash
 {
     if (self.cell == nil)
         return 0;
     return [self.cell hash];
 }
+
 - (BOOL)isEqual:(id)arg1
 {
     if (arg1 == self)
