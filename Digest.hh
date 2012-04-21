@@ -4,9 +4,8 @@
 # include <elle/types.hh>
 
 # include <elle/standalone/Region.hh>
-
+# include <elle/serialize/Uniquable.hh>
 # include <elle/radix/Object.hh>
-
 # include <elle/idiom/Open.hh>
 
 namespace elle
@@ -25,8 +24,9 @@ namespace elle
     ///
     /// this class represents an asymmetrically encrypted text.
     ///
-    class Digest:
-      public Object
+    class Digest
+      : public Object
+      , public elle::serialize::Uniquable<Digest>
     {
     public:
       //
