@@ -183,41 +183,41 @@ namespace lune
   ///
   /// this method serializes the object.
   ///
-  elle::Status          Descriptor::Serialize(elle::Archive&    archive) const
-  {
-    // serialize the attributes.
-    if (archive.Serialize(
-          this->name,
-          this->model,
-          this->root,
-          this->history,
-          this->extent,
-          this->contention,
-          this->balancing,
-          this->signature) == elle::Status::Error)
-      escape("unable to serialize the attributes");
+  //elle::Status          Descriptor::Serialize(elle::Archive&    archive) const
+  //{
+  //  // serialize the attributes.
+  //  if (archive.Serialize(
+  //        this->name,
+  //        this->model,
+  //        this->root,
+  //        this->history,
+  //        this->extent,
+  //        this->contention,
+  //        this->balancing,
+  //        this->signature) == elle::Status::Error)
+  //    escape("unable to serialize the attributes");
 
-    return elle::Status::Ok;
-  }
+  //  return elle::Status::Ok;
+  //}
 
-  ///
-  /// this method extracts the object.
-  ///
-  elle::Status          Descriptor::Extract(elle::Archive&      archive)
-  {
-    // extract the attributes.
-    if (archive.Extract(this->name,
-                        this->model,
-                        this->root,
-                        this->history,
-                        this->extent,
-                        this->contention,
-                        this->balancing,
-                        this->signature) == elle::Status::Error)
-      escape("unable to extract the attributes");
+  /////
+  ///// this method extracts the object.
+  /////
+  //elle::Status          Descriptor::Extract(elle::Archive&      archive)
+  //{
+  //  // extract the attributes.
+  //  if (archive.Extract(this->name,
+  //                      this->model,
+  //                      this->root,
+  //                      this->history,
+  //                      this->extent,
+  //                      this->contention,
+  //                      this->balancing,
+  //                      this->signature) == elle::Status::Error)
+  //    escape("unable to extract the attributes");
 
-    return elle::Status::Ok;
-  }
+  //  return elle::Status::Ok;
+  //}
 
 //
 // ---------- fileable --------------------------------------------------------

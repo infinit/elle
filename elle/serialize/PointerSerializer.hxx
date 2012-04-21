@@ -1,6 +1,8 @@
 #ifndef  ELLE_SERIALIZE_POINTERSERIALIZER_HXX
 # define ELLE_SERIALIZE_POINTERSERIALIZER_HXX
 
+# include <stdexcept>
+
 # include <elle/serialize/ArchiveSerializer.hxx>
 
 # include <elle/serialize/Pointer.hh>
@@ -51,6 +53,41 @@ namespace elle
 
     template<typename T>
       struct StoreClassVersion<Pointer<T>>
+      {
+        static bool const value = false;
+      };
+
+    template<typename T>
+      struct ArchiveSerializer<AlivePointer<T>>
+        : public SplitSerializer<AlivePointer<T>>
+      {
+        template<typename Archive> static void
+          Save(Archive& ar,
+               AlivePointer<T> const& value,
+               unsigned int version)
+          {
+            assert(version == 0);
+            if (value._ptr == nullptr)
+              throw std::runtime_error("Pointer is null, cannot archive it");
+            archive >> *(value._ptr);
+          }
+
+        template<typename Archive> static void
+          Load(Archive& ar,
+               AlivePointer<T> const& value,
+               unsigned int version)
+          {
+            assert(version == 0);
+
+            delete value._ptr;
+            value._ptr = nullptr;
+
+            value._ptr = archive.Construct<T>().release();
+          }
+      };
+
+    template<typename T>
+      struct StoreClassVersion<AlivePointer<T>>
       {
         static bool const value = false;
       };

@@ -266,23 +266,23 @@ elle::Status            Handle::Dump(const elle::Natural32      margin) const
 ///
 /// this method serializes the object.
 ///
-elle::Status            Handle::Serialize(elle::Archive&        archive) const
-{
-  if (archive.Serialize(this->address,
-                        this->secret) == elle::Status::Error)
-    escape("unable to serialize the attribtues");
-
-  return elle::Status::Ok;
-}
-
-///
-/// this method extracts the object.
-///
-elle::Status            Handle::Extract(elle::Archive&          archive)
-{
-  if (archive.Extract(this->address,
-                      this->secret) == elle::Status::Error)
-    escape("unable to extract the attribtues");
-
-  return elle::Status::Ok;
-}
+//elle::Status            Handle::Serialize(elle::Archive&        archive) const
+//{
+//  if (archive.Serialize(this->address,
+//                        this->secret) == elle::Status::Error)
+//    escape("unable to serialize the attribtues");
+//
+//  return elle::Status::Ok;
+//}
+//
+/////
+///// this method extracts the object.
+/////
+//elle::Status            Handle::Extract(elle::Archive&          archive)
+//{
+//  if (archive.Extract(this->address,
+//                      this->secret) == elle::Status::Error)
+//    escape("unable to extract the attribtues");
+//
+//  return elle::Status::Ok;
+//}

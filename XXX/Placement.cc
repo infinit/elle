@@ -89,26 +89,26 @@ embed(Placement, _());
 ///
 /// this method serializes the placement.
 ///
-elle::Status        Placement::Serialize(elle::Archive&     archive) const
-{
-  // serialize the attributes.
-  if (archive.Serialize(this->value) == elle::Status::Error)
-    escape("unable to serialize the placement attributes");
-
-  return elle::Status::Ok;
-};
-
-///
-/// this method extracts the placement.
-///
-elle::Status        Placement::Extract(elle::Archive&       archive)
-{
-  // extract the attributes.
-  if (archive.Extract(this->value) == elle::Status::Error)
-    escape("unable to extract the placement attributes");
-
-  return elle::Status::Ok;
-};
+//elle::Status        Placement::Serialize(elle::Archive&     archive) const
+//{
+//  // serialize the attributes.
+//  if (archive.Serialize(this->value) == elle::Status::Error)
+//    escape("unable to serialize the placement attributes");
+//
+//  return elle::Status::Ok;
+//};
+//
+/////
+///// this method extracts the placement.
+/////
+//elle::Status        Placement::Extract(elle::Archive&       archive)
+//{
+//  // extract the attributes.
+//  if (archive.Extract(this->value) == elle::Status::Error)
+//    escape("unable to extract the placement attributes");
+//
+//  return elle::Status::Ok;
+//};
 
 //
 // ---------- dumpable --------------------------------------------------------

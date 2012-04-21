@@ -250,43 +250,43 @@ namespace nucleus
     ///
     /// this method archives the nodule.
     ///
-    template <typename V>
-    elle::Status        Nodule<V>::Serialize(elle::Archive&     archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(
-            static_cast<elle::Natural8>(this->type),
-            this->parent,
-            this->left,
-            this->right) == elle::Status::Error)
-        escape("unable to serialize the attributes");
+    //template <typename V>
+    //elle::Status        Nodule<V>::Serialize(elle::Archive&     archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(
+    //        static_cast<elle::Natural8>(this->type),
+    //        this->parent,
+    //        this->left,
+    //        this->right) == elle::Status::Error)
+    //    escape("unable to serialize the attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the attributes.
-    ///
-    template <typename V>
-    elle::Status        Nodule<V>::Extract(elle::Archive&       archive)
-    {
-      elle::Natural8    type;
+    /////
+    ///// this method extracts the attributes.
+    /////
+    //template <typename V>
+    //elle::Status        Nodule<V>::Extract(elle::Archive&       archive)
+    //{
+    //  elle::Natural8    type;
 
-      // extract the attributes.
-      if (archive.Extract(type,
-                          this->parent,
-                          this->left,
-                          this->right) == elle::Status::Error)
-        escape("unable to extract the attributes");
+    //  // extract the attributes.
+    //  if (archive.Extract(type,
+    //                      this->parent,
+    //                      this->left,
+    //                      this->right) == elle::Status::Error)
+    //    escape("unable to extract the attributes");
 
-      // cast the type.
-      this->type = static_cast<Nodule<V>::Type>(type);
+    //  // cast the type.
+    //  this->type = static_cast<Nodule<V>::Type>(type);
 
-      // XXX[ne devrait-t-on pas calculer le footprint? ou juste que c'est
-      //     toujours calcule au dernier moment?]
+    //  // XXX[ne devrait-t-on pas calculer le footprint? ou juste que c'est
+    //  //     toujours calcule au dernier moment?]
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

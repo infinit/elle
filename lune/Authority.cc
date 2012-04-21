@@ -239,39 +239,39 @@ namespace lune
   ///
   /// this method serializes the object.
   ///
-  elle::Status          Authority::Serialize(elle::Archive&     archive) const
-  {
-    // check the cipher.
-    if (this->cipher == NULL)
-      escape("unable to serialize an unencrypted authority");
+  //elle::Status          Authority::Serialize(elle::Archive&     archive) const
+  //{
+  //  // check the cipher.
+  //  if (this->cipher == NULL)
+  //    escape("unable to serialize an unencrypted authority");
 
-    // serialize the type and cipher.
-    if (archive.Serialize(static_cast<elle::Natural8>(this->type),
-                          *this->cipher) == elle::Status::Error)
-      escape("unable to serialize the attributes");
+  //  // serialize the type and cipher.
+  //  if (archive.Serialize(static_cast<elle::Natural8>(this->type),
+  //                        *this->cipher) == elle::Status::Error)
+  //    escape("unable to serialize the attributes");
 
-    return elle::Status::Ok;
-  }
+  //  return elle::Status::Ok;
+  //}
 
-  ///
-  /// this method extracts the object.
-  ///
-  elle::Status          Authority::Extract(elle::Archive&       archive)
-  {
-    elle::Natural8      type;
+  /////
+  ///// this method extracts the object.
+  /////
+  //elle::Status          Authority::Extract(elle::Archive&       archive)
+  //{
+  //  elle::Natural8      type;
 
-    // allocate the cipher.
-    this->cipher = new elle::cryptography::Cipher;
+  //  // allocate the cipher.
+  //  this->cipher = new elle::cryptography::Cipher;
 
-    // extract the type and cipher.
-    if (archive.Extract(type, *this->cipher) == elle::Status::Error)
-      escape("unable to extract the attributes");
+  //  // extract the type and cipher.
+  //  if (archive.Extract(type, *this->cipher) == elle::Status::Error)
+  //    escape("unable to extract the attributes");
 
-    // set the type.
-    this->type = static_cast<Authority::Type>(type);
+  //  // set the type.
+  //  this->type = static_cast<Authority::Type>(type);
 
-    return elle::Status::Ok;
-  }
+  //  return elle::Status::Ok;
+  //}
 
 //
 // ---------- fileable --------------------------------------------------------

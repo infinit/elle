@@ -67,26 +67,26 @@ namespace lune
   ///
   /// this method serializes a dictionary.
   ///
-  elle::Status          Dictionary::Serialize(elle::Archive&    archive) const
-  {
-    // serialize the maps.
-    if (archive.Serialize(this->users, this->groups) == elle::Status::Error)
-      escape("unable to serialize the maps");
+  //elle::Status          Dictionary::Serialize(elle::Archive&    archive) const
+  //{
+  //  // serialize the maps.
+  //  if (archive.Serialize(this->users, this->groups) == elle::Status::Error)
+  //    escape("unable to serialize the maps");
 
-    return elle::Status::Ok;
-  }
+  //  return elle::Status::Ok;
+  //}
 
-  ///
-  /// this method extract a public key from the given archive.
-  ///
-  elle::Status          Dictionary::Extract(elle::Archive&      archive)
-  {
-    // extract the maps.
-    if (archive.Extract(this->users, this->groups) == elle::Status::Error)
-      escape("unable to extract the maps");
+  /////
+  ///// this method extract a public key from the given archive.
+  /////
+  //elle::Status          Dictionary::Extract(elle::Archive&      archive)
+  //{
+  //  // extract the maps.
+  //  if (archive.Extract(this->users, this->groups) == elle::Status::Error)
+  //    escape("unable to extract the maps");
 
-    return elle::Status::Ok;
-  }
+  //  return elle::Status::Ok;
+  //}
 
 //
 // ---------- fileable --------------------------------------------------------

@@ -915,74 +915,74 @@ namespace nucleus
     ///
     /// this method archives the seam.
     ///
-    template <typename V>
-    elle::Status        Seam<V>::Serialize(elle::Archive&       archive) const
-    {
-      auto              iterator = this->container.begin();
-      auto              end = this->container.end();
-      elle::Natural32   size;
+    //template <typename V>
+    //elle::Status        Seam<V>::Serialize(elle::Archive&       archive) const
+    //{
+    //  auto              iterator = this->container.begin();
+    //  auto              end = this->container.end();
+    //  elle::Natural32   size;
 
-      // serialize the parent nodule.
-      if (Nodule<V>::Serialize(archive) == elle::Status::Error)
-        escape("unable to serialize the parent nodule");
+    //  // serialize the parent nodule.
+    //  if (Nodule<V>::Serialize(archive) == elle::Status::Error)
+    //    escape("unable to serialize the parent nodule");
 
-      // retrieve the container size.
-      size = this->container.size();
+    //  // retrieve the container size.
+    //  size = this->container.size();
 
-      // serialize the container size.
-      if (archive.Serialize(size) == elle::Status::Error)
-        escape("unable to serialize the size");
+    //  // serialize the container size.
+    //  if (archive.Serialize(size) == elle::Status::Error)
+    //    escape("unable to serialize the size");
 
-      // go through the container.
-      for (; iterator != end; ++iterator)
-        {
-          // serialize the key and inlet.
-          if (archive.Serialize(*iterator->second) == elle::Status::Error)
-            escape("unable to serialize the key/inlet tuple");
-        }
+    //  // go through the container.
+    //  for (; iterator != end; ++iterator)
+    //    {
+    //      // serialize the key and inlet.
+    //      if (archive.Serialize(*iterator->second) == elle::Status::Error)
+    //        escape("unable to serialize the key/inlet tuple");
+    //    }
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the attributes.
-    ///
-    template <typename V>
-    elle::Status        Seam<V>::Extract(elle::Archive& archive)
-    {
-      elle::Natural32   size;
-      elle::Natural32   i;
+    /////
+    ///// this method extracts the attributes.
+    /////
+    //template <typename V>
+    //elle::Status        Seam<V>::Extract(elle::Archive& archive)
+    //{
+    //  elle::Natural32   size;
+    //  elle::Natural32   i;
 
-      // extract the parent nodule.
-      if (Nodule<V>::Extract(archive) == elle::Status::Error)
-        escape("unable to extract the parent nodule");
+    //  // extract the parent nodule.
+    //  if (Nodule<V>::Extract(archive) == elle::Status::Error)
+    //    escape("unable to extract the parent nodule");
 
-      // extract the container size.
-      if (archive.Extract(size) == elle::Status::Error)
-        escape("unable to extract the size");
+    //  // extract the container size.
+    //  if (archive.Extract(size) == elle::Status::Error)
+    //    escape("unable to extract the size");
 
-      // iterator.
-      for (i = 0; i < size; i++)
-        {
-          // allocate an inlet.
-          auto          inlet =
-            std::unique_ptr< Seam<V>::I >(
-              new Seam<V>::I);
+    //  // iterator.
+    //  for (i = 0; i < size; i++)
+    //    {
+    //      // allocate an inlet.
+    //      auto          inlet =
+    //        std::unique_ptr< Seam<V>::I >(
+    //          new Seam<V>::I);
 
-          // extract the key and inlet.
-          if (archive.Extract(*inlet.get()) == elle::Status::Error)
-            escape("unable to extract the key/inlet tuple");
+    //      // extract the key and inlet.
+    //      if (archive.Extract(*inlet.get()) == elle::Status::Error)
+    //        escape("unable to extract the key/inlet tuple");
 
-          // add the tuple to the seam.
-          if (this->Insert(inlet.get()) == elle::Status::Error)
-            escape("unable to add the key/tuple inlet to the seam");
+    //      // add the tuple to the seam.
+    //      if (this->Insert(inlet.get()) == elle::Status::Error)
+    //        escape("unable to add the key/tuple inlet to the seam");
 
-          // release.
-          inlet.release();
-        }
+    //      // release.
+    //      inlet.release();
+    //    }
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
 //
 // ---------- definitions -----------------------------------------------------

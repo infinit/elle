@@ -100,28 +100,28 @@ namespace lune
   ///
   /// this method serializes the object.
   ///
-  elle::Status          Phrase::Serialize(elle::Archive&        archive) const
-  {
-    // serialize the attributes.
-    if (archive.Serialize(this->pass,
-                          this->portal) == elle::Status::Error)
-      escape("unable to serialize the attributes");
+  //elle::Status          Phrase::Serialize(elle::Archive&        archive) const
+  //{
+  //  // serialize the attributes.
+  //  if (archive.Serialize(this->pass,
+  //                        this->portal) == elle::Status::Error)
+  //    escape("unable to serialize the attributes");
 
-    return elle::Status::Ok;
-  }
+  //  return elle::Status::Ok;
+  //}
 
-  ///
-  /// this method extracts the object.
-  ///
-  elle::Status          Phrase::Extract(elle::Archive&          archive)
-  {
-    // extract the attributes.
-    if (archive.Extract(this->pass,
-                        this->portal) == elle::Status::Error)
-      escape("unable to extract the attributes");
+  /////
+  ///// this method extracts the object.
+  /////
+  //elle::Status          Phrase::Extract(elle::Archive&          archive)
+  //{
+  //  // extract the attributes.
+  //  if (archive.Extract(this->pass,
+  //                      this->portal) == elle::Status::Error)
+  //    escape("unable to extract the attributes");
 
-    return elle::Status::Ok;
-  }
+  //  return elle::Status::Ok;
+  //}
 
 //
 // ---------- fileable --------------------------------------------------------

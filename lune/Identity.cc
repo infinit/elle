@@ -221,37 +221,37 @@ namespace lune
   ///
   /// this method serializes the object.
   ///
-  elle::Status          Identity::Serialize(elle::Archive&      archive) const
-  {
-    // check the cipher.
-    if (this->cipher != nullptr)
-      {
-        // serialize the attributes.
-        if (archive.Serialize(
-              static_cast<elle::Byte>(Identity::ModeEncrypted),
-              this->name,
-              *this->cipher,
-              this->signature) == elle::Status::Error)
-          escape("unable to serialize the attributes");
-      }
-    else
-      {
-        //
-        // this is a special case where the identity is actually serialized
-        // in its unencrypted form.
-        //
+  //elle::Status          Identity::Serialize(elle::Archive&      archive) const
+  //{
+  //  // check the cipher.
+  //  if (this->cipher != nullptr)
+  //    {
+  //      // serialize the attributes.
+  //      if (archive.Serialize(
+  //            static_cast<elle::Byte>(Identity::ModeEncrypted),
+  //            this->name,
+  //            *this->cipher,
+  //            this->signature) == elle::Status::Error)
+  //        escape("unable to serialize the attributes");
+  //    }
+  //  else
+  //    {
+  //      //
+  //      // this is a special case where the identity is actually serialized
+  //      // in its unencrypted form.
+  //      //
 
-        // serialize the attributes.
-        if (archive.Serialize(
-              static_cast<elle::Byte>(Identity::ModeUnencrypted),
-              this->name,
-              this->pair,
-              this->signature) == elle::Status::Error)
-          escape("unable to serialize the attributes");
-      }
+  //      // serialize the attributes.
+  //      if (archive.Serialize(
+  //            static_cast<elle::Byte>(Identity::ModeUnencrypted),
+  //            this->name,
+  //            this->pair,
+  //            this->signature) == elle::Status::Error)
+  //        escape("unable to serialize the attributes");
+  //    }
 
-    return elle::Status::Ok;
-  }
+  //  return elle::Status::Ok;
+  //}
 
   ///
   /// this method extracts the object.
