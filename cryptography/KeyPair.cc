@@ -187,22 +187,22 @@ namespace elle
 
       // create an EVP key.
       if ((scope.key = ::EVP_PKEY_new()) == NULL)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       // create a new RSA key.
       if ((scope.rsa = ::RSA_new()) == NULL)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       // rotate the RSA key.
       if (comet::RSA_rotate(scope.rsa,
                             ::BN_num_bits(this->K.key()->pkey.rsa->n),
                             seed.region.contents,
                             seed.region.size) <= 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       // assign the RSA key to the EVP's.
       if (::EVP_PKEY_assign_RSA(scope.key, scope.rsa) <= 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       // stop tracking.
       scope.rsa = nullptr;

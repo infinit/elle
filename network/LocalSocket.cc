@@ -506,20 +506,12 @@ namespace elle
     ///
     void                LocalSocket::_connected()
     {
-      Closure<
-        Status,
-        Parameters<>
-        >               closure(Callback<>::Infer(&Signal<
-                                                    Parameters<>
-                                                    >::Emit,
-                                                  &this->signal.connected));
-
       // set the state.
       this->state = AbstractSocket::StateConnected;
 
-      // spawn a fiber.
-      if (Fiber::Spawn(closure) == Status::Error)
-        yield(_(), "unable to spawn a fiber");
+      new reactor::Thread(concurrency::scheduler(), "LocalSocket connected",
+                          boost::bind(&Signal<Parameters<> >::Emit,
+                                      &this->signal.connected), true);
     }
 
     ///
@@ -527,20 +519,12 @@ namespace elle
     ///
     void                LocalSocket::_disconnected()
     {
-      Closure<
-        Status,
-        Parameters<>
-        >               closure(Callback<>::Infer(&Signal<
-                                                    Parameters<>
-                                                    >::Emit,
-                                                  &this->signal.disconnected));
-
       // set the state.
       this->state = AbstractSocket::StateDisconnected;
 
-      // spawn a fiber.
-      if (Fiber::Spawn(closure) == Status::Error)
-        yield(_(), "unable to spawn a fiber");
+      new reactor::Thread(concurrency::scheduler(), "LocalSocket disconnect",
+                          boost::bind(&Signal<Parameters<> >::Emit,
+                                      &this->signal.disconnected), true);
     }
 
     ///
@@ -548,17 +532,9 @@ namespace elle
     ///
     void                LocalSocket::_ready()
     {
-      Closure<
-        Status,
-        Parameters<>
-        >               closure(Callback<>::Infer(&Signal<
-                                                    Parameters<>
-                                                    >::Emit,
-                                                  &this->signal.ready));
-
-      // spawn a fiber.
-      if (Fiber::Spawn(closure) == Status::Error)
-        yield(_(), "unable to spawn a fiber");
+      new reactor::Thread(concurrency::scheduler(), "LocalSocket ready",
+                          boost::bind(&Signal<Parameters<> >::Emit,
+                                      &this->signal.ready), true);
     }
 
     ///
@@ -572,22 +548,11 @@ namespace elle
                           const QLocalSocket::LocalSocketError)
     {
       String            cause(this->socket->errorString().toStdString());
-      Closure<
-        Status,
-        Parameters<
-          const String&
-          >
-        >               closure(Callback<>::Infer(&Signal<
-                                                    Parameters<
-                                                      const String&
-                                                      >
-                                                    >::Emit,
-                                                  &this->signal.error),
-                                cause);
 
-      // spawn a fiber.
-      if (Fiber::Spawn(closure) == Status::Error)
-        yield(_(), "unable to spawn a fiber");
+      new reactor::Thread
+        (concurrency::scheduler(), "LocalSocket error",
+         boost::bind(&Signal<Parameters<String> >::Emit,
+                     &this->signal.error, cause), true);
     }
 
   }

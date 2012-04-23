@@ -32,7 +32,7 @@ namespace reactor
                           boost::bind(&wrapper<R>,
                                       boost::ref(mutex),
                                       boost::ref(condition),
-                                      action, boost::ref(result)));
+                                      action, boost::ref(result)), true);
       condition.wait(lock);
     }
     return result;

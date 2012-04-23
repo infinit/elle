@@ -7,12 +7,19 @@
 # include <elle/concurrency/Callback.hh>
 # include <elle/concurrency/Broker.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <QCoreApplication>
-#  include <QAbstractEventDispatcher>
-#  include <list>
-#  include <signal.h>
-# include <elle/idiom/Open.hh>
+#include <elle/idiom/Close.hh>
+
+# include <QCoreApplication>
+# include <QAbstractEventDispatcher>
+# include <list>
+# include <signal.h>
+
+#include <elle/idiom/Open.hh>
+
+namespace reactor
+{
+  class Scheduler;
+}
 
 namespace elle
 {
@@ -20,7 +27,6 @@ namespace elle
 
   namespace concurrency
   {
-
 //
 // ---------- classes ---------------------------------------------------------
 //
@@ -74,6 +80,9 @@ namespace elle
       ::QCoreApplication*       core;
 
       State                     state;
+    private:
+      static bool               _exit;
+      friend void qt_runner();
     };
 
 //
@@ -81,7 +90,6 @@ namespace elle
 //
 
     extern Program*             program;
-
   }
 }
 

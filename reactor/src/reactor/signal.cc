@@ -6,9 +6,15 @@ namespace reactor
     : Super(name)
   {}
 
-  void
+  bool
   Signal::signal()
   {
-    _signal();
+    return _signal();
+  }
+
+  bool
+  Signal::signal_one()
+  {
+    return _signal_one();
   }
 };

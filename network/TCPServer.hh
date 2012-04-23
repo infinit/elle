@@ -106,7 +106,7 @@ namespace elle
       //
       // slots
       //
-    private slots:
+    private Q_SLOTS:
       void              _accept();
     };
 

@@ -12,6 +12,7 @@ namespace elle
     class Cipher;
     class KeyPair;
     class Digest;
+    class Code;
   }
 }
 

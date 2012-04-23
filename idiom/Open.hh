@@ -194,45 +194,27 @@
 ///
 #define report(_format_, ...)                                           \
   do                                                                    \
-    {                                                                   \
-      elle::standalone::Report* _report_;                               \
-      std::ostringstream        _tmp_;                                  \
-      elle::Character     _message_[1024];                        \
+  {                                                                     \
+    std::ostringstream        _tmp_;                                    \
+    elle::Character     _message_[1024];                                \
                                                                         \
-      _tmp_ << __FILE__ << ":" << __LINE__ << " # " << __FUNCTION__;    \
+    _tmp_ << __FILE__ << ":" << __LINE__ << " # " << __FUNCTION__;      \
                                                                         \
-      elle::String        _location_(_tmp_.str());                \
-      elle::String        _time_(__DATE__ " " __TIME__);          \
+      elle::String        _location_(_tmp_.str());                      \
+      elle::String        _time_(__DATE__ " " __TIME__);                \
                                                                         \
-      ::sprintf(_message_, _format_, ##__VA_ARGS__);                    \
+    ::sprintf(_message_, _format_, ##__VA_ARGS__);                      \
                                                                         \
-      if (elle::standalone::Report::Instance(_report_) ==               \
-          elle::Status::True)                                      \
-        _report_->Record(_location_,                                    \
-                         _time_,                                        \
-                         elle::String(_message_));                \
-      else                                                              \
-        {                                                               \
-          std::cerr << _message_                                        \
-                    << " (" << _location_ << ") @ "                     \
-                    << _time_ << std::endl;                             \
-                                                                        \
-          show();                                                       \
-        }                                                               \
-    } while (false)
+    elle::standalone::Report::report.Get().Record(_location_,           \
+                                      _time_,                           \
+                                      elle::core::String(_message_));   \
+  } while (false)
 
 ///
 /// this macro-function transposes an existing report.
 ///
-#define transpose(_r_)                                                  \
-  do                                                                    \
-    {                                                                   \
-      elle::standalone::Report* _report_;                               \
-                                                                        \
-      if (elle::standalone::Report::Instance(_report_) ==               \
-          elle::Status::True)                                      \
-        _report_->Record(_r_);                                          \
-    } while (false)
+#define transpose(_r_)                          \
+  elle::standalone::Report::report.Get().Record(_r_)
 
 ///
 /// this macro-function indicates that an error occured
@@ -283,13 +265,13 @@
 ///
 #define fail(_format_, ...)                                             \
   do                                                                    \
-    {                                                                   \
-      report(_format_, ##__VA_ARGS__);                                  \
+  {                                                                     \
+    report(_format_, ##__VA_ARGS__);                                    \
                                                                         \
-      show();                                                           \
+    show();                                                             \
                                                                         \
-      ::exit(EXIT_FAILURE);                                             \
-    } while (false)
+    ::exit(EXIT_FAILURE);                                               \
+  } while (false)
 
 ///
 /// this macro-function displays the error stack on the error output.
@@ -297,14 +279,20 @@
 #define show()                                                          \
   do                                                                    \
     {                                                                   \
-      elle::standalone::Report* _report_;                               \
+      elle::standalone::Report& _report_ =                              \
+        elle::standalone::Report::report.Get();                         \
                                                                         \
+<<<<<<< HEAD
       if (elle::standalone::Report::Instance(_report_) ==               \
           elle::Status::True)                                      \
         {                                                               \
           _report_->Dump();                                             \
           _report_->Flush();                                            \
         }                                                               \
+=======
+      _report_.Dump();                                                  \
+      _report_.Flush();                                                 \
+>>>>>>> b07c9c342badfd662005a3dd7e0c8da2478c6c96
     } while (false)
 
 ///
@@ -314,19 +302,14 @@
 #define expose()                                                        \
   do                                                                    \
     {                                                                   \
-      elle::standalone::Report* _report_;                               \
-                                                                        \
-      if (elle::standalone::Report::Instance(_report_) ==               \
-          elle::Status::True)                                      \
-        {                                                               \
-          if (_report_->container.empty() == false)                     \
-            {                                                           \
-              _report_->Dump();                                         \
-              _report_->Flush();                                        \
-                                                                        \
-              ::exit(EXIT_FAILURE);                                     \
-            }                                                           \
-        }                                                               \
+      elle::standalone::Report& _report_ =                              \
+        elle::standalone::Report::report.Get();                         \
+      if (_report_.container.empty() == false)                          \
+      {                                                                 \
+        _report_.Dump();                                                \
+        _report_.Flush();                                               \
+        ::exit(EXIT_FAILURE);                                           \
+      }                                                                 \
     } while (false)
 
 ///
@@ -335,11 +318,7 @@
 #define purge()                                                         \
   do                                                                    \
     {                                                                   \
-      elle::standalone::Report* _report_;                               \
-                                                                        \
-      if (elle::standalone::Report::Instance(_report_) ==               \
-          elle::Status::True)                                      \
-        _report_->Flush();                                              \
+      elle::standalone::Report::report.Get().Flush();                   \
     } while (false)
 
 //

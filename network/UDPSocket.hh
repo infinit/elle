@@ -79,8 +79,7 @@ namespace elle
                              const I,
                              const Event& = Event::Null);
       template <typename O>
-      Status            Receive(const Event&,
-                                O);
+      Status            Receive(Event&, O);
       template <typename I,
                 typename O>
       Status            Call(const Locus&,
@@ -124,7 +123,7 @@ namespace elle
           >             error;
       }                 signal;
 
-    private slots:
+    private Q_SLOTS:
       //
       // slots
       //

@@ -2,6 +2,9 @@
 # define INFINIT_REACTOR_THREAD_HH
 
 # include <boost/optional.hpp>
+# ifndef Q_MOC_RUN
+#  include <boost/signal.hpp>
+# endif
 # include <boost/system/error_code.hpp>
 
 # include <reactor/backend/thread.hh>
@@ -24,8 +27,21 @@ namespace reactor
     `-------------*/
     public:
       Thread(Scheduler& scheduler,
-                 const std::string& name,
-                 const Action& action);
+             const std::string& name,
+             const Action& action,
+             bool dispose = false);
+      ~Thread();
+    private:
+      bool _dispose;
+
+    /*---------.
+    | Tracking |
+    `---------*/
+    public:
+      typedef boost::signal<void ()> Tracker;
+      Tracker& destructed();
+    private:
+      Tracker _destructed;
 
     /*-------.
     | Status |
@@ -50,6 +66,10 @@ namespace reactor
       bool done() const;
       /// Pretty name.
       std::string name() const;
+      /// Pretty print.
+      void Print(std::ostream& output) const;
+      /// Debug dump.
+      void Dump(std::ostream& output) const;
     private:
       State _state;
 
@@ -140,7 +160,12 @@ namespace reactor
       R _result;
   };
 
+  /*----------------.
+  | Print operators |
+  `----------------*/
+
   std::ostream& operator << (std::ostream& s, const Thread& t);
+  std::ostream& operator << (std::ostream& s, Thread::State state);
 }
 
 # include <reactor/thread.hxx>
