@@ -2,6 +2,7 @@
 # define LUNE_SET_HH
 
 # include <elle/types.hh>
+# include <elle/io/Fileable.hh>
 
 # include <elle/network/Locus.hh>
 

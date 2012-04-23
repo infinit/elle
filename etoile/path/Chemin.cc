@@ -143,14 +143,14 @@ namespace etoile
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::Status::True;
+        return true;
 
       // compare the attributes.
       if ((this->route != element.route) ||
           (this->venue != element.venue))
-        return elle::Status::False;
+        return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///
@@ -160,13 +160,13 @@ namespace etoile
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::Status::False;
+        return false;
 
       // compare the route only.
       if (this->route < element.route)
-        return elle::Status::True;
+        return true;
 
-      return elle::Status::False;
+      return false;
     }
 
     ///

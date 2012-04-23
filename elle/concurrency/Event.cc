@@ -57,7 +57,7 @@ namespace elle
       do
         {
           // generate the identifier.
-          if (Random::Generate(this->_identifier) == StatusError)
+          if (Random::Generate(this->_identifier) == Status::Error)
             escape("unable to generate the identifier");
         } while (*this == Event::Null);
 
@@ -85,7 +85,7 @@ namespace elle
       if (this == &element)
         return true;
 
-      if (this->identifier != element.identifier)
+      if (this->_identifier != element._identifier)
         return false;
 
       return true;

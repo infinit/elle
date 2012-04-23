@@ -38,7 +38,7 @@ namespace elle
         T*& _ptr;
       public:
         AlivePointer(T*& ptr) : _ptr(ptr) {}
-        AlivePointer(Pointer&& other) : _ptr(other._ptr) {}
+        AlivePointer(AlivePointer&& other) : _ptr(other._ptr) {}
       };
 
     /// Infer the Pointer<T> type.

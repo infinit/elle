@@ -109,11 +109,11 @@ namespace elle
     {
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // Q_EMIT the signal.
-      if (this->signal.ready.Emit(this->descriptor) == StatusError)
+      if (this->signal.ready.Emit(this->descriptor) == Status::Error)
         escape("unable to Q_EMIT the signal");
 #elif defined(INFINIT_WINDOWS)
       // Q_EMIT the signal.
-      if (this->signal.ready.Emit(this->notifier.handle()) == StatusError)
+      if (this->signal.ready.Emit(this->notifier.handle()) == Status::Error)
         escape("unable to Q_EMIT the signal");
 #else
 # error "unsupported platform"

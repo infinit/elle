@@ -1,16 +1,4 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       agent
-//
-// license       infinit
-//
-// author        julien quintard   [thu mar  4 17:51:46 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/io/Console.hh>
 
 #include <agent/Agent.hh>
 #include <hole/Hole.hh>
@@ -65,10 +53,10 @@ namespace agent
       // prompt the user for the passphrase.
       prompt = "Enter passphrase for keypair '" + Infinit::User + "': ";
 
-      if (elle::Console::Input(
+      if (elle::io::Console::Input(
             pass,
             prompt,
-            elle::Console::OptionPassword) == elle::Status::Error)
+            elle::io::Console::OptionPassword) == elle::Status::Error)
         escape("unable to read the input");
 
       // load the identity.

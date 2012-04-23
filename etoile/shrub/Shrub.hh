@@ -1,27 +1,15 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [sat aug  6 17:31:57 2011]
-//
-
 #ifndef ETOILE_SHRUB_SHRUB_HH
-#define ETOILE_SHRUB_SHRUB_HH
+# define ETOILE_SHRUB_SHRUB_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/concurrency/Timer.hh>
 
-#include <elle/types.hh>
+# include <elle/container/timeline/Timeline.hh>
+# include <etoile/shrub/Riffle.hh>
 
-#include <etoile/shrub/Riffle.hh>
-
-#include <etoile/path/Slab.hh>
-#include <etoile/path/Route.hh>
-#include <etoile/path/Venue.hh>
+# include <etoile/path/Slab.hh>
+# include <etoile/path/Route.hh>
+# include <etoile/path/Venue.hh>
 
 namespace etoile
 {
@@ -31,10 +19,6 @@ namespace etoile
   ///
   namespace shrub
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// the shrub i.e path cache relies on the LRU algorithm by keeping two
@@ -108,7 +92,7 @@ namespace etoile
       //
       static Riffle*                    Riffles;
 
-      static elle::Timeline<Riffle*>    Queue;
+      static elle::container::timeline::Timeline<Riffle*>    Queue;
       static elle::concurrency::Timer                Timer;
     };
 

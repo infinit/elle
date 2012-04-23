@@ -41,4 +41,27 @@ namespace elle
   }
 }
 
+
+/// If you need to overload the Load/Store methods of a Fileable class, you'll have to publish the
+/// Fileable<T> methods explicitly with this macro.
+/// --------------------
+/// class MyClass : public elle::io::Fileable<MyClass>
+/// {
+/// void Load(bool b); // overrides all elle::io::Fileable<MyClass> methods
+///
+/// ELLE_IO_USING_FILEABLE_LOAD(MyClass);
+/// };
+/// ---------------------
+#define ELLE_IO_USING_FILEABLE_LOAD(T)        \
+  using ::elle::io::Fileable<T>::Load         \
+
+/// As `ELLE_IO_USING_LOAD', but for Fileable<T>::Store method.
+#define ELLE_IO_USING_FILEABLE_STORE(T)       \
+  using ::elle::io::Fileable<T>::Store        \
+
+/// Both Load and Store methods.
+#define ELLE_IO_USING_FILEABLE_METHODS(T)     \
+  ELLE_IO_USING_FILEABLE_LOAD(T);             \
+  ELLE_IO_USING_FILEABLE_STORE(T)             \
+
 #endif

@@ -1,30 +1,13 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [tue nov  1 08:38:35 2011]
-//
-
 #ifndef ETOILE_PORTAL_APPLICATION_HH
-#define ETOILE_PORTAL_APPLICATION_HH
+# define ETOILE_PORTAL_APPLICATION_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
+# include <elle/types.hh>
+# include <elle/network/LocalSocket.hh>
 
 namespace etoile
 {
   namespace portal
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents an external client triggering operations
@@ -67,7 +50,7 @@ namespace etoile
       //
       // methods
       //
-      elle::Status      Create(elle::LocalSocket*);
+      elle::Status      Create(elle::network::LocalSocket*);
 
       //
       // callbacks
@@ -91,7 +74,7 @@ namespace etoile
       Processing                processing;
 
       elle::concurrency::Timer*              timer;
-      elle::LocalSocket*        socket;
+      elle::network::LocalSocket*        socket;
     };
 
   }

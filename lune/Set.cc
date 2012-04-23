@@ -1,19 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [tue mar  6 15:15:47 2012]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/io/Piece.hh>
+#include <elle/io/File.hh>
 
 #include <lune/Set.hh>
 #include <lune/Lune.hh>
+
+#include <elle/idiom/Open.hh>
 
 using namespace lune;
 
@@ -103,50 +94,50 @@ elle::Status          Set::Dump(const elle::Natural32      margin) const
 ///
 /// this method serializes the object.
 ///
-elle::Status          Set::Serialize(elle::Archive&        archive) const
-{
-  elle::Natural32     size;
-  auto                iterator = this->loci.begin();
-  auto                end = this->loci.end();
-
-  size = this->loci.size();
-
-  if (archive.Serialize(size) == elle::Status::Error)
-    escape("unable to serialize the size");
-
-  for (; iterator != end; ++iterator)
-    {
-      if (archive.Serialize(*iterator) == elle::Status::Error)
-        escape("unable to serialize the attributes");
-    }
-
-  return elle::Status::Ok;
-}
-
-///
-/// this method extracts the object.
-///
-elle::Status          Set::Extract(elle::Archive&          archive)
-{
-  elle::Natural32     size;
-  elle::Natural32     i;
-
-  if (archive.Extract(size) == elle::Status::Error)
-    escape("unable to extract the size");
-
-  for (i = 0; i < size; i++)
-    {
-      elle::network::Locus     locus;
-
-      if (archive.Extract(locus) == elle::Status::Error)
-        escape("unable to extract the attributes");
-
-      if (this->Add(locus) == elle::Status::Error)
-        escape("unable to add the locus to the set");
-    }
-
-  return elle::Status::Ok;
-}
+//elle::Status          Set::Serialize(elle::Archive&        archive) const
+//{
+//  elle::Natural32     size;
+//  auto                iterator = this->loci.begin();
+//  auto                end = this->loci.end();
+//
+//  size = this->loci.size();
+//
+//  if (archive.Serialize(size) == elle::Status::Error)
+//    escape("unable to serialize the size");
+//
+//  for (; iterator != end; ++iterator)
+//    {
+//      if (archive.Serialize(*iterator) == elle::Status::Error)
+//        escape("unable to serialize the attributes");
+//    }
+//
+//  return elle::Status::Ok;
+//}
+//
+/////
+///// this method extracts the object.
+/////
+//elle::Status          Set::Extract(elle::Archive&          archive)
+//{
+//  elle::Natural32     size;
+//  elle::Natural32     i;
+//
+//  if (archive.Extract(size) == elle::Status::Error)
+//    escape("unable to extract the size");
+//
+//  for (i = 0; i < size; i++)
+//    {
+//      elle::network::Locus     locus;
+//
+//      if (archive.Extract(locus) == elle::Status::Error)
+//        escape("unable to extract the attributes");
+//
+//      if (this->Add(locus) == elle::Status::Error)
+//        escape("unable to add the locus to the set");
+//    }
+//
+//  return elle::Status::Ok;
+//}
 
 //
 // ---------- fileable --------------------------------------------------------

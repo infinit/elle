@@ -1,38 +1,21 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 14 23:13:51 2009]
-//
-
 #ifndef ETOILE_GEAR_OBJECT_HH
-#define ETOILE_GEAR_OBJECT_HH
+# define ETOILE_GEAR_OBJECT_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/concurrency/Callback.hh>
+# include <nucleus/Nucleus.hh>
 
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
+# include <etoile/gear/Context.hh>
+# include <etoile/gear/Nature.hh>
 
-#include <etoile/gear/Context.hh>
-#include <etoile/gear/Nature.hh>
+# include <etoile/automaton/Object.hh>
 
-#include <etoile/automaton/Object.hh>
-
-#include <etoile/wall/Object.hh>
+# include <etoile/wall/Object.hh>
 
 namespace etoile
 {
   namespace gear
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents an object context.

@@ -73,8 +73,10 @@ namespace lune
     //elle::Status        Extract(elle::Archive&);
 
     // fileable
+    using elle::io::Fileable<Authority>::Load;
+    using elle::io::Fileable<Authority>::Store;
+
     elle::Status        Load();
-    elle::Status        Load(elle::Path const& path);
     elle::Status        Store() const;
     elle::Status        Erase() const;
     elle::Status        Exist() const;

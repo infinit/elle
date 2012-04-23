@@ -1,42 +1,19 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [thu jul 28 12:45:43 2011]
-//
-
 #ifndef ETOILE_GEAR_ACTOR_HH
-#define ETOILE_GEAR_ACTOR_HH
+# define ETOILE_GEAR_ACTOR_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <map>
 
-#include <elle/types.hh>
+# include <elle/types.hh>
 
-#include <etoile/gear/Identifier.hh>
-#include <etoile/gear/Operation.hh>
+# include <etoile/gear/Identifier.hh>
+# include <etoile/gear/Operation.hh>
 
 namespace etoile
 {
   namespace gear
   {
 
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    ///
-    /// the Scope class must be forward declared to prevent conflicts.
-    ///
     class Scope;
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// an actor represents an application operating on an object for

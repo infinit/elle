@@ -35,9 +35,7 @@ namespace elle
     ///
     Status              Session::Initialize()
     {
-      // register the govern callback to the fiber system.
-      if (Fiber::Register(Callback<>::Infer(&Session::Govern)) == Status::Error)
-        escape("unable to register the govern callback");
+      return Status::Ok;
     }
 
     ///

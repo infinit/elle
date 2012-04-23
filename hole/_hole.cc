@@ -109,7 +109,7 @@ namespace hole
     reactor::Thread t(elle::concurrency::scheduler(), "Hole initialization",
                       &hole::Hole::Initialize);
     // // initialize the Hole library.
-    // if (hole::Hole::Initialize() == elle::StatusError)
+    // if (hole::Hole::Initialize() == elle::Status::Error)
     //   escape("unable to initialize Hole");
 
     // launch the program.

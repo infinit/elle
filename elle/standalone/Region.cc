@@ -182,7 +182,7 @@ namespace elle
       // allocate memory.
       if ((this->contents =
            static_cast<Byte*>(::realloc(this->contents, capacity))) == NULL)
-        escape(::strerror(errno));
+        escape("%s", ::strerror(errno));
 
       // update the capacity. note that the size should be updated
       // manually when the direct copy is made.
@@ -208,7 +208,7 @@ namespace elle
       // allocate the required memory.
       if ((this->contents =
            static_cast<Byte*>(::realloc(this->contents, size))) == NULL)
-        escape(::strerror(errno));
+        escape("%s", ::strerror(errno));
 
       // copy the data.
       ::memcpy(this->contents, contents, size);
@@ -261,7 +261,7 @@ namespace elle
           if ((this->contents =
                static_cast<Byte*>(::realloc(this->contents,
                                             this->capacity))) == NULL)
-            escape(::strerror(errno));
+            escape("%s", ::strerror(errno));
 
 #ifdef REGION_CLEAR
           // initialize the memory's content.

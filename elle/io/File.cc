@@ -65,7 +65,7 @@ namespace elle
 
       // retrieve information.
       if (::stat(path.str().c_str(), &status) == -1)
-        escape(::strerror(errno));
+        escape("%s", ::strerror(errno));
 
       // prepare the data.
       if (data.Prepare(static_cast<Natural32>(status.st_size)) == Status::Error)
@@ -125,7 +125,7 @@ namespace elle
       if ((fd = ::open(path.str().c_str(),
                        O_CREAT | O_TRUNC | O_WRONLY,
                        0600)) == -1)
-        escape(::strerror(errno));
+        escape("%s", ::strerror(errno));
 
       // write the text to the file.
       while (woffset < data.size)
@@ -141,7 +141,7 @@ namespace elle
                 continue;
 
               ::close(fd);
-              escape(::strerror(errno));
+              escape("%s", ::strerror(errno));
             }
 
           if (wbytes == 0)

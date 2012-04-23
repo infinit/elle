@@ -1,16 +1,4 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [sat aug  8 16:26:41 2009]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/system/System.hh>
 
 #include <etoile/path/Path.hh>
 #include <etoile/path/Route.hh>
@@ -46,7 +34,7 @@ namespace etoile
     ///
     elle::Status        Route::Initialize()
     {
-      Way               root(elle::System::Path::Separator);
+      Way               root(elle::system::System::Path::Separator);
 
       // create the reference root route.
       if (Route::Root.Create(root) == elle::Status::Error)
@@ -108,18 +96,18 @@ namespace etoile
       Slab                      slab;
 
       // check that the way starts with a leading '/'
-      if (way.path[0] != elle::System::Path::Separator)
+      if (way.path[0] != elle::system::System::Path::Separator)
         escape("the path must contain the leading path separator '%c'",
-               elle::System::Path::Separator);
+               elle::system::System::Path::Separator);
 
       // clear the elements.
       this->elements.clear();
 
       // compute the next offsets.
       start =
-        way.path.find_first_not_of(elle::System::Path::Separator);
+        way.path.find_first_not_of(elle::system::System::Path::Separator);
       end =
-        way.path.find_first_of(elle::System::Path::Separator, start);
+        way.path.find_first_of(elle::system::System::Path::Separator, start);
 
       // check if at least one slab is present.
       if (start < way.path.length())
@@ -143,9 +131,9 @@ namespace etoile
 
               // compute the next offsets.
               start =
-                way.path.find_first_not_of(elle::System::Path::Separator, end);
+                way.path.find_first_not_of(elle::system::System::Path::Separator, end);
               end =
-                way.path.find_first_of(elle::System::Path::Separator, start);
+                way.path.find_first_of(elle::system::System::Path::Separator, start);
             }
         }
 
@@ -169,9 +157,9 @@ namespace etoile
 
           // compute the next offsets.
           start =
-            way.path.find_first_not_of(elle::System::Path::Separator, end);
+            way.path.find_first_not_of(elle::system::System::Path::Separator, end);
           end =
-            way.path.find_first_of(elle::System::Path::Separator, start);
+            way.path.find_first_of(elle::system::System::Path::Separator, start);
         }
 
       return elle::Status::Ok;
@@ -239,20 +227,20 @@ namespace etoile
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::Status::True;
+        return true;
 
       // compare the size.
       if (this->elements.size() != element.elements.size())
-        return elle::Status::False;
+        return false;
 
       // for every element.
       for (s = this->elements.begin(), t = element.elements.begin();
            s != this->elements.end();
            s++, t++)
         if (*s != *t)
-          return elle::Status::False;
+          return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///
@@ -265,13 +253,13 @@ namespace etoile
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::Status::False;
+        return false;
 
       // compare the size.
       if (this->elements.size() < element.elements.size())
-        return elle::Status::True;
+        return true;
       else if (this->elements.size() > element.elements.size())
-        return elle::Status::False;
+        return false;
 
       // for every element.
       for (s = this->elements.begin(), t = element.elements.begin();
@@ -279,13 +267,13 @@ namespace etoile
            s++, t++)
         {
           if (*s < *t)
-            return elle::Status::True;
+            return true;
           else if (*s > *t)
-            return elle::Status::False;
+            return false;
         }
 
       // at this point, both routes seem identical.
-      return elle::Status::False;
+      return false;
     }
 
     ///

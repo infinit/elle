@@ -71,7 +71,7 @@ namespace satellite
     //
     // static attributes
     //
-    static elle::LocalSocket    Socket;
+    static elle::network::LocalSocket    Socket;
   };
 
 }

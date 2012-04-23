@@ -87,12 +87,12 @@ namespace elle
 
       // start listening.
       if (this->server->listen(this->name.c_str()) == false)
-        escape(this->server->errorString().toStdString().c_str());
+        escape("%s", this->server->errorString().toStdString().c_str());
 
       // connect the signals.
       if (this->connect(this->server, SIGNAL(newConnection()),
                         this, SLOT(_accept())) == false)
-        escape("unable to connect the signal");
+        escape("%s", "unable to connect the signal");
 
       return Status::Ok;
     }
@@ -314,7 +314,7 @@ namespace elle
 
       // retrieve the connection from the server.
       if ((connection = this->server->nextPendingConnection()) == NULL)
-        escape(this->server->errorString().toStdString().c_str());
+        escape("%s", this->server->errorString().toStdString().c_str());
 
       // allocate a new socket to this server.
       auto socket = std::unique_ptr<LocalSocket>(new LocalSocket);

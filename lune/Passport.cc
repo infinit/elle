@@ -1,16 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [thu aug 11 13:31:24 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/io/File.hh>
+#include <elle/io/Piece.hh>
 
 #include <lune/Passport.hh>
 #include <lune/Lune.hh>
@@ -158,15 +147,7 @@ namespace lune
     if (path.Create(Lune::Passport) == elle::Status::Error)
       escape("unable to create the path");
 
-    // read the file's content.
-    if (elle::io::File::Read(path, region) == elle::Status::Error)
-      escape("unable to read the file's content");
-
-    // decode and extract the object.
-    if (elle::Hexadecimal::Decode(
-          elle::String(reinterpret_cast<char*>(region.contents),
-                       region.size),
-          *this) == elle::Status::Error)
+    if (this->Load(path) == elle::Status::Error)
       escape("unable to decode the object");
 
     return elle::Status::Ok;
@@ -185,18 +166,8 @@ namespace lune
     if (path.Create(Lune::Passport) == elle::Status::Error)
       escape("unable to create the path");
 
-    // encode in hexadecimal.
-    if (elle::Hexadecimal::Encode(*this, string) == elle::Status::Error)
-      escape("unable to encode the object in hexadecimal");
-
-    // wrap the string.
-    if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
-                    string.length()) == elle::Status::Error)
-      escape("unable to wrap the string in a region");
-
-    // write the file's content.
-    if (elle::io::File::Write(path, region) == elle::Status::Error)
-      escape("unable to write the file's content");
+    if (this->Store(path) == elle::Status::Error)
+      escape("unable to store the object");
 
     return elle::Status::Ok;
   }

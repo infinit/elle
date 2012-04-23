@@ -80,6 +80,8 @@ namespace lune
     //elle::Status        Extract(elle::Archive&);
 
     // fileable
+    using elle::io::Fileable<Descriptor>::Load;
+    using elle::io::Fileable<Descriptor>::Store;
     elle::Status        Load(const elle::String&);
     elle::Status        Store(const elle::String&) const;
     elle::Status        Erase(const elle::String&) const;

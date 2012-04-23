@@ -101,7 +101,7 @@ namespace etoile
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::Status::True;
+        return true;
 
       // compare the attributes.
       if ((this->genre != element.genre) ||
@@ -113,9 +113,9 @@ namespace etoile
           (this->permissions.owner != element.permissions.owner) ||
           (this->versions.meta != element.versions.meta) ||
           (this->versions.data != element.versions.data))
-        return elle::Status::False;
+        return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///
@@ -233,42 +233,42 @@ namespace etoile
     ///
     /// this method serializes the abstract.
     ///
-    elle::Status        Abstract::Serialize(elle::Archive&      archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(this->genre,
-                            this->stamps.creation,
-                            this->stamps.modification,
-                            this->size,
-                            this->keys.owner,
-                            this->keys.author,
-                            this->permissions.owner,
-                            this->versions.meta,
-                            this->versions.data) == elle::Status::Error)
-        escape("unable to serialize the attributes");
+    //elle::Status        Abstract::Serialize(elle::Archive&      archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(this->genre,
+    //                        this->stamps.creation,
+    //                        this->stamps.modification,
+    //                        this->size,
+    //                        this->keys.owner,
+    //                        this->keys.author,
+    //                        this->permissions.owner,
+    //                        this->versions.meta,
+    //                        this->versions.data) == elle::Status::Error)
+    //    escape("unable to serialize the attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the abstract.
-    ///
-    elle::Status        Abstract::Extract(elle::Archive&        archive)
-    {
-      // extract the attributes.
-      if (archive.Extract(this->genre,
-                          this->stamps.creation,
-                          this->stamps.modification,
-                          this->size,
-                          this->keys.owner,
-                          this->keys.author,
-                          this->permissions.owner,
-                          this->versions.meta,
-                          this->versions.data) == elle::Status::Error)
-        escape("unable to extract the attributes");
+    /////
+    ///// this method extracts the abstract.
+    /////
+    //elle::Status        Abstract::Extract(elle::Archive&        archive)
+    //{
+    //  // extract the attributes.
+    //  if (archive.Extract(this->genre,
+    //                      this->stamps.creation,
+    //                      this->stamps.modification,
+    //                      this->size,
+    //                      this->keys.owner,
+    //                      this->keys.author,
+    //                      this->permissions.owner,
+    //                      this->versions.meta,
+    //                      this->versions.data) == elle::Status::Error)
+    //    escape("unable to extract the attributes");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

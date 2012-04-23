@@ -1,17 +1,4 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [tue jun 14 12:57:24 2011]
-//
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/system/System.hh>
 
 #include <etoile/wall/Path.hh>
 
@@ -23,10 +10,6 @@ namespace etoile
 {
   namespace wall
   {
-
-//
-// ---------- methods ---------------------------------------------------------
-//
 
     ///
     /// this method takes a string-based path i.e a way and resolves it
@@ -85,7 +68,7 @@ namespace etoile
 
       // if the relative path is empty, just return the root directory.
       if (relative.path.empty() == true)
-        relative.path = elle::System::Path::Root;
+        relative.path = elle::system::System::Path::Root;
 
       return elle::Status::Ok;
     }

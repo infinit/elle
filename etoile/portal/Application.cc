@@ -68,7 +68,7 @@ namespace etoile
     ///
     /// this method creates the application given its socket.
     ///
-    elle::Status        Application::Create(elle::LocalSocket*  socket)
+    elle::Status        Application::Create(elle::network::LocalSocket*  socket)
     {
       // set the socket.
       this->socket = socket;

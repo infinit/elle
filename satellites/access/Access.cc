@@ -31,7 +31,7 @@ namespace satellite
   ///
   /// the socket used for communicating with Etoile.
   ///
-  elle::LocalSocket                     Access::Socket;
+  elle::network::LocalSocket                     Access::Socket;
 
 //
 // ---------- static callbacks ------------------------------------------------

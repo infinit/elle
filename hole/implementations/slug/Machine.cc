@@ -1157,7 +1157,7 @@ namespace hole
                                               const elle::network::Port& port)
       {
         Host*           host;
-        elle::Session*  session = elle::network::Session::session.Get();
+        elle::network::Session*  session = elle::network::Session::session.Get();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -1230,7 +1230,7 @@ namespace hole
       ///
       elle::Status      Machine::Authenticated(const Cluster&   cluster)
       {
-        elle::Session*  session = elle::network::Session::session.Get();
+        //elle::network::Session*  session = elle::network::Session::session.Get();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -1390,7 +1390,7 @@ namespace hole
                                       const nucleus::Block&     block)
       {
         Host*           host;
-        elle::Session*  session = elle::network::Session::session.Get();
+        elle::network::Session*  session = elle::network::Session::session.Get();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -1551,7 +1551,7 @@ namespace hole
                                       const nucleus::Version&   version)
       {
         Host*           host;
-        elle::Session*  session = elle::network::Session::session.Get();
+        elle::network::Session*  session = elle::network::Session::session.Get();
         nucleus::Block* block;
 
         // debug.
@@ -1700,7 +1700,7 @@ namespace hole
       elle::Status      Machine::Wipe(const nucleus::Address&   address)
       {
         Host*           host;
-        elle::Session*  session = elle::network::Session::session.Get();
+        elle::network::Session*  session = elle::network::Session::session.Get();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)

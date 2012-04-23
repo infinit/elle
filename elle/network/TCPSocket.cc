@@ -173,7 +173,7 @@ namespace elle
           {
             // deliberately wait for the connection to terminate.
             if (this->socket->waitForConnected(TCPSocket::Timeout) == false)
-              escape(this->socket->errorString().toStdString().c_str());
+              escape("%s", this->socket->errorString().toStdString().c_str());
 
             break;
           }
@@ -263,7 +263,7 @@ namespace elle
               reinterpret_cast<char*>(this->buffer->contents +
                                       this->buffer->size),
               size) != size)
-          escape(this->socket->errorString().toStdString().c_str());
+          escape("%s", this->socket->errorString().toStdString().c_str());
 
         // set the new size.
         this->buffer->size = this->buffer->size + size;

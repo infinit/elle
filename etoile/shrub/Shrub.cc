@@ -1,16 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [sat aug  6 17:48:20 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/container/timeline/Timeline.hh>
+#include <elle/concurrency/Callback.hh>
 
 #include <etoile/shrub/Shrub.hh>
 
@@ -38,7 +27,7 @@ namespace etoile
     /// whenever the capacity is reached, this data structure is used
     /// to quickly locate the least-recently-used riffles.
     ///
-    elle::Timeline<Riffle*>             Shrub::Queue;
+    elle::container::timeline::Timeline<Riffle*>             Shrub::Queue;
 
     ///
     /// this timer triggers the sweeper on a regular basis.

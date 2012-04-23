@@ -202,15 +202,9 @@ namespace hole
         // if the host has not been authenticated...
         if (this->state != Host::StateAuthenticated)
           {
-<<<<<<< HEAD
-            // emit the signal.
+            // Q_EMIT the signal.
             if (this->signal.dead.Emit(this) == elle::Status::Error)
               escape("unable to emit the signal");
-=======
-            // Q_EMIT the signal.
-            if (this->signal.dead.Emit(this) == elle::StatusError)
-              escape("unable to Q_EMIT the signal");
->>>>>>> b07c9c342badfd662005a3dd7e0c8da2478c6c96
 
             // set the state.
             this->state = Host::StateDead;
@@ -256,15 +250,9 @@ namespace hole
             this->timer = NULL;
           }
 
-<<<<<<< HEAD
-        // emit the signal.
+        // Q_EMIT the signal.
         if (this->signal.dead.Emit(this) == elle::Status::Error)
           escape("unable to emit the signal");
-=======
-        // Q_EMIT the signal.
-        if (this->signal.dead.Emit(this) == elle::StatusError)
-          escape("unable to Q_EMIT the signal");
->>>>>>> b07c9c342badfd662005a3dd7e0c8da2478c6c96
 
         // set the state.
         this->state = Host::StateDead;

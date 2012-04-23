@@ -120,20 +120,20 @@ namespace etoile
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::Status::True;
+        return true;
 
       // compare the size.
       if (this->elements.size() != element.elements.size())
-        return elle::Status::False;
+        return false;
 
       // for every element.
       for (s = this->elements.begin(), t = element.elements.begin();
            s != this->elements.end();
            s++, t++)
         if (*s != *t)
-          return elle::Status::False;
+          return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///
@@ -177,58 +177,58 @@ namespace etoile
     ///
     /// this method serializes the object.
     ///
-    elle::Status        Venue::Serialize(elle::Archive&         archive) const
-    {
-      Venue::Scoutor    scoutor;
-      elle::Natural32   size;
+    //elle::Status        Venue::Serialize(elle::Archive&         archive) const
+    //{
+    //  Venue::Scoutor    scoutor;
+    //  elle::Natural32   size;
 
-      // retrieve the container size.
-      size = this->elements.size();
+    //  // retrieve the container size.
+    //  size = this->elements.size();
 
-      // serialize the size.
-      if (archive.Serialize(size) == elle::Status::Error)
-        escape("unable to serialize the size");
+    //  // serialize the size.
+    //  if (archive.Serialize(size) == elle::Status::Error)
+    //    escape("unable to serialize the size");
 
-      // for every element.
-      for (scoutor = this->elements.begin();
-           scoutor != this->elements.end();
-           scoutor++)
-        {
-          // serialize the location.
-          if (archive.Serialize(*scoutor) == elle::Status::Error)
-            escape("unable to serialize the location");
-        }
+    //  // for every element.
+    //  for (scoutor = this->elements.begin();
+    //       scoutor != this->elements.end();
+    //       scoutor++)
+    //    {
+    //      // serialize the location.
+    //      if (archive.Serialize(*scoutor) == elle::Status::Error)
+    //        escape("unable to serialize the location");
+    //    }
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the object.
-    ///
-    elle::Status        Venue::Extract(elle::Archive&           archive)
-    {
-      elle::Natural32   size;
-      elle::Natural32   i;
+    /////
+    ///// this method extracts the object.
+    /////
+    //elle::Status        Venue::Extract(elle::Archive&           archive)
+    //{
+    //  elle::Natural32   size;
+    //  elle::Natural32   i;
 
-      // extract the size.
-      if (archive.Extract(size) == elle::Status::Error)
-        escape("unable to extract the size");
+    //  // extract the size.
+    //  if (archive.Extract(size) == elle::Status::Error)
+    //    escape("unable to extract the size");
 
-      // for every element.
-      for (i = 0; i < size; i++)
-        {
-          nucleus::Location     location;
+    //  // for every element.
+    //  for (i = 0; i < size; i++)
+    //    {
+    //      nucleus::Location     location;
 
-          // extract the location.
-          if (archive.Extract(location) == elle::Status::Error)
-            escape("unable to extract the location");
+    //      // extract the location.
+    //      if (archive.Extract(location) == elle::Status::Error)
+    //        escape("unable to extract the location");
 
-          // store the location in the elements.
-          this->elements.push_back(location);
-        }
+    //      // store the location in the elements.
+    //      this->elements.push_back(location);
+    //    }
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

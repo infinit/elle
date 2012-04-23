@@ -1,16 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar  3 13:55:58 2010]
-//
+#include <iostream>
+#include <sstream>
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/standalone/Log.hh>
+# include <elle/standalone/Report.hh>
 
 #include <etoile/gear/Identifier.hh>
 
@@ -78,13 +70,13 @@ namespace etoile
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::Status::True;
+        return true;
 
       // compare the identifier.
       if (this->value != element.value)
-        return elle::Status::False;
+        return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///

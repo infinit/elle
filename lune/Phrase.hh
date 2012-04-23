@@ -53,6 +53,7 @@ namespace lune
     //elle::Status        Extract(elle::Archive&);
 
     // fileable
+    ELLE_IO_USING_FILEABLE_METHODS(Phrase);
     elle::Status        Load(const elle::String&);
     elle::Status        Store(const elle::String&) const;
     elle::Status        Erase(const elle::String&) const;

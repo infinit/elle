@@ -122,15 +122,9 @@ namespace elle
     ///
     Status              Timer::Timeout()
     {
-<<<<<<< HEAD
-      // emit the signal.
-      if (this->signal.timeout.Emit() == Status::Error)
-        escape("unable to emit the signal");
-=======
       // Q_EMIT the signal.
-      if (this->signal.timeout.Emit() == StatusError)
+      if (this->signal.timeout.Emit() == Status::Error)
         escape("unable to Q_EMIT the signal");
->>>>>>> b07c9c342badfd662005a3dd7e0c8da2478c6c96
 
       return Status::Ok;
     }

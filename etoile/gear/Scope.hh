@@ -16,6 +16,7 @@
 //
 
 #include <elle/types.hh>
+#include <elle/concurrency/Timer.hh>
 
 #include <etoile/gear/Context.hh>
 #include <etoile/gear/Chronicle.hh>

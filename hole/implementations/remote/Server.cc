@@ -508,8 +508,8 @@ namespace hole
       ///
       elle::Status      Server::Challenge(const lune::Passport& passport)
       {
-        Customer*       customer;
-        elle::Session*  session = elle::network::Session::session.Get();
+        Customer*               customer;
+        elle::network::Session* session = elle::network::Session::session.Get();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -571,8 +571,8 @@ namespace hole
                                      nucleus::Block const&      block)
       {
         Customer*       customer;
-        elle::Session*  session = elle::network::Session::session.Get();
-        nucleus::Block* object;
+        elle::network::Session*  session = elle::network::Session::session.Get();
+        //nucleus::Block* object;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -636,7 +636,7 @@ namespace hole
                                      const nucleus::Version&    version)
       {
         Customer*       customer;
-        elle::Session*  session = elle::network::Session::session.Get();
+        elle::network::Session*  session = elle::network::Session::session.Get();
         nucleus::Block* block;
 
         // debug.
@@ -714,7 +714,7 @@ namespace hole
       elle::Status      Server::Wipe(const nucleus::Address&    address)
       {
         Customer*       customer;
-        elle::Session*  session = elle::network::Session::session.Get();
+        elle::network::Session*  session = elle::network::Session::session.Get();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)

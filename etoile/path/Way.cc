@@ -1,16 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [wed apr  7 00:29:12 2010]
-//
+#include <iostream>
+#include <sstream>
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/standalone/Log.hh>
+#include <elle/standalone/Report.hh>
+#include <elle/system/System.hh>
 
 #include <etoile/path/Way.hh>
 #include <elle/utility/Unicode.hh>
@@ -105,7 +98,7 @@ namespace etoile
       name.clear();
 
       // find the position.
-      last_slash = way.path.rfind(elle::System::Path::Separator);
+      last_slash = way.path.rfind(elle::system::System::Path::Separator);
 
       // check if way.path contains at least a slash
       if (last_slash == elle::String::npos)
@@ -142,13 +135,13 @@ namespace etoile
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::Status::True;
+        return true;
 
       // compare the attributes..
       if (this->path != element.path)
-        return elle::Status::False;
+        return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///

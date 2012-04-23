@@ -1,18 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [tue may  4 23:47:55 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/io/File.hh>
 
 #include <lune/Authority.hh>
+#include <lune/AuthoritySerializer.hxx>
 #include <lune/Lune.hh>
 
 namespace lune
@@ -280,26 +269,26 @@ namespace lune
   ///
   /// this method loads an authority file.
   ///
-  elle::Status          Authority::Load(elle::Path const& path)
-  {
-    elle::standalone::Region        region;
+  //elle::Status          Authority::Load(elle::Path const& path)
+  //{
+  //  elle::standalone::Region        region;
 
-    // read the file's content.
-    if (elle::io::File::Read(path, region) == elle::Status::Error)
-      escape("unable to read the file's content");
+  //  // read the file's content.
+  //  if (elle::io::File::Read(path, region) == elle::Status::Error)
+  //    escape("unable to read the file's content");
 
-    // decode and extract the object.
-    auto status = elle::Hexadecimal::Decode(
-        // XXX this copy the whole buffer, not opti
-        elle::String(reinterpret_cast<char*>(region.contents), region.size),
-        *this
-    );
+  //  // decode and extract the object.
+  //  auto status = elle::Hexadecimal::Decode(
+  //      // XXX this copy the whole buffer, not opti
+  //      elle::String(reinterpret_cast<char*>(region.contents), region.size),
+  //      *this
+  //  );
 
-    if (status == elle::Status::Error)
-      escape("unable to decode the object");
+  //  if (status == elle::Status::Error)
+  //    escape("unable to decode the object");
 
-    return elle::Status::Ok;
-  }
+  //  return elle::Status::Ok;
+  //}
 
   ///
   /// this method loads the system's authority file.
@@ -328,18 +317,8 @@ namespace lune
     if (path.Create(Lune::Authority) == elle::Status::Error)
       escape("unable to create the path");
 
-    // encode in hexadecimal.
-    if (elle::Hexadecimal::Encode(*this, string) == elle::Status::Error)
-      escape("unable to encode the object in hexadecimal");
-
-    // wrap the string.
-    if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
-                    string.length()) == elle::Status::Error)
-      escape("unable to wrap the string in a region");
-
-    // write the file's content.
-    if (elle::io::File::Write(path, region) == elle::Status::Error)
-      escape("unable to write the file's content");
+    if (this->Store(path) == elle::Status::Error)
+      escape("unable to store");
 
     return elle::Status::Ok;
   }

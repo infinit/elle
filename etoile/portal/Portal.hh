@@ -50,8 +50,8 @@ namespace etoile
       //
       // types
       //
-      typedef std::pair<elle::LocalSocket*, Application*>       Value;
-      typedef std::map<elle::LocalSocket*, Application*>        Container;
+      typedef std::pair<elle::network::LocalSocket*, Application*>       Value;
+      typedef std::map<elle::network::LocalSocket*, Application*>        Container;
       typedef Container::iterator                               Iterator;
       typedef Container::const_iterator                         Scoutor;
 
@@ -62,16 +62,16 @@ namespace etoile
       static elle::Status       Clean();
 
       static elle::Status       Add(Application*);
-      static elle::Status       Retrieve(elle::LocalSocket*,
+      static elle::Status       Retrieve(elle::network::LocalSocket*,
                                          Application*&);
-      static elle::Status       Remove(elle::LocalSocket*);
+      static elle::Status       Remove(elle::network::LocalSocket*);
 
       static elle::Status       Show(const elle::Natural32 = 0);
 
       //
       // static callbacks
       //
-      static elle::Status       Connection(elle::LocalSocket*);
+      static elle::Status       Connection(elle::network::LocalSocket*);
       static elle::Status       Authenticate(const elle::String&);
       static elle::Status       Prolog();
       static elle::Status       Epilog();

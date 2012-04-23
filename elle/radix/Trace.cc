@@ -313,7 +313,7 @@ namespace elle
       if ((fd = ::open(path,
                        O_CREAT | O_TRUNC | O_WRONLY,
                        0600)) == -1)
-        escape(::strerror(errno));
+        escape("%s", ::strerror(errno));
 
       // write the text to the file.
       if (::write(fd,
@@ -322,7 +322,7 @@ namespace elle
         {
           ::close(fd);
 
-          escape(::strerror(errno));
+          escape("%s", ::strerror(errno));
         }
 
       // close the file.
@@ -413,14 +413,14 @@ namespace elle
 
           // open the file.
           if ((fd = ::open(path, O_RDONLY)) == -1)
-            escape(::strerror(errno));
+            escape("%s", ::strerror(errno));
 
           // read the file's content.
           if (::read(fd, buffer, static_cast<size_t>(stat.st_size)) == -1)
             {
               ::close(fd);
 
-              escape(::strerror(errno));
+              escape("%s", ::strerror(errno));
             }
 
           // close the file.

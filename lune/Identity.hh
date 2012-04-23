@@ -80,6 +80,7 @@ namespace lune
     //elle::Status        Extract(elle::Archive&);
 
     // fileable
+    ELLE_IO_USING_FILEABLE_METHODS(Identity);
     elle::Status        Load();
     elle::Status        Store() const;
     elle::Status        Erase() const;

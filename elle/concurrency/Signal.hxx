@@ -136,16 +136,7 @@ namespace elle
         EmitOne(functionoid, arguments...);
       }
 
-<<<<<<< HEAD
-          // call the functionoid's object.
-          if (functionoid->Call(arguments...) == Status::Error)
-            {
-              // if an error occured, log it.
-              log("an error occured while processing a signal");
-            }
-        }
-=======
-      return StatusOk;
+      return Status::Ok;
     }
 
     template <typename... T>
@@ -164,7 +155,6 @@ namespace elle
                             boost::bind(&Signal< Parameters<T...> >::EmitOne,
                                         f, arguments...), true);
       }
->>>>>>> b07c9c342badfd662005a3dd7e0c8da2478c6c96
 
       return Status::Ok;
     }
@@ -177,9 +167,9 @@ namespace elle
       T... arguments)
     {
       assert(f);
-      if (f->Call(arguments...) == StatusError)
+      if (f->Call(arguments...) == Status::Error)
         log("an error occured while processing a signal");
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///

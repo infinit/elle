@@ -194,3 +194,8 @@ namespace nucleus
 
   }
 }
+
+std::ostream& operator <<(std::ostream& out, nucleus::proton::Version const& v)
+{
+  return out << v.number;
+}

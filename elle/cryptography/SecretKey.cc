@@ -144,7 +144,7 @@ namespace elle
                                NULL,
                                key,
                                iv) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       // retreive the cipher-specific block size.
       capacity = ::EVP_CIPHER_CTX_block_size(&scope.context);
@@ -176,7 +176,7 @@ namespace elle
                               &size,
                               plain.contents,
                               plain.size) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       // update the cipher size.
       cipher.region.size += size;
@@ -185,7 +185,7 @@ namespace elle
       if (::EVP_EncryptFinal_ex(&scope.context,
                                 cipher.region.contents + cipher.region.size,
                                 &size) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       // update the cipher size.
       cipher.region.size += size;
@@ -241,7 +241,7 @@ namespace elle
                                NULL,
                                key,
                                iv) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       // retreive the cipher-specific block size.
       capacity = ::EVP_CIPHER_CTX_block_size(&scope.context);
@@ -262,7 +262,7 @@ namespace elle
                               cipher.region.size -
                               (sizeof (SecretKey::Magic) - 1 +
                                sizeof (salt))) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       // update the clear size.
       clear.size += size;
@@ -271,7 +271,7 @@ namespace elle
       if (::EVP_DecryptFinal_ex(&scope.context,
                                 clear.contents + size,
                                 &size) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       // update the clear size.
       clear.size += size;

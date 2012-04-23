@@ -1,16 +1,4 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [mon feb  1 19:24:19 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <limits>
 
 #include <etoile/automaton/Attributes.hh>
 #include <etoile/automaton/Rights.hh>
@@ -106,8 +94,8 @@ namespace etoile
 
       // consult the attributes.
       if (context.object.meta.attributes.Consult(
-            elle::Type<nucleus::Index>::Minimum,
-            elle::Type<nucleus::Size>::Maximum,
+            std::numeric_limits<nucleus::Index>::min(),
+            std::numeric_limits<nucleus::Size>::max(),
             range) == elle::Status::Error)
         escape("unable to fetch the attributes");
 

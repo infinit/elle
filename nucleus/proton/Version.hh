@@ -69,7 +69,10 @@ namespace nucleus
       Type                      number;
     };
 
+
   }
 }
+
+std::ostream& operator <<(std::ostream& out, nucleus::proton::Version const& v);
 
 #endif

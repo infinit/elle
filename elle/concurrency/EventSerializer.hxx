@@ -11,7 +11,7 @@ ELLE_SERIALIZE_SIMPLE(elle::concurrency::Event,
                       version)
 {
   assert(version == 0);
-  archive & value.identifier;
+  archive & value._identifier;
 
   // XXX
   if (Archive::mode == ArchiveMode::Output)

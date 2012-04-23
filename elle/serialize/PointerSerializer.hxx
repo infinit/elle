@@ -17,7 +17,7 @@ namespace elle
         : public SplitSerializer<Pointer<T>>
       {
         template<typename Archive> static void
-          Save(Archive& ar,
+          Save(Archive& archive,
                Pointer<T> const& value,
                unsigned int version)
           {
@@ -34,7 +34,7 @@ namespace elle
           }
 
         template<typename Archive> static void
-          Load(Archive& ar,
+          Load(Archive& archive,
                Pointer<T> const& value,
                unsigned int version)
           {
@@ -47,7 +47,7 @@ namespace elle
             archive >> not_null;
 
             if (not_null)
-              value._ptr = archive.Construct<T>().release();
+              value._ptr = archive.template Construct<T>().release();
           }
       };
 
@@ -62,7 +62,7 @@ namespace elle
         : public SplitSerializer<AlivePointer<T>>
       {
         template<typename Archive> static void
-          Save(Archive& ar,
+          Save(Archive& archive,
                AlivePointer<T> const& value,
                unsigned int version)
           {
@@ -73,7 +73,7 @@ namespace elle
           }
 
         template<typename Archive> static void
-          Load(Archive& ar,
+          Load(Archive& archive,
                AlivePointer<T> const& value,
                unsigned int version)
           {
@@ -82,7 +82,7 @@ namespace elle
             delete value._ptr;
             value._ptr = nullptr;
 
-            value._ptr = archive.Construct<T>().release();
+            value._ptr = archive.template Construct<T>().release();
           }
       };
 

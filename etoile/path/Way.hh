@@ -1,33 +1,16 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [tue mar 30 23:31:29 2010]
-//
-
 #ifndef ETOILE_PATH_WAY_HH
-#define ETOILE_PATH_WAY_HH
+# define ETOILE_PATH_WAY_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/types.hh>
-
-#include <etoile/path/Length.hh>
-#include <etoile/path/Slice.hh>
+# include <etoile/path/Length.hh>
+# include <etoile/path/Slice.hh>
 
 namespace etoile
 {
   namespace path
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a string-based path i.e a way.

@@ -31,7 +31,7 @@ namespace elle
           }
         catch (std::exception const& err)
           {
-            escape(err.what());
+            escape("%s", err.what());
           }
 
         out = ss.str();
@@ -50,7 +50,7 @@ namespace elle
           }
         catch (std::exception const& err)
           {
-            escape(err.what());
+            escape("%s", err.what());
           }
 
         return Status::Ok;

@@ -16,6 +16,7 @@
 //
 
 #include <elle/types.hh>
+#include <elle/concurrency/Callback.hh>
 #include <nucleus/Nucleus.hh>
 
 #include <etoile/gear/Object.hh>

@@ -1,21 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar  3 13:37:54 2010]
-//
-
 #ifndef ETOILE_GEAR_IDENTIFIER_HH
-#define ETOILE_GEAR_IDENTIFIER_HH
+# define ETOILE_GEAR_IDENTIFIER_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
 namespace etoile
 {
