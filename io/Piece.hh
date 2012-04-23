@@ -4,6 +4,7 @@
 # include <elle/types.hh>
 
 # include <elle/radix/Object.hh>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {

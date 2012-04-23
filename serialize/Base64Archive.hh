@@ -33,6 +33,11 @@ namespace elle { namespace serialize {
       std::string _temp;
 
     public:
+      template<typename T>
+        Base64Archive(StreamType& stream, T const& value)
+          : BaseClass(stream)
+        { *this << value; }
+
       Base64Archive(StreamType& stream);
       ~Base64Archive();
 

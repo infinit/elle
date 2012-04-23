@@ -6,6 +6,8 @@
 
 #include <elle/utility/Duration.hh>
 
+#include <elle/idiom/Open.hh>
+
 namespace elle
 {
   namespace utility
