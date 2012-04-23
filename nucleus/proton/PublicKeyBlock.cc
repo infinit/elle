@@ -1,19 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [tue feb 17 18:09:00 2009]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/cryptography/PublicKeySerializer.hxx>
 
+#include <nucleus/proton/NetworkSerializer.hxx>
 #include <nucleus/proton/PublicKeyBlock.hh>
 #include <nucleus/proton/Family.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {

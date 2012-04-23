@@ -10,6 +10,7 @@
 
 # include <nucleus/neutron/Component.hh>
 
+
 namespace nucleus
 {
   namespace proton
@@ -57,7 +58,9 @@ namespace nucleus
       //
 
       // object
+# include <elle/idiom/Open.hh>
       declare(Block);
+# include <elle/idiom/Close.hh>
 
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;

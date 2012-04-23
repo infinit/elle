@@ -11,6 +11,8 @@
 
 #include <lune/Lune.hh>
 
+#include <elle/idiom/Open.hh>
+
 namespace nucleus
 {
   namespace proton

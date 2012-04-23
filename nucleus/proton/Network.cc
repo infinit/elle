@@ -1,18 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [mon feb 16 21:42:37 2009]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 
 #include <nucleus/proton/Network.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -65,13 +57,13 @@ namespace nucleus
     {
       // check the network as this may actually be the same object.
       if (this == &element)
-        return elle::Status::True;
+        return true;
 
       // compare the names.
       if (this->name != element.name)
-        return elle::Status::False;
+        return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///
@@ -81,13 +73,13 @@ namespace nucleus
     {
       // check the network as this may actually be the same object.
       if (this == &element)
-        return elle::Status::False;
+        return false;
 
       // compare the names.
       if (this->name < element.name)
-        return elle::Status::False;
+        return false;
 
-      return elle::Status::False;
+      return false;
     }
 
     ///

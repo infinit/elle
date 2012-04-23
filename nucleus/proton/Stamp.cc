@@ -77,15 +77,15 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::Status::True;
+        return true;
 
       // compare the attributes.
       if ((this->master != element.master) ||
           (this->slave != element.slave) ||
           (this->signature != element.signature))
-        return elle::Status::False;
+        return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///

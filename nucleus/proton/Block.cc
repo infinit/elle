@@ -4,6 +4,8 @@
 #include <nucleus/proton/Block.hh>
 #include <nucleus/proton/BlockSerializer.hxx>
 
+#include <elle/idiom/Open.hh>
+
 namespace nucleus
 {
   namespace proton

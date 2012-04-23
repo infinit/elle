@@ -2,6 +2,7 @@
 # define ELLE_IO_FILEABLE_HXX
 
 # include <elle/types.hh>
+# include <fstream>
 
 # include <elle/serialize/BinaryArchive.hxx>
 

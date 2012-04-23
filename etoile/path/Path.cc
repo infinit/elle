@@ -1,16 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [sat aug  8 16:21:09 2009]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <boost/lexical_cast.hpp>
 
 #include <etoile/path/Path.hh>
 
@@ -244,14 +233,17 @@ namespace etoile
               // retrieve the slice.
               slice = elle::String(slab, 0, start);
 
-              // transform the string into a number.
-              if (elle::Variable::Convert(elle::String(slab,
-                                                       start + 1,
-                                                       length - (start + 1)),
-                                          n) == elle::Status::Error)
-                escape("unable to convert the string-based version number");
+              try
+                {
+                  n = boost::lexical_cast<nucleus::Version::Type>(
+                      elle::String(slab, start + 1, length - (start + 1))
+                  );
+                }
+              catch (std::exception const& err)
+                {
+                  escape("unable to retreive the version number: %s", err.what());
+                }
 
-              // create the version.
               if (version.Create(n) == elle::Status::Error)
                 escape("unable to create the version");
             }

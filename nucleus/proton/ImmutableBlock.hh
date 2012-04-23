@@ -37,7 +37,9 @@ namespace nucleus
       //
 
       // object
+#include <elle/idiom/Open.hh>
       declare(ImmutableBlock);
+#include <elle/idiom/Close.hh>
 
       // fileable
       elle::Status      Load(const Network&,

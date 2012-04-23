@@ -38,7 +38,7 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status      Update(elle::cryptography::SecretKey&,
+      elle::Status      Update(elle::cryptography::SecretKey const&,
                                elle::cryptography::PublicKey const&);
       elle::Status      Extract(elle::cryptography::PrivateKey const&,
                                 elle::cryptography::SecretKey&) const;
@@ -48,7 +48,9 @@ namespace nucleus
       //
 
       // object
+#include <elle/idiom/Open.hh>
       declare(Token);
+#include <elle/idiom/Close.hh>
       elle::Boolean     operator==(const Token&) const;
 
       // dumpable

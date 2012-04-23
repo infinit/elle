@@ -45,7 +45,9 @@ namespace nucleus
       //
 
       // object
+#include <elle/idiom/Open.hh>
       declare(User);
+#include <elle/idiom/Close.hh>
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;

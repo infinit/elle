@@ -1,16 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [sat may 21 13:41:42 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <limits>
+
+#include <elle/standalone/Log.hh>
+#include <elle/standalone/Report.hh>
 
 #include <nucleus/proton/Version.hh>
 
@@ -31,8 +23,7 @@ namespace nucleus
     ///
     /// this constant represents the latest version.
     ///
-    const Version               Version::Last(
-                                  elle::Type<Version::Type>::Maximum);
+    const Version Version::Last = std::numeric_limits<Version::Type>::max();
 
     ///
     /// this constant represents any version and is useful whenever
@@ -92,13 +83,13 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::Status::True;
+        return true;
 
       // compare the numbers.
       if (this->number != element.number)
-        return elle::Status::False;
+        return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///
@@ -108,13 +99,13 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::Status::True;
+        return true;
 
       // compare the numbers.
       if (this->number >= element.number)
-        return elle::Status::False;
+        return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///
@@ -124,13 +115,13 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::Status::True;
+        return true;
 
       // compare the numbers.
       if (this->number <= element.number)
-        return elle::Status::False;
+        return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///

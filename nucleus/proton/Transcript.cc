@@ -1,18 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [wed jun 22 13:49:40 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <nucleus/proton/Transcript.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {

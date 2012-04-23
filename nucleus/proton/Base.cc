@@ -5,6 +5,8 @@
 #include <nucleus/proton/MutableBlock.hh>
 #include <nucleus/proton/MutableBlockSerializer.hxx>
 
+#include <elle/idiom/Open.hh>
+
 namespace nucleus
 {
   namespace proton

@@ -1,18 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri jun 24 14:52:08 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <nucleus/proton/Action.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -88,7 +78,7 @@ namespace nucleus
             escape("unknown action type");
           }
         }
-      
+
       return elle::Status::Ok;
     }
 

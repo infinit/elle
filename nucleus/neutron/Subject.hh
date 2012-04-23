@@ -73,7 +73,9 @@ namespace nucleus
       //
 
       // object
+#include <elle/idiom/Open.hh>
       declare(Subject);
+#include <elle/idiom/Close.hh>
       elle::Boolean     operator==(const Subject&) const;
 
       // dumpable

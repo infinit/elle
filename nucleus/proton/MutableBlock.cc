@@ -1,16 +1,14 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [sat may 21 12:27:39 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <boost/lexical_cast.hpp>
+
+#include <elle/cryptography/DigestSerializer.hxx>
+#include <nucleus/proton/MutableBlockSerializer.hxx>
+
+#include <elle/radix/Variables.hh>
+#include <elle/io/Fileable.hxx>
+#include <elle/serialize/Uniquable.hxx>
+#include <elle/io/File.hh>
+#include <elle/io/Piece.hh>
 
 #include <nucleus/proton/MutableBlock.hh>
 #include <nucleus/proton/History.hh>
@@ -150,7 +148,6 @@ namespace nucleus
       if (hole::Hole::Descriptor.history == false)
         {
           elle::Region  region;
-          elle::Archive archive;
 
           // complete the path with the network name.
           if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
@@ -159,23 +156,25 @@ namespace nucleus
               elle::Status::Error)
             escape("unable to complete the path");
 
-          // read the file's content.
-          if (elle::io::File::Read(path, region) == elle::Status::Error)
-            escape("unable to read the file's content");
+          if (this->Load(path) == elle::Status::Error)
+            escape("unable to load block");
 
-          // wrap the region into an archive.
-          if (archive.Wrap(region) == elle::Status::Error)
-            escape("unable to prepare the archive");
+          //// read the file's content.
+          //if (elle::io::File::Read(path, region) == elle::Status::Error)
+          //  escape("unable to read the file's content");
 
-          // extract from the archive.
-          if (archive.Extract(*this) == elle::Status::Error)
-            escape("unable to extract the archive");
+          //// wrap the region into an archive.
+          //if (archive.Wrap(region) == elle::Status::Error)
+          //  escape("unable to prepare the archive");
+
+          //// extract from the archive.
+          //if (archive.Extract(*this) == elle::Status::Error)
+          //  escape("unable to extract the archive");
         }
       else
         {
           elle::Region  region;
           elle::String  number;
-          elle::Archive archive;
 
           // if the requested version is the latest...
           if (version == Version::Last)
@@ -203,10 +202,17 @@ namespace nucleus
             }
           else
             {
-              // convert the version number.
-              if (elle::Variable::Convert(version.number,
-                                          number) == elle::Status::False)
-                escape("unable to convert the version number into a string");
+              try
+                {
+                  number = boost::lexical_cast<std::string>(version.number);
+                }
+              catch (std::exception const& err)
+                {
+                  escape(
+                      "unable to convert the version number into a string: %s",
+                      err.what()
+                  );
+                }
             }
 
           // complete the path with the network name.
@@ -216,17 +222,8 @@ namespace nucleus
               elle::Status::Error)
             escape("unable to complete the path");
 
-          // read the file's content.
-          if (elle::io::File::Read(path, region) == elle::Status::Error)
-            escape("unable to read the file's content");
-
-          // wrap the region into an archive.
-          if (archive.Wrap(region) == elle::Status::Error)
-            escape("unable to prepare the archive");
-
-          // extract from the archive.
-          if (archive.Extract(*this) == elle::Status::Error)
-            escape("unable to extract the archive");
+          if (this->Load(path) == elle::Status::Error)
+            escape("unable to load '%s'", path.str().c_str());
         }
 
       return elle::Status::Ok;
@@ -242,9 +239,8 @@ namespace nucleus
       elle::Path        file;
       elle::String      unique;
 
-      // first, turn the block's address into a hexadecimal string.
-      if (elle::Hexadecimal::Encode(address.digest->region,
-                                    unique) == elle::Status::Error)
+
+      if (address.digest->Save(unique) == elle::Status::Error)
         escape("unable to convert the address in its hexadecimal form");
 
       // debug.
@@ -269,7 +265,6 @@ namespace nucleus
           // if the history is not supported, store the mutable block
           // in a file without version number extension.
           //
-          elle::Archive         archive;
           elle::Region          region;
           MutableBlock          block;
 
@@ -297,23 +292,8 @@ namespace nucleus
                        "current version");
             }
 
-          // create the archive.
-          if (archive.Create() == elle::Status::Error)
-            escape("unable to create the archive");
-
-          // serialize the object.
-          if (archive.Serialize(*this) == elle::Status::Error)
-            escape("unable to serialize the object");
-
-          // wrap the archive.
-          if (region.Wrap(reinterpret_cast<const elle::Byte*>(
-                            archive.contents),
-                          archive.size) == elle::Status::Error)
-            escape("unable to wrap the archive in a region");
-
-          // write the file's content.
-          if (elle::io::File::Write(file, region) == elle::Status::Error)
-            escape("unable to write the file's content");
+          if (this->Store(file) == elle::Status::Error)
+            escape("Cannot store into %s", file.str().c_str());
         }
       else
         {
@@ -326,13 +306,16 @@ namespace nucleus
           elle::String          number;
           elle::Path            link;
           elle::Region          region;
-          elle::Archive         archive;
           nucleus::History      history;
 
-          // convert the version number into a string.
-          if (elle::Variable::Convert(this->version.number,
-                                      number) == elle::Status::False)
-            escape("unable to transform the version number into a string");
+          try
+            {
+              number = boost::lexical_cast<std::string>(this->version.number);
+            }
+          catch (std::exception const&)
+            {
+              escape("unable to transform the version number into a string");
+            }
 
           // duplicate the path.
           link = file;
@@ -342,23 +325,7 @@ namespace nucleus
               elle::Status::Error)
             escape("unable to complete the path");
 
-          // create the archive.
-          if (archive.Create() == elle::Status::Error)
-            escape("unable to create the archive");
-
-          // serialize the object.
-          if (archive.Serialize(*this) == elle::Status::Error)
-            escape("unable to serialize the object");
-
-          // wrap the archive.
-          if (region.Wrap(reinterpret_cast<const elle::Byte*>(
-                            archive.contents),
-                          archive.size) == elle::Status::Error)
-            escape("unable to wrap the archive in a region");
-
-          // write the file's content.
-          if (elle::io::File::Write(file, region) == elle::Status::Error)
-            escape("unable to write the file's content");
+          this->Store(file);
 
           // complete the link path.
           if (link.Complete(elle::io::Piece("%VERSION%", "@")) ==
@@ -422,9 +389,9 @@ namespace nucleus
       elle::Unique      unique;
       elle::Path        path;
 
+
       // turn the block's address into a hexadecimal string.
-      if (elle::Hexadecimal::Encode(address.digest->region,
-                                    unique) == elle::Status::Error)
+      if (address.digest->Save(unique) == elle::Status::Error)
         escape("unable to convert the address in its hexadecimal form");
 
       // debug.
@@ -486,10 +453,14 @@ namespace nucleus
               if (history.Select(i, version) == elle::Status::Error)
                 escape("unable to select a particular version");
 
-              // convert the version number into a string.
-              if (elle::Variable::Convert(version.number,
-                                          number) == elle::Status::False)
-                escape("unable to transform the version number into a string");
+              try
+                {
+                  number = boost::lexical_cast<std::string>(version.number);
+                }
+              catch (std::exception const&)
+                {
+                  escape("unable to transform the version number into a string");
+                }
 
               // duplicate the generic path.
               file = path;
@@ -541,8 +512,7 @@ namespace nucleus
       elle::String              unique;
 
       // first, turn the block's address into a hexadecimal string.
-      if (elle::Hexadecimal::Encode(address.digest->region,
-                                    unique) == elle::Status::Error)
+      if (address.digest->Save(unique) == elle::Status::Error)
         flee("unable to convert the address in its hexadecimal form");
 
       // debug.
@@ -599,10 +569,14 @@ namespace nucleus
             }
           else
             {
-              // convert the version number.
-              if (elle::Variable::Convert(version.number,
-                                          number) == elle::Status::False)
-                flee("unable to convert the version number into a string");
+              try
+                {
+                  number = boost::lexical_cast<std::string>(version.number);
+                }
+              catch (std::exception const&)
+                {
+                  flee("unable to convert the version number into a string");
+                }
             }
 
           // complete the path with the network name.

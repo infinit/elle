@@ -72,7 +72,9 @@ namespace nucleus
       //
 
       // object
+#include <elle/idiom/Open.hh>
       declare(Record);
+#include <elle/idiom/Close.hh>
       elle::Boolean     operator==(const Record&) const;
 
       // dumpable

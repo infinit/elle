@@ -1,30 +1,16 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [sat may 21 12:27:09 2011]
-//
+#ifndef  NUCLEUS_PROTON_MUTABLEBLOCK_HH
+# define NUCLEUS_PROTON_MUTABLEBLOCK_HH
 
-#ifndef NUCLEUS_PROTON_MUTABLEBLOCK_HH
-#define NUCLEUS_PROTON_MUTABLEBLOCK_HH
+# include <elle/io/Fileable.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <nucleus/proton/Block.hh>
+# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/Network.hh>
+# include <nucleus/proton/Family.hh>
+# include <nucleus/proton/Version.hh>
+# include <nucleus/proton/Base.hh>
 
-#include <elle/types.hh>
-
-#include <nucleus/proton/Block.hh>
-#include <nucleus/proton/Address.hh>
-#include <nucleus/proton/Network.hh>
-#include <nucleus/proton/Family.hh>
-#include <nucleus/proton/Version.hh>
-#include <nucleus/proton/Base.hh>
-
-#include <nucleus/neutron/Component.hh>
+# include <nucleus/neutron/Component.hh>
 
 namespace nucleus
 {
@@ -56,8 +42,9 @@ namespace nucleus
     /// the _base_ attribute is used internally to keep a view of the
     /// block's original state i.e before being modified.
     ///
-    class MutableBlock:
-      public Block
+    class MutableBlock
+      : public Block
+      , public elle::io::Fileable<MutableBlock>
     {
     public:
       //
@@ -72,7 +59,9 @@ namespace nucleus
       //
 
       // object
+#include <elle/idiom/Open.hh>
       declare(MutableBlock);
+#include <elle/idiom/Close.hh>
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
@@ -82,6 +71,9 @@ namespace nucleus
       //elle::Status      Extract(elle::Archive&);
 
       // fileable
+      using             elle::io::Fileable<MutableBlock>::Load;
+      using             elle::io::Fileable<MutableBlock>::Store;
+
       elle::Status      Load(const Network&,
                              const Address&,
                              const Version&);

@@ -285,7 +285,7 @@ namespace satellite
 
           // initialize the indexes.
           from = 0;
-          to = elle::Variable::Maximum(to);
+          to = elle::radix::Variable::Maximum(to);
 
           // retrieve the from.
           if ((Infinit::Parser->Test("From") == elle::Status::True) &&

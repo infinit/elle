@@ -58,7 +58,9 @@ namespace nucleus
       //
 
       // object
+#include <elle/idiom/Open.hh>
       declare(ImprintBlock);
+#include <elle/idiom/Close.hh>
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;

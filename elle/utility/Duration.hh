@@ -51,7 +51,9 @@ namespace elle
       //
 
       // object
+#include <elle/idiom/Open.hh>
       declare(Duration);
+#include <elle/idiom/Close.hh>
       Boolean           operator==(const Duration&) const;
 
       // dumpable

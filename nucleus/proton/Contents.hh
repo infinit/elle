@@ -11,11 +11,10 @@
 #ifndef NUCLEUS_PROTON_CONTENTS_HH
 #define NUCLEUS_PROTON_CONTENTS_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
+#include <elle/cryptography/SecretKey.hh>
 #include <nucleus/proton/ContentHashBlock.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {

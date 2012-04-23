@@ -6,6 +6,8 @@
 #include <nucleus/proton/ImprintBlock.hh>
 #include <nucleus/proton/Family.hh>
 
+#include <elle/idiom/Open.hh>
+
 namespace nucleus
 {
   namespace proton

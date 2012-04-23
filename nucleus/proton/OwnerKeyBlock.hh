@@ -16,12 +16,15 @@
 //
 
 #include <elle/types.hh>
+#include <elle/utility/Time.hh>
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/MutableBlock.hh>
 
 #include <nucleus/neutron/Component.hh>
 #include <nucleus/neutron/Subject.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
