@@ -321,6 +321,7 @@ namespace elle { namespace serialize {
         *this >> value;
       }
 
+      inline void Save(bool val);
       inline void Save(char val);
       inline void Save(uint8_t val);
       inline void Save(uint16_t val);
@@ -342,6 +343,7 @@ namespace elle { namespace serialize {
         Save(T const& value);
       inline void SaveBinary(void const* data, std::streamsize size);
 
+      inline void Load(bool& val);
       inline void Load(char& val);
       inline void Load(int8_t& val);
       inline void Load(uint8_t& val);

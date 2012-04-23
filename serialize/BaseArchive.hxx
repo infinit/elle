@@ -371,6 +371,12 @@ namespace elle { namespace serialize {
       inline void BaseArchive<mode_, Archive, CT, STS>::Load(int8_t& val)
         { Access::LoadBinary(this->self(), &val, sizeof(val)); }
 
+
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Save(bool val)
+        { Access::Save(this->self(), static_cast<int8_t>(val)); }
+
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Save(char val)
@@ -395,6 +401,16 @@ namespace elle { namespace serialize {
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Save(uint64_t val)
         { Access::Save(this->self(), static_cast<int64_t>(val)); }
+
+
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Load(bool& val)
+        {
+          int8_t val_;
+          Access::Load(this->self(), val_);
+          val = val_;
+        }
 
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
@@ -436,6 +452,7 @@ namespace elle { namespace serialize {
           ar.LoadBinary(data, size);
         }
 
+        static inline void Save(Archive& ar, bool val)      { ar.Save(val); }
         static inline void Save(Archive& ar, char val)      { ar.Save(val); }
         static inline void Save(Archive& ar, int8_t val)    { ar.Save(val); }
         static inline void Save(Archive& ar, uint8_t val)   { ar.Save(val); }
@@ -446,6 +463,7 @@ namespace elle { namespace serialize {
         static inline void Save(Archive& ar, uint64_t val)  { ar.Save(val); }
         static inline void Save(Archive& ar, int64_t val)   { ar.Save(val); }
 
+        static inline void Load(Archive& ar, bool& val)     { ar.Load(val); }
         static inline void Load(Archive& ar, char& val)     { ar.Load(val); }
         static inline void Load(Archive& ar, int8_t& val)   { ar.Load(val); }
         static inline void Load(Archive& ar, uint8_t& val)  { ar.Load(val); }
