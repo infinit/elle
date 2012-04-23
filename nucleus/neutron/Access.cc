@@ -6,6 +6,8 @@
 
 #include <nucleus/proton/Address.hh>
 
+#include <elle/idiom/Open.hh>
+
 namespace nucleus
 {
   namespace neutron

@@ -46,7 +46,10 @@ namespace hole
       {
         // delete the socket.
         if (this->socket != NULL)
+        {
           delete this->socket;
+          this->socket = 0;
+        }
       }
 
 //
@@ -308,14 +311,19 @@ namespace hole
       ///
       /// this callback is triggered whenever an error occurs on the socket.
       ///
-      elle::Status      Client::Error(const elle::String&)
+      elle::Status      Client::Error(elle::String)
       {
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Client::Error()\n");
 
         // disconnect the socket, though that may be unecessary.
-        this->socket->Disconnect();
+
+        // XXX: This this call is asynchronous (sigh), we might have
+        // been destroyed, so check if the socket hasn't been
+        // deleted. Don't touch anything else in this, also.
+        if (this->socket)
+          this->socket->Disconnect();
 
         return elle::Status::Ok;
       }

@@ -1,20 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri mar  6 11:37:13 2009]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/cryptography/PrivateKey.hh>
 
 #include <nucleus/neutron/Object.hh>
 
 #include <nucleus/neutron/Component.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -298,7 +288,7 @@ namespace nucleus
     }
 
     ///
-    /// this method verifies that the object has been properly author 
+    /// this method verifies that the object has been properly author
     /// i.e that every signature has been produced by legitimate users.
     ///
     /// the method (i) calls the parent class for validation (iii) verifies
@@ -572,83 +562,84 @@ namespace nucleus
     ///
     /// this method serializes the object.
     ///
-    elle::Status        Object::Serialize(elle::Archive&        archive) const
-    {
-      // call the parent class.
-      if (proton::ImprintBlock::Serialize(archive) == elle::Status::Error)
-        escape("unable to serialize the underlying physical block");
+    //:w
+    ////elle::Status        Object::Serialize(elle::Archive&        archive) const
+    //{
+    //  // call the parent class.
+    //  if (proton::ImprintBlock::Serialize(archive) == elle::Status::Error)
+    //    escape("unable to serialize the underlying physical block");
 
-      // serialize the author part.
-      if (archive.Serialize(this->author) == elle::Status::Error)
-        escape("unable to serialize the author");
+    //  // serialize the author part.
+    //  if (archive.Serialize(this->author) == elle::Status::Error)
+    //    escape("unable to serialize the author");
 
-      // serialize the meta part.
-      if (archive.Serialize(this->meta.owner.permissions,
-                            this->meta.owner.token,
-                            this->meta.genre,
-                            this->meta.stamp,
-                            this->meta.attributes,
-                            this->meta.access,
-                            this->meta.version,
-                            this->meta.signature) == elle::Status::Error)
-        escape("unable to serialize the meta part");
+    //  // serialize the meta part.
+    //  if (archive.Serialize(this->meta.owner.permissions,
+    //                        this->meta.owner.token,
+    //                        this->meta.genre,
+    //                        this->meta.stamp,
+    //                        this->meta.attributes,
+    //                        this->meta.access,
+    //                        this->meta.version,
+    //                        this->meta.signature) == elle::Status::Error)
+    //    escape("unable to serialize the meta part");
 
-      // serialize the data part.
-      if (archive.Serialize(this->data.contents,
-                            this->data.size,
-                            this->data.stamp,
-                            this->data.version,
-                            this->data.signature) == elle::Status::Error)
-        escape("unable to serialize the data part");
+    //  // serialize the data part.
+    //  if (archive.Serialize(this->data.contents,
+    //                        this->data.size,
+    //                        this->data.stamp,
+    //                        this->data.version,
+    //                        this->data.signature) == elle::Status::Error)
+    //    escape("unable to serialize the data part");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
     ///
     /// this method extracts the object.
     ///
-    elle::Status        Object::Extract(elle::Archive&          archive)
-    {
-      // call the parent class.
-      if (proton::ImprintBlock::Extract(archive) == elle::Status::Error)
-        escape("unable to extract the underyling physical block");
+    //elle::Status        Object::Extract(elle::Archive&          archive)
+    //{
+    //  // call the parent class.
+    //  if (proton::ImprintBlock::Extract(archive) == elle::Status::Error)
+    //    escape("unable to extract the underyling physical block");
 
-      // compare the component.
-      if (this->component != ComponentObject)
-        escape("the archive does not seem to contain an object");
+    //  // compare the component.
+    //  if (this->component != ComponentObject)
+    //    escape("the archive does not seem to contain an object");
 
-      // extract the author part.
-      if (archive.Extract(this->author) == elle::Status::Error)
-        escape("unable to extract the author");
+    //  // extract the author part.
+    //  if (archive.Extract(this->author) == elle::Status::Error)
+    //    escape("unable to extract the author");
 
-      // extract the meta part.
-      if (archive.Extract(this->meta.owner.permissions,
-                          this->meta.owner.token,
-                          this->meta.genre,
-                          this->meta.stamp,
-                          this->meta.attributes,
-                          this->meta.access,
-                          this->meta.version,
-                          this->meta.signature) == elle::Status::Error)
-        escape("unable to extract the meta part");
+    //  // extract the meta part.
+    //  if (archive.Extract(this->meta.owner.permissions,
+    //                      this->meta.owner.token,
+    //                      this->meta.genre,
+    //                      this->meta.stamp,
+    //                      this->meta.attributes,
+    //                      this->meta.access,
+    //                      this->meta.version,
+    //                      this->meta.signature) == elle::Status::Error)
+    //    escape("unable to extract the meta part");
 
-      // extract the data part.
-      if (archive.Extract(this->data.contents,
-                          this->data.size,
-                          this->data.stamp,
-                          this->data.version,
-                          this->data.signature) == elle::Status::Error)
-        escape("unable to extract the data part");
+    //  // extract the data part.
+    //  if (archive.Extract(this->data.contents,
+    //                      this->data.size,
+    //                      this->data.stamp,
+    //                      this->data.version,
+    //                      this->data.signature) == elle::Status::Error)
+    //    escape("unable to extract the data part");
 
-      // compute the owner record.
-      if (this->meta.owner.record.Update(
-            this->owner.subject,
-            this->meta.owner.permissions,
-            this->meta.owner.token) == elle::Status::Error)
-        escape("unable to create the owner access record");
+    //  // compute the owner record.
+    //  if (this->meta.owner.record.Update(
+    //        this->owner.subject,
+    //        this->meta.owner.permissions,
+    //        this->meta.owner.token) == elle::Status::Error)
+    //    escape("unable to create the owner access record");
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

@@ -114,15 +114,8 @@ namespace elle
           >::Type
         >               outputs;
       Status            status;
-      Session*          session;
 
-      // retrieve the session.
-      if (Session::Instance(session) == Status::Error)
-        escape("unable to retrieve the session instance");
-
-      // check the session.
-      if (session == NULL)
-        escape("unable to proceed with a null session");
+      Session*          session = elle::network::Session::session.Get();
 
       // call the prolog.
       if (this->prolog.Call() == Status::Error)
@@ -171,25 +164,21 @@ namespace elle
           //
           // serialize the report and send it to the caller.
           //
-          Report*               report;
+          Report& report = elle::standalone::Report::report.Get();
 
           // check the socket.
           if (session->socket == NULL)
             escape("unable to reply with a null socket");
 
-          // retrieve the report.
-          if (Report::Instance(report) == Status::False)
-            escape("unable to retrieve the report");
-
           // reply with the report.
           if (session->socket->Reply(
-                Inputs<E>(*report),
+                Inputs<E>(report),
                 session) == Status::Error)
             escape("unable to reply with the status");
 
           // flush the report since it has been sent
           // to the sender.
-          report->Flush();
+          report.Flush();
 
           return Status::Ok;
         }

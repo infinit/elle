@@ -33,6 +33,8 @@
 #include <elle/standalone/Region.hh>
 
 #include <elle/concurrency/Event.hh>
+#include <elle/concurrency/Signal.hh>
+#include <elle/concurrency/Timer.hh>
 
 #include <elle/network/Socket.hh>
 #include <elle/network/Parcel.hh>
@@ -132,7 +134,7 @@ namespace elle
           >             ready;
         Signal<
           Parameters<
-            const String&
+            String
             >
           >             error;
       }                 signal;

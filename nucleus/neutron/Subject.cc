@@ -1,18 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [mon aug 17 02:05:03 2009]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <algorithm>
 
 #include <nucleus/neutron/Subject.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -204,11 +195,11 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::Status::True;
+        return true;
 
       // compare the type.
       if (this->type != element.type)
-        return elle::Status::False;
+        return false;
 
       // compare the identifier.
       switch (this->type)
@@ -227,7 +218,7 @@ namespace nucleus
           }
         }
 
-      return elle::Status::True;
+      return true;
     }
 
     ///

@@ -25,6 +25,8 @@
 
 #include <etoile/path/Chemin.hh>
 
+#include <reactor/rw-mutex.hh>
+
 namespace etoile
 {
   namespace gear
@@ -182,7 +184,7 @@ namespace etoile
 
       A::Container      actors;
 
-      elle::Hurdle      hurdle;
+      reactor::RWMutex mutex;
     };
 
   }

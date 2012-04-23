@@ -3,6 +3,8 @@
 
 # include <boost/thread.hpp>
 
+# include <reactor/fwd.hh>
+
 # ifdef INFINIT_REACTOR_ENABLE_DEBUG
 #  include <iostream>
 # define INFINIT_REACTOR_DEBUG(Arg)                             \
@@ -17,7 +19,11 @@
 
 namespace reactor
 {
-  extern boost::mutex debug_mutex;
+  namespace debug
+  {
+    extern boost::mutex debug_mutex;
+    void Dump(Scheduler& s);
+  }
 }
 
 #endif

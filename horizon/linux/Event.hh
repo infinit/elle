@@ -33,6 +33,7 @@
 
 namespace horizon
 {
+#undef linux
   namespace linux
   {
 

@@ -19,27 +19,65 @@
 #include <Infinit.hh>
 
 #include <elle/idiom/Close.hh>
+# include <boost/function.hpp>
 # include <boost/interprocess/sync/interprocess_semaphore.hpp>
+# include <boost/preprocessor/seq/for_each.hpp>
+# include <boost/preprocessor/seq/for_each_i.hpp>
+# include <boost/preprocessor/seq/pop_front.hpp>
 # include <QCoreApplication>
 # include <pthread.h>
 # include <sys/param.h>
 # include <sys/mount.h>
+# include <reactor/scheduler.hh>
+# include <reactor/thread.hh>
 #include <elle/idiom/Open.hh>
 
 namespace horizon
 {
   namespace macosx
   {
+    typedef struct ::timespec timespec2[2];
 
-//
-// ---------- definitions -----------------------------------------------------
-//
+#if defined(HAVE_SETXATTR)
+# define INFINIT_FUSE_COMMANDS_XATTR                                    \
+    ((setxattr, (const char*)(const char*)(const char*)                 \
+      (size_t)(int)(uint32_t)))                                         \
+    ((getxattr, (const char*)(const char*)(char*)(size_t)(uint32_t)))   \
+    ((listxattr, (const char*)(char*)(size_t)))                         \
+    ((removexattr, (const char*)(const char*)))
+#else
+# define INFINIT_FUSE_COMMANDS_XATTR
+#endif
 
-    ///
-    /// this agent represents the broker which is responsible for receiving
-    /// the events once posted to the event loop so as to treat them.
-    ///
-    Broker*                     FUker::Agent = nullptr;
+#define INFINIT_FUSE_COMMANDS                                           \
+    ((statfs, (const char*)(struct ::statvfs*)))                        \
+    ((getattr, (const char*)(struct ::stat*)))                          \
+    ((fgetattr, (const char*)(struct ::stat*)                           \
+      (struct ::fuse_file_info*)))                                      \
+    ((utimens, (const char*)(const timespec2)))                         \
+    ((opendir, (const char*)(struct ::fuse_file_info*)))                \
+    ((readdir, (const char*)(void*) (::fuse_fill_dir_t)(off_t)          \
+      (struct ::fuse_file_info*)))                                      \
+    ((releasedir, (const char*)(struct ::fuse_file_info*)))             \
+    ((mkdir, (const char*)(mode_t)))                                    \
+    ((rmdir, (const char*)))                                            \
+    ((access, (const char*)(int)))                                      \
+    ((chmod, (const char*)(mode_t)))                                    \
+    ((chown, (const char*)(uid_t)(gid_t)))                              \
+    INFINIT_FUSE_COMMANDS_XATTR                                         \
+    ((symlink, (const char*)(const char*)))                             \
+    ((readlink, (const char*)(char*)(size_t)))                          \
+    ((create, (const char*)(mode_t)(struct ::fuse_file_info*)))         \
+    ((open, (const char*)(struct ::fuse_file_info*)))                   \
+    ((write, (const char*)(const char*)(size_t)(off_t)                  \
+      (struct ::fuse_file_info*)))                                      \
+    ((read, (const char*)(char*)(size_t)(off_t)                         \
+      (struct ::fuse_file_info*)))                                      \
+    ((truncate, (const char*)(off_t)))                                  \
+    ((ftruncate, (const char*)(off_t)(struct ::fuse_file_info*)))       \
+    ((release, (const char*)(struct ::fuse_file_info*)))                \
+    ((rename, (const char*)(const char*)))                              \
+    ((unlink, (const char*)))                                           \
 
     ///
     /// this is the identifier of the thread which is spawn so as to start
@@ -50,9 +88,50 @@ namespace horizon
     ///
     ::pthread_t                 FUker::Thread;
 
-//
-// ---------- static methods --------------------------------------------------
-//
+    /// The callbacks below are triggered by FUSE whenever a kernel
+    /// event occurs.
+    ///
+    /// Note that every one of the callbacks run in a specific thread.
+    ///
+    /// the purpose of the code is to create an event, inject it in
+    /// the event loop so that the Broker can treat it in a fiber and
+    /// possible block.
+    ///
+    /// since the thread must not return until the event is treated,
+    /// the following relies on a semaphore by blocking on it. once
+    /// the event handled, the semaphore is unlocked, in which case
+    /// the thread is resumed and can terminate by returning the
+    /// result of the upcall.
+
+#define INFINIT_FUSE_FORMALS(R, Data, I, Elem)  \
+    , Elem BOOST_PP_CAT(a, BOOST_PP_INC(I))
+
+#define INFINIT_FUSE_EFFECTIVE(R, Data, I, Elem)        \
+    , BOOST_PP_CAT(a, I)
+
+#define INFINIT_FUSE_BOUNCER(Name, Args)                                \
+    static int                                                          \
+    Name(BOOST_PP_SEQ_HEAD(Args) a0                                     \
+         BOOST_PP_SEQ_FOR_EACH_I(INFINIT_FUSE_FORMALS, _,               \
+                                 BOOST_PP_SEQ_POP_FRONT(Args)))         \
+    {                                                                   \
+      return elle::Program::scheduler->mt_run<int>                      \
+        (#Name,                                                         \
+         boost::bind(FUSE::Operations.Name                              \
+                     BOOST_PP_SEQ_FOR_EACH_I(INFINIT_FUSE_EFFECTIVE,    \
+                                             _, Args)));                \
+    }                                                                   \
+
+#define INFINIT_FUSE_BOUNCER_(R, Data, Elem)                            \
+    INFINIT_FUSE_BOUNCER(BOOST_PP_TUPLE_ELEM(2, 0, Elem),               \
+                         BOOST_PP_TUPLE_ELEM(2, 1, Elem))               \
+
+    BOOST_PP_SEQ_FOR_EACH(INFINIT_FUSE_BOUNCER_, _, INFINIT_FUSE_COMMANDS)
+
+#undef INFINIT_FUSE_BOUNCER_
+#undef INFINIT_FUSE_BOUNCER
+#undef INFINIT_FUSE_FORMALS
+#undef INFINIT_FUSE_EFFECTIVE
 
     ///
     /// this method represents the entry point of the FUSE-specific thread.
@@ -150,42 +229,13 @@ namespace horizon
         // set all the pointers to zero.
         ::memset(&operations, 0x0, sizeof (::fuse_operations));
 
-        operations.statfs = FUker::Statfs;
-        operations.getattr = FUker::Getattr;
-        operations.fgetattr = FUker::Fgetattr;
-        operations.utimens = FUker::Utimens;
-
-        operations.opendir = FUker::Opendir;
-        operations.readdir = FUker::Readdir;
-        operations.releasedir = FUker::Releasedir;
-        operations.mkdir = FUker::Mkdir;
-        operations.rmdir = FUker::Rmdir;
-
-        operations.access = FUker::Access;
-        operations.chmod = FUker::Chmod;
-        operations.chown = FUker::Chown;
-#if defined(HAVE_SETXATTR)
-        operations.setxattr = FUker::Setxattr;
-        operations.getxattr = FUker::Getxattr;
-        operations.listxattr = FUker::Listxattr;
-        operations.removexattr = FUker::Removexattr;
-#endif
-
-        // operations.link: not supported
-        operations.readlink = FUker::Readlink;
-        operations.symlink = FUker::Symlink;
-
-        operations.create = FUker::Create;
-        // operations.mknod: not supported
-        operations.open = FUker::Open;
-        operations.write = FUker::Write;
-        operations.read = FUker::Read;
-        operations.truncate = FUker::Truncate;
-        operations.ftruncate = FUker::Ftruncate;
-        operations.release = FUker::Release;
-
-        operations.rename = FUker::Rename;
-        operations.unlink = FUker::Unlink;
+        // Fill fuse functions array.
+#define INFINIT_FUSE_LINK(Name) operations.Name = Name
+#define INFINIT_FUSE_LINK_(R, Data, Elem)                       \
+        INFINIT_FUSE_LINK(BOOST_PP_TUPLE_ELEM(2, 0, Elem));
+        BOOST_PP_SEQ_FOR_EACH(INFINIT_FUSE_LINK_, _, INFINIT_FUSE_COMMANDS)
+#undef INFINIT_FUSE_LINK_
+#undef INFINIT_FUSE_LINK
 
         // the following flag being activated prevents the path argument
         // to be passed for functions which take a file descriptor.
@@ -267,691 +317,5 @@ namespace horizon
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- callbacks -------------------------------------------------------
-//
-
-    ///
-    /// the callbacks below are triggered by FUSE whenever a kernel event
-    /// occurs.
-    ///
-    /// note that every one of the callbacks run in a specific thread.
-    ///
-    /// the purpose of the code is to create an event, inject it in
-    /// the event loop so that the Broker can treat it in a fiber and
-    /// possible block.
-    ///
-    /// since the thread must not return until the event is treated,
-    /// the following relies on a semaphore by blocking on it. once
-    /// the event handled, the semaphore is unlocked, in which case
-    /// the thread is resumed and can terminate by returning the
-    /// result of the upcall.
-    ///
-
-    int                         FUker::Statfs(const char*       path,
-                                              struct ::statvfs* statvfs)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationStatfs;
-      event->path = path;
-      event->statvfs = statvfs;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Getattr(const char*      path,
-                                               struct ::stat*   stat)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationGetattr;
-      event->path = path;
-      event->stat = stat;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Fgetattr(const char*              path,
-                                                struct ::stat*           stat,
-                                                struct ::fuse_file_info* info)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationFgetattr;
-      event->path = path;
-      event->stat = stat;
-      event->info = info;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Utimens(const char*      path,
-                                               const struct ::timespec ts[2])
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationUtimens;
-      event->path = path;
-      event->ts[0] = ts[0];
-      event->ts[1] = ts[1];
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Opendir(const char*              path,
-                                               struct ::fuse_file_info* info)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationOpendir;
-      event->path = path;
-      event->info = info;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Readdir(const char*              path,
-                                               void*                    buffer,
-                                               ::fuse_fill_dir_t        filler,
-                                               off_t                    offset,
-                                               struct ::fuse_file_info* info)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationReaddir;
-      event->path = path;
-      event->buffer = buffer;
-      event->filler = filler;
-      event->offset = offset;
-      event->info = info;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Releasedir(const char*              path,
-                                                  struct ::fuse_file_info* info)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationReleasedir;
-      event->path = path;
-      event->info = info;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Mkdir(const char*        path,
-                                             mode_t             mode)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationMkdir;
-      event->path = path;
-      event->mode = mode;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Rmdir(const char*        path)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationRmdir;
-      event->path = path;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Access(const char*       path,
-                                              int               mask)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationAccess;
-      event->path = path;
-      event->mask = mask;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Chmod(const char*        path,
-                                             mode_t             mode)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationChmod;
-      event->path = path;
-      event->mode = mode;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Chown(const char*        path,
-                                             uid_t              uid,
-                                             gid_t              gid)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationChown;
-      event->path = path;
-      event->uid = uid;
-      event->gid = gid;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-#if defined(HAVE_SETXATTR)
-    int                         FUker::Setxattr(const char*     path,
-                                                const char*     name,
-                                                const char*     value,
-                                                size_t          size,
-                                                int             flags,
-                                                uint32_t        position)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationSetxattr;
-      event->path = path;
-      event->name = name;
-      event->value = const_cast<char*>(value);
-      event->size = size;
-      event->flags = flags;
-      event->position = position;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Getxattr(const char*     path,
-                                                const char*     name,
-                                                char*           value,
-                                                size_t          size,
-                                                uint32_t        position)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationGetxattr;
-      event->path = path;
-      event->name = name;
-      event->value = value;
-      event->size = size;
-      event->position = position;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Listxattr(const char*    path,
-                                                 char*          list,
-                                                 size_t         size)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationListxattr;
-      event->path = path;
-      event->list = list;
-      event->size = size;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Removexattr(const char*  path,
-                                                   const char*  name)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationRemovexattr;
-      event->path = path;
-      event->name = name;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-#endif
-
-    int                         FUker::Symlink(const char*      target,
-                                               const char*      source)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationSymlink;
-      event->target = target;
-      event->source = source;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Readlink(const char*     path,
-                                                char*           buffer,
-                                                size_t          size)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationReadlink;
-      event->path = path;
-      event->buffer = buffer;
-      event->size = size;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Create(const char*              path,
-                                              mode_t                   mode,
-                                              struct ::fuse_file_info* info)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationCreate;
-      event->path = path;
-      event->mode = mode;
-      event->info = info;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Open(const char*              path,
-                                            struct ::fuse_file_info* info)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationOpen;
-      event->path = path;
-      event->info = info;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Write(const char*              path,
-                                             const char*              buffer,
-                                             size_t                   size,
-                                             off_t                    offset,
-                                             struct ::fuse_file_info* info)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationWrite;
-      event->path = path;
-      event->buffer = const_cast<void*>(static_cast<const void*>(buffer));
-      event->size = size;
-      event->offset = offset;
-      event->info = info;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Read(const char*              path,
-                                            char*                    buffer,
-                                            size_t                   size,
-                                            off_t                    offset,
-                                            struct ::fuse_file_info* info)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationRead;
-      event->path = path;
-      event->buffer = buffer;
-      event->size = size;
-      event->offset = offset;
-      event->info = info;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Truncate(const char*     path,
-                                                off_t           size)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationTruncate;
-      event->path = path;
-      event->size = size;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Ftruncate(const char*              path,
-                                                 off_t                    size,
-                                                 struct ::fuse_file_info* info)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationFtruncate;
-      event->path = path;
-      event->size = size;
-      event->info = info;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Release(const char*              path,
-                                               struct ::fuse_file_info* info)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationRelease;
-      event->path = path;
-      event->info = info;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Rename(const char*       source,
-                                              const char*       target)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationRename;
-      event->source = source;
-      event->target = target;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
-    int                         FUker::Unlink(const char*       path)
-    {
-      boost::interprocess::interprocess_semaphore     semaphore(0);
-      Event*                                          event;
-      int                                             result;
-
-      // allocate an event.
-      event = new Event(&semaphore, &result);
-
-      event->operation = Event::OperationUnlink;
-      event->path = path;
-
-      // post the event.
-      ::QCoreApplication::postEvent(FUker::Agent, event);
-
-      // finally, wait for the event to be processed.
-      semaphore.wait();
-
-      return (result);
-    }
-
   }
 }

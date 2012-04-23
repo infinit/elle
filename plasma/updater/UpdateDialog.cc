@@ -36,5 +36,5 @@ void UpdateDialog::setStatus(std::string const& status)
 
 void UpdateDialog::on_cancelButton_clicked()
 {
-  emit cancelled();
+  Q_EMIT cancelled();
 }

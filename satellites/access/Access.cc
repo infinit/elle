@@ -57,7 +57,7 @@ namespace satellite
   ///
   /// this callback is triggered whenever an error occurs on the socket.
   ///
-  elle::Status          Access::Error(const elle::String&       error)
+  elle::Status          Access::Error(elle::String       error)
   {
     // report the given error.
     report(error.c_str());

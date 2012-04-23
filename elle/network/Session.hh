@@ -19,7 +19,6 @@
 
 #include <elle/radix/Entity.hh>
 
-#include <elle/concurrency/Fiber.hh>
 #include <elle/concurrency/Phase.hh>
 #include <elle/concurrency/Event.hh>
 
@@ -61,18 +60,13 @@ namespace elle
       static Status     Initialize();
       static Status     Clean();
 
-      static Status     Instance(Session*&);
-
       static Status     Assign(Session*);
       static Status     Clear();
-
-      static Status     Govern(const Phase,
-                               Fiber*);
 
       //
       // static attributes
       //
-      static Session*   Current;
+      static reactor::LocalStorage<Session*> session;
 
       //
       // constructors & destructors

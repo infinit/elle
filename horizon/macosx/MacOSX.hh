@@ -70,7 +70,6 @@ namespace horizon
 // ---------- includes --------------------------------------------------------
 //
 
-#include <horizon/macosx/Broker.hh>
 #include <horizon/macosx/Crib.hh>
 #include <horizon/macosx/Crux.hh>
 #include <horizon/macosx/Event.hh>

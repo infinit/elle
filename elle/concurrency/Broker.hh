@@ -32,7 +32,7 @@ namespace elle
     /// an event loop so as to be taken into account.
     ///
     /// the broker is notified whenever data is ready on its file descriptor
-    /// so that it can take action accordingly i.e emit the ready signal.
+    /// so that it can take action accordingly i.e Q_EMIT the ready signal.
     ///
     class Broker:
       public ::QObject
@@ -92,7 +92,7 @@ namespace elle
           >                     ready;
       }                         signal;
 
-    private slots:
+    private Q_SLOTS:
       //
       // slots
       //

@@ -1,4 +1,8 @@
+#include <boost/unordered_map.hpp>
+
 #include <elle/concurrency/Event.hh>
+
+#include <elle/network/Parcel.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
@@ -29,14 +33,20 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Event::Event():
-      identifier(0)
-    {
-    }
+    Event::Event()
+      : _identifier(0)
+      , _signal(0)
+    {}
 
 //
 // ---------- methods ---------------------------------------------------------
 //
+
+
+    // XXX workaround until concurrency is entirely rewritten.
+    typedef boost::unordered_map
+      <Natural64, reactor::VSignal<std::shared_ptr<elle::network::Parcel> >*> Signals;
+    static Signals _signals;
 
     ///
     /// this method generates a new unique event.
@@ -47,9 +57,17 @@ namespace elle
       do
         {
           // generate the identifier.
-          if (Random::Generate(this->identifier) == Status::Error)
+          if (Random::Generate(this->_identifier) == StatusError)
             escape("unable to generate the identifier");
         } while (*this == Event::Null);
+
+      // XXX
+      Signals::iterator it = _signals.find(this->_identifier);
+      if (it == _signals.end())
+        _signals[this->_identifier] = _signal =
+          new reactor::VSignal<std::shared_ptr<elle::network::Parcel> >();
+      else
+        this->_signal = it->second;
 
       return Status::Ok;
     }
@@ -67,7 +85,6 @@ namespace elle
       if (this == &element)
         return true;
 
-      // compare the identifier.
       if (this->identifier != element.identifier)
         return false;
 
@@ -79,7 +96,7 @@ namespace elle
     ///
     Boolean             Event::operator<(const Event&           element) const
     {
-      return (this->identifier < element.identifier);
+      return (this->_identifier < element._identifier);
     }
 
     ///
@@ -90,30 +107,32 @@ namespace elle
 //
 // ---------- archivable ------------------------------------------------------
 //
+    void
+    Event::XXX_OLD_Extract()
+    {
+      // XXX
+      Signals::iterator it = _signals.find(this->_identifier);
+      if (it == _signals.end())
+        _signals[this->_identifier] = _signal =
+          new reactor::VSignal<std::shared_ptr<elle::network::Parcel> >();
+      else
+        this->_signal = it->second;
+    };
 
-    /////
-    ///// this method serializes the event.
-    /////
-    //Status              Event::Serialize(Archive&               archive) const
-    //{
-    //  // serialize the attributes.
-    //  if (archive.Serialize(this->identifier) == Status::Error)
-    //    escape("unable to serialize the event attributes");
+    void
+    Event::Cleanup()
+    {
+      Signals::iterator it = _signals.find(this->_identifier);
+      assert (it != _signals.end());
+      delete it->second;
+      _signals.erase(it);
+    }
 
-    //  return Status::Ok;
-    //};
-
-    /////
-    ///// this method extracts the event.
-    /////
-    //Status              Event::Extract(Archive&                 archive)
-    //{
-    //  // extract the attributes.
-    //  if (archive.Extract(this->identifier) == Status::Error)
-    //    escape("unable to extract the event attributes");
-
-    //  return Status::Ok;
-    //};
+    Natural64
+    Event::Identifier() const
+    {
+      return _identifier;
+    }
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -126,10 +145,16 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      std::cout << alignment << "[Event] " << this->identifier << std::endl;
+      std::cout << alignment << "[Event] " << this->_identifier << std::endl;
 
       return Status::Ok;
     }
 
+    reactor::VSignal<std::shared_ptr<elle::network::Parcel> >&
+    Event::Signal()
+    {
+      assert(_signal);
+      return *_signal;
+    }
   }
 }

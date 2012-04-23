@@ -15,6 +15,13 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/idiom/Close.hh>
+# include <reactor/scheduler.hh>
+# include <reactor/thread.hh>
+#include <elle/idiom/Open.hh>
+
+#include <elle/concurrency/Program.hh>
+
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
@@ -88,14 +95,14 @@ namespace elle
     /// this method receives a packet through blocking.
     ///
     template <typename O>
-    Status              LocalSocket::Receive(const Event&       event,
-                                             O                  outputs)
+    Status
+    LocalSocket::Receive(Event& event, O outputs)
     {
       std::shared_ptr<Parcel> parcel;
 
       // block the current fiber until the given event is received.
-      if (Fiber::Wait(event, parcel) == Status::Error)
-        escape("an error occured while waiting for a specific event");
+      scheduler().current()->wait(event.Signal());
+      parcel = event.Signal().Value();
 
       // check the tag.
       if (parcel->header->tag != outputs.tag)
@@ -171,10 +178,7 @@ namespace elle
     {
       // retrieve the current session, if necessary.
       if (session == NULL)
-        {
-          if (Session::Instance(session) == Status::Error)
-            escape("unable to retrieve the session instance");
-        }
+        session = elle::network::Session::session.Get();
 
       // send a message as a response by using the event of
       // the received message i.e the current session.

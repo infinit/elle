@@ -343,16 +343,8 @@ namespace elle
     ///
     void                LocalServerPorter::_accept()
     {
-      Closure<
-        Status,
-        Parameters<>
-        >               closure(Callback<>::Infer(
-                                  &LocalServerPorter::Accept, this));
-
-      // spawn a fiber.
-      if (Fiber::Spawn(closure) == Status::Error)
-        yield(_(), "unable to spawn a fiber");
+      new reactor::Thread(scheduler(), "Server accept",
+                          boost::bind(&LocalServerPorter::Accept, this), true);
     }
-
- }
+  }
 }

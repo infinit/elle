@@ -2,6 +2,8 @@
 #include <elle/network/HeaderSerializer.hxx>
 #include <elle/utility/BufferSerializer.hxx>
 
+#include <string>
+
 #include <elle/network/TCPSocket.hh>
 #include <elle/network/Packet.hh>
 #include <elle/network/Inputs.hh>
@@ -513,20 +515,8 @@ namespace elle
     ///
     void                TCPSocket::_connected()
     {
-      Closure<
-        Status,
-        Parameters<>
-        >               closure(Callback<>::Infer(&Signal<
-                                                    Parameters<>
-                                                    >::Emit,
-                                                  &this->signal.connected));
-
-      // set the state.
-      this->state = AbstractSocket::StateConnected;
-
-      // spawn a fiber.
-      if (Fiber::Spawn(closure) == Status::Error)
-        yield(_(), "unable to spawn a fiber");
+      state = AbstractSocket::StateConnected;
+      signal.connected.AsyncEmit();
     }
 
     ///
@@ -534,20 +524,8 @@ namespace elle
     ///
     void                TCPSocket::_disconnected()
     {
-      Closure<
-        Status,
-        Parameters<>
-        >               closure(Callback<>::Infer(&Signal<
-                                                    Parameters<>
-                                                    >::Emit,
-                                                  &this->signal.disconnected));
-
-      // set the state.
       this->state = AbstractSocket::StateDisconnected;
-
-      // spawn a fiber.
-      if (Fiber::Spawn(closure) == Status::Error)
-        yield(_(), "unable to spawn a fiber");
+      signal.disconnected.AsyncEmit();
     }
 
     ///
@@ -555,17 +533,7 @@ namespace elle
     ///
     void                TCPSocket::_ready()
     {
-      Closure<
-        Status,
-        Parameters<>
-        >               closure(Callback<>::Infer(&Signal<
-                                                    Parameters<>
-                                                    >::Emit,
-                                                  &this->signal.ready));
-
-      // spawn a fiber.
-      if (Fiber::Spawn(closure) == Status::Error)
-        yield(_(), "unable to spawn a fiber");
+      signal.ready.AsyncEmit();
     }
 
     ///
@@ -579,23 +547,7 @@ namespace elle
                           const QAbstractSocket::SocketError)
     {
       String            cause(this->socket->errorString().toStdString());
-      Closure<
-        Status,
-        Parameters<
-          const String&
-          >
-        >               closure(Callback<>::Infer(&Signal<
-                                                    Parameters<
-                                                      const String&
-                                                      >
-                                                    >::Emit,
-                                                  &this->signal.error),
-                                cause);
-
-      // spawn a fiber.
-      if (Fiber::Spawn(closure) == Status::Error)
-        yield(_(), "unable to spawn a fiber");
+      signal.error.AsyncEmit(cause);
     }
-
   }
 }

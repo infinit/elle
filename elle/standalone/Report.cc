@@ -3,7 +3,7 @@
 #include <elle/standalone/Maid.hh>
 
 #include <elle/concurrency/Callback.hh>
-#include <elle/concurrency/Fiber.hh>
+#include <elle/concurrency/Program.hh>
 
 namespace elle
 {
@@ -13,14 +13,9 @@ namespace elle
   namespace standalone
   {
 
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// this global variable represent the report of the current thread/fiber.
-    ///
-    Report*             Report::Current = NULL;
+#include <elle/idiom/Close.hh>
+    reactor::LocalStorage<Report> Report::report(concurrency::scheduler());
+#include <elle/idiom/Open.hh>
 
 //
 // ---------- static methods --------------------------------------------------
@@ -32,13 +27,6 @@ namespace elle
     ///
     Status              Report::Initialize()
     {
-      // allocate the report for the initial thread/fiber.
-      Report::Current = new Report;
-
-      // register the govern callback to the fiber system.
-      if (Fiber::Register(Callback<>::Infer(&Report::Govern)) == Status::Error)
-        escape("unable to register the govern callback");
-
       return Status::Ok;
     }
 
@@ -47,81 +35,6 @@ namespace elle
     ///
     Status              Report::Clean()
     {
-      // delete the report.
-      delete Report::Current;
-
-      // reset the pointer.
-      Report::Current = NULL;
-
-      return Status::Ok;
-    }
-
-    ///
-    /// this method returns the current instance of the report.
-    ///
-    /// note that this method returns true or false.
-    ///
-    Status              Report::Instance(Report*&               report)
-    {
-      // verify the report's presence.
-      if (Report::Current == NULL)
-        return Status::False;
-
-      report = Report::Current;
-
-      return Status::True;
-    }
-
-    ///
-    /// this method initializes, saves, restores and cleans the report for
-    /// the given fiber, in other words govern the fiber's environment.
-    ///
-    Status              Report::Govern(const Phase              phase,
-                                       Fiber*                   fiber)
-    {
-      // perform an operation depending on the phase.
-      switch (phase)
-        {
-        case PhaseInitialize:
-          {
-            // allocate a new report and install it.
-            Report::Current = new Report;
-
-            break;
-          }
-        case PhaseSave:
-          {
-            // save the report in the fiber's environment.
-            if (fiber->environment->Store("report",
-                                          Report::Current) == Status::Error)
-              escape("unable to store the report in the environment");
-
-            // set the pointer to NULL, for safety purposes.
-            Report::Current = NULL;
-
-            break;
-          }
-        case PhaseRestore:
-          {
-            // load the report from the environment.
-            if (fiber->environment->Load("report",
-                                         Report::Current) == Status::Error)
-              escape("unable to load the report from the environment");
-
-            break;
-          }
-        case PhaseClean:
-          {
-            // delete the report.
-            delete Report::Current;
-
-            // reinitialize the report to NULL, for safety purposes.
-            Report::Current = NULL;
-
-            break;
-          }
-        }
-
       return Status::Ok;
     }
 

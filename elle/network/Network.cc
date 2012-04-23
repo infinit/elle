@@ -1,6 +1,7 @@
 
 #include <elle/standalone/ReportSerializer.hxx>
 #include <elle/network/Network.hh>
+#include <elle/concurrency/Event.hh>
 
 namespace elle
 {
@@ -92,8 +93,8 @@ namespace elle
       //
       {
         // try to wake up a slot.
-        if (Fiber::Awaken(parcel->header->event, parcel) == Status::True)
-            return Status::Ok;
+        if (parcel->header->event.Signal().Emit(parcel))
+          return Status::Ok;
       }
 
       //

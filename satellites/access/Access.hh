@@ -51,7 +51,8 @@ namespace satellite
     // static callbacks
     //
     static elle::Status         Disconnected();
-    static elle::Status         Error(const elle::String&);
+    // XXX: const string&
+    static elle::Status         Error(elle::String);
 
     //
     // static methods

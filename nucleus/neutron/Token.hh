@@ -2,6 +2,7 @@
 # define NUCLEUS_NEUTRON_TOKEN_HH
 
 # include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
 # include <elle/cryptography/fwd.hh>
 
@@ -9,10 +10,6 @@ namespace nucleus
 {
   namespace neutron
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// a token is a secret key enabling a user to access encrypted

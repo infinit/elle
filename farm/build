@@ -4,6 +4,6 @@ JOBS=8
 
 cd "$DIR_BUILD"
 make -j"$JOBS"
-for b in cryptography fiber network-local network-tcp network-udp package; do
+for b in cryptography network-local network-tcp network-udp package; do
     make -j"$JOBS" "test-$b"
 done

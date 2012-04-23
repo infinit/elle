@@ -46,17 +46,39 @@ namespace reactor
   | Waiting |
   `--------*/
 
-  void
+  int
   Waitable::_signal()
   {
+    if (_threads.empty())
+    {
+      _exception = 0;
+      return false;
+    }
     BOOST_FOREACH (Thread* thread, _threads)
     {
       INFINIT_REACTOR_DEBUG(": woken by " << *this);
       INFINIT_REACTOR_DEBUG(*thread << ": woken by " << *this);
       thread->_wake(this);
     }
+    int res = _threads.size();
     _threads.clear();
     _exception = 0;
+    return res;
+  }
+
+  bool
+  Waitable::_signal_one()
+  {
+    if (_threads.empty())
+    {
+      _exception = 0;
+      return false;
+    }
+    Thread* thread = *_threads.begin();
+    thread->_wake(this);
+    _threads.erase(thread);
+    _exception = 0;
+    return true;
   }
 
   bool

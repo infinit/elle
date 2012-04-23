@@ -11,6 +11,8 @@
 #ifndef NUCLEUS_NEUTRON_ACCESS_HXX
 #define NUCLEUS_NEUTRON_ACCESS_HXX
 
+#include <elle/idiom/Open.hh>
+
 namespace nucleus
 {
   namespace neutron
@@ -53,5 +55,7 @@ namespace nucleus
 
   }
 }
+
+#include <elle/idiom/Close.hh>
 
 #endif

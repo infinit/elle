@@ -1,6 +1,15 @@
 #include <reactor/debug.hh>
+#include <reactor/scheduler.hh>
 
 namespace reactor
 {
-  boost::mutex debug_mutex;
+  namespace debug
+  {
+    boost::mutex debug_mutex;
+
+    void Dump(Scheduler& s)
+    {
+      s.Dump(std::cerr);
+    }
+  }
 }

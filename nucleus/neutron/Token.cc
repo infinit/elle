@@ -1,18 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [tue feb 17 12:39:45 2009]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/cryptography/Code.hh>
+#include <elle/cryptography/SecretKey.hh>
+#include <elle/cryptography/PublicKey.hh>
+#include <elle/cryptography/PrivateKey.hh>
 
 #include <nucleus/neutron/Token.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -126,21 +119,21 @@ namespace nucleus
     {
       // check if the objects are the same.
       if (this == &element)
-        return elle::Status::True;
+        return true;
 
       // compare the code.
       if ((this->code == NULL) || (element.code == NULL))
         {
           if (this->code != element.code)
-            return elle::Status::False;
+            return false;
         }
       else
         {
           if (*this->code != *element.code)
-            return elle::Status::False;
+            return false;
         }
 
-      return elle::Status::True;
+      return true;
     }
 
     ///

@@ -33,6 +33,7 @@
 # include <errno.h>
 # include <stdlib.h>
 # include <time.h>
+# include <reactor/storage.hh>
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -129,15 +130,10 @@ namespace elle
       static Status     Initialize();
       static Status     Clean();
 
-      static Status     Instance(Report*&);
-
-      static Status     Govern(const Phase,
-                               Fiber*);
-
       //
       // static attributes
       //
-      static Report*            Current;
+      static reactor::LocalStorage<Report> report;
 
       //
       // constructors & destructors

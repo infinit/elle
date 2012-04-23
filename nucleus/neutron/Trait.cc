@@ -1,18 +1,6 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [thu apr  1 22:00:03 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <nucleus/neutron/Trait.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -60,14 +48,14 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::Status::True;
+        return true;
 
       // compare the name and value.
       if ((this->name != element.name) ||
           (this->value != element.value))
-        return elle::Status::False;
+        return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///

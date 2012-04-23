@@ -64,7 +64,8 @@ namespace hole
         //
         elle::Status            Connected();
         elle::Status            Disconnected();
-        elle::Status            Error(const elle::String&);
+        // XXX: const string&
+        elle::Status            Error(elle::String);
 
         elle::Status            Authenticated();
         elle::Status            Exception(const elle::Report&);
