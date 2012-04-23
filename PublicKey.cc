@@ -108,14 +108,14 @@ Status PublicKey::Create(Large* n, Large* e)
 
   // initialise the public key structure.
   if ((this->_key = ::EVP_PKEY_new()) == nullptr)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   ::RSA* rsa;
   // create the RSA structure.
   if ((rsa = ::RSA_new()) == nullptr)
     {
       ::RSA_free(rsa);
-      escape(::ERR_error_string(ERR_get_error(), nullptr));
+      escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
     }
 
   // assign the big numbers relevant to the public key.
@@ -126,7 +126,7 @@ Status PublicKey::Create(Large* n, Large* e)
   if (::EVP_PKEY_assign_RSA(this->_key, rsa) <= 0)
     {
       ::RSA_free(rsa);
-      escape(::ERR_error_string(ERR_get_error(), nullptr));
+      escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
     }
 
   //
@@ -137,10 +137,10 @@ Status PublicKey::Create(Large* n, Large* e)
   // encrypt context.
   this->_contexts.encrypt = ::EVP_PKEY_CTX_new(this->_key, nullptr);
   if (this->_contexts.encrypt == nullptr)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   if (::EVP_PKEY_encrypt_init(this->_contexts.encrypt) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   if (::EVP_PKEY_CTX_ctrl(this->_contexts.encrypt,
                           EVP_PKEY_RSA,
@@ -148,15 +148,15 @@ Status PublicKey::Create(Large* n, Large* e)
                           EVP_PKEY_CTRL_RSA_PADDING,
                           RSA_PKCS1_OAEP_PADDING,
                           nullptr) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   // create and initialize the verify context.
   this->_contexts.verify = EVP_PKEY_CTX_new(this->_key, nullptr);
   if (this->_contexts.verify == nullptr)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   if (::EVP_PKEY_verify_init(this->_contexts.verify) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   if (::EVP_PKEY_CTX_ctrl(this->_contexts.verify,
                           EVP_PKEY_RSA,
@@ -164,15 +164,15 @@ Status PublicKey::Create(Large* n, Large* e)
                           EVP_PKEY_CTRL_RSA_PADDING,
                           RSA_PKCS1_PADDING,
                           nullptr) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   // create and initialize the decrypt context.
   this->_contexts.decrypt = ::EVP_PKEY_CTX_new(this->_key, nullptr);
   if (this->_contexts.decrypt == nullptr)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   if (::EVP_PKEY_verify_recover_init(this->_contexts.decrypt) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   if (::EVP_PKEY_CTX_ctrl(this->_contexts.decrypt,
                           EVP_PKEY_RSA,
@@ -180,7 +180,7 @@ Status PublicKey::Create(Large* n, Large* e)
                           EVP_PKEY_CTRL_RSA_PADDING,
                           RSA_PKCS1_PADDING,
                           nullptr) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   assert(this->_key != nullptr);
 
@@ -311,7 +311,7 @@ Status              PublicKey::Verify(const Signature&      signature,
         signature.region.size,
         reinterpret_cast<const unsigned char*>(digest.region.contents),
         digest.region.size) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   return Status::Ok;
 }
