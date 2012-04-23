@@ -81,7 +81,7 @@ namespace satellite
   ///
   //elle::Status          Memoirs::Load(const elle::Path&         path)
   //{
-  //  elle::Region        region;
+  //  elle::standalone::Region        region;
 
   //  // read the file's content.
   //  if (elle::io::File::Read(path, region) == elle::Status::Error)
@@ -111,7 +111,7 @@ namespace satellite
   //  // write the file's content.
   //  if (elle::io::File::Write(
   //        path,
-  //        elle::Region(
+  //        elle::standalone::Region(
   //          this->archive.contents,
   //          this->archive.size)) == elle::Status::Error)
   //    escape("unable to write the file's content");

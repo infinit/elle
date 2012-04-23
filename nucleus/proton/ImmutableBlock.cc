@@ -62,7 +62,7 @@ namespace nucleus
         }                                                                     \
       catch (std::exception const& err)                                       \
         {                                                                     \
-          escape(err.what());                                                 \
+          escape("%s", err.what());                                           \
         }                                                                     \
     } while (false)                                                           \
 

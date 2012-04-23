@@ -62,7 +62,9 @@ namespace nucleus
       //
 
       // object
+#include <elle/idiom/Open.hh>
       declare(Trait);
+#include <elle/idiom/Close.hh>
       elle::Boolean     operator==(const Trait&) const;
 
       // dumpable

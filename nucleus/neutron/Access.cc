@@ -1,16 +1,6 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar 11 16:55:36 2009]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/utility/BufferSerializer.hxx>
+#include <nucleus/neutron/SubjectSerializer.hxx>
 
 #include <nucleus/neutron/Access.hh>
 
@@ -298,30 +288,24 @@ namespace nucleus
     ///
     /// this is required by the object class for access control purposes.
     ///
-    elle::Status        Access::Fingerprint(elle::cryptography::Digest&       digest) const
+    elle::Status Access::Fingerprint(elle::cryptography::Digest& digest) const
     {
-      elle::Archive             archive;
-      Range<Record>::Scoutor    scoutor;
+      elle::utility::Buffer buffer;
 
-      // create the archive.
-      if (archive.Create() == elle::Status::Error)
-        escape("unable to create an archive");
-
-      // go through the range and serialize every tuple (subject, permissions).
-      for (scoutor = this->range.container.begin();
-           scoutor != this->range.container.end();
-           scoutor++)
+      try
         {
-          Record*       record = *scoutor;
-
-          // serialize the subject and permissions.
-          if (archive.Serialize(record->subject,
-                                record->permissions) == elle::Status::Error)
-            escape("unable to serialize the (subject, permissions) tuple");
+          auto it = this->range.container.begin(),
+               end = this->range.container.end();
+          for (; it != end; ++it)
+              buffer.Writer() << (*it)->subject
+                              << (*it)->permissions;
+        }
+      catch (std::exception const& err)
+        {
+          escape("Couldn't serialize a record: %s", err.what());
         }
 
-      // hash the archive.
-      if (elle::cryptography::OneWay::Hash(archive, digest) == elle::Status::Error)
+      if (elle::cryptography::OneWay::Hash(buffer, digest) == elle::Status::Error)
         escape("unable to hash the set of archived tuples");
 
       return elle::Status::Ok;
@@ -338,13 +322,13 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::Status::True;
+        return true;
 
       // compare the ranges.
       if (this->range != element.range)
-        return elle::Status::False;
+        return false;
 
-      return elle::Status::True;
+      return true;
     }
 
     ///

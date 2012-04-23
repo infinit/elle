@@ -133,7 +133,7 @@ namespace lune
   elle::Status          Phrase::Load(const elle::String&        network)
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
 
     // create the path.
     if (path.Create(Lune::Network::Phrase) == elle::Status::Error)
@@ -163,7 +163,7 @@ namespace lune
   elle::Status          Phrase::Store(const elle::String&       network) const
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
     elle::String        string;
 
     // create the path.

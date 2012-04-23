@@ -51,7 +51,7 @@ namespace nucleus
     /// this method updates a segment of the data object.
     ///
     elle::Status        Data::Write(const Offset&               offset,
-                                    const elle::Region&         region)
+                                    const elle::standalone::Region& region)
     {
       // expand if necessary.
       if ((offset + region.size) > this->region.capacity)
@@ -78,7 +78,7 @@ namespace nucleus
     ///
     elle::Status        Data::Read(const Offset&                offset,
                                    const Size&                  size,
-                                   elle::Region&                region) const
+                                   elle::standalone::Region&    region) const
     {
       Size              length;
 

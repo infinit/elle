@@ -56,11 +56,11 @@ namespace etoile
 
       static elle::Status       Write(gear::File&,
                                       const nucleus::Offset&,
-                                      const elle::Region&);
+                                      const elle::standalone::Region&);
       static elle::Status       Read(gear::File&,
                                      const nucleus::Offset&,
                                      const nucleus::Size&,
-                                     elle::Region&);
+                                     elle::standalone::Region&);
       static elle::Status       Adjust(gear::File&,
                                        const nucleus::Size&);
 

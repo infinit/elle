@@ -133,7 +133,7 @@ namespace hole
           printf("[hole] implementations::remote::Customer::Error()\n");
 
         // log the error.
-        log(error.c_str());
+        log("%s", error.c_str());
 
         // disconnect the socket, though that may be unecessary.
         this->socket->Disconnect();

@@ -1,24 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [mon jul 27 10:19:21 2009]
-//
-
 #ifndef NUCLEUS_NEUTRON_REFERENCE_HH
-#define NUCLEUS_NEUTRON_REFERENCE_HH
+# define NUCLEUS_NEUTRON_REFERENCE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/types.hh>
-
-#include <nucleus/neutron/Offset.hh>
-#include <nucleus/neutron/Size.hh>
+# include <nucleus/neutron/Offset.hh>
+# include <nucleus/neutron/Size.hh>
 
 namespace nucleus
 {

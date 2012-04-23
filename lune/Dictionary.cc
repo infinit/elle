@@ -98,7 +98,7 @@ namespace lune
   elle::Status          Dictionary::Load()
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
 
     // create the path.
     if (path.Create(Lune::Dictionary) == elle::Status::Error)
@@ -124,7 +124,7 @@ namespace lune
   elle::Status          Dictionary::Store() const
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
     elle::String        string;
 
     // create the path.
@@ -189,7 +189,7 @@ namespace lune
   elle::Status          Dictionary::Load(const elle::String&    name)
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
 
     // create the path.
     if (path.Create(Lune::User::Dictionary) == elle::Status::Error)
@@ -219,7 +219,7 @@ namespace lune
   elle::Status          Dictionary::Store(const elle::String&   name) const
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
     elle::String        string;
 
     // create the path.

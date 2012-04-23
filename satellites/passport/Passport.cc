@@ -77,7 +77,7 @@ namespace satellite
     //
     {
       hole::Label               label;
-      elle::Region              region;
+      elle::standalone::Region              region;
       elle::String              id;
 
       // generate a random string.

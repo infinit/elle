@@ -60,11 +60,11 @@ namespace satellite
       struct
       {
         elle::String    path;
-        elle::Region    stbuf;
+        elle::standalone::Region    stbuf;
       }                 inputs;
       struct
       {
-        elle::Region    stbuf;
+        elle::standalone::Region    stbuf;
       }                 outputs;
       int               res;
 
@@ -122,13 +122,13 @@ namespace satellite
       struct
       {
         elle::String    path;
-        elle::Region    stbuf;
-        elle::Region    fi;
+        elle::standalone::Region    stbuf;
+        elle::standalone::Region    fi;
       }                 inputs;
       struct
       {
-        elle::Region    stbuf;
-        elle::Region    fi;
+        elle::standalone::Region    stbuf;
+        elle::standalone::Region    fi;
       }                 outputs;
       elle::Natural64   identifier;
       int               res;
@@ -203,7 +203,7 @@ namespace satellite
       struct
       {
         elle::String    path;
-        elle::Region    ts;
+        elle::standalone::Region    ts;
       }                 inputs;
       int               res;
 
@@ -239,11 +239,11 @@ namespace satellite
       struct
       {
         elle::String    path;
-        elle::Region    fi;
+        elle::standalone::Region    fi;
       }                 inputs;
       struct
       {
-        elle::Region    fi;
+        elle::standalone::Region    fi;
       }                 outputs;
       elle::Natural64   identifier;
       int               res;
@@ -323,11 +323,11 @@ namespace satellite
       {
         elle::String    path;
         elle::Natural64 offset;
-        elle::Region    fi;
+        elle::standalone::Region    fi;
       }                 inputs;
       struct
       {
-        elle::Region    fi;
+        elle::standalone::Region    fi;
       }                 outputs;
       elle::Natural64   identifier;
       int               res;
@@ -382,11 +382,11 @@ namespace satellite
       struct
       {
         elle::String    path;
-        elle::Region    fi;
+        elle::standalone::Region    fi;
       }                 inputs;
       struct
       {
-        elle::Region    fi;
+        elle::standalone::Region    fi;
       }                 outputs;
       elle::Natural64   identifier;
       int               res;
@@ -1122,11 +1122,11 @@ namespace satellite
       {
         elle::String    path;
         elle::Natural32 mode;
-        elle::Region    fi;
+        elle::standalone::Region    fi;
       }                 inputs;
       struct
       {
-        elle::Region    fi;
+        elle::standalone::Region    fi;
       }                 outputs;
       elle::Natural64   identifier;
       int               res;
@@ -1181,11 +1181,11 @@ namespace satellite
       struct
       {
         elle::String    path;
-        elle::Region    fi;
+        elle::standalone::Region    fi;
       }                 inputs;
       struct
       {
-        elle::Region    fi;
+        elle::standalone::Region    fi;
       }                 outputs;
       elle::Natural64   identifier;
       int               res;
@@ -1236,14 +1236,14 @@ namespace satellite
       struct
       {
         elle::String    path;
-        elle::Region    buf;
+        elle::standalone::Region    buf;
         elle::Natural64 size;
         elle::Natural64 off;
-        elle::Region    fi;
+        elle::standalone::Region    fi;
       }                 inputs;
       struct
       {
-        elle::Region    fi;
+        elle::standalone::Region    fi;
       }                 outputs;
       elle::Natural64   identifier;
       int               res;
@@ -1303,14 +1303,14 @@ namespace satellite
       struct
       {
         elle::String    path;
-        elle::Region    buf;
+        elle::standalone::Region    buf;
         elle::Natural64 size;
         elle::Natural64 off;
-        elle::Region    fi;
+        elle::standalone::Region    fi;
       }                 inputs;
       struct
       {
-        elle::Region    buf;
+        elle::standalone::Region    buf;
       }                 outputs;
       elle::Natural64   identifier;
       int               res;
@@ -1410,11 +1410,11 @@ namespace satellite
       {
         elle::String    path;
         elle::Natural64 size;
-        elle::Region    fi;
+        elle::standalone::Region    fi;
       }                 inputs;
       struct
       {
-        elle::Region    fi;
+        elle::standalone::Region    fi;
       }                 outputs;
       elle::Natural64   identifier;
       int               res;
@@ -1466,11 +1466,11 @@ namespace satellite
       struct
       {
         elle::String    path;
-        elle::Region    fi;
+        elle::standalone::Region    fi;
       }                 inputs;
       struct
       {
-        elle::Region    fi;
+        elle::standalone::Region    fi;
       }                 outputs;
       elle::Natural64   identifier;
       int               res;

@@ -184,7 +184,7 @@ namespace etoile
     elle::Status        File::Write(
                           const gear::Identifier&               identifier,
                           const nucleus::Offset&                offset,
-                          const elle::Region&                   region)
+                          const elle::standalone::Region&                   region)
     {
       gear::Actor*      actor;
       gear::Scope*      scope;
@@ -232,7 +232,7 @@ namespace etoile
                           const gear::Identifier&               identifier,
                           const nucleus::Offset&                offset,
                           const nucleus::Size&                  size,
-                          elle::Region&                         region)
+                          elle::standalone::Region&                         region)
     {
       gear::Actor*      actor;
       gear::Scope*      scope;

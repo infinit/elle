@@ -48,11 +48,11 @@ namespace etoile
       static elle::Status       Release(const gear::Identifier&);
       static elle::Status       Write(const gear::Identifier&,
                                       const nucleus::Offset&,
-                                      const elle::Region&);
+                                      const elle::standalone::Region&);
       static elle::Status       Read(const gear::Identifier&,
                                      const nucleus::Offset&,
                                      const nucleus::Size&,
-                                     elle::Region&);
+                                     elle::standalone::Region&);
       static elle::Status       Adjust(const gear::Identifier&,
                                        const nucleus::Size&);
 

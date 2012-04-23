@@ -56,7 +56,7 @@ static lune::Passport create_passport(elle::String const& id,
   //
   {
     hole::Label               label;
-    elle::Region              region;
+    elle::standalone::Region              region;
 
     // generate a random region.
     if (cryptography::Random::Generate(region) == elle::Status::Error)

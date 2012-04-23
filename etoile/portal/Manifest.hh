@@ -198,13 +198,13 @@ message(etoile::portal::TagFileLoad,
 message(etoile::portal::TagFileWrite,
         parameters(etoile::gear::Identifier&,
                    nucleus::Offset&,
-                   elle::Region&));
+                   elle::standalone::Region&));
 message(etoile::portal::TagFileRead,
         parameters(etoile::gear::Identifier&,
                    nucleus::Offset&,
                    nucleus::Size&));
 message(etoile::portal::TagFileRegion,
-        parameters(elle::Region&));
+        parameters(elle::standalone::Region&));
 message(etoile::portal::TagFileAdjust,
         parameters(etoile::gear::Identifier&,
                    nucleus::Size&));

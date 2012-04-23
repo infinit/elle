@@ -147,7 +147,7 @@ namespace nucleus
       // operate depending on the network's support of history.
       if (hole::Hole::Descriptor.history == false)
         {
-          elle::Region  region;
+          elle::standalone::Region  region;
 
           // complete the path with the network name.
           if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
@@ -173,14 +173,14 @@ namespace nucleus
         }
       else
         {
-          elle::Region  region;
+          elle::standalone::Region  region;
           elle::String  number;
 
           // if the requested version is the latest...
           if (version == Version::Last)
             {
               elle::Path        link;
-              elle::Region      r;
+              elle::standalone::Region      r;
 
               // copy the path.
               link = path;
@@ -265,7 +265,7 @@ namespace nucleus
           // if the history is not supported, store the mutable block
           // in a file without version number extension.
           //
-          elle::Region          region;
+          elle::standalone::Region          region;
           MutableBlock          block;
 
           // complete the file path.
@@ -305,7 +305,7 @@ namespace nucleus
           //
           elle::String          number;
           elle::Path            link;
-          elle::Region          region;
+          elle::standalone::Region          region;
           nucleus::History      history;
 
           try
@@ -344,7 +344,7 @@ namespace nucleus
           // finally, create the block link.
           if (elle::io::File::Write(
                 link,
-                elle::Region(
+                elle::standalone::Region(
                   reinterpret_cast<const elle::Byte*>(number.c_str()),
                   number.length())) == elle::Status::Error)
             escape("unable to create the block link");
@@ -547,7 +547,7 @@ namespace nucleus
           if (version == Version::Last)
             {
               elle::Path        link;
-              elle::Region      r;
+              elle::standalone::Region      r;
 
               // copy the path.
               link = path;

@@ -1,16 +1,6 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 21 22:10:42 2009]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/standalone/Log.hh>
+#include <elle/standalone/Report.hh>
 
 #include <nucleus/neutron/Author.hh>
 
@@ -89,11 +79,11 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::Status::True;
+        return true;
 
       // compare the role.
       if (this->role != element.role)
-        return elle::Status::False;
+        return false;
 
       // depending on the role.
       switch (this->role)
@@ -114,7 +104,7 @@ namespace nucleus
 
             // compare the indexes.
             if (this->lord.index != element.lord.index)
-              return elle::Status::False;
+              return false;
 
             break;
           }
@@ -134,7 +124,7 @@ namespace nucleus
           }
         }
 
-      return elle::Status::True;
+      return true;
     }
 
     ///
@@ -201,98 +191,98 @@ namespace nucleus
     ///
     /// this method serializes the address object.
     ///
-    elle::Status        Author::Serialize(elle::Archive&        archive) const
-    {
-      // serialize the role.
-      if (archive.Serialize(this->role) == elle::Status::Error)
-        escape("unable to serialize the role");
+    //elle::Status        Author::Serialize(elle::Archive&        archive) const
+    //{
+    //  // serialize the role.
+    //  if (archive.Serialize(this->role) == elle::Status::Error)
+    //    escape("unable to serialize the role");
 
-      // depending on the role.
-      switch (this->role)
-        {
-        case RoleOwner:
-          {
-            //
-            // nothing more to serialize.
-            //
+    //  // depending on the role.
+    //  switch (this->role)
+    //    {
+    //    case RoleOwner:
+    //      {
+    //        //
+    //        // nothing more to serialize.
+    //        //
 
-            break;
-          }
-        case RoleLord:
-          {
-            //
-            // serialize the index to the entry in the Access block.
-            //
+    //        break;
+    //      }
+    //    case RoleLord:
+    //      {
+    //        //
+    //        // serialize the index to the entry in the Access block.
+    //        //
 
-            // serialize the index.
-            if (archive.Serialize(this->lord.index) == elle::Status::Error)
-              escape("unable to serialize the index");
+    //        // serialize the index.
+    //        if (archive.Serialize(this->lord.index) == elle::Status::Error)
+    //          escape("unable to serialize the index");
 
-            break;
-          }
-        case RoleVassal:
-          {
-            // XXX to implement.
+    //        break;
+    //      }
+    //    case RoleVassal:
+    //      {
+    //        // XXX to implement.
 
-            break;
-          }
-        default:
-          {
-            escape("unknown role '%u'",
-                   this->role);
-          }
-        }
+    //        break;
+    //      }
+    //    default:
+    //      {
+    //        escape("unknown role '%u'",
+    //               this->role);
+    //      }
+    //    }
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the address object.
-    ///
-    elle::Status        Author::Extract(elle::Archive&          archive)
-    {
-      // extract the role.
-      if (archive.Extract(this->role) == elle::Status::Error)
-        escape("unable to extract the role");
+    /////
+    ///// this method extracts the address object.
+    /////
+    //elle::Status        Author::Extract(elle::Archive&          archive)
+    //{
+    //  // extract the role.
+    //  if (archive.Extract(this->role) == elle::Status::Error)
+    //    escape("unable to extract the role");
 
-      // depending on the role.
-      switch (this->role)
-        {
-        case RoleOwner:
-          {
-            //
-            // nothing more to extract.
-            //
+    //  // depending on the role.
+    //  switch (this->role)
+    //    {
+    //    case RoleOwner:
+    //      {
+    //        //
+    //        // nothing more to extract.
+    //        //
 
-            break;
-          }
-        case RoleLord:
-          {
-            //
-            // extract the index to the entry in the Access block.
-            //
+    //        break;
+    //      }
+    //    case RoleLord:
+    //      {
+    //        //
+    //        // extract the index to the entry in the Access block.
+    //        //
 
-            // extract the index.
-            if (archive.Extract(this->lord.index) == elle::Status::Error)
-              escape("unable to extract the index");
+    //        // extract the index.
+    //        if (archive.Extract(this->lord.index) == elle::Status::Error)
+    //          escape("unable to extract the index");
 
-            break;
-          }
-        case RoleVassal:
-          {
-            // XXX to implement.
+    //        break;
+    //      }
+    //    case RoleVassal:
+    //      {
+    //        // XXX to implement.
 
-            break;
-          }
-        default:
-          {
-            escape("unknown role '%u'",
-                   this->role);
-          }
-        }
+    //        break;
+    //      }
+    //    default:
+    //      {
+    //        escape("unknown role '%u'",
+    //               this->role);
+    //      }
+    //    }
 
-      return elle::Status::Ok;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

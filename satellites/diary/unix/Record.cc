@@ -79,7 +79,7 @@ namespace satellite
 
       if (upcall.Inputs(
             elle::String(path),
-            elle::Region(reinterpret_cast<elle::Byte*>(stbuf),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(stbuf),
                          sizeof (struct ::stat))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's inputs");
@@ -87,7 +87,7 @@ namespace satellite
       res = Record::Reference->fuse.getattr(path, stbuf);
 
       if (upcall.Outputs(
-            elle::Region(reinterpret_cast<elle::Byte*>(stbuf),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(stbuf),
                          sizeof (struct ::stat))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's outputs");
@@ -125,9 +125,9 @@ namespace satellite
 
       if (upcall.Inputs(
             elle::String(path),
-            elle::Region(reinterpret_cast<elle::Byte*>(stbuf),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(stbuf),
                          sizeof (struct ::stat)),
-            elle::Region(reinterpret_cast<elle::Byte*>(fi),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's inputs");
@@ -135,9 +135,9 @@ namespace satellite
       res = Record::Reference->fuse.fgetattr(path, stbuf, fi);
 
       if (upcall.Outputs(
-            elle::Region(reinterpret_cast<elle::Byte*>(stbuf),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(stbuf),
                          sizeof (struct ::stat)),
-            elle::Region(reinterpret_cast<elle::Byte*>(fi),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's outputs");
@@ -174,7 +174,7 @@ namespace satellite
 
       if (upcall.Inputs(
             elle::String(path),
-            elle::Region(reinterpret_cast<const elle::Byte*>(ts),
+            elle::standalone::Region(reinterpret_cast<const elle::Byte*>(ts),
                          sizeof (struct ::timespec[2]))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's inputs");
@@ -216,7 +216,7 @@ namespace satellite
 
       if (upcall.Inputs(
             elle::String(path),
-            elle::Region(reinterpret_cast<elle::Byte*>(fi),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's inputs");
@@ -224,7 +224,7 @@ namespace satellite
       res = Record::Reference->fuse.opendir(path, fi);
 
       if (upcall.Outputs(
-            elle::Region(reinterpret_cast<elle::Byte*>(fi),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's outputs");
@@ -266,7 +266,7 @@ namespace satellite
       if (upcall.Inputs(
             elle::String(path),
             static_cast<elle::Natural64>(offset),
-            elle::Region(reinterpret_cast<elle::Byte*>(fi),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's inputs");
@@ -274,7 +274,7 @@ namespace satellite
       res = Record::Reference->fuse.readdir(path, buf, filler, offset, fi);
 
       if (upcall.Outputs(
-            elle::Region(reinterpret_cast<elle::Byte*>(fi),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's outputs");
@@ -312,7 +312,7 @@ namespace satellite
 
       if (upcall.Inputs(
             elle::String(path),
-            elle::Region(reinterpret_cast<elle::Byte*>(fi),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's inputs");
@@ -320,7 +320,7 @@ namespace satellite
       res = Record::Reference->fuse.releasedir(path, fi);
 
       if (upcall.Outputs(
-            elle::Region(reinterpret_cast<elle::Byte*>(fi),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's outputs");
@@ -1018,7 +1018,7 @@ namespace satellite
       if (upcall.Inputs(
             elle::String(path),
             static_cast<elle::Natural32>(mode),
-            elle::Region(reinterpret_cast<elle::Byte*>(fi),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's inputs");
@@ -1026,7 +1026,7 @@ namespace satellite
       res = Record::Reference->fuse.create(path, mode, fi);
 
       if (upcall.Outputs(
-            elle::Region(reinterpret_cast<elle::Byte*>(fi),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's outputs");
@@ -1063,7 +1063,7 @@ namespace satellite
 
       if (upcall.Inputs(
             elle::String(path),
-            elle::Region(reinterpret_cast<elle::Byte*>(fi),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's inputs");
@@ -1071,7 +1071,7 @@ namespace satellite
       res = Record::Reference->fuse.open(path, fi);
 
       if (upcall.Outputs(
-            elle::Region(reinterpret_cast<elle::Byte*>(fi),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's outputs");
@@ -1112,11 +1112,11 @@ namespace satellite
 
       if (upcall.Inputs(
             elle::String(path),
-            elle::Region(reinterpret_cast<const elle::Byte*>(buf),
+            elle::standalone::Region(reinterpret_cast<const elle::Byte*>(buf),
                          size),
             static_cast<elle::Natural64>(size),
             static_cast<elle::Natural64>(offset),
-            elle::Region(reinterpret_cast<const elle::Byte*>(fi),
+            elle::standalone::Region(reinterpret_cast<const elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's inputs");
@@ -1124,7 +1124,7 @@ namespace satellite
       res = Record::Reference->fuse.write(path, buf, size, offset, fi);
 
       if (upcall.Outputs(
-            elle::Region(reinterpret_cast<elle::Byte*>(fi),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's outputs");
@@ -1166,11 +1166,11 @@ namespace satellite
 
       if (upcall.Inputs(
             elle::String(path),
-            elle::Region(reinterpret_cast<elle::Byte*>(buf),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(buf),
                          size),
             static_cast<elle::Natural64>(size),
             static_cast<elle::Natural64>(offset),
-            elle::Region(reinterpret_cast<elle::Byte*>(fi),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's inputs");
@@ -1178,7 +1178,7 @@ namespace satellite
       res = Record::Reference->fuse.read(path, buf, size, offset, fi);
 
       if (upcall.Outputs(
-            elle::Region(reinterpret_cast<elle::Byte*>(buf),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(buf),
                          size)) ==
           elle::Status::Error)
         fail("unable to specify the upcall's outputs");
@@ -1259,7 +1259,7 @@ namespace satellite
       if (upcall.Inputs(
             elle::String(path),
             static_cast<elle::Natural64>(size),
-            elle::Region(reinterpret_cast<elle::Byte*>(fi),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's inputs");
@@ -1267,7 +1267,7 @@ namespace satellite
       res = Record::Reference->fuse.ftruncate(path, size, fi);
 
       if (upcall.Outputs(
-            elle::Region(reinterpret_cast<elle::Byte*>(fi),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's outputs");
@@ -1304,7 +1304,7 @@ namespace satellite
 
       if (upcall.Inputs(
             elle::String(path),
-            elle::Region(reinterpret_cast<elle::Byte*>(fi),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's inputs");
@@ -1314,7 +1314,7 @@ namespace satellite
 #include <elle/idiom/Open.hh>
 
       if (upcall.Outputs(
-            elle::Region(reinterpret_cast<elle::Byte*>(fi),
+            elle::standalone::Region(reinterpret_cast<elle::Byte*>(fi),
                          sizeof (struct ::fuse_file_info))) ==
           elle::Status::Error)
         fail("unable to specify the upcall's outputs");

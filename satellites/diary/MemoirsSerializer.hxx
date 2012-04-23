@@ -46,7 +46,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(satellite::Memoirs,
       ::free(ptr);
       throw;
     }
-  memoirs.archive.Acquire(elle::Region(ptr, size));
+  memoirs.archive.Acquire(elle::standalone::Region(ptr, size));
 }
 
 #endif

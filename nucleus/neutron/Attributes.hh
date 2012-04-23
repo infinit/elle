@@ -22,6 +22,8 @@
 #include <nucleus/neutron/Size.hh>
 #include <nucleus/neutron/Range.hh>
 
+#include <elle/idiom/Open.hh>
+
 namespace nucleus
 {
   namespace neutron

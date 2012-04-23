@@ -19,9 +19,10 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::neutron::Subject,
                           version)
 {
   assert(version == 0);
+  using namespace nucleus::neutron;
 
   archive & value.type;
-  switch (this->type)
+  switch (value.type)
   {
   case Subject::TypeUser:
     assert(value.user != nullptr);
@@ -43,6 +44,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Subject,
                           version)
 {
   assert(version == 0);
+  using namespace nucleus::neutron;
 
   delete value.user;
   value.user = nullptr;
@@ -51,13 +53,13 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Subject,
   value.group = nullptr;
 
   archive >> value.type;
-  switch (this->type)
+  switch (value.type)
   {
   case Subject::TypeUser:
-    value.user = archive.Construct<elle::cryptography::PublicKey>().release();
+    value.user = archive.template Construct<elle::cryptography::PublicKey>().release();
     break;
   case Subject::TypeGroup:
-    value.group = archive.Construct<nucleus::proton::Address>().release();
+    value.group = archive.template Construct<nucleus::proton::Address>().release();
     break;
   default:
     throw std::runtime_error("Unknown group!");

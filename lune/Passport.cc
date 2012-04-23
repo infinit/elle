@@ -152,7 +152,7 @@ namespace lune
   elle::Status          Passport::Load()
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
 
     // create the path.
     if (path.Create(Lune::Passport) == elle::Status::Error)
@@ -178,7 +178,7 @@ namespace lune
   elle::Status          Passport::Store() const
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
     elle::String        string;
 
     // create the path.

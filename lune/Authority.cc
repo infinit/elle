@@ -282,7 +282,7 @@ namespace lune
   ///
   elle::Status          Authority::Load(elle::Path const& path)
   {
-    elle::Region        region;
+    elle::standalone::Region        region;
 
     // read the file's content.
     if (elle::io::File::Read(path, region) == elle::Status::Error)
@@ -321,7 +321,7 @@ namespace lune
   elle::Status          Authority::Store() const
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
     elle::String        string;
 
     // create the path.

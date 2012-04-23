@@ -62,7 +62,7 @@ namespace etoile
     ///
     elle::Status        File::Load(
                           gear::File&                           context)
-                                        
+
     {
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
@@ -88,7 +88,7 @@ namespace etoile
     elle::Status        File::Write(
                           gear::File&                           context,
                           const nucleus::Offset&                offset,
-                          const elle::Region&                   region)
+                          const elle::standalone::Region&                   region)
     {
       nucleus::Size     size;
 
@@ -143,7 +143,7 @@ namespace etoile
                           gear::File&                           context,
                           const nucleus::Offset&                offset,
                           const nucleus::Size&                  size,
-                          elle::Region&                         region)
+                          elle::standalone::Region&                         region)
     {
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)

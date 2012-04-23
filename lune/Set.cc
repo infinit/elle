@@ -158,7 +158,7 @@ elle::Status          Set::Extract(elle::Archive&          archive)
 elle::Status          Set::Load(const elle::String&        network)
 {
   elle::Path          path;
-  elle::Region        region;
+  elle::standalone::Region        region;
   std::istringstream  stream;
   elle::String        element;
 
@@ -201,7 +201,7 @@ elle::Status          Set::Load(const elle::String&        network)
 elle::Status          Set::Store(const elle::String&       network) const
 {
   elle::Path          path;
-  elle::Region        region;
+  elle::standalone::Region        region;
   std::ostringstream  stream;
   auto                iterator = this->loci.begin();
   auto                end = this->loci.end();

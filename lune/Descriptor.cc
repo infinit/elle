@@ -229,7 +229,7 @@ namespace lune
   elle::Status          Descriptor::Load(const elle::String&    name)
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
 
     // create the path.
     if (path.Create(Lune::Network::Descriptor) == elle::Status::Error)
@@ -259,7 +259,7 @@ namespace lune
   elle::Status          Descriptor::Store(const elle::String&   name) const
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
     elle::String        string;
 
     // create the path.

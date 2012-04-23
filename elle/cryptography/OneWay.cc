@@ -57,7 +57,7 @@ namespace elle
                                static_cast<unsigned int*>(&size)) <= 0)
         {
           (void) ::EVP_MD_CTX_cleanup(&context); // no matter if we can cleanup the context
-          escape(::ERR_error_string(ERR_get_error(), NULL));
+          escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
         }
 
       // set the size.

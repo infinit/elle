@@ -46,7 +46,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::proton::Address,
     return;
 
   archive >> value.family >> value.component;
-  value.digest = archive.construct<elle::cryptography::Digest>().release();
+  value.digest = archive.template Construct<elle::cryptography::Digest>().release();
 }
 
 #endif

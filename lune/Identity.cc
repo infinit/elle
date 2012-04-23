@@ -305,7 +305,7 @@ namespace lune
   elle::Status          Identity::Load()
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
 
     // create the path.
     if (path.Create(Lune::Identity) == elle::Status::Error)
@@ -331,7 +331,7 @@ namespace lune
   elle::Status          Identity::Store() const
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
     elle::String        string;
 
     // create the path.
@@ -396,7 +396,7 @@ namespace lune
   elle::Status          Identity::Load(const elle::String&      name)
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
 
     // create the path.
     if (path.Create(Lune::User::Identity) == elle::Status::Error)
@@ -426,7 +426,7 @@ namespace lune
   elle::Status          Identity::Store(const elle::String&     name) const
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
     elle::String        string;
 
     // create the path.

@@ -320,7 +320,7 @@ namespace horizon
             if ((abstract.permissions.owner & nucleus::PermissionWrite) ==
                 nucleus::PermissionWrite)
               stat->st_mode |= S_IWUSR;
- 
+
             break;
           }
         default:
@@ -1153,7 +1153,7 @@ namespace horizon
       // set the attribute.
       if (etoile::wall::Attributes::Set(identifier,
                                         elle::String(name),
-                                        elle::String(value, size)) == 
+                                        elle::String(value, size)) ==
           elle::Status::Error)
         error("unable to set the attribute",
               -EPERM,
@@ -1751,7 +1751,7 @@ namespace horizon
                                     struct ::fuse_file_info*    info)
     {
       Handle*           handle;
-      elle::Region      region;
+      elle::standalone::Region      region;
       nucleus::Record*  record;
 
       // debug.
@@ -1811,7 +1811,7 @@ namespace horizon
                                    struct ::fuse_file_info*     info)
     {
       Handle*           handle;
-      elle::Region      region;
+      elle::standalone::Region      region;
       nucleus::Record*  record;
 
       // debug.

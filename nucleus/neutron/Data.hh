@@ -16,6 +16,8 @@
 //
 
 #include <elle/types.hh>
+#include <elle/radix/Object.hh>
+#include <elle/standalone/Region.hh>
 
 #include <nucleus/neutron/Offset.hh>
 
@@ -63,10 +65,10 @@ namespace nucleus
       elle::Status      Create();
 
       elle::Status      Write(const Offset&,
-                              const elle::Region&);
+                              const elle::standalone::Region&);
       elle::Status      Read(const Offset&,
                              const Size&,
-                             elle::Region&) const;
+                             elle::standalone::Region&) const;
       elle::Status      Adjust(const Size&);
 
       elle::Status      Capacity(Size&) const;
@@ -87,7 +89,7 @@ namespace nucleus
       //
       proton::Contents<Data>&           contents;
 
-      elle::Region                      region;
+      elle::standalone::Region                      region;
     };
 
   }
