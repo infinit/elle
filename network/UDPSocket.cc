@@ -51,7 +51,7 @@ namespace elle
 
       // bind the socket.
       if (this->socket->bind() == false)
-        escape(this->socket->errorString().toStdString().c_str());
+        escape("%s", this->socket->errorString().toStdString().c_str());
 
       // retrieve the port.
       this->port = this->socket->localPort();
@@ -89,7 +89,7 @@ namespace elle
 
       // bind the socket to the port.
       if (this->socket->bind(this->port) == false)
-        escape(this->socket->errorString().toStdString().c_str());
+        escape("%s", this->socket->errorString().toStdString().c_str());
 
       // subscribe to the signal.
       if (this->signal.ready.Subscribe(
@@ -124,7 +124,7 @@ namespace elle
             packet.Size(),
             locus.host.location,
             locus.port) != static_cast<qint64>(packet.Size()))
-        escape(this->socket->errorString().toStdString().c_str());
+        escape("%s", this->socket->errorString().toStdString().c_str());
 
       return Status::Ok;
     }
@@ -170,7 +170,7 @@ namespace elle
             size,
             &locus.host.location,
             &locus.port) != size)
-        escape(this->socket->errorString().toStdString().c_str());
+        escape("%s", this->socket->errorString().toStdString().c_str());
 
       // set the raw's size.
       raw.size = size;
@@ -290,29 +290,10 @@ namespace elle
                           const QAbstractSocket::SocketError)
     {
       String            cause(this->socket->errorString().toStdString());
-<<<<<<< HEAD
-      Closure<
-        Status,
-        Parameters<
-          const String&
-          >
-        >               closure(Callback<>::Infer(&Signal<
-                                                    Parameters<
-                                                      const String&
-                                                      >
-                                                    >::Emit,
-                                                  &this->signal.error),
-                                cause);
-
-      // spawn a fiber.
-      if (Fiber::Spawn(closure) == Status::Error)
-        yield(_(), "unable to spawn a fiber");
-=======
       new reactor::Thread
         (concurrency::scheduler(), "UDPSocket error",
          boost::bind(&Signal<Parameters<const String& > >::Emit,
                      &this->signal.error, cause), true);
->>>>>>> b07c9c342badfd662005a3dd7e0c8da2478c6c96
     }
 
   }

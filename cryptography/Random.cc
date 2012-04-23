@@ -75,14 +75,14 @@ namespace elle
         // get some random data.
         static const char* source = random_source();
         if ((fd = ::open(source, O_RDONLY)) == -1)
-          escape(::strerror(errno));
+          escape("%s", ::strerror(errno));
 
         // read random data.
         if (::read(fd, temporary, sizeof (temporary)) == -1)
           {
             ::close(fd);
 
-            escape(::strerror(errno));
+            escape("%s", ::strerror(errno));
           }
 
         // close the file descriptor.
@@ -154,7 +154,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       return Status::Ok;
     }
@@ -167,7 +167,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       return Status::Ok;
     }
@@ -180,7 +180,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       return Status::Ok;
     }
@@ -193,7 +193,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       return Status::Ok;
     }
@@ -206,7 +206,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       return Status::Ok;
     }
@@ -219,7 +219,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       return Status::Ok;
     }
@@ -232,7 +232,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       return Status::Ok;
     }
@@ -245,7 +245,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       return Status::Ok;
     }
@@ -258,7 +258,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       return Status::Ok;
     }
@@ -271,7 +271,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       return Status::Ok;
     }
@@ -284,7 +284,7 @@ namespace elle
     {
       // generate a random BN.
       if (::BN_rand(&value, length, -1, 0) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       return Status::Ok;
     }
@@ -329,7 +329,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(value.contents),
                        size) == 0)
-        escape(::strerror(errno));
+        escape("%s", ::strerror(errno));
 
       // set the region's size.
       value.size = size;

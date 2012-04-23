@@ -32,8 +32,26 @@ namespace elle
     typedef BufferArchive<ArchiveMode::Output>      OutputBufferArchive;
 
     template<typename T> struct                     ArchiveSerializer;
+
   }
 }
+
+///
+/// Allow full access to the serializer of the class T.
+/// -----------------
+/// class MyClass
+/// {
+/// private:
+///   int     _my_int;
+///
+///   // The serializer has access to _my_int;
+///   ELLE_SERIALIZE_FRIEND(MyClass);
+/// };
+/// -----------------
+///
+#define ELLE_SERIALIZE_FRIEND_FOR(T)                      \
+  friend struct ::elle::serialize::ArchiveSerializer<T>   \
+
 
 #endif
 

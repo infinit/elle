@@ -1,28 +1,18 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       network
-//
-// author        julien quintard   [fri mar  5 10:43:11 2010]
-//
+#ifndef  ELLE_NETWORK_SESSION_HH
+# define ELLE_NETWORK_SESSION_HH
 
-#ifndef ELLE_NETWORK_SESSION_HH
-#define ELLE_NETWORK_SESSION_HH
+# include <elle/types.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/radix/Entity.hh>
 
-#include <elle/types.hh>
+# include <elle/concurrency/Phase.hh>
+# include <elle/concurrency/Event.hh>
 
-#include <elle/radix/Entity.hh>
+# include <elle/network/Locus.hh>
 
-#include <elle/concurrency/Phase.hh>
-#include <elle/concurrency/Event.hh>
-
-#include <elle/network/Locus.hh>
+# include <elle/idiom/Close.hh>
+# include <elle/reactor/src/reactor/storage.hh>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {

@@ -2,7 +2,7 @@
 # define ELLE_CONCURRENCY_EVENT_HH
 
 # include <elle/types.hh>
-
+# include <elle/serialize/fwd.hh>
 # include <elle/radix/Object.hh>
 
 #include <elle/idiom/Close.hh>
@@ -76,6 +76,8 @@ namespace elle
     private:
       Natural64                                 _identifier;
       reactor::VSignal<std::shared_ptr<elle::network::Parcel> >*  _signal;
+
+      ELLE_SERIALIZE_FRIEND_FOR(Event);
     };
 
   }

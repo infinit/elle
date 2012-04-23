@@ -65,7 +65,7 @@ namespace elle
 
       // clean the context.
       if (::EVP_MD_CTX_cleanup(&context) <= 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       return Status::Ok;
     }

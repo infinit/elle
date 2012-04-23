@@ -122,7 +122,7 @@ namespace elle
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      escape(HTTP::Error);
+      escape("%s", HTTP::Error);
     }
 
     ///
@@ -236,7 +236,7 @@ namespace elle
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      escape(HTTP::Error);
+      escape("%s", HTTP::Error);
     }
 
     ///
@@ -368,7 +368,7 @@ namespace elle
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      escape(HTTP::Error);
+      escape("%s", HTTP::Error);
     }
 
     ///
@@ -447,7 +447,7 @@ namespace elle
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      escape(HTTP::Error);
+      escape("%s", HTTP::Error);
     }
 
 //

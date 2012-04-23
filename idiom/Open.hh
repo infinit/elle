@@ -207,8 +207,8 @@
                                                                         \
     elle::standalone::Report::report.Get().Record(_location_,           \
                                       _time_,                           \
-                                      elle::core::String(_message_));   \
-  } while (false)
+                                      elle::String(_message_));         \
+  } while (false)                                                       \
 
 ///
 /// this macro-function transposes an existing report.
@@ -225,8 +225,8 @@
     {                                                                   \
       report(_format_, ##__VA_ARGS__);                                  \
                                                                         \
-      return (elle::Status::Error);                                \
-    } while (false)
+      return (elle::Status::Error);                                     \
+    } while (false)                                                     \
 
 ///
 /// this macro-function logs the fact that an error occured
@@ -282,18 +282,9 @@
       elle::standalone::Report& _report_ =                              \
         elle::standalone::Report::report.Get();                         \
                                                                         \
-<<<<<<< HEAD
-      if (elle::standalone::Report::Instance(_report_) ==               \
-          elle::Status::True)                                      \
-        {                                                               \
-          _report_->Dump();                                             \
-          _report_->Flush();                                            \
-        }                                                               \
-=======
       _report_.Dump();                                                  \
       _report_.Flush();                                                 \
->>>>>>> b07c9c342badfd662005a3dd7e0c8da2478c6c96
-    } while (false)
+    } while (false)                                                     \
 
 ///
 /// this macro-function, in the case of reported errors, displays them
