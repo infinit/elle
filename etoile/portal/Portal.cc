@@ -1,6 +1,11 @@
+
 #include <elle/cryptography/Random.hh>
 #include <elle/network/Network.hh>
 #include <elle/network/Procedure.hh>
+#include <elle/standalone/Morgue.hh>
+
+#include <elle/network/BundleSerializer.hxx>
+#include <elle/utility/BufferSerializer.hxx>
 
 #include <etoile/portal/Portal.hh>
 
@@ -486,7 +491,7 @@ namespace etoile
       }
 
       // listen for incoming connection.
-      if (elle::LocalServer::Listen(
+      if (elle::network::LocalServer::Listen(
             Portal::Line,
             elle::concurrency::Callback<>::Infer(
               &Portal::Connection)) == elle::Status::Error)

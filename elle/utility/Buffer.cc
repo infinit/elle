@@ -33,6 +33,12 @@ Buffer::Buffer(size_t size)
     throw std::bad_alloc();
 }
 
+Buffer::Buffer(ContentPair&& pair)
+  : _contents(pair.first.release())
+  , _size(pair.second)
+  , _buffer_size(pair.second)
+{}
+
 Buffer::Buffer(Buffer&& other)
   : _contents(other._contents)
   , _size(other._size)
@@ -54,15 +60,17 @@ Buffer::~Buffer()
 
 void Buffer::Append(void const* data_, size_t size)
 {
-  elle::Byte const* data = static_cast<elle::Byte const*>(data_);
-  elle::Byte* ptr = &this->_contents[this->_size];
+  assert(data_ != nullptr || size == 0);
 
-  size_t new_size = this->_size + size;
-  if (new_size > this->_buffer_size)
-    this->Size(new_size);
-  else
-    this->_size = new_size;
-  std::uninitialized_copy(data, data + size, ptr);
+  elle::Byte const* data = static_cast<elle::Byte const*>(data_);
+
+  size_t old_size = this->_size;
+  this->Size(this->_size + size);
+  std::uninitialized_copy(
+      data,
+      data + size,
+      this->_contents + old_size
+  );
 }
 
 void Buffer::Size(size_t size)
@@ -81,7 +89,7 @@ void Buffer::Size(size_t size)
 
 Buffer::ContentPair Buffer::Release()
 {
-  ContentPair res = std::make_pair(this->_contents, this->_size);
+  ContentPair res(ContentPtr(this->_contents), this->_size);
   this->_contents = nullptr;
   this->_size = 0;
   return res;
@@ -89,12 +97,14 @@ Buffer::ContentPair Buffer::Release()
 
 elle::serialize::OutputBufferArchive Buffer::Writer()
 {
-  return elle::serialize::OutputBufferArchive(*this);
+  elle::utility::OutputBufferStream out(*this);
+  return elle::serialize::OutputBufferArchive(out);
 }
 
 elle::serialize::InputBufferArchive  Buffer::Reader() const
 {
-  return elle::serialize::InputBufferArchive(*this);
+  elle::utility::InputBufferStream in(*this);
+  return elle::serialize::InputBufferArchive(in);
 }
 
 elle::Status Buffer::Dump(const Natural32 margin) const
@@ -158,5 +168,6 @@ size_t Buffer::_NextSize(size_t size)
 
 elle::serialize::InputBufferArchive  WeakBuffer::Reader() const
 {
-  return elle::serialize::InputBufferArchive(*this);
+  elle::utility::InputBufferStream in(*this);
+  return elle::serialize::InputBufferArchive(in);
 }

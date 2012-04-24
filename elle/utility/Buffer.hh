@@ -47,6 +47,7 @@ namespace elle
     public:
       Buffer();
       Buffer(size_t                 size);
+      Buffer(ContentPair&&          pair);
 
       // Buffer class is moveable
       Buffer(Buffer&&               other);
@@ -94,6 +95,11 @@ namespace elle
       {}
 
       WeakBuffer(Buffer const& buffer)
+        : _contents(buffer.Contents())
+        , _size(buffer.Size())
+      {}
+
+      WeakBuffer(WeakBuffer const& buffer)
         : _contents(buffer.Contents())
         , _size(buffer.Size())
       {}

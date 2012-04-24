@@ -112,9 +112,10 @@ namespace elle
         {
           String        line(symbols[i]);
           Character*    symbol;
-          Integer32     first;
-          Integer32     last;
-          Integer32     index;
+          // XXX check the code below (previous type was int32_t)
+          size_t        first;
+          size_t        last;
+          size_t        index;
           int           status;
 
           // find a parenthese, indicating the beginning of the mangled name.

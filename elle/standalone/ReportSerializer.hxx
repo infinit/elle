@@ -5,6 +5,17 @@
 
 # include <elle/standalone/Report.hh>
 
+ELLE_SERIALIZE_SIMPLE(elle::standalone::Report::Entry,
+                      archive,
+                      value,
+                      version)
+{
+  assert(version == 0);
+  archive & value.location;
+  archive & value.time;
+  archive & value.message;
+}
+
 ELLE_SERIALIZE_SPLIT(elle::standalone::Report)
 
 ELLE_SERIALIZE_SPLIT_SAVE(elle::standalone::Report,
@@ -20,11 +31,29 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::standalone::Report,
     {
       auto entry = *it;
       assert(entry != nullptr);
-      archive << entry->location
-              << entry->time
-              << entry->message;
+      archive << *entry;
     }
 }
+
+
+ELLE_SERIALIZE_SPLIT_LOAD(elle::standalone::Report,
+                          archive,
+                          value,
+                          version)
+{
+  assert(version == 0);
+
+  elle::Natural32 size;
+  archive >> size;
+
+  for (elle::Natural32 i = 0; i < size; ++i)
+    {
+      auto entry = archive.template Construct<elle::standalone::Report::Entry>();
+      value.container.push_back(entry.get());
+      entry.release();
+    }
+}
+
 
 #endif
 

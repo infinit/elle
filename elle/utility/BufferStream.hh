@@ -3,6 +3,7 @@
 
 # include <iosfwd>
 # include <elle/utility/fwd.hh>
+# include <elle/utility/Buffer.hh>
 
 namespace elle
 {
@@ -12,11 +13,10 @@ namespace elle
     class InputBufferStream
     {
     private:
-      WeakBuffer const& _buffer;
+      WeakBuffer        _buffer;
       size_t            _idx;
 
     public:
-      InputBufferStream(Buffer const& input);
       InputBufferStream(WeakBuffer const& input);
       InputBufferStream(InputBufferStream const& other);
 
@@ -36,7 +36,7 @@ namespace elle
 
     public:
       OutputBufferStream(Buffer& output);
-      OutputBufferStream(OutputBufferStream& other);
+      OutputBufferStream(OutputBufferStream const& other);
 
     /// The following methods make this class "std::ostream like".
     public:

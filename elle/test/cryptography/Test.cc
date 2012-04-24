@@ -1,21 +1,17 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed jan 28 11:22:24 2009]
-//
+#include <elle/Elle.hh>
+#include <elle/cryptography/SecretKey.hh>
+#include <elle/cryptography/PublicKey.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/standalone/RegionSerializer.hxx>
+#include <elle/utility/BufferSerializer.hxx>
 
 #include "Test.hh"
 
 namespace elle
 {
+
+  using namespace elle::cryptography;
+
   namespace test
   {
 

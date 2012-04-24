@@ -3,6 +3,8 @@
 
 # include <elle/utility/fwd.hh>
 
+# include <elle/utility/BufferStream.hh>
+
 # include <elle/serialize/BinaryArchive.hh>
 
 namespace elle
@@ -48,7 +50,7 @@ namespace elle
       StreamType    _stream;
 
     public:
-      BufferArchive(StreamType const& stream);
+      BufferArchive(StreamType& stream);
       BufferArchive(BufferArchive const& other);
 
     public:

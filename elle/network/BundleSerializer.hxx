@@ -30,7 +30,7 @@ namespace elle
       template<typename Archive>
         static void Serialize(Archive& ar, Type& value, unsigned int version)
         {
-          assert(false);
+          static_assert(false, "biet");
         }
     };
 
@@ -55,7 +55,7 @@ namespace elle
       template<typename Archive>
         static void Serialize(Archive& ar, Type& value, unsigned int version)
         {
-          assert(false);
+          static_assert(false, "biet");
         }
     };
   }
