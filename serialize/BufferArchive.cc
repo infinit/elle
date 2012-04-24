@@ -5,7 +5,7 @@
 using namespace elle::serialize;
 
 template<ArchiveMode mode>
-BufferArchive<mode>::BufferArchive(StreamType const& stream)
+BufferArchive<mode>::BufferArchive(StreamType& stream)
   : BaseClass(this->_stream)
   , _stream(stream)
 {}
@@ -13,5 +13,9 @@ BufferArchive<mode>::BufferArchive(StreamType const& stream)
 template<ArchiveMode mode>
 BufferArchive<mode>::BufferArchive(BufferArchive const& other)
   : BaseClass(this->_stream)
-  , _stream(other->_stream)
+  , _stream(other._stream)
 {}
+
+
+template class BufferArchive<ArchiveMode::Input>;
+template class BufferArchive<ArchiveMode::Output>;

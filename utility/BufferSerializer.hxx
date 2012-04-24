@@ -26,6 +26,17 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::utility::Buffer,
   archive.LoadBinary(value._contents, size);
 }
 
+ELLE_SERIALIZE_SPLIT_SAVE(elle::utility::Buffer,
+                          archive,
+                          value,
+                          version)
+{
+  assert(version == 0);
+  archive << value.Size();
+  archive.SaveBinary(value.Contents(), value.Size());
+}
+
+
 ELLE_SERIALIZE_SPLIT(elle::utility::WeakBuffer)
 
 ELLE_SERIALIZE_SPLIT_SAVE(elle::utility::WeakBuffer,

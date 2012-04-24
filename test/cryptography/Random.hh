@@ -1,30 +1,20 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu jan 29 11:52:52 2009]
-//
-
 #ifndef ELLE_TEST_CRYPTOGRAPHY_RANDOM_HH
-#define ELLE_TEST_CRYPTOGRAPHY_RANDOM_HH
+# define ELLE_TEST_CRYPTOGRAPHY_RANDOM_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <sstream>
 
-#include <elle/types.hh>
+# include <elle/types.hh>
+# include <elle/cryptography/KeyPair.hh>
+# include <elle/standalone/Region.hh>
+# include <elle/standalone/Report.hh>
+
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
+  using namespace elle::standalone;
   namespace test
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class provides methods for generating random numbers.
@@ -70,8 +60,8 @@ namespace elle
         // randomize the buffer contents.
         for (i = 0; i < size; i++)
           *(buffer + i) =
-            Random::Generate(elle::Type<Character>::Minimum,
-                             elle::Type<Character>::Maximum);
+            Random::Generate(std::numeric_limits<Character>::min(),
+                             std::numeric_limits<Character>::max());
 
         // assign the buffer to the region.
         if (region.Acquire(buffer, size) == Status::Error)

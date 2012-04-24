@@ -20,6 +20,8 @@
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
+#include <elle/idiom/Open.hh>
+
 namespace elle
 {
   using namespace standalone;
@@ -27,10 +29,55 @@ namespace elle
   namespace cryptography
   {
 
-//
-// ---------- variadic templates ----------------------------------------------
-//
+    template<typename T> Status
+      PrivateKey::Decrypt(T const& in, Clear& out) const
+      {
+        elle::utility::Buffer buf;
+        try
+          {
+            buf.Writer() << in;
+          }
+        catch (std::exception const& err)
+          {
+            escape("Cannot decrypt the object: %s", err.what());
+          }
 
+        return this->Decrypt(buf, out);
+      }
+
+    template<typename T>  Status
+      PrivateKey::Encrypt(T const& in, Code& out) const
+      {
+        elle::utility::Buffer buf;
+
+        try
+          {
+            buf.Writer() << in;
+          }
+        catch (std::exception const& err)
+          {
+            escape("Cannot save object: %s", err.what());
+          }
+
+        return this->Encrypt(buf, out);
+      }
+
+    template<typename T>  Status
+      PrivateKey::Sign(T const& in, Signature& out) const
+      {
+        elle::utility::Buffer buf;
+
+        try
+          {
+            buf.Writer() << in;
+          }
+        catch (std::exception const& err)
+          {
+            escape("Cannot save object: %s", err.what());
+          }
+
+        return this->Sign(buf, out);
+      }
     ///
     /// these methods make it easier to decrypt/sign multiple items at
     /// the same time while keeping a way to catch errors.

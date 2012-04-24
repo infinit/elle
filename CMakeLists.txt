@@ -62,6 +62,8 @@ ADD_LIBRARY(elle
 
   system/System.cc
 
+  types.cc
+
   concurrency/Broker.cc
   concurrency/Concurrency.cc
   concurrency/Environment.cc
@@ -99,6 +101,8 @@ ADD_LIBRARY(elle
   network/TCPSocket.cc
   network/UDPSocket.cc
 
+  utility/Buffer.cc
+  utility/BufferStream.cc
   utility/Duration.cc
   utility/Factory.cc
   utility/HTTP.cc
@@ -124,6 +128,7 @@ ADD_LIBRARY(elle
   serialize/Base64Archive.cc
   serialize/JSONArchive.cc
   serialize/IniArchive.cc
+  serialize/BufferArchive.cc
 
   Elle.cc
 

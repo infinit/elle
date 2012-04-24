@@ -1,22 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon jan 26 14:09:50 2009]
-//
+#ifndef  ELLE_CRYPTOGRAPHY_PUBLICKEY_HXX
+# define ELLE_CRYPTOGRAPHY_PUBLICKEY_HXX
 
-#ifndef ELLE_CRYPTOGRAPHY_PUBLICKEY_HXX
-#define ELLE_CRYPTOGRAPHY_PUBLICKEY_HXX
+# include <elle/standalone/Maid.hh>
+# include <elle/standalone/Report.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/standalone/Maid.hh>
-#include <elle/standalone/Report.hh>
+# include <elle/utility/Buffer.hh>
+# include <elle/serialize/BufferArchive.hh>
 
 namespace elle
 {
@@ -25,9 +14,45 @@ namespace elle
   namespace cryptography
   {
 
-//
-// ---------- variadic templates ----------------------------------------------
-//
+    template<typename T>
+      Status PublicKey::Encrypt(T const& in, Code& out) const
+      {
+        elle::utility::Buffer buf;
+
+        try
+          {
+            buf.Writer() << in;
+          }
+        catch (std::exception const& err)
+          {
+            escape("Cannot save object: %s", err.what());
+          }
+
+        return this->Encrypt(
+            elle::utility::WeakBuffer(buf),
+            out
+        );
+      }
+
+    template <typename T>
+      Status PublicKey::Decrypt(Code const& in, T& out) const
+      {
+        elle::utility::Buffer buf;
+
+        if (this->Decrypt(in, buf) == elle::Status::Error)
+          escape("Cannot decrypt data");
+
+        try
+          {
+            buf.Reader() >> out;
+          }
+        catch (std::exception const& err)
+          {
+            escape("Cannot load object: %s", err.what());
+          }
+
+        return elle::Status::Ok;
+      }
 
     ///
     /// these methods make it easier to decrypt/sign multiple items at

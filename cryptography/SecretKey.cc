@@ -107,8 +107,17 @@ namespace elle
     ///
     /// this method encrypts the given plain text.
     ///
-    Status              SecretKey::Encrypt(const Plain&         plain,
-                                           Cipher&              cipher) const
+    Status SecretKey::Encrypt(Plain const&         plain,
+                              Cipher&              cipher) const
+    {
+      return this->Encrypt(
+          elle::utility::WeakBuffer(plain.contents, plain.size),
+          cipher
+      );
+    }
+
+    Status SecretKey::Encrypt(elle::utility::WeakBuffer const&  in,
+                              Cipher&                           cipher) const
     {
       unsigned char     key[EVP_MAX_KEY_LENGTH];
       unsigned char     iv[EVP_MAX_IV_LENGTH];
@@ -153,7 +162,7 @@ namespace elle
       if (cipher.region.Prepare(sizeof (SecretKey::Magic) -
                                 1 +
                                 sizeof (salt) +
-                                plain.size +
+                                in.Size() +
                                 capacity) == Status::Error)
         escape("unable to reserve memory for the cipher");
 
@@ -174,8 +183,8 @@ namespace elle
       if (::EVP_EncryptUpdate(&scope.context,
                               cipher.region.contents + cipher.region.size,
                               &size,
-                              plain.contents,
-                              plain.size) == 0)
+                              in.Contents(),
+                              in.Size()) == 0)
         escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       // update the cipher size.
