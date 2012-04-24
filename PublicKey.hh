@@ -1,19 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [tue oct 30 01:08:16 2007]
-//
 
 #ifndef ELLE_CRYPTOGRAPHY_PUBLICKEY_HH
 #define ELLE_CRYPTOGRAPHY_PUBLICKEY_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <elle/types.hh>
 
@@ -25,6 +13,8 @@
 #include <elle/cryptography/Code.hh>
 #include <elle/cryptography/Clear.hh>
 #include <elle/cryptography/Signature.hh>
+
+#include <elle/utility/Buffer.hh>
 
 #include <elle/idiom/Close.hh>
 # include <openssl/rsa.h>
@@ -72,12 +62,17 @@ namespace elle
       Status            Create(Large*,
                                Large*);
 
-      Status            Encrypt(const Plain&,
-                                Code&) const;
       Status            Verify(const Signature&,
                                const Plain&) const;
-      Status            Decrypt(const Code&,
-                                Clear&) const;
+      Status Encrypt(elle::utility::WeakBuffer const& buffer, Code& out) const;
+      Status Decrypt(Code const& in, elle::utility::Buffer& out) const;
+
+      template <typename T>
+        Status Encrypt(T const& in, Code& out) const;
+
+      template <typename T>
+        Status Decrypt(Code const& in, T& out) const;
+
       //
       // interfaces
       //
@@ -162,106 +157,6 @@ namespace elle
       // variadic templates
       //
 
-      // encrypt
-      template <typename T1>
-      Status            Encrypt(const T1&,
-                                Code&) const;
-      template <typename T1,
-                typename T2>
-      Status            Encrypt(const T1&,
-                                const T2&,
-                                Code&) const;
-      template <typename T1,
-                typename T2,
-                typename T3>
-      Status            Encrypt(const T1&,
-                                const T2&,
-                                const T3&,
-                                Code&) const;
-      template <typename T1,
-                typename T2,
-                typename T3,
-                typename T4>
-      Status            Encrypt(const T1&,
-                                const T2&,
-                                const T3&,
-                                const T4&,
-                                Code&) const;
-      template <typename T1,
-                typename T2,
-                typename T3,
-                typename T4,
-                typename T5>
-      Status            Encrypt(const T1&,
-                                const T2&,
-                                const T3&,
-                                const T4&,
-                                const T5&,
-                                Code&) const;
-      template <typename T1,
-                typename T2,
-                typename T3,
-                typename T4,
-                typename T5,
-                typename T6>
-      Status            Encrypt(const T1&,
-                                const T2&,
-                                const T3&,
-                                const T4&,
-                                const T5&,
-                                const T6&,
-                                Code&) const;
-      template <typename T1,
-                typename T2,
-                typename T3,
-                typename T4,
-                typename T5,
-                typename T6,
-                typename T7>
-      Status            Encrypt(const T1&,
-                                const T2&,
-                                const T3&,
-                                const T4&,
-                                const T5&,
-                                const T6&,
-                                const T7&,
-                                Code&) const;
-      template <typename T1,
-                typename T2,
-                typename T3,
-                typename T4,
-                typename T5,
-                typename T6,
-                typename T7,
-                typename T8>
-      Status            Encrypt(const T1&,
-                                const T2&,
-                                const T3&,
-                                const T4&,
-                                const T5&,
-                                const T6&,
-                                const T7&,
-                                const T8&,
-                                Code&) const;
-      template <typename T1,
-                typename T2,
-                typename T3,
-                typename T4,
-                typename T5,
-                typename T6,
-                typename T7,
-                typename T8,
-                typename T9>
-      Status            Encrypt(const T1&,
-                                const T2&,
-                                const T3&,
-                                const T4&,
-                                const T5&,
-                                const T6&,
-                                const T7&,
-                                const T8&,
-                                const T9&,
-                                Code&) const;
 
       // verify
       template <typename T,

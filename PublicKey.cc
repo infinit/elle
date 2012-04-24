@@ -1,23 +1,17 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [tue oct 30 01:23:20 2007]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <elle/cryptography/PublicKey.hh>
 #include <elle/cryptography/Digest.hh>
 #include <elle/cryptography/OneWay.hh>
 #include <elle/cryptography/SecretKey.hh>
+#include <elle/cryptography/SecretKeySerializer.hxx>
+#include <elle/cryptography/CodeSerializer.hxx>
+#include <elle/cryptography/CipherSerializer.hxx>
+
+#include <elle/serialize/BufferArchive.hh>
 
 #include <elle/standalone/Log.hh>
+
+#include <elle/idiom/Open.hh>
 
 using namespace elle;
 using namespace elle::cryptography;
@@ -202,90 +196,88 @@ Status PublicKey::Create(Large* n, Large* e)
 /// computation is performed. otherwise, (2) the data is symmetrically
 /// encrypted.
 ///
-//Status              PublicKey::Encrypt(const Plain&         plain,
-//                                       Code&                code) const
-//{
-//  SecretKey         secret;
-//
-//  Code              key;
-//  Cipher            data;
-//
-//  // (i)
-//  {
-//    // generate a secret key.
-//    if (secret.Generate() == Status::Error)
-//      escape("unable to generate the secret key");
-//  }
-//
-//  // (ii)
-//  {
-//    // cipher the plain text with the secret key.
-//    if (secret.Encrypt(plain, data) == Status::Error)
-//      escape("unable to cipher the plain text with the secret key");
-//  }
-//
-//  // (iii)
-//  {
-//    Archive         archive;
-//    size_t          size;
-//
-//    // first, create an archive.
-//    if (archive.Create() == Status::Error)
-//      escape("unable to create an achive");
-//
-//    // then, serialize the secret key.
-//    if (archive.Serialize(secret) == Status::Error)
-//      escape("unable to serialize the secret key");
-//
-//    // compute the size of the archived symmetric key.
-//    if (::EVP_PKEY_encrypt(
-//          this->_contexts.encrypt,
-//          nullptr,
-//          &size,
-//          reinterpret_cast<const unsigned char*>(archive.contents),
-//          archive.size) <= 0)
-//      escape(::ERR_error_string(ERR_get_error(), nullptr));
-//
-//    // allocate memory so the key can receive the upcoming
-//    // encrypted portion.
-//    if (key.region.Prepare(size) == Status::Error)
-//      escape("unable to prepare the key");
-//
-//    // actually encrypt the secret key's archive, storing the encrypted
-//    // portion directly into the key object, without any re-copy.
-//    if (::EVP_PKEY_encrypt(
-//          this->_contexts.encrypt,
-//          reinterpret_cast<unsigned char*>(key.region.contents),
-//          &size,
-//          reinterpret_cast<const unsigned char*>(archive.contents),
-//          archive.size) <= 0)
-//      escape(::ERR_error_string(ERR_get_error(), nullptr));
-//
-//    // set the key size.
-//    key.region.size = size;
-//  }
-//
-//  // (iv)
-//  {
-//    Archive         archive;
-//
-//    // create the main archive.
-//    if (archive.Create() == Status::Error)
-//      escape("unable to create the archive");
-//
-//    // serialize the key.
-//    if (archive.Serialize(key, data) == Status::Error)
-//      escape("unable to serialize the asymetrically-encrypted secret key "
-//             "and the symetrically-encrypted data");
-//
-//    // duplicate the archive's content.
-//    if (code.region.Duplicate(archive.contents,
-//                              archive.size) == Status::Error)
-//      escape("unable to duplicate the archive's content");
-//  }
-//
-//  return Status::Ok;
-//}
+Status  PublicKey::Encrypt(elle::utility::WeakBuffer const& buffer,
+                           Code&                            code) const
+{
+  SecretKey         secret;
+
+  Code              key;
+  Cipher            data;
+
+  // (i)
+  {
+    if (secret.Generate() == Status::Error)
+      escape("unable to generate the secret key");
+  }
+
+  // (ii)
+  {
+    // cipher the plain text with the secret key.
+    if (secret.Encrypt(buffer, data) == Status::Error)
+      escape("unable to cipher the plain text with the secret key");
+  }
+
+  // (iii)
+  {
+    // XXX secret_buf should be filled with zeros at the end
+    elle::utility::Buffer secret_buf;
+    size_t                size;
+
+    secret_buf.Writer() << secret;
+
+    // compute the size of the archived symmetric key.
+    if (::EVP_PKEY_encrypt(
+          this->_contexts.encrypt,
+          nullptr,
+          &size,
+          reinterpret_cast<const unsigned char*>(secret_buf.Contents()),
+          secret_buf.Size()) <= 0)
+      escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+
+    // allocate memory so the key can receive the upcoming
+    // encrypted portion.
+    if (key.region.Prepare(size) == Status::Error)
+      escape("unable to prepare the key");
+
+    // actually encrypt the secret key's archive, storing the encrypted
+    // portion directly into the key object, without any re-copy.
+    if (::EVP_PKEY_encrypt(
+          this->_contexts.encrypt,
+          reinterpret_cast<unsigned char*>(key.region.contents),
+          &size,
+          reinterpret_cast<const unsigned char*>(secret_buf.Contents()),
+          secret_buf.Size()) <= 0)
+      escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+
+    // set the key size.
+    key.region.size = size;
+  }
+
+  // (iv)
+  {
+    elle::utility::Buffer result_buf;
+
+    try
+      {
+        result_buf.Writer() << key << data;
+      }
+    catch (std::exception const& err)
+      {
+        escape(
+          "unable to serialize the asymetrically-encrypted secret key "
+          "and the symetrically-encrypted data: %s",
+          err.what()
+        );
+      }
+
+    // duplicate the archive's content.
+    if (code.region.Duplicate(result_buf.Contents(),
+                              result_buf.Size()) == Status::Error)
+      escape("unable to duplicate the archive's content");
+  }
+
+  return Status::Ok;
+}
 
 ///
 /// this method verifies that the non-signed text is equal to the
@@ -333,85 +325,88 @@ Status              PublicKey::Verify(const Signature&      signature,
 /// with the public key and (iii) decipher the data with the
 /// symmetric key.
 ///
-//Status              PublicKey::Decrypt(const Code&          code,
-//                                       Clear&               clear) const
-//{
-//  SecretKey         secret;
-//
-//  Archive           archive;
-//  Code              key;
-//  Cipher            data;
-//
-//  // (i)
-//  {
-//    // prepare the archive.
-//    if (archive.Wrap(code.region) == Status::Error)
-//      escape("unable to prepare the archive");
-//
-//    // extract the secret key and data, in their encrypted form.
-//    if (archive.Extract(key, data) == Status::Error)
-//      escape("unable to extract the asymetrically-encrypted secret key "
-//             "and the symetrically-encrypted data");
-//  }
-//
-//  // (ii)
-//  {
-//    Archive         archive;
-//    Region          region;
-//    size_t          size;
-//
-//    // compute the size of the decrypted portion to come.
-//    if (::EVP_PKEY_verify_recover(
-//          this->_contexts.decrypt,
-//          nullptr,
-//          &size,
-//          reinterpret_cast<const unsigned char*>(key.region.contents),
-//          key.region.size) <= 0)
-//      escape(::ERR_error_string(ERR_get_error(), nullptr));
-//
-//    // allocate the required memory for the region object.
-//    if (region.Prepare(size) == Status::Error)
-//      escape("unable to allocate the required memory");
-//
-//    // perform the decrypt operation.
-//    //
-//    // note that since the encryption with the private key relies
-//    // upon the sign() EVP functionality, the verify_recover()
-//    // function is used here.
-//    if (::EVP_PKEY_verify_recover(
-//          this->_contexts.decrypt,
-//          reinterpret_cast<unsigned char*>(region.contents),
-//          &size,
-//          reinterpret_cast<const unsigned char*>(key.region.contents),
-//          key.region.size) <= 0)
-//      escape(::ERR_error_string(ERR_get_error(), nullptr));
-//
-//    // set the region size.
-//    region.size = size;
-//
-//    // prepare the archive.
-//    if (archive.Acquire(region) == Status::Error)
-//      escape("unable to prepare the archive");
-//
-//    // detach the data from the region so that the data
-//    // is not release twice by both 'region' and 'archive'.
-//    if (region.Detach() == Status::Error)
-//      escape("unable to detach the data from the region");
-//
-//    // extract the secret key.
-//    if (archive.Extract(secret) == Status::Error)
-//      escape("unable to extract the secret key from the archive");
-//  }
-//
-//  // (iii)
-//  {
-//    // finally, decrypt the data with the secret key.
-//    if (secret.Decrypt(data, clear) == Status::Error)
-//      escape("unable to decrypt the data with the secret key");
-//  }
-//
-//  return Status::Ok;
-//}
+Status PublicKey::Decrypt(Code const& in, elle::utility::Buffer& out) const
+{
+  SecretKey         secret;
+
+  Code              key;
+  Cipher            data;
+
+  // (i)
+  try
+    {
+      elle::utility::WeakBuffer input_buffer(in.region.contents, in.region.size);
+      input_buffer.Reader() >> key >> data;
+    }
+  catch (std::exception const& err)
+    {
+      escape(
+          "unable to extract the asymetrically-encrypted secret key "
+          "and the symetrically-encrypted data: %s",
+          err.what()
+      );
+    }
+
+  // (ii)
+  {
+    size_t          size;
+    // compute the size of the decrypted portion to come.
+    if (::EVP_PKEY_verify_recover(
+          this->_contexts.decrypt,
+          nullptr,
+          &size,
+          reinterpret_cast<const unsigned char*>(key.region.contents),
+          key.region.size) <= 0)
+      escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+
+    elle::utility::Buffer buf;
+
+    try
+      {
+        buf.Size(size);
+      }
+    catch (std::exception const& err)
+      {
+        escape("unable to allocate the required memory: %s", err.what());
+      }
+
+    auto buf_pair = buf.Release();
+
+    // perform the decrypt operation.
+    //
+    // note that since the encryption with the private key relies
+    // upon the sign() EVP functionality, the verify_recover()
+    // function is used here.
+    if (::EVP_PKEY_verify_recover(
+          this->_contexts.decrypt,
+          reinterpret_cast<unsigned char*>(buf_pair.first.get()),
+          &size,
+          reinterpret_cast<const unsigned char*>(key.region.contents),
+          key.region.size) <= 0)
+      escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+
+    buf_pair.second = size;
+
+
+    try
+      {
+        elle::utility::Buffer(std::move(buf_pair)).Reader() >> secret;
+      }
+    catch (std::exception const& err)
+      {
+        escape("couldn't decode the object: %s", err.what());
+      }
+  }
+
+  // (iii)
+  {
+    // finally, decrypt the data with the secret key.
+    if (secret.Decrypt(data, out) == Status::Error)
+      escape("unable to decrypt the data with the secret key");
+  }
+
+  return Status::Ok;
+}
 
 //
 // ---------- object ----------------------------------------------------------

@@ -3,10 +3,11 @@
 
 #include <elle/cryptography/PrivateKey.hh>
 #include <elle/cryptography/PublicKey.hh>
-#include <elle/cryptography/Seed.hh>
 #include <elle/cryptography/Random.hh>
 #include <elle/standalone/Log.hh>
 #include <elle/standalone/Report.hh>
+
+#include <elle/cryptography/SeedSerializer.hxx>
 
 namespace elle
 {

@@ -24,6 +24,7 @@
 #include <elle/cryptography/Signature.hh>
 #include <elle/cryptography/Clear.hh>
 #include <elle/cryptography/Seed.hh>
+#include <elle/utility/Buffer.hh>
 
 // XXX remove openssl include from headers
 #include <elle/idiom/Close.hh>
@@ -90,14 +91,47 @@ namespace elle
                                Large*,
                                Large*);
 
-      virtual Status    Decrypt(const Code&,
-                                Clear&) const;
-      virtual Status    Sign(const Plain&,
-                             Signature&) const;
-      virtual Status    Encrypt(const Plain&,
-                                Code&) const;
-      virtual Status    Derive(const Seed&,
-                               PublicKey&) const;
+    public:
+      // Decrypt methods
+      Status
+      Decrypt(elle::utility::WeakBuffer const& in, Clear& out) const;
+
+      Status
+      Decrypt(elle::standalone::Region const& in, Clear& out) const;
+
+      Status
+      Decrypt(elle::cryptography::Code const& in, Clear& out) const;
+
+      template<typename T> Status
+      Decrypt(T const& in, Clear& out) const;
+
+
+    public:
+      // Encrypt methods
+      Status
+      Encrypt(Region const& in,  Code& out) const;
+
+      Status
+      Encrypt(elle::utility::WeakBuffer const& in,  Code& out) const;
+
+      template<typename T> Status
+      Encrypt(T const& in, Code& out) const;
+
+    public:
+      // Sign methods
+      Status
+      Sign(elle::utility::WeakBuffer const& in, Signature& out) const;
+
+      Status
+      Sign(Region const& in, Signature& out) const;
+
+      template<typename T> Status
+      Sign(T const& in, Signature& out) const;
+
+
+    public:
+      Status
+      Derive(const Seed& seed, PublicKey& key) const;
 
       //
       // interfaces
@@ -126,268 +160,9 @@ namespace elle
         ::EVP_PKEY_CTX* encrypt;
       }                 _contexts;
 
-      //
-      // properties
-      //
     public:
       ::EVP_PKEY const* key() const { return this->_key; }
 
-      //
-      // forward methods
-      //
-    public:
-
-      ///
-      /// these methods basically handle the archive-specific cases.
-      ///
-
-      //Status            Decrypt(const Code&                     code,
-      //                          Archive&                        archive) const
-      //{
-      //  Clear           clear;
-
-      //  // decrypt the code.
-      //  if (this->Decrypt(code, clear) == Status::Error)
-      //    escape("unable to decrypt the code");
-
-      //  // prepare the archive.
-      //  if (archive.Acquire(clear) == Status::Error)
-      //    escape("unable to prepare the archive");
-
-      //  // detach the data so that not both the clear and archive
-      //  // release the data.
-      //  if (clear.Detach() == Status::Error)
-      //    escape("unable to detach the clear's data");
-
-      //  return Status::Ok;
-      //}
-
-      //Status            Sign(const Archive&             archive,
-      //                       Signature&                 signature) const
-      //{
-      //  return (this->Sign(Plain(archive.contents, archive.size),
-      //                     signature));
-      //}
-
-      //Status            Encrypt(const Archive&          archive,
-      //                          Code&                   code) const
-      //{
-      //  return (this->Encrypt(Plain(archive.contents, archive.size),
-      //                        code));
-      //}
-
-      //
-      // variadic templates
-      //
-
-      // decrypt
-      template <typename T,
-                typename... TT>
-      Status            Decrypt(const Code&,
-                                T&,
-                                TT&...) const;
-
-      // sign
-      template <typename T1>
-      Status            Sign(const T1&,
-                             Signature&) const;
-      template <typename T1,
-                typename T2>
-      Status            Sign(const T1&,
-                             const T2&,
-                             Signature&) const;
-      template <typename T1,
-                typename T2,
-                typename T3>
-      Status            Sign(const T1&,
-                             const T2&,
-                             const T3&,
-                             Signature&) const;
-      template <typename T1,
-                typename T2,
-                typename T3,
-                typename T4>
-      Status            Sign(const T1&,
-                             const T2&,
-                             const T3&,
-                             const T4&,
-                             Signature&) const;
-      template <typename T1,
-                typename T2,
-                typename T3,
-                typename T4,
-                typename T5>
-      Status            Sign(const T1&,
-                             const T2&,
-                             const T3&,
-                             const T4&,
-                             const T5&,
-                             Signature&) const;
-      template <typename T1,
-                typename T2,
-                typename T3,
-                typename T4,
-                typename T5,
-                typename T6>
-      Status            Sign(const T1&,
-                             const T2&,
-                             const T3&,
-                             const T4&,
-                             const T5&,
-                             const T6&,
-                             Signature&) const;
-      template <typename T1,
-                typename T2,
-                typename T3,
-                typename T4,
-                typename T5,
-                typename T6,
-                typename T7>
-      Status            Sign(const T1&,
-                             const T2&,
-                             const T3&,
-                             const T4&,
-                             const T5&,
-                             const T6&,
-                             const T7&,
-                             Signature&) const;
-      template <typename T1,
-                typename T2,
-                typename T3,
-                typename T4,
-                typename T5,
-                typename T6,
-                typename T7,
-                typename T8>
-      Status            Sign(const T1&,
-                             const T2&,
-                             const T3&,
-                             const T4&,
-                             const T5&,
-                             const T6&,
-                             const T7&,
-                             const T8&,
-                             Signature&) const;
-      template <typename T1,
-                typename T2,
-                typename T3,
-                typename T4,
-                typename T5,
-                typename T6,
-                typename T7,
-                typename T8,
-                typename T9>
-      Status            Sign(const T1&,
-                             const T2&,
-                             const T3&,
-                             const T4&,
-                             const T5&,
-                             const T6&,
-                             const T7&,
-                             const T8&,
-                             const T9&,
-                             Signature&) const;
-
-      // encrypt
-      template <typename T1>
-      Status            Encrypt(const T1&,
-                                Code&) const;
-      template <typename T1,
-                typename T2>
-      Status            Encrypt(const T1&,
-                                const T2&,
-                                Code&) const;
-      template <typename T1,
-                typename T2,
-                typename T3>
-      Status            Encrypt(const T1&,
-                                const T2&,
-                                const T3&,
-                                Code&) const;
-      template <typename T1,
-                typename T2,
-                typename T3,
-                typename T4>
-      Status            Encrypt(const T1&,
-                                const T2&,
-                                const T3&,
-                                const T4&,
-                                Code&) const;
-      template <typename T1,
-                typename T2,
-                typename T3,
-                typename T4,
-                typename T5>
-      Status            Encrypt(const T1&,
-                                const T2&,
-                                const T3&,
-                                const T4&,
-                                const T5&,
-                                Code&) const;
-      template <typename T1,
-                typename T2,
-                typename T3,
-                typename T4,
-                typename T5,
-                typename T6>
-      Status            Encrypt(const T1&,
-                                const T2&,
-                                const T3&,
-                                const T4&,
-                                const T5&,
-                                const T6&,
-                                Code&) const;
-      template <typename T1,
-                typename T2,
-                typename T3,
-                typename T4,
-                typename T5,
-                typename T6,
-                typename T7>
-      Status            Encrypt(const T1&,
-                                const T2&,
-                                const T3&,
-                                const T4&,
-                                const T5&,
-                                const T6&,
-                                const T7&,
-                                Code&) const;
-      template <typename T1,
-                typename T2,
-                typename T3,
-                typename T4,
-                typename T5,
-                typename T6,
-                typename T7,
-                typename T8>
-      Status            Encrypt(const T1&,
-                                const T2&,
-                                const T3&,
-                                const T4&,
-                                const T5&,
-                                const T6&,
-                                const T7&,
-                                const T8&,
-                                Code&) const;
-      template <typename T1,
-                typename T2,
-                typename T3,
-                typename T4,
-                typename T5,
-                typename T6,
-                typename T7,
-                typename T8,
-                typename T9>
-      Status            Encrypt(const T1&,
-                                const T2&,
-                                const T3&,
-                                const T4&,
-                                const T5&,
-                                const T6&,
-                                const T7&,
-                                const T8&,
-                                const T9&,
-                                Code&) const;
     };
 
   }
