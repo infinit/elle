@@ -8,6 +8,11 @@
 
 #include <elle/idiom/Open.hh>
 
+#define show_assert(expr)                                       \
+  do {                                                          \
+      if (expr != elle::Status::Ok) {show(); assert(false);}    \
+  } while (false)                                               \
+
 void test_encrypt()
 {
   std::string const my_secret_text =
@@ -18,24 +23,24 @@ void test_encrypt()
 
   elle::cryptography::KeyPair pair;
 
-  assert(pair.Generate() == elle::Status::Ok);
+  show_assert(pair.Generate());
 
-  if (pair.k.Encrypt(my_secret_text, code) != elle::Status::Ok)
-    {
-      show();
-      assert(false);
-    }
+  std::cout << "bim\n";
+
+  show_assert(pair.k.Encrypt(my_secret_text, code));
+
+  std::cout << "encrypted size: " << code.region.size << "\n";
 
     {
       std::string res;
-      assert(pair.k.Decrypt(code, res) == elle::Status::Ok);
+      show_assert(pair.k.Decrypt(code, res));
     }
 
 }
 
 int main()
 {
-  elle::Elle::Initialize();
+  show_assert(elle::Elle::Initialize());
   test_encrypt();
 
   std::cout << "tests done.\n";

@@ -179,6 +179,7 @@ namespace elle
       // set the type.
       this->type = Region::TypeBuffer;
 
+      // XXX leak when realloc fails
       // allocate memory.
       if ((this->contents =
            static_cast<Byte*>(::realloc(this->contents, capacity))) == NULL)
@@ -205,6 +206,7 @@ namespace elle
       // set the type.
       this->type = Region::TypeBuffer;
 
+      // XXX leak when realloc fails
       // allocate the required memory.
       if ((this->contents =
            static_cast<Byte*>(::realloc(this->contents, size))) == NULL)

@@ -14,9 +14,9 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::standalone::Region,
                           value,
                           version)
 {
-  std::cout << "Saving region of " << value.size << std::endl;
   archive << static_cast<uint64_t>(value.size);
   archive.SaveBinary(value.contents, value.size);
+  std::cout << "Saved region of " << value.size << " bytes\n";
 }
 
 ELLE_SERIALIZE_SPLIT_LOAD(elle::standalone::Region,
@@ -26,11 +26,16 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::standalone::Region,
 {
   uint64_t size;
   archive >> size;
-  std::cout << "Loading region of " << size << std::endl;
-  if (value.Prepare(size) == elle::Status::Error)
-    throw std::bad_cast();
-  archive.LoadBinary(value.contents, value.size);
-  value.size = size;
+
+  elle::utility::Buffer buffer(size);
+  archive.LoadBinary(buffer.MutableContents(), size);
+
+  auto ptr = buffer.Release().first;
+  if (value.Acquire(ptr.get(), size) == elle::Status::Error)
+    throw std::runtime_error("Cannot acquire the pointer!");
+  ptr.release();
+
+  std::cout << "Loaded region of " << size << " bytes\n";
 }
 
 #endif

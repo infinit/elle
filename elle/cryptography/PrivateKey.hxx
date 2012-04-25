@@ -9,6 +9,9 @@
 # include <elle/utility/Buffer.hh>
 # include <elle/serialize/BufferArchive.hh>
 
+//# include <elle/cryptography/CodeSerializer.hxx>
+# include <elle/standalone/RegionSerializer.hxx>
+
 # include <elle/idiom/Open.hh>
 
 namespace elle
@@ -21,16 +24,14 @@ namespace elle
     template<typename T> Status
       PrivateKey::Decrypt(Code const& in, T& out) const
       {
-        Clear clear;
-        if (this->Decrypt(in, clear) == elle::Status::Error)
+        elle::utility::Buffer out_buffer;
+
+        if (this->Decrypt(in, out_buffer) == elle::Status::Error)
           escape("Cannot decrypt code");
 
         try
           {
-            elle::utility::WeakBuffer(
-                clear.contents,
-                clear.size
-            ).Reader() >> out;
+            out_buffer.Reader() >> out;
           }
         catch (std::exception const& err)
           {
