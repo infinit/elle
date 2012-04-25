@@ -1,6 +1,9 @@
 #ifndef ELLE_SERIALIZE_BASEARCHIVE_HXX
 # define ELLE_SERIALIZE_BASEARCHIVE_HXX
 
+//XXX
+# include <iostream>
+
 # include <boost/detail/endian.hpp>
 
 # include "BaseArchive.hh"
@@ -69,6 +72,12 @@ namespace elle { namespace serialize {
     inline typename std::enable_if<std::is_enum<T>::value == false>::type
       BaseArchive<mode_, Archive, CT, STS>::Save(T const& val)
       {
+        // XXX
+//# ifndef NDEBUG
+//        std::cout << "Saving type: " << std::string(typeid(T).name()) << std::endl;
+//        Access::Save(this->self(), std::string(typeid(T).name()));
+//# endif
+
         if (StoreClassVersion<T>::value == true)
             Access::Save(this->self(), ClassVersionType(ArchivableClass<T>::version));
 
@@ -88,6 +97,14 @@ namespace elle { namespace serialize {
     inline typename std::enable_if<std::is_enum<T>::value == false>::type
       BaseArchive<mode_, Archive, CT, STS>::Load(T& val)
       {
+        // XXX
+//# ifndef NDEBUG
+//        std::string type_name;
+//        Access::Load(this->self(), type_name);
+//        std::cout << "Loading type: " << type_name << std::endl;
+//        assert(type_name == typeid(T).name());
+//# endif
+
         ClassVersionType classVersion(0);
         if (StoreClassVersion<T>::value == true)
           Access::Load(this->self(), classVersion);
@@ -262,6 +279,7 @@ namespace elle { namespace serialize {
           Access::LoadBinary(this->self(), &val, sizeof(val));
         }
 
+
       /// Save std::string
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
@@ -272,8 +290,8 @@ namespace elle { namespace serialize {
           size_t sz = val.size();
           if (static_cast<size_t>(static_cast<SizeType>(-1)) < sz)
             throw std::runtime_error("String size too big");
-          this->self().Save(static_cast<SizeType>(sz));
-          Access::SaveBinary(this->self(), val.data(), sz);
+          Access::Save(this->self(), static_cast<SizeType>(sz));
+          Access::SaveBinary(this->self(), val.c_str(), sz);
         }
 
       /// Load std::string
@@ -284,7 +302,7 @@ namespace elle { namespace serialize {
           typedef typename Archive::StringSizeType SizeType;
           static_assert(std::is_unsigned<SizeType>::value, "A string size type have to be unsigned");
           SizeType size;
-          this->self().Load(size);
+          Access::Load(this->self(), size);
           val.resize(size);
           char tab[256];
           size_t idx = 0;

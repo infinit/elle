@@ -15,8 +15,6 @@ void detail::MallocDeleter::operator ()(void* data)
   ::free(data);
 }
 
-
-
 Buffer::Buffer()
   : _contents(nullptr)
   , _size(0)
@@ -39,6 +37,14 @@ Buffer::Buffer(ContentPair&& pair)
   , _buffer_size(pair.second)
 {}
 
+Buffer::Buffer(elle::Byte const* data, size_t size)
+  : _contents(nullptr)
+  , _size(0)
+  , _buffer_size(0)
+{
+  this->Append(data, size);
+}
+
 Buffer::Buffer(Buffer&& other)
   : _contents(other._contents)
   , _size(other._size)
@@ -58,17 +64,16 @@ Buffer::~Buffer()
   ::free(this->_contents);
 }
 
-void Buffer::Append(void const* data_, size_t size)
+void Buffer::Append(void const* data, size_t size)
 {
-  assert(data_ != nullptr || size == 0);
-
-  elle::Byte const* data = static_cast<elle::Byte const*>(data_);
+  assert(data != nullptr || size == 0);
 
   size_t old_size = this->_size;
   this->Size(this->_size + size);
+  //::memcpy(this->_contents + old_size, data, size);
   std::uninitialized_copy(
-      data,
-      data + size,
+      static_cast<elle::Byte const*>(data),
+      static_cast<elle::Byte const*>(data) + size,
       this->_contents + old_size
   );
 }
@@ -92,6 +97,7 @@ Buffer::ContentPair Buffer::Release()
   ContentPair res(ContentPtr(this->_contents), this->_size);
   this->_contents = nullptr;
   this->_size = 0;
+  this->_buffer_size = 0;
   return res;
 }
 

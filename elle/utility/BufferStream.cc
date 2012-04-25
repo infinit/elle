@@ -23,11 +23,14 @@ void InputBufferStream::read(char* out, std::streamsize size)
 {
   if (this->_idx + size > this->_buffer.Size())
     throw std::runtime_error("Out of range");
+
+  //::memcpy(out, this->_buffer.Contents() + this->_idx, size);
   std::uninitialized_copy(
       this->_buffer.Contents() + this->_idx,
       this->_buffer.Contents() + this->_idx + size,
       out
   );
+  this->_idx += size;
 }
 
 

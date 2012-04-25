@@ -100,10 +100,10 @@ namespace elle
       Decrypt(elle::standalone::Region const& in, Clear& out) const;
 
       Status
-      Decrypt(elle::cryptography::Code const& in, Clear& out) const;
+      Decrypt(Code const& in, Clear& out) const;
 
       template<typename T> Status
-      Decrypt(T const& in, Clear& out) const;
+      Decrypt(Code const& in, T& out) const;
 
 
     public:

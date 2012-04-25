@@ -239,9 +239,11 @@ Status PrivateKey::Decrypt(elle::utility::WeakBuffer const&   in,
   // (i)
   try
     {
+      std::cout << "<<<LOAD\n";
       in.Reader() >> key >> data;
+      std::cout << ">>>LOAD\n";
     }
-  catch (std::exception const& err)
+  catch (std::runtime_error const& err)
     {
       escape(
         "unable to extract the asymetrically-encrypted secret key "
@@ -446,7 +448,10 @@ Status PrivateKey::Encrypt(elle::utility::WeakBuffer const& in,
           &size,
           reinterpret_cast<const unsigned char*>(buf.Contents()),
           buf.Size()) <= 0)
-      escape(::ERR_error_string(ERR_get_error(), nullptr));
+      {
+        std::cout << "buf size: " << buf.Size() << std::endl;
+        escape(::ERR_error_string(ERR_get_error(), nullptr));
+      }
 
     // set the key size.
     key.region.size = size;
@@ -458,7 +463,9 @@ Status PrivateKey::Encrypt(elle::utility::WeakBuffer const& in,
 
     try
       {
+        std::cout << "<<<SAVE\n";
         buf.Writer() << key << data;
+        std::cout << ">>>SAVE " << buf.Size() << "\n";
       }
     catch (std::exception const& err)
       {

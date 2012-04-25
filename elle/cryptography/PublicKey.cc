@@ -223,14 +223,24 @@ Status  PublicKey::Encrypt(elle::utility::WeakBuffer const& buffer,
     elle::utility::Buffer secret_buf;
     size_t                size;
 
-    secret_buf.Writer() << secret;
+    try
+      {
+        secret_buf.Writer() << secret;
+        assert(secret_buf.Size() > 0);
+      }
+    catch (std::runtime_error const& err)
+      {
+        escape("Cannot serialize the secret key: %s", err.what());
+      }
+
+    assert(this->_contexts.encrypt != nullptr);
 
     // compute the size of the archived symmetric key.
     if (::EVP_PKEY_encrypt(
           this->_contexts.encrypt,
           nullptr,
           &size,
-          reinterpret_cast<const unsigned char*>(secret_buf.Contents()),
+          secret_buf.Contents(),
           secret_buf.Size()) <= 0)
       escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 

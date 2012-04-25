@@ -48,6 +48,7 @@ namespace elle
       Buffer();
       Buffer(size_t                 size);
       Buffer(ContentPair&&          pair);
+      Buffer(elle::Byte const* data, size_t size);
 
       // Buffer class is moveable
       Buffer(Buffer&&               other);
@@ -62,12 +63,12 @@ namespace elle
       Buffer& operator =(Buffer const&);
 
     public:
-      void                Append(void const* data,
-                                 size_t size);
-
+      void                Append(void const* data, size_t size);
       void                Size(size_t size);
       size_t              Size() const { return this->_size; }
       elle::Byte const*   Contents() const { return this->_contents; }
+      elle::Byte*         MutableContents() { return this->_contents; }
+
 
       ContentPair         Release();
 
