@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [thu may 26 10:22:03 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <hole/implementations/remote/Client.hh>
 #include <hole/implementations/remote/Manifest.hh>
 
@@ -85,40 +71,13 @@ namespace hole
             escape("unable to register the callback");
         }
 
-        //
-        // connect to the server.
-        //
         {
-          // allocate the socket.
-          this->socket = new elle::TCPSocket;
-
-          // create the socket.
-          if (this->socket->Create() == elle::StatusError)
-            escape("unable to create the socket");
-
-          // subscribe to the signal.
-          if (this->socket->signal.connected.Subscribe(
-                elle::Callback<>::Infer(&Client::Connected,
-                                        this)) == elle::StatusError)
-            escape("unable to subscribe to the signal");
-
-          // subscribe to the signal.
-          if (this->socket->signal.disconnected.Subscribe(
-                elle::Callback<>::Infer(&Client::Disconnected,
-                                        this)) == elle::StatusError)
-            escape("unable to subscribe to the signal");
-
-          // subscribe to the signal.
-          if (this->socket->signal.error.Subscribe(
-                elle::Callback<>::Infer(&Client::Error,
-                                        this)) == elle::StatusError)
-            escape("unable to subscribe to the signal");
-
-          // connect the socket.
-          if (this->socket->Connect(this->locus,
-                                    elle::AbstractSocket::ModeSynchronous) ==
-              elle::StatusError)
-            escape("unable to connect to the bridge");
+          std::string hostname;
+          this->locus.host.Convert(hostname);
+          auto socket = new reactor::network::TCPSocket
+            (elle::concurrency::scheduler(), hostname, this->locus.port);
+          this->socket = new elle::TCPSocket(socket);
+          Connected();
         }
 
         //
@@ -303,9 +262,7 @@ namespace hole
             // show the report.
             show();
 
-            // exit the program.
-            if (elle::Program::Exit() == elle::StatusError)
-              escape("unable to exit the program");
+            elle::Program::Exit();
           }
 
         return elle::StatusOk;
@@ -335,7 +292,8 @@ namespace hole
       /// this callback is triggered when the Authenticated message is
       /// received from the server meaning that the challenge has been passed.
       ///
-      elle::Status      Client::Authenticated()
+      elle::Status
+      Client::Authenticated()
       {
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -384,18 +342,6 @@ namespace hole
         // dump the locus.
         if (this->locus.Dump(margin + 2) == elle::StatusError)
           escape("unable to dump the locus");
-
-        // dump the socket.
-        if (this->socket != NULL)
-          {
-            if (this->socket->Dump(margin + 2) == elle::StatusError)
-              escape("unable to dump the socket");
-          }
-        else
-          {
-            std::cout << alignment << elle::Dumpable::Shift
-                      << "[TCPSocket] " << elle::none << std::endl;
-          }
 
         return elle::StatusOk;
       }

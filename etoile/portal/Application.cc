@@ -1,21 +1,6 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [tue nov  1 08:51:06 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
+#include <Infinit.hh>
 #include <etoile/portal/Application.hh>
 #include <etoile/portal/Portal.hh>
-
-#include <Infinit.hh>
 
 namespace etoile
 {
@@ -30,7 +15,8 @@ namespace etoile
     /// this constant defines the time after which an application is
     /// rejected if it has not been authenticated.
     ///
-    const elle::Natural32               Application::Timeout = 5000;
+    const reactor::Duration Application::Timeout =
+      boost::posix_time::seconds(5);
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -39,23 +25,17 @@ namespace etoile
     ///
     /// default constructor.
     ///
-    Application::Application():
-      state(StateDisconnected),
-      processing(ProcessingOff),
-      timer(NULL),
-      socket(NULL)
-    {
-    }
+    Application::Application()
+      : state(StateDisconnected)
+      , processing(ProcessingOff)
+      , socket(NULL)
+    {}
 
     ///
     /// destructor.
     ///
     Application::~Application()
     {
-      // delete the timer, if present.
-      if (this->timer != NULL)
-        delete this->timer;
-
       // delete the socket, if present.
       if (this->socket != NULL)
         delete this->socket;
@@ -68,7 +48,7 @@ namespace etoile
     ///
     /// this method creates the application given its socket.
     ///
-    elle::Status        Application::Create(elle::LocalSocket*  socket)
+    elle::Status        Application::Create(elle::TCPSocket*  socket)
     {
       // set the socket.
       this->socket = socket;
@@ -76,34 +56,15 @@ namespace etoile
       // set the state.
       this->state = Application::StateConnected;
 
-      // subscribe to the signal.
-      if (this->socket->signal.disconnected.Subscribe(
-            elle::Callback<>::Infer(&Application::Disconnected,
-                                    this)) == elle::StatusError)
-        escape("unable to subscribe to the signal");
+      // // subscribe to the signal.
+      // if (this->socket->signal.error.Subscribe(
+      //       elle::Callback<>::Infer(&Application::Error,
+      //                               this)) == elle::StatusError)
+      //   escape("unable to subscribe to the signal");
 
-      // subscribe to the signal.
-      if (this->socket->signal.error.Subscribe(
-            elle::Callback<>::Infer(&Application::Error,
-                                    this)) == elle::StatusError)
-        escape("unable to subscribe to the signal");
-
-      // allocate a new timer.
-      this->timer = new elle::Timer;
-
-      // create the timer.
-      if (this->timer->Create(elle::Timer::ModeSingle) == elle::StatusError)
-        escape("unable to create the timer");
-
-      // subscribe to the timer's signal.
-      if (this->timer->signal.timeout.Subscribe(
-            elle::Callback<>::Infer(&Application::Abort,
-                                    this)) == elle::StatusError)
-        escape("unable to subscribe to the signal");
-
-      // start the timer.
-      if (this->timer->Start(Application::Timeout) == elle::StatusError)
-        escape("unable to start the timer");
+      elle::concurrency::scheduler().CallLater
+        (boost::bind(&Application::Abort, this),
+         "Application abort", Application::Timeout);
 
       return elle::StatusOk;
     }
@@ -165,25 +126,11 @@ namespace etoile
     ///
     elle::Status        Application::Abort()
     {
-      // debug.
+      // Check if the application has been authenticated.
+      if (this->state == Application::StateAuthenticated)
+        return elle::StatusOk;
       if (Infinit::Configuration.etoile.debug == true)
-        std::cout << "[etoile] portal::Application::Abort()"
-                  << std::endl;
-
-      // bury the timer because we are in the timer to delete.
-      bury(this->timer);
-
-      // reset the pointer.
-      this->timer = NULL;
-
-      // check if the application has been authenticated.
-      if (this->state != Application::StateAuthenticated)
-        {
-          // disconnect the application.
-          if (this->socket->Disconnect() == elle::StatusError)
-            escape("unable to disconnect the socket");
-        }
-
+        std::cout << "[etoile] portal::Application::Abort()" << std::endl;
       return elle::StatusOk;
     }
 
@@ -208,34 +155,6 @@ namespace etoile
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Processing] " << std::dec
                 << this->processing << std::endl;
-
-      // dump the timer, depending on its presence.
-      if (this->timer != NULL)
-        {
-          // dump the timer.
-          if (this->timer->Dump(margin + 2) == elle::StatusError)
-            escape("unable to dump the timer");
-        }
-      else
-        {
-          // dump a null timer.
-          std::cout << alignment << elle::Dumpable::Shift
-                    << "[Timer] " << elle::none << std::endl;
-        }
-
-      // dump the socket, depending on its presence.
-      if (this->socket != NULL)
-        {
-          // dump the socket.
-          if (this->socket->Dump(margin + 2) == elle::StatusError)
-            escape("unable to dump the socket");
-        }
-      else
-        {
-          // dump a null socket.
-          std::cout << alignment << elle::Dumpable::Shift
-                    << "[LocalSocket] " << elle::none << std::endl;
-        }
 
       return elle::StatusOk;
     }

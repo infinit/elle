@@ -1,44 +1,30 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun oct 28 19:12:38 2007]
-//
-
 #ifndef ELLE_STANDALONE_REPORT_HH
-#define ELLE_STANDALONE_REPORT_HH
+# define ELLE_STANDALONE_REPORT_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/core/String.hh>
+# include <elle/core/Void.hh>
 
-#include <elle/core/String.hh>
-#include <elle/core/Void.hh>
+# include <elle/radix/Status.hh>
+# include <elle/radix/Meta.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Meta.hh>
+# include <elle/package/Archivable.hh>
 
-#include <elle/package/Archivable.hh>
+# include <elle/io/Dumpable.hh>
 
-#include <elle/io/Dumpable.hh>
+# include <elle/concurrency/Phase.hh>
 
-#include <elle/concurrency/Phase.hh>
-
-#include <elle/idiom/Close.hh>
-# include <sstream>
-# include <list>
-# include <ostream>
-# include <iostream>
-# include <string.h>
-# include <assert.h>
-# include <errno.h>
-# include <stdlib.h>
-# include <time.h>
-# include <reactor/storage.hh>
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  include <sstream>
+#  include <list>
+#  include <ostream>
+#  include <iostream>
+#  include <string.h>
+#  include <assert.h>
+#  include <errno.h>
+#  include <stdlib.h>
+#  include <time.h>
+#  include <reactor/storage.hh>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {

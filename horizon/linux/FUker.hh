@@ -1,36 +1,18 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       horizon
-//
-// license       infinit
-//
-// author        julien quintard   [tue jul 26 15:28:37 2011]
-//
-
 #ifndef HORIZON_LINUX_FUKER_HH
-#define HORIZON_LINUX_FUKER_HH
+# define HORIZON_LINUX_FUKER_HH
 
-//
-// ---------- macros ----------------------------------------------------------
-//
-
-#ifndef FUSE_USE_VERSION
-# define FUSE_USE_VERSION               26
-#endif
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/Elle.hh>
-
-#include <elle/idiom/Close.hh>
-# include <fuse.h>
-# if defined(HAVE_SETXATTR)
-#  include <attr/xattr.h>
+# ifndef FUSE_USE_VERSION
+#  define FUSE_USE_VERSION               26
 # endif
-#include <elle/idiom/Open.hh>
+
+# include <elle/Elle.hh>
+
+# include <elle/idiom/Close.hh>
+#  include <fuse.h>
+#  if defined(HAVE_SETXATTR)
+#   include <attr/xattr.h>
+#  endif
+# include <elle/idiom/Open.hh>
 
 namespace horizon
 {

@@ -1,21 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [tue nov  1 08:38:35 2011]
-//
-
 #ifndef ETOILE_PORTAL_APPLICATION_HH
-#define ETOILE_PORTAL_APPLICATION_HH
+# define ETOILE_PORTAL_APPLICATION_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/Elle.hh>
+# include <elle/Elle.hh>
 
 namespace etoile
 {
@@ -40,7 +26,7 @@ namespace etoile
       //
       // constants
       //
-      static const elle::Natural32              Timeout;
+      static const reactor::Duration              Timeout;
 
       //
       // enumerations
@@ -67,7 +53,7 @@ namespace etoile
       //
       // methods
       //
-      elle::Status      Create(elle::LocalSocket*);
+      elle::Status      Create(elle::TCPSocket*);
 
       //
       // callbacks
@@ -90,8 +76,7 @@ namespace etoile
       State                     state;
       Processing                processing;
 
-      elle::Timer*              timer;
-      elle::LocalSocket*        socket;
+      elle::TCPSocket*        socket;
     };
 
   }

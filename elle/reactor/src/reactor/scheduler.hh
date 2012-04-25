@@ -30,22 +30,23 @@ namespace reactor
       void run();
       bool step();
 
-    /*-------------------.
-    | Threads management |
-    `-------------------*/
-    public:
-      typedef std::set<Thread*> Threads;
-      Thread* current() const;
-    private:
-      void _freeze(Thread& thread);
-      void _thread_register(Thread& thread);
-      void _unfreeze(Thread& thread);
-    private:
-      Thread* _current;
-      Threads _starting;
-      boost::mutex _starting_mtx;
-      Threads _running;
-      Threads _frozen;
+  /*-------------------.
+  | Threads management |
+  `-------------------*/
+  public:
+    typedef std::set<Thread*> Threads;
+    Thread* current() const;
+    void terminate();
+  private:
+    void _freeze(Thread& thread);
+    void _thread_register(Thread& thread);
+    void _unfreeze(Thread& thread);
+  private:
+    Thread* _current;
+    Threads _starting;
+    boost::mutex _starting_mtx;
+    Threads _running;
+    Threads _frozen;
 
     /*-------.
     | Status |
@@ -61,6 +62,17 @@ namespace reactor
       R
       mt_run(const std::string&                 name,
              const boost::function<R ()>&       action);
+
+  /*----------.
+  | Shortcuts |
+  `----------*/
+  public:
+    void CallLater(const boost::function<void ()>&      f,
+                   const std::string&                   name,
+                   Duration                             delay);
+    void Every(const boost::function<void ()>&  f,
+               const std::string&               name,
+               Duration                         delay);
 
     /*-----.
     | Asio |

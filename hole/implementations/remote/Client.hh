@@ -1,22 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [thu may 26 10:21:46 2011]
-//
-
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_CLIENT_HH
-#define HOLE_IMPLEMENTATIONS_REMOTE_CLIENT_HH
+# define HOLE_IMPLEMENTATIONS_REMOTE_CLIENT_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/Elle.hh>
-#include <nucleus/Nucleus.hh>
+# include <elle/Elle.hh>
+# include <nucleus/Nucleus.hh>
 
 namespace hole
 {

@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [tue nov  1 12:32:18 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <etoile/portal/Portal.hh>
 
 #include <etoile/wall/Wall.hh>
@@ -495,13 +481,6 @@ namespace etoile
           escape("unable to register the callback");
       }
 
-      // listen for incoming connection.
-      if (elle::LocalServer::Listen(
-            Portal::Line,
-            elle::Callback<>::Infer(
-              &Portal::Connection)) == elle::StatusError)
-        escape("unable to listen for local connections");
-
       return elle::StatusOk;
     }
 
@@ -543,7 +522,7 @@ namespace etoile
     ///
     /// this method returns the application associated with the given socket.
     ///
-    elle::Status        Portal::Retrieve(elle::LocalSocket*     socket,
+    elle::Status        Portal::Retrieve(elle::TCPSocket*     socket,
                                          Application*&          application)
     {
       Portal::Iterator  iterator;
@@ -562,7 +541,7 @@ namespace etoile
     ///
     /// this method removes an application from the container.
     ///
-    elle::Status        Portal::Remove(elle::LocalSocket*       socket)
+    elle::Status        Portal::Remove(elle::TCPSocket*       socket)
     {
       Portal::Iterator  iterator;
 
@@ -618,7 +597,7 @@ namespace etoile
     /// this callback is triggered whenever a connection is made to etoile
     /// through the wall.
     ///
-    elle::Status        Portal::Connection(elle::LocalSocket*   socket)
+    elle::Status        Portal::Connection(elle::TCPSocket*   socket)
     {
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -660,7 +639,7 @@ namespace etoile
                   << std::endl;
 
       // retrieve the application associated with the current socket.
-      if (Portal::Retrieve(dynamic_cast<elle::LocalSocket*>(session->socket),
+      if (Portal::Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
                            application) == elle::StatusError)
         escape("unable to retrieve the application");
 
@@ -692,7 +671,7 @@ namespace etoile
       Application*      application;
 
       // retrieve the application associated with the current socket.
-      if (Portal::Retrieve(dynamic_cast<elle::LocalSocket*>(session->socket),
+      if (Portal::Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
                            application) == elle::StatusError)
         escape("unable to retrieve the application");
 
@@ -723,7 +702,7 @@ namespace etoile
       elle::Session*  session = elle::network::Session::session.Get();
 
       // retrieve the application associated with the current socket.
-      if (Portal::Retrieve(dynamic_cast<elle::LocalSocket*>(session->socket),
+      if (Portal::Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
                            application) == elle::StatusError)
         escape("unable to retrieve the application");
 

@@ -29,23 +29,23 @@
 ///
 /// this is the entry point of infinit.
 ///
-elle::Status            Main(elle::Natural32                    argc,
-                             elle::Character*                   argv[])
+elle::Status            Infinit(elle::Natural32                    argc,
+                                elle::Character*                   argv[])
 {
   // initialize the Elle library.
   if (elle::Elle::Initialize() == elle::StatusError)
-    escape("unable to initialize Elle");
+    throw std::runtime_error("unable to initialize Elle");
 
   // set up the program.
   if (elle::Program::Setup() == elle::StatusError)
-    escape("unable to set up the program");
+    throw std::runtime_error("unable to set up the program");
 
   // allocate a new parser.
   Infinit::Parser = new elle::Parser(argc, argv);
 
   // specify a program description.
   if (Infinit::Parser->Description(Infinit::Copyright) == elle::StatusError)
-    escape("unable to set the description");
+    throw std::runtime_error("unable to set the description");
 
   // register the options.
   if (Infinit::Parser->Register(
@@ -54,7 +54,7 @@ elle::Status            Main(elle::Natural32                    argc,
         "help",
         "display the help",
         elle::Parser::KindNone) == elle::StatusError)
-    escape("unable to register the option");
+    throw std::runtime_error("unable to register the option");
 
   // register the option.
   if (Infinit::Parser->Register(
@@ -63,7 +63,7 @@ elle::Status            Main(elle::Natural32                    argc,
         "network",
         "specifies the name of the network",
         elle::Parser::KindRequired) == elle::StatusError)
-    escape("unable to register the option");
+    throw std::runtime_error("unable to register the option");
 
   // register the option.
   if (Infinit::Parser->Register(
@@ -72,11 +72,11 @@ elle::Status            Main(elle::Natural32                    argc,
         "mountpoint",
         "specifies the mount point",
         elle::Parser::KindRequired) == elle::StatusError)
-    escape("unable to register the option");
+    throw std::runtime_error("unable to register the option");
 
   // parse.
   if (Infinit::Parser->Parse() == elle::StatusError)
-    escape("unable to parse the command line");
+    throw std::runtime_error("unable to parse the command line");
 
   // test the option.
   if (Infinit::Parser->Test("Help") == elle::StatusTrue)
@@ -95,7 +95,7 @@ elle::Status            Main(elle::Natural32                    argc,
 
     // retrieve the current password
     if ((pw = ::getpwuid(geteuid())) == NULL)
-      escape("unable to retrieve the current user's password structure");
+      throw std::runtime_error("unable to retrieve the current user's password structure");
 
     // assign the username.
     Infinit::User.assign(pw->pw_name);
@@ -109,7 +109,7 @@ elle::Status            Main(elle::Natural32                    argc,
 
     // retrieve the username.
     if (!::GetUserName(username, &length))
-      escape("unable to retrieve the username");
+      throw std::runtime_error("unable to retrieve the username");
 
     // assign the username.
     Infinit::User.assign(username, length);
@@ -127,7 +127,7 @@ elle::Status            Main(elle::Natural32                    argc,
       // display the usage.
       Infinit::Parser->Usage();
 
-      escape("unable to retrieve the network name");
+      throw std::runtime_error("unable to retrieve the network name");
     }
 
   // retrieve the mount point.
@@ -137,40 +137,37 @@ elle::Status            Main(elle::Natural32                    argc,
       // display the usage.
       Infinit::Parser->Usage();
 
-      escape("unable to retrieve the mount point");
+      throw std::runtime_error("unable to retrieve the mount point");
     }
 
   // initialize the nucleus library.
   if (nucleus::Nucleus::Initialize() == elle::StatusError)
-    escape("unable to initialize Nucleus");
+    throw std::runtime_error("unable to initialize Nucleus");
 
   // initialize the Lune library.
   if (lune::Lune::Initialize() == elle::StatusError)
-    escape("unable to initialize Lune");
+    throw std::runtime_error("unable to initialize Lune");
 
   // initialize Infinit.
   if (Infinit::Initialize() == elle::StatusError)
-    escape("unable to initialize Infinit");
+    throw std::runtime_error("unable to initialize Infinit");
 
-  // initialize the Hole library.
-  if (hole::Hole::Initialize() == elle::StatusError)
-    escape("unable to initialize Hole");
+  hole::Hole::Initialize();
 
   // initialize the Agent library.
   if (agent::Agent::Initialize() == elle::StatusError)
-    escape("unable to initialize Agent");
+    throw std::runtime_error("unable to initialize Agent");
 
   // initialize the Etoile library.
   if (etoile::Etoile::Initialize() == elle::StatusError)
-    escape("unable to initialize Etoile");
+    throw std::runtime_error("unable to initialize Etoile");
 
   // initialize the horizon.
   if (horizon::Horizon::Initialize() == elle::StatusError)
-    escape("unable to initialize the horizon");
+    throw std::runtime_error("unable to initialize the horizon");
 
   // launch the program.
-  if (elle::Program::Launch() == elle::StatusError)
-    escape("an error occured while processing events");
+  elle::Program::Launch();
 
   // delete the parser.
   delete Infinit::Parser;
@@ -178,35 +175,35 @@ elle::Status            Main(elle::Natural32                    argc,
 
   // clean the horizon.
   if (horizon::Horizon::Clean() == elle::StatusError)
-    escape("unable to clean the horizon");
+    throw std::runtime_error("unable to clean the horizon");
 
   // clean the Etoile library.
   if (etoile::Etoile::Clean() == elle::StatusError)
-    escape("unable to clean Etoile");
+    throw std::runtime_error("unable to clean Etoile");
 
   // clean the Agent library.
   if (agent::Agent::Clean() == elle::StatusError)
-    escape("unable to clean Agent");
+    throw std::runtime_error("unable to clean Agent");
 
   // clean Hole.
   if (hole::Hole::Clean() == elle::StatusError)
-    escape("unable to clean Hole");
+    throw std::runtime_error("unable to clean Hole");
 
   // clean Infinit.
   if (Infinit::Clean() == elle::StatusError)
-    escape("unable to clean Infinit");
+    throw std::runtime_error("unable to clean Infinit");
 
   // clean Lune
   if (lune::Lune::Clean() == elle::StatusError)
-    escape("unable to clean Lune");
+    throw std::runtime_error("unable to clean Lune");
 
   // clean the nucleus library.
   if (nucleus::Nucleus::Clean() == elle::StatusError)
-    escape("unable to clean Nucleus");
+    throw std::runtime_error("unable to clean Nucleus");
 
   // clean Elle.
   if (elle::Elle::Clean() == elle::StatusError)
-    escape("unable to clean Elle");
+    throw std::runtime_error("unable to clean Elle");
 
   return elle::StatusOk;
 }
@@ -215,16 +212,39 @@ elle::Status            Main(elle::Natural32                    argc,
 // ---------- main ------------------------------------------------------------
 //
 
+elle::Status    Main(elle::Natural32    argc,
+                     elle::Character*   argv[])
+{
+  try
+    {
+      if (Infinit(argc, argv) == elle::StatusError)
+        {
+          show();
+          throw std::runtime_error("killed by escape");
+        }
+    }
+  catch (std::runtime_error& e)
+    {
+      std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
+      elle::concurrency::scheduler().terminate();
+      return elle::StatusError;
+    }
+  elle::concurrency::scheduler().terminate();
+  return elle::StatusOk;
+}
+
 int                     main(int                                argc,
                              char*                              argv[])
 {
   try
     {
-      if (Main(argc, argv) == elle::StatusError)
+      reactor::Scheduler& sched = elle::concurrency::scheduler();
+      if (!sched.current())
         {
-          show();
-
-          return (1);
+          reactor::VThread<elle::Status> main(sched, "Infinit main",
+                                              boost::bind(&Main, argc, argv));
+          sched.run();
+          return main.result();
         }
     }
   catch (...)

@@ -57,8 +57,7 @@ namespace elle
 
 
     // XXX workaround until concurrency is entirely rewritten.
-    typedef boost::unordered_map
-      <Natural64, reactor::VSignal<std::shared_ptr<elle::network::Parcel> >*> Signals;
+    typedef boost::unordered_map <Natural64, Event::SignalType*> Signals;
     static Signals _signals;
 
     ///
@@ -78,7 +77,7 @@ namespace elle
       Signals::iterator it = _signals.find(this->_identifier);
       if (it == _signals.end())
         _signals[this->_identifier] = _signal =
-          new reactor::VSignal<std::shared_ptr<elle::network::Parcel> >();
+          new SignalType();
       else
         this->_signal = it->second;
 
@@ -146,8 +145,7 @@ namespace elle
       // XXX
       Signals::iterator it = _signals.find(this->_identifier);
       if (it == _signals.end())
-        _signals[this->_identifier] = _signal =
-          new reactor::VSignal<std::shared_ptr<elle::network::Parcel> >();
+        _signals[this->_identifier] = _signal = new SignalType();
       else
         this->_signal = it->second;
 
@@ -185,7 +183,7 @@ namespace elle
       return StatusOk;
     }
 
-    reactor::VSignal<std::shared_ptr<elle::network::Parcel> >&
+    Event::SignalType&
     Event::Signal()
     {
       assert(_signal);

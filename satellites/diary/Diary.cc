@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       diary
-//
-// license       infinit
-//
-// author        julien quintard   [mon jun 27 22:38:51 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <satellites/diary/Diary.hh>
 
 namespace satellite
@@ -238,8 +224,7 @@ namespace satellite
               escape("unable to initialize the memoirs");
 
             // launch the program.
-            if (elle::Program::Launch() == elle::StatusError)
-              escape("an error occured while processing events");
+            elle::Program::Launch();
 
             // clean the memoirs.
             if (memoirs.Clean() == elle::StatusError)
@@ -304,8 +289,7 @@ namespace satellite
             escape("unable to retrieve the network name");
 
           // initialize the Hole library.
-          if (hole::Hole::Initialize() == elle::StatusError)
-            escape("unable to initialize Hole");
+          hole::Hole::Initialize();
 
           // initialize the Agent library.
           if (agent::Agent::Initialize() == elle::StatusError)
@@ -324,8 +308,7 @@ namespace satellite
               escape("unable to initialize the memoirs");
 
             // launch the program.
-            if (elle::Program::Launch() == elle::StatusError)
-              escape("an error occured while processing events");
+            elle::Program::Launch();
 
             // clean the memoirs.
             if (memoirs.Clean() == elle::StatusError)

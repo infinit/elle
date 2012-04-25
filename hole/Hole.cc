@@ -1,16 +1,4 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [tue apr 13 15:27:20 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <boost/format.hpp>
 
 #include <hole/Hole.hh>
 #include <Infinit.hh>
@@ -63,17 +51,14 @@ namespace hole
 // ---------- static methods --------------------------------------------------
 //
 
-  ///
-  /// this method initializes the hole by allocating and initializing
-  /// the implementation.
-  ///
-  elle::Status          Hole::Initialize()
+  void
+  Hole::Initialize()
   {
     nucleus::Network    network;
 
     // disable the meta logging.
     if (elle::Meta::Disable() == elle::StatusError)
-      escape("unable to disable the meta logging");
+      throw std::runtime_error("unable to disable the meta logging");
 
     //
     // retrieve the descriptor.
@@ -81,15 +66,15 @@ namespace hole
     {
       // does the network exist.
       if (Hole::Descriptor.Exist(Infinit::Network) == elle::StatusFalse)
-        escape("this network does not seem to exist");
+        throw std::runtime_error("this network does not seem to exist");
 
       // load the descriptor.
       if (Hole::Descriptor.Load(Infinit::Network) == elle::StatusError)
-        escape("unable to load the descriptor");
+        throw std::runtime_error("unable to load the descriptor");
 
       // validate the descriptor.
       if (Hole::Descriptor.Validate(Infinit::Authority) == elle::StatusError)
-        escape("unable to validate the descriptor");
+        throw std::runtime_error("unable to validate the descriptor");
     }
 
     //
@@ -99,7 +84,7 @@ namespace hole
       {
         // load the set.
         if (Hole::Set.Load(Infinit::Network) == elle::StatusError)
-          escape("unable to load the set");
+          throw std::runtime_error("unable to load the set");
       }
 
     //
@@ -108,24 +93,24 @@ namespace hole
     {
       // does the network exist.
       if (Hole::Passport.Exist() == elle::StatusFalse)
-        escape("the device passport does not seem to exist");
+        throw std::runtime_error("the device passport does not seem to exist");
 
       // load the passport.
       if (Hole::Passport.Load() == elle::StatusError)
-        escape("unable to load the passport");
+        throw std::runtime_error("unable to load the passport");
 
       // validate the passport.
       if (Hole::Passport.Validate(Infinit::Authority) == elle::StatusError)
-        escape("unable to validate the passport");
+        throw std::runtime_error("unable to validate the passport");
     }
 
     // enable the meta logging.
     if (elle::Meta::Enable() == elle::StatusError)
-      escape("unable to enable the meta logging");
+      throw std::runtime_error("unable to enable the meta logging");
 
     // create the network instance.
     if (network.Create(Infinit::Network) == elle::StatusError)
-      escape("unable to create the network instance");
+      throw std::runtime_error("unable to create the network instance");
 
     // create the holeable depending on the model.
     switch (Hole::Descriptor.model.type)
@@ -165,15 +150,15 @@ namespace hole
           break;
         }
       default:
-        escape("unknown or not-yet-supported model '%u'",
-               Hole::Descriptor.model.type);
+      {
+        static boost::format fmt("unknown or not-yet-supported model '%u'");
+        throw std::runtime_error(str(fmt % Hole::Descriptor.model.type));
+      }
       }
 
     // join the network
     if (Hole::Implementation->Join() == elle::StatusError)
-      escape("unable to join the network");
-
-    return elle::StatusOk;
+      throw std::runtime_error("unable to join the network");
   }
 
   ///

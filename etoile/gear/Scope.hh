@@ -1,31 +1,17 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [fri jun  3 11:01:57 2011]
-//
-
 #ifndef ETOILE_GEAR_SCOPE_HH
-#define ETOILE_GEAR_SCOPE_HH
+# define ETOILE_GEAR_SCOPE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/Elle.hh>
 
-#include <elle/Elle.hh>
+# include <etoile/gear/Context.hh>
+# include <etoile/gear/Chronicle.hh>
+# include <etoile/gear/Nature.hh>
+# include <etoile/gear/Actor.hh>
+# include <etoile/gear/Operation.hh>
 
-#include <etoile/gear/Context.hh>
-#include <etoile/gear/Chronicle.hh>
-#include <etoile/gear/Nature.hh>
-#include <etoile/gear/Actor.hh>
-#include <etoile/gear/Operation.hh>
+# include <etoile/path/Chemin.hh>
 
-#include <etoile/path/Chemin.hh>
-
-#include <reactor/rw-mutex.hh>
+# include <reactor/rw-mutex.hh>
 
 namespace etoile
 {
@@ -175,7 +161,6 @@ namespace etoile
       // attributes
       //
       State             state;
-      elle::Timer       timer;
 
       path::Chemin      chemin;
 

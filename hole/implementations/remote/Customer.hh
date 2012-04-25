@@ -1,21 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [sun aug 28 17:49:10 2011]
-//
-
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_CUSTOMER_HH
-#define HOLE_IMPLEMENTATIONS_REMOTE_CUSTOMER_HH
+# define HOLE_IMPLEMENTATIONS_REMOTE_CUSTOMER_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/Elle.hh>
+# include <elle/Elle.hh>
 
 namespace hole
 {
@@ -55,13 +41,8 @@ namespace hole
         //
         // constructors & destructors
         //
-        Customer();
+        Customer(elle::TCPSocket* socket);
         ~Customer();
-
-        //
-        // methods
-        //
-        elle::Status            Create(elle::TCPSocket*);
 
         //
         // callbacks
@@ -97,7 +78,6 @@ namespace hole
         State                   state;
 
         elle::TCPSocket*        socket;
-        elle::Timer*            timer;
       };
 
     }

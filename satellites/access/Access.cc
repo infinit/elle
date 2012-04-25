@@ -96,21 +96,17 @@ namespace satellite
     // connect to the server.
     //
     {
-      // create the socket.
-      if (Access::Socket.Create() == elle::StatusError)
-        escape("unable to create the socket");
-
       // subscribe to the signal.
       if (Access::Socket.signal.disconnected.Subscribe(
             elle::Callback<>::Infer(
               &Access::Disconnected)) == elle::StatusError)
         escape("unable to subscribe to the signal");
 
-      // subscribe to the signal.
-      if (Access::Socket.signal.error.Subscribe(
-            elle::Callback<>::Infer(
-              &Access::Error)) == elle::StatusError)
-        escape("unable to subscribe to the signal");
+      // // subscribe to the signal.
+      // if (Access::Socket.signal.error.Subscribe(
+      //       elle::Callback<>::Infer(
+      //         &Access::Error)) == elle::StatusError)
+      //   escape("unable to subscribe to the signal");
 
       // connect the socket.
       if (Access::Socket.Connect(
@@ -568,9 +564,7 @@ namespace satellite
         escape("unable to retrieve the network name");
       }
 
-    // initialize the Hole library.
-    if (hole::Hole::Initialize() == elle::StatusError)
-      escape("unable to initialize Hole");
+    hole::Hole::Initialize();
 
     // initialize the Agent library.
     if (agent::Agent::Initialize() == elle::StatusError)
@@ -667,25 +661,12 @@ namespace satellite
 
           // declare additional local variables.
           etoile::path::Way             way(path);
-          elle::Closure<
-            elle::Status,
-            elle::Parameters<
-              const etoile::path::Way&,
-              const nucleus::Subject&
-              >
-            >                           closure(&Access::Lookup,
-                                                way, subject);
-          elle::Entrance<
-            elle::Status,
-            elle::Parameters<
-              const etoile::path::Way&,
-              const nucleus::Subject&
-              >
-            >                           entrance(closure);
+          new reactor::Thread(elle::concurrency::scheduler(), "Lookup",
+                              boost::bind(&Access::Lookup, way, subject),
+                              true);
 
           // launch the program.
-          if (elle::Program::Launch() == elle::StatusError)
-            escape("an error occured while processing events");
+          elle::Program::Launch();
 
           break;
         }
@@ -700,23 +681,12 @@ namespace satellite
 
           // declare additional local variables.
           etoile::path::Way             way(path);
-          elle::Closure<
-            elle::Status,
-            elle::Parameters<
-              const etoile::path::Way&
-              >
-            >                           closure(&Access::Consult,
-                                                way);
-          elle::Entrance<
-            elle::Status,
-            elle::Parameters<
-              const etoile::path::Way&
-              >
-            >                           entrance(closure);
+          new reactor::Thread(elle::concurrency::scheduler(), "Consult",
+                              boost::bind(&Access::Consult, way),
+                              true);
 
           // launch the program.
-          if (elle::Program::Launch() == elle::StatusError)
-            escape("an error occured while processing events");
+          elle::Program::Launch();
 
           break;
         }
@@ -791,27 +761,12 @@ namespace satellite
 
           // declare additional local variables.
           etoile::path::Way             way(path);
-          elle::Closure<
-            elle::Status,
-            elle::Parameters<
-              const etoile::path::Way&,
-              const nucleus::Subject&,
-              const nucleus::Permissions
-              >
-            >                           closure(&Access::Grant,
-                                                way, subject, permissions);
-          elle::Entrance<
-            elle::Status,
-            elle::Parameters<
-              const etoile::path::Way&,
-              const nucleus::Subject&,
-              const nucleus::Permissions
-              >
-            >                           entrance(closure);
+          new reactor::Thread
+            (elle::concurrency::scheduler(), "Grant",
+             boost::bind(&Access::Grant, way, subject, permissions), true);
 
           // launch the program.
-          if (elle::Program::Launch() == elle::StatusError)
-            escape("an error occured while processing events");
+          elle::Program::Launch();
 
           break;
         }
@@ -874,25 +829,9 @@ namespace satellite
 
           // declare additional local variables.
           etoile::path::Way             way(path);
-          elle::Closure<
-            elle::Status,
-            elle::Parameters<
-              const etoile::path::Way&,
-              const nucleus::Subject&
-              >
-            >                           closure(&Access::Revoke,
-                                                way, subject);
-          elle::Entrance<
-            elle::Status,
-            elle::Parameters<
-              const etoile::path::Way&,
-              const nucleus::Subject&
-              >
-            >                           entrance(closure);
-
-          // launch the program.
-          if (elle::Program::Launch() == elle::StatusError)
-            escape("an error occured while processing events");
+          new reactor::Thread
+            (elle::concurrency::scheduler(), "Revoke",
+             boost::bind(&Access::Revoke, way, subject), true);
 
           break;
         }

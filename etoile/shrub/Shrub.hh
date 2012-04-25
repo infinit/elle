@@ -1,27 +1,13 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [sat aug  6 17:31:57 2011]
-//
-
 #ifndef ETOILE_SHRUB_SHRUB_HH
-#define ETOILE_SHRUB_SHRUB_HH
+# define ETOILE_SHRUB_SHRUB_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/Elle.hh>
 
-#include <elle/Elle.hh>
+# include <etoile/shrub/Riffle.hh>
 
-#include <etoile/shrub/Riffle.hh>
-
-#include <etoile/path/Slab.hh>
-#include <etoile/path/Route.hh>
-#include <etoile/path/Venue.hh>
+# include <etoile/path/Slab.hh>
+# include <etoile/path/Route.hh>
+# include <etoile/path/Venue.hh>
 
 namespace etoile
 {
@@ -109,7 +95,6 @@ namespace etoile
       static Riffle*                    Riffles;
 
       static elle::Timeline<Riffle*>    Queue;
-      static elle::Timer                Timer;
     };
 
   }

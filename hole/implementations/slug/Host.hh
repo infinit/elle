@@ -1,23 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [wed aug 24 10:33:01 2011]
-//
-
 #ifndef HOLE_IMPLEMENTATIONS_SLUG_HOST_HH
-#define HOLE_IMPLEMENTATIONS_SLUG_HOST_HH
+# define HOLE_IMPLEMENTATIONS_SLUG_HOST_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/Elle.hh>
 
-#include <elle/Elle.hh>
-
-#include <hole/Label.hh>
+# include <hole/Label.hh>
 
 namespace hole
 {
@@ -62,10 +48,9 @@ namespace hole
         //
         // methods
         //
-        elle::Status    Create(const elle::Locus&);
         elle::Status    Create(elle::TCPSocket*);
 
-        elle::Status    Connect();
+        elle::Status    Connect(const elle::Locus&);
         elle::Status    Disconnect();
 
         elle::Status    Authenticated();
@@ -106,8 +91,6 @@ namespace hole
         elle::Locus             locus;
 
         elle::TCPSocket*        socket;
-
-        elle::Timer*            timer;
       };
 
     }

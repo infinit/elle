@@ -144,6 +144,21 @@ namespace reactor
     assert(thread.state() == Thread::state::frozen);
     _frozen.erase(&thread);
     _running.insert(&thread);
+    if (_running.size() == 1)
+      _io_service.post(nothing);
+  }
+
+  void
+  Scheduler::terminate()
+  {
+    BOOST_FOREACH(Thread* t, _starting)
+      if (t->_dispose)
+        delete t;
+    _starting.clear();
+    BOOST_FOREACH(Thread* t, _running)
+      t->terminate();
+    BOOST_FOREACH(Thread* t, _frozen)
+      t->terminate();
   }
 
   /*-------.
@@ -168,6 +183,47 @@ namespace reactor
     s << "Scheduler" << std::endl;
     DumpSet(_running, s);
     DumpSet(_frozen, s);
+  }
+
+  /*----------.
+  | Shortcuts |
+  `----------*/
+
+  static void CallLaterHelper(Scheduler* sched,
+                              const boost::function<void ()>& f,
+                              Duration delay)
+  {
+    sched->current()->sleep(delay);
+    f();
+  }
+
+  void
+  Scheduler::CallLater(const boost::function<void ()>&  f,
+                       const std::string&               name,
+                       Duration                         delay)
+  {
+    new Thread(*this, name,
+               boost::bind(&CallLaterHelper, this, f, delay), true);
+  }
+
+  static void EveryHelper(Scheduler* sched,
+                              const boost::function<void ()>& f,
+                              Duration delay)
+  {
+    while (true)
+      {
+        sched->current()->sleep(delay);
+        f();
+      }
+  }
+
+  void
+  Scheduler::Every(const boost::function<void ()>&  f,
+                   const std::string&               name,
+                   Duration                         delay)
+  {
+    new Thread(*this, name,
+               boost::bind(&EveryHelper, this, f, delay), true);
   }
 
   /*-----.

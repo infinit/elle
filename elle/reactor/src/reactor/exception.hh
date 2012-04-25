@@ -15,9 +15,17 @@ namespace reactor
 {
   class Exception: public std::runtime_error
   {
-    public:
-      Exception(const std::string& message);
-      INFINIT_REACTOR_EXCEPTION(Exception);
+  public:
+    Exception(const std::string& message);
+    INFINIT_REACTOR_EXCEPTION(Exception);
+  };
+
+  class Terminate: public Exception
+  {
+  public:
+    typedef Exception Super;
+    Terminate();
+    INFINIT_REACTOR_EXCEPTION(Terminate);
   };
 }
 

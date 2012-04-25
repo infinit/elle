@@ -1,25 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [wed may 25 19:20:52 2011]
-//
-
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_SERVER_HH
-#define HOLE_IMPLEMENTATIONS_REMOTE_SERVER_HH
+# define HOLE_IMPLEMENTATIONS_REMOTE_SERVER_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/Elle.hh>
+# include <nucleus/Nucleus.hh>
+# include <lune/Lune.hh>
 
-#include <elle/Elle.hh>
-#include <nucleus/Nucleus.hh>
-#include <lune/Lune.hh>
-
-#include <hole/implementations/remote/Customer.hh>
+# include <hole/implementations/remote/Customer.hh>
 
 namespace hole
 {
@@ -80,11 +66,6 @@ namespace hole
                                     nucleus::MutableBlock&);
         elle::Status            Kill(const nucleus::Address&);
 
-        //
-        // callbacks
-        //
-        elle::Status            Connection(elle::TCPSocket*);
-
         elle::Status            Challenge(const lune::Passport&);
 
         elle::Status            Sweep(Customer*);
@@ -106,9 +87,13 @@ namespace hole
         //
         // attributes
         //
-        elle::Locus             locus;
+        elle::Locus             _locus;
 
         Container               container;
+
+      private:
+        void _accept();
+        reactor::network::TCPServer* _server;
       };
 
     }

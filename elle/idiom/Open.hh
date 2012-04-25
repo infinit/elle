@@ -374,7 +374,7 @@
       public:                                                           \
         static const Tag                        G = _tag_;              \
                                                                         \
-        typedef Parameters< _parameters_ >      P;                      \
+        typedef Parameters<_parameters_ >      P;                       \
                                                                         \
         struct                                  B                       \
         {                                                               \

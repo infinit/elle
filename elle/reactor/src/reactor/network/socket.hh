@@ -100,7 +100,7 @@ namespace reactor
       /*------------.
       | Asio socket |
       `------------*/
-      private:
+      protected:
         friend class TCPServer;
         friend class TCPSocket;
         friend class UDPServer;

@@ -1,27 +1,13 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       shell
-//
-// license       infinit
-//
-// author        julien quintard   [sat mar 27 08:37:14 2010]
-//
-
 #ifndef SHELL_SHELL_HH
-#define SHELL_SHELL_HH
+# define SHELL_SHELL_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/Elle.hh>
+# include <nucleus/Nucleus.hh>
 
-#include <elle/Elle.hh>
-#include <nucleus/Nucleus.hh>
-
-#include <elle/idiom/Close.hh>
-# include <readline/readline.h>
-# include <readline/history.h>
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  include <readline/readline.h>
+#  include <readline/history.h>
+# include <elle/idiom/Open.hh>
 
 namespace satellite
 {

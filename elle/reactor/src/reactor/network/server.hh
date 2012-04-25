@@ -28,6 +28,12 @@ namespace reactor
         Server(Scheduler& sched);
         ~Server();
 
+      /*----------.
+      | Accepting |
+      `----------*/
+      public:
+        virtual Socket* accept() = 0;
+
       /*-----------.
       | Scheduling |
       `-----------*/

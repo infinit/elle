@@ -1,32 +1,18 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar  3 13:37:54 2010]
-//
-
 #ifndef ELLE_CONCURRENCY_EVENT_HH
-#define ELLE_CONCURRENCY_EVENT_HH
+# define ELLE_CONCURRENCY_EVENT_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/core/Natural.hh>
+# include <elle/core/Boolean.hh>
 
-#include <elle/core/Natural.hh>
-#include <elle/core/Boolean.hh>
+# include <elle/radix/Status.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Object.hh>
+# include <elle/package/Archive.hh>
 
-#include <elle/package/Archive.hh>
-
-#include <elle/idiom/Close.hh>
-# include <openssl/err.h>
-# include <reactor/signal.hh>
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  include <openssl/err.h>
+#  include <reactor/signal.hh>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -93,10 +79,11 @@ namespace elle
       Natural64 Identifier() const;
 
     public:
-      reactor::VSignal<std::shared_ptr<elle::network::Parcel> >& Signal();
+      typedef reactor::VSignal<elle::network::Parcel*> SignalType;
+      SignalType& Signal();
     private:
       Natural64                                 _identifier;
-      reactor::VSignal<std::shared_ptr<elle::network::Parcel> >*  _signal;
+      SignalType*  _signal;
     };
 
   }

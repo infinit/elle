@@ -21,7 +21,6 @@ add_library(hole
   implementations/slug/Machine.cc
   implementations/slug/Neighbourhood.cc
   implementations/slug/Slug.cc
-  implementations/slug/Synchroniser.cc
 
 # XXX
 #  implementations/cirkle/Cirkle.cc

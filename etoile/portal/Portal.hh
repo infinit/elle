@@ -1,28 +1,14 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [mon oct 31 13:52:37 2011]
-//
-
 #ifndef ETOILE_PORTAL_PORTAL_HH
-#define ETOILE_PORTAL_PORTAL_HH
+# define ETOILE_PORTAL_PORTAL_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/Elle.hh>
+# include <lune/Lune.hh>
 
-#include <elle/Elle.hh>
-#include <lune/Lune.hh>
+# include <etoile/portal/Application.hh>
 
-#include <etoile/portal/Application.hh>
-
-#include <elle/idiom/Close.hh>
-# include <map>
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  include <map>
+# include <elle/idiom/Open.hh>
 
 namespace etoile
 {
@@ -50,8 +36,8 @@ namespace etoile
       //
       // types
       //
-      typedef std::pair<elle::LocalSocket*, Application*>       Value;
-      typedef std::map<elle::LocalSocket*, Application*>        Container;
+      typedef std::pair<elle::TCPSocket*, Application*>       Value;
+      typedef std::map<elle::TCPSocket*, Application*>        Container;
       typedef Container::iterator                               Iterator;
       typedef Container::const_iterator                         Scoutor;
 
@@ -62,16 +48,16 @@ namespace etoile
       static elle::Status       Clean();
 
       static elle::Status       Add(Application*);
-      static elle::Status       Retrieve(elle::LocalSocket*,
+      static elle::Status       Retrieve(elle::TCPSocket*,
                                          Application*&);
-      static elle::Status       Remove(elle::LocalSocket*);
+      static elle::Status       Remove(elle::TCPSocket*);
 
       static elle::Status       Show(const elle::Natural32 = 0);
 
       //
       // static callbacks
       //
-      static elle::Status       Connection(elle::LocalSocket*);
+      static elle::Status       Connection(elle::TCPSocket*);
       static elle::Status       Authenticate(const elle::String&);
       static elle::Status       Prolog();
       static elle::Status       Epilog();

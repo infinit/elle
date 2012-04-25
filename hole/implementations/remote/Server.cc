@@ -1,22 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [thu may 26 09:58:52 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <hole/implementations/remote/Server.hh>
-#include <hole/implementations/remote/Manifest.hh>
+#include <reactor/network/tcp-server.hh>
 
 #include <hole/Hole.hh>
-
+#include <hole/implementations/remote/Manifest.hh>
+#include <hole/implementations/remote/Server.hh>
 #include <lune/Lune.hh>
 
 #include <Infinit.hh>
@@ -27,48 +13,35 @@ namespace hole
   {
     namespace remote
     {
+      /*-------------.
+      | Construction |
+      `-------------*/
 
-//
-// ---------- constructors & destructors --------------------------------------
-//
-
-      ///
-      /// default constructor.
-      ///
-      Server::Server(const elle::Locus&                         locus):
-        locus(locus)
+      Server::Server(const elle::Locus&         locus)
+        : _locus(locus)
+        , _server(new reactor::network::TCPServer
+                  (elle::concurrency::scheduler()))
       {
+        _server->listen(locus.port);
       }
 
-      ///
-      /// destructor.
-      ///
       Server::~Server()
       {
         Server::Scoutor scoutor;
-
-        // go though the customer.
         for (scoutor = this->container.begin();
              scoutor != this->container.end();
              scoutor++)
           {
             Customer*   customer = scoutor->second;
-
             // ignore dead customers.
             if (customer->state == Customer::StateDead)
               continue;
-
-            // delete the customer.
             delete customer;
           }
-
-        // clear the container.
         this->container.clear();
+        delete _server;
+        _server = 0;
       }
-
-//
-// ---------- methods ---------------------------------------------------------
-//
 
       ///
       /// launch the server by waiting for incoming connections.
@@ -121,19 +94,46 @@ namespace hole
             escape("unable to register the callback");
         }
 
-        //
-        // create the connection.
-        //
-        {
-          // listen for incoming connections.
-          if (elle::TCPServer::Listen(
-                this->locus,
-                elle::Callback<>::Infer(
-                  &Server::Connection, this)) == elle::StatusError)
-            escape("unable to listen for TCP connections");
-        }
+        new reactor::Thread(elle::concurrency::scheduler(),
+                            "Remote Server accept",
+                            boost::bind(&Server::_accept, this),
+                            true);
 
         return elle::StatusOk;
+      }
+
+      void
+      Server::_accept()
+      {
+        while (true)
+          {
+            reactor::network::TCPSocket* socket = _server->accept();
+
+            if (Infinit::Configuration.hole.debug == true)
+              printf("[hole] implementations::remote::Server::_accept()\n");
+
+            auto customer = new Customer(new elle::TCPSocket(socket));
+
+            // set the state.
+            // FIXME: this status should be handled by customer itself
+            customer->state = Customer::StateConnected;
+
+            // subscribe to the signal.
+            if (customer->signal.dead.Subscribe(
+                  elle::Callback<>::Infer(
+                    &Server::Sweep, this
+                    )
+                  ) == elle::StatusError)
+              // FIXME
+              // escape("unable to subscribe to the signal");
+              std::abort();
+
+            // add the customer.
+            if (this->Add(customer->socket, customer) == elle::StatusError)
+              // FIXME
+              // escape("unable to add the customer");
+              std::abort();
+          }
       }
 
       ///
@@ -472,57 +472,19 @@ namespace hole
 //
 
       ///
-      /// this callback handles new connections.
-      ///
-      elle::Status      Server::Connection(elle::TCPSocket*     socket)
-      {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Server::Connection()\n");
-
-        // allocate a customer.
-        auto customer = std::unique_ptr<Customer>(new Customer);
-
-        // create the customer.
-        if (customer->Create(socket) == elle::StatusError)
-          escape("unable to create the customer");
-
-        // set the state.
-        customer->state = Customer::StateConnected;
-
-        // subscribe to the signal.
-        if (customer->signal.dead.Subscribe(
-              elle::Callback<>::Infer(
-                &Server::Sweep, this
-              )
-            ) == elle::StatusError)
-          escape("unable to subscribe to the signal");
-
-        // add the customer.
-        if (this->Add(customer->socket, customer.get()) == elle::StatusError)
-          escape("unable to add the customer");
-        else
-          customer.release();
-
-        return elle::StatusOk;
-      }
-
-      ///
       /// this callback is triggered whenever the client initiate the
       /// authentication challenge.
       ///
       elle::Status      Server::Challenge(const lune::Passport& passport)
       {
         Customer*       customer;
-        elle::Session*  session = elle::network::Session::session.Get();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Server::Challenge()\n");
 
         // retrieve the customer.
-        if (this->Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
-                           customer) == elle::StatusError)
+        if (this->Retrieve(elle::network::current_context().socket, customer) == elle::StatusError)
           escape("unable to retrieve the customer");
 
         // validate the passport.
@@ -533,8 +495,7 @@ namespace hole
               escape("unable to remove the customer");
 
             // disconnect the customer.
-            if (customer->socket->Disconnect() == elle::StatusError)
-              escape("unable to disconnect the customer");
+            customer->socket->Disconnect();
 
             // bury the customer: the socket is still in use.
             bury(customer);
@@ -578,7 +539,6 @@ namespace hole
                                          <nucleus::Block>&      derivable)
       {
         Customer*       customer;
-        elle::Session*  session = elle::network::Session::session.Get();
         nucleus::Block* object;
 
 
@@ -587,7 +547,7 @@ namespace hole
           printf("[hole] implementations::remote::Server::Push()\n");
 
         // retrieve the customer.
-        if (this->Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
+        if (this->Retrieve(elle::network::current_context().socket,
                            customer) == elle::StatusError)
           escape("unable to retrieve the customer");
 
@@ -652,7 +612,6 @@ namespace hole
                                      const nucleus::Version&    version)
       {
         Customer*       customer;
-        elle::Session*  session = elle::network::Session::session.Get();
         nucleus::Block* block;
 
         // debug.
@@ -660,7 +619,7 @@ namespace hole
           printf("[hole] implementations::remote::Server::Pull()\n");
 
         // retrieve the customer.
-        if (this->Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
+        if (this->Retrieve(elle::network::current_context().socket,
                            customer) == elle::StatusError)
           escape("unable to retrieve the customer");
 
@@ -730,14 +689,13 @@ namespace hole
       elle::Status      Server::Wipe(const nucleus::Address&    address)
       {
         Customer*       customer;
-        elle::Session*  session = elle::network::Session::session.Get();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::remote::Server::Wipe()\n");
 
         // retrieve the customer.
-        if (this->Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
+        if (this->Retrieve(elle::network::current_context().socket,
                            customer) == elle::StatusError)
           escape("unable to retrieve the customer");
 
@@ -772,7 +730,7 @@ namespace hole
         std::cout << alignment << "[Server]" << std::endl;
 
         // dump the locus.
-        if (this->locus.Dump(margin + 2) == elle::StatusError)
+        if (this->_locus.Dump(margin + 2) == elle::StatusError)
           escape("unable to dump the locus");
 
         std::cout << alignment << elle::Dumpable::Shift

@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [wed aug 24 13:12:46 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <hole/implementations/slug/Host.hh>
 #include <hole/implementations/slug/Slug.hh>
 #include <hole/implementations/slug/Manifest.hh>
@@ -42,10 +28,9 @@ namespace hole
       ///
       /// XXX
       ///
-      Host::Host():
-        state(StateUnknown),
-        socket(NULL),
-        timer(NULL)
+      Host::Host()
+        : state(StateUnknown)
+        , socket(NULL)
       {
       }
 
@@ -57,50 +42,10 @@ namespace hole
         // delete the socket, if present.
         if (this->socket != NULL)
           delete this->socket;
-
-        // delete the timer, if present.
-        if (this->timer != NULL)
-          delete this->timer;
       }
 
 //
 // ---------- methods ---------------------------------------------------------
-//
-
-      ///
-      /// XXX
-      ///
-      elle::Status      Host::Create(const elle::Locus&         locus)
-      {
-        // set the locus.
-        this->locus = locus;
-
-        // allocate a socket.
-        this->socket = new elle::TCPSocket;
-
-        // create the socket.
-        if (this->socket->Create() == elle::StatusError)
-          escape("unable to create the socket");
-
-        // allocate the timer.
-        this->timer = new elle::Timer;
-
-        // create the timer.
-        if (this->timer->Create(elle::Timer::ModeSingle) == elle::StatusError)
-          escape("unable to create the timer");
-
-        // subscribe to the timer's signal.
-        if (this->timer->signal.timeout.Subscribe(
-              elle::Callback<>::Infer(&Host::Abort,
-                                      this)) == elle::StatusError)
-          escape("unable to subscribe to the signal");
-
-        // start the timer.
-        if (this->timer->Start(Host::Timeout) == elle::StatusError)
-          escape("unable to start the timer");
-
-        return elle::StatusOk;
-      }
 
       ///
       /// XXX
@@ -113,47 +58,23 @@ namespace hole
         // set the state.
         this->state = Host::StateConnected;
 
-        // subscribe to the signal.
-        if (this->socket->signal.disconnected.Subscribe(
-              elle::Callback<>::Infer(&Host::Disconnected,
-                                      this)) == elle::StatusError)
-          escape("unable to subscribe the signal");
-
-        // subscribe to the signal.
-        if (this->socket->signal.error.Subscribe(
-              elle::Callback<>::Infer(&Host::Error,
-                                      this)) == elle::StatusError)
-          escape("unable to subscribe the signal");
-
         return elle::StatusOk;
       }
 
       ///
       /// XXX
       ///
-      elle::Status      Host::Connect()
+      elle::Status      Host::Connect(const elle::Locus& locus)
       {
-        // subscribe to the signal.
-        if (this->socket->signal.connected.Subscribe(
-              elle::Callback<>::Infer(&Host::Connected,
-                                      this)) == elle::StatusError)
-          escape("unable to subscribe the signal");
+        this->locus = locus;
 
-        // subscribe to the signal.
-        if (this->socket->signal.disconnected.Subscribe(
-              elle::Callback<>::Infer(&Host::Disconnected,
-                                      this)) == elle::StatusError)
-          escape("unable to subscribe the signal");
+        std::string hostname;
+        this->locus.host.Convert(hostname);
+        auto socket = new reactor::network::TCPSocket
+          (elle::concurrency::scheduler(), hostname, this->locus.port);
+        this->socket = new elle::TCPSocket(socket);
 
-        // subscribe to the signal.
-        if (this->socket->signal.error.Subscribe(
-              elle::Callback<>::Infer(&Host::Error,
-                                      this)) == elle::StatusError)
-          escape("unable to subscribe the signal");
-
-        // connect the socket.
-        if (this->socket->Connect(this->locus) == elle::StatusError)
-          escape("unable to connect to the peer");
+        return Connected();
 
         return elle::StatusOk;
       }
@@ -163,9 +84,7 @@ namespace hole
       ///
       elle::Status      Host::Disconnect()
       {
-        // disconnect the socket.
-        if (this->socket->Disconnect() == elle::StatusError)
-          escape("unable to disconnect the socket");
+        this->socket->Disconnect();
 
         return elle::StatusOk;
       }
@@ -175,15 +94,7 @@ namespace hole
       ///
       elle::Status      Host::Authenticated()
       {
-        // delete the timer.
-        delete this->timer;
-
-        // reset the pointer.
-        this->timer = NULL;
-
-        // set the state.
         this->state = Host::StateAuthenticated;
-
         return elle::StatusOk;
       }
 
@@ -199,12 +110,6 @@ namespace hole
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Host::Abort()\n");
-
-        // delete the timer.
-        bury(this->timer);
-
-        // reset the pointer.
-        this->timer = NULL;
 
         // if the host has not been authenticated...
         if (this->state != Host::StateAuthenticated)
@@ -243,19 +148,6 @@ namespace hole
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Host::Disconnected()\n");
-
-        // if a timer is still present.
-        if (this->timer != NULL)
-          {
-            // stop the timer.
-            this->timer->Stop();
-
-            // delete the timer.
-            bury(this->timer);
-
-            // reset the pointer.
-            this->timer = NULL;
-          }
 
         // Q_EMIT the signal.
         if (this->signal.dead.Emit(this) == elle::StatusError)
@@ -305,30 +197,6 @@ namespace hole
         // dump the locus.
         if (this->locus.Dump(margin + 2) == elle::StatusError)
           escape("unable to dump the locus");
-
-        // dump the socket, if present.
-        if (this->socket != NULL)
-          {
-            if (this->socket->Dump(margin + 2) == elle::StatusError)
-              escape("unable to dump the socket");
-          }
-        else
-          {
-            std::cout << alignment << elle::Dumpable::Shift
-                      << "[TCPSocket] " << elle::none << std::endl;
-          }
-
-        // dump the timer, if present.
-        if (this->timer != NULL)
-          {
-            if (this->timer->Dump(margin + 2) == elle::StatusError)
-              escape("unable to dump the timer");
-          }
-        else
-          {
-            std::cout << alignment << elle::Dumpable::Shift
-                      << "[Timer] " << elle::none << std::endl;
-          }
 
         return elle::StatusOk;
       }

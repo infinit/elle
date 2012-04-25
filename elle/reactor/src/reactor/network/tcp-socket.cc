@@ -167,6 +167,16 @@ namespace reactor
       write.run();
     }
 
+    /*-----------.
+    | Properties |
+    `-----------*/
+
+    TCPSocket::EndPoint
+    TCPSocket::Peer() const
+    {
+      return this->_socket->remote_endpoint();
+    }
+
     /*----------------.
     | Pretty Printing |
     `----------------*/

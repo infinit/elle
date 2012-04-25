@@ -1,67 +1,49 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       diary
-//
-// license       infinit
-//
-// author        julien quintard   [thu jun 30 09:19:53 2011]
-//
-
 #ifndef DIARY_UNIX_REPLAY_HH
 #define DIARY_UNIX_REPLAY_HH
 
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-#ifndef FUSE_USE_VERSION
-# define FUSE_USE_VERSION 26
-#endif
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/Elle.hh>
-
-#include <satellites/diary/unix/Upcall.hh>
-
-#include <elle/idiom/Close.hh>
-# if defined(INFINIT_MACOSX)
-#  define _GNU_SOURCE
+# ifndef FUSE_USE_VERSION
+#  define FUSE_USE_VERSION 26
 # endif
-# include <fuse.h>
-# include <stdio.h>
-# include <stdlib.h>
-# include <string.h>
-# include <unistd.h>
-# include <fcntl.h>
-# include <dirent.h>
-# include <errno.h>
-# include <sys/time.h>
-# include <sys/stat.h>
-# if defined(HAVE_SETXATTR)
-#  if defined(INFINIT_LINUX)
-#   include <attr/xattr.h>
-#  elif defined(INFINIT_MACOSX)
-#   include <sys/xattr.h>
-#  else
-#   error "unsupported platform"
+
+# include <elle/Elle.hh>
+
+# include <satellites/diary/unix/Upcall.hh>
+
+# include <elle/idiom/Close.hh>
+#  if defined(INFINIT_MACOSX)
+#   define _GNU_SOURCE
 #  endif
-# endif
-#include <elle/idiom/Open.hh>
+#  include <fuse.h>
+#  include <stdio.h>
+#  include <stdlib.h>
+#  include <string.h>
+#  include <unistd.h>
+#  include <fcntl.h>
+#  include <dirent.h>
+#  include <errno.h>
+#  include <sys/time.h>
+#  include <sys/stat.h>
+#  if defined(HAVE_SETXATTR)
+#   if defined(INFINIT_LINUX)
+#    include <attr/xattr.h>
+#   elif defined(INFINIT_MACOSX)
+#    include <sys/xattr.h>
+#   else
+#    error "unsupported platform"
+#   endif
+#  endif
+# include <elle/idiom/Open.hh>
 
 ///
 /// the HAVE_SETXATTR macro is undefined because the calls crash on MacOS X.
 ///
-#if defined(INFINIT_MACOSX)
-# undef HAVE_SETXATTR
-#endif
+# if defined(INFINIT_MACOSX)
+#  undef HAVE_SETXATTR
+# endif
 
 namespace satellite
 {
-  #undef unix
+# undef unix
   namespace unix
   {
 
@@ -127,10 +109,6 @@ namespace satellite
       // static attributes
       //
       static Memoirs*           Reference;
-      static elle::Entrance<
-        elle::Status,
-        elle::Parameters<>
-        >*                      Entrance;
     };
 
   }

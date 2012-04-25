@@ -31,6 +31,15 @@ namespace hole
   elle::Status          Main(elle::Natural32                    argc,
                              elle::Character*                   argv[])
   {
+    reactor::Scheduler& sched = elle::concurrency::scheduler();
+    if (!sched.current())
+      {
+        reactor::VThread<elle::Status> main(sched, "Hole main",
+                                            boost::bind(&Main, argc, argv));
+        sched.run();
+        return main.result();
+      }
+
     // XXX Infinit::Parser is not deleted in case of error
 
     // initialize the Elle library.
@@ -106,15 +115,11 @@ namespace hole
         escape("unable to retrieve the network name");
       }
 
-    reactor::Thread t(elle::concurrency::scheduler(), "Hole initialization",
-                      &hole::Hole::Initialize);
-    // // initialize the Hole library.
-    // if (hole::Hole::Initialize() == elle::StatusError)
-    //   escape("unable to initialize Hole");
+    // initialize the Hole library.
+    hole::Hole::Initialize();
 
     // launch the program.
-    if (elle::Program::Launch() == elle::StatusError)
-      escape("an error occured while processing events");
+    elle::Program::Launch();
 
     // delete the parser.
     delete Infinit::Parser;

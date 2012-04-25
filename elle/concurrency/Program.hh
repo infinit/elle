@@ -1,35 +1,16 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon mar 15 20:37:49 2010]
-//
-
 #ifndef ELLE_CONCURRENCY_PROGRAM_HH
-#define ELLE_CONCURRENCY_PROGRAM_HH
+# define ELLE_CONCURRENCY_PROGRAM_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/radix/Status.hh>
-#include <elle/radix/Entity.hh>
-#include <elle/radix/Parameters.hh>
-
-#include <elle/concurrency/Callback.hh>
-#include <elle/concurrency/Broker.hh>
-
-#include <elle/idiom/Close.hh>
-
-# include <QCoreApplication>
-# include <QAbstractEventDispatcher>
 # include <list>
 # include <signal.h>
 
-#include <elle/idiom/Open.hh>
+# include <elle/concurrency/Callback.hh>
+
+# include <elle/idiom/Close.hh>
+#  include <elle/radix/Entity.hh>
+#  include <elle/radix/Parameters.hh>
+#  include <elle/radix/Status.hh>
+# include <elle/idiom/Open.hh>
 
 namespace reactor
 {
@@ -70,18 +51,9 @@ namespace elle
       static Status             Clean();
 
       static Status             Setup();
-      static Status             Launch();
+      static void               Launch();
       static Void               Exception(int);
-      static Status             Exit();
-
-#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
-      static Status             Attach(Broker&);
-      static Status             Detach(Broker&);
-#elif defined(INFINIT_WINDOWS)
-      // nothing
-#else
-# error "unsupported platform"
-#endif
+      static void               Exit();
 
       //
       // constructors & destructors
@@ -92,12 +64,9 @@ namespace elle
       //
       // attributes
       //
-      ::QCoreApplication*       core;
-
       State                     state;
     private:
-      static bool               _exit;
-      friend void qt_runner();
+      static reactor::Signal    _exit;
     };
 
 //

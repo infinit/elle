@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       shell
-//
-// license       infinit
-//
-// author        julien quintard   [thu mar  4 17:51:46 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <satellites/shell/Shell.hh>
 
 #include <lune/Lune.hh>
@@ -211,9 +197,7 @@ namespace satellite
     if (agent::Agent::Initialize() == elle::StatusError)
       escape("unable to initialize Agent");
 
-    // initialize the Hole library.
-    if (hole::Hole::Initialize() == elle::StatusError)
-      escape("unable to initialize Hole");
+    hole::Hole::Initialize();
 
     // wait for and trigger commands.
     while ((line = ::readline("$> ")) != NULL)

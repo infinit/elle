@@ -115,11 +115,17 @@ namespace reactor
       /// Shortcut to wait for a single waitable to be done.
       bool wait(Waitable& s,
                 DurationOpt timeout = DurationOpt());
+      /** Terminate execution of the thread by injecting a terminate exception.
+       *
+       *
+       */
+      void terminate();
     protected:
       virtual bool _wait(Thread* thread);
     private:
       friend class Waitable;
       void _wait_timeout(const boost::system::error_code& e);
+      void _wait_abort();
       void _freeze();
       void _wake(Waitable* waitable);
       std::set<Waitable*> _waited;

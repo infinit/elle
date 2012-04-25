@@ -22,6 +22,7 @@
 
 #include <elle/package/Archive.hh>
 
+#include <elle/network/fwd.hh>
 #include <elle/network/Message.hh>
 
 #include <elle/concurrency/Callback.hh>
@@ -110,7 +111,7 @@ namespace elle
       //
       // methods
       //
-      Status            Skeleton(Archive&) const;
+      Status            Skeleton(TCPSocket*, Locus&, Parcel&) const;
 
       //
       // interfaces

@@ -1,16 +1,5 @@
 PROJECT(Elle CXX)
 
-QT4_WRAP_CPP(elle_MOCS
-  network/LocalServer.hh
-  network/LocalSocket.hh
-  network/TCPServer.hh
-  network/TCPSocket.hh
-  network/UDPSocket.hh
-
-  concurrency/Timer.hh
-  concurrency/Broker.hh
-)
-
 IF(INFINIT_LINUX)
   SET(elle_PLATFORM
     thirdparty/epth-linux.cc
@@ -62,7 +51,6 @@ ADD_LIBRARY(elle
 
   system/System.cc
 
-  concurrency/Broker.cc
   concurrency/Concurrency.cc
   concurrency/Environment.cc
   concurrency/Event.cc
@@ -70,7 +58,6 @@ ADD_LIBRARY(elle
   concurrency/Program.cc
   concurrency/Routine.cc
   concurrency/Scheduler.cc
-  concurrency/Timer.cc
 
   cryptography/Cipher.cc
   cryptography/Code.cc
@@ -87,17 +74,11 @@ ADD_LIBRARY(elle
 
   network/Header.cc
   network/Host.cc
-  network/LocalServer.cc
-  network/LocalSocket.cc
   network/Network.cc
   network/Parcel.cc
   network/Locus.cc
   network/Session.cc
-  network/Socket.cc
-  network/AbstractSocket.cc
-  network/TCPServer.cc
   network/TCPSocket.cc
-  network/UDPSocket.cc
 
   utility/Base64.cc
   utility/Duration.cc

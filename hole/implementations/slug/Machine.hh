@@ -1,28 +1,13 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [wed aug 31 15:05:39 2011]
-//
-
 #ifndef HOLE_IMPLEMENTATIONS_SLUG_MACHINE_HH
-#define HOLE_IMPLEMENTATIONS_SLUG_MACHINE_HH
+# define HOLE_IMPLEMENTATIONS_SLUG_MACHINE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/Elle.hh>
+# include <nucleus/Nucleus.hh>
+# include <lune/Lune.hh>
 
-#include <elle/Elle.hh>
-#include <nucleus/Nucleus.hh>
-#include <lune/Lune.hh>
-
-#include <hole/implementations/slug/Guestlist.hh>
-#include <hole/implementations/slug/Neighbourhood.hh>
-#include <hole/implementations/slug/Cluster.hh>
-#include <hole/implementations/slug/Synchroniser.hh>
+# include <hole/implementations/slug/Guestlist.hh>
+# include <hole/implementations/slug/Neighbourhood.hh>
+# include <hole/implementations/slug/Cluster.hh>
 
 namespace hole
 {
@@ -45,21 +30,21 @@ namespace hole
         //
         // constants
         //
-        struct                                  Default
+        struct Default
         {
-          static const elle::Natural16          Port;
+          static const elle::Natural16  Port;
         };
 
-        static const elle::Natural32            Timeout;
+        static const reactor::Duration  Timeout;
 
         //
         // enumerations
         //
         enum State
-          {
-            StateDetached,
-            StateAttached
-          };
+        {
+          StateDetached,
+          StateAttached
+        };
 
         //
         // constructors & destructors
@@ -88,7 +73,6 @@ namespace hole
         //
         elle::Status            Alone();
 
-        elle::Status            Connection(elle::TCPSocket*);
         elle::Status            Authenticate(const lune::Passport&,
                                              const elle::Port&);
         elle::Status            Authenticated(const Cluster&);
@@ -119,9 +103,9 @@ namespace hole
         Guestlist               guestlist;
         Neighbourhood           neighbourhood;
 
-        elle::Timer*            timer;
-
-        Synchroniser*           synchroniser;
+      private:
+        void                            _accept();
+        reactor::network::TCPServer*    _server;
       };
 
     }

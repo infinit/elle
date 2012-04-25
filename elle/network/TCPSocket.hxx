@@ -75,8 +75,7 @@ namespace elle
         escape("unable to serialize the header and data");
 
       // write the socket.
-      if (this->Write(packet) == StatusError)
-        escape("unable to write the socket");
+      this->Write(packet);
 
       return StatusOk;
     }
@@ -88,13 +87,13 @@ namespace elle
     Status
     TCPSocket::Receive(Event& event, O outputs)
     {
-      std::shared_ptr<Parcel> parcel;
+      Parcel* parcel;
 
       // block the current fiber until the given event is received.
       scheduler().current()->wait(event.Signal());
       parcel = event.Signal().Value();
 
-      assert(parcel.get() != nullptr && "The event should have filled the parcel");
+      assert(parcel != nullptr && "The event should have filled the parcel");
 
       // check the tag.
       if (parcel->header->tag != outputs.tag)
@@ -119,12 +118,7 @@ namespace elle
               transpose(report);
             }
           else
-            {
-              // otherwise, try to ship the parcel since a handler may be
-              // able to treat it.
-              if (Socket::Ship(parcel) == StatusError)
-                log("an error occured while shipping the parcel");
-            }
+            escape("fiber was awaken by a packet with the wrong tag");
 
           // in any case, return an error from the Receive() method.
           escape("received a packet with an unexpected tag '%u'",
@@ -170,18 +164,11 @@ namespace elle
     /// whose tag is specified in the current session.
     ///
     template <typename I>
-    Status              TCPSocket::Reply(const I                inputs,
-                                         Session*               session)
+    Status              TCPSocket::Reply(const I                inputs)
     {
-      // retrieve the current session, if necessary.
-      if (session == NULL)
-        session = elle::network::Session::session.Get();
-
-      // send a message as a response by using the event of
-      // the received message i.e the current session.
-      if (this->Send(inputs, session->event) == StatusError)
+      if (this->Send(inputs, current_context().parcel->header->event) == StatusError)
         escape("unable to send the reply");
-      session->event.Cleanup();
+      current_context().parcel->header->event.Cleanup();
 
       return StatusOk;
     }

@@ -1,20 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [wed aug 31 15:04:40 2011]
-//
+#include <reactor/network/tcp-server.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
+#include <elle/network/TCPSocket.hh>
+#include <hole/Hole.hh>
 #include <hole/implementations/slug/Machine.hh>
 #include <hole/implementations/slug/Manifest.hh>
-#include <hole/Hole.hh>
 
 #include <Infinit.hh>
 
@@ -39,7 +28,7 @@ namespace hole
       ///
       /// XXX 3 seconds
       ///
-      const elle::Natural32             Machine::Timeout = 3000;
+      const reactor::Duration Machine::Timeout = boost::posix_time::seconds(3);
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -48,27 +37,18 @@ namespace hole
       ///
       /// XXX
       ///
-      Machine::Machine():
-        state(StateDetached),
-        port(0),
-        timer(NULL),
-        synchroniser(NULL)
-      {
-      }
+      Machine::Machine()
+        : state(StateDetached)
+        , port(0)
+        , _server(new reactor::network::TCPServer
+                  (elle::concurrency::scheduler()))
+      {}
 
       ///
       /// XXX
       ///
       Machine::~Machine()
-      {
-        // delete the timer, if present.
-        if (this->timer != NULL)
-          delete this->timer;
-
-        // delete the synchroniser, if present.
-        if (this->synchroniser != NULL)
-          delete this->synchroniser;
-      }
+      {}
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -148,7 +128,7 @@ namespace hole
               auto              host = std::unique_ptr<Host>(new Host);
 
               // create the host.
-              if (host->Create(*iterator) == elle::StatusError)
+              if (host->Connect(*iterator) == elle::StatusError)
                 escape("unable to create the host");
 
               // subscribe to the signal.
@@ -156,10 +136,6 @@ namespace hole
                     elle::Callback<>::Infer(&Machine::Sweep,
                                             this)) == elle::StatusError)
                 escape("unable to subscribe to the signal");
-
-              // connect the host.
-              if (host->Connect() == elle::StatusError)
-                escape("unable to connect the host");
 
               // add the host to the guestlist.
               if (this->guestlist.Add(host->socket, host.get()) ==
@@ -171,29 +147,12 @@ namespace hole
             }
         }
 
-        //
-        // set up the timeout after which the machine will be considered
-        // alone in the network, in other words, the very first node.
-        //
-        {
-          // allocate a timer.
-          this->timer = new elle::Timer;
-
-          // create the timer.
-          if (this->timer->Create(
-                elle::Timer::ModeSingle) == elle::StatusError)
-            escape("unable to create the timer");
-
-          // subscribe to the timer's signal.
-          if (this->timer->signal.timeout.Subscribe(
-                elle::Callback<>::Infer(&Machine::Alone,
-                                        this)) == elle::StatusError)
-            escape("unable to subscribe to the signal");
-
-          // start the timer.
-          if (this->timer->Start(Machine::Timeout) == elle::StatusError)
-            escape("unable to start the timer");
-        }
+        // Set up the timeout after which the machine will be
+        // considered alone in the network, in other words, the very
+        // first node.
+        elle::concurrency::scheduler().CallLater
+          (boost::bind(&Machine::Alone, this),
+           "Machine::Alone", Machine::Timeout);
 
         //
         // finally, listen for incoming connections.
@@ -210,12 +169,11 @@ namespace hole
           if (locus.Create(host, this->port) == elle::StatusError)
             escape("unable to create the locus");
 
-          // listen for incoming connections.
-          if (elle::TCPServer::Listen(
-                locus,
-                elle::Callback<>::Infer(
-                  &Machine::Connection, this)) == elle::StatusError)
-            escape("unable to listen for TCP connections");
+          _server->listen(locus.port);
+          new reactor::Thread(elle::concurrency::scheduler(),
+                              "Slug accept",
+                              boost::bind(&Machine::_accept, this),
+                              true);
         }
 
         return elle::StatusOk;
@@ -1072,15 +1030,13 @@ namespace hole
       ///
       elle::Status      Machine::Alone()
       {
+        // If we were attached in the meantime, do nothing.
+        if (this->state == Machine::StateDetached)
+          return elle::StatusOk;
+
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Machine::Alone()\n");
-
-        // first, delete the timer.
-        bury(timer);
-
-        // reset the pointer.
-        this->timer = NULL;
 
         // if the machine has been neither connected nor authenticated
         // to existing nodes...
@@ -1104,64 +1060,67 @@ namespace hole
       ///
       /// this method handles new connections.
       ///
-      elle::Status      Machine::Connection(elle::TCPSocket*    socket)
+      void
+      Machine::_accept()
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Connection()\n");
-
-        // depending on the machine's state.
-        switch (this->state)
+        while (true)
           {
-          case Machine::StateAttached:
-            {
-              // allocate the host.
-              auto      host = std::unique_ptr<Host>(new Host);
+            reactor::network::TCPSocket* socket = _server->accept();
+            auto connection = new elle::network::TCPSocket(socket);
+            if (Infinit::Configuration.hole.debug == true)
+              printf("[hole] implementations::slug::Machine::_accept()\n");
 
-              // create the host.
-              if (host->Create(socket) == elle::StatusError)
-                escape("unable to create the host");
+            // depending on the machine's state.
+            switch (this->state)
+              {
+                case Machine::StateAttached:
+                {
+                  // allocate the host.
+                  auto      host = std::unique_ptr<Host>(new Host);
 
-              // subscribe to the signal.
-              if (host->signal.dead.Subscribe(
-                    elle::Callback<>::Infer(&Machine::Sweep,
-                                            this)) == elle::StatusError)
-                escape("unable to subscribe to the signal");
+                  // create the host.
+                  if (host->Create(connection) == elle::StatusError)
+                    throw std::runtime_error("unable to create the host");
 
-              // add the host to the guestlist for now until it
-              // gets authenticated.
-              if (this->guestlist.Add(host->socket,
-                                      host.get()) == elle::StatusError)
-                escape("unable to add the host to the neigbourhood");
+                  // subscribe to the signal.
+                  if (host->signal.dead.Subscribe(
+                        elle::Callback<>::Infer(&Machine::Sweep,
+                                                this)) == elle::StatusError)
+                    throw std::runtime_error("unable to subscribe to the signal");
 
-              // release the host.
-              auto      h = host.release();
+                  // add the host to the guestlist for now until it
+                  // gets authenticated.
+                  if (this->guestlist.Add(host->socket,
+                                          host.get()) == elle::StatusError)
+                    throw std::runtime_error("unable to add the host to the neigbourhood");
 
-              // also authenticate to this host now that it is considered a
-              // potentiel peer.
-              if (h->socket->Send(
-                    elle::Inputs<TagAuthenticate>(
-                      Hole::Passport,
-                      this->port)) == elle::StatusError)
-                escape("unable to send a message");
+                  // release the host.
+                  auto      h = host.release();
 
-              break;
-            }
-          default:
-            {
-              //
-              // if the machine is not authenticated, reject the
-              // incoming connection right away.
-              //
+                  // also authenticate to this host now that it is
+                  // considered a potentiel peer.
+                  if (h->socket->Send(
+                        elle::Inputs<TagAuthenticate>(
+                          Hole::Passport,
+                          this->port)) == elle::StatusError)
+                    throw std::runtime_error("unable to send a message");
 
-              // delete the socket. XXX ARGHLLL use unique_ptr !
-              delete socket;
+                  break;
+                }
+                default:
+                {
+                  //
+                  // if the machine is not authenticated, reject the
+                  // incoming connection right away.
+                  //
 
-              break;
-            }
+                  // delete the socket. XXX ARGHLLL use unique_ptr !
+                  delete socket;
+
+                  break;
+                }
+              }
           }
-
-        return elle::StatusOk;
       }
 
       ///
@@ -1171,7 +1130,6 @@ namespace hole
                                               const elle::Port& port)
       {
         Host*           host;
-        elle::Session*  session = elle::network::Session::session.Get();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -1179,14 +1137,14 @@ namespace hole
 
         // if the host exists in the guestlist, handle its authentication.
         if (this->guestlist.Exist(
-              static_cast<elle::TCPSocket*>(session->socket)) ==
+              static_cast<elle::TCPSocket*>(elle::network::current_context().socket)) ==
             elle::StatusTrue)
           {
             Cluster     cluster;
 
             // retrieve the host from the guestlist.
             if (this->guestlist.Retrieve(
-                  static_cast<elle::TCPSocket*>(session->socket),
+                  static_cast<elle::TCPSocket*>(elle::network::current_context().socket),
                   host) == elle::StatusError)
               escape("unable to retrieve the host");
 
@@ -1203,8 +1161,9 @@ namespace hole
               escape("unable to validate the passport");
 
             // create the host's locus according to the given port.
-            if (host->locus.Create(session->locus.host,
-                                   port) == elle::StatusError)
+            elle::network::Host h;
+            h.Create(elle::network::current_context().host);
+            if (host->locus.Create(h, port) == elle::StatusError)
               escape("unable to create the locus");
 
             // add the host to the neighbourhood now that it has been
@@ -1244,8 +1203,6 @@ namespace hole
       ///
       elle::Status      Machine::Authenticated(const Cluster&   cluster)
       {
-        elle::Session*  session = elle::network::Session::session.Get();
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Machine::Authenticated()\n");
@@ -1257,16 +1214,6 @@ namespace hole
         // set the hole as ready to receive requests.
         if (Hole::Ready() == elle::StatusError)
           escape("unable to set the hole online");
-
-        // stop the timer, if present.
-        if (this->timer != nullptr)
-          {
-            // first, delete the timer.
-            delete this->timer;
-
-            // reset the pointer.
-            this->timer = nullptr;
-          }
 
         //
         // use the given cluster to extend the network by connecting to
@@ -1289,19 +1236,15 @@ namespace hole
               // allocate the host.
               auto      host = std::unique_ptr<Host>(new Host);
 
-              // create the host.
-              if (host->Create(locus) == elle::StatusError)
-                escape("unable to create the host");
+              // connect the host.
+              if (host->Connect(locus) == elle::StatusError)
+                escape("unable to connect the host");
 
               // subscribe to the signal.
               if (host->signal.dead.Subscribe(
                     elle::Callback<>::Infer(&Machine::Sweep,
                                             this)) == elle::StatusError)
                 escape("unable to subscribe to the signal");
-
-              // connect the host.
-              if (host->Connect() == elle::StatusError)
-                escape("unable to connect the host");
 
               // add the host to the guestlist.
               if (this->guestlist.Add(host->socket, host.get()) ==
@@ -1311,24 +1254,6 @@ namespace hole
               // release the host.
               host.release();
             }
-        }
-
-        //
-        // prepare the synchroniser.
-        //
-        {
-          // allocate the synchroniser.
-          this->synchroniser = new Synchroniser;
-
-          // subscribe to the signal.
-          if (this->synchroniser->signal.synchronised.Subscribe(
-                elle::Callback<>::Infer(&Machine::Synchronised,
-                                        this)) == elle::StatusError)
-            escape("unable to subscribe to the signal");
-
-          // start the synchroniser.
-          if (this->synchroniser->Start() == elle::StatusError)
-            escape("unable to start the synchroniser");
         }
 
         return elle::StatusOk;
@@ -1388,12 +1313,6 @@ namespace hole
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Machine::Push()\n");
 
-        // bury the synchroniser.
-        bury(this->synchroniser);
-
-        // reset its pointer.
-        this->synchroniser = NULL;
-
         return elle::StatusOk;
       }
 
@@ -1406,7 +1325,6 @@ namespace hole
                                           <nucleus::Block>&     derivable)
       {
         Host*           host;
-        elle::Session*  session = elle::network::Session::session.Get();
         nucleus::Block* object;
 
         // debug.
@@ -1415,7 +1333,7 @@ namespace hole
 
         // retrieve the host from the guestlist.
         if (this->guestlist.Retrieve(
-              static_cast<elle::TCPSocket*>(session->socket),
+              elle::network::current_context().socket,
               host) == elle::StatusError)
           escape("unable to retrieve the host");
 
@@ -1564,7 +1482,7 @@ namespace hole
             }
           }
 
-        // XXX do not even bother returning TagOk
+        // // XXX do not even bother returning TagOk
 
         return elle::StatusOk;
       }
@@ -1576,7 +1494,6 @@ namespace hole
                                       const nucleus::Version&   version)
       {
         Host*           host;
-        elle::Session*  session = elle::network::Session::session.Get();
         nucleus::Block* block;
 
         // debug.
@@ -1585,7 +1502,7 @@ namespace hole
 
         // retrieve the host from the guestlist.
         if (this->guestlist.Retrieve(
-              static_cast<elle::TCPSocket*>(session->socket),
+              elle::network::current_context().socket,
               host) == elle::StatusError)
           escape("unable to retrieve the host");
 
@@ -1725,7 +1642,6 @@ namespace hole
       elle::Status      Machine::Wipe(const nucleus::Address&   address)
       {
         Host*           host;
-        elle::Session*  session = elle::network::Session::session.Get();
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -1733,7 +1649,7 @@ namespace hole
 
         // retrieve the host from the guestlist.
         if (this->guestlist.Retrieve(
-              static_cast<elle::TCPSocket*>(session->socket),
+              static_cast<elle::TCPSocket*>(elle::network::current_context().socket),
               host) == elle::StatusError)
           escape("unable to retrieve the host");
 
@@ -1814,33 +1730,8 @@ namespace hole
         if (this->neighbourhood.Dump(margin + 2) == elle::StatusError)
           escape("unable to dump the neighbourhood");
 
-        // dump the timer, if present.
-        if (this->timer != NULL)
-          {
-            if (this->timer->Dump(margin + 2) == elle::StatusError)
-              escape("unable to dump the timer");
-          }
-        else
-          {
-            std::cout << alignment << elle::Dumpable::Shift
-                      << "[Timer] " << elle::none << std::endl;
-          }
-
-        // dump the synchroniser, if present.
-        if (this->synchroniser != NULL)
-          {
-            if (this->synchroniser->Dump(margin + 2) == elle::StatusError)
-              escape("unable to dump the synchroniser");
-          }
-        else
-          {
-            std::cout << alignment << elle::Dumpable::Shift
-                      << "[Synchroniser] " << elle::none << std::endl;
-          }
-
         return elle::StatusOk;
       }
-
     }
   }
 }

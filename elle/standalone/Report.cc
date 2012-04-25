@@ -1,17 +1,4 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun oct 28 19:11:07 2007]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
+#include <elle/concurrency/Scheduler.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Region.hh>
 #include <elle/standalone/Maid.hh>

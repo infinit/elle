@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [sat aug  6 17:48:20 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <etoile/shrub/Shrub.hh>
 
 #include <nucleus/Nucleus.hh>
@@ -40,11 +26,6 @@ namespace etoile
     ///
     elle::Timeline<Riffle*>             Shrub::Queue;
 
-    ///
-    /// this timer triggers the sweeper on a regular basis.
-    ///
-    elle::Timer                         Shrub::Timer;
-
 //
 // ---------- static methods --------------------------------------------------
 //
@@ -58,21 +39,10 @@ namespace etoile
       if (Infinit::Configuration.etoile.shrub.status == false)
         return elle::StatusOk;
 
-      // create the sweeper timer.
-      if (Shrub::Timer.Create(
-            elle::Timer::ModeRepetition) == elle::StatusError)
-        escape("unable to create the timer");
-
-      // subscribe to the timer's signal.
-      if (Shrub::Timer.signal.timeout.Subscribe(
-            elle::Callback<>::Infer(&Shrub::Sweeper)) == elle::StatusError)
-        escape("unable to subscribe to the signal");
-
-      // start the timer.
-      if (Shrub::Timer.Start(
-            Infinit::Configuration.etoile.shrub.frequency) ==
-          elle::StatusError)
-        escape("unable to start the timer");
+      elle::concurrency::scheduler().Every
+        (&Shrub::Sweeper, "Shrub sweeper",
+         boost::posix_time::milliseconds
+         (Infinit::Configuration.etoile.shrub.frequency));
 
       return elle::StatusOk;
     }
@@ -85,10 +55,6 @@ namespace etoile
       // make sure the shrub has been activated, return otherwise.
       if (Infinit::Configuration.etoile.shrub.status == false)
         return elle::StatusOk;
-
-      // stop the timer.
-      if (Shrub::Timer.Stop() == elle::StatusError)
-        escape("unable to stop the timer");
 
       // delete the shrub content, if present.
       if (Shrub::Riffles != NULL)

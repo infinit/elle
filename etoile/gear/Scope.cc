@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [wed jun 15 13:09:29 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/concurrency/Scheduler.hh>
 
 #include <etoile/gear/Scope.hh>
@@ -513,9 +499,6 @@ namespace etoile
     {
       Scope::A::Scoutor scoutor;
 
-      // stop the timer.
-      this->timer.Stop();
-
       // delete the context.
       if (this->context != nullptr)
         delete this->context;
@@ -548,24 +531,6 @@ namespace etoile
     ///
     elle::Status        Scope::Create()
     {
-
-      // create the supervisor timer.
-      if (this->timer.Create(
-            elle::Timer::ModeRepetition) == elle::StatusError)
-        escape("unable to create the timer");
-
-      // subscribe to the timer's signal.
-      if (this->timer.signal.timeout.Subscribe(
-            elle::Callback<>::Infer(&Scope::Supervisor,
-                                    this)) == elle::StatusError)
-        escape("unable to subscribe to the signal");
-
-      // start the timer.
-      if (this->timer.Start(
-            Infinit::Configuration.etoile.gear.containment) ==
-          elle::StatusError)
-        escape("unable to start the timer");
-
       return elle::StatusOk;
     }
 

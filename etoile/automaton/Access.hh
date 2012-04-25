@@ -1,24 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [mon jun 20 14:58:16 2011]
-//
-
 #ifndef ETOILE_AUTOMATON_ACCESS_HH
-#define ETOILE_AUTOMATON_ACCESS_HH
+# define ETOILE_AUTOMATON_ACCESS_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/Elle.hh>
+# include <nucleus/Nucleus.hh>
 
-#include <elle/Elle.hh>
-#include <nucleus/Nucleus.hh>
-
-#include <etoile/gear/Object.hh>
+# include <etoile/gear/Object.hh>
 
 namespace etoile
 {

@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       diary
-//
-// license       infinit
-//
-// author        julien quintard   [thu jun 30 09:23:09 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <satellites/diary/unix/Replay.hh>
 #include <satellites/diary/unix/Live.hh>
 
@@ -36,14 +22,6 @@ namespace satellite
     /// being replayed.
     ///
     Memoirs*                            Replay::Reference = NULL;
-
-    ///
-    /// this variable contains the entrance which triggers the replay.
-    ///
-    elle::Entrance<
-      elle::Status,
-      elle::Parameters<>
-      >*                                Replay::Entrance = NULL;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -1598,14 +1576,8 @@ namespace satellite
         escape("unable to initialize the live system");
 
       // allocate the entrance.
-      Replay::Entrance =
-        new elle::Entrance<
-          elle::Status,
-          elle::Parameters<>
-          >(elle::Closure<
-              elle::Status,
-              elle::Parameters<>
-              >(elle::Callback<>::Infer(&Replay::Process)));
+      new reactor::Thread
+        (elle::concurrency::scheduler(), "Replay::Process", &Replay::Process);
 
 #if defined(INFINIT_LINUX)
       {
@@ -1930,10 +1902,6 @@ namespace satellite
       if (horizon::macosx::MacOSX::Clean() == elle::StatusError)
         escape("unable to clean the horizon");
 #endif
-
-      // delete the entrance.
-      if (Replay::Entrance != NULL)
-        delete Replay::Entrance;
 
       // reset the memoirs pointer.
       Replay::Reference = NULL;

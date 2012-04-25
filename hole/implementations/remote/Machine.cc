@@ -1,16 +1,4 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [wed aug 31 01:02:08 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <reactor/network/exception.hh>
 
 #include <hole/implementations/remote/Machine.hh>
 
@@ -86,11 +74,13 @@ namespace hole
         locus = *Hole::Set.loci.begin();
 
         // try to connect to the server's host.
+        try
         {
           // allocate a client.
           auto client = std::unique_ptr<Client>(new Client(locus));
 
           // launch the client.
+
           if (client->Launch() == elle::StatusOk)
             {
               // set the client as the host.
@@ -110,6 +100,10 @@ namespace hole
           elle::concurrency::scheduler().current()->yield();
 #include <elle/idiom/Open.hh>
         }
+        catch (reactor::network::Exception&)
+          {
+            // Nothing.
+          }
 
         // purge the error messages.
         purge();

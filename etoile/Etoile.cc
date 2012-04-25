@@ -1,21 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar  3 22:36:08 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/Etoile.hh>
-#include <agent/Agent.hh>
-#include <hole/Hole.hh>
 #include <Infinit.hh>
+#include <agent/Agent.hh>
+#include <etoile/Etoile.hh>
+#include <hole/Hole.hh>
 
 using namespace etoile;
 
@@ -59,8 +45,8 @@ elle::Status          Etoile::Initialize()
     if (shrub::Shrub::Initialize() == elle::StatusError)
       escape("unable to initialize the shrub");
 
-    if (portal::Portal::Initialize() == elle::StatusError)
-      escape("unable to initialize the portal");
+    // if (portal::Portal::Initialize() == elle::StatusError)
+    //   escape("unable to initialize the portal");
   }
 
   //
@@ -76,9 +62,9 @@ elle::Status          Etoile::Initialize()
     if (elle::Random::Generate(string) == elle::StatusError)
       escape("unable to generate a random string");
 
-    if (Etoile::Phrase.Create(string,
-                              portal::Portal::Line) == elle::StatusError)
-      escape("unable to create the phrase");
+    // if (Etoile::Phrase.Create(string,
+    //                           portal::Portal::Line) == elle::StatusError)
+    //   escape("unable to create the phrase");
 
     if (Etoile::Phrase.Store(Infinit::Network) == elle::StatusError)
       escape("unable to store the phrase");
@@ -104,8 +90,8 @@ elle::Status          Etoile::Clean()
   // clean the components.
   //
   {
-    if (portal::Portal::Clean() == elle::StatusError)
-      escape("unable to clean the portal");
+    // if (portal::Portal::Clean() == elle::StatusError)
+    //   escape("unable to clean the portal");
 
     if (shrub::Shrub::Clean() == elle::StatusError)
       escape("unable to clean the shrub");

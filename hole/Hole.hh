@@ -1,25 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [tue apr 13 15:25:04 2010]
-//
-
 #ifndef HOLE_HOLE_HH
-#define HOLE_HOLE_HH
+# define HOLE_HOLE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/Elle.hh>
+# include <nucleus/Nucleus.hh>
+# include <lune/Lune.hh>
 
-#include <elle/Elle.hh>
-#include <nucleus/Nucleus.hh>
-#include <lune/Lune.hh>
-
-#include <hole/Holeable.hh>
+# include <hole/Holeable.hh>
 
 ///
 /// this namespace is used by the hole storage abstraction.
@@ -49,7 +35,7 @@ namespace hole
     //
     // static methods
     //
-    static elle::Status         Initialize();
+    static void                 Initialize();
     static elle::Status         Clean();
 
     static elle::Status         Ready();
