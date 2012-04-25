@@ -116,14 +116,17 @@ namespace elle
                 K = kp->K;
                 k = kp->k;
 
+                std::cout << "generate\n";
                 // generate an input.
                 if (Random::Generate(plain) == Status::Error)
                   escape("unable to generate a plain");
 
+                std::cout << "encrypt " << plain.size << " bytes\n";
                 // encrypt the input.
                 if (K.Encrypt(plain, code) == Status::Error)
                   escape("unable to encrypt the plain");
 
+                std::cout << "decrypt\n";
                 // decrypt it.
                 if (k.Decrypt(code, clear) == Status::Error)
                   escape("unable to decrypt the code");

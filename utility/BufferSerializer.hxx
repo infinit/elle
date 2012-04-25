@@ -32,7 +32,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::utility::Buffer,
                           version)
 {
   assert(version == 0);
-  archive << value.Size();
+  archive << static_cast<uint64_t>(value.Size());
   archive.SaveBinary(value.Contents(), value.Size());
 }
 
@@ -45,7 +45,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::utility::WeakBuffer,
                           version)
 {
   assert(version == 0);
-  archive << value.Size();
+  archive << static_cast<uint64_t>(value.Size());
   archive.SaveBinary(value.Contents(), value.Size());
 }
 

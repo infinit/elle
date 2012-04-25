@@ -4,6 +4,10 @@
 # include <elle/standalone/Maid.hh>
 # include <elle/standalone/Report.hh>
 
+# include <elle/utility/Buffer.hh>
+# include <elle/serialize/BufferArchive.hh>
+# include <elle/cryptography/PlainSerializer.hxx>
+
 # include <elle/idiom/Open.hh>
 
 namespace elle
@@ -17,10 +21,15 @@ namespace elle
       SecretKey::Encrypt(T const& in, Cipher& out) const
       {
         elle::utility::Buffer buf;
+        static_assert(
+            !std::is_same<T, elle::utility::Buffer>::value,
+            "Explicitly cast to WeakBuffer needed"
+        );
 
         try
           {
             buf.Writer() << in;
+            std::cout << "to encrypt size: " << buf.Size() << std::endl;
           }
         catch (std::exception const& err)
           {
@@ -36,18 +45,20 @@ namespace elle
     template<typename T> Status
       SecretKey::Decrypt(Cipher const& in, T& out) const
       {
-        Clear clear;
-        if (this->Decrypt(in, clear) == elle::Status::Error)
+        elle::utility::Buffer buffer;
+
+        if (this->Decrypt(in, buffer) == elle::Status::Error)
           escape("Cannot decrypt cipher");
+
         try
           {
-            elle::utility::WeakBuffer buf(clear.contents, clear.size);
-            buf.Reader() >> out;
+            buffer.Reader() >> out;
           }
         catch (std::exception const& err)
           {
             escape("Cannot decode object: %s", err.what());
           }
+
         return elle::Status::Ok;
       }
   }

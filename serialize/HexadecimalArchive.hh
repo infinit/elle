@@ -67,7 +67,6 @@ namespace elle { namespace serialize {
       : BaseClass(stream)
     {}
 
-  protected:
     void LoadBinary(void* data, size_t size)
     {
       char* ptr = static_cast<char*>(data);
