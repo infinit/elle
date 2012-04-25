@@ -112,10 +112,22 @@ namespace elle { namespace serialize {                                          
       {                                                                         \
         template<typename Archive>                                              \
           static void Serialize(Archive&, T&, unsigned int);                    \
+        template<typename Archive>                                              \
+          static void _Serialize(Archive&, T&, unsigned int);                   \
       };                                                                        \
 }}                                                                              \
 template<typename Archive>                                                      \
   void elle::serialize::ArchiveSerializer<T>::Serialize(                        \
+                                              Archive& archive,                 \
+                                              T& value,                         \
+                                              unsigned int version)             \
+{                                                                               \
+  std::cout << (Archive::mode == ArchiveMode::Input ? "Loading" : "Saving")     \
+            << " " #T << std::endl;                                             \
+  _Serialize(archive, value, version);                                          \
+}                                                                               \
+template<typename Archive>                                                      \
+  void elle::serialize::ArchiveSerializer<T>::_Serialize(                       \
                                               Archive& archive,                 \
                                               T& value,                         \
                                               unsigned int version)             \
@@ -173,6 +185,8 @@ namespace elle { namespace serialize {                                          
               Type                                                              \
             , Archive::mode                                                     \
           > Method;                                                             \
+          std::cout << (Archive::mode == ArchiveMode::Input ? "Loading" : "Saving")     \
+                    << " " #T << std::endl;                                             \
           Method::Serialize(ar, val, version);                                  \
         }                                                                       \
         template<typename Archive>                                              \
@@ -215,6 +229,8 @@ namespace elle { namespace serialize {                                          
       template<typename Archive>                                                \
         static void Serialize(Archive& ar, Type& val, unsigned int version)     \
         {                                                                       \
+          std::cout << (Archive::mode == ArchiveMode::Input ? "Loading" : "Saving")     \
+                    << " " #T << std::endl;                                             \
           typedef detail::_SplitSerializerSelectMethod<                         \
               Type                                                              \
             , Archive::mode                                                     \

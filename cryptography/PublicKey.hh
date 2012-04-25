@@ -64,14 +64,16 @@ namespace elle
 
       Status            Verify(const Signature&,
                                const Plain&) const;
-      Status Encrypt(elle::utility::WeakBuffer const& buffer, Code& out) const;
-      Status Decrypt(Code const& in, elle::utility::Buffer& out) const;
 
-      template <typename T>
-        Status Encrypt(T const& in, Code& out) const;
+      Status
+        Encrypt(elle::utility::WeakBuffer const& buffer, Code& out) const;
+      template <typename T> Status
+        Encrypt(T const& in, Code& out) const;
 
-      template <typename T>
-        Status Decrypt(Code const& in, T& out) const;
+      Status
+        Decrypt(Code const& in, elle::utility::Buffer& out) const;
+      template <typename T> Status
+        Decrypt(Code const& in, T& out) const;
 
       //
       // interfaces
