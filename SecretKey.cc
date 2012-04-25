@@ -107,15 +107,6 @@ namespace elle
     ///
     /// this method encrypts the given plain text.
     ///
-    Status SecretKey::Encrypt(Plain const&         plain,
-                              Cipher&              cipher) const
-    {
-      return this->Encrypt(
-          elle::utility::WeakBuffer(plain.contents, plain.size),
-          cipher
-      );
-    }
-
     Status SecretKey::Encrypt(elle::utility::WeakBuffer const&  in,
                               Cipher&                           cipher) const
     {
@@ -205,8 +196,8 @@ namespace elle
     ///
     /// this method decrypts the given cipher.
     ///
-    Status              SecretKey::Decrypt(const Cipher&        cipher,
-                                           Clear&               clear) const
+    Status SecretKey::Decrypt(const Cipher&             cipher,
+                              elle::utility::Buffer&    out) const
     {
       unsigned char     key[EVP_MAX_KEY_LENGTH];
       unsigned char     iv[EVP_MAX_IV_LENGTH];
@@ -255,15 +246,15 @@ namespace elle
       // retreive the cipher-specific block size.
       capacity = ::EVP_CIPHER_CTX_block_size(&scope.context);
 
-      // allocate the clear.
-      if (clear.Prepare(cipher.region.size -
-                        (sizeof (SecretKey::Magic) - 1 + sizeof (salt)) +
-                        capacity) == Status::Error)
-        escape("unable to reserve memory for the clear text");
+      // allocate the out buffer
+      out.Size(
+          cipher.region.size -
+          (sizeof (SecretKey::Magic) - 1 + sizeof (salt)) +
+          capacity
+      );
 
-      // cipher the cipher text.
       if (::EVP_DecryptUpdate(&scope.context,
-                              clear.contents,
+                              out.MutableContents(),
                               &size,
                               cipher.region.contents +
                               sizeof (SecretKey::Magic) - 1 +
@@ -274,16 +265,16 @@ namespace elle
         escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       // update the clear size.
-      clear.size += size;
+      out.Size(out.Size() + size);
 
       // finalise the ciphering process.
       if (::EVP_DecryptFinal_ex(&scope.context,
-                                clear.contents + size,
+                                out.MutableContents() + size,
                                 &size) == 0)
         escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       // update the clear size.
-      clear.size += size;
+      out.Size(out.Size() + size);
 
       return Status::Ok;
     }
@@ -302,7 +293,7 @@ namespace elle
         return true;
 
       // compare the internal region.
-      return (this->region != element.region);
+      return (this->region == element.region);
     }
 
     ///

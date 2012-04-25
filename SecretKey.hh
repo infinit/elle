@@ -69,16 +69,14 @@ namespace elle
       Status            Generate();
       Status            Generate(const Natural32);
 
-      Status Encrypt(Plain const& in, Cipher& out) const;
       Status Encrypt(elle::utility::WeakBuffer const& in, Cipher& out) const;
+      template<typename T>
+        Status Encrypt(T const& in, Cipher& out) const;
 
-      Status Decrypt(Cipher const& in, Clear& out) const;
 
-      template<typename T> Status
-        Encrypt(T const& in, Cipher& out) const;
-
-      template<typename T> Status
-        Decrypt(Cipher const& in, T& out) const;
+      Status Decrypt(Cipher const& in, elle::utility::Buffer& out) const;
+      template<typename T>
+        Status Decrypt(Cipher const& in, T& out) const;
 
       //
       // interfaces
