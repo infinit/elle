@@ -27,10 +27,6 @@ namespace elle
   namespace cryptography
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// this class represents a secret key for symmetric encryption.
     ///
@@ -69,12 +65,14 @@ namespace elle
       Status            Generate();
       Status            Generate(const Natural32);
 
-      Status Encrypt(elle::utility::WeakBuffer const& in, Cipher& out) const;
+      Status
+        Encrypt(elle::utility::WeakBuffer const& in, Cipher& out) const;
       template<typename T>
         Status Encrypt(T const& in, Cipher& out) const;
 
 
-      Status Decrypt(Cipher const& in, elle::utility::Buffer& out) const;
+      Status
+        Decrypt(Cipher const& in, elle::utility::Buffer& out) const;
       template<typename T>
         Status Decrypt(Cipher const& in, T& out) const;
 

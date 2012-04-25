@@ -92,38 +92,49 @@ namespace elle
                                Large*);
 
     public:
+      ///
+      /// this method decrypts a code which should actually be
+      /// an archive containing both a secret key and some data.
+      ///
+      /// this method starts by (i) extracting the key and data
+      /// in their encrypted forms (ii) decrypt the symmetric key
+      /// with the private key and (iii) decipher the data with the
+      /// symmetric key.
+      ///
       // Decrypt methods
       Status
-      Decrypt(elle::utility::WeakBuffer const& in, Clear& out) const;
-
-      Status
-      Decrypt(elle::standalone::Region const& in, Clear& out) const;
-
-      Status
-      Decrypt(Code const& in, Clear& out) const;
-
+        Decrypt(Code const& in, elle::utility::Buffer& out) const;
       template<typename T> Status
-      Decrypt(Code const& in, T& out) const;
+        Decrypt(Code const& in, T& out) const;
 
 
     public:
-      // Encrypt methods
+      ///
+      /// This methods encrypt the given data with the private key.
+      ///
+      /// although unusual, the private key can very well be used for
+      /// encrypting in which case the public key would be used for
+      /// decrypting.
+      ///
+      /// since (i) the private key size limits the size of the data that
+      /// can be encrypted and (ii) raising large data to large exponent
+      /// is very slow; the algorithm below consists in (i) generating
+      /// a secret key, (ii) ciphering the plain text with this key,
+      /// (iii) encrypting the secret key with the private key and finally
+      /// (iv) returning an archive containing the asymetrically-encrypted
+      /// secret key with the symmetrically-encrypted data.
+      ///
       Status
-      Encrypt(Region const& in,  Code& out) const;
-
-      Status
-      Encrypt(elle::utility::WeakBuffer const& in,  Code& out) const;
-
+        Encrypt(elle::utility::WeakBuffer const& in,  Code& out) const;
       template<typename T> Status
-      Encrypt(T const& in, Code& out) const;
+        Encrypt(T const& in, Code& out) const;
 
     public:
       // Sign methods
       Status
-      Sign(elle::utility::WeakBuffer const& in, Signature& out) const;
-
+        Sign(elle::utility::WeakBuffer const& in, Signature& out) const;
       Status
-      Sign(Region const& in, Signature& out) const;
+        Sign(Region const& in, Signature& out) const;
 
       template<typename T> Status
       Sign(T const& in, Signature& out) const;

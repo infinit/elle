@@ -8,7 +8,7 @@
 #include <elle/cryptography/SecretKeySerializer.hxx>
 #include <elle/cryptography/CodeSerializer.hxx>
 #include <elle/cryptography/CipherSerializer.hxx>
-#include <elle/utility/BufferSerializer.hxx>
+#include <elle/standalone/RegionSerializer.hxx>
 
 #include <comet/Comet.hh>
 
@@ -205,32 +205,8 @@ Status              PrivateKey::Create(Large*               n,
   return Status::Ok;
 }
 
-Status
-PrivateKey::Decrypt(elle::standalone::Region const& in, Clear& out) const
-{
-  return this->Decrypt(
-      elle::utility::WeakBuffer(in.contents, in.size),
-      out
-  );
-}
-
-Status
-PrivateKey::Decrypt(elle::cryptography::Code const& in, Clear& out) const
-{
-  return this->Decrypt(in.region, out);
-}
-
-///
-/// this method decrypts a code which should actually be
-/// an archive containing both a secret key and some data.
-///
-/// this method starts by (i) extracting the key and data
-/// in their encrypted forms (ii) decrypt the symmetric key
-/// with the private key and (iii) decipher the data with the
-/// symmetric key.
-///
-Status PrivateKey::Decrypt(elle::utility::WeakBuffer const&   in,
-                           Clear&                             out) const
+Status PrivateKey::Decrypt(elle::cryptography::Code const&    in,
+                           elle::utility::Buffer&             out) const
 {
   SecretKey         secret;
   Code              key;
@@ -239,9 +215,12 @@ Status PrivateKey::Decrypt(elle::utility::WeakBuffer const&   in,
   // (i)
   try
     {
-      std::cout << "<<<LOAD\n";
-      in.Reader() >> key >> data;
-      std::cout << ">>>LOAD\n";
+      std::cout << "<<<Load code encrypted secret key / data\n";
+      elle::utility::WeakBuffer(
+          in.region.contents,
+          in.region.size
+      ).Reader() >> key >> data;
+      std::cout << ">>>Load\n";
     }
   catch (std::runtime_error const& err)
     {
@@ -255,6 +234,12 @@ Status PrivateKey::Decrypt(elle::utility::WeakBuffer const&   in,
   // (ii)
   {
     size_t          size;
+    Region          region;
+
+    std::cout << "Decrypt secret key from:\n";
+    key.Dump();
+    std::cout << "-----------------------------------Decrypt secret key\n";
+
 
     // compute the size of the decrypted portion to come.
     if (::EVP_PKEY_decrypt(
@@ -265,32 +250,48 @@ Status PrivateKey::Decrypt(elle::utility::WeakBuffer const&   in,
           key.region.size) <= 0)
     escape(::ERR_error_string(ERR_get_error(), nullptr));
 
-    elle::utility::Buffer buf;
-    try
-      {
-        buf.Size(size);
-      }
-    catch (std::exception const& err)
-      {
-        escape("unable to allocate the required memory: %s", err.what());
-      }
-
-    auto buf_pair = buf.Release();
+    // allocate the required memory for the region object.
+    if (region.Prepare(size) == elle::Status::Error)
+      escape("unable to allocate the required memory");
 
     // perform the decrypt operation.
     if (::EVP_PKEY_decrypt(
           this->_contexts.decrypt,
-          reinterpret_cast<unsigned char*>(buf_pair.first.get()),
+          reinterpret_cast<unsigned char*>(region.contents),
           &size,
           reinterpret_cast<const unsigned char*>(key.region.contents),
           key.region.size) <= 0)
       escape(::ERR_error_string(ERR_get_error(), nullptr));
 
-    buf_pair.second = size;
+    // set the region size.
+    region.size = size;
+//    // compute the size of the decrypted portion to come.
+//    if (::EVP_PKEY_decrypt(
+//          this->_contexts.decrypt,
+//          nullptr,
+//          &size,
+//          key.region.contents,
+//          key.region.size) <= 0)
+//    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+//
+//    std::cout << "Got size: " << size << std::endl;
+//    elle::utility::Buffer buf(size);
+//
+//    // perform the decrypt operation.
+//    if (::EVP_PKEY_decrypt(
+//          this->_contexts.decrypt,
+//          buf.MutableContents(),
+//          &size,
+//          key.region.contents,
+//          key.region.size) <= 0)
+//      escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
     try
       {
-        elle::utility::Buffer(std::move(buf_pair)).Reader() >> secret;
+        elle::utility::WeakBuffer(
+            region.contents,
+            region.size
+        ).Reader() >> secret;
       }
     catch (std::exception const& err)
       {
@@ -364,30 +365,6 @@ Status PrivateKey::Sign(elle::utility::WeakBuffer const&  buffer,
 
 
 
-Status
-PrivateKey::Encrypt(Region const& in,  Code& out) const
-{
-  return this->Encrypt(
-      elle::utility::WeakBuffer(in.contents, in.size),
-      out
-  );
-}
-
-/////
-///// this method encrypts the given data with the private key.
-/////
-///// although unusual, the private key can very well be used for
-///// encrypting in which case the public key would be used for
-///// decrypting.
-/////
-///// since (i) the private key size limits the size of the data that
-///// can be encrypted and (ii) raising large data to large exponent
-///// is very slow; the algorithm below consists in (i) generating
-///// a secret key, (ii) ciphering the plain text with this key,
-///// (iii) encrypting the secret key with the private key and finally
-///// (iv) returning an archive containing the asymetrically-encrypted
-///// secret key with the symmetrically-encrypted data.
-/////
 Status PrivateKey::Encrypt(elle::utility::WeakBuffer const& in,
                            Code&                            out) const
 {
@@ -414,6 +391,7 @@ Status PrivateKey::Encrypt(elle::utility::WeakBuffer const& in,
     size_t                  size;
     elle::utility::Buffer   buf;
 
+    std::cout << "Encrypt secret key\n";
     try
       {
         buf.Writer() << secret;
@@ -428,7 +406,7 @@ Status PrivateKey::Encrypt(elle::utility::WeakBuffer const& in,
           this->_contexts.encrypt,
           nullptr,
           &size,
-          reinterpret_cast<const unsigned char*>(buf.Contents()),
+          buf.Contents(),
           buf.Size()) <= 0)
       escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
@@ -444,17 +422,17 @@ Status PrivateKey::Encrypt(elle::utility::WeakBuffer const& in,
     // the operation is equivalent to a signature.
     if (::EVP_PKEY_sign(
           this->_contexts.encrypt,
-          reinterpret_cast<unsigned char*>(key.region.contents),
+          key.region.contents,
           &size,
-          reinterpret_cast<const unsigned char*>(buf.Contents()),
+          buf.Contents(),
           buf.Size()) <= 0)
-      {
-        std::cout << "buf size: " << buf.Size() << std::endl;
         escape(::ERR_error_string(ERR_get_error(), nullptr));
-      }
 
     // set the key size.
     key.region.size = size;
+    std::cout << "Encrypted secret key:\n";
+    key.Dump();
+    std::cout << "######################################\n";
   }
 
   // (iv)
@@ -463,7 +441,7 @@ Status PrivateKey::Encrypt(elle::utility::WeakBuffer const& in,
 
     try
       {
-        std::cout << "<<<SAVE\n";
+        std::cout << "<<<SAVE encrypted secret key / data\n";
         buf.Writer() << key << data;
         std::cout << ">>>SAVE " << buf.Size() << "\n";
       }
