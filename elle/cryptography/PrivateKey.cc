@@ -234,64 +234,35 @@ Status PrivateKey::Decrypt(elle::cryptography::Code const&    in,
   // (ii)
   {
     size_t          size;
-    Region          region;
 
     std::cout << "Decrypt secret key from:\n";
     key.Dump();
     std::cout << "-----------------------------------Decrypt secret key\n";
-
 
     // compute the size of the decrypted portion to come.
     if (::EVP_PKEY_decrypt(
           this->_contexts.decrypt,
           nullptr,
           &size,
-          reinterpret_cast<const unsigned char*>(key.region.contents),
+          key.region.contents,
           key.region.size) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
-    // allocate the required memory for the region object.
-    if (region.Prepare(size) == elle::Status::Error)
-      escape("unable to allocate the required memory");
+    std::cout << "Got size: " << size << std::endl;
+    elle::utility::Buffer buf(size);
 
     // perform the decrypt operation.
     if (::EVP_PKEY_decrypt(
           this->_contexts.decrypt,
-          reinterpret_cast<unsigned char*>(region.contents),
+          buf.MutableContents(),
           &size,
-          reinterpret_cast<const unsigned char*>(key.region.contents),
+          key.region.contents,
           key.region.size) <= 0)
-      escape(::ERR_error_string(ERR_get_error(), nullptr));
-
-    // set the region size.
-    region.size = size;
-//    // compute the size of the decrypted portion to come.
-//    if (::EVP_PKEY_decrypt(
-//          this->_contexts.decrypt,
-//          nullptr,
-//          &size,
-//          key.region.contents,
-//          key.region.size) <= 0)
-//    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
-//
-//    std::cout << "Got size: " << size << std::endl;
-//    elle::utility::Buffer buf(size);
-//
-//    // perform the decrypt operation.
-//    if (::EVP_PKEY_decrypt(
-//          this->_contexts.decrypt,
-//          buf.MutableContents(),
-//          &size,
-//          key.region.contents,
-//          key.region.size) <= 0)
-//      escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+      escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
     try
       {
-        elle::utility::WeakBuffer(
-            region.contents,
-            region.size
-        ).Reader() >> secret;
+        buf.Reader() >> secret;
       }
     catch (std::exception const& err)
       {
