@@ -43,62 +43,17 @@ namespace elle
       if (Network::Procedures.find(I) != Network::Procedures.end())
         escape("this tag seems to have already been recorded");
 
-      // create a new selectionoid.
-      auto                                      selectionoid =
-        std::unique_ptr< Selectionoid< Procedure<I, O, E> > >(
-          new Selectionoid< Procedure<I, O, E> >(procedure));
-
-      // insert the selectionoid in the container.
-      result =
-        Network::Procedures.insert(
-          std::pair<const Tag, Network::Functionoid*>(I, selectionoid.get()));
+      Function f(boost::bind(&Procedure<I, O, E>::Skeleton,
+                             Procedure<I, O, E>(procedure), _1, _2, _3));
+      result = Network::Procedures.insert
+        (std::pair<const Tag, Function>(I, f));
 
       // check if the insertion was successful.
       if (result.second == false)
         escape("unable to insert the selectoinoid in the container");
 
-      // release tracking.
-      selectionoid.release();
-
       return StatusOk;
     }
-
-//
-// ---------- selectonoid -----------------------------------------------------
-//
-
-    ///
-    /// default constructor.
-    ///
-    template <typename P>
-    Network::Selectionoid<P>::Selectionoid(const P&             procedure):
-      procedure(procedure)
-    {
-    }
-
-    ///
-    /// this method forwards the request by calling the procedure's
-    /// Skeleton() method.
-    ///
-    template <typename P>
-    Status      Network::Selectionoid<P>::Call(Archive&         archive) const
-    {
-      return (this->procedure.Skeleton(archive));
-    }
-
-    ///
-    /// this method dumps the selectionoid.
-    ///
-    template <typename P>
-    Status      Network::Selectionoid<P>::Dump(const Natural32  margin) const
-    {
-      // dump the object.
-      if (this->procedure.Dump(margin) == StatusError)
-        escape("unable to dump the object");
-
-      return StatusOk;
-    }
-
   }
 }
 

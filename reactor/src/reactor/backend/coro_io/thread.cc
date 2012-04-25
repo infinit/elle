@@ -75,8 +75,11 @@ namespace reactor
       Thread::~Thread()
       {
         INFINIT_REACTOR_DEBUG(_name << ": die");
-        Coro_free(_coro);
-        _coro = 0;
+        if (_coro)
+          {
+            Coro_free(_coro);
+            _coro = 0;
+          }
       }
 
       /*---------------.
@@ -148,12 +151,14 @@ namespace reactor
         }
         catch (const std::exception& e)
         {
-          std::cerr << "Thread " << name() << " killed by exception: " << e.what() << "." << std::endl;
+          std::cerr << "Thread " << name() << " killed by exception: "
+                    << e.what() << "." << std::endl;
           std::abort();
         }
         catch (...)
         {
-          std::cerr << "Thread " << name() << " killed by unknown exception." << std::endl;
+          std::cerr << "Thread " << name() << " killed by unknown exception."
+                    << std::endl;
           std::abort();
         }
         Thread* caller = _caller;

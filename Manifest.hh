@@ -27,6 +27,7 @@
 #include <elle/network/Range.hh>
 #include <elle/network/Message.hh>
 #include <elle/network/Bundle.hh>
+#include <elle/network/fwd.hh>
 
 namespace elle
 {

@@ -99,10 +99,4 @@ namespace elle
   }
 }
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/network/Socket.hh>
-
 #endif

@@ -16,6 +16,7 @@ namespace reactor
   Operation::run(DurationOpt timeout)
   {
     Thread* current = _sched.current();
+    assert(current);
     start();
     if (!current->wait(*this, timeout))
     {

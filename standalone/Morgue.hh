@@ -1,31 +1,21 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 26 17:04:49 2011]
-//
-
 #ifndef ELLE_STANDALONE_MORGUE_HH
-#define ELLE_STANDALONE_MORGUE_HH
+# define ELLE_STANDALONE_MORGUE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/idiom/Close.hh>
+#  include <list>
+# include <elle/idiom/Open.hh>
 
-#include <elle/core/Void.hh>
-#include <elle/core/Natural.hh>
+# include <elle/idiom/Close.hh>
+#  include <reactor/signal.hh>
+#  include <reactor/thread.hh>
+# include <elle/idiom/Open.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Meta.hh>
+# include <elle/core/Void.hh>
+# include <elle/core/Natural.hh>
 
-#include <elle/concurrency/Timer.hh>
-
-#include <elle/idiom/Close.hh>
-# include <list>
-#include <elle/idiom/Open.hh>
+# include <elle/radix/Entity.hh>
+# include <elle/radix/Meta.hh>
+# include <elle/radix/Status.hh>
 
 namespace elle
 {
@@ -95,6 +85,7 @@ namespace elle
       // callbacks
       //
       Status            Bury();
+      void              GraveDigger();
 
       //
       // interfaces
@@ -107,7 +98,8 @@ namespace elle
       // attributes
       //
       Container         container;
-      Timer*            timer;
+      reactor::Signal   _corpses_available;
+      reactor::Thread   _deleter;
     };
 
   }

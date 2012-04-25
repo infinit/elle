@@ -12,6 +12,8 @@ namespace reactor
   | Construction |
   `-------------*/
 
+  static void action_wrapper(Thread::Action action);
+
   Thread::Thread(Scheduler&             scheduler,
                  std::string const&     name,
                  Action const&          action,
@@ -21,7 +23,8 @@ namespace reactor
     , _exception(0)
     , _waited()
     , _timeout(false)
-    , _thread(scheduler._manager, name, action)
+    , _thread(scheduler._manager, name, boost::bind(action_wrapper,
+                                                    action))
     , _scheduler(scheduler)
     , _dispose(dispose)
   {
@@ -80,6 +83,17 @@ namespace reactor
   /*----.
   | Run |
   `----*/
+
+
+  static void action_wrapper(Thread::Action action)
+  {
+    try
+      {
+        action();
+      }
+    catch (const Terminate&)
+      {}
+  }
 
   void
   Thread::_step()
@@ -186,6 +200,25 @@ namespace reactor
       return true;
   }
 
+  void Thread::terminate()
+  {
+    INFINIT_REACTOR_DEBUG(*this << ": terminate");
+    if (_scheduler.current() == this)
+      throw Terminate();
+    switch (state())
+      {
+        case state::running:
+          raise(new Terminate());
+          break;
+        case state::frozen:
+          raise(new Terminate());
+          _wait_abort();
+          break;
+        case state::done:
+          break;
+      }
+  }
+
   bool
   Thread::_wait(Thread* thread)
   {
@@ -200,8 +233,15 @@ namespace reactor
   {
     if (e == boost::system::errc::operation_canceled)
       return;
-    assert(state() == state::frozen);
     INFINIT_REACTOR_DEBUG(*this << ": timed out");
+    _wait_abort();
+  }
+
+  void
+  Thread::_wait_abort()
+  {
+    INFINIT_REACTOR_DEBUG(*this << ": abort wait");
+    assert(state() == state::frozen);
     BOOST_FOREACH (Waitable* waitable, _waited)
       waitable->_unwait(this);
     _waited.clear();

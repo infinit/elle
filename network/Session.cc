@@ -12,8 +12,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/concurrency/Scheduler.hh>
 #include <elle/network/Session.hh>
-
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 

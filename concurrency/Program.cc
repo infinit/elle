@@ -26,6 +26,8 @@
 # include <reactor/thread.hh>
 #include <elle/idiom/Open.hh>
 
+#include <hole/Hole.hh>
+
 namespace elle
 {
   namespace concurrency
@@ -78,9 +80,6 @@ namespace elle
       // QCoreApplication to bother parsing arguments.
       n = 0;
 
-      // allocate the QT program.
-      program->core = new ::QCoreApplication(n, NULL);
-
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // set the signal handlers.
       ::signal(SIGINT, &Program::Exception);
@@ -96,44 +95,16 @@ namespace elle
       return StatusOk;
     }
 
-    ///
-    /// this method stops the program.
-    ///
-    Status              Program::Exit()
+    void
+    Program::Exit()
     {
-      // exit the core application.
-      program->core->exit();
-      _exit = true;
-
-      return StatusOk;
+      _exit.signal();
     }
 
-    void qt_runner()
+    void
+    Program::Launch()
     {
-      // static const reactor::Duration delay
-      //   = boost::posix_time::milliseconds(10);
-      while (!Program::_exit)
-      {
-        QCoreApplication::processEvents();
-#undef yield
-        scheduler().current()->yield();//sleep(delay);
-      }
-    }
-
-    ///
-    /// this method processes events.
-    ///
-    Status              Program::Launch()
-    {
-      // check the program.
-      if ((program == NULL) || (program->core == NULL))
-        escape("unable to process events since the program has not "
-               "been set up");
-
-      reactor::Thread qt(scheduler(), "Qt event loop", &qt_runner);
-      scheduler().run();
-
-      return StatusOk;
+      elle::concurrency::scheduler().current()->wait(_exit);
     }
 
     ///
@@ -163,44 +134,6 @@ namespace elle
         }
     }
 
-#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
-    ///
-    /// this method attaches a broker to the program's event loop.
-    ///
-    Status              Program::Attach(Broker&                 broker)
-    {
-      ::QAbstractEventDispatcher*       dispatcher;
-
-      // retrieve the event dispatcher instance.
-      dispatcher = ::QAbstractEventDispatcher::instance();
-
-      // register the socket notifier.
-      dispatcher->registerSocketNotifier(&broker.notifier);
-
-      return StatusOk;
-    }
-
-    ///
-    /// this method detaches a broker from the program's event loop.
-    ///
-    Status              Program::Detach(Broker&                 broker)
-    {
-      ::QAbstractEventDispatcher*       dispatcher;
-
-      // retrieve the event dispatcher instance.
-      dispatcher = ::QAbstractEventDispatcher::instance();
-
-      // unregister the socket notifier.
-      dispatcher->unregisterSocketNotifier(&broker.notifier);
-
-      return StatusOk;
-    }
-#elif defined(INFINIT_WINDOWS)
-    // nothing
-#else
-# error "unsupported platform"
-#endif
-
 //
 // ---------- constructors & destructors --------------------------------------
 //
@@ -209,19 +142,14 @@ namespace elle
     /// default constructor.
     ///
     Program::Program()
-      : core(NULL)
     {}
 
     ///
     /// destructor.
     ///
     Program::~Program()
-    {
-      // releae the core.
-      if (this->core != NULL)
-        delete this->core;
-    }
+    {}
 
-    bool Program::_exit = false;
+    reactor::Signal Program::_exit;
   }
 }

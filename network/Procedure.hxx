@@ -1,29 +1,14 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon jul 18 17:40:44 2011]
-//
-
 #ifndef ELLE_NETWORK_PROCEDURE_HXX
-#define ELLE_NETWORK_PROCEDURE_HXX
+# define ELLE_NETWORK_PROCEDURE_HXX
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/radix/Arguments.hh>
-#include <elle/radix/Variables.hh>
-
-#include <elle/network/Session.hh>
-#include <elle/network/Bundle.hh>
-#include <elle/network/Inputs.hh>
-
-#include <elle/standalone/Maid.hh>
-#include <elle/standalone/Report.hh>
+# include <elle/network/Bundle.hh>
+# include <elle/network/Inputs.hh>
+# include <elle/network/Session.hh>
+# include <elle/network/TCPSocket.hh>
+# include <elle/radix/Arguments.hh>
+# include <elle/radix/Variables.hh>
+# include <elle/standalone/Maid.hh>
+# include <elle/standalone/Report.hh>
 
 namespace elle
 {
@@ -72,8 +57,12 @@ namespace elle
     template <const Tag I,
               const Tag O,
               const Tag E>
-    Status              Procedure<I, O, E>::Skeleton(Archive&   archive) const
+    Status              Procedure<I, O, E>::Skeleton(TCPSocket* socket,
+                                                     Locus& locus,
+                                                     Parcel&   parcel) const
     {
+      Archive& archive = *parcel.data;
+
       Callback<
         Status,
         typename Trait::Reference<
@@ -91,7 +80,6 @@ namespace elle
           >::Type
         >               outputs;
       Status            status;
-      Session*          session = elle::network::Session::session.Get();
 
       // call the prolog.
       if (this->prolog.Call() == StatusError)
@@ -113,19 +101,26 @@ namespace elle
       // outputs can still be accessed through the _outputs_ variable.
       Arguments<
         typename
-          Set::Union<
-            typename
+        Set::Union<
+          typename
+          Trait::Bare<
+            typename Message<I>::P
+            >::Type,
+              typename
               Trait::Bare<
-                typename Message<I>::P
-                >::Type,
-            typename
-              Trait::Bare<
-                typename Message<O>::P
-                >::Type
-            >::Type
-        >               arguments = Arguments<>::Union(inputs, outputs);
+              typename Message<O>::P
+              >::Type
+          >::Type
+          >               arguments = Arguments<>::Union(inputs, outputs);
 
       // call the routine.
+      Context ctx;
+      ctx.socket = socket;
+      ctx.parcel = &parcel;
+      std::string host;
+      locus.host.Convert(host);
+      ctx.host = host;
+      elle::network::current_context(ctx);
       status = arguments.Call(this->routine);
 
       // call the epilog.
@@ -142,14 +137,8 @@ namespace elle
           //
           Report& report = elle::standalone::Report::report.Get();
 
-          // check the socket.
-          if (session->socket == NULL)
-            escape("unable to reply with a null socket");
-
           // reply with the report.
-          if (session->socket->Reply(
-                Inputs<E>(report),
-                session) == StatusError)
+          if (socket->Reply(Inputs<E>(report)) == StatusError)
             escape("unable to reply with the status");
 
           // flush the report since it has been sent
@@ -180,13 +169,8 @@ namespace elle
             typename
               Message<O>::B::Inputs     bundle(outputs);
 
-            // check the socket.
-            if (session->socket == NULL)
-              escape("unable to reply with a null socket");
-
             // reply with the output bundle.
-            if (session->socket->Reply(bundle,
-                                       session) == StatusError)
+            if (socket->Reply(bundle) == StatusError)
               escape("unable to reply to the caller");
 
             break;

@@ -5,6 +5,7 @@
 
 # include <reactor/network/server.hh>
 # include <reactor/network/udp-socket.hh>
+# include <reactor/network/udp-server-socket.hh>
 # include <reactor/signal.hh>
 
 namespace reactor

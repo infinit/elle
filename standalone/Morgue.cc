@@ -1,20 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 26 17:10:36 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/standalone/Morgue.hh>
 
 #include <elle/concurrency/Callback.hh>
+#include <elle/concurrency/Scheduler.hh>
 
 namespace elle
 {
@@ -81,23 +68,30 @@ namespace elle
 // ---------- constructors & destructors --------------------------------------
 //
 
+    void Morgue::GraveDigger()
+    {
+      while (true)
+        {
+          elle::concurrency::scheduler().current()
+            ->wait(this->_corpses_available);
+          this->Bury();
+        }
+    }
+
     ///
     /// default constructor.
     ///
-    Morgue::Morgue():
-      timer(NULL)
-    {
-    }
+    Morgue::Morgue()
+      : _corpses_available()
+      , _deleter(elle::concurrency::scheduler(), "Grave digger",
+                 boost::bind(&Morgue::GraveDigger, this))
+    {}
 
     ///
     /// destructor.
     ///
     Morgue::~Morgue()
     {
-      // if present, delete the timer.
-      if (this->timer != NULL)
-        delete this->timer;
-
       // bury the pending instances.
       this->Bury();
     }

@@ -65,65 +65,11 @@ namespace elle
     {
     public:
       //
-      // classes
-      //
-
-      ///
-      /// this class represents the functionoid used to forward the call.
-      ///
-      class Functionoid:
-        public Entity
-      {
-      public:
-        //
-        // constructors & destructors
-        //
-        virtual ~Functionoid()
-        {
-        }
-
-        //
-        // methods
-        //
-        virtual Status  Call(Archive&) const = 0;
-      };
-
-      ///
-      /// this implementation takes an archive and triggers the
-      /// procedure's callback.
-      ///
-      template <typename P>
-      class Selectionoid:
-        public Functionoid
-      {
-      public:
-        //
-        // constructors & destructors
-        //
-        Selectionoid(const P&);
-
-        //
-        // methods
-        //
-        Status          Call(Archive&) const;
-
-        //
-        // interfaces
-        //
-
-        // dumpable
-        Status          Dump(const Natural32) const;
-
-        //
-        // attributes
-        //
-        P               procedure;
-      };
-
-      //
       // types
       //
-      typedef std::map<const Tag, Functionoid*>         Container;
+      typedef boost::function<elle::Status (TCPSocket*, Locus&, Parcel&)>
+      Function;
+      typedef std::map<const Tag, Function> Container;
       typedef typename Container::iterator              Iterator;
       typedef typename Container::const_iterator        Scoutor;
 
@@ -137,8 +83,6 @@ namespace elle
                 const Tag O,
                 const Tag E>
       static Status     Register(const Procedure<I, O, E>&);
-
-      static Status     Dispatch(std::shared_ptr<Parcel>&);
 
       static Status     Show(const Natural32 = 0);
 
@@ -161,13 +105,10 @@ namespace elle
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/AbstractSocket.hh>
 #include <elle/network/Data.hh>
 #include <elle/network/Header.hh>
 #include <elle/network/Host.hh>
 #include <elle/network/Inputs.hh>
-#include <elle/network/LocalServer.hh>
-#include <elle/network/LocalSocket.hh>
 #include <elle/network/Locus.hh>
 #include <elle/network/Message.hh>
 #include <elle/network/Outputs.hh>
@@ -178,10 +119,7 @@ namespace elle
 #include <elle/network/Range.hh>
 #include <elle/network/Raw.hh>
 #include <elle/network/Session.hh>
-#include <elle/network/Socket.hh>
 #include <elle/network/Tag.hh>
-#include <elle/network/TCPServer.hh>
 #include <elle/network/TCPSocket.hh>
-#include <elle/network/UDPSocket.hh>
 
 #endif
