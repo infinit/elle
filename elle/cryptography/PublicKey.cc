@@ -181,21 +181,6 @@ Status PublicKey::Create(Large* n, Large* e)
   return Status::Ok;
 }
 
-///
-/// this method encrypts the given data with the public key.
-///
-/// since the public key size limits the size of the data that
-/// can be encrypted and raising large data to large exponent
-/// is very slow; the algorithm below consists in (i) generating
-/// a secret key, (ii) ciphering the plain text with this key,
-/// (iii) encrypting the secret key with the public key and finally
-/// (iv) returning an archive containing the asymetrically-encrypted
-/// secret key with the symmetrically-encrypted data.
-///
-/// note however that should the plain be small enough, (1) a direct
-/// computation is performed. otherwise, (2) the data is symmetrically
-/// encrypted.
-///
 Status  PublicKey::Encrypt(elle::utility::WeakBuffer const& buffer,
                            Code&                            code) const
 {
@@ -289,21 +274,31 @@ Status  PublicKey::Encrypt(elle::utility::WeakBuffer const& buffer,
   return Status::Ok;
 }
 
-///
-/// this method verifies that the non-signed text is equal to the
-/// plain text.
-///
-/// note that, as for the Sign() method, this method computes
-/// the plain's digest before forwarding to the other Verify()
-/// method.
-///
-Status              PublicKey::Verify(const Signature&      signature,
-                                      const Plain&          plain) const
+//Status PublicKey::Verify(Signature const& signature,
+//                         Code const& code) const
+//{
+//  return this->Verify(
+//      signature,
+//      elle::utility::WeakBuffer(code.region.contents, code.region.size)
+//  );
+//}
+//
+//Status PublicKey::Verify(Signature const& signature,
+//                         Plain const& plain) const
+//{
+//  return this->Verify(
+//      signature,
+//      elle::utility::WeakBuffer(plain.contents, plain.size)
+//  );
+//}
+
+Status PublicKey::Verify(const Signature&                 signature,
+                         elle::utility::WeakBuffer const& buffer) const
 {
   Digest            digest;
 
   // compute the plain's digest.
-  if (OneWay::Hash(plain, digest) == Status::Error)
+  if (OneWay::Hash(buffer, digest) == Status::Error)
     escape("unable to hash the plain");
 
   // verify.
@@ -318,23 +313,6 @@ Status              PublicKey::Verify(const Signature&      signature,
   return Status::Ok;
 }
 
-///
-/// this method decrypts a code which should actually be
-/// an archive containing both a secret key and some data.
-///
-/// note that, although it may sound strange to 'decrypt' with a
-/// public key, it does not matter as both keys act as the other's
-/// opposite.
-///
-/// therefore the public key can be used to encrypt in which case
-/// the private key will be used for decrypting or the other way
-/// around, which is what this function is for.
-///
-/// this method starts by (i) extracting the key and data
-/// in their encrypted forms (ii) decrypt the symmetric key
-/// with the public key and (iii) decipher the data with the
-/// symmetric key.
-///
 Status PublicKey::Decrypt(Code const& in, elle::utility::Buffer& out) const
 {
   SecretKey         secret;
