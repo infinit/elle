@@ -62,6 +62,9 @@ namespace elle
       Status            Create(Large*,
                                Large*);
 
+      // XXX harmoniser les methodes encrypt/decrypt/sign/verify
+      // pour prendre des Plain sans les serializer d'abord.
+
     public:
       ///
       /// this method encrypts the given data with the public key.
