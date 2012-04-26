@@ -52,6 +52,7 @@ namespace elle
     public:
       BufferArchive(StreamType& stream);
       BufferArchive(BufferArchive const& other);
+      BufferArchive(typename StreamType::BufferType& buffer);
 
     public:
       StreamType& Stream() { return _stream; }

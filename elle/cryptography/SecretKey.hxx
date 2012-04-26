@@ -20,12 +20,12 @@ namespace elle
     template<typename T> Status
       SecretKey::Encrypt(T const& in, Cipher& out) const
       {
-        elle::utility::Buffer buf;
         static_assert(
             !std::is_same<T, elle::utility::Buffer>::value,
             "Explicitly cast to WeakBuffer needed"
         );
 
+        elle::utility::Buffer buf;
         try
           {
             buf.Writer() << in;

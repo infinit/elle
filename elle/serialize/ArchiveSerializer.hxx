@@ -1,6 +1,9 @@
 #ifndef ELLE_SERIALIZE_ARCHIVESERIALIZER_HXX
 # define ELLE_SERIALIZE_ARCHIVESERIALIZER_HXX
 
+// XXX
+# include <iostream>
+
 # include <type_traits>
 
 # include "ArchivableClass.hh"

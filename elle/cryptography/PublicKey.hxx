@@ -17,6 +17,11 @@ namespace elle
     template<typename T>
       Status PublicKey::Encrypt(T const& in, Code& out) const
       {
+        static_assert(
+            !std::is_same<T, elle::utility::Buffer>::value,
+            "explicit cast to WeakBuffer needed"
+        );
+
         elle::utility::Buffer buf;
 
         try
@@ -57,6 +62,11 @@ namespace elle
     template<typename T>
       Status PublicKey::Verify(Signature const& signature, T const& any) const
       {
+        static_assert(
+            !std::is_same<T, elle::utility::Buffer>::value,
+            "explicit cast to WeakBuffer needed"
+        );
+
         elle::utility::Buffer buf;
 
         try

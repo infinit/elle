@@ -44,6 +44,11 @@ namespace elle
     template<typename T>  Status
       PrivateKey::Encrypt(T const& in, Code& out) const
       {
+        static_assert(
+            !std::is_same<T, elle::utility::Buffer>::value,
+            "explicit cast to WeakBuffer needed"
+        );
+
         elle::utility::Buffer buf;
 
         try
@@ -64,8 +69,12 @@ namespace elle
     template<typename T>  Status
       PrivateKey::Sign(T const& in, Signature& out) const
       {
-        elle::utility::Buffer buf;
+        static_assert(
+            !std::is_same<T, elle::utility::Buffer>::value,
+            "explicit cast to WeakBuffer needed"
+        );
 
+        elle::utility::Buffer buf;
         try
           {
             buf.Writer() << in;
