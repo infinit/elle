@@ -64,4 +64,6 @@ namespace elle
   ELLE_IO_USING_FILEABLE_LOAD(T);             \
   ELLE_IO_USING_FILEABLE_STORE(T)             \
 
+# include <elle/io/Fileable.hxx>
+
 #endif

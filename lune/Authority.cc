@@ -1,7 +1,16 @@
+#include <elle/cryptography/PublicKeySerializer.hxx>
+#include <elle/cryptography/PrivateKeySerializer.hxx>
+#include <elle/cryptography/CipherSerializer.hxx>
+#include <elle/serialize/TupleSerializer.hxx>
+
+#include <lune/AuthoritySerializer.hxx>
+
+#include <nucleus/proton/AddressSerializer.hxx>
+#include <nucleus/proton/AddressSerializer.hxx>
+
 #include <elle/io/File.hh>
 
 #include <lune/Authority.hh>
-#include <lune/AuthoritySerializer.hxx>
 #include <lune/Lune.hh>
 
 namespace lune
@@ -98,7 +107,7 @@ namespace lune
       case Authority::TypePair:
         {
           // encrypt the authority.
-          if (key.Encrypt(this->K, *this->k,
+          if (key.Encrypt(std::make_tuple(this->K, *this->k),
                           *this->cipher) == elle::Status::Error)
             escape("unable to encrypt the authority");
 
@@ -147,8 +156,8 @@ namespace lune
           this->k = new elle::cryptography::PrivateKey;
 
           // decrypt the authority.
-          if (key.Decrypt(*this->cipher,
-                          this->K, *this->k) == elle::Status::Error)
+          auto res = std::make_tuple(this->K, *this->k);
+          if (key.Decrypt(*this->cipher, res) == elle::Status::Error)
             escape("unable to decrypt the authority");
 
           break;

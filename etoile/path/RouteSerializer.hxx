@@ -4,7 +4,6 @@
 # include <cassert>
 
 # include <elle/serialize/VectorSerializer.hxx>
-# include <etoile/path/SlabSerializer.hxx>
 
 # include <etoile/path/Route.hh>
 

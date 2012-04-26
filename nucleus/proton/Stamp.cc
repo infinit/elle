@@ -1,16 +1,6 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri jun 17 14:01:30 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/serialize/TupleSerializer.hxx>
+#include <nucleus/proton/LocationSerializer.hxx>
 
 #include <nucleus/proton/Stamp.hh>
 
@@ -44,7 +34,7 @@ namespace nucleus
     elle::Status        Stamp::Seal(elle::cryptography::PrivateKey const&     k)
     {
       // sign the attributes.
-      if (k.Sign(this->master, this->slave,
+      if (k.Sign(std::make_tuple(this->master, this->slave),
                  this->signature) == elle::Status::Error)
         escape("unable to sign the attributes");
 
@@ -60,7 +50,7 @@ namespace nucleus
       // sign the attributes.
       if (Infinit::Authority.K.Verify(
             this->signature,
-            this->master, this->slave) == elle::Status::Error)
+            std::make_tuple(this->master, this->slave)) == elle::Status::Error)
         escape("this stamp seems not to have been issued by the oracle");
 
       return elle::Status::Ok;

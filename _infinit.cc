@@ -14,7 +14,9 @@
 
 #include <Infinit.hh>
 
-#include <elle/types.hh>
+#include <elle/Elle.hh>
+#include <elle/utility/Parser.hh>
+
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 #include <agent/Agent.hh>
@@ -41,7 +43,7 @@ elle::Status            Main(elle::Natural32                    argc,
     escape("unable to set up the program");
 
   // allocate a new parser.
-  Infinit::Parser = new elle::Parser(argc, argv);
+  Infinit::Parser = new elle::utility::Parser(argc, argv);
 
   // specify a program description.
   if (Infinit::Parser->Description(Infinit::Copyright) == elle::Status::Error)

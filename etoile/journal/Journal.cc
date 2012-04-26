@@ -1,16 +1,4 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [fri jun 24 14:23:50 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/standalone/Morgue.hh>
 
 #include <etoile/journal/Journal.hh>
 

@@ -27,7 +27,7 @@ void test_encrypt()
 
   std::cout << "bim\n";
 
-  show_assert(pair.k.Encrypt(my_secret_text, code));
+  show_assert(pair.K.Encrypt(my_secret_text, code));
 
   std::cout << "encrypted size: " << code.region.size << "\n";
 

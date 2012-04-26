@@ -6,7 +6,7 @@
 
 #include <elle/serialize/HexadecimalArchive.hh>
 
-#include <nucleus/proton/ImmutableBlock.hh>
+#include <nucleus/proton/ImmutableBlockSerializer.hxx>
 
 #include <lune/Lune.hh>
 #include <Infinit.hh>

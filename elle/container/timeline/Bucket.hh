@@ -13,7 +13,6 @@ namespace elle
 {
 
   using namespace radix;
-  using namespace utility;
 
   namespace container
   {

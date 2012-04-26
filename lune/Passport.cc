@@ -1,3 +1,7 @@
+
+#include <elle/serialize/TupleSerializer.hxx>
+#include <hole/LabelSerializer.hxx>
+
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
@@ -39,8 +43,7 @@ namespace lune
   elle::Status          Passport::Seal(const Authority&         authority)
   {
     // sign the pair with the authority.
-    if (authority.k->Sign(this->label,
-                          this->id,
+    if (authority.k->Sign(std::make_tuple(this->label, this->id),
                           this->signature) == elle::Status::Error)
       escape("unable to sign the pair with the authority");
 
@@ -55,8 +58,8 @@ namespace lune
   {
     // verify the signature.
     if (authority.K.Verify(this->signature,
-                           this->label,
-                           this->id) == elle::Status::Error)
+                           std::make_tuple(this->label,
+                                           this->id)) == elle::Status::Error)
       escape("unable to verify the signature");
 
     return elle::Status::Ok;

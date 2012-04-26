@@ -3,6 +3,7 @@
 #include <elle/standalone/ReportSerializer.hxx>
 #include <elle/utility/BufferSerializer.hxx>
 #include <elle/network/HeaderSerializer.hxx>
+#include <nucleus/proton/BlockSerializer.hxx>
 
 #include <elle/network/Network.hh>
 #include <elle/standalone/Morgue.hh>

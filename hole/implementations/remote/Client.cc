@@ -11,6 +11,11 @@
 #include <elle/utility/Time.hh>
 #include <elle/network/Network.hh>
 
+#include <lune/PassportSerializer.hxx>
+#include <nucleus/proton/AddressSerializer.hxx>
+#include <nucleus/proton/VersionSerializer.hxx>
+#include <nucleus/proton/BlockSerializer.hxx>
+
 #include <hole/implementations/remote/Client.hh>
 #include <hole/implementations/remote/Manifest.hh>
 

@@ -7,7 +7,7 @@
 #include <elle/utility/Buffer.hh>
 #include <elle/utility/BufferSerializer.hxx>
 
-#include <nucleus/proton/History.hh>
+#include <nucleus/proton/HistorySerializer.hxx>
 
 #include <lune/Lune.hh>
 

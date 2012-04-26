@@ -1,9 +1,9 @@
 #ifndef  ELLE_NETWORK_BUNDLE_SERIALIZE_HXX
 # define ELLE_NETWORK_BUNDLE_SERIALIZE_HXX
 
-# include <elle/network/Bundle.hh>
+# include <elle/radix/ArgumentsSerializer.hxx>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/network/Bundle.hh>
 
 namespace elle
 {
@@ -30,7 +30,9 @@ namespace elle
       template<typename Archive>
         static void Serialize(Archive& ar, Type& value, unsigned int version)
         {
-          static_assert(false, "biet");
+          assert(version == 0);
+          ar & value.tag;
+          ar & value.arguments;
         }
     };
 
@@ -55,7 +57,9 @@ namespace elle
       template<typename Archive>
         static void Serialize(Archive& ar, Type& value, unsigned int version)
         {
-          static_assert(false, "biet");
+          assert(version == 0);
+          ar & value.tag;
+          ar & value.arguments;
         }
     };
   }

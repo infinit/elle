@@ -3,7 +3,6 @@
 
 # include <cassert>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
 # include <elle/standalone/RegionSerializer.hxx>
 
 # include <elle/cryptography/Digest.hh>

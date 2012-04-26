@@ -5,6 +5,14 @@
 #include <elle/network/BundleSerializer.hxx>
 #include <elle/standalone/ReportSerializer.hxx>
 
+#include <lune/PassportSerializer.hxx>
+
+#include <nucleus/proton/AddressSerializer.hxx>
+#include <nucleus/proton/BlockSerializer.hxx>
+#include <nucleus/proton/VersionSerializer.hxx>
+
+#include <hole/implementations/slug/ClusterSerializer.hxx>
+
 #include <elle/network/Network.hh>
 #include <elle/standalone/Morgue.hh>
 

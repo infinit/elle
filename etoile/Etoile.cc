@@ -1,16 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar  3 22:36:08 2010]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/cryptography/Random.hh>
 
 #include <etoile/Etoile.hh>
 #include <agent/Agent.hh>
@@ -73,7 +62,7 @@ elle::Status          Etoile::Initialize()
   {
     elle::String string;
 
-    if (cryptography::Random::Generate(string) == elle::Status::Error)
+    if (elle::cryptography::Random::Generate(string) == elle::Status::Error)
       escape("unable to generate a random string");
 
     if (Etoile::Phrase.Create(string,

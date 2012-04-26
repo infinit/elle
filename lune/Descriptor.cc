@@ -1,8 +1,11 @@
+
+#include <nucleus/proton/AddressSerializer.hxx>
+#include <lune/DescriptorSerializer.hxx>
+
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
 #include <lune/Descriptor.hh>
-#include <lune/DescriptorSerializer.hxx>
 #include <lune/Lune.hh>
 
 namespace lune
@@ -79,13 +82,13 @@ namespace lune
   elle::Status          Descriptor::Seal(const Authority&       authority)
   {
     // sign the attributesr with the authority.
-    if (authority.k->Sign(this->name,
-                          this->model,
-                          this->root,
-                          this->history,
-                          this->extent,
-                          this->contention,
-                          this->balancing,
+    if (authority.k->Sign(std::make_tuple(this->name,
+                                          this->model,
+                                          this->root,
+                                          this->history,
+                                          this->extent,
+                                          this->contention,
+                                          this->balancing),
                           this->signature) == elle::Status::Error)
       escape("unable to sign the attributes with the authority");
 
@@ -100,13 +103,13 @@ namespace lune
   {
     // verify the signature.
     if (authority.K.Verify(this->signature,
-                           this->name,
-                           this->model,
-                           this->root,
-                           this->history,
-                           this->extent,
-                           this->contention,
-                           this->balancing) == elle::Status::Error)
+                           std::make_tuple(this->name,
+                                           this->model,
+                                           this->root,
+                                           this->history,
+                                           this->extent,
+                                           this->contention,
+                                           this->balancing)) == elle::Status::Error)
       escape("unable to verify the signature");
 
     return elle::Status::Ok;

@@ -1,3 +1,4 @@
+#include <elle/container/timeline/Bucket.hh>
 #include <elle/container/timeline/Timeline.hh>
 #include <elle/concurrency/Callback.hh>
 
@@ -116,7 +117,7 @@ namespace etoile
       // as soon as the number of available slots is reached.
       for (i = 0; i < size; i++)
         {
-          elle::Bucket<Riffle*>*        bucket;
+          elle::container::timeline::Bucket<Riffle*>*        bucket;
           Riffle*                       riffle;
 
           // stop if there are enough available slots to proceed.
@@ -486,7 +487,7 @@ namespace etoile
       // their update timestamp has reached the threshold.
       while (Shrub::Queue.container.empty() == false)
         {
-          elle::Bucket<Riffle*>*        bucket;
+          elle::container::timeline::Bucket<Riffle*>*        bucket;
           Riffle*                       riffle;
 
           // retrieve the least-recently-used bucket.

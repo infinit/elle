@@ -15,8 +15,8 @@ ELLE_SERIALIZE_SIMPLE(elle::network::Locus,
 {
   assert(version == 0);
 
-  archive & host;
-  archive & port;
+  archive & value.host;
+  archive & value.port;
 }
 
 #endif

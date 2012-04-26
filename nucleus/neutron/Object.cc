@@ -1,3 +1,12 @@
+#include <elle/cryptography/DigestSerializer.hxx>
+#include <elle/serialize/TupleSerializer.hxx>
+#include <elle/utility/TimeSerializer.hxx>
+#include <nucleus/proton/VersionSerializer.hxx>
+#include <nucleus/proton/AddressSerializer.hxx>
+#include <nucleus/neutron/AttributesSerializer.hxx>
+#include <nucleus/neutron/TokenSerializer.hxx>
+#include <nucleus/neutron/TraitSerializer.hxx>
+
 #include <elle/cryptography/PrivateKey.hh>
 
 #include <nucleus/neutron/Object.hh>
@@ -185,14 +194,12 @@ namespace nucleus
           this->data.version += 1;
 
           // sign the archive with the author key.
-          if (k.Sign(this->data.contents,
-                     this->data.size,
-                     this->data.stamp,
-                     this->data.version,
-
-                     this->meta.owner.token,
-                     this->meta.access,
-
+          if (k.Sign(std::make_tuple(this->data.contents,
+                                     this->data.size,
+                                     this->data.stamp,
+                                     this->data.version,
+                                     this->meta.owner.token,
+                                     this->meta.access),
                      this->data.signature) == elle::Status::Error)
             escape("unable to sign the data archive");
 
@@ -233,14 +240,12 @@ namespace nucleus
 
               // sign the meta data, making sure to include the access
               // fingerprint.
-              if (k.Sign(this->meta.owner.permissions,
-                         this->meta.genre,
-                         this->meta.stamp,
-                         this->meta.attributes,
-                         this->meta.version,
-
-                         fingerprint,
-
+              if (k.Sign(std::make_tuple(this->meta.owner.permissions,
+                                         this->meta.genre,
+                                         this->meta.stamp,
+                                         this->meta.attributes,
+                                         this->meta.version,
+                                         fingerprint),
                          this->meta.signature) == elle::Status::Error)
                 escape("unable to sign the meta archive");
             }
@@ -252,12 +257,11 @@ namespace nucleus
               //
 
               // sign the meta data.
-              if (k.Sign(this->meta.owner.permissions,
-                         this->meta.genre,
-                         this->meta.stamp,
-                         this->meta.attributes,
-                         this->meta.version,
-
+              if (k.Sign(std::make_tuple(this->meta.owner.permissions,
+                                         this->meta.genre,
+                                         this->meta.stamp,
+                                         this->meta.attributes,
+                                         this->meta.version),
                          this->meta.signature) == elle::Status::Error)
                 escape("unable to sign the meta archive");
             }
@@ -327,26 +331,23 @@ namespace nucleus
 
             // verify the meta part, including the access fingerprint.
             if (this->owner.K.Verify(this->meta.signature,
-
-                                     this->meta.owner.permissions,
-                                     this->meta.genre,
-                                     this->meta.stamp,
-                                     this->meta.attributes,
-                                     this->meta.version,
-
-                                     fingerprint) == elle::Status::Error)
+                                     std::make_tuple(this->meta.owner.permissions,
+                                                     this->meta.genre,
+                                                     this->meta.stamp,
+                                                     this->meta.attributes,
+                                                     this->meta.version,
+                                                     fingerprint)) == elle::Status::Error)
               escape("unable to verify the meta's signature");
           }
         else
           {
             // verify the meta part.
             if (this->owner.K.Verify(this->meta.signature,
-
-                                     this->meta.owner.permissions,
-                                     this->meta.genre,
-                                     this->meta.stamp,
-                                     this->meta.attributes,
-                                     this->meta.version) == elle::Status::Error)
+                                     std::make_tuple(this->meta.owner.permissions,
+                                                     this->meta.genre,
+                                                     this->meta.stamp,
+                                                     this->meta.attributes,
+                                                     this->meta.version)) == elle::Status::Error)
               escape("unable to verify the meta's signature");
           }
       }
@@ -434,14 +435,12 @@ namespace nucleus
       {
         // verify the signature.
         if (author.Verify(this->data.signature,
-
-                          this->data.contents,
-                          this->data.size,
-                          this->data.stamp,
-                          this->data.version,
-
-                          this->meta.owner.token,
-                          this->meta.access) == elle::Status::Error)
+                          std::make_tuple(this->data.contents,
+                                          this->data.size,
+                                          this->data.stamp,
+                                          this->data.version,
+                                          this->meta.owner.token,
+                                          this->meta.access)) == elle::Status::Error)
           escape("unable to verify the data signature");
       }
 

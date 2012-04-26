@@ -5,7 +5,19 @@
 #include <elle/standalone/Morgue.hh>
 
 #include <elle/network/BundleSerializer.hxx>
+#include <elle/network/HeaderSerializer.hxx>
+#include <elle/standalone/ReportSerializer.hxx>
 #include <elle/utility/BufferSerializer.hxx>
+
+#include <nucleus/neutron/TraitSerializer.hxx>
+#include <nucleus/neutron/RangeSerializer.hxx>
+#include <nucleus/neutron/RecordSerializer.hxx>
+#include <nucleus/neutron/EntrySerializer.hxx>
+
+#include <etoile/path/WaySerializer.hxx>
+#include <etoile/path/CheminSerializer.hxx>
+#include <etoile/gear/IdentifierSerializer.hxx>
+#include <etoile/miscellaneous/AbstractSerializer.hxx>
 
 #include <etoile/portal/Portal.hh>
 

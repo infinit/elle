@@ -7,44 +7,37 @@
 
 # include <nucleus/neutron/Range.hh>
 
-namespace elle
+
+ELLE_SERIALIZE_SPLIT_T1(nucleus::neutron::Range);
+
+ELLE_SERIALIZE_SPLIT_T1_LOAD(nucleus::neutron::Range,
+                             archive,
+                             value,
+                             version)
 {
-  namespace serialize
-  {
-    template<typename T>
-      struct ArchiveSerializer<nucleus::proton::Range<T>>
-        : public SplitSerializer<nucleus::proton::Range<T>>
-      {
-        template<typename Archive> static void
-          Save(Archive& ar,
-               nucleus::proton::Range<T> const& value,
-               unsigned int version)
-          {
-            assert(version == 0);
+  assert(version == 0);
 
-            archive << static_cast<Archive::ListSizeType>(value.container.size());
+  typename Archive::SequenceSizeType size;
+  archive >> size;
 
-            auto it = value.container.begin(),
-                 end = value.container.end();
-            for (; it != end; ++it)
-                archive << *(*it);
-          }
-
-        template<typename Archive> static void
-          Load(Archive& ar,
-               nucleus::proton::Range<T>& value,
-               unsigned int version)
-          {
-            assert(version == 0);
-
-            Archive::ListSizeType size;
-            archive >> size;
-
-            for (Archive::ListSizeType i = 0; i < size; ++i)
-                value.container.push_back(archive.Construct<T>());
-          }
-      };
-  }
+  for (typename Archive::SequenceSizeType i = 0; i < size; ++i)
+    value.container.push_back(archive.template Construct<Type>());
 }
+
+ELLE_SERIALIZE_SPLIT_T1_SAVE(nucleus::neutron::Range,
+                             archive,
+                             value,
+                             version)
+{
+  assert(version == 0);
+
+  archive << static_cast<typename Archive::SequenceSizeType>(value.container.size());
+
+  auto it = value.container.begin(),
+       end = value.container.end();
+  for (; it != end; ++it)
+    archive << *(*it);
+}
+
 
 #endif
