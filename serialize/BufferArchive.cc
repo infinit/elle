@@ -16,6 +16,12 @@ BufferArchive<mode>::BufferArchive(BufferArchive const& other)
   , _stream(other._stream)
 {}
 
+template<ArchiveMode mode>
+BufferArchive<mode>::BufferArchive(typename StreamType::BufferType& buffer)
+  : BaseClass(this->_stream)
+  , _stream(buffer)
+{}
+
 
 template class BufferArchive<ArchiveMode::Input>;
 template class BufferArchive<ArchiveMode::Output>;

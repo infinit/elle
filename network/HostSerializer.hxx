@@ -39,7 +39,7 @@ ELLE_SERIALIZE_SIMPLE(elle::network::Host,
 {
   assert(version == 0);
   archive & value.type;
-  archive & value.host;
+  archive & value.location;
 }
 
 #endif

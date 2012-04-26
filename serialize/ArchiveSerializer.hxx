@@ -11,6 +11,8 @@
 
 namespace elle { namespace serialize {
 
+    template<typename T> struct StoreClassVersion;
+
     ///
     /// The BaseArchiveSerializer define common standard function involved in
     /// the serialization process. You might want to derive from this struct for
