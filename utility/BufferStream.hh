@@ -12,12 +12,15 @@ namespace elle
 
     class InputBufferStream
     {
+    public:
+      typedef WeakBuffer const    BufferType;
+
     private:
-      WeakBuffer        _buffer;
+      BufferType        _buffer;
       size_t            _idx;
 
     public:
-      InputBufferStream(WeakBuffer const& input);
+      InputBufferStream(BufferType& input);
       InputBufferStream(InputBufferStream const& other);
 
       size_t BytesLeft() const;
@@ -31,11 +34,14 @@ namespace elle
 
     class OutputBufferStream
     {
+    public:
+      typedef Buffer                BufferType;
+
     private:
-      Buffer&       _buffer;
+      BufferType&       _buffer;
 
     public:
-      OutputBufferStream(Buffer& output);
+      OutputBufferStream(BufferType& output);
       OutputBufferStream(OutputBufferStream const& other);
 
     /// The following methods make this class "std::ostream like".

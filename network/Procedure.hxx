@@ -90,8 +90,6 @@ namespace elle
               const Tag E>
     Status Procedure<I, O, E>::Skeleton(elle::utility::Buffer& buffer) const
     {
-
-
       elle::serialize::InputBufferArchive archive(buffer);
       ProcedureSkeletonExtractor extractor(archive);
 
