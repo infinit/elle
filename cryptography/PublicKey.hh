@@ -62,18 +62,67 @@ namespace elle
       Status            Create(Large*,
                                Large*);
 
-      Status            Verify(const Signature&,
-                               const Plain&) const;
-
+    public:
+      ///
+      /// this method encrypts the given data with the public key.
+      ///
+      /// since the public key size limits the size of the data that can be
+      /// encrypted and raising large data to large exponent is very slow; the
+      /// algorithm below consists in (i) generating a secret key, (ii)
+      /// ciphering the plain text with this key, (iii) encrypting the secret
+      /// key with the public key and finally (iv) returning an archive
+      /// containing the asymetrically-encrypted secret key with the
+      /// symmetrically-encrypted data.
+      ///
+      /// note however that should the plain be small enough, (1) a direct
+      /// computation is performed. otherwise, (2) the data is symmetrically
+      /// encrypted.
+      ///
       Status
         Encrypt(elle::utility::WeakBuffer const& buffer, Code& out) const;
       template <typename T> Status
         Encrypt(T const& in, Code& out) const;
 
+    public:
+      ///
+      /// this method decrypts a code which should actually be an archive
+      /// containing both a secret key and some data.
+      ///
+      /// note that, although it may sound strange to 'decrypt' with a public
+      /// key, it does not matter as both keys act as the other's opposite.
+      ///
+      /// therefore the public key can be used to encrypt in which case the
+      /// private key will be used for decrypting or the other way around,
+      /// which is what this function is for.
+      ///
+      /// this method starts by (i) extracting the key and data in their
+      /// encrypted forms (ii) decrypt the symmetric key with the public key
+      /// and (iii) decipher the data with the symmetric key.
+      ///
       Status
         Decrypt(Code const& in, elle::utility::Buffer& out) const;
       template <typename T> Status
         Decrypt(Code const& in, T& out) const;
+
+    public:
+      ///
+      /// this method verifies that the non-signed text is equal to the plain
+      /// text.
+      ///
+      /// note that, as for the Sign() method, this method computes the plain's
+      /// digest before forwarding to the other Verify() method.
+      ///
+      //Status
+      //  Verify(Signature const& signature,
+      //         Code const& code) const;
+      //Status
+      //  Verify(Signature const& signature,
+      //         Plain const& plain) const;
+      Status
+        Verify(Signature const& signature,
+               elle::utility::WeakBuffer const& plain) const;
+      template <typename T> Status
+        Verify(Signature const& signature, T const& any) const;
 
       //
       // interfaces
@@ -110,69 +159,9 @@ namespace elle
       //
       ::EVP_PKEY const* key() const { return this->_key; }
 
-    public:
-      ///
-      /// this methods are required because the compiler, given an Archive
-      /// object will call a template-based method instead of the Plain one.
-      ///
-      /// we do not want this especially because the template-based methods
-      /// build archives and we are already receiving an archive.
-      ///
-
-      // XXX
-      //Status            Encrypt(const Archive&          archive,
-      //                          Code&                   code) const
-      //{
-      //  return (this->Encrypt(Plain(archive.contents, archive.size),
-      //                        code));
-      //}
-
-      //Status            Verify(const Signature&         signature,
-      //                         const Archive&           archive) const
-      //{
-      //  return (this->Verify(signature,
-      //                       Plain(archive.contents, archive.size)));
-      //}
-
-      //Status            Decrypt(const Code&             code,
-      //                          Archive&                archive) const
-      //{
-      //  Clear           clear;
-
-      //  // decrypt the code.
-      //  if (this->Decrypt(code, clear) == Status::Error)
-      //    escape("unable to decrypt the code");
-
-      //  // prepare the archive.
-      //  if (archive.Acquire(clear) == Status::Error)
-      //    escape("unable to prepare the archive");
-
-      //  // detach the data so that not both the clear and archive
-      //  // release the data.
-      //  if (clear.Detach() == Status::Error)
-      //    escape("unable to detach the clear's data");
-
-      //  return Status::Ok;
-      //}
-
-      //
-      // variadic templates
-      //
-
 
       // verify
-      template <typename T,
-                typename... TT>
-      Status            Verify(const Signature&,
-                               const T&,
-                               const TT&...) const;
 
-      // decrypt
-      template <typename T,
-                typename... TT>
-      Status            Decrypt(const Code&,
-                                T&,
-                                TT&...) const;
     };
 
   }

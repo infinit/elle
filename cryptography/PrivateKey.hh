@@ -133,16 +133,13 @@ namespace elle
       // Sign methods
       Status
         Sign(elle::utility::WeakBuffer const& in, Signature& out) const;
-      Status
-        Sign(Region const& in, Signature& out) const;
-
       template<typename T> Status
-      Sign(T const& in, Signature& out) const;
+        Sign(T const& in, Signature& out) const;
 
 
     public:
       Status
-      Derive(const Seed& seed, PublicKey& key) const;
+        Derive(const Seed& seed, PublicKey& key) const;
 
       //
       // interfaces
