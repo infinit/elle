@@ -37,13 +37,24 @@ namespace elle { namespace serialize {
         {}
       };
 
+    namespace detail
+    {
+      // assume clean type
+      template<typename T> struct IsNamedValue
+        { static bool const value = false; };
+      template<typename T> struct IsNamedValue<NamedValue<T>>
+        { static bool const value = true;  };
+
+    }
+
+    /// Check whether or not the type T could be expressed as NamedValue<K>.
     template<typename T> struct IsNamedValue
       {
-        static bool const value = false;
-      };
-    template<typename T> struct IsNamedValue<NamedValue<T>>
-      {
-        static bool const value = true;
+        static bool const value = detail::IsNamedValue<
+            typename std::remove_cv<
+              typename std::remove_reference<T>::type
+            >::type
+        >::value;
       };
 
     /// Helper to infer the right NamedValue<T> type.
@@ -384,9 +395,13 @@ namespace elle { namespace serialize {
         inline typename std::enable_if<std::is_enum<T>::value == true>::type
         Load(T& value);
       template<typename T>
-        inline typename std::enable_if<std::is_enum<T>::value == false>::type
+        inline typename std::enable_if<
+              std::is_enum<T>::value == false
+          &&  IsNamedValue<T>::value == false
+        >::type
         Load(T& val);
-      template<typename T> inline void LoadConstruct(T* ptr);
+      template<typename T>
+        inline void LoadConstruct(T* ptr);
       inline void LoadBinary(void* data, std::streamsize size);
 
       // This allows you to write raw c string into an archive

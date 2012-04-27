@@ -9,17 +9,16 @@
 # include "BaseArchive.hh"
 # include "ArchiveSerializer.hxx"
 
-namespace elle { namespace serialize {
+namespace elle
+{
+  namespace serialize
+  {
 
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
     template<typename T, ArchiveMode _mode>
       struct BaseArchive<mode_, Archive, CT, STS>::_EnableFor
       {
-        template<typename T_> struct _IsNamedValue
-          { static bool const value = false; };
-        template<typename T_> struct _IsNamedValue<NamedValue<T_>>
-          { static bool const value = true; };
 
         typedef typename std::enable_if<
                  (
@@ -32,7 +31,7 @@ namespace elle { namespace serialize {
                   ||  (!std::is_pointer<T>::value && std::is_array<T>::value)
                 )
             &&  mode == _mode
-            &&  !_IsNamedValue<T>::value
+            &&  !IsNamedValue<T>::value
           , Archive&
         > Ref;
 
@@ -42,8 +41,8 @@ namespace elle { namespace serialize {
                     typename std::add_const<T>::type
                 >::value
             &&  mode == _mode
-            &&  !_IsNamedValue<T>::value
-            && !std::is_pointer<T>::value
+            &&  !IsNamedValue<T>::value
+            && std::is_pointer<T>::value == false
           , Archive&
         > Val;
 
@@ -51,6 +50,7 @@ namespace elle { namespace serialize {
                 (!std::is_pointer<T>::value || std::is_array<T>::value)
             &&  !std::is_const<T>::value
             &&  mode == _mode
+            &&  IsNamedValue<T>::value == false
           , Archive&
         > NotPointer;
 
@@ -60,7 +60,7 @@ namespace elle { namespace serialize {
         > ConstructPtr;
 
         typedef typename std::enable_if<
-          _IsNamedValue<T>::value && mode == _mode,
+         IsNamedValue<T>::value && mode == _mode,
           Archive&
         > NamedValue;
       };
@@ -94,7 +94,10 @@ namespace elle { namespace serialize {
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
     template<typename T>
-    inline typename std::enable_if<std::is_enum<T>::value == false>::type
+    inline typename std::enable_if<
+            std::is_enum<T>::value == false
+        &&  IsNamedValue<T>::value == false
+      >::type
       BaseArchive<mode_, Archive, CT, STS>::Load(T& val)
       {
         // XXX

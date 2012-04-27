@@ -1,10 +1,15 @@
 #ifndef ELLE_UTILITY_PARSER_HXX
 # define ELLE_UTILITY_PARSER_HXX
 
+
 # include <elle/radix/Variables.hh>
 
 # include <elle/standalone/Report.hh>
 # include <elle/standalone/Log.hh>
+
+# include <elle/idiom/Close.hh>
+# include <boost/lexical_cast.hpp>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -223,13 +228,32 @@ namespace elle
     Status              Parser::Value(const String&             name,
                                       T&                        value)
     {
-      return
-        (Parser::Behaviour<T,
-                           ParserType<T>::Value
-                             ==
-                           Parser::TypeUnknown>::Value(*this,
-                                                       name,
-                                                       value));
+      Parser::Option*   option;
+
+      if (this->Locate(name, option) == Status::False)
+          escape("unable to locate the option '%s'", name.c_str());
+
+      if (option->state == Parser::StateDeactivated)
+        escape("the option '%s' has not been activated",
+               name.c_str());
+
+      // if no argument has been provided, return an error.
+      if (option->value == NULL)
+        escape("the option '%s' has not been provided with an argument",
+               name.c_str());
+
+      try
+        {
+          value = boost::lexical_cast<T>(*option->value);
+        }
+      catch (std::exception const& err)
+        {
+          escape(
+            "unable to convert the argument '%s' for the option '%s'",
+            option->value->c_str(), name.c_str()
+          );
+        }
+      return elle::Status::Ok;
     }
 
     ///
@@ -241,14 +265,33 @@ namespace elle
                                       T&                        value,
                                       const T&                  D)
     {
-      return
-        (Parser::Behaviour<T,
-                           ParserType<T>::Value
-                             ==
-                           Parser::TypeUnknown>::Value(*this,
-                                                       name,
-                                                       value,
-                                                       D));
+      Option* option;
+      if (this->Locate(name, option) == Status::False)
+        {
+          value = D;
+          return elle::Status::Ok;
+        }
+
+      if (option->state == Parser::StateDeactivated)
+        escape("the option '%s' has not been activated", name.c_str());
+
+      // if no argument has been provided, return an error.
+      if (option->value == NULL)
+        escape("the option '%s' has not been provided with an argument",
+               name.c_str());
+
+      try
+        {
+          value = boost::lexical_cast<T>(*option->value);
+        }
+      catch (std::exception const& err)
+        {
+          escape(
+            "unable to convert the argument '%s' for the option '%s'",
+            option->value->c_str(), name.c_str()
+          );
+        }
+      return elle::Status::Ok;
     }
 
   }
