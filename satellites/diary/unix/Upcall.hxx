@@ -43,7 +43,7 @@ namespace satellite
     {
       try
         {
-          this->inputs.Writer() << std::make_tuple(outputs...);
+          this->outputs.Writer() << std::make_tuple(outputs...);
         }
       catch (std::exception const& err)
         {
