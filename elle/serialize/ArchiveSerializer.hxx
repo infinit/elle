@@ -1,6 +1,51 @@
 #ifndef ELLE_SERIALIZE_ARCHIVESERIALIZER_HXX
 # define ELLE_SERIALIZE_ARCHIVESERIALIZER_HXX
 
+///
+/// This module provides tools to specialize the class ArchiveSerializer with
+/// your types, or in other words, to define your own serializers.
+///
+/// To define a serializer the hard way, you'll have to specialize the class ArchiveSerializer
+/// with your type in the namespace elle::serialize.
+/// ----------------------------------
+/// XXX example here
+/// ----------------------------------
+///
+/// If you need to do something different to save and load your type, you can
+/// simply derive from the class SplitSerializer<T>, where T is your type. It
+/// will call Save() or Load() depending on the archive mode.
+/// ----------------------------------
+/// XXX example here
+/// ----------------------------------
+///
+/// This module also provides some macros to help you defining common
+/// serializers with far less verbosity.
+/// These macros uses this kind of arguments:
+///   * T: the type to specialize
+///   * archive: the variable name of the archive (its template type is Archive)
+///   * value: the variable name of the value (its type is T)
+///   * version: the variable name of the version (its type is unsigned long)
+///
+/// ELLE_SERIALIZE_SIMPLE(T, archive, value, version) : both way serialization method
+/// ----------------------------------
+/// struct A
+/// {
+///   int i;
+///   short k;
+/// };
+///
+/// ELLE_SERIAZE_SIMPLE(A, archive, value, version)
+/// {
+///    // 0 is the current and only version of A serializer.
+///   assert(version == 0);
+///
+///   // both way serialization operator
+///   archive & i;
+///   archive & k;
+/// }
+/// -----------------------------------
+///
+
 // XXX
 # include <iostream>
 
@@ -113,13 +158,26 @@ namespace elle { namespace serialize {
 /// Define a simple serializer for the type T
 # define ELLE_SERIALIZE_SIMPLE(T, archive, value, version)                      \
 namespace elle { namespace serialize {                                          \
-    template<> struct ArchiveSerializer<T>                                      \
-      : public BaseArchiveSerializer<T>                                         \
+    template<>                                                                  \
+    struct ArchiveSerializer<T>                                                 \
+        : public BaseArchiveSerializer<T>                                       \
       {                                                                         \
+      private:                                                                  \
+        template<typename K> struct _LoadConstruct                              \
+        {                                                                       \
+          template<typename Archive>                                            \
+            static inline void Method(Archive& ar, K* ptr)                      \
+              { BaseArchiveSerializer<K>::LoadConstruct(ar, ptr); }             \
+        };                                                                      \
         template<typename Archive>                                              \
-          static void Serialize(Archive&, T&, unsigned int);                    \
+          static inline void _Serialize(Archive&, T&, unsigned int);            \
+                                                                                \
+      public:                                                                   \
         template<typename Archive>                                              \
-          static void _Serialize(Archive&, T&, unsigned int);                   \
+          static inline void Serialize(Archive&, T&, unsigned int);             \
+        template<typename Archive, typename K>                                  \
+          static inline void LoadConstruct(Archive& archive, K* ptr)            \
+            { _LoadConstruct<K>::Method(archive, ptr); }                        \
       };                                                                        \
 }}                                                                              \
 template<typename Archive>                                                      \
@@ -137,6 +195,24 @@ template<typename Archive>                                                      
                                               Archive& archive,                 \
                                               T& value,                         \
                                               unsigned int version)             \
+
+
+// Defines an optional load construct method
+# define ELLE_SERIALIZE_LOAD_CONSTRUCT(T, archive, ptr)                         \
+  namespace elle { namespace serialize {                                        \
+        template<> struct ArchiveSerializer<T>::_LoadConstruct<T>               \
+          {                                                                     \
+            template<typename Archive> static inline void                       \
+              Method(Archive& ar, T* ptr);                                      \
+          };                                                                    \
+  }}                                                                            \
+template<typename Archive>                                                      \
+void                                                                            \
+elle::serialize::ArchiveSerializer<T>::_LoadConstruct<T>::Method(               \
+    Archive& archive,                                                           \
+    T* ptr                                                                      \
+)                                                                               \
+
 
 /// Define a simple serializer for the type T<T1>
 # define ELLE_SERIALIZE_SIMPLE_T1(T, archive, value, version)                   \

@@ -76,10 +76,10 @@ namespace satellite
       // prompt the user for the passphrase.
       prompt = "Enter passphrase for the authority: ";
 
-      if (elle::Console::Input(
+      if (elle::io::Console::Input(
             pass,
             prompt,
-            elle::Console::OptionPassword) == elle::Status::Error)
+            elle::io::Console::OptionPassword) == elle::Status::Error)
         escape("unable to read the input");
 
       // load the authority.
@@ -101,10 +101,10 @@ namespace satellite
       // prompt the user for the passphrase.
       prompt = "Enter passphrase for keypair '" + administrator + "': ";
 
-      if (elle::Console::Input(
+      if (elle::io::Console::Input(
             pass,
             prompt,
-            elle::Console::OptionPassword) == elle::Status::Error)
+            elle::io::Console::OptionPassword) == elle::Status::Error)
         escape("unable to read the input");
 
       // load the identity.

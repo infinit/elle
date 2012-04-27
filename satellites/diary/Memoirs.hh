@@ -55,7 +55,8 @@ namespace satellite
     //
     // attributes
     //
-    elle::Archive               archive;
+    //elle::Archive               archive;
+    // XXX !
   };
 
 }

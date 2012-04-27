@@ -13,7 +13,12 @@
 //
 
 #include <Infinit.hh>
+
 #include <elle/types.hh>
+#include <elle/Elle.hh>
+#include <elle/utility/Parser.hh>
+#include <elle/concurrency/Program.hh>
+
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 #include <hole/Hole.hh>

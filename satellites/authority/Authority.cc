@@ -1,16 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       authority
-//
-// license       infinit
-//
-// author        julien quintard   [thu mar  4 17:51:46 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <satellites/authority/Authority.hh>
 
@@ -50,10 +37,10 @@ namespace satellite
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for the authority keypair: ";
 
-    if (elle::Console::Input(
+    if (elle::io::Console::Input(
           pass,
           prompt,
-          elle::Console::OptionPassword) == elle::Status::Error)
+          elle::io::Console::OptionPassword) == elle::Status::Error)
       escape("unable to read the input");
 
     // generate the authority key pair.
@@ -108,10 +95,10 @@ namespace satellite
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for the authority keypair: ";
 
-    if (elle::Console::Input(
+    if (elle::io::Console::Input(
           pass,
           prompt,
-          elle::Console::OptionPassword) == elle::Status::Error)
+          elle::io::Console::OptionPassword) == elle::Status::Error)
       escape("unable to read the input");
 
     // load the authority.

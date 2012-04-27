@@ -312,7 +312,7 @@ Status PrivateKey::Sign(elle::utility::WeakBuffer const&  buffer,
         &size,
         reinterpret_cast<const unsigned char*>(digest.region.contents),
         digest.region.size) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   // prepare the signature so it can receive the upcoming portion.
   if (signature.region.Prepare(size) == Status::Error)
@@ -325,7 +325,7 @@ Status PrivateKey::Sign(elle::utility::WeakBuffer const&  buffer,
         &size,
         reinterpret_cast<const unsigned char*>(digest.region.contents),
         digest.region.size) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   // set the code size.
   signature.region.size = size;
@@ -397,7 +397,7 @@ Status PrivateKey::Encrypt(elle::utility::WeakBuffer const& in,
           &size,
           buf.Contents(),
           buf.Size()) <= 0)
-        escape(::ERR_error_string(ERR_get_error(), nullptr));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
     // set the key size.
     key.region.size = size;
