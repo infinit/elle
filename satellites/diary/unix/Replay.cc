@@ -40,7 +40,7 @@ namespace satellite
     ///
     /// this variable contains the entrance which triggers the replay.
     ///
-    elle::Entrance<
+    elle::concurrency::Entrance<
       elle::Status,
       elle::radix::Parameters<>
       >*                                Replay::Entrance = NULL;
@@ -1599,10 +1599,10 @@ namespace satellite
 
       // allocate the entrance.
       Replay::Entrance =
-        new elle::Entrance<
+        new elle::concurrency::Entrance<
           elle::Status,
           elle::radix::Parameters<>
-          >(elle::Closure<
+          >(elle::concurrency::Closure<
               elle::Status,
               elle::radix::Parameters<>
               >(elle::concurrency::Callback<>::Infer(&Replay::Process)));

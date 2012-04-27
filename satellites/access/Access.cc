@@ -1,16 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       access
-//
-// license       infinit
-//
-// author        julien quintard   [tue nov  1 13:00:02 2011]
-//
+#include <limits>
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/Elle.hh>
+#include <elle/concurrency/Closure.hh>
+#include <elle/concurrency/Entrance.hh>
+#include <elle/network/Inputs.hh>
+#include <elle/network/Outputs.hh>
+#include <elle/utility/Parser.hh>
 
 #include <satellites/access/Access.hh>
 
@@ -60,7 +55,7 @@ namespace satellite
   elle::Status          Access::Error(elle::String       error)
   {
     // report the given error.
-    report(error.c_str());
+    report("%s", error.c_str());
 
     // expose the report.
     expose();
@@ -115,7 +110,7 @@ namespace satellite
       // connect the socket.
       if (Access::Socket.Connect(
             phrase.portal,
-            elle::Socket::ModeSynchronous) == elle::Status::Error)
+            elle::network::Socket::ModeSynchronous) == elle::Status::Error)
         escape("unable to connect to the lane");
     }
 
@@ -225,8 +220,8 @@ namespace satellite
     if (Access::Socket.Call(
           elle::network::Inputs<etoile::portal::TagAccessConsult>(
             identifier,
-            elle::Type<nucleus::Index>::Minimum,
-            elle::Type<nucleus::Size>::Maximum),
+            std::numeric_limits<nucleus::Index>::min(),
+            std::numeric_limits<nucleus::Size>::max()),
           elle::network::Outputs<etoile::portal::TagAccessRange>(range)) ==
         elle::Status::Error)
       goto _error;
@@ -667,7 +662,7 @@ namespace satellite
 
           // declare additional local variables.
           etoile::path::Way             way(path);
-          elle::Closure<
+          elle::concurrency::Closure<
             elle::Status,
             elle::radix::Parameters<
               const etoile::path::Way&,
@@ -675,7 +670,7 @@ namespace satellite
               >
             >                           closure(&Access::Lookup,
                                                 way, subject);
-          elle::Entrance<
+          elle::concurrency::Entrance<
             elle::Status,
             elle::radix::Parameters<
               const etoile::path::Way&,
@@ -700,14 +695,14 @@ namespace satellite
 
           // declare additional local variables.
           etoile::path::Way             way(path);
-          elle::Closure<
+          elle::concurrency::Closure<
             elle::Status,
             elle::radix::Parameters<
               const etoile::path::Way&
               >
             >                           closure(&Access::Consult,
                                                 way);
-          elle::Entrance<
+          elle::concurrency::Entrance<
             elle::Status,
             elle::radix::Parameters<
               const etoile::path::Way&
@@ -791,7 +786,7 @@ namespace satellite
 
           // declare additional local variables.
           etoile::path::Way             way(path);
-          elle::Closure<
+          elle::concurrency::Closure<
             elle::Status,
             elle::radix::Parameters<
               const etoile::path::Way&,
@@ -800,7 +795,7 @@ namespace satellite
               >
             >                           closure(&Access::Grant,
                                                 way, subject, permissions);
-          elle::Entrance<
+          elle::concurrency::Entrance<
             elle::Status,
             elle::radix::Parameters<
               const etoile::path::Way&,
@@ -874,7 +869,7 @@ namespace satellite
 
           // declare additional local variables.
           etoile::path::Way             way(path);
-          elle::Closure<
+          elle::concurrency::Closure<
             elle::Status,
             elle::radix::Parameters<
               const etoile::path::Way&,
@@ -882,7 +877,7 @@ namespace satellite
               >
             >                           closure(&Access::Revoke,
                                                 way, subject);
-          elle::Entrance<
+          elle::concurrency::Entrance<
             elle::Status,
             elle::radix::Parameters<
               const etoile::path::Way&,

@@ -98,8 +98,8 @@ namespace satellite
       //
       Operation         operation;
       //XXX
-      //elle::Archive     inputs;
-      //elle::Archive     outputs;
+      elle::utility::Buffer inputs;
+      elle::utility::Buffer outputs;
       elle::Integer32   result;
     };
 

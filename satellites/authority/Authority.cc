@@ -1,3 +1,8 @@
+#include <elle/cryptography/PublicKeySerializer.hxx>
+
+#include <elle/Elle.hh>
+#include <elle/io/Console.hh>
+#include <elle/utility/Parser.hh>
 
 #include <satellites/authority/Authority.hh>
 

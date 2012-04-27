@@ -20,6 +20,8 @@
 # include <reactor/thread.hh>
 #include <elle/idiom/Open.hh>
 
+# include <elle/network/BundleSerializer.hxx>
+
 #include <elle/concurrency/Program.hh>
 
 #include <elle/standalone/Maid.hh>
@@ -136,9 +138,15 @@ namespace elle
           escape("received a packet with an unexpected tag '%u'", tag);
         }
 
-      // extract the arguments.
-      if (outputs.Extract(*parcel->data) == Status::Error)
-        escape("unable to extract the arguments");
+      try
+        {
+          // XXX parcel->data.Reset() ?
+          parcel->data->Writer() << outputs;
+        }
+      catch (std::exception const& err)
+        {
+          escape("Couldn't extract ouputs: %s", err.what());
+        }
 
       return Status::Ok;
     }

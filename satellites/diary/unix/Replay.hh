@@ -24,6 +24,7 @@
 //
 
 #include <elle/types.hh>
+#include <elle/concurrency/Entrance.hh>
 
 #include <satellites/diary/unix/Upcall.hh>
 
@@ -127,7 +128,7 @@ namespace satellite
       // static attributes
       //
       static Memoirs*           Reference;
-      static elle::Entrance<
+      static elle::concurrency::Entrance<
         elle::Status,
         elle::radix::Parameters<>
         >*                      Entrance;

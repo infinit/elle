@@ -1,16 +1,4 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 14 19:00:57 2009]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <nucleus/neutron/ReferenceSerializer.hxx>
 
 #include <etoile/automaton/Link.hh>
 #include <etoile/automaton/Object.hh>

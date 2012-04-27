@@ -1,16 +1,6 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [mon jun 20 13:22:27 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <nucleus/neutron/CatalogSerializer.hxx>
+#include <nucleus/neutron/RangeSerializer.hxx>
+#include <nucleus/neutron/EntrySerializer.hxx>
 
 #include <etoile/automaton/Directory.hh>
 #include <etoile/automaton/Object.hh>

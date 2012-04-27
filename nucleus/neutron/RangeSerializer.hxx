@@ -15,13 +15,16 @@ ELLE_SERIALIZE_SPLIT_T1_LOAD(nucleus::neutron::Range,
                              value,
                              version)
 {
+  typedef typename Archive::SequenceSizeType SizeType;
   assert(version == 0);
 
-  typename Archive::SequenceSizeType size;
+  SizeType size;
   archive >> size;
 
-  for (typename Archive::SequenceSizeType i = 0; i < size; ++i)
-    value.container.push_back(archive.template Construct<Type>());
+  for (SizeType i = 0; i < size; ++i)
+    value.container.push_back(
+        archive.template Construct<T1>().release()
+    );
 }
 
 ELLE_SERIALIZE_SPLIT_T1_SAVE(nucleus::neutron::Range,
@@ -29,9 +32,9 @@ ELLE_SERIALIZE_SPLIT_T1_SAVE(nucleus::neutron::Range,
                              value,
                              version)
 {
+  typedef typename Archive::SequenceSizeType SizeType;
   assert(version == 0);
-
-  archive << static_cast<typename Archive::SequenceSizeType>(value.container.size());
+  archive << static_cast<SizeType>(value.container.size());
 
   auto it = value.container.begin(),
        end = value.container.end();
