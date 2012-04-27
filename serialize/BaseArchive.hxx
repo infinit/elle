@@ -120,9 +120,11 @@ namespace elle { namespace serialize {
       inline void BaseArchive<mode_, Archive, CT, STS>::LoadConstruct(T* ptr)
       {
         assert(ptr != nullptr);
-        ClassVersionType classVersion(0);
-        Access::Load(this->self(), classVersion);
-        ArchiveSerializer<T>::LoadConstruct(this->self(), ptr, classVersion.version);
+        //ClassVersionType classVersion(0);
+        //if (StoreClassVersion<T>::value == true)
+        //  Access::Load(this->self(), classVersion);
+        typedef ArchiveSerializer<typename std::remove_cv<T>::type> Serializer;
+        Serializer::LoadConstruct(this->self(), ptr);
       }
 
     template<ArchiveMode mode_, typename Archive, typename CT,
