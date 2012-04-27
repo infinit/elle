@@ -5,7 +5,7 @@
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
-#include <lune/Passport.hh>
+#include <lune/PassportSerializer.hxx>
 #include <lune/Lune.hh>
 
 namespace lune

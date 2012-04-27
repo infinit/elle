@@ -16,14 +16,16 @@ ELLE_SERIALIZE_SPLIT_T1_SAVE(lune::Map,
 {
   assert(version == 0);
 
-  archive << static_cast<Archive::ListSizeType>(value.container.size());
+  archive << static_cast<
+      typename Archive::SequenceSizeType
+  >(value.container.size());
 
   auto it = value.container.begin(),
        end = value.container.end();
   for (; it != end; ++it)
     {
-      lune::Map<T1>::Entry* entry = *it;
-      archive << entry.name << entry.value;
+      typename lune::Map<T1>::Entry* entry = *it;
+      archive << entry->name << entry->value;
     }
 }
 
@@ -35,13 +37,13 @@ ELLE_SERIALIZE_SPLIT_T1_LOAD(lune::Map,
 {
   assert(version == 0);
 
-  Archive::ListSizeType size;
+  typename Archive::SequenceSizeType size;
   archive >> size;
 
-  for (ArchiveListSizeType i = 0; i < size; ++i)
+  for (typename Archive::SequenceSizeType i = 0; i < size; ++i)
     {
-      auto entry = std::unique_ptr<lune::Map<T1>::Entry>(
-          new lune::Map<T1>::Entry()
+      std::unique_ptr<typename lune::Map<T1>::Entry> entry(
+          new typename lune::Map<T1>::Entry
       );
       archive >> entry->name >> entry->value;
       value.container.push_back(entry.get());

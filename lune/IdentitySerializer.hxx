@@ -3,7 +3,7 @@
 
 # include <cassert>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/PointerSerializer.hxx>
 
 # include <lune/Identity.hh>
 
@@ -15,7 +15,7 @@ ELLE_SERIALIZE_SIMPLE(lune::Identity,
   assert(version == 0);
 
   archive & elle::serialize::pointer(value.cipher);
-  if (value.cipher != null)
+  if (value.cipher != nullptr)
     archive & value.pair;
   archive & value.name;
   archive & value.signature;

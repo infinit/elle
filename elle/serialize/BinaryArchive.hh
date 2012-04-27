@@ -1,6 +1,8 @@
 #ifndef ELLE_SERIALIZE_BINARYARCHIVE_HH
 # define ELLE_SERIALIZE_BINARYARCHIVE_HH
 
+# include <elle/serialize/fwd.hh>
+
 # include "BaseArchive.hh"
 
 namespace elle { namespace serialize {

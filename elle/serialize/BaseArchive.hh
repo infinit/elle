@@ -11,6 +11,7 @@
 # include <boost/noncopyable.hpp>
 # include <boost/call_traits.hpp>
 
+# include "fwd.hh"
 # include "ArchiveMode.hh"
 # include "ArchivableClass.hh"
 
@@ -79,9 +80,16 @@ namespace elle { namespace serialize {
     /// for each type that doesn't need to store its version.
     ///
     template<typename T> struct StoreClassVersion
-      {
-        static bool const value = true;
-      };
+      { static bool const value = true; };
+
+    template<typename T> struct StoreClassVersion<T&>
+      { static bool const value = StoreClassVersion<T>::value; };
+    template<typename T> struct StoreClassVersion<T const>
+      { static bool const value = StoreClassVersion<T>::value; };
+    template<typename T> struct StoreClassVersion<T volatile>
+      { static bool const value = StoreClassVersion<T>::value; };
+    template<typename T> struct StoreClassVersion<T*>
+      { static_assert(std::is_same<T,T>::value, "Should not happen !"); };
 
     /// Default stream type selector. Select the right stream type depending on
     /// the archive mode.
@@ -262,6 +270,13 @@ namespace elle { namespace serialize {
           return this->self();
         }
 
+      template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::NotPointer::
+        type operator >>(T const&& val)
+        {
+          Access::Load(this->self(), val);
+          return this->self();
+        }
+
       /// input_ar >> named_value
       template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::NamedValue::
         type operator >>(T const& val)
@@ -287,6 +302,13 @@ namespace elle { namespace serialize {
           return *this >> val;
         }
 
+      template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::NotPointer::
+        type operator &(T const&& val)
+        {
+          Access::Load(this->self(), val);
+          return this->self();
+        }
+
       ///
       /// Load an object on the heap.  If the constructors need arguments, you
       /// will have to override the LoadConstruct function of the
@@ -295,7 +317,7 @@ namespace elle { namespace serialize {
       template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::ConstructPtr::
         type Construct()
         {
-          T* ptr = static_cast<T*>(::malloc(sizeof(T)));
+          T* ptr = static_cast<T*>(::operator new(sizeof(T)));
           if (ptr == nullptr)
             throw std::bad_alloc();
           try
@@ -304,7 +326,8 @@ namespace elle { namespace serialize {
             }
           catch (std::exception const&)
             {
-              ::free(ptr);
+              //::free(ptr);
+              delete ptr;
               throw;
             }
           return std::unique_ptr<T, ConstructDeleter<T>>(ptr);

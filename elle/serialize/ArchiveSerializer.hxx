@@ -27,11 +27,12 @@ namespace elle { namespace serialize {
       /// and forward to standard Load() method.
       ///
       template<typename Archive>
-      static inline void LoadConstruct(Archive&, T* ptr, unsigned int)
+      static inline void LoadConstruct(Archive& archive, T* ptr)
       {
         assert(ptr != nullptr);
         static_assert(!std::is_pointer<T>::value, "You cannot construct pointers...");
         new (ptr) T;
+        archive >> *ptr;
       }
 
     };

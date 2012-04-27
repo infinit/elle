@@ -16,7 +16,7 @@ ELLE_SERIALIZE_SIMPLE(lune::Dictionary,
 {
   assert(version == 0);
 
-  archive & value.user;
+  archive & value.users;
   archive & value.groups;
 }
 
