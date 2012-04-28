@@ -86,4 +86,7 @@ namespace nucleus
   }
 }
 
+
+# include <nucleus/proton/BlockSerializer.hxx>
+
 #endif

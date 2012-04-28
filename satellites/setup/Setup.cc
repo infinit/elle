@@ -1,16 +1,6 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       setup
-//
-// license       infinit
-//
-// author        julien quintard   [thu mar  4 17:51:46 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/Elle.hh>
+#include <elle/io/Directory.hh>
+#include <elle/utility/Parser.hh>
 
 #include <satellites/setup/Setup.hh>
 
@@ -47,16 +37,16 @@ namespace satellite
         escape("unable to create the path");
 
       // if the user directory does not exist, create it.
-      if (elle::Directory::Exist(path) == elle::Status::False)
+      if (elle::io::Directory::Exist(path) == elle::Status::False)
         {
           // create the directory.
-          if (elle::Directory::Create(path) == elle::Status::Error)
+          if (elle::io::Directory::Create(path) == elle::Status::Error)
             escape("unable to create the directory");
         }
       else
         {
           // clear the directory.
-          if (elle::Directory::Clear(path) == elle::Status::Error)
+          if (elle::io::Directory::Clear(path) == elle::Status::Error)
             escape("unable to clear the directory");
         }
     }
@@ -112,14 +102,14 @@ namespace satellite
         escape("unable to create the path");
 
       // if the user directory exists, clear it and remove it.
-      if (elle::Directory::Exist(path) == elle::Status::True)
+      if (elle::io::Directory::Exist(path) == elle::Status::True)
         {
           // clear the content.
-          if (elle::Directory::Clear(path) == elle::Status::Error)
+          if (elle::io::Directory::Clear(path) == elle::Status::Error)
             escape("unable to clear the directory");
 
           // remove the directory.
-          if (elle::Directory::Remove(path) == elle::Status::Error)
+          if (elle::io::Directory::Remove(path) == elle::Status::Error)
             escape("unable to remove the directory");
         }
     }

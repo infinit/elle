@@ -1,16 +1,6 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       passport
-//
-// license       infinit
-//
-// author        julien quintard   [thu aug 11 15:16:04 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/Elle.hh>
+#include <elle/io/Console.hh>
+#include <elle/utility/Parser.hh>
 
 #include <satellites/passport/Passport.hh>
 
@@ -81,11 +71,11 @@ namespace satellite
       elle::String              id;
 
       // generate a random string.
-      if (cryptography::Random::Generate(id) == elle::Status::Error)
+      if (elle::cryptography::Random::Generate(id) == elle::Status::Error)
         escape("unable to generate a random string");
 
       // generate a random region.
-      if (cryptography::Random::Generate(region) == elle::Status::Error)
+      if (elle::cryptography::Random::Generate(region) == elle::Status::Error)
         escape("unable to generate a random region");
 
       // create a label.

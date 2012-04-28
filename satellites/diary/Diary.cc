@@ -1,18 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       diary
-//
-// license       infinit
-//
-// author        julien quintard   [mon jun 27 22:38:51 2011]
-//
+#include <limits>
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/Elle.hh>
+#include <elle/utility/Parser.hh>
 
-#include <elle/io/Fileable.hxx>
+#include <elle/io/Fileable.hh>
 
 #include "Diary.hh"
 #include "MemoirsSerializer.hxx"
@@ -285,7 +276,7 @@ namespace satellite
 
           // initialize the indexes.
           from = 0;
-          to = elle::radix::Variable::Maximum(to);
+          to = std::numeric_limits<decltype(to)>::max();
 
           // retrieve the from.
           if ((Infinit::Parser->Test("From") == elle::Status::True) &&

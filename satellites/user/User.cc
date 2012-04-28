@@ -1,16 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       user
-//
-// license       infinit
-//
-// author        julien quintard   [thu mar  4 17:51:46 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/io/Console.hh>
+#include <elle/io/Piece.hh>
+#include <elle/io/Directory.hh>
+#include <elle/utility/Parser.hh>
 
 #include <satellites/user/User.hh>
 
@@ -162,11 +153,11 @@ namespace satellite
         escape("unable to complete the path");
 
       // clear the user directory content.
-      if (elle::Directory::Clear(path) == elle::Status::Error)
+      if (elle::io::Directory::Clear(path) == elle::Status::Error)
         escape("unable to clear the directory");
 
       // remove the directory.
-      if (elle::Directory::Remove(path) == elle::Status::Error)
+      if (elle::io::Directory::Remove(path) == elle::Status::Error)
         escape("unable to erase the directory");
     }
 

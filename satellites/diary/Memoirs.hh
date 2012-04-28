@@ -1,25 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       diary
-//
-// license       infinit
-//
-// author        julien quintard   [fri dec 23 13:27:57 2011]
-//
-
 #ifndef DIARY_MEMOIRS_HH
-#define DIARY_MEMOIRS_HH
+# define DIARY_MEMOIRS_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/io/Fileable.hh>
+# include <elle/io/Dumpable.hh>
+# include <elle/utility/Buffer.hh>
 
-#include <elle/io/Fileable.hh>
-#include <elle/io/Dumpable.hh>
-
-#include <elle/types.hh>
-//#include <elle/radix.hh>
 
 namespace satellite
 {
@@ -56,7 +42,7 @@ namespace satellite
     // attributes
     //
     //elle::Archive               archive;
-    // XXX !
+    elle::utility::Buffer         archive;
   };
 
 }

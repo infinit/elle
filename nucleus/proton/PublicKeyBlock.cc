@@ -1,5 +1,6 @@
 
 #include <elle/cryptography/PublicKeySerializer.hxx>
+#include <nucleus/proton/BlockSerializer.hxx>
 
 #include <nucleus/proton/NetworkSerializer.hxx>
 #include <nucleus/proton/PublicKeyBlock.hh>

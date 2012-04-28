@@ -1,16 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       dictionary
-//
-// license       infinit
-//
-// author        julien quintard   [thu mar  4 17:51:46 2010]
-//
+#include <elle/Elle.hh>
+#include <elle/utility/Parser.hh>
+#include <elle/cryptography/PublicKeySerializer.hxx>
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <nucleus/proton/AddressSerializer.hxx>
 
 #include <satellites/dictionary/Dictionary.hh>
 
@@ -229,7 +221,8 @@ namespace satellite
               lune::Map<elle::cryptography::PublicKey>::Entry* entry = *scoutor;
 
               std::cout << entry->name << " :: "
-                        << entry->value << std::endl;
+                        // XXX << entry->value
+                        << std::endl;
             }
 
           break;
@@ -246,7 +239,8 @@ namespace satellite
               lune::Map<nucleus::Address>::Entry* entry = *scoutor;
 
               std::cout << entry->name << " :: "
-                        << entry->value << std::endl;
+                        // XXX << entry->value
+                        << std::endl;
             }
 
           break;

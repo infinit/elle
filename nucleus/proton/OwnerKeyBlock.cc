@@ -1,10 +1,11 @@
-
 #include <elle/cryptography/PublicKeySerializer.hxx>
+#include <nucleus/proton/BlockSerializer.hxx>
+#include <nucleus/proton/NetworkSerializer.hxx>
+
 #include <elle/cryptography/KeyPair.hh>
 
-#include <nucleus/proton/NetworkSerializer.hxx>
-#include <nucleus/proton/OwnerKeyBlock.hh>
 #include <nucleus/proton/Family.hh>
+#include <nucleus/proton/OwnerKeyBlock.hh>
 
 namespace nucleus
 {

@@ -70,9 +70,7 @@ namespace satellite
       // set the mode.
       this->mode = Memoirs::ModeRecord;
 
-      // create the archive.
-      if (this->archive.Create() == elle::Status::Error)
-        escape("unable to create the archive");
+      this->archive.Reset();
 
       // initialize the record.
       if (Record::Initialize(this, mountpoint) == elle::Status::Error)
@@ -158,8 +156,14 @@ namespace satellite
         escape("unable to write an upcall in a non-recording memoirs");
 
       // serialize the upcall.
-      if (this->archive.Serialize(upcall) == elle::Status::Error)
-        escape("unable to serialize the upcall");
+      try
+        {
+          this->archive.Writer() << upcall;
+        }
+      catch (std::exception const& err)
+        {
+          escape("unable to serialize the upcall: %s", err.what());
+        }
 
       return elle::Status::Ok;
     }
@@ -173,9 +177,14 @@ namespace satellite
       if (this->mode != Memoirs::ModeReplay)
         escape("unable to read an upcall from a non-replaying memoirs");
 
-      // extract the upcall.
-      if (this->archive.Extract(upcall) == elle::Status::Error)
-        escape("unable to extract the upcall");
+      try
+        {
+          this->archive.Reader() >> upcall;
+        }
+      catch (std::exception const& err)
+        {
+          escape("unable to extract the upcall: %s", err.what());
+        }
 
       return elle::Status::Ok;
     }
@@ -183,14 +192,14 @@ namespace satellite
     ///
     /// this method returns true if the end of the memoirs has been reached.
     ///
-    elle::Status        Memoirs::End() const
-    {
-      // have we reached the end of the archive.
-      if (this->archive.offset == this->archive.size)
-        return elle::Status::True;
+    //elle::Status        Memoirs::End() const
+    //{
+    //  // have we reached the end of the archive.
+    //  if (this->archive.offset == this->archive.size)
+    //    return elle::Status::True;
 
-      return elle::Status::False;
-    }
+    //  return elle::Status::False;
+    //}
 
 //
 // ---------- dumpable --------------------------------------------------------

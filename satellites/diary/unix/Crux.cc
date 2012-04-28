@@ -362,7 +362,7 @@ namespace satellite
     }
 
 #if defined(HAVE_SETXATTR)
-# if defined(INFINIT_LINUX)
+# if defined(INFINIT_LINUX) && 0
     int                 Crux::Setxattr(const char*              path,
                                        const char*              name,
                                        const char*              value,
@@ -881,7 +881,7 @@ namespace satellite
         Crux::Operations.access = Crux::Access;
         Crux::Operations.chmod = Crux::Chmod;
         Crux::Operations.chown = Crux::Chown;
-#if defined(HAVE_SETXATTR)
+#if defined(HAVE_SETXATTR) && 0
         Crux::Operations.setxattr = Crux::Setxattr;
         Crux::Operations.getxattr = Crux::Getxattr;
         Crux::Operations.listxattr = Crux::Listxattr;

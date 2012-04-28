@@ -1,16 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       network
-//
-// license       infinit
-//
-// author        julien quintard   [thu mar  4 17:51:46 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/Elle.hh>
+#include <elle/io/Console.hh>
+#include <elle/io/Directory.hh>
+#include <elle/io/Piece.hh>
+#include <elle/utility/Parser.hh>
 
 #include <satellites/network/Network.hh>
 
@@ -212,14 +204,14 @@ namespace satellite
         escape("unable to complete the path");
 
       // if the reserve exists, clear it and remove it.
-      if (elle::Directory::Exist(path) == elle::Status::True)
+      if (elle::io::Directory::Exist(path) == elle::Status::True)
         {
           // clear the reserve content.
-          if (elle::Directory::Clear(path) == elle::Status::Error)
+          if (elle::io::Directory::Clear(path) == elle::Status::Error)
             escape("unable to clear the directory");
 
           // remove the directory.
-          if (elle::Directory::Remove(path) == elle::Status::Error)
+          if (elle::io::Directory::Remove(path) == elle::Status::Error)
             escape("unable to remove the directory");
         }
     }
@@ -239,14 +231,14 @@ namespace satellite
         escape("unable to complete the path");
 
       // if the shelter exists, clear it and remove it.
-      if (elle::Directory::Exist(path) == elle::Status::True)
+      if (elle::io::Directory::Exist(path) == elle::Status::True)
         {
           // clear the reserve content.
-          if (elle::Directory::Clear(path) == elle::Status::Error)
+          if (elle::io::Directory::Clear(path) == elle::Status::Error)
             escape("unable to clear the directory");
 
           // remove the directory.
-          if (elle::Directory::Remove(path) == elle::Status::Error)
+          if (elle::io::Directory::Remove(path) == elle::Status::Error)
             escape("unable to remove the directory");
         }
     }
@@ -266,11 +258,11 @@ namespace satellite
         escape("unable to complete the path");
 
       // clear the network directory content.
-      if (elle::Directory::Clear(path) == elle::Status::Error)
+      if (elle::io::Directory::Clear(path) == elle::Status::Error)
         escape("unable to clear the directory");
 
       // remove the directory.
-      if (elle::Directory::Remove(path) == elle::Status::Error)
+      if (elle::io::Directory::Remove(path) == elle::Status::Error)
         escape("unable to remove the directory");
     }
 

@@ -546,7 +546,7 @@ namespace satellite
     }
 
 #if defined(HAVE_SETXATTR)
-# if defined(INFINIT_LINUX)
+# if defined(INFINIT_LINUX) && 0
     int                 Record::Setxattr(const char*            path,
                                          const char*            name,
                                          const char*            value,

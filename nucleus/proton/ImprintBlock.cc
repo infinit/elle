@@ -1,4 +1,6 @@
 
+#include <nucleus/proton/BlockSerializer.hxx>
+
 #include <elle/cryptography/Random.hh>
 #include <elle/cryptography/PublicKeySerializer.hxx>
 #include <elle/utility/TimeSerializer.hxx>

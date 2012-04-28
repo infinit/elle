@@ -1,18 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       diary
-//
-// license       infinit
-//
-// author        julien quintard   [fri jul  1 11:42:31 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <sstream>
+#include <iostream>
+#include <memory>
 
 #include <satellites/diary/unix/Live.hh>
+#include <elle/standalone/Report.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace satellite
 {
@@ -169,7 +162,7 @@ namespace satellite
 
       std::cout << alignment << "[Live]" << std::endl;
 
-      std::cout << alignment << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Items]" << std::endl;
 
       // go through the items.
