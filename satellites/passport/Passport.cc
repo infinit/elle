@@ -1,4 +1,5 @@
 #include <elle/Elle.hh>
+#include <elle/cryptography/Random.hh>
 #include <elle/io/Console.hh>
 #include <elle/utility/Parser.hh>
 

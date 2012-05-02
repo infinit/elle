@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       @FIXME@
-//
-// license       infinit
-//
-// author        Raphael Londeix   [Fri 17 Feb 2012 05:49:28 PM CET]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <iostream>
 #include <stdexcept>
 
@@ -20,6 +6,9 @@
 #include "plasma/common/resources.hh"
 
 #include "IdentityUpdater.hh"
+
+#include <lune/IdentitySerializer.hxx>
+#include <lune/PassportSerializer.hxx>
 
 using namespace plasma::updater;
 
@@ -56,12 +45,11 @@ void IdentityUpdater::_DoLogin(std::string const& login,
     }
 
     {
-      using namespace std::placeholders;
       std::cout << "LOGIN NOW !\n";
       this->_api.Login(
           login, password,
-          std::bind(&IdentityUpdater::_OnLogin, this, password, _1),
-          std::bind(&IdentityUpdater::_OnError, this, _1, _2)
+          std::bind(&IdentityUpdater::_OnLogin, this, password, std::placeholders::_1),
+          std::bind(&IdentityUpdater::_OnError, this, std::placeholders::_1, std::placeholders::_2)
       );
     }
   this->_loginDialog.setDisabled(true);

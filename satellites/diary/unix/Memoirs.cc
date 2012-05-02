@@ -17,6 +17,7 @@
 #include <satellites/diary/unix/Crux.hh>
 #include <satellites/diary/unix/Record.hh>
 #include <satellites/diary/unix/Replay.hh>
+#include <satellites/diary/unix/UpcallSerializer.hxx>
 
 #if defined(INFINIT_LINUX)
 # include <horizon/linux/Linux.hh>
@@ -177,9 +178,15 @@ namespace satellite
       if (this->mode != Memoirs::ModeReplay)
         escape("unable to read an upcall from a non-replaying memoirs");
 
+      if (this->archive.Size() >= this->offset)
+        escape("Nothing to read!");
+
       try
         {
-          this->archive.Reader() >> upcall;
+          elle::utility::WeakBuffer(
+              this->archive.Contents() + this->offset,
+              this->archive.Size() - this->offset
+          ).Reader() >> upcall;
         }
       catch (std::exception const& err)
         {
@@ -192,14 +199,13 @@ namespace satellite
     ///
     /// this method returns true if the end of the memoirs has been reached.
     ///
-    //elle::Status        Memoirs::End() const
-    //{
-    //  // have we reached the end of the archive.
-    //  if (this->archive.offset == this->archive.size)
-    //    return elle::Status::True;
+    elle::Status        Memoirs::End() const
+    {
+      if (this->archive.Size() <= this->offset)
+        return elle::Status::True;
 
-    //  return elle::Status::False;
-    //}
+      return elle::Status::False;
+    }
 
 //
 // ---------- dumpable --------------------------------------------------------

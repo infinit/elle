@@ -7,6 +7,7 @@
 
 # include <elle/io/Fileable.hh>
 # include <elle/radix/Object.hh>
+# include <elle/serialize/Uniquable.hh>
 
 # include <elle/idiom/Open.hh>
 
@@ -26,14 +27,12 @@ namespace lune
   /// note that the name attribute is supposed to be unique as it plays the
   /// role of identifier.
   ///
-  class Identity:
-    public elle::radix::Object,
-    public elle::io::Fileable<Identity>
+  class Identity
+    : public elle::radix::Object
+    , public elle::io::Fileable<Identity>
+    , public elle::serialize::Uniquable<Identity>
   {
   public:
-    //
-    // constants
-    //
     static const elle::String           Extension;
 
     //

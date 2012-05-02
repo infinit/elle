@@ -13,6 +13,7 @@
 //
 
 #include <cassert>
+#include <unistd.h>
 #include <iostream>
 #include <stdexcept>
 

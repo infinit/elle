@@ -7,12 +7,10 @@
 
 # include <nucleus/neutron/Author.hh>
 
-ELLE_SERIALIZE_SPLIT(nucleus::neutron::Author);
-
-ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Author,
-                          archive,
-                          value,
-                          version)
+ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Author,
+                      archive,
+                      value,
+                      version)
 {
   assert(version == 0);
 
@@ -20,12 +18,12 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Author,
 
   switch (value.role)
   {
-  case RoleOwner:
+  case nucleus::neutron::RoleOwner:
     break;
-  case RoleLord:
-    archive & lord.index;
+  case nucleus::neutron::RoleLord:
+    archive & value.lord.index;
     break;
-  case RoleVassal:
+  case nucleus::neutron::RoleVassal:
     assert(false && "XXX: Not implemented");
   default:
     throw std::runtime_error("unknown role");

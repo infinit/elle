@@ -1,3 +1,6 @@
+
+#include <elle/Elle.hh>
+#include <elle/cryptography/PublicKeySerializer.hxx>
 #include <elle/io/Console.hh>
 #include <elle/io/Piece.hh>
 #include <elle/io/Directory.hh>

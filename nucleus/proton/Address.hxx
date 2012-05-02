@@ -6,6 +6,7 @@
 # include <elle/cryptography/OneWay.hxx>
 # include <elle/serialize/TupleSerializer.hxx>
 
+# include <nucleus/proton/Address.hh>
 # include <elle/idiom/Open.hh>
 
 namespace nucleus

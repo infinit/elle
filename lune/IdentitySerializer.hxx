@@ -4,6 +4,9 @@
 # include <cassert>
 
 # include <elle/serialize/PointerSerializer.hxx>
+# include <elle/cryptography/CipherSerializer.hxx>
+# include <elle/cryptography/SignatureSerializer.hxx>
+# include <elle/cryptography/KeyPairSerializer.hxx>
 
 # include <lune/Identity.hh>
 

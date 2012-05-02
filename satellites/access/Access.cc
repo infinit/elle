@@ -3,9 +3,19 @@
 #include <elle/Elle.hh>
 #include <elle/concurrency/Closure.hh>
 #include <elle/concurrency/Entrance.hh>
+#include <elle/network/HeaderSerializer.hxx>
 #include <elle/network/Inputs.hh>
 #include <elle/network/Outputs.hh>
 #include <elle/utility/Parser.hh>
+#include <elle/standalone/ReportSerializer.hxx>
+
+#include <etoile/gear/IdentifierSerializer.hxx>
+#include <etoile/path/WaySerializer.hxx>
+#include <etoile/path/CheminSerializer.hxx>
+
+#include <nucleus/neutron/RangeSerializer.hxx>
+#include <nucleus/neutron/RecordSerializer.hxx>
+#include <nucleus/neutron/SubjectSerializer.hxx>
 
 #include <satellites/access/Access.hh>
 
@@ -632,11 +642,12 @@ namespace satellite
             case nucleus::Subject::TypeUser:
               {
                 elle::cryptography::PublicKey         K;
+                std::string                           res;
 
                 // retrieve the identifier which is supposed to
                 // represent a user identity i.e a public key.
-                if (Infinit::Parser->Value("Identifier",
-                                           K) == elle::Status::Error)
+                if (Infinit::Parser->Value("Identifier", res) == elle::Status::Error ||
+                    K.Restore(res) == elle::Status::Error)
                   escape("unable to retrieve the user's public key "
                          "through the identifier");
 
@@ -655,8 +666,7 @@ namespace satellite
               }
             default:
               {
-                escape("unsupported entity type '%u'",
-                       type);
+                escape("unsupported entity type '%u'", type);
               }
             }
 
@@ -745,11 +755,13 @@ namespace satellite
             case nucleus::Subject::TypeUser:
               {
                 elle::cryptography::PublicKey         K;
+                std::string res;
 
                 // retrieve the identifier which is supposed to
                 // represent a user identity i.e a public key.
                 if (Infinit::Parser->Value("Identifier",
-                                           K) == elle::Status::Error)
+                                           res) == elle::Status::Error ||
+                    K.Restore(res) == elle::Status::Error)
                   escape("unable to retrieve the user's public key "
                          "through the identifier");
 
@@ -839,11 +851,13 @@ namespace satellite
             case nucleus::Subject::TypeUser:
               {
                 elle::cryptography::PublicKey         K;
+                std::string res;
 
                 // retrieve the identifier which is supposed to
                 // represent a user identity i.e a public key.
                 if (Infinit::Parser->Value("Identifier",
-                                           K) == elle::Status::Error)
+                                           res) == elle::Status::Error ||
+                    K.Restore(res) == elle::Status::Error)
                   escape("unable to retrieve the user's public key "
                          "through the identifier");
 

@@ -1,21 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       diary
-//
-// license       infinit
-//
-// author        julien quintard   [tue jun 28 14:58:51 2011]
-//
-
 #ifndef DIARY_UNIX_UPCALL_HH
-#define DIARY_UNIX_UPCALL_HH
+# define DIARY_UNIX_UPCALL_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
+# include <elle/utility/Buffer.hh>
+# include <elle/serialize/fwd.hh>
+# include <elle/idiom/Open.hh>
 
 namespace satellite
 {
@@ -78,13 +68,11 @@ namespace satellite
       template <typename... T>
       elle::Status      Outputs(const T&...);
       elle::Status      Result(const elle::Integer32);
+      template<typename... T>
+        elle::Status    ExtractInputs(T&... value);
+      template<typename... T>
+        elle::Status    ExtractOutputs(T&... value);
 
-      //
-      // interfaces
-      //
-
-      // object
-      declare(Upcall);
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
@@ -97,10 +85,11 @@ namespace satellite
       // attributes
       //
       Operation         operation;
-      //XXX
-      elle::utility::Buffer inputs;
-      elle::utility::Buffer outputs;
       elle::Integer32   result;
+    private:
+      elle::utility::Buffer _inputs;
+      elle::utility::Buffer _outputs;
+      ELLE_SERIALIZE_FRIEND_FOR(Upcall);
     };
 
   }

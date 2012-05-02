@@ -13,18 +13,21 @@
 //
 
 
-#include "elle/cryptography/KeyPair.hh"
+#include "elle/cryptography/KeyPairSerializer.hxx"
 #include "elle/io/Path.hh"
 #include <elle/types.hh>
 #include "elle/io/Unique.hh"
 
 #include "hole/Model.hh"
 
-#include "lune/Identity.hh"
-#include "lune/Descriptor.hh"
+#include <lune/IdentitySerializer.hxx>
+#include <lune/AuthoritySerializer.hxx>
+#include <lune/DescriptorSerializer.hxx>
 
-#include "nucleus/proton/Address.hh"
-#include "nucleus/proton/Block.hh"
+#include <nucleus/proton/AddressSerializer.hxx>
+#include <nucleus/proton/BlockSerializer.hxx>
+#include <nucleus/neutron/ObjectSerializer.hxx>
+#include <nucleus/neutron/TraitSerializer.hxx>
 
 
 // XXX When Qt is out, remove this
@@ -118,7 +121,9 @@ extern "C" PyObject* metalib_generate_network_descriptor(PyObject* self, PyObjec
       // WARNING: restore state before setting exception !
       PyEval_RestoreThread(_save);
       std::cout << "############################################################\n";
+#include <elle/idiom/Open.hh>
       show();
+#include <elle/idiom/Close.hh>
       std::cout << "############################################################\n";
       char const* error_string = err.what();
       PyErr_SetString(metalib_MetaError, error_string);
@@ -194,7 +199,9 @@ extern "C" PyObject* metalib_check_root_block_signature(PyObject* self, PyObject
       // WARNING: restore state before setting exception !
       PyEval_RestoreThread(_save);
       std::cout << "############################################################\n";
+#include <elle/idiom/Open.hh>
       show();
+#include <elle/idiom/Close.hh>
       std::cout << "############################################################\n";
       char const* error_string = err.what();
       PyErr_SetString(metalib_MetaError, error_string);

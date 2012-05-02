@@ -8,12 +8,12 @@
 // author        Raphael Londeix   [Mon 20 Feb 2012 03:17:55 PM CET]
 //
 
-#include "elle/cryptography/KeyPair.hh"
-#include "elle/io/Path.hh"
+#include <elle/cryptography/KeyPairSerializer.hxx>
+#include <elle/io/Path.hh>
 #include <elle/types.hh>
 
-#include "lune/Identity.hh"
-#include "lune/Authority.hh"
+#include <lune/IdentitySerializer.hxx>
+#include <lune/AuthoritySerializer.hxx>
 
 // XXX When Qt is out, remove this
 #ifdef slots

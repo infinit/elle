@@ -1444,7 +1444,7 @@ namespace satellite
         Record::Operations.access = Record::Access;
         Record::Operations.chmod = Record::Chmod;
         Record::Operations.chown = Record::Chown;
-#if defined(HAVE_SETXATTR)
+#if defined(HAVE_SETXATTR) && 0
         Record::Operations.setxattr = Record::Setxattr;
         Record::Operations.getxattr = Record::Getxattr;
         Record::Operations.listxattr = Record::Listxattr;

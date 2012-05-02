@@ -31,6 +31,8 @@ namespace satellite
     {
       // set the operation.
       this->operation = operation;
+      this->_inputs.Reset();
+      this->_outputs.Reset();
 
       return elle::Status::Ok;
     }
@@ -46,15 +48,6 @@ namespace satellite
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- object ----------------------------------------------------------
-//
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Upcall, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -78,14 +71,14 @@ namespace satellite
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Inputs]" << std::endl;
 
-      if (this->inputs.Dump(margin + 4) == elle::Status::Error)
+      if (this->_inputs.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the archive");
 
       // display the outputs.
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Outputs]" << std::endl;
 
-      if (this->outputs.Dump(margin + 4) == elle::Status::Error)
+      if (this->_outputs.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the archive");
 
       // display the result.

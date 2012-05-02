@@ -13,7 +13,7 @@
 //
 
 #include "lune/Lune.hh"
-#include <elle/types.hh>
+#include <elle/Elle.hh>
 
 #include "identity.hh"
 #include "passport.hh"

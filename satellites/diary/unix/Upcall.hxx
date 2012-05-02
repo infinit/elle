@@ -26,7 +26,7 @@ namespace satellite
     {
       try
         {
-          this->inputs.Writer() << std::make_tuple(inputs...);
+          this->_inputs.Writer() << std::tuple<T const&...>(inputs...);
         }
       catch (std::exception const& err)
         {
@@ -45,7 +45,7 @@ namespace satellite
     {
       try
         {
-          this->outputs.Writer() << std::make_tuple(outputs...);
+          this->_outputs.Writer() << std::tuple<T const&...>(outputs...);
         }
       catch (std::exception const& err)
         {
@@ -54,6 +54,37 @@ namespace satellite
       return elle::Status::Ok;
     }
 
+    template<typename... T>
+      elle::Status    Upcall::ExtractInputs(T&... inputs)
+      {
+        try
+          {
+            auto tuple = std::tuple<T&...>(inputs...);
+            this->_inputs.Reader() >> tuple;
+          }
+        catch (std::exception const& err)
+          {
+            escape("Cannot extract inputs: %s", err.what());
+          }
+
+        return elle::Status::Ok;
+      }
+
+    template<typename... T>
+      elle::Status    Upcall::ExtractOutputs(T&... outputs)
+      {
+        try
+          {
+            auto tuple = std::tuple<T&...>(outputs...);
+            this->_outputs.Reader() >> tuple;
+          }
+        catch (std::exception const& err)
+          {
+            escape("Cannot extract outputs: %s", err.what());
+          }
+
+        return elle::Status::Ok;
+      }
   }
 }
 

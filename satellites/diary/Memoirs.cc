@@ -19,6 +19,10 @@
 namespace satellite
 {
 
+  Memoirs::Memoirs()
+      : archive()
+      , offset(0)
+    {}
 //
 // ---------- dumpable --------------------------------------------------------
 //

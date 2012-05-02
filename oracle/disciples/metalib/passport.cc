@@ -1,21 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       @FIXME@
-//
-// license       infinit
-//
-// author        Raphaël Londeix   [Tue 21 Feb 2012 11:36:47 AM CET]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include "elle/io/Path.hh"
+#include <elle/cryptography/Random.hh>
+#include <elle/io/Path.hh>
 #include <elle/types.hh>
 
-#include "lune/Passport.hh"
+#include <lune/PassportSerializer.hxx>
+#include <lune/AuthoritySerializer.hxx>
 
 // XXX When Qt is out, remove this
 #ifdef slots
@@ -59,7 +47,7 @@ static lune::Passport create_passport(elle::String const& id,
     elle::standalone::Region              region;
 
     // generate a random region.
-    if (cryptography::Random::Generate(region) == elle::Status::Error)
+    if (elle::cryptography::Random::Generate(region) == elle::Status::Error)
       throw std::runtime_error("unable to generate a random region");
 
     // create a label.

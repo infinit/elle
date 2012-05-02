@@ -45,7 +45,7 @@ namespace elle
 ///   int     _my_int;
 ///
 ///   // The serializer has access to _my_int;
-///   ELLE_SERIALIZE_FRIEND(MyClass);
+///   ELLE_SERIALIZE_FRIEND_FOR(MyClass);
 /// };
 /// -----------------
 ///

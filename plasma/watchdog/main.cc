@@ -3,6 +3,7 @@
 #include <iostream>
 #include <boost/thread.hpp>
 
+#include <elle/Elle.hh>
 #include "Application.hh"
 #include "Agent.hh"
 #include "WatchdogInterface.hh"

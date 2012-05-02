@@ -6,6 +6,7 @@
 
 #include <QDir>
 
+#include <elle/Elle.hh>
 
 #include "Application.hh"
 

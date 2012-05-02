@@ -25,7 +25,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Object,
 {
   assert(version == 0);
 
-  archive & static_cast<nucleus::proton::ImprintBlockSerializer&>(value);
+  archive & static_cast<nucleus::proton::ImprintBlock&>(value);
 
   archive & value.author;
 

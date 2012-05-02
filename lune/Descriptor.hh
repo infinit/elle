@@ -36,9 +36,10 @@ namespace lune
   /// note that the network name is supposed to be unique as it plays the
   /// role of identifier.
   ///
-  class Descriptor:
-    public elle::radix::Object,
-    public elle::io::Fileable<Descriptor>
+  class Descriptor
+    : public elle::radix::Object
+    , public elle::io::Fileable<Descriptor>
+    , public elle::serialize::Uniquable<Descriptor>
   {
   public:
     //

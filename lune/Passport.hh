@@ -15,9 +15,10 @@ namespace lune
   /// used by the storage layer to locate the nodes responsible for a
   /// block's replica for instance.
   ///
-  class Passport:
-    public elle::radix::Object,
-    public elle::io::Fileable<Passport>
+  class Passport
+    : public elle::radix::Object
+    , public elle::io::Fileable<Passport>
+    , public elle::serialize::Uniquable<Passport>
   {
   public:
     //

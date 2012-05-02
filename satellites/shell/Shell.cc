@@ -1,16 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       shell
-//
-// license       infinit
-//
-// author        julien quintard   [thu mar  4 17:51:46 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/Elle.hh>
+#include <elle/utility/Parser.hh>
 
 #include <satellites/shell/Shell.hh>
 

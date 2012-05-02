@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       plasma/watchdog
-//
-// license       infinit
-//
-// author        Raphael Londeix   [Sun 04 Mar 2012 11:40:29 AM CET]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <stdexcept>
 #include <iostream>
 
@@ -21,6 +7,12 @@
 
 #include "InfinitNetwork.hh"
 #include "Manager.hh"
+
+#include <lune/IdentitySerializer.hxx>
+#include <lune/DescriptorSerializer.hxx>
+#include <nucleus/proton/AddressSerializer.hxx>
+#include <nucleus/neutron/ObjectSerializer.hxx>
+#include <nucleus/neutron/TraitSerializer.hxx>
 
 using namespace plasma::watchdog;
 
@@ -321,7 +313,7 @@ void InfinitNetwork::_OnProcessStarted()
   LOG() << "Process successfully started!\n";
 }
 
-void InfinitNetwork::_OnProcessError(QProcess::ProcessError error)
+void InfinitNetwork::_OnProcessError(QProcess::ProcessError)
 {
   LOG() << "Process has an error\n";
 }

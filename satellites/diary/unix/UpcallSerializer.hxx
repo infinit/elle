@@ -3,11 +3,11 @@
 
 # include <cassert>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/utility/BufferSerializer.hxx>
 
 # include <satellites/diary/unix/Upcall.hh>
 
-ELLE_SERIALIZE_SIMPLE(satellites::diary::unix::Upcall,
+ELLE_SERIALIZE_SIMPLE(satellite::unix::Upcall,
                       archive,
                       value,
                       version)
@@ -15,10 +15,9 @@ ELLE_SERIALIZE_SIMPLE(satellites::diary::unix::Upcall,
   assert(version == 0);
 
   archive & value.operation;
-  // XXX
-  //archive & value.inputs;
-  //archive & value.outputs;
   archive & value.result;
+  archive & value._inputs;
+  archive & value._outputs;
 }
 
 #endif

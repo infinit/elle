@@ -51,8 +51,9 @@ namespace nucleus
     /// make it as easy to manipulate the owner entry as for other access
     /// records. thus, this attribute is never serialized.
     ///
-    class Object:
-      public proton::ImprintBlock
+    class Object
+      : public proton::ImprintBlock
+      , public elle::serialize::Uniquable<Object>
     {
     public:
       //
