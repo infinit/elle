@@ -4,5 +4,6 @@
 int main()
 {
 
+  std::cout << "tests done.\n";
   return 0;
 }

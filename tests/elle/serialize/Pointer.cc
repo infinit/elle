@@ -87,5 +87,7 @@ int main()
     assert(ptr->biet == "MEGABIET is a string like any other");
     delete ptr;
   }
+
+  std::cout << "tests done.\n";
   return 0;
 }
