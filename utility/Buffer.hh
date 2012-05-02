@@ -81,8 +81,8 @@ namespace elle
       ContentPair         Release();
 
       /// Binary serialization shorcut.
-      elle::serialize::OutputBufferArchive Writer();
-      elle::serialize::InputBufferArchive  Reader() const;
+      elle::serialize::OutputBufferArchive  Writer();
+      elle::serialize::InputBufferArchive   Reader() const;
 
       virtual Status    Dump(const Natural32 shift = 0) const;
 
