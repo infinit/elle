@@ -47,6 +47,12 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::cryptography::PublicKey,
   if (!n || !e)
     throw std::bad_alloc();
 
+  // XXX
+  value.~PublicKey();
+  new (&value) elle::cryptography::PublicKey;
+
+  assert(value.key() == nullptr);
+
   if (value.Create(::BN_dup(n.get()),
                    ::BN_dup(e.get())) == Status::Error)
     {
