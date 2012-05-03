@@ -45,6 +45,9 @@ namespace elle { namespace io {
     template<template<elle::serialize::ArchiveMode> class Archive>
       Status Fileable<T, DefaultArchive>::Store(Path const& path) const
       {
+        if (File::Dig(path) == elle::Status::Error)
+          escape("unable to dig the chain of directories");
+
         std::ofstream out(path.str(), std::ios_base::out | std::ios_base::binary);
         if (!out.good())
           {

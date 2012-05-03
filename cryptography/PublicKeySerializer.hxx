@@ -9,6 +9,7 @@
 
 ELLE_SERIALIZE_SPLIT(elle::cryptography::PublicKey)
 
+// XXX ya moyen de faire bcp plus simple, cf BN_new
 ELLE_SERIALIZE_SPLIT_LOAD(elle::cryptography::PublicKey,
                           archive,
                           value,
