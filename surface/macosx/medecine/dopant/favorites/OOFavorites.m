@@ -27,11 +27,11 @@
     self = [super init];
 
     if(self) {
-		NSString* imagePath = [[NSBundle bundleWithIdentifier:@"io.infinit.FinderDopant"] pathForResource:@"Infinit" ofType:@"icns"];
-        NSImage *image = [[NSImage alloc] initWithContentsOfFile:imagePath];
-        self.sideBarImage = [[NSClassFromString(@"NSSidebarImage") alloc] initWithSourceImage:image];
+		NSString* imagePath = [[NSBundle bundleWithIdentifier:@"io.infinit.FinderDopant"] pathForResource:@"sidebar-18" ofType:@"png"];
+        self.sideBarImage = [[NSImage alloc] initWithContentsOfFile:imagePath];
+        [self.sideBarImage setTemplate:YES];
         
-        self.infinitMountPath = [[NSURL URLWithString:[NSHomeDirectory() stringByAppendingPathComponent:@"/.config/infinit/mnt"]] absoluteString];
+        self.infinitMountPath = [[NSURL URLWithString:[NSHomeDirectory() stringByAppendingPathComponent:@"/.config/infinit/Infinit"]] absoluteString];
 
         // Add Favorite 
         // TODO: preference checked.
@@ -66,8 +66,20 @@
 {
     if ([[[self accessibilityAttributeValue:@"AXURL"] path] isEqualToString:[OOFavorites instance].infinitMountPath])
     {
-        [self setStringValue:@"infinit.io"];
-        [self setImage:[OOFavorites instance].sideBarImage];
+        [self setStringValue:@"Infinit"];
+        if ([self respondsToSelector:@selector(image)])
+        {
+            id img = [self image];
+            if ([img respondsToSelector:@selector(initWithSourceImage:)])
+            {
+                [img initWithSourceImage:[OOFavorites instance].sideBarImage];
+                
+            }
+            else if ([self respondsToSelector:@selector(setImage:)])
+            {
+                [self setImage:[OOFavorites instance].sideBarImage];
+            }
+        }
     }
     [self drawWithFrame2:arg1 inView:arg2];
 }

@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
-	<string>Infinit.icns</string>
+	<string>infinit.app.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>io.infinit.Infinit</string>
 	<key>CFBundleInfoDictionaryVersion</key>

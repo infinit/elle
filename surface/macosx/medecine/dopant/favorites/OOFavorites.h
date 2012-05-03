@@ -18,14 +18,14 @@
     /**
      The sidebar image
      */
-    NSImage                 *sidebarImage;
+    id                      sidebarImage;
     /**
      The mountPath
      */
     NSString                *infinitMountPath;
 }
 
-@property(retain) NSImage   *sideBarImage;
+@property(retain) id        sideBarImage;
 @property(retain) NSString  *infinitMountPath;
 
 /**

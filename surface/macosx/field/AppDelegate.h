@@ -16,5 +16,13 @@
 }
 
 @property (assign) IBOutlet NSWindow *window;
+
 - (void)launch8infinit;
+
+- (IBAction)openInfinitNeworks:(id)sender;
+- (IBAction)installInjectBundle:(id)sender;
+- (IBAction)injectBundle:(id)sender;
+- (IBAction)launchWebsite:(id)sender;
+- (IBAction)launchHelpCenter:(id)sender;
+
 @end

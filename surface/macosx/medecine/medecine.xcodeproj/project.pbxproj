@@ -15,7 +15,7 @@
 		1C8522E81528D94E00051605 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522A21528D78200051605 /* main.m */; };
 		1C8522E91528D94E00051605 /* mach_inject.c in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522A91528D78200051605 /* mach_inject.c */; };
 		1C8522EA1528D94E00051605 /* mach_inject_bundle.c in Sources */ = {isa = PBXBuildFile; fileRef = 1C8522AB1528D78200051605 /* mach_inject_bundle.c */; };
-		1CA5AC7E1534E1000050BA05 /* Infinit.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CA5AC7D1534E1000050BA05 /* Infinit.icns */; };
+		1CA30DF6154E958F00001944 /* sidebar-18.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CA30DF5154E958F00001944 /* sidebar-18.png */; };
 		1CC130F11534162B00C805FE /* OOFavorites.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CC130F01534162B00C805FE /* OOFavorites.m */; };
 		1CDEC3241533543E001EFEC0 /* OOCellDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CDEC3181533543E001EFEC0 /* OOCellDictKey.m */; };
 		1CDEC3251533543E001EFEC0 /* OOIconCellDictKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CDEC31A1533543E001EFEC0 /* OOIconCellDictKey.m */; };
@@ -64,7 +64,7 @@
 		1C8522AA1528D78200051605 /* mach_inject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mach_inject.h; sourceTree = "<group>"; };
 		1C8522AB1528D78200051605 /* mach_inject_bundle.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mach_inject_bundle.c; sourceTree = "<group>"; };
 		1C8522AC1528D78200051605 /* mach_inject_bundle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mach_inject_bundle.h; sourceTree = "<group>"; };
-		1CA5AC7D1534E1000050BA05 /* Infinit.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Infinit.icns; sourceTree = "<group>"; };
+		1CA30DF5154E958F00001944 /* sidebar-18.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "sidebar-18.png"; path = "../../../field/ressources/icons/sidebar-18.png"; sourceTree = "<group>"; };
 		1CB4FB7E1528EEDC00DDEC99 /* mach_inject_bundle_stub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mach_inject_bundle_stub.h; path = ../needle/mach_inject_bundle_stub.h; sourceTree = "<group>"; };
 		1CC130EF1534162B00C805FE /* OOFavorites.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOFavorites.h; sourceTree = "<group>"; };
 		1CC130F01534162B00C805FE /* OOFavorites.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOFavorites.m; sourceTree = "<group>"; };
@@ -234,7 +234,7 @@
 		1CFCA40A152EFE3B00F67E8D /* ressources */ = {
 			isa = PBXGroup;
 			children = (
-				1CA5AC7D1534E1000050BA05 /* Infinit.icns */,
+				1CA30DF5154E958F00001944 /* sidebar-18.png */,
 				1CFCA40B152EFE3B00F67E8D /* ok.icns */,
 			);
 			path = ressources;
@@ -359,7 +359,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1CFCA40C152EFE3B00F67E8D /* ok.icns in Resources */,
-				1CA5AC7E1534E1000050BA05 /* Infinit.icns in Resources */,
+				1CA30DF6154E958F00001944 /* sidebar-18.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -404,7 +404,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
 				CODE_SIGN_IDENTITY = io.infinit;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -436,7 +436,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
 				CODE_SIGN_IDENTITY = io.infinit;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -469,7 +469,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -498,7 +498,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;

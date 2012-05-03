@@ -23,44 +23,45 @@
     // Launch installer process
     [self launch8infinit];
 }
--(void)launch8infinit
+- (void)launch8infinit
 {
     NSString *installerPath = [[NSBundle mainBundle] pathForResource:@"8installer" ofType:nil];
     [NSTask launchedTaskWithLaunchPath:installerPath arguments:Nil];
 }
--(void)awakeFromNib
+- (void)awakeFromNib
 {
     statusItem = [[[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength] retain];
     [statusItem setMenu:statusMenu];
-    [statusItem setTitle:@"⌘"];
-    //[statusItem setImage:[[NSImage alloc] initWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Infinit" ofType:@"icns"]]];
+    //[statusItem setTitle:@"⌘"];
+    NSImage *icon = [[NSImage alloc] initWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"sidebar-18" ofType:@"png"]];
+    [icon setTemplate:YES];
+    [statusItem setImage:icon];
     [statusItem setHighlightMode:YES];
-    //[statusItem setLength:20];
 }
 
--(IBAction)installInjectBundle:(id)sender
+- (IBAction)openInfinitNeworks:(id)sender
+{
+    [[NSWorkspace sharedWorkspace] openFile:@"/Users/charlesguillot/.config/infinit/Infinit"];
+}
+
+- (IBAction)installInjectBundle:(id)sender
 {
     [OOInjectorHelper launchFinderHelperTools:YES];
 }
 
--(IBAction)injectBundle:(id)sender
+- (IBAction)injectBundle:(id)sender
 {
     [OOInjectorHelper launchFinderHelperTools:NO];
 }
 
--(IBAction)launchWebsite:(id)sender
+- (IBAction)launchWebsite:(id)sender
 {
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://www.infinit.io"]];
 }
 
--(IBAction)launchHelpCenter:(id)sender
+- (IBAction)launchHelpCenter:(id)sender
 {
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://www.infinit.io/help"]];
-}
-
--(IBAction)openPreferences:(id)sender
-{
-    [[NSWorkspace sharedWorkspace] openFile:@ "/Library/PreferencePanes/Flash Player.prefPane"];
 }
 
 @end
