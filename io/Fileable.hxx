@@ -28,7 +28,7 @@ namespace elle { namespace io {
         try
           {
             Archive<elle::serialize::ArchiveMode::Input> archive(in);
-            archive >> reinterpret_cast<T&>(*this);
+            archive >> static_cast<T&>(*this);
 
           }
         catch (std::exception const& err)
@@ -55,7 +55,8 @@ namespace elle { namespace io {
 
         try
           {
-            Archive<elle::serialize::ArchiveMode::Output>(out, reinterpret_cast<T const&>(*this));
+            typedef Archive<elle::serialize::ArchiveMode::Output> OutArchive;
+            OutArchive(out, static_cast<T const&>(*this));
           }
         catch (std::exception const& err)
           {

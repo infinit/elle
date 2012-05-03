@@ -202,8 +202,8 @@ char Base64Archive<ArchiveMode::Input>::_DecodeChar(unsigned char c)
   if (res < 0)
     {
       std::stringstream ss;
-      ss << (unsigned int) c;
-      throw std::runtime_error("Unexpected base64 char: '" + ss.str() + "'");
+      ss << '\'' << (char)c << "' (" << (unsigned int) c << ')';
+      throw std::runtime_error("Unexpected base64 char: " + ss.str());
     }
   return res;
 }

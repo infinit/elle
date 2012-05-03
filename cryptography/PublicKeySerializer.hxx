@@ -30,6 +30,9 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::cryptography::PublicKey,
   Large n_;
   Large e_;
 
+  BN_init(&n_);
+  BN_init(&e_);
+
   archive >> n_;
   archive >> e_;
 

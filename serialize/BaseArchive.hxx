@@ -360,7 +360,7 @@ namespace elle
       {
         uint16_t value_;
         Access::Load(this->self(), value_);
-        value = static_cast<T>(value);
+        value = static_cast<T>(value_);
       }
 
 
