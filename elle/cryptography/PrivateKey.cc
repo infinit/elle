@@ -34,14 +34,17 @@ const PrivateKey            PrivateKey::Null;
 /// this method initializes the object.
 ///
 PrivateKey::PrivateKey():
-  _key(nullptr), _contexts{nullptr, nullptr, nullptr}
+  _key(nullptr),
+  _contexts{nullptr, nullptr, nullptr}
 {}
 
 ///
 /// this is the copy constructor.
 ///
 PrivateKey::PrivateKey(PrivateKey const&k) :
-  Object(k)
+  Object(k),
+  _key(nullptr),
+  _contexts{nullptr, nullptr, nullptr}
 {
   assert(k._key != nullptr);
 

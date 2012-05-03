@@ -59,19 +59,20 @@ elle::Status          Etoile::Initialize()
   // generate a random string, create a phrase with it along with
   // the socket used by portal so that applications have everything
   // to connect to and authenticate to portal.
-  {
-    elle::String string;
+  if (!Infinit::Network.empty())
+    {
+      elle::String string;
 
-    if (elle::cryptography::Random::Generate(string) == elle::Status::Error)
-      escape("unable to generate a random string");
+      if (elle::cryptography::Random::Generate(string) == elle::Status::Error)
+        escape("unable to generate a random string");
 
-    if (Etoile::Phrase.Create(string,
-                              portal::Portal::Line) == elle::Status::Error)
-      escape("unable to create the phrase");
+      if (Etoile::Phrase.Create(string,
+                                portal::Portal::Line) == elle::Status::Error)
+        escape("unable to create the phrase");
 
-    if (Etoile::Phrase.Store(Infinit::Network) == elle::Status::Error)
-      escape("unable to store the phrase");
-  }
+      if (Etoile::Phrase.Store(Infinit::Network) == elle::Status::Error)
+        escape("unable to store the phrase");
+    }
 
   return elle::Status::Ok;
 }
@@ -84,10 +85,9 @@ elle::Status          Etoile::Clean()
   //
   // delete the phrase.
   //
-  {
-    if (Etoile::Phrase.Erase(Infinit::Network) == elle::Status::Error)
+  if (!Infinit::Network.empty() &&
+      Etoile::Phrase.Erase(Infinit::Network) == elle::Status::Error)
       escape("unable to erase the phrase");
-  }
 
   //
   // clean the components.

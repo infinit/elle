@@ -29,9 +29,9 @@ namespace lune
   /// Infinit identifiers so that Infinit can be used with local file
   /// system entities such as UNIX's UIDs/GIDs for instance.
   ///
-  class Dictionary:
-    public elle::radix::Object,
-    public virtual elle::io::Fileable<Dictionary>
+  class Dictionary
+    : public elle::radix::Object
+    , public elle::io::Fileable<Dictionary>
   {
   public:
     //

@@ -98,6 +98,9 @@ namespace lune
     if (key.Create(pass) == elle::Status::Error)
       escape("unable to create the secret key");
 
+    delete this->cipher;
+    this->cipher = nullptr;
+
     // allocate the cipher.
     this->cipher = new elle::cryptography::Cipher;
 
@@ -106,9 +109,11 @@ namespace lune
       {
       case Authority::TypePair:
         {
-          // encrypt the authority.
-          if (key.Encrypt(std::make_tuple(this->K, *this->k),
-                          *this->cipher) == elle::Status::Error)
+          std::tuple<
+            elle::cryptography::PublicKey const&,
+            elle::cryptography::PrivateKey const&
+          >                                     res{this->K, *this->k};
+          if (key.Encrypt(res, *this->cipher) == elle::Status::Error)
             escape("unable to encrypt the authority");
 
           break;
@@ -123,10 +128,9 @@ namespace lune
           break;
         }
       case Authority::TypeUnknown:
+        escape("unknown type");
       default:
-        {
-          escape("unknown type");
-        }
+        escape("invalid type");
       }
 
     return elle::Status::Ok;
@@ -156,7 +160,11 @@ namespace lune
           this->k = new elle::cryptography::PrivateKey;
 
           // decrypt the authority.
-          auto res = std::make_tuple(this->K, *this->k);
+          std::tuple<
+            elle::cryptography::PublicKey&,
+            elle::cryptography::PrivateKey&
+          >                                     res{this->K, *this->k};
+
           if (key.Decrypt(*this->cipher, res) == elle::Status::Error)
             escape("unable to decrypt the authority");
 
@@ -172,10 +180,9 @@ namespace lune
           break;
         }
       case Authority::TypeUnknown:
+        escape("unknown type");
       default:
-        {
-          escape("unknown type");
-        }
+        escape("invalid type");
       }
 
     return elle::Status::Ok;

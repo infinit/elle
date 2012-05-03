@@ -46,7 +46,7 @@ namespace elle
       if (this == &element)
         return true;
 
-      return this->region != element.region;
+      return this->region == element.region;
     }
 
     ///

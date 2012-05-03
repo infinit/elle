@@ -2,6 +2,7 @@
 # define LUNE_AUTHORITYSERIALIZER_HXX
 
 # include <cassert>
+# include <iostream>
 
 # include <elle/serialize/PointerSerializer.hxx>
 # include <elle/cryptography/CipherSerializer.hxx>
@@ -17,6 +18,8 @@ ELLE_SERIALIZE_SIMPLE(lune::Authority,
 
   archive & value.type;
   archive & elle::serialize::alive_pointer(value.cipher);
+  std::cout << (Archive::mode == ArchiveMode::Input ? "Loading" : "Saving")
+            << " authority type = " << value.type << " cipher = " << value.cipher << std::endl;
 }
 
 #endif

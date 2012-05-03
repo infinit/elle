@@ -110,6 +110,8 @@ namespace satellite
     if (authority.Load() == elle::Status::Error)
       escape("unable to load the authority file");
 
+    authority.Dump();
+
     // decrypt the authority.
     if (authority.Decrypt(pass) == elle::Status::Error)
       escape("unable to decrypt the authority");

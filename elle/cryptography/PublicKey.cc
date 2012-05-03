@@ -33,19 +33,18 @@ const PublicKey             PublicKey::Null;
 /// this method initializes the object.
 ///
 PublicKey::PublicKey():
-  _key(nullptr)
+  _key(nullptr),
+  _contexts{nullptr, nullptr, nullptr}
 {
-  // initialize the contexts.
-  this->_contexts.encrypt = nullptr;
-  this->_contexts.verify = nullptr;
-  this->_contexts.decrypt = nullptr;
 }
 
 ///
 /// this is the copy constructor.
 ///
 PublicKey::PublicKey(const PublicKey& K) :
-  Object(K), _key(nullptr)
+  Object(K),
+  _key(nullptr),
+  _contexts{nullptr, nullptr, nullptr}
 {
   // re-create the public key by duplicate the internal numbers.
   if (this->Create(K._key) == Status::Error)

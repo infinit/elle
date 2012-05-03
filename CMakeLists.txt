@@ -153,11 +153,16 @@ add_executable(8infinit
 )
 add_dependencies(8infinit dependencies)
 add_dependencies(infinit dependencies)
+
 message("BOOST: ${Boost_LIBRARIES}")
+
+
 target_link_libraries(8infinit
-  infinit elle etoile nucleus lune agent hole horizon
+  infinit
   ${Boost_LIBRARIES}
   ${CMAKE_THREAD_LIBS_INIT}
+  boost_thread # XXX why ?
+  elle etoile nucleus lune agent hole horizon
 )
 
 # XXX
