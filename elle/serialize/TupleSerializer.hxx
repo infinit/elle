@@ -73,6 +73,15 @@ namespace elle
       {
         static bool const value = false;
       };
+
+
+
+    /// Helper to create tuples of references
+    template<typename... T>
+      std::tuple<T&...> make_tuple(T&... values)
+      {
+        return std::tuple<T&...>(values...);
+      }
   }
 }
 

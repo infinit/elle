@@ -42,9 +42,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::Large,
   if (size > ELLE_LARGE_MAX_BIN_SIZE)
     throw std::runtime_error("Cannot load large number that big");
   archive.LoadBinary(tab, size);
-  std::cout << "__ > size = " << (size_t) size << std::endl;
   ::BN_bin2bn(tab, size, &n);
-  std::cout << "__ > " << ++i << std::endl;
 }
 
 ELLE_SERIALIZE_SPLIT_SAVE(elle::Large,

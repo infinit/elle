@@ -86,6 +86,13 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::cryptography::PrivateKey,
           >> *guard.iqmp
     ;
 
+  // XXX because the private key is not always cleaned
+  // TODO redesign cryptography classes !
+  value.~PrivateKey();
+  new (&value) elle::cryptography::PrivateKey();
+
+  assert(value.key() == nullptr);
+
   auto res = value.Create(
       guard.n,
       guard.e,
