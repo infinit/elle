@@ -72,10 +72,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::cryptography::PublicKey,
                           value,
                           version)
 {
-// XXX assert(this->_key != nullptr);
-// XXX[to remove]
-  if (value.key() == nullptr)
-    throw std::runtime_error("XXX: should not happen !");
+  assert(value.key() != nullptr);
 
   archive << *(value.key()->pkey.rsa->n)
           << *(value.key()->pkey.rsa->e);
