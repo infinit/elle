@@ -83,7 +83,7 @@ class LocalBuild(Build):
                 'dest_dir': self._dir,
             })
             if res != 0:
-                raise Exception("Cannot create the install dir of `%s'" % build_dir)
+                raise Exception("Cannot create the install dir of `%s'" % self._build_dir)
             self._release_dir = os.path.join(self._dir, self._type)
             assert(os.path.isdir(self._release_dir))
 
