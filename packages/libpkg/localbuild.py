@@ -98,7 +98,8 @@ class LocalBuild(Build):
 
         def cleanup(self):
             if self._dir is not None:
-                self.removeDirectory(self._dir)
+                pass
+                #self.removeDirectory(self._dir)
 
     def prepareEnvList(self, architecture, platform):
         """Returns a client environment for the targetted combination."""

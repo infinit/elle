@@ -18,4 +18,4 @@ export DIR_SOURCE="$SCRIPTDIR/../.."
 export DIR_BUILD="$1"
 export DIR_INSTALL="$2"
 
-. "$DIR_SOURCE"/farm/install
+"$DIR_SOURCE"/farm/install

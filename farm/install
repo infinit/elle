@@ -1,173 +1,212 @@
-#!/bin/sh
+#!/usr/bin/env python3
 
-set -ex
+import sys
+import os
+import subprocess
+import shutil
 
-MYSELF="$0"
+#set -ex
 
-error ()
-{
-    for line; do
-        echo "$MYSELF: $1" 1>&2
-    done
-}
+#MYSELF="$0"
 
-fatal ()
-{
-    error "$@"
-    exit 1
-}
+def cmd(*args, **kwargs):
+    return subprocess.check_output(list(args), **kwargs)
 
-for d in "$DIR_SOURCE" "$DIR_BUILD"; do
-    test -d "$d" || fatal "directory $d does not exist"
-done
+def error(*args):
+    sys.stderr.write(' '.join(str(a) for a in args))
 
-name=$(cd "$DIR_SOURCE" && git describe)
-rev=$(git rev-parse --short HEAD)
-version=${name%-*}
-version=${name%-*}
-major=${version%.*}
-minor=${version#*.}
+def fatal(*args):
+    error(*args)
+    sys.exit(1)
 
+def which(executable):
+    path = os.environ["PATH"]
+    for d in path.split(":"):
+        file = os.path.join(d,executable)
+        if os.path.exists(file):
+            return file
 
-DIR_INSTALL_CLIENT="$DIR_INSTALL/client"
-rm -rf "$DIR_INSTALL_CLIENT"
-mkdir -p "$DIR_INSTALL_CLIENT"
+DIR_SOURCE = os.environ["DIR_SOURCE"]
+DIR_BUILD = os.environ["DIR_BUILD"]
+DIR_INSTALL = os.environ["DIR_INSTALL"]
 
-error ()
-{
-    for line; do
-        echo 1>&2 "$line"
-    done
-}
+for d in [DIR_SOURCE, DIR_BUILD]:
+    if not os.path.isdir(d):
+        fatal(d, "is not a directory")
 
-fatal ()
-{
-    error "$@"
-    exit 1
-}
-
-ship_libs ()
-{
-    _IFS="$IFS"
-    IFS="
-"
-    for line in $(ldd $1 | awk '{print $1 " " $3}'); do
-        lib=$(echo "$line" | cut -d ' ' -f 1)
-        path=$(echo "$line" | cut -d ' ' -f 2)
-        case "$lib" in
-            (\
-             /lib64/ld-linux-x86-64.so.2|\
-             /lib/ld-linux-x86-64.so.2|\
-             /lib/ld-linux.so.2|\
-             libICE.so.6|\
-             libSM.so.6|\
-             libX11.so.6|\
-             libXau.so.6|\
-             libXdmcp.so.6|\
-             libXext.so.6|\
-             libXi.so.6|\
-             libXrandr.so.2|\
-             libXrender.so.1|\
-             libXt.so.6|\
-             libaudio.so.2|\
-             libbz2.so.1.0|\
-             libc.so.6|\
-             libcrypto.so.1.0.0|\
-             libdl.so.2|\
-             libffi.so.5|\
-             libffi.so.6|\
-             libfontconfig.so.1|\
-             libfreetype.so.6|\
-             libfuse.so.2|\
-             libgcc_s.so.1|\
-             libglib-2.0.so.0|\
-             libgobject-2.0.so.0|\
-             libgthread-2.0.so.0|\
-             libm.so.6|\
-             libpcre.so.1|\
-             libpcre.so.3|\
-             libpthread.so.0|\
-             librt.so.1|\
-             libssl.so.1.0.0|\
-             libstdc++.so.6|\
-             libtinfo.so.5|\
-             libuuid.so.1|\
-             libxcb.so.1|\
-             linux-vdso.so.1|\
-             linux-gate.so.1\
-             )
-                ;;
-            (\
-             libQtCore.so.4|\
-             libQtGui.so.4|\
-             libQtNetwork.so.4|\
-             libQtXml.so.4|\
-             libbz2.so.1|\
-             libexpat.so.1|\
-             libncurses.so.5|\
-             libncursesw.so.5|\
-             libpng15.so.15|\
-             libpng12.so.0|\
-             libpth.so.20|\
-             libqjson.so.0|\
-             libreadline.so.6|\
-             libz.so.1\
-            )
-                test -e "$2/$(basename "$path")" || cp "$path" "$2"
-                ;;
-            (*)
-                fatal "unrecognized dynamic dependency: $lib"
-                ;;
-        esac
-    done
-    IFS="$IFS"
-}
-
-DIR_INSTALL_CLIENT_BIN="$DIR_INSTALL_CLIENT/bin"
-DIR_INSTALL_CLIENT_LIB="$DIR_INSTALL_CLIENT/lib"
-mkdir -p "$DIR_INSTALL_CLIENT_BIN" "$DIR_INSTALL_CLIENT_LIB"
-for f in 8infinit                               \
-    satellites/dictionary/8dictionary           \
-    satellites/access/8access                   \
-    plasma/updater/8updater                     \
-    plasma/installer/8installer                 \
-    plasma/watchdog/8watchdog
-do
-    dst="$DIR_INSTALL_CLIENT_BIN/$(basename $f)"
-    cp "$DIR_BUILD/$f" "$dst"
-    strip "$dst"
-    echo "Ship libs for $dst"
-    ship_libs "$dst" "$DIR_INSTALL_CLIENT_LIB"
-    patchelf --set-rpath '$ORIGIN/../lib' "$dst"
-done
-
-echo "Prepare the manifest"
-${DIR_SOURCE}/farm/make_manifest "${DIR_INSTALL_CLIENT}" $major $minor $rev
+name = cmd("cd '%s' && git describe" % DIR_SOURCE, shell=True).decode("utf-8")
+rev = cmd("git", "rev-parse", "--short", "HEAD").decode("utf-8")
+version = name.split("-")[0]
+major = version.split(".")[0]
+minor = version.split(".")[1]
 
 
-DIR_INSTALL_SERVER="$DIR_INSTALL/server"
-rm -rf "$DIR_INSTALL_SERVER"
-mkdir -p "$DIR_INSTALL_SERVER"
 
-list ()
-{
-    cd "$DIR_BUILD/oracle/disciples/"
-    find "$@"
-}
+DIR_INSTALL_CLIENT = "%s/client" % DIR_INSTALL
 
-for f in                                                \
-    metalib/__init__.py                                 \
-    metalib/metalib.so                                  \
-    $(list pythia -name '*.py')                         \
-    $(list meta -name '*.py')                           \
-    $(list creosus -name '*.py' -or -name '*.html')     \
-    $(list troll -name '*.py')                          \
-    meta-server                                         \
-    meta-tests                                          \
-    creosus-server                                      \
-    production-meta-server.sh                           \
-    production-creosus-server.sh
-do
-    mkdir -p "$DIR_INSTALL_SERVER/$(dirname "$f")"
-    cp -r "$DIR_BUILD/oracle/disciples/$f" "$DIR_INSTALL_SERVER/$f"
-done
+shutil.rmtree(DIR_INSTALL_CLIENT, True)
+os.makedirs(DIR_INSTALL_CLIENT)
+
+if which("otool"):
+    def get_deps(arg):
+        deps = cmd('otool', '-L', arg).decode("utf-8")
+        deps = deps.split("\n")[:-1]
+        if not deps:
+            return []
+        return (dep.strip().split(" ")[0] for dep in deps[1:])
+elif which("ldd"):
+    def get_deps(arg):
+        deps = cmd("lld %s" % arg).decode("utf-8")
+        deps = deps.split('\n')
+        if not deps:
+            return []
+        return (dep.split("=>")[1].strip().split(" ")[0] for dep in deps[1:])
+else:
+    raise Exception("otool or ldd needed")
+
+def ship_libs(binary, dest_dir):
+    for dep in get_deps(binary):
+        lib = os.path.basename(dep)
+        path = os.path.dirname(dep)
+        if (to_add(lib) and os.path.exists(os.path.join(dest_dir,lib))):
+            print('Add lib : %s to %s' % (dep, dest_dir))
+            shutil.copy(dep, dest_dir)
+
+def to_add(lib):
+    print(lib)
+    patterns_exclude = [
+        "/lib64/ld-linux-x86-64", 
+        "/lib/ld-linux-x86-64",
+        "libICE",
+        "libSM",
+        "libX11",
+        "libXau",
+        "libXdmcp",
+        "libXext",
+        "libXi",
+        "libXrandr",
+        "libXrender",
+        "libXt",
+        "libaudio",
+        "libbz2",
+        "libc",
+        "libcrypto",
+        "libdl",
+        "libffi",
+        "libfontconfig",
+        "libfreetype",
+        "libfuse",
+        "libgcc_s",
+        "libgobject",
+        "libgthread",
+        "libm",
+        "libpcre",
+        "librt",
+        "libgthread",
+        "libssl",
+        "libstdc",
+        "libtinfo",
+        "libuuid",
+        "libstdc",
+        "libxcb",
+        "linux-vdso",
+        "linux-gate",
+        "libSystem"
+    ]
+    patterns_include = [
+        "libQtGui",
+        "libQtNetwork",
+        "libQtCore",
+        "libQtXml",
+        "libbz2",
+        "libexpat",
+        "libncurses",
+        "libncursesw",
+        "libpng15",
+        "libpng12",
+        "libpth",
+        "libqjson",
+        "libreadline",
+        "libz",
+    ]
+    for p in patterns_include:
+        if (p in lib):
+            return True
+    for p in patterns_exclude:
+        if (p in lib):
+            return False
+    raise Exception("lib not specified")
+
+DIR_INSTALL_CLIENT_BIN = os.path.join(DIR_INSTALL_CLIENT, "bin")
+DIR_INSTALL_CLIENT_LIB = os.path.join(DIR_INSTALL_CLIENT, "lib")
+os.makedirs(DIR_INSTALL_CLIENT_BIN)
+os.makedirs(DIR_INSTALL_CLIENT_LIB)
+
+infinit_path = ["8infinit", "satellites/dictionary/8dictionary", "satellites/access/8access", "plasma/updater/8updater", "plasma/installer/8installer", "plasma/watchdog/8watchdog"]
+
+for f in infinit_path:
+    dst = os.path.join(DIR_INSTALL_CLIENT_BIN, os.path.basename(f))
+    shutil.copy(os.path.join(DIR_BUILD, f), dst)
+    dst.strip()
+    print("Ship libs for %s" % dst)
+    ship_libs(dst, DIR_INSTALL_CLIENT_LIB)
+    if which("patchelf"):
+        cmd('patchelf', '--set-rpath','\'$ORIGIN/../lib\'', dst)
+    elif which("install_name_tool"):
+        cmd("install_name_tool", "-change", os.path.join("@loader_path/../lib/", os.path.basename(f, dst)), f)
+    else:
+        raise Exception("patchelf or install_name_tool needed")
+
+print("Prepare the manifest")
+cmd(os.path.join(DIR_SOURCE,'farm/make_manifest'), DIR_INSTALL_CLIENT, major, minor, rev)
+
+DIR_INSTALL_SERVER = os.path.join(DIR_INSTALL, "server")
+shutil.rmtree(DIR_INSTALL_SERVER, True)
+os.makedirs(DIR_INSTALL_SERVER)
+
+# list ()
+# {
+#     cd "$DIR_BUILD/oracle/disciples/"
+#     find "$@"
+# }
+
+server_scripts = [
+    "metalib/__init__.py",
+    "metalib/metalib.so",
+    "",
+    "",
+    "",
+    "",
+    "meta-server",
+    "meta-tests",
+    "creosus-server",
+    "production-meta-server.sh",
+    "production-creosus-server.sh"
+]
+
+# for f in server_scripts:
+#     os.makedirs(os.path.join(DIR_INSTALL_SERVER, os.path.dirname(f)))
+#     print(DIR_INSTALL_SERVER)
+#     a = os.path.join(DIR_INSTALL_SERVER, f)
+#     print(a)
+#     shutil.copytree(
+#         os.path.join(DIR_BUILD, "oracle/disciples", f), 
+#         os.path.join(DIR_INSTALL_SERVER, f)
+#     )
+
+# for f in                                                \
+#     metalib/__init__.py                                 \
+#     metalib/metalib.so                                  \
+#     $(list pythia -name '*.py')                         \
+#     $(list meta -name '*.py')                           \
+#     $(list creosus -name '*.py' -or -name '*.html')     \
+#     $(list troll -name '*.py')                          \
+#     meta-server                                         \
+#     meta-tests                                          \
+#     creosus-server                                      \
+#     production-meta-server.sh                           \
+#     production-creosus-server.sh
+# do
+#     mkdir -p "$DIR_INSTALL_SERVER/$(dirname "$f")"
+#     cp -r "$DIR_BUILD/oracle/disciples/$f" "$DIR_INSTALL_SERVER/$f"
+# done

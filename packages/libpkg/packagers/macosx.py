@@ -61,4 +61,5 @@ class Packager(BasePackager):
             )
             return filename
         finally:
-            BuildEnv.removeDirectory(tempdir)
+            pass
+            #BuildEnv.removeDirectory(tempdir)TOCHANGE
