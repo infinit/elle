@@ -56,7 +56,7 @@ if which("otool"):
         return (dep.strip().split(" ")[0] for dep in deps[1:])
 elif which("ldd"):
     def get_deps(arg):
-        deps = cmd("lld %s" % arg).decode("utf-8")
+        deps = cmd("ldd %s" % arg).decode("utf-8")
         deps = deps.split('\n')
         if not deps:
             return []
@@ -184,15 +184,15 @@ server_scripts = [
     "production-creosus-server.sh"
 ]
 
-# for f in server_scripts:
-#     os.makedirs(os.path.join(DIR_INSTALL_SERVER, os.path.dirname(f)))
-#     print(DIR_INSTALL_SERVER)
-#     a = os.path.join(DIR_INSTALL_SERVER, f)
-#     print(a)
-#     shutil.copytree(
-#         os.path.join(DIR_BUILD, "oracle/disciples", f), 
-#         os.path.join(DIR_INSTALL_SERVER, f)
-#     )
+for f in server_scripts:
+    os.makedirs(os.path.join(DIR_INSTALL_SERVER, os.path.dirname(f)))
+    print(DIR_INSTALL_SERVER)
+    a = os.path.join(DIR_INSTALL_SERVER, f)
+    print(a)
+    shutil.copytree(
+        os.path.join(DIR_BUILD, "oracle/disciples", f), 
+        os.path.join(DIR_INSTALL_SERVER, f)
+    )
 
 # for f in                                                \
 #     metalib/__init__.py                                 \
