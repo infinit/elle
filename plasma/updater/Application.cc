@@ -1,17 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       plasma/updater
-//
-// license       infinit
-//
-// author        Raphael Londeix   [Mon 30 Jan 2012 12:41:48 PM CET]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
+#include <unistd.h>
 #include <cassert>
 #include <iostream>
 #include <stdexcept>
