@@ -23,29 +23,18 @@ namespace elle
 {
   namespace network
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// this variables is the session specific to the current thread/fiber.
-    ///
-    Session*                    Session::Current = NULL;
-
 //
 // ---------- static methods --------------------------------------------------
 //
+
+    reactor::LocalStorage<Session*> Session::session(concurrency::scheduler());
+
 
     ///
     /// this method initializes the session.
     ///
     Status              Session::Initialize()
     {
-      // register the govern callback to the fiber system.
-      if (Fiber::Register(Callback<>::Infer(&Session::Govern)) == StatusError)
-        escape("unable to register the govern callback");
-
       return StatusOk;
     }
 
@@ -60,23 +49,12 @@ namespace elle
     }
 
     ///
-    /// this method returns the instance of the session.
-    ///
-    Status              Session::Instance(Session*&             session)
-    {
-      // return the current session.
-      session = Session::Current;
-
-      return StatusOk;
-    }
-
-    ///
     /// this method explicitely assign the session.
     ///
-    Status              Session::Assign(Session*                session)
+    Status              Session::Assign(Session* s)
     {
       // set the current session.
-      Session::Current = session;
+      session.Get() = s;
 
       return StatusOk;
     }
@@ -87,66 +65,9 @@ namespace elle
     ///
     Status              Session::Clear()
     {
-      // clear the locuser.
-      Session::Current = NULL;
-
       return StatusOk;
     }
 
-    ///
-    /// this method initializes, saves, restores and cleans the session
-    /// for the given fiber.
-    ///
-    Status              Session::Govern(const Phase             phase,
-                                        Fiber*                  fiber)
-    {
-      // perform an operation depending on the phase.
-      switch (phase)
-        {
-        case PhaseInitialize:
-          {
-            // nothing to do.
-
-            break;
-          }
-        case PhaseSave:
-          {
-            // save the session in the fiber's environment.
-            if (fiber->environment->Store("session",
-                                          Session::Current) == StatusError)
-              escape("unable to store the session in the environment");
-
-            // set the locuser to NULL, for safety purposes.
-            Session::Current = NULL;
-
-            break;
-          }
-        case PhaseRestore:
-          {
-            // restore the session from the fiber's environment.
-            if (fiber->environment->Load("session",
-                                         Session::Current) == StatusError)
-              escape("unable to load the session from the environment");
-
-            break;
-          }
-        case PhaseClean:
-          {
-            // nothing to do.
-            //
-            // actually, at this locus, the session must have been deleted
-            // by the network manager.
-
-            // ... but reinitializes the session locuser to make sure
-            // everything is clean!
-            Session::Current = NULL;
-
-            break;
-          }
-        }
-
-      return StatusOk;
-    }
 
 //
 // ---------- constructors & destructors --------------------------------------

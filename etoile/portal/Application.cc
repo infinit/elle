@@ -144,7 +144,7 @@ namespace etoile
     /// this callback is triggered whenever an error occurs on the
     /// application's socket.
     ///
-    elle::Status        Application::Error(const elle::String&)
+    elle::Status        Application::Error(elle::String)
     {
       // debug.
       if (Infinit::Configuration.etoile.debug == true)

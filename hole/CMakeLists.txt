@@ -41,4 +41,4 @@ add_library(hole
 target_link_libraries(hole elle)
 
 add_executable(8hole _hole.cc)
-target_link_libraries(8hole infinit nucleus lune hole)
+target_link_libraries(8hole infinit nucleus lune hole ${Boost_LIBRARIES})

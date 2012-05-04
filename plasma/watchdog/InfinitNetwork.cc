@@ -120,7 +120,6 @@ void InfinitNetwork::_CreateNetworkRootBlock()
   directory.Save(rootBlock);
   address.Save(rootAddress);
 
-  using namespace std::placeholders;
   this->_manager.meta().UpdateNetwork(
       this->_description._id,
       nullptr,
@@ -128,8 +127,8 @@ void InfinitNetwork::_CreateNetworkRootBlock()
       nullptr,
       &rootBlock,
       &rootAddress,
-      std::bind(&InfinitNetwork::_OnGotDescriptor, this, _1),
-      std::bind(&InfinitNetwork::_OnAnyError, this, _1, _2)
+      boost::bind(&InfinitNetwork::_OnGotDescriptor, this, _1),
+      boost::bind(&InfinitNetwork::_OnAnyError, this, _1, _2)
   );
 }
 
@@ -189,7 +188,6 @@ void InfinitNetwork::_RegisterDevice()
   if (it == this->_description.devices.end())
     {
       LOG() << "Registering device for this network\n";
-      using namespace std::placeholders;
 
       this->_description.devices.push_back(passport.id);
       this->_manager.meta().UpdateNetwork(
@@ -199,17 +197,16 @@ void InfinitNetwork::_RegisterDevice()
           &this->_description.devices,
           nullptr,
           nullptr,
-          std::bind(&InfinitNetwork::_OnDeviceRegistered, this, _1),
-          std::bind(&InfinitNetwork::_OnAnyError, this, _1, _2)
+          boost::bind(&InfinitNetwork::_OnDeviceRegistered, this, _1),
+          boost::bind(&InfinitNetwork::_OnAnyError, this, _1, _2)
       );
     }
   else
     {
-      using namespace std::placeholders;
       this->_manager.meta().GetNetworkNodes(
           this->_description._id,
-          std::bind(&InfinitNetwork::_OnNetworkNodes, this, _1),
-          std::bind(&InfinitNetwork::_OnAnyError, this, _1, _2)
+          boost::bind(&InfinitNetwork::_OnNetworkNodes, this, _1),
+          boost::bind(&InfinitNetwork::_OnAnyError, this, _1, _2)
       );
     }
 }
@@ -218,11 +215,10 @@ void InfinitNetwork::_OnDeviceRegistered(meta::UpdateNetworkResponse const& resp
 {
   LOG() << "Device successfully registered\n";
   assert(response.updated_network_id == this->_description._id);
-  using namespace std::placeholders;
   this->_manager.meta().GetNetworkNodes(
       this->_description._id,
-      std::bind(&InfinitNetwork::_OnNetworkNodes, this, _1),
-      std::bind(&InfinitNetwork::_OnAnyError, this, _1, _2)
+      boost::bind(&InfinitNetwork::_OnNetworkNodes, this, _1),
+      boost::bind(&InfinitNetwork::_OnAnyError, this, _1, _2)
   );
 }
 

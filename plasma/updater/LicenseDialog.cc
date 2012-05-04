@@ -17,10 +17,10 @@ LicenseDialog::~LicenseDialog()
 
 void LicenseDialog::on_acceptButton_clicked()
 {
-  emit accepted();
+  Q_EMIT accepted();
 }
 
 void LicenseDialog::on_cancelButton_clicked()
 {
-  emit cancelled();
+  Q_EMIT cancelled();
 }

@@ -106,9 +106,11 @@ namespace hole
         escape("unable to retrieve the network name");
       }
 
-    // initialize the Hole library.
-    if (hole::Hole::Initialize() == elle::StatusError)
-      escape("unable to initialize Hole");
+    reactor::Thread t(elle::concurrency::scheduler(), "Hole initialization",
+                      &hole::Hole::Initialize);
+    // // initialize the Hole library.
+    // if (hole::Hole::Initialize() == elle::StatusError)
+    //   escape("unable to initialize Hole");
 
     // launch the program.
     if (elle::Program::Launch() == elle::StatusError)

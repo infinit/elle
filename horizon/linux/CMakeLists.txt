@@ -6,12 +6,7 @@ CHECK_FUNCTION_EXISTS(setxattr HAVE_SETXATTR)
 
 ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
 
-QT4_WRAP_CPP(linux_MOCS
-  Broker.hh
-)
-
 ADD_LIBRARY(linux
-  Broker.cc
   Crib.cc
   Crux.cc
   Event.cc

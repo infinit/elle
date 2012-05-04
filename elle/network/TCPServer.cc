@@ -341,15 +341,8 @@ namespace elle
     ///
     void                TCPServerPorter::_accept()
     {
-      Closure<
-        Status,
-        Parameters<>
-        >               closure(Callback<>::Infer(
-                                  &TCPServerPorter::Accept, this));
-
-      // spawn a fiber.
-      if (Fiber::Spawn(closure) == StatusError)
-        yield(_(), "unable to spawn a fiber");
+      new reactor::Thread(concurrency::scheduler(), "TCPServer accept",
+                          boost::bind(&TCPServerPorter::Accept, this), true);
     }
 
  }

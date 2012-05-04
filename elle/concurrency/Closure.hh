@@ -1,26 +1,12 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu mar 25 03:25:25 2010]
-//
-
 #ifndef ELLE_CONCURRENCY_CLOSURE_HH
-#define ELLE_CONCURRENCY_CLOSURE_HH
+# define ELLE_CONCURRENCY_CLOSURE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/radix/Status.hh>
+# include <elle/radix/Entity.hh>
+# include <elle/radix/Parameters.hh>
+# include <elle/radix/Arguments.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Entity.hh>
-#include <elle/radix/Parameters.hh>
-#include <elle/radix/Arguments.hh>
-
-#include <elle/concurrency/Callback.hh>
+# include <elle/concurrency/Callback.hh>
 
 namespace elle
 {
@@ -28,11 +14,6 @@ namespace elle
 
   namespace concurrency
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// Closure generic class.
     ///
@@ -196,10 +177,6 @@ namespace elle
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/concurrency/Closure.hxx>
 

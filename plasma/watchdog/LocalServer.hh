@@ -58,7 +58,7 @@ namespace plasma
       void _OnClientError(ConnectionPtr conn, std::string const& error);
       void _OnClientCommand(ConnectionPtr conn, QByteArray const& data);
 
-    private slots:
+    private Q_SLOTS:
       void _OnNewConnection();
 
     };

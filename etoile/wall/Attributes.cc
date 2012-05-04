@@ -56,10 +56,7 @@ namespace etoile
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
-
-      // protect the access.
-      zone.Lock();
+      reactor::Lock lock(&elle::concurrency::scheduler(), scope->mutex.write());
       {
         // retrieve the context.
         if (scope->Use(context) == elle::StatusError)
@@ -74,7 +71,6 @@ namespace etoile
         // set the actor's state.
         actor->state = gear::Actor::StateUpdated;
       }
-      zone.Unlock();
 
       return elle::StatusOk;
     }
@@ -86,7 +82,7 @@ namespace etoile
     /// note that this method should be used careful as a pointer to the
     /// target trait is returned. should this trait be destroyed by another
     /// actor's operation, accessing it could make the system crash.
-    /// 
+    ///
     elle::Status        Attributes::Get(
                           const gear::Identifier&               identifier,
                           const elle::String&                   name,
@@ -108,10 +104,7 @@ namespace etoile
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeRead);
-
-      // protect the access.
-      zone.Lock();
+      reactor::Lock lock(&elle::concurrency::scheduler(), scope->mutex);
       {
         // retrieve the context.
         if (scope->Use(context) == elle::StatusError)
@@ -123,7 +116,6 @@ namespace etoile
                                        trait) == elle::StatusError)
           escape("unable to get the attribute");
       }
-      zone.Unlock();
 
       return elle::StatusOk;
     }
@@ -134,7 +126,7 @@ namespace etoile
     /// note that this method should be used careful as a set of pointers to
     /// the target traits is returned. should one of the traits be destroyed
     /// by another actor's operation, accessing it could make the system crash.
-    /// 
+    ///
     elle::Status        Attributes::Fetch(
                           const gear::Identifier&               identifier,
                           nucleus::Range<nucleus::Trait>&       range)
@@ -155,10 +147,7 @@ namespace etoile
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeRead);
-
-      // protect the access.
-      zone.Lock();
+      reactor::Lock lock(&elle::concurrency::scheduler(), scope->mutex);
       {
         // retrieve the context.
         if (scope->Use(context) == elle::StatusError)
@@ -169,7 +158,6 @@ namespace etoile
                                          range) == elle::StatusError)
           escape("unable to fetch the attribute");
       }
-      zone.Unlock();
 
       return elle::StatusOk;
     }
@@ -197,10 +185,7 @@ namespace etoile
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
-
-      // protect the access.
-      zone.Lock();
+      reactor::Lock lock(&elle::concurrency::scheduler(), scope->mutex.write());
       {
         // retrieve the context.
         if (scope->Use(context) == elle::StatusError)
@@ -214,7 +199,6 @@ namespace etoile
         // set the actor's state.
         actor->state = gear::Actor::StateUpdated;
       }
-      zone.Unlock();
 
       return elle::StatusOk;
     }

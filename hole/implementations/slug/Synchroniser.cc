@@ -82,9 +82,9 @@ namespace hole
         //      execution time.
         // XXX
 
-        // emit the signal.
+        // Q_EMIT the signal.
         if (this->signal.synchronised.Emit() == elle::StatusError)
-          escape("unable to emit the signal");
+          escape("unable to Q_EMIT the signal");
 
         return elle::StatusOk;
       }

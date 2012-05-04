@@ -62,10 +62,7 @@ namespace etoile
       gear::Guard               guard(scope);
 
       // declare a critical section.
-      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
-
-      // protect the access.
-      zone.Lock();
+      reactor::Lock lock(&elle::concurrency::scheduler(), scope->mutex.write());
       {
         // retrieve the context.
         if (scope->Use(context) == elle::StatusError)
@@ -89,7 +86,6 @@ namespace etoile
         if (guard.Release() == elle::StatusError)
           escape("unable to release the guard");
       }
-      zone.Unlock();
 
       return elle::StatusOk;
     }
@@ -151,10 +147,7 @@ namespace etoile
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeRead);
-
-      // protect the access.
-      zone.Lock();
+      reactor::Lock lock(&elle::concurrency::scheduler(), scope->mutex);
       {
         // retrieve the context.
         if (scope->Use(context) == elle::StatusError)
@@ -165,7 +158,6 @@ namespace etoile
                                            abstract) == elle::StatusError)
           escape("unable to retrieve general information on the object");
       }
-      zone.Unlock();
 
       return elle::StatusOk;
     }
@@ -195,10 +187,7 @@ namespace etoile
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
-
-      // protect the access.
-      zone.Lock();
+      reactor::Lock lock(&elle::concurrency::scheduler(), scope->mutex.write());
       {
         // retrieve the context.
         if (scope->Use(context) == elle::StatusError)
@@ -229,7 +218,6 @@ namespace etoile
         if (scope->Shutdown() == elle::StatusError)
           escape("unable to trigger the shutdown");
       }
-      zone.Unlock();
 
       // depending on the context's state.
       switch (context->state)
@@ -292,10 +280,7 @@ namespace etoile
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
-
-      // protect the access.
-      zone.Lock();
+      reactor::Lock lock(&elle::concurrency::scheduler(), scope->mutex.write());
       {
         // retrieve the context.
         if (scope->Use(context) == elle::StatusError)
@@ -326,7 +311,6 @@ namespace etoile
         if (scope->Shutdown() == elle::StatusError)
           escape("unable to trigger the shutdown");
       }
-      zone.Unlock();
 
       // depending on the context's state.
       switch (context->state)
@@ -392,10 +376,7 @@ namespace etoile
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::Zone        zone(scope->hurdle, elle::ModeWrite);
-
-      // protect the access.
-      zone.Lock();
+      reactor::Lock lock(&elle::concurrency::scheduler(), scope->mutex.write());
       {
         // retrieve the context.
         if (scope->Use(context) == elle::StatusError)
@@ -426,7 +407,6 @@ namespace etoile
         if (scope->Shutdown() == elle::StatusError)
           escape("unable to trigger the shutdown");
       }
-      zone.Unlock();
 
       // depending on the context's state.
       switch (context->state)

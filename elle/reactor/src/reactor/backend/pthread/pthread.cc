@@ -155,12 +155,15 @@ namespace reactor
         }
         catch (const std::exception& e)
         {
-          std::cerr << "Thread " << name() << " killed by exception: " << e.what() << "." << std::endl;
+          std::cerr << "Thread " << name()
+                    << " killed by exception: " << e.what()
+                    << "." << std::endl;
           std::abort();
         }
         catch (...)
         {
-          std::cerr << "Thread " << name() << " killed by unknown exception." << std::endl;
+          std::cerr << "Thread " << name()
+                    << " killed by unknown exception." << std::endl;
           std::abort();
         }
         Thread* caller = _caller;
@@ -182,7 +185,8 @@ namespace reactor
         boost::unique_lock<boost::mutex> lock(_mutex);
         _status = status::waiting;
         _manager._current = _caller;
-        INFINIT_REACTOR_DEBUG(_name << ": yield back to " << _manager._current->_name);
+        INFINIT_REACTOR_DEBUG(_name << ": yield back to "
+                              << _manager._current->_name);
         _caller = 0;
         {
           boost::unique_lock<boost::mutex> lock(_manager._current->_mutex);

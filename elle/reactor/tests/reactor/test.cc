@@ -2,7 +2,11 @@
 #include "backend/test.hh"
 #include "network/test.hh"
 
+#include <reactor/semaphore.hh>
+#include <reactor/mutex.hh>
+#include <reactor/rw-mutex.hh>
 #include <reactor/signal.hh>
+#include <reactor/storage.hh>
 #include <reactor/thread.hh>
 
 /*-----------------.
@@ -431,26 +435,29 @@ void test_vthread()
 | Multithread |
 `------------*/
 
-void run_sched(reactor::Signal& s)
+void waker(reactor::Signal& s)
 {
-  Fixture f;
+  // FIXME: sleeps suck
 
-  typedef bool (reactor::Thread::*F)(reactor::Waitable&, reactor::DurationOpt);
-  reactor::Thread keeper(*sched, "keeper",
-                         boost::bind(static_cast<F>(&reactor::Thread::wait),
-                                     &keeper, boost::ref(s),
-                                     reactor::DurationOpt()));
-  sched->run();
+  // Make sure the scheduler is sleeping.
+  sleep(1);
+  reactor::Thread w(*sched, "waker",
+                    boost::bind(&reactor::Signal::signal, &s));
+  // Make sure the scheduler is done.
+  sleep(1);
 }
 
 void test_multithread_spawn_wake()
 {
+  Fixture f;
   reactor::Signal sig;
-  boost::thread s(boost::bind(run_sched, boost::ref(sig)));
-  // Make sure the scheduler is sleeping.
-  sleep(1);
-  reactor::Thread waker(*sched, "waker",
-                        boost::bind(&reactor::Signal::signal, &sig));
+  typedef bool (reactor::Thread::*F)(reactor::Waitable&, reactor::DurationOpt);
+  reactor::Thread keeper(*sched, "keeper",
+                         boost::bind(static_cast<F>(&reactor::Thread::wait),
+                                     &keeper, boost::ref(sig),
+                                     reactor::DurationOpt()));
+  boost::thread s(boost::bind(waker, boost::ref(sig)));
+  sched->run();
   s.join();
 }
 
@@ -460,17 +467,19 @@ int spawned(reactor::Signal& s)
   return 42;
 }
 
-void spawn(reactor::Signal& s)
+void spawn(reactor::Signal& s, int& res)
 {
-  int res = sched->mt_run<int>("spawned", boost::bind(spawned, boost::ref(s)));
-  BOOST_CHECK_EQUAL(res, 42);
+  res = sched->mt_run<int>("spawned", boost::bind(spawned, boost::ref(s)));
 }
 
 void spawner()
 {
   reactor::Signal s;
-  boost::thread spawner(boost::bind(spawn, boost::ref(s)));
+  int res = 0;
+  boost::thread spawner(boost::bind(spawn, boost::ref(s), boost::ref(res)));
   wait(s);
+  spawner.join();
+  BOOST_CHECK_EQUAL(res, 42);
 }
 
 void test_multithread_run()
@@ -478,6 +487,297 @@ void test_multithread_run()
   Fixture f;
 
   reactor::Thread t(*sched, "spawner", spawner);
+  sched->run();
+}
+
+/*----------.
+| Semaphore |
+`----------*/
+
+void semaphore_noblock_wait(reactor::Semaphore& s)
+{
+  BOOST_CHECK_EQUAL(s.count(), 2);
+  wait(s);
+  BOOST_CHECK_EQUAL(s.count(), 1);
+  wait(s);
+  BOOST_CHECK_EQUAL(s.count(), 0);
+}
+
+void test_semaphore_noblock()
+{
+  Fixture f;
+  reactor::Semaphore s(2);
+  reactor::Thread wait(*sched, "wait",
+                       boost::bind(&semaphore_noblock_wait, boost::ref(s)));
+  sched->run();
+}
+
+void semaphore_block_wait(reactor::Semaphore& s)
+{
+  BOOST_CHECK_EQUAL(s.count(), 0);
+  wait(s);
+  BOOST_CHECK_EQUAL(s.count(), 0);
+}
+
+void semaphore_block_post(reactor::Semaphore& s)
+{
+  yield();
+  yield();
+  yield();
+  BOOST_CHECK_EQUAL(s.count(), -1);
+  s.release();
+  BOOST_CHECK_EQUAL(s.count(), 0);
+}
+
+void test_semaphore_block()
+{
+  Fixture f;
+  reactor::Semaphore s;
+  reactor::Thread wait(*sched, "wait",
+                       boost::bind(&semaphore_block_wait, boost::ref(s)));
+  reactor::Thread post(*sched, "post",
+                       boost::bind(&semaphore_block_post, boost::ref(s)));
+  sched->run();
+}
+
+void semaphore_multi_wait(reactor::Semaphore& s, int& step)
+{
+  wait(s);
+  ++step;
+}
+
+void semaphore_multi_post(reactor::Semaphore& s, int& step)
+{
+  yield();
+  yield();
+  yield();
+  BOOST_CHECK_EQUAL(s.count(), -2);
+  BOOST_CHECK_EQUAL(step, 0);
+  s.release();
+  yield();
+  BOOST_CHECK_EQUAL(s.count(), -1);
+  BOOST_CHECK_EQUAL(step, 1);
+  s.release();
+  yield();
+  BOOST_CHECK_EQUAL(s.count(), 0);
+  BOOST_CHECK_EQUAL(step, 2);
+}
+
+void test_semaphore_multi()
+{
+  Fixture f;
+  reactor::Semaphore s;
+  int step = 0;
+  reactor::Thread wait1(*sched, "wait1",
+                       boost::bind(&semaphore_multi_wait,
+                                   boost::ref(s), boost::ref(step)));
+  reactor::Thread wait2(*sched, "wait2",
+                       boost::bind(&semaphore_multi_wait,
+                                   boost::ref(s), boost::ref(step)));
+  reactor::Thread post(*sched, "post",
+                       boost::bind(&semaphore_multi_post,
+                                   boost::ref(s), boost::ref(step)));
+  sched->run();
+}
+
+/*------.
+| Mutex |
+`------*/
+
+static const int mutex_yields = 32;
+
+void mutex_count(int& i, reactor::Mutex& mutex, int yields)
+{
+  int count = 0;
+  int prev = -1;
+  while (count < mutex_yields)
+  {
+    {
+      reactor::Lock lock(sched, mutex);
+      // For now, mutex do guarantee fairness between lockers.
+      //BOOST_CHECK_NE(i, prev);
+      (void)prev;
+      BOOST_CHECK_EQUAL(i % 2, 0);
+      ++i;
+      for (int c = 0; c < yields; ++c)
+      {
+        ++count;
+        yield();
+      }
+      ++i;
+      prev = i;
+    }
+    yield();
+  }
+}
+
+void test_mutex()
+{
+  Fixture f;
+  reactor::Mutex mutex;
+  int step = 0;
+  reactor::Thread c1(*sched, "counter1",
+                     boost::bind(&mutex_count,
+                                 boost::ref(step), boost::ref(mutex), 1));
+  reactor::Thread c2(*sched, "counter2",
+                     boost::bind(&mutex_count,
+                                 boost::ref(step), boost::ref(mutex), 1));
+  reactor::Thread c3(*sched, "counter3",
+                     boost::bind(&mutex_count,
+                                 boost::ref(step), boost::ref(mutex), 1));
+  sched->run();
+}
+
+/*--------.
+| RWMutex |
+`--------*/
+
+void rw_mutex_read(reactor::RWMutex& mutex, int& step)
+{
+  reactor::Lock lock(sched, mutex);
+  ++step;
+  yield();
+  BOOST_CHECK_EQUAL(step, 3);
+}
+
+void test_rw_mutex_multi_read()
+{
+  Fixture f;
+  reactor::RWMutex mutex;
+  int step = 0;
+  reactor::Thread r1(*sched, "reader1",
+                     boost::bind(rw_mutex_read,
+                                 boost::ref(mutex), boost::ref(step)));
+  reactor::Thread r2(*sched, "reader2",
+                     boost::bind(rw_mutex_read,
+                                 boost::ref(mutex), boost::ref(step)));
+  reactor::Thread r3(*sched, "reader3",
+                     boost::bind(rw_mutex_read,
+                                 boost::ref(mutex), boost::ref(step)));
+  sched->run();
+}
+
+void rw_mutex_write(reactor::RWMutex& mutex, int& step)
+{
+  reactor::Lock lock(sched, mutex.write());
+  ++step;
+  int prev = step;
+  yield();
+  BOOST_CHECK_EQUAL(step, prev);
+}
+
+void test_rw_mutex_multi_write()
+{
+  Fixture f;
+  reactor::RWMutex mutex;
+  int step = 0;
+  reactor::Thread r1(*sched, "writer1",
+                     boost::bind(rw_mutex_write,
+                                 boost::ref(mutex), boost::ref(step)));
+  reactor::Thread r2(*sched, "writer2",
+                     boost::bind(rw_mutex_write,
+                                 boost::ref(mutex), boost::ref(step)));
+  reactor::Thread r3(*sched, "writer3",
+                     boost::bind(rw_mutex_write,
+                                 boost::ref(mutex), boost::ref(step)));
+  sched->run();
+}
+
+void rw_mutex_both_read(reactor::RWMutex& mutex, int& step)
+{
+  reactor::Lock lock(sched, mutex);
+  int v = step;
+  BOOST_CHECK_EQUAL(v % 2, 0);
+  BOOST_CHECK_EQUAL(step, v);
+  yield();
+  BOOST_CHECK_EQUAL(step, v);
+  yield();
+  BOOST_CHECK_EQUAL(step, v);
+}
+
+void rw_mutex_both_write(reactor::RWMutex& mutex, int& step)
+{
+  reactor::Lock lock(sched, mutex.write());
+  ++step;
+  yield();
+  yield();
+  ++step;
+  BOOST_CHECK_EQUAL(step % 2, 0);
+}
+
+void test_rw_mutex_both()
+{
+  Fixture f;
+  reactor::RWMutex mutex;
+  int step = 0;
+  reactor::Thread r1(*sched, "reader1",
+                     boost::bind(rw_mutex_both_read,
+                                 boost::ref(mutex), boost::ref(step)));
+  reactor::Thread r2(*sched, "reader2",
+                     boost::bind(rw_mutex_both_read,
+                                 boost::ref(mutex), boost::ref(step)));
+  sched->step();
+
+
+  reactor::Thread w1(*sched, "writer1",
+                     boost::bind(rw_mutex_both_write,
+                                 boost::ref(mutex), boost::ref(step)));
+
+  reactor::Thread w2(*sched, "writer2",
+                     boost::bind(rw_mutex_both_write,
+                                 boost::ref(mutex), boost::ref(step)));
+  while (!r1.done())
+    sched->step();
+  BOOST_CHECK(r2.done());
+  sched->step();
+
+  reactor::Thread r3(*sched, "reader3",
+                     boost::bind(rw_mutex_both_read,
+                                 boost::ref(mutex), boost::ref(step)));
+  reactor::Thread r4(*sched, "reader4",
+                     boost::bind(rw_mutex_both_read,
+                                 boost::ref(mutex), boost::ref(step)));
+  while (!w1.done() || !w2.done())
+    sched->step();
+
+  sched->step();
+
+
+  reactor::Thread w3(*sched, "writer2",
+                     boost::bind(rw_mutex_both_write,
+                                 boost::ref(mutex), boost::ref(step)));
+
+  reactor::Thread w4(*sched, "writer4",
+                     boost::bind(rw_mutex_both_write,
+                                 boost::ref(mutex), boost::ref(step)));
+
+  sched->run();
+}
+
+/*--------.
+| Storage |
+`--------*/
+
+void storage(reactor::LocalStorage<int>& val, int start)
+{
+  val.get() = start;
+  yield();
+  BOOST_CHECK_EQUAL(val.get(), start);
+  val.get()++;
+  yield();
+  BOOST_CHECK_EQUAL(val.get(), start + 1);
+}
+
+void test_storage()
+{
+  Fixture f;
+  reactor::LocalStorage<int> val(*sched);
+
+  reactor::Thread t1(*sched, "1", boost::bind(storage, boost::ref(val), 0));
+  reactor::Thread t2(*sched, "2", boost::bind(storage, boost::ref(val), 1));
+  reactor::Thread t3(*sched, "3", boost::bind(storage, boost::ref(val), 2));
+  reactor::Thread t4(*sched, "4", boost::bind(storage, boost::ref(val), 3));
+
   sched->run();
 }
 
@@ -526,6 +826,26 @@ bool test_suite()
   boost::unit_test::framework::master_test_suite().add(mt);
   mt->add(BOOST_TEST_CASE(test_multithread_spawn_wake));
   mt->add(BOOST_TEST_CASE(test_multithread_run));
+
+  boost::unit_test::test_suite* sem = BOOST_TEST_SUITE("Semaphore");
+  boost::unit_test::framework::master_test_suite().add(sem);
+  sem->add(BOOST_TEST_CASE(test_semaphore_noblock));
+  sem->add(BOOST_TEST_CASE(test_semaphore_block));
+  sem->add(BOOST_TEST_CASE(test_semaphore_multi));
+
+  boost::unit_test::test_suite* mtx = BOOST_TEST_SUITE("Mutex");
+  boost::unit_test::framework::master_test_suite().add(mtx);
+  mtx->add(BOOST_TEST_CASE(test_mutex));
+
+  boost::unit_test::test_suite* rwmtx = BOOST_TEST_SUITE("RWMutex");
+  boost::unit_test::framework::master_test_suite().add(rwmtx);
+  rwmtx->add(BOOST_TEST_CASE(test_rw_mutex_multi_read));
+  rwmtx->add(BOOST_TEST_CASE(test_rw_mutex_multi_write));
+  rwmtx->add(BOOST_TEST_CASE(test_rw_mutex_both));
+
+  boost::unit_test::test_suite* storage = BOOST_TEST_SUITE("Storage");
+  boost::unit_test::framework::master_test_suite().add(storage);
+  storage->add(BOOST_TEST_CASE(test_storage));
 
   boost::unit_test::framework::master_test_suite().add
     (reactor::network::test_suite());

@@ -14,11 +14,17 @@
 
 #include <elle/system/Platform.hh>
 
-#include <elle/concurrency/Program.hh>
 #include <elle/concurrency/Callback.hh>
+#include <elle/concurrency/Program.hh>
+#include <elle/concurrency/Scheduler.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+
+#include <elle/idiom/Close.hh>
+# include <reactor/scheduler.hh>
+# include <reactor/thread.hh>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -97,8 +103,21 @@ namespace elle
     {
       // exit the core application.
       program->core->exit();
+      _exit = true;
 
       return StatusOk;
+    }
+
+    void qt_runner()
+    {
+      // static const reactor::Duration delay
+      //   = boost::posix_time::milliseconds(10);
+      while (!Program::_exit)
+      {
+        QCoreApplication::processEvents();
+#undef yield
+        scheduler().current()->yield();//sleep(delay);
+      }
     }
 
     ///
@@ -111,8 +130,8 @@ namespace elle
         escape("unable to process events since the program has not "
                "been set up");
 
-      // process the events.
-      program->core->exec();
+      reactor::Thread qt(scheduler(), "Qt event loop", &qt_runner);
+      scheduler().run();
 
       return StatusOk;
     }
@@ -189,10 +208,9 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Program::Program():
-      core(NULL)
-    {
-    }
+    Program::Program()
+      : core(NULL)
+    {}
 
     ///
     /// destructor.
@@ -204,5 +222,6 @@ namespace elle
         delete this->core;
     }
 
+    bool Program::_exit = false;
   }
 }

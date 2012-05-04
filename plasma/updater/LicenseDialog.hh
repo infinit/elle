@@ -19,11 +19,11 @@ public:
 private:
     Ui::LicenseDialog* _ui;
 
-private slots:
+private Q_SLOTS:
   void on_acceptButton_clicked();
   void on_cancelButton_clicked();
 
-signals:
+Q_SIGNALS:
     void accepted();
     void cancelled();
 };

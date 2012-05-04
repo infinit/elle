@@ -12,6 +12,9 @@
 
 namespace reactor
 {
+  /** Scheduler
+   *
+   */
   class Scheduler
   {
     /*-------------.
@@ -25,30 +28,39 @@ namespace reactor
     `----*/
     public:
       void run();
+      bool step();
 
     /*-------------------.
     | Threads management |
     `-------------------*/
     public:
+      typedef std::set<Thread*> Threads;
       Thread* current() const;
     private:
       void _freeze(Thread& thread);
       void _thread_register(Thread& thread);
       void _unfreeze(Thread& thread);
-      typedef std::set<Thread*> Threads;
+    private:
       Thread* _current;
       Threads _starting;
       boost::mutex _starting_mtx;
       Threads _running;
       Threads _frozen;
 
+    /*-------.
+    | Status |
+    `-------*/
+    public:
+      void Dump(std::ostream&);
+
     /*----------------.
     | Multithread API |
     `----------------*/
     public:
       template <typename R>
-      R mt_run(const std::string& name,
-               const boost::function<R ()>& action);
+      R
+      mt_run(const std::string&                 name,
+             const boost::function<R ()>&       action);
 
     /*-----.
     | Asio |

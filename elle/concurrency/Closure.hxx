@@ -1,15 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu mar 25 11:55:10 2010]
-//
-
 #ifndef ELLE_CONCURRENCY_CLOSURE_HXX
-#define ELLE_CONCURRENCY_CLOSURE_HXX
+# define ELLE_CONCURRENCY_CLOSURE_HXX
 
 namespace elle
 {

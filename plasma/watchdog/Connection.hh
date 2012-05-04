@@ -63,7 +63,7 @@ namespace plasma
     private:
       void _Raise(std::string const& error);
 
-    private slots:
+    private Q_SLOTS:
       void _OnDisconnect();
       void _OnReadyRead();
     };

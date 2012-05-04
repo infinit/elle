@@ -60,7 +60,7 @@ namespace plasma
       void _OnNetworkNodes(meta::NetworkNodesResponse const& response);
       void _StartProcess();
 
-    private slots:
+    private Q_SLOTS:
       void _OnProcessStarted();
       void _OnProcessError(QProcess::ProcessError error);
     };

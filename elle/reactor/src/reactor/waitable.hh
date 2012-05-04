@@ -4,12 +4,13 @@
 # include <set>
 
 # include <boost/function.hpp>
+# include <boost/noncopyable.hpp>
 
 # include <reactor/fwd.hh>
 
 namespace reactor
 {
-  class Waitable
+  class Waitable: public boost::noncopyable
   {
     /*---------.
     | Typedefs |
@@ -73,7 +74,8 @@ namespace reactor
        */
       virtual void _unwait(Thread* thread);
       /// Wake waiting threads.
-      void _signal();
+      int  _signal();
+      bool _signal_one();
       /** Register an exception waiting thread should throw when woken.
        *
        * @param e The exception threads must throw.

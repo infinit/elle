@@ -15,6 +15,13 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/idiom/Close.hh>
+# include <reactor/scheduler.hh>
+# include <reactor/thread.hh>
+#include <elle/idiom/Open.hh>
+
+#include <elle/concurrency/Event.hh>
+#include <elle/concurrency/Program.hh>
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
@@ -78,14 +85,14 @@ namespace elle
     /// this method receives a packet by blocking.
     ///
     template <typename O>
-    Status              TCPSocket::Receive(const Event&         event,
-                                           O                    outputs)
+    Status
+    TCPSocket::Receive(Event& event, O outputs)
     {
       std::shared_ptr<Parcel> parcel;
 
       // block the current fiber until the given event is received.
-      if (Fiber::Wait(event, parcel) == StatusError)
-        escape("an error occured while waiting for a specific event");
+      scheduler().current()->wait(event.Signal());
+      parcel = event.Signal().Value();
 
       assert(parcel.get() != nullptr && "The event should have filled the parcel");
 
@@ -153,6 +160,8 @@ namespace elle
       if (this->Receive(event, outputs) == StatusError)
         escape("unable to receive the outputs");
 
+      event.Cleanup();
+
       return StatusOk;
     }
 
@@ -166,15 +175,13 @@ namespace elle
     {
       // retrieve the current session, if necessary.
       if (session == NULL)
-        {
-          if (Session::Instance(session) == StatusError)
-            escape("unable to retrieve the session instance");
-        }
+        session = elle::network::Session::session.Get();
 
       // send a message as a response by using the event of
       // the received message i.e the current session.
       if (this->Send(inputs, session->event) == StatusError)
         escape("unable to send the reply");
+      session->event.Cleanup();
 
       return StatusOk;
     }
