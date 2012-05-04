@@ -194,7 +194,7 @@ namespace nucleus
           this->data.version += 1;
 
           // sign the archive with the author key.
-          if (k.Sign(std::make_tuple(this->data.contents,
+          if (k.Sign(elle::serialize::make_tuple(this->data.contents,
                                      this->data.size,
                                      this->data.stamp,
                                      this->data.version,
@@ -240,7 +240,7 @@ namespace nucleus
 
               // sign the meta data, making sure to include the access
               // fingerprint.
-              if (k.Sign(std::make_tuple(this->meta.owner.permissions,
+              if (k.Sign(elle::serialize::make_tuple(this->meta.owner.permissions,
                                          this->meta.genre,
                                          this->meta.stamp,
                                          this->meta.attributes,
@@ -257,7 +257,7 @@ namespace nucleus
               //
 
               // sign the meta data.
-              if (k.Sign(std::make_tuple(this->meta.owner.permissions,
+              if (k.Sign(elle::serialize::make_tuple(this->meta.owner.permissions,
                                          this->meta.genre,
                                          this->meta.stamp,
                                          this->meta.attributes,
@@ -331,7 +331,7 @@ namespace nucleus
 
             // verify the meta part, including the access fingerprint.
             if (this->owner.K.Verify(this->meta.signature,
-                                     std::make_tuple(this->meta.owner.permissions,
+                                     elle::serialize::make_tuple(this->meta.owner.permissions,
                                                      this->meta.genre,
                                                      this->meta.stamp,
                                                      this->meta.attributes,
@@ -343,7 +343,7 @@ namespace nucleus
           {
             // verify the meta part.
             if (this->owner.K.Verify(this->meta.signature,
-                                     std::make_tuple(this->meta.owner.permissions,
+                                     elle::serialize::make_tuple(this->meta.owner.permissions,
                                                      this->meta.genre,
                                                      this->meta.stamp,
                                                      this->meta.attributes,
@@ -435,7 +435,7 @@ namespace nucleus
       {
         // verify the signature.
         if (author.Verify(this->data.signature,
-                          std::make_tuple(this->data.contents,
+                          elle::serialize::make_tuple(this->data.contents,
                                           this->data.size,
                                           this->data.stamp,
                                           this->data.version,

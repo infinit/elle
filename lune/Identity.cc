@@ -138,7 +138,7 @@ namespace lune
       escape("unable to seal an unencrypted identity");
 
     // sign the pair with the authority.
-    if (authority.k->Sign(std::make_tuple(this->name, *this->cipher),
+    if (authority.k->Sign(elle::serialize::make_tuple(this->name, *this->cipher),
                           this->signature) == elle::Status::Error)
       escape("unable to sign the pair with the authority");
 
@@ -157,7 +157,7 @@ namespace lune
 
     // verify the signature.
     if (authority.K.Verify(this->signature,
-                           std::make_tuple(this->name, *this->cipher)) == elle::Status::Error)
+                           elle::serialize::make_tuple(this->name, *this->cipher)) == elle::Status::Error)
       escape("unable to verify the signature");
 
     return elle::Status::Ok;

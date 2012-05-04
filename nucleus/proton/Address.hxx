@@ -44,7 +44,7 @@ namespace nucleus
       // in the parameters as well. for examples, please refer to
       // ContentHashBlock, PublicKeyBlock etc.
       if (elle::cryptography::OneWay::Hash(
-            std::make_tuple(parameter, parameters...),
+            elle::serialize::make_tuple(parameter, parameters...),
             *this->digest) == elle::Status::Error)
         escape("unable to hash the given parameter(s)");
 

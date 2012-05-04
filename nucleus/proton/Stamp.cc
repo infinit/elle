@@ -34,7 +34,7 @@ namespace nucleus
     elle::Status        Stamp::Seal(elle::cryptography::PrivateKey const&     k)
     {
       // sign the attributes.
-      if (k.Sign(std::make_tuple(this->master, this->slave),
+      if (k.Sign(elle::serialize::make_tuple(this->master, this->slave),
                  this->signature) == elle::Status::Error)
         escape("unable to sign the attributes");
 
@@ -50,7 +50,7 @@ namespace nucleus
       // sign the attributes.
       if (Infinit::Authority.K.Verify(
             this->signature,
-            std::make_tuple(this->master, this->slave)) == elle::Status::Error)
+            elle::serialize::make_tuple(this->master, this->slave)) == elle::Status::Error)
         escape("this stamp seems not to have been issued by the oracle");
 
       return elle::Status::Ok;
