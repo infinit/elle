@@ -19,7 +19,7 @@
 -(void)awakeFromNib{
 	[self.window setContentSize:[generalPreferenceView frame].size];
 	[[self.window contentView] addSubview:generalPreferenceView];
-	[toolbar setSelectedItemIdentifier:@"General"];
+	[bar setSelectedItemIdentifier:@"General"];
 	[self.window center];
 }
 

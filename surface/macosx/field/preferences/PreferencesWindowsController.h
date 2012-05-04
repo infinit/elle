@@ -10,7 +10,7 @@
 
 @interface PreferencesWindowsController : NSWindowController <NSToolbarDelegate> 
 {
-    IBOutlet NSToolbar *toolbar;
+    IBOutlet NSToolbar *bar;
 	IBOutlet NSView *generalPreferenceView;
 	IBOutlet NSView *accountPreferenceView;
 	IBOutlet NSView *networkPreferenceView;

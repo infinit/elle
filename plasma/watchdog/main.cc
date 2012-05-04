@@ -1,10 +1,10 @@
 
 #include <cstdio>
 #include <iostream>
-#include <thread>
+//#include <thread>
 
 #include "Application.hh"
-#include "Agent.hh"
+//#include "Agent.hh"
 #include "WatchdogInterface.hh"
 
 #define BUF_SIZE 4096
@@ -15,18 +15,18 @@ static void _initAll();
 
 int     main(int ac, char* av[])
 {
-  typedef std::unique_ptr<WatchdogInterface> WatchdogInterfacePtr;
+  //typedef std::unique_ptr<WatchdogInterface> WatchdogInterfacePtr;
 
   plasma::watchdog::Application app(ac, av);
-  auto agent = Agent(
-      WatchdogInterfacePtr(new WatchdogInterface(app))
-  );
+  //auto agent = Agent(
+  //    WatchdogInterfacePtr(new WatchdogInterface(app))
+  //);
   try
     {
       _initAll();
-      std::thread agentThread(std::bind(&Agent::Run, &agent));
+      //std::thread agentThread(std::bind(&Agent::Run, &agent));
       auto res = app.Exec();
-      agentThread.join();
+      //agentThread.join();
       return res;
     }
   catch (std::exception const& err)
