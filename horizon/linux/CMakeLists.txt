@@ -19,4 +19,4 @@ ADD_LIBRARY(linux
   ${linux_MOCS}
 )
 
-TARGET_LINK_LIBRARIES(linux etoile fuse pthread)
+TARGET_LINK_LIBRARIES(linux etoile fuse pthread ${Boost_LIBRARIES})
