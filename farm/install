@@ -200,7 +200,7 @@ if os.path.isdir(os.path.join(DIR_BUILD, "oracle")): # oracle is built
         else:
             if not os.path.isdir(os.path.dirname(dst)):
                 os.makedirs(os.path.dirname(dst))
-            shutil.copyfile(src, dst)
+            shutil.copy(src, dst)
 
 # for f in                                                \
 #     metalib/__init__.py                                 \
