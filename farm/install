@@ -146,7 +146,11 @@ DIR_INSTALL_CLIENT_LIB = os.path.join(DIR_INSTALL_CLIENT, "lib")
 os.makedirs(DIR_INSTALL_CLIENT_BIN)
 os.makedirs(DIR_INSTALL_CLIENT_LIB)
 
-infinit_path = ["8infinit", "plasma/updater/8updater", "plasma/watchdog/8watchdog"]
+infinit_path = [
+    "8infinit",
+    "plasma/updater/8updater",
+    "plasma/watchdog/8watchdog",
+]
 
 for f in infinit_path:
     dst = os.path.join(DIR_INSTALL_CLIENT_BIN, os.path.basename(f))
