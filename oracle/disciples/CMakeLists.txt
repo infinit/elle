@@ -1,7 +1,7 @@
 add_subdirectory(metalib)
 
 file(
-    COPY creosus meta pythia troll
+    COPY creosus meta pythia troll static
     DESTINATION .
     FILES_MATCHING
         PATTERN "*.py"
@@ -9,6 +9,8 @@ file(
         PATTERN "*.html"
         PATTERN "*.png"
         PATTERN "*.jpg"
+        PATTERN "*.css"
+        PATTERN "*.less"
 )
 
 file(
