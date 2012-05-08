@@ -17,7 +17,7 @@ parser.add_argument(
     action="append"
 )
 parser.add_argument(
-    '--last',
+    '--last', '-l',
     help="Install the last tarball in the results",
     action='store_true',
     default=False
@@ -41,13 +41,13 @@ parser.add_argument(
     default=False
 )
 parser.add_argument(
-    '--only-client',
+    '--only-client', '-c',
     help="Use only client builds",
     action='store_true',
     default=False
 )
 parser.add_argument(
-    '--only-server',
+    '--only-server', '-s',
     help="Use only server builds",
     action='store_true',
     default=False
