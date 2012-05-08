@@ -114,6 +114,7 @@ ship_libs ()
              libboost_system-mt.so.1.46.1|\
              libboost_thread-mt.so.1.46.1|\
              libboost_signals-mt.so.1.46.1|\
+             libboost_system-mt.so.1.46.1|\
              libz.so.1\
             )
                 test -e "$2/$(basename "$path")" || cp "$path" "$2"
