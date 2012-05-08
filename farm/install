@@ -114,6 +114,9 @@ def to_add(lib):
         "libSystem"
     ]
     patterns_include = [
+        "libboost_system-mt",
+        "libboost_thread-mt",
+        "libboost_signals-mt",
         "libQtGui",
         "libQtNetwork",
         "libQtCore",
@@ -135,7 +138,7 @@ def to_add(lib):
     for p in patterns_exclude:
         if (p in lib):
             return False
-    raise Exception("lib not specified")
+    raise Exception("lib not specified: %s" % lib)
 
 DIR_INSTALL_CLIENT_BIN = os.path.join(DIR_INSTALL_CLIENT, "bin")
 DIR_INSTALL_CLIENT_LIB = os.path.join(DIR_INSTALL_CLIENT, "lib")
@@ -153,7 +156,8 @@ for f in infinit_path:
     if which("patchelf"):
         cmd('patchelf', '--set-rpath','\'$ORIGIN/../lib\'', dst)
     elif which("install_name_tool"):
-        cmd("install_name_tool", "-change", os.path.join("@loader_path/../lib/", os.path.basename(f, dst)), f)
+        pass
+        #cmd("install_name_tool", "-change", f, dst)
     else:
         raise Exception("patchelf or install_name_tool needed")
 
@@ -173,10 +177,10 @@ os.makedirs(DIR_INSTALL_SERVER)
 server_scripts = [
     "metalib/__init__.py",
     "metalib/metalib.so",
-    "pythia",
-    "meta",
-    "creosus",
-    "troll",
+    #"pythia",
+    #"meta",
+    #"creosus",
+    #"troll",
     "meta-server",
     "meta-tests",
     "creosus-server",
@@ -184,15 +188,17 @@ server_scripts = [
     "production-creosus-server.sh"
 ]
 
-for f in server_scripts:
-    os.makedirs(os.path.join(DIR_INSTALL_SERVER, os.path.dirname(f)))
-    print(DIR_INSTALL_SERVER)
-    a = os.path.join(DIR_INSTALL_SERVER, f)
-    print(a)
-    shutil.copytree(
-        os.path.join(DIR_BUILD, "oracle/disciples", f), 
-        os.path.join(DIR_INSTALL_SERVER, f)
-    )
+if os.path.isdir(os.path.join(DIR_BUILD, "oracle")):
+    for f in server_scripts:
+        os.makedirs(os.path.join(DIR_INSTALL_SERVER, os.path.dirname(f)))
+        print(os.path.join(DIR_INSTALL_SERVER, os.path.dirname(f)))
+        a = os.path.join(DIR_INSTALL_SERVER, f)
+        print(a)
+        print(os.path.join(DIR_BUILD, "oracle/disciples", f))
+        shutil.copytree(
+            os.path.join(DIR_BUILD, "oracle/disciples", f), 
+            os.path.join(DIR_INSTALL_SERVER, f)
+        )
 
 # for f in                                                \
 #     metalib/__init__.py                                 \

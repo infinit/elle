@@ -33,7 +33,7 @@ class Packager(BasePackager):
             os.mkdir(pkgdir)
             shutil.copyfile(
                 os.path.join(build_env.directory, 'bin', '8updater'),
-                os.path.join(pkgdir, 'infinit'),
+                os.path.join(pkgdir, '8updater'),
             )
             params = {
                 'architecture': {
@@ -47,9 +47,27 @@ class Packager(BasePackager):
             filename = "infinit-%(version_name)s-%(version)s-%(architecture)s.dmg" % params
             path = os.path.join(tempdir, filename)
 
-            res = os.system('hdiutil create "%(dmgfile)s" -volname "%(window_title)s" -fs HFS+ -srcfolder "%(pkgdir)s"' % {
+            print(filename)
+            print(tempdir)
+            res = os.system('''/Infinit/infinit/packages/libpkg/packagers/macosx/dmger/create-dmg \
+                --window-size %(window_size_x)i %(window_size_y)i \
+                --background "%(background)s" \
+                --icon-size %(icon_size)i \
+                --volname "%(volname)s" \
+                --app-drop-link %(app_rect_x)i %(app_rect_y)i \
+                --icon 8updater %(infinit_rect_x)i %(infinit_rect_y)i \
+                "%(dmgfile)s" "%(pkgdir)s"
+                ''' % {
+                'window_size_x' : 600,
+                'window_size_y' : 400,
+                'background' : '/Users/charlesguillot/Desktop/Finder_integration/infinit-dmg-bg.png',
+                'icon_size' : 100,
+                'volname' : 'Infinit',
+                'app_rect_x' : 450,
+                'app_rect_y' : 300,
+                'infinit_rect_x' : 220,
+                'infinit_rect_y' : 140,
                 'dmgfile': path,
-                'window_title': 'Infinit.io',
                 'pkgdir': pkgdir,
             })
             if res != 0:

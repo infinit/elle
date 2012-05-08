@@ -115,7 +115,7 @@ namespace horizon
          BOOST_PP_SEQ_FOR_EACH_I(INFINIT_FUSE_FORMALS, _,               \
                                  BOOST_PP_SEQ_POP_FRONT(Args)))         \
     {                                                                   \
-      return elle::Program::scheduler->mt_run<int>                      \
+      return elle::concurrency::scheduler().mt_run<int>                 \
         (#Name,                                                         \
          boost::bind(FUSE::Operations.Name                              \
                      BOOST_PP_SEQ_FOR_EACH_I(INFINIT_FUSE_EFFECTIVE,    \
@@ -279,28 +279,9 @@ namespace horizon
     ///
     elle::Status        FUker::Initialize()
     {
-      // allocate the broker.
-      FUker::Agent = new Broker;
-
-      // XXX[to replace by the new signal mechanism]
-      switch (hole::Hole::state)
-        {
-        case hole::Hole::StateOffline:
-          {
-            if (hole::Hole::ready.Subscribe(
-                  elle::Callback<>::Infer(&FUker::Run)) == elle::StatusError)
-              escape("unable to subscribe to the signal");
-
-            break;
-          }
-        case hole::Hole::StateOnline:
-          {
-            if (FUker::Run() == elle::StatusError)
-              escape("unable to run the FUker thread");
-
-            break;
-          }
-        }
+      // create the FUSE-specific thread.
+      if (::pthread_create(&FUker::Thread, NULL, &FUker::Setup, NULL) != 0)
+        escape("unable to create the FUSE-specific thread");
 
       return elle::StatusOk;
     }

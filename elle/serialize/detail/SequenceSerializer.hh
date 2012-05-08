@@ -37,7 +37,7 @@ namespace elle { namespace serialize { namespace detail {
         typedef Container_ Container;
 
         template<typename Archive>
-          static inline Save(Archive& ar, Container const& container, unsigned int)
+          static inline void Save(Archive& ar, Container const& container, unsigned int)
             {
               static_assert(
                   StoreClassVersion<Container>::value == false,
@@ -59,7 +59,7 @@ namespace elle { namespace serialize { namespace detail {
             }
 
         template<typename Archive>
-          static inline Load(Archive& ar, Container& container, unsigned int)
+          static inline void Load(Archive& ar, Container& container, unsigned int)
             {
               static_assert(
                   StoreClassVersion<Container>::value == false,
