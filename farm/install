@@ -52,11 +52,15 @@ if which("otool"):
         return (dep.strip().split(" ")[0] for dep in deps[1:])
 elif which("ldd"):
     def get_deps(arg):
-        deps = cmd("ldd %s" % arg).decode("utf-8")
+        deps = cmd('ldd', arg).decode("utf-8")
         deps = deps.split('\n')
         if not deps:
-            return []
-        return (dep.split("=>")[1].strip().split(" ")[0] for dep in deps[1:])
+            return
+        for dep in deps[1:]:
+            dep = dep.strip()
+            if not dep or '=>' not in dep:
+                return
+            yield dep.split('=>')[1].strip().split(' ')[0].strip()
 else:
     raise Exception("otool or ldd needed")
 
@@ -71,7 +75,7 @@ def ship_libs(binary, dest_dir):
 def to_add(lib):
     print(lib)
     patterns_exclude = [
-        "/lib64/ld-linux-x86-64", 
+        "/lib64/ld-linux-x86-64",
         "/lib/ld-linux-x86-64",
         "libICE",
         "libSM",
@@ -110,9 +114,10 @@ def to_add(lib):
         "libSystem"
     ]
     patterns_include = [
-        "libboost_system-mt",
-        "libboost_thread-mt",
-        "libboost_signals-mt",
+        "libboost_system",
+        "libboost_thread",
+        "libboost_signals",
+        "libglib",
         "libQtGui",
         "libQtNetwork",
         "libQtCore",
@@ -173,10 +178,10 @@ os.makedirs(DIR_INSTALL_SERVER)
 server_scripts = [
     "metalib/__init__.py",
     "metalib/metalib.so",
-    #"pythia",
-    #"meta",
-    #"creosus",
-    #"troll",
+    "pythia",
+    "meta",
+    "creosus",
+    "troll",
     "meta-server",
     "meta-tests",
     "creosus-server",
@@ -184,17 +189,17 @@ server_scripts = [
     "production-creosus-server.sh"
 ]
 
-if os.path.isdir(os.path.join(DIR_BUILD, "oracle")):
+if os.path.isdir(os.path.join(DIR_BUILD, "oracle")): # oracle is built
     for f in server_scripts:
-        os.makedirs(os.path.join(DIR_INSTALL_SERVER, os.path.dirname(f)))
-        print(os.path.join(DIR_INSTALL_SERVER, os.path.dirname(f)))
-        a = os.path.join(DIR_INSTALL_SERVER, f)
-        print(a)
-        print(os.path.join(DIR_BUILD, "oracle/disciples", f))
-        shutil.copytree(
-            os.path.join(DIR_BUILD, "oracle/disciples", f), 
-            os.path.join(DIR_INSTALL_SERVER, f)
-        )
+        src = os.path.join(DIR_BUILD, "oracle/disciples", f)
+        dst = os.path.join(DIR_INSTALL_SERVER, f)
+        print("cpy", src, "->", dst)
+        if os.path.isdir(src):
+            shutil.copytree(src, dst)
+        else:
+            if not os.path.isdir(os.path.dirname(dst)):
+                os.makedirs(os.path.dirname(dst))
+            shutil.copyfile(src, dst)
 
 # for f in                                                \
 #     metalib/__init__.py                                 \
