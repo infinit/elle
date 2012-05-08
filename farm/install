@@ -182,6 +182,7 @@ server_scripts = [
     "meta",
     "creosus",
     "troll",
+    "static",
     "meta-server",
     "meta-tests",
     "creosus-server",
