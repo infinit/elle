@@ -111,9 +111,9 @@ ship_libs ()
              libpth.so.20|\
              libqjson.so.0|\
              libreadline.so.6|\
-             libboost_system.so.1.49.0|\
-             libboost_thread.so.1.49.0|\
-             libboost_signals.so.1.49.0|\
+             libboost_system.so.1.46.0|\
+             libboost_thread.so.1.46.0|\
+             libboost_signals.so.1.46.0|\
              libz.so.1\
             )
                 test -e "$2/$(basename "$path")" || cp "$path" "$2"
