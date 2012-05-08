@@ -7,15 +7,13 @@
 	<head>
 		<title> Infinit </title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<link rel="stylesheet" href="/static/styles.css" media="screen" title="no title" charset="utf-8" />
-		<link rel="icon" type="image/png" href="/static/favico.png" />
+		<link rel="stylesheet/less" href="/static/css/styles.less" />
+		<link rel="icon" type="image/png" href="/static/images/favico.png" />
+		<script src="/static/js/less-1.3.0.min.js"></script>
 	</head>
 	<body>
 
 		<div id="header">
-			<span class="logo">
-				<a href="/">∞</a>
-			</span>
 			<div class="toolbar">
 				<py:if test="user.id is None">
 				<a href="/login">Log In</a>
@@ -25,9 +23,13 @@
 				<a href="/logout">Log out</a>
 				</py:if>
 			</div>
+			<span class="logo">
+				<a href="/"><img src="/static/images/logo.png" alt="Infinit" height="180px"/></a>
+			</span>
+			<span class="tagline">You are the cloud</span>
 		</div>
 
-		<div id="body">
+		<div id="content">
 <!-- start content -->
 ${content}
 <!-- end content -->

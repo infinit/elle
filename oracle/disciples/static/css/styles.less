@@ -1,0 +1,53 @@
+
+
+html, body, div, p, span,
+h1, h2, h3, h4, h5,
+label, input
+{
+	margin: 0;
+	padding: 0;
+}
+
+body {
+
+	font: normal 100% Helvetica, Arial, sans-serif;
+	color: #454545;
+
+	label, input {
+		font-size: 1.1em;
+		width: 10em;
+		margin-top: 5px;
+		padding: 5px;
+	}
+
+	label {
+		text-align: right;
+		width: 15em;
+		display: inline-block;
+	}
+
+	input {
+		border: 1px solid #bbb;
+	}
+
+	input:hover, input:focus {
+		border: 1px solid #aaa;
+	}
+
+	div#header, div#content, div#footer {
+		width: 87%;
+		max-width: 974px;
+		margin: 20px auto;
+		padding: 20px;
+		background-color: #eee;
+	}
+
+	div#header {
+		margin-top: 0;
+		.toolbar {
+			font-size:.9em;
+			float: right;
+		}
+	}
+
+}
