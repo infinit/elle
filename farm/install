@@ -5,10 +5,6 @@ import os
 import subprocess
 import shutil
 
-#set -ex
-
-#MYSELF="$0"
-
 def cmd(*args, **kwargs):
     return subprocess.check_output(list(args), **kwargs)
 

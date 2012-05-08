@@ -6,6 +6,7 @@
 
 import argparse
 import os
+import subprocess
 import sys
 import libpkg
 
@@ -123,7 +124,9 @@ def deployServerTarball(package):
         'tarball': package.file_,
     }
     os.system('ssh oracle@infinit.im "%s"' % cmd)
-
+    if yesno("Restart api server ?", True):
+        cmd = 'sudo /etc/init.d/meta restart && sleep 3'
+        subprocess.call('ssh -t infinit.im "%s"' % cmd, shell=True)
 
 def deployTarball(package):
     assert package.type_ in ('client', 'server')
