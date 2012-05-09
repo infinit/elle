@@ -210,6 +210,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OBJROOT = "$(SYMROOT)/Intermediates";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -217,6 +218,7 @@
 				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
 				STRIP_STYLE = all;
+				SYMROOT = ../../DerivedData/Needle;
 				VALID_ARCHS = x86_64;
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -249,6 +251,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OBJROOT = "$(SYMROOT)/Intermediates";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -256,6 +259,7 @@
 				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
 				STRIP_STYLE = all;
+				SYMROOT = ../../DerivedData/Needle;
 				VALID_ARCHS = x86_64;
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -287,6 +291,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OBJROOT = "$(SYMROOT)/Intermediates";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -294,6 +299,7 @@
 				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
 				STRIP_STYLE = all;
+				SYMROOT = ../../DerivedData/Needle;
 				VALID_ARCHS = x86_64;
 				WARNING_CFLAGS = (
 					"-Wmost",

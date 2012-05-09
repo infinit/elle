@@ -142,7 +142,8 @@ os.makedirs(DIR_INSTALL_CLIENT_BIN)
 os.makedirs(DIR_INSTALL_CLIENT_LIB)
 
 infinit_path = ["8infinit", "satellites/dictionary/8dictionary", "satellites/access/8access", "plasma/updater/8updater", "plasma/installer/8installer", "plasma/watchdog/8watchdog"]
-
+if os.path.exists("Infinit.app"):
+    infinit_path :: "surface/macosx64/Infinit.app"
 for f in infinit_path:
     dst = os.path.join(DIR_INSTALL_CLIENT_BIN, os.path.basename(f))
     shutil.copy(os.path.join(DIR_BUILD, f), dst)

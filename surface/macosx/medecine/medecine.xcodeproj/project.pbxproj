@@ -411,6 +411,7 @@
 				GCC_PREFIX_HEADER = "";
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"-sectcreate",
@@ -425,7 +426,7 @@
 				PRODUCT_NAME = io.infinit.Nurse.helper;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
-				SYMROOT = build;
+				SYMROOT = ../DerivedData/Nurse;
 				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				VALID_ARCHS = x86_64;
 			};
@@ -444,6 +445,7 @@
 				GCC_PREFIX_HEADER = "";
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"-sectcreate",
@@ -458,7 +460,7 @@
 				PRODUCT_NAME = io.infinit.Nurse.helper;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
-				SYMROOT = build;
+				SYMROOT = ../DerivedData/Nurse;
 				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				VALID_ARCHS = x86_64;
 			};
@@ -529,10 +531,11 @@
 				INFOPLIST_FILE = "dopant/supportingFiles/Dopant-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "io.infinit.$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SYMROOT = "";
+				SYMROOT = ../DerivedData/FinderDopant;
 				VALID_ARCHS = x86_64;
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -552,10 +555,11 @@
 				INFOPLIST_FILE = "dopant/supportingFiles/Dopant-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OBJROOT = "$(SYMROOT)/Intermediates";
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "io.infinit.$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SYMROOT = "";
+				SYMROOT = ../DerivedData/FinderDopant;
 				VALID_ARCHS = x86_64;
 				WRAPPER_EXTENSION = bundle;
 			};
