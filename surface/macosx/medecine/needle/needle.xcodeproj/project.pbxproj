@@ -134,7 +134,7 @@
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 			};
 			buildConfigurationList = 33B2AC4E092854FB004B1632 /* Build configuration list for PBXProject "needle" */;
 			compatibilityVersion = "Xcode 3.2";
