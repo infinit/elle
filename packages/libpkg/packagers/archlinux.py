@@ -32,9 +32,14 @@ echo "build ..."
 }
 
 package() {
+  tree "%(build_dir)s"
+  cat "%(build_dir)s"/manifest.xml
+  mkdir -p "$pkgdir"/opt/infinit
+  cp -r "%(build_dir)s"/{bin,lib} "$pkgdir"/opt/infinit/
+  chmod +x "$pkgdir"/opt/infinit/bin/*
+  chmod -R a+rX "$pkgdir"/opt/infinit
   mkdir -p "$pkgdir"/usr/bin
-  cp "%(updater_bin)s" "$pkgdir"/usr/bin/infinit
-  chmod +x "$pkgdir"/usr/bin/infinit
+  ln -s "$pkgdir"/opt/infinit/bin/8updater "$pkgdir"/usr/bin/infinit
 }
 """
 
@@ -62,7 +67,7 @@ package() {
                     constants.Architectures.AMD64: 'x86_64',
                     constants.Architectures.I386: 'i386',
                 }[build_env.architecture],
-                'updater_bin': os.path.join(build_env.directory, 'bin', '8updater'),
+                'build_dir': build_env.directory,
                 'version_name': build_env.build.infos['version_name'],
                 'version': build_env.build.infos['version'],
                 'extension': self.extension,
