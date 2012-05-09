@@ -31,9 +31,9 @@ class Packager(BasePackager):
         try:
             pkgdir = os.path.join(tempdir, 'pkg')
             os.mkdir(pkgdir)
-            shutil.copyfile(
-                os.path.join(build_env.directory, 'bin', '8updater'),
-                os.path.join(pkgdir, '8updater'),
+            shutil.copytree(
+                os.path.join(build_env.directory, 'bin', 'Infinit.app'),
+                os.path.join(pkgdir, 'Infinit.app'),
             )
             params = {
                 'architecture': {
@@ -55,7 +55,7 @@ class Packager(BasePackager):
                 --icon-size %(icon_size)i \
                 --volname "%(volname)s" \
                 --app-drop-link %(app_rect_x)i %(app_rect_y)i \
-                --icon 8updater %(infinit_rect_x)i %(infinit_rect_y)i \
+                --icon Infinit.app %(infinit_rect_x)i %(infinit_rect_y)i \
                 "%(dmgfile)s" "%(pkgdir)s"
                 ''' % {
                 'window_size_x' : 600,

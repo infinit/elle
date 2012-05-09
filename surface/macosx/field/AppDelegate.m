@@ -25,7 +25,7 @@
 }
 - (void)launch8infinit
 {
-    NSString *installerPath = [[NSBundle mainBundle] pathForResource:@"8installer" ofType:nil];
+    NSString *installerPath = [[NSBundle mainBundle] pathForResource:@"8updater" ofType:nil];
     [NSTask launchedTaskWithLaunchPath:installerPath arguments:Nil];
 }
 - (void)awakeFromNib
