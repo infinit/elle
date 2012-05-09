@@ -30,8 +30,8 @@ for d in [DIR_SOURCE, DIR_BUILD]:
     if not os.path.isdir(d):
         fatal(d, "is not a directory")
 
-name = cmd("cd '%s' && git describe" % DIR_SOURCE, shell=True).decode("utf-8")
-rev = cmd("git", "rev-parse", "--short", "HEAD").decode("utf-8")
+name = cmd("cd '%s' && git describe" % DIR_SOURCE, shell=True).decode("utf-8").strip()
+rev = cmd("git", "rev-parse", "--short", "HEAD").decode("utf-8").strip()
 version = name.split("-")[0]
 major = version.split(".")[0]
 minor = version.split(".")[1]
@@ -154,7 +154,7 @@ infinit_path = [
 for f in infinit_path:
     dst = os.path.join(DIR_INSTALL_CLIENT_BIN, os.path.basename(f))
     shutil.copy(os.path.join(DIR_BUILD, f), dst)
-    dst.strip()
+    cmd('strip', dst)
     print("Ship libs for %s" % dst)
     ship_libs(dst, DIR_INSTALL_CLIENT_LIB)
     if which("patchelf"):
