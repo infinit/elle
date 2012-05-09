@@ -96,12 +96,13 @@ def to_add(lib):
         "libfreetype",
         "libfuse",
         "libgcc_s",
+        "libglib",
         "libgobject",
         "libgthread",
         "libm",
         "libpcre",
+        "libpthread",
         "librt",
-        "libgthread",
         "libssl",
         "libstdc",
         "libtinfo",
@@ -113,10 +114,9 @@ def to_add(lib):
         "libSystem"
     ]
     patterns_include = [
-        "libboost_system",
-        "libboost_thread",
-        "libboost_signals",
-        "libglib",
+        "libboost_system-mt-1.46",
+        "libboost_thread-mt-1.46",
+        "libboost_signals-mt-1.46",
         "libQtGui",
         "libQtNetwork",
         "libQtCore",
@@ -132,12 +132,12 @@ def to_add(lib):
         "libreadline",
         "libz",
     ]
-    for p in patterns_include:
-        if (p in lib):
-            return True
     for p in patterns_exclude:
-        if (p in lib):
+        if (p + '.') in lib:
             return False
+    for p in patterns_include:
+        if (p + '.') in lib:
+            return True
     raise Exception("lib not specified: %s" % lib)
 
 DIR_INSTALL_CLIENT_BIN = os.path.join(DIR_INSTALL_CLIENT, "bin")
