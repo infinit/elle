@@ -12,7 +12,6 @@
 		1C45EE58152AECAB00EFB356 /* OOInstallerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C45EE4B152AECAB00EFB356 /* OOInstallerHelper.m */; };
 		1C45EE59152AECAB00EFB356 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C45EE4C152AECAB00EFB356 /* main.m */; };
 		1C45EE5A152AECAB00EFB356 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C45EE4E152AECAB00EFB356 /* AppDelegate.m */; };
-		1C45EE5B152AECAB00EFB356 /* 8installer in Resources */ = {isa = PBXBuildFile; fileRef = 1C45EE50152AECAB00EFB356 /* 8installer */; };
 		1CB4FB751528EDA100DDEC99 /* io.infinit.FinderDopant.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CD297041528D28A006D1A4C /* io.infinit.FinderDopant.bundle */; };
 		1CB4FB761528EDA100DDEC99 /* io.infinit.Nurse.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CD297061528D28A006D1A4C /* io.infinit.Nurse.helper */; };
 		1CB4FB7D1528EDEB00DDEC99 /* mach_inject_bundle_stub.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CB4FB7C1528EDDA00DDEC99 /* mach_inject_bundle_stub.bundle */; };
@@ -37,21 +36,21 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		1C99E168155A802F00426951 /* PBXContainerItemProxy */ = {
+		1C99E16E155AAC7B00426951 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 367BCFF514FE6F4600B41298;
 			remoteInfo = FinderDopant;
 		};
-		1C99E16A155A802F00426951 /* PBXContainerItemProxy */ = {
+		1C99E170155AAC7B00426951 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1CD296FA1528D289006D1A4C /* medecine.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 3661644515011A08008A1425;
 			remoteInfo = Nurse;
 		};
-		1C99E16C155A802F00426951 /* PBXContainerItemProxy */ = {
+		1C99E172155AAC7B00426951 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1CB4FB771528EDDA00DDEC99 /* needle.xcodeproj */;
 			proxyType = 1;
@@ -114,7 +113,6 @@
 		1C45EE4C152AECAB00EFB356 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		1C45EE4D152AECAB00EFB356 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		1C45EE4E152AECAB00EFB356 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		1C45EE50152AECAB00EFB356 /* 8installer */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = 8installer; sourceTree = "<group>"; };
 		1C45EE55152AECAB00EFB356 /* Infinit-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Infinit-Info.plist"; sourceTree = "<group>"; };
 		1C9B30BD15529790001EA6EA /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		1C9B30BF15529790001EA6EA /* PreferencePanes.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PreferencePanes.framework; path = System/Library/Frameworks/PreferencePanes.framework; sourceTree = SDKROOT; };
@@ -190,7 +188,6 @@
 			isa = PBXGroup;
 			children = (
 				1CD5C4581552EC9200556CC9 /* prefpane */,
-				1C45EE50152AECAB00EFB356 /* 8installer */,
 				1CDABDA115502B3200F8097E /* infinite-app-icon.icns */,
 				1CDABDA215502B3200F8097E /* sidebar-18.png */,
 			);
@@ -307,9 +304,9 @@
 			buildRules = (
 			);
 			dependencies = (
-				1C99E169155A802F00426951 /* PBXTargetDependency */,
-				1C99E16B155A802F00426951 /* PBXTargetDependency */,
-				1C99E16D155A802F00426951 /* PBXTargetDependency */,
+				1C99E16F155AAC7B00426951 /* PBXTargetDependency */,
+				1C99E171155AAC7B00426951 /* PBXTargetDependency */,
+				1C99E173155AAC7B00426951 /* PBXTargetDependency */,
 			);
 			name = Infinit;
 			productName = Infinit;
@@ -381,7 +378,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1C45EE56152AECAB00EFB356 /* MainMenu.xib in Resources */,
-				1C45EE5B152AECAB00EFB356 /* 8installer in Resources */,
 				1CDABDA315502B3200F8097E /* infinite-app-icon.icns in Resources */,
 				1CDABDA415502B3200F8097E /* sidebar-18.png in Resources */,
 				1CD5C44C1552A80C00556CC9 /* Preferences.xib in Resources */,
@@ -417,20 +413,20 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1C99E169155A802F00426951 /* PBXTargetDependency */ = {
+		1C99E16F155AAC7B00426951 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FinderDopant;
-			targetProxy = 1C99E168155A802F00426951 /* PBXContainerItemProxy */;
+			targetProxy = 1C99E16E155AAC7B00426951 /* PBXContainerItemProxy */;
 		};
-		1C99E16B155A802F00426951 /* PBXTargetDependency */ = {
+		1C99E171155AAC7B00426951 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Nurse;
-			targetProxy = 1C99E16A155A802F00426951 /* PBXContainerItemProxy */;
+			targetProxy = 1C99E170155AAC7B00426951 /* PBXContainerItemProxy */;
 		};
-		1C99E16D155A802F00426951 /* PBXTargetDependency */ = {
+		1C99E173155AAC7B00426951 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = mach_inject_bundle_stub;
-			targetProxy = 1C99E16C155A802F00426951 /* PBXContainerItemProxy */;
+			targetProxy = 1C99E172155AAC7B00426951 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -450,15 +446,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "field/supportingFiles/Infinit-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OBJROOT = "$(SYMROOT)/Intermediates";
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SYMROOT = DerivedData/Surface;
+				SYMROOT = DerivedData;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -467,15 +465,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "field/supportingFiles/Infinit-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OBJROOT = "$(SYMROOT)/Intermediates";
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SYMROOT = DerivedData/Surface;
+				SYMROOT = DerivedData;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

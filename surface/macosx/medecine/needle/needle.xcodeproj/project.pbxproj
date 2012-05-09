@@ -218,7 +218,7 @@
 				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
 				STRIP_STYLE = all;
-				SYMROOT = ../../DerivedData/Needle;
+				SYMROOT = ../../DerivedData;
 				VALID_ARCHS = x86_64;
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -259,7 +259,7 @@
 				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
 				STRIP_STYLE = all;
-				SYMROOT = ../../DerivedData/Needle;
+				SYMROOT = ../../DerivedData;
 				VALID_ARCHS = x86_64;
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -299,7 +299,7 @@
 				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
 				STRIP_STYLE = all;
-				SYMROOT = ../../DerivedData/Needle;
+				SYMROOT = ../../DerivedData;
 				VALID_ARCHS = x86_64;
 				WARNING_CFLAGS = (
 					"-Wmost",

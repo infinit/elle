@@ -3,7 +3,7 @@ CMakeLists.txt.user
 config.hh
 config.mk
 dependencies/environment.sh
-
+*.pyc
 build
 work
 *.swp

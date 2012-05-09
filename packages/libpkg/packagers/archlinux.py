@@ -28,12 +28,13 @@ source=()
 sha1sums=()
 
 build() {
-echo "bite"
+echo "build ..."
 }
 
 package() {
-  cp "%(updater_bin)s" "$pkgdir"/infinit
-  chmod +x "$pkgdir"/infinit
+  mkdir -p "$pkgdir"/usr/bin
+  cp "%(updater_bin)s" "$pkgdir"/usr/bin/infinit
+  chmod +x "$pkgdir"/usr/bin/infinit
 }
 """
 

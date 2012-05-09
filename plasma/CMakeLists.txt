@@ -6,7 +6,6 @@ find_package(Qt4 REQUIRED)
 include_directories(common)
 
 add_subdirectory(metaclient)
-add_subdirectory(installer)
 add_subdirectory(updater)
 add_subdirectory(watchdog)
 
