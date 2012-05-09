@@ -83,14 +83,13 @@ add_custom_command(
 ##
 ## Loading boost
 ##
-set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 find_package(Boost COMPONENTS system thread signals REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIRS})
 message("-- Boost libraries: ${Boost_LIBRARIES}")
-message("-- Boost shared libraries: ${Boost_SHARED_LIBRARIES}")
 
 
 
