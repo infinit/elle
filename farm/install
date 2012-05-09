@@ -73,7 +73,6 @@ def ship_libs(binary, dest_dir):
             shutil.copy(dep, dest_dir)
 
 def to_add(lib):
-    print(lib)
     patterns_exclude = [
         "/lib64/ld-linux-x86-64",
         "/lib/ld-linux-x86-64",
@@ -159,7 +158,9 @@ for f in infinit_path:
     print("Ship libs for %s" % dst)
     ship_libs(dst, DIR_INSTALL_CLIENT_LIB)
     if which("patchelf"):
-        cmd('patchelf', '--set-rpath','\'$ORIGIN/../lib\'', dst)
+        print("patchelf for:", dst)
+        os.system("ldd %s" % dst)
+        cmd('patchelf', '--set-rpath', '\'$ORIGIN/../lib\'', dst)
     elif which("install_name_tool"):
         pass
         #cmd("install_name_tool", "-change", f, dst)
