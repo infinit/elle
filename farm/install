@@ -68,7 +68,7 @@ def ship_libs(binary, dest_dir):
     for dep in get_deps(binary):
         lib = os.path.basename(dep)
         path = os.path.dirname(dep)
-        if (to_add(lib) and os.path.exists(os.path.join(dest_dir,lib))):
+        if to_add(lib) and not os.path.exists(os.path.join(dest_dir,lib)):
             print('Add lib : %s to %s' % (dep, dest_dir))
             shutil.copy(dep, dest_dir)
 
