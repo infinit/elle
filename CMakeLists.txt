@@ -52,11 +52,6 @@ set(INFINIT_QJSON_SHARED_LIBRARIES
   ${INFINIT_LIBRARIES_PREFIX}/lib/libqjson${CMAKE_SHARED_LIBRARY_SUFFIX}
 )
 
-message("-- External librairies directory: ${INFINIT_LIBRARIES_PREFIX}")
-
-find_package(Boost COMPONENTS system thread signals REQUIRED)
-include_directories(${Boost_INCLUDE_DIR})
-
 set(INFINIT_EXTERNAL_LIBRARIES
   ${INFINIT_OPENSSL_STATIC_LIBRARIES}
   ${INFINIT_OPENSSL_SHARED_LIBRARIES}
@@ -68,7 +63,12 @@ set(INFINIT_EXTERNAL_LIBRARIES
   ${INFINIT_CURL_SHARED_LIBRARIES}
   ${INFINIT_QJSON_SHARED_LIBRARIES}
 )
+message("-- External librairies directory: ${INFINIT_LIBRARIES_PREFIX}")
+message("-- External libraries: ${INFINIT_EXTERNAL_LIBRARIES}")
 
+##
+## Dependencies target.
+##
 add_custom_target(dependencies ALL)
 add_custom_command(
   TARGET
@@ -79,7 +79,19 @@ add_custom_command(
   WORKING_DIRECTORY
     ${CMAKE_CURRENT_SOURCE_DIR}/dependencies
 )
-message(${INFINIT_EXTERNAL_LIBRARIES})
+
+##
+## Loading boost
+##
+set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
+find_package(Boost COMPONENTS system thread signals REQUIRED)
+
+include_directories(${Boost_INCLUDE_DIRS})
+message("-- Boost libraries: ${Boost_LIBRARIES}")
+message("-- Boost shared libraries: ${Boost_SHARED_LIBRARIES}")
+
 
 
 
