@@ -68,7 +68,7 @@ def ship_libs(binary, dest_dir):
     for dep in get_deps(binary):
         lib = os.path.basename(dep)
         path = os.path.dirname(dep)
-        if to_add(lib) and not os.path.exists(os.path.join(dest_dir,lib)):
+        if to_add(lib) and not os.path.exists(os.path.join(dest_dir, lib)):
             print('Add lib : %s to %s' % (dep, dest_dir))
             shutil.copy(dep, dest_dir)
 
@@ -160,7 +160,7 @@ for f in infinit_path:
     if which("patchelf"):
         print("patchelf for:", dst)
         os.system("ldd %s" % dst)
-        cmd('patchelf', '--set-rpath', '\'$ORIGIN/../lib\'', dst)
+        cmd('patchelf', '--debug', '--set-rpath', '\'$ORIGIN/../lib\'', dst)
     elif which("install_name_tool"):
         pass
         #cmd("install_name_tool", "-change", f, dst)
