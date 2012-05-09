@@ -160,7 +160,7 @@ for f in infinit_path:
     if which("patchelf"):
         print("patchelf for:", dst)
         os.system("ldd %s" % dst)
-        cmd('patchelf', '--debug', '--set-rpath', '\'$ORIGIN/../lib\'', dst)
+        cmd('patchelf', '--debug', '--set-rpath', '$ORIGIN/../lib', dst)
     elif which("install_name_tool"):
         pass
         #cmd("install_name_tool", "-change", f, dst)
