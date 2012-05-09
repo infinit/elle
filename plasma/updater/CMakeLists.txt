@@ -22,9 +22,10 @@ QT4_WRAP_UI(updater_ui_hdrs ${updater_ui})
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 add_executable(8updater ${updater_srcs} ${updater_moc_srcs} ${updater_ui_hdrs})
-target_link_libraries(8updater
+target_link_libraries(
+  8updater
 	metaclient elle lune infinit
 	${QT_LIBRARIES}
 	${INFINIT_QJSON_SHARED_LIBRARIES}
-        ${Boost_LIBRARIES}
+  ${Boost_LIBRARIES}
 )
