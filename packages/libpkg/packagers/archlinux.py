@@ -32,8 +32,6 @@ echo "build ..."
 }
 
 package() {
-  tree "%(build_dir)s"
-  cat "%(build_dir)s"/manifest.xml
   mkdir -p "$pkgdir"/opt/infinit
   cp -r "%(build_dir)s"/{bin,lib} "$pkgdir"/opt/infinit/
   chmod +x "$pkgdir"/opt/infinit/bin/*
