@@ -30,8 +30,8 @@ for d in [DIR_SOURCE, DIR_BUILD]:
     if not os.path.isdir(d):
         fatal(d, "is not a directory")
 
-name = cmd("cd '%s' && git describe" % DIR_SOURCE, shell=True).decode("utf-8")
-rev = cmd("git", "rev-parse", "--short", "HEAD").decode("utf-8")
+name = cmd("cd '%s' && git describe" % DIR_SOURCE, shell=True).decode("utf-8").strip()
+rev = cmd("git", "rev-parse", "--short", "HEAD").decode("utf-8").strip()
 version = name.split("-")[0]
 major = version.split(".")[0]
 minor = version.split(".")[1]
@@ -73,73 +73,70 @@ def ship_libs(binary, dest_dir):
             shutil.copy(dep, dest_dir)
 
 def to_add(lib):
-    patterns_exclude = [
-        "/lib64/ld-linux-x86-64",
-        "/lib/ld-linux-x86-64",
-        "libICE",
-        "libSM",
-        "libX11",
-        "libXau",
-        "libXdmcp",
-        "libXext",
-        "libXi",
-        "libXrandr",
-        "libXrender",
-        "libXt",
-        "libaudio",
-        "libbz2",
-        "libc",
-        "libcrypto",
-        "libdl",
-        "libffi",
-        "libfontconfig",
-        "libfreetype",
-        "libfuse",
-        "libgcc_s",
-        "libgobject",
-        "libgthread",
-        "libm",
-        "libpcre",
-        "librt",
-        "libgthread",
-        "libssl",
-        "libstdc",
-        "libtinfo",
-        "libuuid",
-        "libstdc",
-        "libxcb",
-        "linux-vdso",
-        "linux-gate",
-        "libSystem"
-    ]
-    patterns_include = [
-        "libboost_system",
-        "libboost_thread",
-        "libboost_signals",
-        "libglib",
-        "libQtGui",
-        "libQtNetwork",
-        "libQtCore",
-        "libQtXml",
-        "libbz2",
-        "libexpat",
-        "libncurses",
-        "libncursesw",
-        "libpng15",
-        "libpng12",
-        "libpth",
-        "libqjson",
-        "libreadline",
-        "libz",
-        "libstdc++"
-    ]
-    for p in patterns_include:
-        if (p in lib):
-            return True
-    for p in patterns_exclude:
-        if (p in lib):
-            return False
-    raise Exception("lib not specified: %s" % lib)
+
+    patterns_exclude = {
+        'startswith': [
+            "/lib64/ld-linux-x86-64",
+            "/lib/ld-linux-x86-64",
+            "libICE",
+            "libSM",
+            "libX",
+            "libaudio",
+            "libbz2",
+            "libcrypto",
+            "libffi",
+            "libfontconfig",
+            "libfreetype",
+            "libfuse",
+            "libgcc",
+            "libglib",
+            "libgobject",
+            "libgthread",
+            "libpcre",
+            "librt",
+            "libssl",
+            "libtinfo",
+            "libuuid",
+            "libxcb",
+            "linux-vdso",
+            "linux-gate",
+            "libSystem"
+        ],
+
+        'contains': [
+            "libstdc.",
+            "libstdc++.",
+            "libpthread.",
+            "libc.",
+            "libm.",
+            "libdl.",
+        ]
+    }
+    patterns_include = {
+        'startswith': [
+            "libboost",
+            "libQt",
+            "libexpat",
+            "libncurses",
+            "libpng",
+            "libqjson",
+            "libreadline",
+        ],
+        'contains': [
+            "libpth.",
+            "libz.",
+        ]
+    }
+
+
+    if any(lib.startswith(p) for p in patterns_exclude['startswith']) or \
+       any(p in lib for p in patterns_exclude['contains']):
+        return False
+    elif any(lib.startswith(p) for p in patterns_include['startswith']) or \
+         any(p in lib for p in patterns_include['contains']):
+        return True
+    else:
+        raise Exception("lib not specified: %s" % lib)
 
 DIR_INSTALL_CLIENT_BIN = os.path.join(DIR_INSTALL_CLIENT, "bin")
 DIR_INSTALL_CLIENT_LIB = os.path.join(DIR_INSTALL_CLIENT, "lib")
@@ -155,7 +152,7 @@ infinit_path = [
 for f in infinit_path:
     dst = os.path.join(DIR_INSTALL_CLIENT_BIN, os.path.basename(f))
     shutil.copy(os.path.join(DIR_BUILD, f), dst)
-    #cmd("strip", dst)
+    cmd('strip', dst)
     print("Ship libs for %s" % dst)
     ship_libs(dst, DIR_INSTALL_CLIENT_LIB)
     if which("patchelf"):
@@ -179,8 +176,10 @@ if os.path.exists(os.path.join(DIR_BUILD, "surface/macosx/Infinit.app")):
         ship_libs(binary_path, os.path.join(dst, "Contents/Library"))
         if which("install_name_tool"):
             for dep in get_deps(binary_path):
-                #cmd("install_name_tool", "-change", dep, os.path.join("@loader_path/../Library", os.path.basename(dep))  , binary_path)
-                print("add : %s" % dep)
+                lib = os.path.basename(dep)
+                if to_add(lib):
+                    cmd("install_name_tool", "-change", dep, os.path.join("@loader_path/../Library", os.path.basename(dep))  , binary_path)
+                    print("add : %s" % dep)
     shutil.copy(os.path.join(DIR_INSTALL_CLIENT_BIN, os.path.basename("8updater")), os.path.join(dst, "Contents/Resources"))
 
 

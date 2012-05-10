@@ -183,7 +183,8 @@ void Application::_OnIdentityUpdated(bool success)
   ///////////////////////////////////////////////////////////////////////////
   // We finaly launch the watchdog
     {
-      QString watchdogPath = homeDirectory.filePath("binaries/8watchdog");
+      QString watchdogPath = homeDirectory.filePath("bin/8watchdog");
+      std::cerr << "watchdog path: " << watchdogPath.toStdString() << std::endl;
       QProcess p;
       if (!p.startDetached(watchdogPath))
         throw std::runtime_error("Cannot start the watchdog !");
