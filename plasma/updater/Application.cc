@@ -252,6 +252,6 @@ void Application::_OnIdentityUpdated(bool success)
     throw std::runtime_error("Couldn't run the watchdog");
 
   std::cerr << "UPDATER: Run command sent\n";
-  //this->exit(EXIT_SUCCESS);
+  this->exit(EXIT_SUCCESS);
 }
 

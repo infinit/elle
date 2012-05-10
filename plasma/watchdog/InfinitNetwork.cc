@@ -170,7 +170,7 @@ void InfinitNetwork::_PrepareDirectory()
 /// Append the local device to the network
 void InfinitNetwork::_RegisterDevice()
 {
-  LOG() << "Check if the device is registered for this network\n";
+  LOG() << "~~ Check if the device is registered for this network\n";
   lune::Passport passport;
 
   if (passport.Load() == elle::StatusError)
@@ -179,12 +179,14 @@ void InfinitNetwork::_RegisterDevice()
       throw std::runtime_error("Couldn't load the passport file :'(");
     }
 
+  LOG() << "search device for the passport id: " << passport.id << "!\n";
   auto it = std::find(
       this->_description.devices.begin(),
       this->_description.devices.end(),
       passport.id
   );
 
+  LOG() << "Done\n";
   if (it == this->_description.devices.end())
     {
       LOG() << "Registering device for this network\n";
@@ -203,6 +205,7 @@ void InfinitNetwork::_RegisterDevice()
     }
   else
     {
+      LOG() << "Get network nodes\n";
       this->_manager.meta().GetNetworkNodes(
           this->_description._id,
           boost::bind(&InfinitNetwork::_OnNetworkNodes, this, _1),
