@@ -105,9 +105,9 @@ def to_add(lib):
         "librt",
         "libssl",
         "libstdc",
+        "libstdc++",
         "libtinfo",
         "libuuid",
-        "libstdc",
         "libxcb",
         "linux-vdso",
         "linux-gate",
@@ -135,13 +135,12 @@ def to_add(lib):
         "libreadline",
         "libz",
     ]
-    for p in patterns_exclude:
-        if (p + '.') in lib:
-            return False
-    for p in patterns_include:
-        if (p + '.') in lib:
-            return True
-    raise Exception("lib not specified: %s" % lib)
+    if any(lib.startswith(p + '.') for p in patterns_exclude):
+        return False
+    elif any(lib.startswith(p + '.') for p in patterns_include):
+        return True
+    else:
+        raise Exception("lib not specified: %s" % lib)
 
 DIR_INSTALL_CLIENT_BIN = os.path.join(DIR_INSTALL_CLIENT, "bin")
 DIR_INSTALL_CLIENT_LIB = os.path.join(DIR_INSTALL_CLIENT, "lib")
