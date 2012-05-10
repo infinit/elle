@@ -73,72 +73,66 @@ def ship_libs(binary, dest_dir):
             shutil.copy(dep, dest_dir)
 
 def to_add(lib):
-    patterns_exclude = [
-        "/lib64/ld-linux-x86-64",
-        "/lib/ld-linux-x86-64",
-        "libICE",
-        "libSM",
-        "libX11",
-        "libXau",
-        "libXdmcp",
-        "libXext",
-        "libXi",
-        "libXrandr",
-        "libXrender",
-        "libXt",
-        "libaudio",
-        "libbz2",
-        "libc",
-        "libcrypto",
-        "libdl",
-        "libffi",
-        "libfontconfig",
-        "libfreetype",
-        "libfuse",
-        "libgcc_s",
-        "libglib",
-        "libgobject",
-        "libgthread",
-        "libgthread-2.0",
-        "libm",
-        "libpcre",
-        "libpthread",
-        "librt",
-        "libssl",
-        "libstdc",
-        "libstdc++",
-        "libtinfo",
-        "libuuid",
-        "libxcb",
-        "linux-vdso",
-        "linux-gate",
-        "libSystem"
-    ]
-    patterns_include = [
-        "libboost_system-mt-1.46",
-        "libboost_thread-mt-1.46",
-        "libboost_signals-mt-1.46",
-        "libboost_system-mt-1_46",
-        "libboost_thread-mt-1_46",
-        "libboost_signals-mt-1_46",
-        "libQtGui",
-        "libQtNetwork",
-        "libQtCore",
-        "libQtXml",
-        "libbz2",
-        "libexpat",
-        "libncurses",
-        "libncursesw",
-        "libpng15",
-        "libpng12",
-        "libpth",
-        "libqjson",
-        "libreadline",
-        "libz",
-    ]
-    if any(lib.startswith(p + '.') for p in patterns_exclude):
+    patterns_exclude = {
+        'startswith': [
+            "/lib64/ld-linux-x86-64",
+            "/lib/ld-linux-x86-64",
+            "libICE",
+            "libSM",
+            "libX",
+            "libaudio",
+            "libbz2",
+            "libcrypto",
+            "libffi",
+            "libfontconfig",
+            "libfreetype",
+            "libfuse",
+            "libgcc",
+            "libglib",
+            "libgobject",
+            "libgthread",
+            "libpcre",
+            "librt",
+            "libssl",
+            "libtinfo",
+            "libuuid",
+            "libxcb",
+            "linux-vdso",
+            "linux-gate",
+            "libSystem"
+        ],
+
+        'contains': [
+            "libstdc.",
+            "libstdc++.",
+            "libpthread.",
+            "libc.",
+            "libm.",
+            "libdl.",
+        ]
+    }
+    patterns_include = {
+        'startswith': [
+            "libboost",
+            "libQt",
+            "libexpat",
+            "libncurses",
+            "libpng",
+            "libqjson",
+            "libreadline",
+        ],
+        'contains': [
+            "libpth.",
+            "libz.",
+        ]
+    }
+
+
+    if any(lib.startswith(p) for p in patterns_exclude['startswith']) or \
+       any(p in lib for p in patterns_exclude['contains']):
         return False
-    elif any(lib.startswith(p + '.') for p in patterns_include):
+    elif any(lib.startswith(p) for p in patterns_include['startswith']) or \
+         any(p in lib for p in patterns_include['contains']):
         return True
     else:
         raise Exception("lib not specified: %s" % lib)
