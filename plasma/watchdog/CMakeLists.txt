@@ -17,5 +17,5 @@ target_link_libraries(8watchdog
 	metaclient nucleus elle lune infinit
 	${QT_LIBRARIES}
 	${INFINIT_QJSON_SHARED_LIBRARIES}
-        ${Boost_LIBRARIES}
+    ${Boost_LIBRARIES}
 )
