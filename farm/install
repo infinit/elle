@@ -99,6 +99,7 @@ def to_add(lib):
         "libglib",
         "libgobject",
         "libgthread",
+        "libgthread-2.0",
         "libm",
         "libpcre",
         "libpthread",
