@@ -203,6 +203,7 @@ void InfinitNetwork::_RegisterDevice()
     }
   else
     {
+      LOG() << "Get network nodes\n";
       this->_manager.meta().GetNetworkNodes(
           this->_description._id,
           boost::bind(&InfinitNetwork::_OnNetworkNodes, this, _1),
