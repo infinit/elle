@@ -18,6 +18,8 @@ os.environ['INFINIT_RANDOM_SOURCE'] = '/dev/urandom'
 def unit_tests():
     run(['make', 'test'], cwd=BUILD)
 
+unit_tests()
+
 def run(cmd, stdin = b'', cwd = None):
   print('Run: %s' % ' '.join(map(pipes.quote, cmd)), file = sys.stderr)
   sys.stderr.flush()
