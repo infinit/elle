@@ -1,5 +1,8 @@
 # -*- encoding: utf-8 -*-
 
+import xml.etree.ElementTree as etree
+
+import os
 import shutil
 import tempfile
 
@@ -43,3 +46,14 @@ class BuildEnv:
     @staticmethod
     def removeDirectory(path, ignore_errors=True):
         shutil.rmtree(path, ignore_errors=ignore_errors)
+
+    @property
+    def total_size(self):
+        manifest = os.path.join(self.directory, 'manifest.xml')
+        tree = etree.parse(manifest)
+        root = tree.getroot()
+        try:
+            return int(root.attrib['size'])
+        except:
+            # XXX
+            return 42
