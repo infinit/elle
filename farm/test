@@ -10,6 +10,7 @@ import sys
 import tempfile
 import time
 
+
 BUILD = os.environ['DIR_BUILD']
 
 os.environ['INFINIT_RANDOM_SOURCE'] = '/dev/urandom'
@@ -24,6 +25,16 @@ def run(cmd, stdin = b'', cwd = None):
   p.stdin.close()
   p.wait()
   assert p.returncode == 0
+
+#############################################################################
+# unit testing
+
+def unit_tests():
+    run(['make', 'test'], cwd=BUILD)
+
+unit_tests()
+
+#############################################################################
 
 def infinit(cmd, stdin = b'', cwd = None):
   cmd[0] = '%s/%s' % (BUILD, cmd[0])

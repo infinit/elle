@@ -121,6 +121,7 @@ ADD_LIBRARY(elle
   format/json/String.cc
 
   Elle.cc
+  print.cc
 
   reactor/src/reactor/backend/coro_io/libcoroutine/asm.S
   reactor/src/reactor/backend/coro_io/libcoroutine/context.cc

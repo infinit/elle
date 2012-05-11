@@ -72,8 +72,11 @@ class FarmBuild(Build):
 
 
             print(' -', self._tarball + ": extracting")
-            with tarfile.open(t) as archive:
+            archive = tarfile.open(t)
+            try:
                 archive.extractall(self._dir)
+            finally:
+                archive.close()
             self._release_dir = os.path.join(self._dir, self._tarball[:-4])
             assert os.path.isdir(self._release_dir)
 

@@ -4,7 +4,7 @@
 import sys, os, hashlib
 
 XML = """<?xml version="1.0" encoding="UTF-8"?>
-<release major="%(major)s" minor="%(minor)s" rev="%(rev)s">
+<release major="%(major)s" minor="%(minor)s" rev="%(rev)s" size="%(size)d" human_size="%(human_size)s">
 %(executables)s
 </release>
 """
@@ -16,21 +16,32 @@ if __name__ == '__main__':
     EXE_TAG = """\t<executable path="%s" size="%d" md5sum="%s" />"""
     EXE_TAGS = []
 
-    isexecutable = lambda f: os.access(f, os.X_OK) and not os.path.isdir(f)
+    total_size = 0
     for dir_ in ['bin', 'lib']:
         bin_dir = os.path.join(dest_dir, dir_)
         assert os.path.isdir(bin_dir)
         binaries = os.listdir(bin_dir)
         for binary in binaries:
             fpath = os.path.join(bin_dir, binary)
-            if isexecutable(fpath):
-                with open(fpath) as f:
-                    md5 = hashlib.md5(f.read()).hexdigest()
-                EXE_TAGS.append(
-                    EXE_TAG % (dir_ + '/' + binary, os.path.getsize(fpath), md5)
-                )
+            with open(fpath) as f:
+                md5 = hashlib.md5(f.read()).hexdigest()
+            size = os.path.getsize(fpath)
+            total_size += size
+            EXE_TAGS.append(
+                EXE_TAG % (dir_ + '/' + binary, size, md5)
+            )
+
+    if total_size > 1000000:
+        human_size = "%d Mb" % (total_size / (1024 * 1024))
+    elif total_size > 1000:
+        human_size = "%d Kb" % (total_size / 1024)
+    else:
+        human_size = "%d b" % total_size
+
     with open(os.path.join(dest_dir, "manifest.xml"), "w") as f:
         f.write(XML % {
             'major': major, 'minor': minor, 'rev': rev,
-            'executables': '\n'.join(EXE_TAGS)
+            'executables': '\n'.join(EXE_TAGS),
+            'size': total_size,
+            'human_size': human_size
         })

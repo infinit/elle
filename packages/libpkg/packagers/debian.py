@@ -19,8 +19,7 @@ Priority: optional
 Architecture: %(architecture)s
 Installed-Size: %(installed_size)d
 Essential: no
-Depends: libqt4-core (>= 4:4.7), libqt4-network, libqt4-xml, libqt4-gui,
-         libssl1.0.0, libfuse2, libqjson0, libreadline5
+Depends: libfuse2
 Maintainer: Infinit.io <debian@infinit.io>
 Description: Provide a secure, distributed and cross-platform filesystem.
 """
@@ -44,12 +43,17 @@ Description: Provide a secure, distributed and cross-platform filesystem.
         try:
             pkgdir = os.path.join(tempdir, 'pkg')
             os.mkdir(pkgdir)
-            pkgbindir = os.path.join(pkgdir, 'bin')
-            os.mkdir(pkgbindir)
-            shutil.copy(
-                os.path.join(build_env.directory, 'bin/8updater'),
-                os.path.join(pkgbindir, 'infinit')
+            infinit_dir = os.path.join(pkgdir, 'usr', 'share', 'infinit')
+
+            shutil.copytree(
+                os.path.join(build_env.directory, 'bin'),
+                os.path.join(infinit_dir, 'bin')
             )
+            shutil.copytree(
+                os.path.join(build_env.directory, 'lib'),
+                os.path.join(infinit_dir, 'lib')
+            )
+
             debian_dir = os.path.join(pkgdir, 'DEBIAN')
             os.mkdir(debian_dir)
             params = {
@@ -59,10 +63,11 @@ Description: Provide a secure, distributed and cross-platform filesystem.
                 }[build_env.architecture],
                 'version_name': build_env.build.infos['version_name'],
                 'version': build_env.build.infos['version'],
-                'installed_size': os.path.getsize(os.path.join(pkgbindir, 'infinit')) / 1024,
+                'installed_size': build_env.total_size / 1024,
             }
             with open(os.path.join(debian_dir, "control"), 'w') as f:
                 f.write(self._control_template % params)
+
             filename = "infinit-%(version_name)s-%(version)s-%(architecture)s.deb" % params
             path = os.path.join(dest_dir, filename)
             os.system('dpkg -b "%s" "%s"' % (pkgdir, filename))
