@@ -1,1 +1,1 @@
-git-core cmake ccache build-essential qt4-qmake libqt4-dev python-dev scons libpth libreadline-dev libboost-dev libfuse-dev libattr1-dev
+git-core cmake ccache build-essential qt4-qmake libqt4-dev python-dev scons libpth libreadline-dev libboost-dev libfuse-dev libattr1-dev libboost-system-dev libboost-signals-dev libboost-thread-dev
