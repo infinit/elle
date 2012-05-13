@@ -132,18 +132,10 @@ endiF(MSVC)
 # MACOSX FLAGS
 #
 if(INFINIT_MACOSX)
-  # SDK Info
-  set(DEVROOT "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer")
-  set(SDKROOT "${DEVROOT}/SDKs/MacOSX10.6.sdk")
-  set(CMAKE_OSX_SYSROOT "${SDKROOT}")
-  # set(CMAKE_OSX_ARCHITECTURES "x86_64")
-  set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
-
   include_directories(/usr/local/include /opt/local/include /usr/local/include/osxfuse)
   link_directories(/usr/local/lib /opt/local/lib)
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
-
 endif(INFINIT_MACOSX)
 
 add_subdirectory(comet)
