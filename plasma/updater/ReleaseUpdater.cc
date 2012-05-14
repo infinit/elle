@@ -174,15 +174,16 @@ bool ReleaseUpdater::_ProcessResource(QNetworkReply& reply)
   auto& src_file = this->_toUpdate.back();
   std::cout << "Just downloaded " << src_file.relpath.toStdString() << std::endl;
   QFile dest_file(home_directory.filePath(src_file.relpath));
-  QString dest_dir = QDir(dest_file.toString()).dirName();
-  if (!QDir::mkpath(dest_dir))
+  QString dest_dir = QDir(dest_file.fileName()).path();
+  std::cout << "Create directory : '" << dest_dir.toStdString() << "'\n";
+  if (!QDir().mkpath(dest_dir))
     {
-      std::cerr << "Cannot create directory '" << dest_dir.toStdString() << "'\n";
+      std::cerr << "Cannot create directory : '" << dest_dir.toStdString() << "'\n";
       return false;
     }
   if (!dest_file.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
-      std::cerr << "Cannot open file '" << src_file.relpath.toStdString() << "'\n";
+      std::cerr << "Cannot open file : '" << dest_file.fileName().toStdString() << "'\n";
       return false;
     }
   dest_file.write(reply.readAll());
