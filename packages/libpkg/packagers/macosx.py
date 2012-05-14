@@ -32,7 +32,7 @@ class Packager(BasePackager):
             pkgdir = os.path.join(tempdir, 'pkg')
             os.mkdir(pkgdir)
             shutil.copytree(
-                os.path.join(build_env.directory, 'bin', 'Infinit.app'),
+                os.path.join(build_env.directory, 'temp', 'Infinit.app'),
                 os.path.join(pkgdir, 'Infinit.app'),
             )
             params = {

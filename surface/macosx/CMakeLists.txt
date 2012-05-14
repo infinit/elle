@@ -15,5 +15,5 @@ add_custom_target(surface
 	COMMAND
     	xcodebuild -project Surface.xcodeproj -target Infinit SYMROOT=${CMAKE_CURRENT_BINARY_DIR} -configuration Release
     DEPENDS
-    	${surface_srcs}
+    	8updater
 )

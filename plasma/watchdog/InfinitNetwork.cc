@@ -144,13 +144,13 @@ void InfinitNetwork::_PrepareDirectory()
 
   auto e = elle::StatusError;
   if (descriptor.Restore(this->_description.descriptor) == e ||
-      descriptor.Store(this->_description.name)          == e)
+      descriptor.Store(this->_description.name)         == e)
     {
       show();
       throw std::runtime_error("Couldn't save the descriptor");
     }
 
-  nucleus::proton::Network  network;
+  nucleus::proton::Network network;
   nucleus::neutron::Object directory;
 
   if (network.Create(this->_description.name)          == e ||
@@ -233,18 +233,18 @@ void InfinitNetwork::_OnNetworkNodes(meta::NetworkNodesResponse const& response)
   auto it =  response.nodes.begin(),
        end = response.nodes.end();
   for (; it != end; ++it)
-    {
-      LOG() << "\t\t * " << *it << "\n";
-      elle::network::Locus locus;
+  {
+    LOG() << "\t\t * " << *it << "\n";
+    elle::network::Locus locus;
 
-      if (locus.Create(*it) == elle::StatusError)
-        throw std::runtime_error("Cannot create locus from string '" + *it + "'");
-      if (locusSet.Add(locus) == elle::StatusError)
-        {
-          LOG() << "Cannot add locus '" << *it << "' to the set (ignored)\n";
-        }
-    }
-
+    if (locus.Create(*it) == elle::StatusError)
+      throw std::runtime_error("Cannot create locus from string '" + *it + "'");
+    if (locusSet.Add(locus) == elle::StatusError)
+      {
+        LOG() << "Cannot add locus '" << *it << "' to the set (ignored)\n";
+      }
+  }
+  
   if (locusSet.Store(this->_description.name) == elle::StatusError)
     throw std::runtime_error("Cannot store the locus set");
   this->_StartProcess();
@@ -297,11 +297,6 @@ void InfinitNetwork::_StartProcess()
   arguments << "-n" << this->_description.name.c_str()
             << "-m" << mnt.path();
 
-  this->_process.start(
-      this->_infinitHome.filePath("bin/8infinit"),
-      arguments
-  );
-
   this->connect(
       &this->_process, SIGNAL(started()),
       this, SLOT(_OnProcessStarted())
@@ -310,6 +305,11 @@ void InfinitNetwork::_StartProcess()
   this->connect(
       &this->_process, SIGNAL(error(QProcess::ProcessError)),
       this, SLOT(_OnProcessError(QProcess::ProcessError))
+  );
+
+  this->_process.start(
+      this->_infinitHome.filePath("bin/8infinit"),
+      arguments
   );
 }
 
