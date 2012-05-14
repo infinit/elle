@@ -1,5 +1,5 @@
 
-link_libraries(elle)
+link_libraries(elle pthread)
 
 simple_test(print "" "tests done." "")
 

@@ -244,7 +244,7 @@ void InfinitNetwork::_OnNetworkNodes(meta::NetworkNodesResponse const& response)
         LOG() << "Cannot add locus '" << *it << "' to the set (ignored)\n";
       }
   }
-  
+
   if (locusSet.Store(this->_description.name) == elle::StatusError)
     throw std::runtime_error("Cannot store the locus set");
   this->_StartProcess();
@@ -307,6 +307,11 @@ void InfinitNetwork::_StartProcess()
       this, SLOT(_OnProcessError(QProcess::ProcessError))
   );
 
+  this->connect(
+      &this->_process, SIGNAL(finished(int, QProcess::ExitStatus)),
+      this, SLOT(_OnProcessFinished(int, QProcess::ExitStatus))
+  );
+
   this->_process.start(
       this->_infinitHome.filePath("bin/8infinit"),
       arguments
@@ -327,4 +332,9 @@ void InfinitNetwork::_OnProcessStarted()
 void InfinitNetwork::_OnProcessError(QProcess::ProcessError error)
 {
   LOG() << "Process has an error\n";
+}
+
+void InfinitNetwork::_OnProcessFinished(int exit_code, QProcess::ExitStatus exit_status)
+{
+  LOG() << "Process finished with exit code " << exit_code << ".\n";
 }

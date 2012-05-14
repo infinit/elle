@@ -63,6 +63,7 @@ namespace plasma
     private Q_SLOTS:
       void _OnProcessStarted();
       void _OnProcessError(QProcess::ProcessError error);
+      void _OnProcessFinished(int exit_code, QProcess::ExitStatus exit_status);
     };
 
   }
