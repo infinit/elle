@@ -174,7 +174,8 @@ bool ReleaseUpdater::_ProcessResource(QNetworkReply& reply)
   auto& src_file = this->_toUpdate.back();
   std::cout << "Just downloaded " << src_file.relpath.toStdString() << std::endl;
   QFile dest_file(home_directory.filePath(src_file.relpath));
-  QString dest_dir = QDir(dest_file.fileName()).path();
+   
+  QString dest_dir = QFileInfo(dest_file).dir().path() ;
   std::cout << "Create directory : '" << dest_dir.toStdString() << "'\n";
   if (!QDir().mkpath(dest_dir))
     {
