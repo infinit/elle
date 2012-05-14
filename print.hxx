@@ -75,25 +75,29 @@ namespace elle
   } // !elle::detail
 
   template<typename... T>
-    void print(T const&... values)
-    {
-      return sprint(std::cout, values...);
-    }
+  void
+  print(T const&...         values)
+  {
+    return sprint(std::cout, values...);
+  }
 
   template<typename... T>
-    void sprint(std::ostream& out, T const&... values)
-    {
-      detail::PrintFlags flags;
-      return detail::sprint(out, flags, true, values...);
-    }
+  void
+  sprint(std::ostream&      out,
+         T const&...        values)
+  {
+    detail::PrintFlags flags;
+    return detail::sprint(out, flags, true, values...);
+  }
 
   template<typename... T>
-    std::string stringify(T const&... values)
-    {
-      std::ostringstream ss;
-      sprint(ss, iomanip::nonewline, values...);
-      return ss.str();
-    }
+  std::string
+  stringify(T const&...     values)
+  {
+    std::ostringstream ss;
+    sprint(ss, iomanip::nonewline, values...);
+    return ss.str();
+  }
 }
 
 #endif
