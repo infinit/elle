@@ -8,5 +8,3 @@ include_directories(common)
 add_subdirectory(metaclient)
 add_subdirectory(updater)
 add_subdirectory(watchdog)
-
-

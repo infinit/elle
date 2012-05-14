@@ -9,27 +9,37 @@ XML = """<?xml version="1.0" encoding="UTF-8"?>
 </release>
 """
 
+total_size = 0
+
 if __name__ == '__main__':
+
+    def add_to_manifest(dir_):
+        global total_size
+        bin_dir = os.path.join(dest_dir, dir_)
+        assert os.path.isdir(bin_dir)
+        binaries = os.listdir(bin_dir)
+        for binary in binaries:
+            print("add binary : %s" % binary)
+            fpath = os.path.join(bin_dir, binary)
+            if os.path.isdir(fpath):
+                add_to_manifest(os.path.join(dir_, binary))
+            else:
+                with open(fpath) as f:
+                    md5 = hashlib.md5(f.read()).hexdigest()
+                size = os.path.getsize(fpath)
+                total_size += size
+                EXE_TAGS.append(
+                    EXE_TAG % (dir_ + '/' + binary, size, md5)
+                )
     dest_dir, major, minor, rev = sys.argv[1:]
     assert os.path.isdir(dest_dir)
 
     EXE_TAG = """\t<executable path="%s" size="%d" md5sum="%s" />"""
     EXE_TAGS = []
 
-    total_size = 0
     for dir_ in ['bin', 'lib']:
-        bin_dir = os.path.join(dest_dir, dir_)
-        assert os.path.isdir(bin_dir)
-        binaries = os.listdir(bin_dir)
-        for binary in binaries:
-            fpath = os.path.join(bin_dir, binary)
-            with open(fpath) as f:
-                md5 = hashlib.md5(f.read()).hexdigest()
-            size = os.path.getsize(fpath)
-            total_size += size
-            EXE_TAGS.append(
-                EXE_TAG % (dir_ + '/' + binary, size, md5)
-            )
+        print("add directory binary : %s" % dir_)
+        add_to_manifest(dir_)    
 
     if total_size > 1000000:
         human_size = "%d Mb" % (total_size / (1024 * 1024))
@@ -45,3 +55,5 @@ if __name__ == '__main__':
             'size': total_size,
             'human_size': human_size
         })
+
+
