@@ -262,9 +262,6 @@ namespace horizon
     ///
     elle::Status        FUker::Run()
     {
-      // XXX
-      printf("FUker::Run\n");
-
       // create the FUSE-specific thread.
       if (::pthread_create(&FUker::Thread, NULL, &FUker::Setup, NULL) != 0)
         escape("unable to create the FUSE-specific thread");
@@ -279,9 +276,27 @@ namespace horizon
     ///
     elle::Status        FUker::Initialize()
     {
-      // create the FUSE-specific thread.
-      if (::pthread_create(&FUker::Thread, NULL, &FUker::Setup, NULL) != 0)
-        escape("unable to create the FUSE-specific thread");
+      // XXX[to do on Linux too i.e signal to start FUSE]
+
+      // XXX[to replace by the new signal mechanism]
+      switch (hole::Hole::state)
+        {
+        case hole::Hole::StateOffline:
+          {
+            if (hole::Hole::ready.Subscribe(
+                  elle::Callback<>::Infer(&FUker::Run)) == elle::StatusError)
+              escape("unable to subscribe to the signal");
+
+            break;
+          }
+        case hole::Hole::StateOnline:
+          {
+            if (FUker::Run() == elle::StatusError)
+              escape("unable to run the FUker thread");
+
+            break;
+          }
+        }
 
       return elle::StatusOk;
     }
