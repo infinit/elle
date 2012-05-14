@@ -25,8 +25,12 @@ namespace reactor
     if (it == this->_content.end())
       {
         this->_content[this->_sched.current()] = T();
-        current->destructed().connect
-          (boost::bind(&Self::_Clean, this, current));
+        if (current != nullptr)
+        {
+          current->destructed().connect(
+            boost::bind(&Self::_Clean, this, current)
+          );
+        }
         return this->_content[this->_sched.current()];
       }
     else

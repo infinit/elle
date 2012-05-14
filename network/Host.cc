@@ -61,12 +61,14 @@ namespace elle
           // ignore all the special addresses though most of the checks
           // are needless since it is impossible for an interface's address
           // to be set to broadcast for instance.
-          if ((qha == ::QHostAddress::Null) ||
-              (qha == ::QHostAddress::LocalHost) ||
-              (qha == ::QHostAddress::LocalHostIPv6) ||
-              (qha == ::QHostAddress::Broadcast) ||
-              (qha == ::QHostAddress::Any) ||
-              (qha == ::QHostAddress::AnyIPv6))
+          if ((qha            == ::QHostAddress::Null)            ||
+              (qha            == ::QHostAddress::LocalHost)       ||
+              (qha            == ::QHostAddress::LocalHostIPv6)   ||
+              (qha            == ::QHostAddress::Broadcast)       ||
+              (qha            == ::QHostAddress::Any)             ||
+              (qha            == ::QHostAddress::AnyIPv6)         ||
+              (qha.protocol() == ::QAbstractSocket::IPv6Protocol) ||
+              (qha.protocol() == ::QAbstractSocket::UnknownNetworkLayerProtocol))
             continue;
 
           // create a host.
