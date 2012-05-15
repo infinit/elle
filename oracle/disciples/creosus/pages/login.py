@@ -15,7 +15,7 @@ class Login(creosus.Page):
         'login_form',
         [
             form.Text('email', validator=validators.Email),
-            form.Password('password', validator=validators.NotNull),
+            form.Password('password'), #XXX, validator=validators.NotNull),
             form.Submit('submit', label="Log in"),
         ]
     )
