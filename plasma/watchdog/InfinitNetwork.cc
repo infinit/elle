@@ -311,6 +311,9 @@ void InfinitNetwork::_StartProcess()
   arguments << "-n" << this->_description.name.c_str()
             << "-m" << mnt.path();
 
+  LOG() << " -n " << this->_description.name.c_str()
+            << " -m " << mnt.path().toStdString();
+
   this->connect(
       &this->_process, SIGNAL(started()),
       this, SLOT(_OnProcessStarted())
@@ -330,6 +333,7 @@ void InfinitNetwork::_StartProcess()
       this->_infinitHome.filePath("bin/8infinit"),
       arguments
   );
+  ::sleep(3);
 }
 
 
