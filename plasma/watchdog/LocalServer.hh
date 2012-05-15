@@ -17,7 +17,7 @@
 
 # include <memory>
 
-# include <QApplication>
+# include <QCoreApplication>
 # include <QLocalServer>
 
 namespace plasma
@@ -49,7 +49,7 @@ namespace plasma
       std::unique_ptr<Manager>      _manager;
 
     public:
-      LocalServer(QApplication& app);
+      LocalServer(QCoreApplication& app);
       ~LocalServer();
       void Start(std::string const& watchdogId);
 

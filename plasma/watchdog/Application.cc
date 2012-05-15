@@ -33,7 +33,7 @@ using namespace plasma::watchdog;
 //
 
 Application::Application(int ac, char* av[]) :
-  QApplication(ac, av)
+  QCoreApplication(ac, av)
 {
   this->_server = new LocalServer(*this);
 }

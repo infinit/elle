@@ -19,7 +19,7 @@
 # include <memory>
 # include <functional>
 
-# include <QApplication>
+# include <QCoreApplication>
 # include <QVariantMap>
 # include <QVariantList>
 
@@ -57,7 +57,7 @@ namespace plasma
       typedef plasma::metaclient::MetaClient MetaClient;
 
     private:
-      QApplication&       _app;
+      QCoreApplication&   _app;
       ClientMap*          _clients;
       CommandMap*         _commands;
       ClientActions*      _actions;
@@ -68,7 +68,7 @@ namespace plasma
     public:
 
       /// ctor & dtor
-      Manager(QApplication& app);
+      Manager(QCoreApplication& app);
       ~Manager();
 
       /// properties

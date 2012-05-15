@@ -334,10 +334,10 @@ void InfinitNetwork::_OnProcessError(QProcess::ProcessError error)
   LOG() << "Process has an error\n";
 }
 
-void InfinitNetwork::_OnProcessFinished(int exit_code, QProcess::ExitStatus exit_status)
+void InfinitNetwork::_OnProcessFinished(int exit_code, QProcess::ExitStatus)
 {
   LOG() << "Process finished with exit code " << exit_code << "\n";
-  if (!exit_code)
+  if (exit_code)
     {
       auto stdout = this->_process.readAllStandardOutput();
       auto stderr = this->_process.readAllStandardError();

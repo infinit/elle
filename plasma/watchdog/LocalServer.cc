@@ -29,7 +29,7 @@ using namespace plasma::watchdog;
 // ---------- contructors & descructors ---------------------------------------
 //
 
-LocalServer::LocalServer(QApplication& app) :
+LocalServer::LocalServer(QCoreApplication& app) :
   QLocalServer(),
   _state(State::Stopped),
   _manager(new Manager(app))

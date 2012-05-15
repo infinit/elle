@@ -259,6 +259,15 @@ namespace {
 // ---------- contructors & descructors ---------------------------------------
 //
 
+MetaClient::MetaClient(QCoreApplication& app) :
+  _network(&app)
+{
+  this->connect(
+      &this->_network, SIGNAL(finished(QNetworkReply*)),
+      this, SLOT(_OnRequestFinished(QNetworkReply*))
+  );
+}
+
 MetaClient::MetaClient(QApplication& app) :
   _network(&app)
 {

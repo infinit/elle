@@ -1,21 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       plasma/watchdog
-//
-// license       infinit
-//
-// author        Raphaël Londeix   [Wed 01 Feb 2012 06:57:42 PM CET]
-//
-
 #ifndef PLASMA_WATCHDOG_APPLICATION_HH
-#define PLASMA_WATCHDOG_APPLICATION_HH
+# define PLASMA_WATCHDOG_APPLICATION_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <QApplication>
+# include <QCoreApplication>
 
 
 namespace plasma
@@ -25,14 +11,10 @@ namespace plasma
 
     class LocalServer;
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// watchdog application
     ///
-    class Application : public QApplication
+    class Application : public QCoreApplication
     {
       Q_OBJECT
 
@@ -49,7 +31,6 @@ namespace plasma
 
   }
 }
-
 
 #endif /* ! APPLICATION_HH */
 
