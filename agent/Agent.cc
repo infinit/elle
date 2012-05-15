@@ -63,6 +63,8 @@ namespace agent
         escape("the user identity does not seem to exist");
 
       // prompt the user for the passphrase.
+      /* XXX[to change to a better version where we retrieve the passphrase from
+             the watchdog]
       prompt = "Enter passphrase for keypair '" + Infinit::User + "': ";
 
       if (elle::Console::Input(
@@ -70,6 +72,9 @@ namespace agent
             prompt,
             elle::Console::OptionPassword) == elle::StatusError)
         escape("unable to read the input");
+      */
+      // XXX[temporary fix]
+      pass = "";
 
       // load the identity.
       if (Agent::Identity.Load() == elle::StatusError)

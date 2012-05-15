@@ -205,8 +205,10 @@ namespace horizon
           // XXX[we should put this file as an output of the
           //     compilation/installation process]
           //
+#if 0 // XXX[to change]
           "-omodules=volicon",
           "-oiconpath=../../temporary/nazi.icns",
+#endif
 
           //
           // this option specifies the name of the file system instance.

@@ -40,6 +40,8 @@
 //
 // ---------- includes --------------------------------------------------------
 //
+// XXX[specify that long separators can be used: two classes for instance
+//     in a single file.]
 
 /*
  * first must be included the Infinit dependencies, grouped by package
