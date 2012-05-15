@@ -297,6 +297,9 @@ void InfinitNetwork::_StartProcess()
   arguments << "-n" << this->_description.name.c_str()
             << "-m" << mnt.path();
 
+  LOG() << " -n " << this->_description.name.c_str()
+            << " -m " << mnt.path().toStdString();
+
   this->connect(
       &this->_process, SIGNAL(started()),
       this, SLOT(_OnProcessStarted())
@@ -316,6 +319,7 @@ void InfinitNetwork::_StartProcess()
       this->_infinitHome.filePath("bin/8infinit"),
       arguments
   );
+  ::sleep(3);
 }
 
 
@@ -337,7 +341,7 @@ void InfinitNetwork::_OnProcessError(QProcess::ProcessError error)
 void InfinitNetwork::_OnProcessFinished(int exit_code, QProcess::ExitStatus exit_status)
 {
   LOG() << "Process finished with exit code " << exit_code << "\n";
-  if (!exit_code)
+  if (exit_code)
     {
       auto stdout = this->_process.readAllStandardOutput();
       auto stderr = this->_process.readAllStandardError();

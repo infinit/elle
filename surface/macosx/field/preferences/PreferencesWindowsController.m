@@ -20,7 +20,7 @@
 	[self.window setContentSize:[generalPreferenceView frame].size];
 	[[self.window contentView] addSubview:generalPreferenceView];
 	[bar setSelectedItemIdentifier:@"General"];
-	[self.window center];
+    [self.window setLevel:NSScreenSaverWindowLevel + 1];
 }
 
 - (NSView *)viewForTag:(int)tag {
