@@ -215,7 +215,7 @@ elle::Status          Set::Store(const elle::String&       network) const
   if (!out.good())
     escape("cannot open file %s", path.string.c_str());
 
-  auto it = this->loci.begin(), end = this->loci.end();  
+  auto it = this->loci.begin(), end = this->loci.end();
   for (; it != end; ++it)
     {
       elle::String      host;
