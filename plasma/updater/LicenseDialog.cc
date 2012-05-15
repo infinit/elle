@@ -7,6 +7,7 @@ LicenseDialog::LicenseDialog(QWidget *parent) :
     _ui(new Ui::LicenseDialog)
 {
     this->_ui->setupUi(this);
+    this->setWindowFlags(Qt::Popup | Qt::Dialog);
 }
 
 LicenseDialog::~LicenseDialog()

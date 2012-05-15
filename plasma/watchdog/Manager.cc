@@ -29,7 +29,7 @@ using namespace plasma::watchdog;
 // ---------- contructors & descructors ---------------------------------------
 //
 
-Manager::Manager(QApplication& app) :
+Manager::Manager(QCoreApplication& app) :
   _app(app),
   _clients(new ClientMap()),
   _commands(new CommandMap()),

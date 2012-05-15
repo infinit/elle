@@ -15,6 +15,7 @@
 # include <list>
 # include <map>
 
+# include <QCoreApplication>
 # include <QApplication>
 # include <QNetworkAccessManager>
 # include <QNetworkReply>
@@ -120,6 +121,7 @@ namespace plasma
     public:
 
       /// ctor & dtor
+      MetaClient(QCoreApplication& app);
       MetaClient(QApplication& app);
       ~MetaClient();
 

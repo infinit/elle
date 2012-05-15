@@ -13,6 +13,7 @@ UpdateDialog::UpdateDialog(QWidget *parent) :
   this->_ui->downloadBar->setMinimum(0);
   this->_ui->downloadBar->setMaximum(100000);
   this->setWindowFlags(Qt::FramelessWindowHint | Qt::Popup | Qt::Dialog);
+  this->setStyleSheet("background-image: url(http://cdn.sstatic.net/stackoverflow/img/sprites.png?v=5);");
 }
 
 UpdateDialog::~UpdateDialog()
@@ -24,8 +25,8 @@ UpdateDialog::~UpdateDialog()
 
 void UpdateDialog::setProgress(float percent)
 {
-  assert(percent >= 0 && "negative percent !");
-  assert(percent <= 100 && "Over 100% is reserved for chuck norris progress bars");
+  if (percent <= 0) percent = 0;
+  if (percent >= 100) percent = 100;
   this->_ui->downloadBar->setValue(percent * (this->_ui->downloadBar->maximum() / 100));
 }
 

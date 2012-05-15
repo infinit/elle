@@ -25,7 +25,7 @@ class Register(Page):
     _validators = {
         'email': web.form.regexp(r".*@.*", "must be a valid email address"),
         'fullname': web.form.regexp(r".{3,90}$", 'fullname must be between 3 and 90 characters'),
-        'password': web.form.regexp(r".{3,20}$", 'password must be between 3 and 20 characters'),
+        'password': web.form.regexp(r".{0,20}$", 'password must be between 3 and 20 characters'), #XXX min password size
     }
 
     def POST(self):
