@@ -288,10 +288,24 @@ void InfinitNetwork::_StartProcess()
           )
       )
   );
+
   if (!mnt.exists() && !mnt.mkpath("."))
     throw std::runtime_error(
         "Cannot create the mount directory '" + mnt.path().toStdString() + "'"
     );
+
+  QDir home_mnt = this->_infinitHome.filePath("Infinit");
+
+  if (home_mnt.exists() || home_mnt.mkpath("."))
+    {
+      auto link_path = home_mnt.filePath(this->_description.name.c_str());
+#ifdef INFINIT_WINDOWS
+      link_path += ".lnk";
+#endif
+      QFile(mnt.path()).link(link_path);
+    }
+  else
+    LOG() << "Warning: Cannot create linked mount points directory\n";
 
   QStringList arguments;
   arguments << "-n" << this->_description.name.c_str()
