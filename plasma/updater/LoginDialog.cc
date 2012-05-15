@@ -25,7 +25,7 @@ void LoginDialog::SetErrorMessage(std::string const& error)
 
 void LoginDialog::_OnAccepted()
 {
-  if (this->ui && this->ui->email && this->ui->password)
+  if (this->ui && this->ui->email) // XXX && this->ui->password)
     {
       Q_EMIT doLogin(this->ui->email->text().toStdString(),
                      "");
