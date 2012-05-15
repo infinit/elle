@@ -201,25 +201,6 @@ elle::Status          Set::Load(const elle::String&        network)
 elle::Status          Set::Store(const elle::String&       network) const
 {
   elle::Path          path;
-  elle::Region        region;
-  std::ostringstream  stream;
-  auto                iterator = this->loci.begin();
-  auto                end = this->loci.end();
-
-  //
-  // build the string-based set of loci.
-  //
-
-  for (; iterator != end; ++iterator)
-    {
-      elle::String      host;
-
-      // convert the current locus into a string.
-      if (iterator->host.Convert(host) == elle::StatusError)
-        escape("unable to convert the locus into a string");
-
-      stream << host << ":" << iterator->port << " ";
-    }
 
   // create the path.
   if (path.Create(Lune::Network::Set) == elle::StatusError)
@@ -229,14 +210,22 @@ elle::Status          Set::Store(const elle::String&       network) const
   if (path.Complete(elle::Piece("%NETWORK%", network)) == elle::StatusError)
     escape("unable to complete the path");
 
-  // wrap the string.
-  if (region.Wrap(reinterpret_cast<const elle::Byte*>(stream.str().c_str()),
-                  stream.str().length()) == elle::StatusError)
-    escape("unable to wrap the string in a region");
+  std::ofstream out(path.string);
 
-  // write the file's content.
-  if (elle::File::Write(path, region) == elle::StatusError)
-    escape("unable to write the file's content");
+  if (!out.good())
+    escape("cannot open file %s", path.string.c_str());
+
+  auto it = this->loci.begin(), end = this->loci.end();  
+  for (; it != end; ++it)
+    {
+      elle::String      host;
+
+      // convert the current locus into a string.
+      if (it->host.Convert(host) == elle::StatusError)
+        escape("unable to convert the locus into a string");
+
+      out << host << ":" << it->port << " ";
+    }
 
   return elle::StatusOk;
 }
