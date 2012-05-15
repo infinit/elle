@@ -16,7 +16,7 @@ class Register(creosus.Page):
         # XXX
         #form.Password('password', validator=form.validators.Regexp(r'^.{6,}$', 'Password too short')),
         #form.Password('password_confirmation'),
-        form.Text('activation_code'),
+        form.Password('activation_code'),
         form.Submit('register', label="Register", validator=form.validators.NotNull),
     ], validators=[
         # XXX
@@ -25,7 +25,7 @@ class Register(creosus.Page):
         #    "Passwords didn't match"
         #),
         form.validators.Validator(
-            lambda f: f['activation_code'] == 'bite',
+            lambda f: f['activation_code'] == 'bite666',
             "Invalid activation code"
         ),
     ])
@@ -41,6 +41,12 @@ class Register(creosus.Page):
             })
             if res['success']:
                 raise web.seeother('/')
+            elif 'errors' in res:
+                form.errors.extend(res['errors'])
+            elif 'error' in res:
+                form.errors.append(res['error'])
+            else:
+                form.errors.append("Unknown API error")
         return self.render(obj={
             'register_form': f.render(),
         })
