@@ -48,7 +48,7 @@ void IdentityUpdater::Start()
 void IdentityUpdater::_DoLogin(std::string const& login,
                                std::string const& password)
 {
-  if (!login.size() || !password.size())
+  if (!login.size()) // XXX || !password.size())
     {
       this->_loginDialog.SetErrorMessage("Wrong login/password");
       this->_loginDialog.show();
