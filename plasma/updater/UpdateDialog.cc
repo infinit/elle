@@ -12,7 +12,7 @@ UpdateDialog::UpdateDialog(QWidget *parent) :
   this->_ui->downloadBar->setValue(0);
   this->_ui->downloadBar->setMinimum(0);
   this->_ui->downloadBar->setMaximum(100000);
-  this->setWindowFlags(Qt::FramelessWindowHint);
+  this->setWindowFlags(Qt::FramelessWindowHint | Qt::Popup | Qt::Dialog);
 }
 
 UpdateDialog::~UpdateDialog()

@@ -10,6 +10,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     this->connect(this, SIGNAL(accepted()), this, SLOT(_OnAccepted()));
+    this->setWindowFlags(Qt::Popup | Qt::Dialog);
 }
 
 LoginDialog::~LoginDialog()
