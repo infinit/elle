@@ -303,7 +303,8 @@ void InfinitNetwork::_StartProcess()
 #ifdef INFINIT_WINDOWS
       link_path += ".lnk";
 #endif
-      QFile(mnt.path()).link(link_path);
+      if (!QFile(mnt.path()).link(link_path))
+        LOG() << "Warning: Cannot create linked mount points\n";
     }
   else
     LOG() << "Warning: Cannot create linked mount points directory\n";
