@@ -31,7 +31,7 @@ namespace package
 
       /// Description.
       void
-      method2(Natural64 const) const;
+      method2(Natural64&);
     };
 
   }
