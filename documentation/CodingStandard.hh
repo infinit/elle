@@ -1,7 +1,7 @@
 /*
- * The three files CodingStandard.{cc, hh, hxx} along with fwd.hh describes
- * the coding style used throughout the Infinit project which every developer
- * must comply to.
+ * The three files CodingStandard.{cc, hh, hxx} along with fwd.hh and
+ * SomeInterface.hh describe the coding style used throughout the Infinit
+ * project which every developer must comply to.
  *
  * Among the core rules are:
  *
@@ -51,7 +51,8 @@
  * underscore acting as a seperator.
  *
  * Besides, every macro and macro-function should be prefixed by
- * the name of its module in order to prevent conflicts.
+ * the name of its module (and possibly even its package) in order
+ * to prevent conflicts.
  *
  * Additionally, as one can notice, the macros and macro-functions do
  * not need to be placed in the namespaces since independent from
@@ -79,17 +80,21 @@ namespace package
   namespace module
   {
 
-//
-// ---------- CodingStandard --------------------------------------------------
-//
 /*
  * This long separator -- as opposed to the short separators which will be
  * introduced later on -- can be relied upon should several classes be defined
  * in the same file.
  *
  * This makes it clearer where the code belongs. Note however that the file
- * must be named after the main class being defined in the file.
+ * must be named after the main class being defined in the file, following
+ * the naming convention of the class i.e capitalized CamelCase.
+ *
+ * Noteworthy is that acroynyms such as JSON must be treated as such e.g.
+ * JSONParser.
  */
+//
+// ---------- CodingStandard --------------------------------------------------
+//
 
     ///
     /// The general documentation about the class purpose should be provided
@@ -133,6 +138,15 @@ namespace package
       `------*/
     public:
       typedef Natural32 Size;
+
+      /*-------------.
+      | Enumerations |
+      `-------------*/
+    public:
+      enum State
+        {
+          XXX
+        };
 
       /*----------.
       | Constants |
@@ -191,7 +205,8 @@ namespace package
       /*
        * The methods, as any other method, should be named in lowercase
        * with underscores as separators. Should it be necessary, accessors
-       * should also be named this way.
+       * should also be named this way. Note that short method names are
+       * always preferred since self-explanatory given the class context.
        *
        * The name of the arguments should also be specified so as to
        * provide all the information required directly within the header file.
@@ -213,7 +228,7 @@ namespace package
 
       /// Another description for the method.
       Natural32
-      compute(SomeOtherClass const& something,
+      compute(another::place::SomeOtherClass const& something,
               Natural32 const somethingelse);
 
       /*
