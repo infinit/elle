@@ -27,7 +27,6 @@ namespace package
     `------------*/
 
     const Natural32 CodingStandard::Zero = 0;
-    const Real CodingStandard::Default::Size = 12.34;
 
     Natural32 CodingStandard::AverageSize = 42;
 
@@ -91,7 +90,7 @@ namespace package
     `--------*/
 
     Real
-    CodingStandard::something()
+    CodingStandard::something() const
     {
       /*
        * The return statement must be used with parentheses since it is
@@ -111,7 +110,7 @@ namespace package
        * make it clear that the attribute is accessed while limiting
        * further naming problems.
        */
-      return (this->_attribute1);
+      return (this->_something);
     }
 
     /*
