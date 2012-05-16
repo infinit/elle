@@ -114,8 +114,12 @@ namespace package
       return (this->_attribute1);
     }
 
+    /*
+     * Every type must be specified using its complete namespace hierarchy.
+     * As a corollary, namespace should be kept short.
+     */
     Natural32
-    CodingStandard::compute(SomeOtherClass const& something,
+    CodingStandard::compute(another::place::SomeOtherClass const& something,
                             Natural32 const somethingelse)
     {
       /*

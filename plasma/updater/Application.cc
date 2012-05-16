@@ -18,11 +18,12 @@ using namespace plasma::updater;
 // ---------- constructors & destructors --------------------------------------
 //
 
-Application::Application(int& ac, char** av) :
-  QApplication(ac, av, true),
-  _releaseUpdater(*this),
-  _identityUpdater(*this),
-  _licenseDialog()
+Application::Application(int& ac, char** av)
+  : QApplication(ac, av, true)
+  , _releaseUpdater(*this)
+  , _identityUpdater(*this)
+  , _licenseDialog()
+  , _infinitHome(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY))
 {}
 
 Application::~Application()
@@ -35,8 +36,7 @@ Application::~Application()
 
 int Application::Exec()
 {
-  QDir home_directory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
-  if (!home_directory.exists())
+  if (!this->_infinitHome.exists())
     {
       this->_licenseDialog.show();
       this->connect(
@@ -62,6 +62,8 @@ void Application::_StartUpdate()
   this->_licenseDialog.hide();
   if (!this->_CheckInfinitHome())
     this->exit(EXIT_FAILURE);
+
+  this->_StopWatchdog();
 
   this->_releaseUpdater.Start();
   this->connect(
@@ -95,14 +97,13 @@ void Application::_OnReleaseUpdated(bool success)
 
 bool Application::_CheckInfinitHome()
 {
-  QDir home_directory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
-  if ((!home_directory.exists() && !home_directory.mkpath(".")) ||
-      (!home_directory.exists("bin") && !home_directory.mkpath("bin")) ||
-      (!home_directory.exists("lib") && !home_directory.mkpath("lib")) ||
-      (!home_directory.exists("networks") && !home_directory.mkpath("networks")))
+  if ((!this->_infinitHome.exists() && !this->_infinitHome.mkpath(".")) ||
+      (!this->_infinitHome.exists("bin") && !this->_infinitHome.mkpath("bin")) ||
+      (!this->_infinitHome.exists("lib") && !this->_infinitHome.mkpath("lib")) ||
+      (!this->_infinitHome.exists("networks") && !this->_infinitHome.mkpath("networks")))
     {
       std::cerr << "Failed to prepare infinit home '"
-                << home_directory.path().toStdString()
+                << this->_infinitHome.path().toStdString()
                 << "'\n";
       return false;
     }
@@ -110,45 +111,36 @@ bool Application::_CheckInfinitHome()
   return true;
 }
 
-
-/// XXX The following is ugly, do not read
-void Application::_OnIdentityUpdated(bool success)
+QString Application::_readWatchdogId()
 {
-  if (!success)
+  if (this->_infinitHome.exists("infinit.wtg"))
     {
-      std::cerr << "Something failed ...\n";
-      this->exit(EXIT_FAILURE);
-      return;
-    }
-  else
-    std::cerr << "Starting the watchdog.\n";
-  QDir homeDirectory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
-  QString watchdogId;
-
-  ///////////////////////////////////////////////////////////////////////////
-  // Read old watchdog id
-  if (homeDirectory.exists("infinit.wtg"))
-    {
-      QFile f(homeDirectory.filePath("infinit.wtg"));
+      QFile f(this->_infinitHome.filePath("infinit.wtg"));
       if (f.open(QIODevice::ReadOnly))
         {
-          watchdogId = QString{f.readAll()};
+          QString watchdogId = QString{f.readAll()};
           f.close();
+          return watchdogId;
         }
     }
+  return "";
+}
 
-  ///////////////////////////////////////////////////////////////////////////
-  // Trying to stop the watchdog
-  if (watchdogId.size() > 0)
+void Application::_StopWatchdog()
+{
+  QString id = this->_readWatchdogId();
+  if (!id.size())
+    return;
+
+  // Stop old watchdog
     {
       QLocalSocket conn;
       conn.connectToServer(WATCHDOG_SERVER_NAME);
       if (conn.waitForConnected(2000))
         {
-          QString token = this->_identityUpdater.api().token();
           QByteArray cmd = QString("{"
                 "\"command\":\"stop\","
-                "\"_id\": \"" + watchdogId + "\""
+                "\"_id\": \"" + id + "\""
           "}\n").toAscii();
           conn.write(cmd);
           if (!conn.waitForBytesWritten(2000))
@@ -157,13 +149,11 @@ void Application::_OnIdentityUpdated(bool success)
       else
         {
           std::cerr << "UPDATER: Warning: Couldn't connect to the old watchdog instance\n";
-          watchdogId = "";
+          return;
         }
     }
 
-  ///////////////////////////////////////////////////////////////////////////
   // Waiting for the old server to be stopped
-  if (watchdogId.size() > 0)
     {
       int tries = 1;
       do {
@@ -179,11 +169,26 @@ void Application::_OnIdentityUpdated(bool success)
       if (tries >= 10)
           std::cerr << "UPDATER: Warning: The old watchdog instance does not stop !\n";
     }
+}
+
+/// XXX The following is ugly, do not read
+void Application::_OnIdentityUpdated(bool success)
+{
+  if (!success)
+    {
+      std::cerr << "Something failed ...\n";
+      this->exit(EXIT_FAILURE);
+      return;
+    }
+  else
+    std::cerr << "Starting the watchdog.\n";
+
+  QString watchdogId = this->_readWatchdogId();
 
   ///////////////////////////////////////////////////////////////////////////
   // We finaly launch the watchdog
     {
-      QString watchdogPath = homeDirectory.filePath("bin/8watchdog");
+      QString watchdogPath = this->_infinitHome.filePath("bin/8watchdog");
       std::cerr << "watchdog path: " << watchdogPath.toStdString() << std::endl;
       QProcess p;
       if (!p.startDetached(watchdogPath))
@@ -221,20 +226,20 @@ void Application::_OnIdentityUpdated(bool success)
   ///////////////////////////////////////////////////////////////////////////
   // Getting the new watchdog id
   // When connected, the watchdog id file should exists
-  QFile f(homeDirectory.filePath("infinit.wtg"));
   QString newWatchdogId;
   tries = 0;
     do {
-      if(tries > 0) ::sleep(1);
-      if (f.open(QIODevice::ReadOnly))
+      if (tries > 0) ::sleep(1);
+      newWatchdogId = this->_readWatchdogId();
+      if (newWatchdogId.size() && watchdogId != newWatchdogId)
         {
-          newWatchdogId = QString{f.readAll()};
-          f.close();
+          watchdogId = newWatchdogId; // prevent errors
           std::cerr << "UPDATER: Found new watchdog id "<< newWatchdogId.toStdString() << "\n";
+          break;
         }
-    } while (newWatchdogId == watchdogId && ++tries < 10);
+    } while (++tries < 10);
 
-    if (newWatchdogId == watchdogId)
+    if (tries == 10)
       throw std::runtime_error("Couldn't open infinit watchdog id file");
 
   ///////////////////////////////////////////////////////////////////////////

@@ -1,35 +1,18 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       plasma/updater
-//
-// license       infinit
-//
-// author        Raphaël Londeix   [Fri 27 Jan 2012 11:54:35 AM CET]
-//
+#ifndef  PLASMA_UPDATER_APPLICATION_HH
+# define PLASMA_UPDATER_APPLICATION_HH
 
-#ifndef PLASMA_UPDATER_APPLICATION_HH
-#define PLASMA_UPDATER_APPLICATION_HH
+# include <string>
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <QApplication>
+# include <QDir>
+# include <QProcess>
 
-#include <string>
-
-#include <QApplication>
-#include <QProcess>
-
-#include "IdentityUpdater.hh"
-#include "ReleaseUpdater.hh"
-#include "LicenseDialog.hh"
+# include "IdentityUpdater.hh"
+# include "ReleaseUpdater.hh"
+# include "LicenseDialog.hh"
 
 namespace plasma {
   namespace updater {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// This class is in charge to download a file list.
@@ -45,23 +28,24 @@ namespace plasma {
       ReleaseUpdater  _releaseUpdater;
       IdentityUpdater _identityUpdater;
       LicenseDialog   _licenseDialog;
+      QDir            _infinitHome;
 
     public:
-      /// ctor & dtor
       Application(int& ac, char** av);
       virtual ~Application();
 
-      /// methods
       int Exec();
 
     private:
-      bool _CheckInfinitHome();
+      bool      _CheckInfinitHome();
+      void      _StopWatchdog();
+      QString   _readWatchdogId();
+
     private Q_SLOTS:
       void _StartUpdate();
       void _CancelUpdate();
       void _OnReleaseUpdated(bool);
       void _OnIdentityUpdated(bool success);
-
     };
 
   }
