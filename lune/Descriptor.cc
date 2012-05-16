@@ -63,7 +63,8 @@ namespace lune
   ///
   /// this method creates a descriptor.
   ///
-  elle::Status          Descriptor::Create(const elle::String&  name,
+  elle::Status          Descriptor::Create(const elle::String id,
+                                           const elle::String&  name,
                                            const hole::Model&   model,
                                            const nucleus::Address& root,
                                            const elle::Boolean  history,
@@ -72,6 +73,7 @@ namespace lune
                                            const elle::Real&    balancing)
   {
     // set the attributes.
+    this->_id = id;
     this->name = name;
     this->model = model;
     this->root = root;
@@ -89,7 +91,8 @@ namespace lune
   elle::Status          Descriptor::Seal(const Authority&       authority)
   {
     // sign the attributesr with the authority.
-    if (authority.k->Sign(this->name,
+    if (authority.k->Sign(this->_id,
+                          this->name,
                           this->model,
                           this->root,
                           this->history,
@@ -110,6 +113,7 @@ namespace lune
   {
     // verify the signature.
     if (authority.K.Verify(this->signature,
+                           this->_id,
                            this->name,
                            this->model,
                            this->root,
@@ -147,7 +151,9 @@ namespace lune
 
     std::cout << alignment << "[Descriptor]" << std::endl;
 
-    std::cout << alignment << elle::Dumpable::Shift << "[Name] "
+    std::cout << alignment << elle::Dumpable::Shift << "[id] "
+              << this->_id << std::endl
+              << alignment << elle::Dumpable::Shift << "[Name] "
               << this->name << std::endl;
 
     if (this->model.Dump(margin + 2) == elle::StatusError)
@@ -187,6 +193,7 @@ namespace lune
   {
     // serialize the attributes.
     if (archive.Serialize(
+          this->_id,
           this->name,
           this->model,
           this->root,
@@ -206,7 +213,8 @@ namespace lune
   elle::Status          Descriptor::Extract(elle::Archive&      archive)
   {
     // extract the attributes.
-    if (archive.Extract(this->name,
+    if (archive.Extract(this->_id,
+                        this->name,
                         this->model,
                         this->root,
                         this->history,

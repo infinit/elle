@@ -192,6 +192,7 @@ class Network(Page):
 
                 to_save['descriptor'] = metalib.generate_network_descriptor(
                     str(id),
+                    to_save['name'],
                     to_save.get('model', 'slug'),
                     root_address,
                     conf.INFINIT_AUTHORITY_PATH,

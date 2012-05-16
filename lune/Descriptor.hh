@@ -53,7 +53,8 @@ namespace lune
     //
     // methods
     //
-    elle::Status        Create(const elle::String&,
+    elle::Status        Create(const elle::String id,
+                               const elle::String&,
                                const hole::Model&,
                                const nucleus::Address&,
                                const elle::Boolean,
@@ -87,6 +88,10 @@ namespace lune
     //
     // attributes
     //
+  private:
+    elle::String        _id;
+
+  public: // XXX
     elle::String        name;
     hole::Model         model;
     nucleus::Address    root;
@@ -95,6 +100,10 @@ namespace lune
     elle::Real          contention;
     elle::Real          balancing;
     elle::Signature     signature;
+
+  public:
+    elle::String const& id() const { return this->_id; }
+    void                id(std::string const& id) { this->_id = id; }
   };
 
 }

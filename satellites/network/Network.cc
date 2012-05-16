@@ -145,6 +145,7 @@ namespace satellite
     {
       // create the descriptor.
       if (descriptor.Create(
+            name, // XXX id = name
             name,
             model,
             address,
