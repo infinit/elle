@@ -36,6 +36,11 @@ NetworkManager::NetworkManager(Manager& manager):
 // ---------- methods  --------------------------------------------------------
 //
 
+void NetworkManager::Stop()
+{
+  this->_networks.clear();
+}
+
 void NetworkManager::UpdateNetworks()
 {
   using namespace std::placeholders;

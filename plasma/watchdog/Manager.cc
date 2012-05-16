@@ -141,6 +141,7 @@ void Manager::Stop()
   std::cerr << "STOPPING\n";
 
   // XXX couldn't get rid of a double free corruption
+  this->_networkManager->Stop();
   //this->_app.quit();
   ::exit(EXIT_SUCCESS);
 }

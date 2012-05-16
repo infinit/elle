@@ -46,6 +46,7 @@ namespace plasma
 
     public:
       InfinitNetwork(Manager& manager, meta::NetworkResponse const& response);
+      ~InfinitNetwork();
       void Update(meta::NetworkResponse const& response);
 
     private:

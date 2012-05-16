@@ -1,16 +1,15 @@
+@import "/static/css/reset.css";
 
-
-html, body, div, p, span,
-h1, h2, h3, h4, h5,
-label, input
-{
-	margin: 0;
-	padding: 0;
+h1, h2 {
+	color: transparent;
+	background-color: rgba(82,96,117,0.3);
+	-webkit-background-clip: text;
+	text-shadow: rgba(255,255,255,0.3) 0 5px 6px;
 }
 
 body {
 
-	font: normal 100% Helvetica, Arial, sans-serif;
+	font-family: "Courier New", Courier, monospace;
 	background-image:url('/static/images/concrete_wall.png');
 	color: #454545;
 
@@ -28,27 +27,44 @@ body {
 	}
 
 	input {
-		border: 1px solid #bbb;
+		border: none;
+		border-radius: 3px;
+		box-shadow: inset 0 0 3px #555;
+	}
+	input[type=submit]{
+		box-shadow: 0 0 3px #555;
+	}
+	input[type=submit]:hover{
+		box-shadow: 0 0 1px #555;
 	}
 
 	input:hover, input:focus {
-		border: 1px solid #aaa;
 	}
 
 	div#header, div#content, div#footer {
 		width: 87%;
-		max-width: 974px;
-		margin: 20px auto;
+		width: 940px;
+		margin: 10px auto;
 		padding: 20px;
 		border-radius: 3px;
 	}
 
 	div#header {
 		margin-top: 0;
+		padding-top: 10px;
 		.toolbar {
-			font-size:.9em;
+			padding-top: 28px;
 			float: right;
 		}
+		.logo {
+			height: 50px;
+		}
+	}
+
+	div#content {
+		background-color: rgba(255, 255, 255, 0.5);
+		min-height: 300px;
+		padding: 20px;
 	}
 
 }

@@ -65,11 +65,19 @@ void Application::_StartUpdate()
 
   this->_StopWatchdog();
 
-  this->_releaseUpdater.Start();
-  this->connect(
-    &this->_releaseUpdater, SIGNAL(releaseUpdated(bool)),
-    this, SLOT(_OnReleaseUpdated(bool))
-  );
+  if (QFile(_infinitHome.filePath(".dev_no_update")).exists())
+    {
+      std::cerr << "Skipping update !\n";
+      this->_OnReleaseUpdated(true);
+    }
+  else
+    {
+      this->_releaseUpdater.Start();
+      this->connect(
+        &this->_releaseUpdater, SIGNAL(releaseUpdated(bool)),
+        this, SLOT(_OnReleaseUpdated(bool))
+      );
+    }
 }
 
 void Application::_CancelUpdate()

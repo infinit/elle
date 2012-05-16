@@ -52,6 +52,7 @@ namespace plasma
       NetworkManager(Manager& manager);
 
       void UpdateNetworks();
+      void Stop();
 
     private:
       void _OnNetworksUpdate(meta::NetworksResponse const& response);
