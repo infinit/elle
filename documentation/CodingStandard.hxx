@@ -1,48 +1,44 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       documentation
-//
-// license       infinit
-//
-// author        julien quintard   [fri jan 27 15:02:19 2012]
-//
-
 #ifndef PACKAGE_MODULE_CODINGSTANDARD_HXX
-#define PACKAGE_MODULE_CODINGSTANDARD_HXX
+# define PACKAGE_MODULE_CODINGSTANDARD_HXX
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <infinit-dependency-1.hh>
-#include <infinit-dependency-2.hh>
-
-#include <idiom/Close.hh>
 # include <system-dependecy.h>
 # include <library-dependency.h>
-#include <idiom/Open.hh>
 
-using namespace package::module
-
-//
-// ---------- template methods ------------------------------------------------
-//
-
-///
-/// description of the method.
-///
-template <typename T>
-Status              CodingStandard::Method3(const Natural32 n,
-                                            T&              object)
+/*
+ * The namespaces are re-specified.
+ */
+namespace package
 {
-  //
-  // do something.
-  //
+  namespace module
+  {
 
-  [...]
+    /*--------.
+    | Methods |
+    `--------*/
 
-  return (StatusOk);
+    /*
+     * So as to make things clear, every C++ keyword must be followed
+     * by a single space. These keywords include, among others: return,
+     * sizeof, if, for, switch and template.
+     *
+     * Once again, one can notice that the return type is specified on
+     * its own line while arguments also lie on their line.
+     */
+    template <typename T>
+    void
+    generate_something_specific(Natural32 const ohoh,
+                                T& bla)
+    {
+      //
+      // One can comment some parts of the code. However, these comments
+      // do not need to be exposed to the developer using the class.
+      //
+      // Therefore, one can notice that this comment is not intended to
+      // be extracted by Doxygen.
+      //
+    }
+
+  }
 }
 
 #endif

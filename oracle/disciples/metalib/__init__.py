@@ -31,10 +31,11 @@ def generate_identity(login, password, authority_file, authority_password):
     return (identity, identity_pub)
 
 
-def generate_network_descriptor(network_id, model, root_address, authority_file, authority_password):
+def generate_network_descriptor(network_id, network_name, model, root_address, authority_file, authority_password):
     """Generate a network descriptor.
 
         :param network_id: The network unique identifier
+        :param network_id: The network name
         :param model: Then network model name
         :param root_address: The base64 encoded root block address
         :param authority_file: The path to the authority file
@@ -43,7 +44,7 @@ def generate_network_descriptor(network_id, model, root_address, authority_file,
         :return: base64 encoded network descriptor
     """
     return _meta.generate_network_descriptor(
-        network_id, model, root_address, authority_file, authority_password
+        network_id, network_name, model, root_address, authority_file, authority_password
     )
 
 def generate_passport(device_id, authority_file, authority_password):

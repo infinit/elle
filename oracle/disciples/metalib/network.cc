@@ -39,7 +39,8 @@
 #include "network.hh"
 
 
-static elle::Unique generate_network_descriptor(elle::String const& name,
+static elle::Unique generate_network_descriptor(elle::String const& id,
+                                                elle::String const& name,
                                                 elle::String const& model_name,
                                                 elle::Unique const& root_address,
                                                 elle::String const& authority_file,
@@ -66,7 +67,7 @@ static elle::Unique generate_network_descriptor(elle::String const& name,
   if (address.Restore(root_address) != elle::StatusOk)
     throw std::runtime_error("Unable to restore root address");
 
-  if (descriptor.Create(name, model, address,
+  if (descriptor.Create(id, name, model, address,
                         lune::Descriptor::History,
                         lune::Descriptor::Extent,
                         lune::Descriptor::Contention,
@@ -87,14 +88,15 @@ static elle::Unique generate_network_descriptor(elle::String const& name,
 extern "C" PyObject* metalib_generate_network_descriptor(PyObject* self, PyObject* args)
 {
   char const* network_id = nullptr,
+            * network_name = nullptr,
             * network_model = nullptr,
             * root_address = nullptr,
             * authority_file = nullptr,
             * authority_password = nullptr;
   PyObject* ret = nullptr;
 
-  if (!PyArg_ParseTuple(args, "sssss:check_root_block_signature",
-                        &network_id, &network_model, &root_address,
+  if (!PyArg_ParseTuple(args, "ssssss:check_root_block_signature",
+                        &network_id, &network_name, &network_model, &root_address,
                         &authority_file, &authority_password))
     return nullptr;
 
@@ -104,7 +106,7 @@ extern "C" PyObject* metalib_generate_network_descriptor(PyObject* self, PyObjec
   try
     {
       elle::Unique descriptor = generate_network_descriptor(
-          network_id, network_model, root_address,
+          network_id, network_name, network_model, root_address,
           authority_file, authority_password
       );
 

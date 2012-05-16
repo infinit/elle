@@ -298,6 +298,7 @@ void InfinitNetwork::_StartProcess()
 
   if (home_mnt.exists() || home_mnt.mkpath("."))
     {
+      LOG() << "Created " << home_mnt.path().toStdString() << std::endl;
       auto link_path = home_mnt.filePath(this->_description.name.c_str());
 #ifdef INFINIT_WINDOWS
       link_path += ".lnk";

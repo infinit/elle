@@ -1,73 +1,78 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project      documentation
-//
-// license      infinit
-//
-// author       Raphael Londeix   [Thu 26 Jan 2012 06:32:31 PM CET]
-//
+/*
+ * The three files CodingStandard.{cc, hh, hxx} along with fwd.hh describes
+ * the coding style used throughout the Infinit project which every developer
+ * must comply to.
+ *
+ * Among the core rules are:
+ *
+ *   o Never use tabulations, always prefer spaces for both indentation
+ *     and alignment.
+ *   o Never exceed 80 columns: lines must be broken if necessary.
+ *   o Everything must be written in English, properly using cases.
+ *   o Space out the code as much as possible so as to make it breathe.
+ *   o Use // for in-code comments and /// for the generated documentation
+ *     i.e Doxygen. As such the class description, method descriptions,
+ *     global variable descriptions etc. are considered documentation.
+ *   o XXX must be included in comments in order to specify something which
+ *     needs completing or re-working.
+ *
+ * All comments used for explaining the coding standards are written in
+ * C-style -- i.e including this comment -- so as to be distinguishable
+ * from the rest.
+ */
 
 #ifndef PACKAGE_MODULE_CODINGSTANDARD_HH
-#define PACKAGE_MODULE_CODINGSTANDARD_HH
-
-//
-// ---------- information -----------------------------------------------------
-//
-// the three files CodingStandard.{cc, hh, hxx} describes the coding style
-// used throughout the Infinit project which every developer must comply to.
-//
-// among the core rules are:
-//
-//   o never use tabulations, always prefer spaces for both indentation
-//     and alignment.
-//   o never exceed 80 columns: lines must be broken if necessary
-//   o never use underscores for naming i.e CodingStandard will always be
-//     preferred to Coding_Standard or coding_standard.
-//   o everything must be written in English and lower-case as much as
-//     possible.
-//   o space out the code as much as possible so as to make it breathe :)
-//   o use // for in-code comments and /// for the generated documentation
-//     i.e Doxygen. as such the class description, method descriptions,
-//     global variable descriptions etc. are considered documentation.
-//   o XXX must be included in comments in order to specify something which
-//     needs completing or re-working.
-//
-// all comments used for explaining the coding standards are written in
-// C-style i.e /* comment about the coding style */.
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-// XXX[specify that long separators can be used: two classes for instance
-//     in a single file.]
+# define PACKAGE_MODULE_CODINGSTANDARD_HH
+/*
+ * Note that the preprocessor definitions lying within a macro scope must
+ * be indented following a one-space rule, the macro above being an example
+ * of this rule along with the includes below.
+ */
 
 /*
- * first must be included the Infinit dependencies, grouped by package
- * or module.
+ * First must be included the Infinit dependencies, grouped by package
+ * or module. Note the brackets are used for the includes.
  *
- * note the brackets are used for the includes.
+ * Besides, the forward declarations should always be preferred, unless
+ * the actual type definition is absolutely necessary.
  */
-#include <infinit-dependency-1.hh>
-#include <infinit-dependency-2.hh>
+# include <package/module/fwd.hh>
+# include <package/module/InfinitDepdency1.hh>
+# include <package/module/InfinitDepdency2.hh>
 
 /*
- * then must be included the system dependencies.
- *
- * note that in order to prevent conflicts, these are enclosed between
- * an idiom Close and Open in order to undefine the macros and redefine
- * them. however, these macros will soon be removed so this should no
- * longer be necessary.
+ * Then must be included the system dependencies.
  */
-#include <idiom/Close.hh>
 # include <system-dependecy.h>
 # include <library-dependency.h>
-#include <idiom/Open.hh>
 
 /*
- * the namespaces must be defined in lower-case with the opening and
- * closing brackets on their own line.
+ * Macros and macro-functions must be named in capital with the
+ * underscore acting as a seperator.
+ *
+ * Besides, every macro and macro-function should be prefixed by
+ * the name of its module in order to prevent conflicts.
+ *
+ * Additionally, as one can notice, the macros and macro-functions do
+ * not need to be placed in the namespaces since independent from
+ * the language used.
+ *
+ * Finally, macro-function parameters should be prefixed and suffixed
+ * by an underscore in order to prevent conflicts with variables while
+ * long macro-functions should be split into several lines, indented
+ * following a two-space rule and terminated by an aligned backslash,
+ * as shown below.
+ */
+/*--------.
+| Macros |
+`--------*/
+# define MODULE_STRINGIFY(_variable_)                                   \
+  #_variable_
+
+/*
+ * The namespaces must be defined in lower-case with the opening and
+ * closing brackets on their own line and aligned with the namespace
+ * keyword.
  */
 namespace package
 {
@@ -75,133 +80,191 @@ namespace package
   {
 
 //
-// ---------- forward declarations --------------------------------------------
+// ---------- CodingStandard --------------------------------------------------
 //
-
-    /*
-     * every class which is referenced in the header file as a
-     * pointer or reference must be forward declared in order to speed
-     * up the compilation process.
-     */
-    class SomeOtherClass;
-
-//
-// ---------- classes ---------------------------------------------------------
-//
+/*
+ * This long separator -- as opposed to the short separators which will be
+ * introduced later on -- can be relied upon should several classes be defined
+ * in the same file.
+ *
+ * This makes it clearer where the code belongs. Note however that the file
+ * must be named after the main class being defined in the file.
+ */
 
     ///
-    /// the general documentation about the class purpose.
+    /// The general documentation about the class purpose should be provided
+    /// here.
+    ///
+    /// Note that every class must be named following the capitalized CamelCase
+    /// naming convention i.e starting with an uppercase letter.
     ///
     class CodingStandard:
       /*
-       * note that every class being derived is specified on its own line.
+       * Every class deriving others must end with a colon while the derived
+       * classes must be presented on their own line, indented with two spaces,
+       * and ending with a comma, as shown here.
        */
       public DerivedClass,
       public AnotherDerivedClass
     {
-      //
-      // types
-      //
-    public:
-      typedef Natural32         Type1;
-
-      //
-      // constants
-      //
-    public:
-      const static Natural32    Constant1;
+      /*
+       * Below are defined the types, constants, constructor/destructor,
+       * methods, accessors and attributes, each within a specific section.
+       *
+       * Every section must represent a logical grouping, being easily
+       * identified through a short separator.
+       *
+       * Besides, each section should provide the openness of its members
+       * being public, protected or private.
+       *
+       * In addition, it is always preferred to align the elements
+       * grouped together in order to ease readability.
+       */
 
       /*
-       * note that structures are always preferred to extended names
-       * such as DefaultConstant2.
+       * For example, the inner tyes can be defined, using a capitalized
+       * CamelCase notation, as shown below.
        *
-       * using structures, including for attributes, making is more
-       * natural since splitting the containing entity 'Default' from the
-       * actual name 'Constant2'.
+       * Note that types, constants and static attributes all rely on
+       * the CamelCase notation.
        */
-      struct                    Default
+      /*------.
+      | Types |
+      `------*/
+    public:
+      typedef Natural32 Size;
+
+      /*----------.
+      | Constants |
+      `----------*/
+    public:
+      static const Natural32 Zero;
+
+      /*
+       * Note that structures are always preferred to extended names
+       * such as DefaultConstant2, though can be accepted.
+       *
+       * Using structures, including for attributes, making is more
+       * natural since splitting the containing entity 'Default' from the
+       * actual name 'Size'.
+       */
+      struct Default
       {
-        const static Real       Constant2;
+        static const Real Size;
       };
 
-      //
-      // static attributes
-      //
+      /*------------------.
+      | Static Attributes |
+      `------------------*/
     public:
-      static Natural32          Attribute1;
+      /// This description line explains what is this static attributes.
+      static Natural32 AverageSize;
 
-      //
-      // static methods
-      //
+      /*
+       * Methods, unlike attributes, rely on another notation which
+       * consists in lowercase words separated by underscores, as
+       * show below.
+       *
+       * However, one should prefer naming methods using a single word
+       * as it should be meaningful enough for the reader to understand
+       * the action in the context of the class.
+       *
+       * For example, the static method generate() obviously generates
+       * a CodingStyle instance.
+       */
+      /*---------------.
+      | Static Methods |
+      `---------------*/
     public:
-      static Status     Method1();
+      /// Note that these kind of one-line (if possible) descriptions
+      /// are supposed to be extracted by Doxygen since using '///'.
+      static CodingStandard*
+      generate();
 
-      //
-      // constructors & destructors
-      //
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
       CodingStandard();
       ~CodingStandard();
 
-      //
-      // accessors
-      //
-    public:
       /*
-       * the getters and setters must be used as little as
-       * possible.
+       * The methods, as any other method, should be named in lowercase
+       * with underscores as separators. Should it be necessary, accessors
+       * should also be named this way.
        *
-       * however they are sometimes necessary since attributes
-       * must be kept private.
+       * The name of the arguments should also be specified so as to
+       * provide all the information required directly within the header file.
        *
-       * setters and getters take the name of the attribute
-       * and are overloaded in order to distinguish them.
+       * Noteworthy is that every return type is placed on its own line
+       * while every argument also lies on its own line. This style increases
+       * readability while coping with very long types, especially template
+       * types.
        */
-      Real              attribute1() const;
-      Void              attribute1(const Real&);
+      /*--------.
+      | Methods |
+      `--------*/
+    public:
+      /// Another description for a method which acts as an accessor i.e
+      /// getter but the developer is not supposed to know that and thus
+      /// cannot distinguish methods from accessors.
+      Real
+      something() const;
 
-      //
-      // methods
-      //
+      /// Another description for the method.
+      Natural32
+      compute(SomeOtherClass const& something,
+              Natural32 const somethingelse);
+
       /*
-       * note that the name of the method arguments are not provided
-       * in the header as implementation specific.
+       * Note that the 'const' keywords must be well-placed, i.e after
+       * the type.
+       *
+       * Besides, even for arguments passed by copy, the constness should
+       * be specified.
        */
-    public:
-      Status            Method2(SomeOtherClass&,
-                                const Natural32);
+      /// Another description for a specific method.
       template <typename T>
-      Status            Method3(const Natural32,
-                                T&);
-    private:
-      Status            Method4(const String&,
-                                const Natural32,
-                                Real&);
+      void
+      generate_something_specific(Natural32 const ohoh,
+                                  T& bla);
 
-      //
-      // attributes
-      //
+    private:
+      Real
+      inner_action(String const& left,
+                   Natural32 const right);
+
+      /*-----------.
+      | Attributes |
+      `-----------*/
     private:
       /*
-       * one must use the basic types provided by Elle: Void, Boolean,
+       * One must use the basic types provided such as Boolean,
        * Integer, Natural, Real, String, Character, Byte etc.
        *
-       * besides, attributes must be kept private (though most of the
-       * code must still be adapted to this rule) and named with a
-       * underscore as prefix in order to prevent conflicts
-       * with method arguments.
+       * Besides, attributes must be kept private and named with a
+       * underscore as prefix in order to prevent conflicts with
+       * method arguments i.e compute(something, somethingelse) can
+       * very easily distinguish 'something' from the private attribute
+       * '_something'.
        */
-      Real              _attribute1;
-      Natural32         _attribute2;
+      /// A description for the use of this attribute.
+      Real _something;
+
+      /*
+       * Note however that this attribute may not need to be described
+       * since its name may be self explanatory.
+       */
+      Natural32 _size;
     };
 
   }
 }
 
-//
-// ---------- templates -------------------------------------------------------
-//
-
-#include <package/module/CodingStandard.hxx>
+/*
+ * Every header file must automatically include its template-specific
+ * header file.
+ */
+# include <package/module/CodingStandard.hxx>
 
 #endif
