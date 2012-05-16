@@ -48,6 +48,12 @@ InfinitNetwork::InfinitNetwork(Manager& manager,
   this->_Update();
 }
 
+InfinitNetwork::~InfinitNetwork()
+{
+  this->_process.close();
+  this->_process.waitForFinished();
+}
+
 //
 // ---------- methods  --------------------------------------------------------
 //
