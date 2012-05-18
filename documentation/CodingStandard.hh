@@ -19,6 +19,10 @@
  * All comments used for explaining the coding standards are written in
  * C-style -- i.e including this comment -- so as to be distinguishable
  * from the rest.
+ *
+ * The overall naming convention can be summarized as:
+ *   o Types: upper CamelCase
+ *   o Values (attributes, variables, enums etc.): lowercase
  */
 
 #ifndef PACKAGE_MODULE_CODINGSTANDARD_HH
@@ -72,7 +76,7 @@
 
 /*
  * The namespaces must be defined in lower-case with the opening and
- * closing brackets on their own line and aligned with the namespace
+ * closing braces on their own line and aligned with the namespace
  * keyword.
  */
 namespace package
@@ -87,7 +91,8 @@ namespace package
  *
  * This makes it clearer where the code belongs. Note however that the file
  * must be named after the main class being defined in the file, following
- * the naming convention of the class i.e capitalized CamelCase.
+ * the naming convention of the class i.e capitalized CamelCase a.k.a
+ * upper CamelCase.
  *
  * Noteworthy is that acroynyms such as JSON must be treated as such e.g.
  * JSONParser.
@@ -100,7 +105,7 @@ namespace package
     /// The general documentation about the class purpose should be provided
     /// here.
     ///
-    /// Note that every class must be named following the capitalized CamelCase
+    /// Note that every class must be named following the upper CamelCase
     /// naming convention i.e starting with an uppercase letter.
     ///
     class CodingStandard:
@@ -127,7 +132,7 @@ namespace package
        */
 
       /*
-       * For example, the inner tyes can be defined, using a capitalized
+       * For example, the inner tyes can be defined, using a upper
        * CamelCase notation, as shown below.
        *
        * Note that types, constants and static attributes all rely on
@@ -139,40 +144,40 @@ namespace package
     public:
       typedef Natural32 Size;
 
+      /*
+       * Enumerations should be defined as 'enum class' in order to
+       * benefit from scoping.
+       *
+       * The values should be named in lowercase since representing values
+       * but the enumeration in itself should be named in upper CamelCase
+       * since representing a type.
+       */
       /*-------------.
       | Enumerations |
       `-------------*/
     public:
-      enum State
+      enum class State
         {
-          XXX
+          inprogress,
+          done
         };
 
+      /*
+       * Note that constants, since representing values, are named in
+       * lowercase.
+       */
       /*----------.
       | Constants |
       `----------*/
     public:
-      static const Natural32 Zero;
-
-      /*
-       * Note that structures are always preferred to extended names
-       * such as DefaultConstant2, though can be accepted.
-       *
-       * Using structures, including for attributes, making is more
-       * natural since splitting the containing entity 'Default' from the
-       * actual name 'Size'.
-       */
-      struct Default
-      {
-        static const Real Size;
-      };
+      static const Natural32 zero;
 
       /*------------------.
       | Static Attributes |
       `------------------*/
     public:
-      /// This description line explains what is this static attributes.
-      static Natural32 AverageSize;
+      /// This description line explains what is this static attribute.
+      static Natural32 average_size;
 
       /*
        * Methods, unlike attributes, rely on another notation which

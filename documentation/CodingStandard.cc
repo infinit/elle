@@ -26,10 +26,9 @@ namespace package
     | Definitions |
     `------------*/
 
-    const Natural32 CodingStandard::Zero = 0;
-    const Real CodingStandard::Default::Size = 12.34;
+    const Natural32 CodingStandard::zero = 0;
 
-    Natural32 CodingStandard::AverageSize = 42;
+    Natural32 CodingStandard::average_size = 42;
 
     /*---------------.
     | Static Methods |
@@ -77,8 +76,8 @@ namespace package
        * Additionally, every attribute must be initialized on its own line,
        * as shown below.
        */
-      _attribute1(1.1),
-      _attribute2(2)
+      _something(1.1),
+      _size(2)
     {
     }
 
@@ -91,7 +90,7 @@ namespace package
     `--------*/
 
     Real
-    CodingStandard::something()
+    CodingStandard::something() const
     {
       /*
        * The return statement must be used with parentheses since it is
@@ -111,7 +110,7 @@ namespace package
        * make it clear that the attribute is accessed while limiting
        * further naming problems.
        */
-      return (this->_attribute1);
+      return (this->_something);
     }
 
     /*
@@ -127,7 +126,7 @@ namespace package
        * of a method call on its own line rather than having an
        * extremely long call.
        */
-      return (something.encrypt(index,
+      return (something.encrypt(somethingelse,
                                 static_cast<Natural64>(this->_size)));
     }
 
