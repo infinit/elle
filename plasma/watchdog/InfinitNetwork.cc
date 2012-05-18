@@ -300,7 +300,7 @@ void InfinitNetwork::_StartProcess()
         "Cannot create the mount directory '" + mnt.path().toStdString() + "'"
     );
 
-  QDir home_mnt = this->_infinitHome.filePath("Infinit");
+  QDir home_mnt = QDir(QDir::homePath()).filePath("Infinit");
 
   if (home_mnt.exists() || home_mnt.mkpath("."))
     {
