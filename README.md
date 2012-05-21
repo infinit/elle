@@ -41,6 +41,8 @@ are built:
 
 Documentation
 -------------
+Hosted documentation:
+http://sirikata.github.com/json-spirit/
 
 You can generate documentation from the source code using doxygen:
 
