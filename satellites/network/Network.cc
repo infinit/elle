@@ -34,7 +34,8 @@ namespace satellite
   /// this method creates a new network by using the user 'name' as the
   /// initial user.
   ///
-  elle::Status          Network::Create(const elle::String&     name,
+  elle::Status          Network::Create(const elle::String&     identifier,
+                                        const elle::String&     name,
                                         const hole::Model&      model,
                                         const elle::String&     administrator)
   {
@@ -145,7 +146,7 @@ namespace satellite
     {
       // create the descriptor.
       if (descriptor.Create(
-            name, // XXX id = name
+            identifier,
             name,
             model,
             address,
@@ -401,6 +402,15 @@ namespace satellite
 
     // register the options.
     if (Infinit::Parser->Register(
+          "Identifier",
+          'i',
+          "identifier",
+          "specify the network identifier",
+          elle::Parser::KindOptional) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
           "Name",
           'n',
           "name",
@@ -469,10 +479,16 @@ namespace satellite
       {
       case Network::OperationCreate:
         {
+          elle::String          identifier;
           elle::String          name;
           elle::String          string;
           hole::Model           model;
           elle::String          administrator;
+
+          // retrieve the identifier.
+          if (Infinit::Parser->Value("Identifier", identifier,
+                                     "") == elle::StatusError)
+            escape("unable to retrieve the identifier value");
 
           // retrieve the name.
           if (Infinit::Parser->Value("Name", name) == elle::StatusError)
@@ -492,7 +508,10 @@ namespace satellite
             escape("unable to retrieve the administrator value");
 
           // create the network.
-          if (Network::Create(name, model, administrator) == elle::StatusError)
+          if (Network::Create(identifier,
+                              name,
+                              model,
+                              administrator) == elle::StatusError)
             escape("unable to create the network");
 
           // display a message.

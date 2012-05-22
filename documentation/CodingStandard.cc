@@ -89,30 +89,6 @@ namespace package
     | Methods |
     `--------*/
 
-    Real
-    CodingStandard::something() const
-    {
-      /*
-       * The return statement must be used with parentheses since it is
-       * a keyword very much as if (...), sizeof (...), for (...) etc.
-       *
-       * Besides, one must understand two rules when accessing attributes.
-       *
-       * Firstly, attributes are named with a prefixed underscore in order
-       * to more easily detect wrong modifications in names; for instance
-       * one renaming the argument 'attribute1' in something else would
-       * note see any error (assuming no underscore prefix is used for
-       * attributes) because naming 'attribute1' without 'this->' would
-       * still be valid. By prefixing attributes, an error would be
-       * generated.
-       *
-       * Secondly, 'this->' must be used *at all times* in order to
-       * make it clear that the attribute is accessed while limiting
-       * further naming problems.
-       */
-      return (this->_something);
-    }
-
     /*
      * Every type must be specified using its complete namespace hierarchy.
      * As a corollary, namespace should be kept short.

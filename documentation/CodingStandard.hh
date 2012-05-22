@@ -114,8 +114,23 @@ namespace package
        * classes must be presented on their own line, indented with two spaces,
        * and ending with a comma, as shown here.
        */
-      public DerivedClass,
-      public AnotherDerivedClass
+      public BaseClass,
+      public AnotherBaseClass,
+
+      /*
+       * Every class should privately inherit the boost::noncopyable class
+       * in order to render the current class non-copyable. Should the class
+       * really need to be copied, one should wonder if the copy constructor
+       * should be activated, the = operator or both.
+       *
+       * Note that offering both the copy constructor and the = operator often
+       * leads to redundant code sections since the = operator can be considered
+       * as a merge between the destructor and the copy constructor. Thus, the
+       * copy constructor should be used as much as possible while the = operator
+       * should be provided for very important classes whose manipulation needs
+       * to be eased.
+       */
+      private boost::noncopyable
     {
       /*
        * Below are defined the types, constants, constructor/destructor,
@@ -228,6 +243,11 @@ namespace package
       /// Another description for a method which acts as an accessor i.e
       /// getter but the developer is not supposed to know that and thus
       /// cannot distinguish methods from accessors.
+      ///
+      /// Noteworthy is that accessors can be put in the .hxx header file
+      /// so as to force their inlining, especially when these accessors
+      /// do an extremely simple thing i.e returning an attribute or
+      /// updating it.
       Real
       something() const;
 

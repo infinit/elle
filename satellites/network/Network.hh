@@ -50,6 +50,7 @@ namespace satellite
     // static methods
     //
     static elle::Status         Create(const elle::String&,
+                                       const elle::String&,
                                        const hole::Model&,
                                        const elle::String&);
     static elle::Status         Destroy(const elle::String&);

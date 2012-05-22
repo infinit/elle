@@ -61,7 +61,8 @@ namespace lune
     //
     // methods
     //
-    elle::Status        Create(const elle::String&,
+    elle::Status        Create(elle::String const&,
+                               const elle::String&,
                                const elle::KeyPair&);
 
     elle::Status        Encrypt(const elle::String&);
@@ -100,6 +101,9 @@ namespace lune
     //
     // attributes
     //
+  private:
+    elle::String        _id;
+  public: // XXX
     elle::String        name;
     elle::KeyPair       pair;
     elle::Signature     signature;

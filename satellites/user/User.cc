@@ -34,7 +34,8 @@ namespace satellite
   /// this method creates a new user by generating a new key pair and
   /// storing a user block.
   ///
-  elle::Status          User::Create(const elle::String&        name)
+  elle::Status          User::Create(elle::String const&        id,
+                                     const elle::String&        name)
   {
     elle::String        prompt;
     elle::String        pass;
@@ -86,7 +87,7 @@ namespace satellite
       escape("unable to generate the key pair");
 
     // create the identity.
-    if (identity.Create(name, pair) == elle::StatusError)
+    if (identity.Create(id, name, pair) == elle::StatusError)
       escape("unable to create the identity");
 
     // encrypt the identity.
@@ -307,6 +308,15 @@ namespace satellite
 
     // register the options.
     if (Infinit::Parser->Register(
+          "Identifier",
+          'i',
+          "identifier",
+          "specify the identity",
+          elle::Parser::KindOptional) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
           "Name",
           'n',
           "name",
@@ -357,14 +367,20 @@ namespace satellite
       {
       case User::OperationCreate:
         {
+          elle::String          identifier;
           elle::String          name;
+
+          // retrieve the identifier.
+          if (Infinit::Parser->Value("Identifier", identifier,
+                                     "") == elle::StatusError)
+            escape("unable to retrieve the identifier");
 
           // retrieve the name.
           if (Infinit::Parser->Value("Name", name) == elle::StatusError)
             escape("unable to retrieve the name value");
 
           // create a user.
-          if (User::Create(name) == elle::StatusError)
+          if (User::Create(identifier, name) == elle::StatusError)
             escape("unable to create the user");
 
           // display a message.

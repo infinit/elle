@@ -56,13 +56,15 @@ namespace lune
   ///
   /// this method creates an identity based on the given key pair.
   ///
-  elle::Status          Identity::Create(const elle::String&    name,
+  elle::Status          Identity::Create(elle::String const&    id,
+                                         const elle::String&    name,
                                          const elle::KeyPair&   pair)
   {
     // One does not simply ...
     assert(pair.k.key() != nullptr);
     assert(pair.K.key() != nullptr);
 
+    this->_id = id;
     this->name = name;
     this->pair = pair;
 
@@ -145,7 +147,7 @@ namespace lune
       escape("unable to seal an unencrypted identity");
 
     // sign the pair with the authority.
-    if (authority.k->Sign(this->name, *this->cipher,
+    if (authority.k->Sign(this->_id, this->name, *this->cipher,
                           this->signature) == elle::StatusError)
       escape("unable to sign the pair with the authority");
 
@@ -164,7 +166,8 @@ namespace lune
 
     // verify the signature.
     if (authority.K.Verify(this->signature,
-                           this->name, *this->cipher) == elle::StatusError)
+                           this->_id, this->name, *this->cipher) ==
+        elle::StatusError)
       escape("unable to verify the signature");
 
     return elle::StatusOk;
@@ -191,6 +194,10 @@ namespace lune
     elle::String        alignment(margin, ' ');
 
     std::cout << alignment << "[Identity]" << std::endl;
+
+    // dump the id.
+    std::cout << alignment << elle::Dumpable::Shift
+              << "[Id] " << this->_id << std::endl;
 
     // dump the name.
     std::cout << alignment << elle::Dumpable::Shift
@@ -229,6 +236,7 @@ namespace lune
         // serialize the attributes.
         if (archive.Serialize(
               static_cast<elle::Byte>(Identity::ModeEncrypted),
+              this->_id,
               this->name,
               *this->cipher,
               this->signature) == elle::StatusError)
@@ -244,6 +252,7 @@ namespace lune
         // serialize the attributes.
         if (archive.Serialize(
               static_cast<elle::Byte>(Identity::ModeUnencrypted),
+              this->_id,
               this->name,
               this->pair,
               this->signature) == elle::StatusError)
@@ -273,7 +282,8 @@ namespace lune
       case Identity::ModeEncrypted:
         {
           // extract the attributes.
-          if (archive.Extract(this->name,
+          if (archive.Extract(this->_id,
+                              this->name,
                               *this->cipher,
                               this->signature) == elle::StatusError)
             escape("unable to extract the attributes");
@@ -283,7 +293,8 @@ namespace lune
       case Identity::ModeUnencrypted:
         {
           // extract the attributes.
-          if (archive.Extract(this->name,
+          if (archive.Extract(this->_id,
+                              this->name,
                               this->pair,
                               this->signature) == elle::StatusError)
             escape("unable to extract the attributes");
