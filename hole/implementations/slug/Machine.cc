@@ -1,3 +1,4 @@
+#include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
 
 #include <elle/network/TCPSocket.hh>
@@ -124,8 +125,16 @@ namespace hole
           // for every locus in the set.
           for (; iterator != end; ++iterator)
             {
-              auto              host = std::unique_ptr<Host>(new Host(*iterator));
-
+              std::unique_ptr<Host> host;
+              try
+                {
+                  host = std::unique_ptr<Host>(new Host(*iterator));
+                }
+              catch (reactor::network::Exception&)
+                {
+                  // The host wasn't up, just ignore it.
+                  continue;
+                }
               // subscribe to the signal.
               if (host->signal.dead.Subscribe(
                     elle::Callback<>::Infer(&Machine::Sweep,
