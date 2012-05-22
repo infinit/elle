@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "OONurseInjector.h"
+#import "OONurseManager.h"
 #import <syslog.h>
 #import <launch.h>
 
@@ -30,7 +30,7 @@ int main (int argc, const char * argv[])
         NSMachPort *rp = [[NSMachPort alloc] initWithMachPort:mp];
         NSConnection *c = [NSConnection connectionWithReceivePort:rp sendPort:nil];
         
-        OONurseInjector *obj = [[OONurseInjector alloc] init];
+        OONurseManager *obj = [[OONurseManager alloc] init];
         [c setRootObject:obj];
         [[NSRunLoop currentRunLoop] run];
         

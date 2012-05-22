@@ -12,12 +12,20 @@
 {
     NSWindow *window;
     IBOutlet NSMenu *statusMenu;
-    NSStatusItem * statusItem;
+    NSStatusItem *statusItem;
+    NSInteger currentFrame;
+    NSTimer *animTimer;
 }
 
 @property (assign) IBOutlet NSWindow *window;
+@property (assign) NSInteger currentFrame;
+@property (assign) NSTimer *animTimer;
 
 - (void)launch8infinit;
+
+- (void)startAnimatingStatusItem;
+- (void)stopAnimatingStatusItem;
+- (void)updateStatusItemImageWithTimer:(NSTimer*)arg1;
 
 - (IBAction)openInfinitNeworks:(id)sender;
 - (IBAction)installInjectBundle:(id)sender;
