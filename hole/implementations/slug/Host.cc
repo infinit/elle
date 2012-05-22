@@ -28,10 +28,26 @@ namespace hole
       ///
       /// XXX
       ///
-      Host::Host()
-        : state(StateUnknown)
-        , socket(NULL)
+      Host::Host(const elle::Locus& locus):
+        state(StateUnknown),
+        socket(0),
+        locus(locus)
       {
+        std::string hostname;
+        this->locus.host.Convert(hostname);
+        auto socket = new reactor::network::TCPSocket
+          (elle::concurrency::scheduler(), hostname, this->locus.port);
+        this->socket = new elle::TCPSocket(socket);
+        Connected();
+      }
+
+      ///
+      /// XXX
+      ///
+      Host::Host(elle::TCPSocket* connection)
+      {
+        this->socket = connection;
+        this->state = Host::StateConnected;
       }
 
       ///
@@ -46,38 +62,6 @@ namespace hole
 
 //
 // ---------- methods ---------------------------------------------------------
-
-      ///
-      /// XXX
-      ///
-      elle::Status      Host::Create(elle::TCPSocket*           socket)
-      {
-        // set the socket.
-        this->socket = socket;
-
-        // set the state.
-        this->state = Host::StateConnected;
-
-        return elle::StatusOk;
-      }
-
-      ///
-      /// XXX
-      ///
-      elle::Status      Host::Connect(const elle::Locus& locus)
-      {
-        this->locus = locus;
-
-        std::string hostname;
-        this->locus.host.Convert(hostname);
-        auto socket = new reactor::network::TCPSocket
-          (elle::concurrency::scheduler(), hostname, this->locus.port);
-        this->socket = new elle::TCPSocket(socket);
-
-        return Connected();
-
-        return elle::StatusOk;
-      }
 
       ///
       /// XXX

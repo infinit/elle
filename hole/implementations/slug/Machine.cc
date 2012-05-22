@@ -124,12 +124,7 @@ namespace hole
           // for every locus in the set.
           for (; iterator != end; ++iterator)
             {
-              // allocate the host.
-              auto              host = std::unique_ptr<Host>(new Host);
-
-              // create the host.
-              if (host->Connect(*iterator) == elle::StatusError)
-                escape("unable to create the host");
+              auto              host = std::unique_ptr<Host>(new Host(*iterator));
 
               // subscribe to the signal.
               if (host->signal.dead.Subscribe(
@@ -1076,11 +1071,7 @@ namespace hole
                 case Machine::StateAttached:
                 {
                   // allocate the host.
-                  auto      host = std::unique_ptr<Host>(new Host);
-
-                  // create the host.
-                  if (host->Create(connection) == elle::StatusError)
-                    throw std::runtime_error("unable to create the host");
+                  auto      host = std::unique_ptr<Host>(new Host(connection));
 
                   // subscribe to the signal.
                   if (host->signal.dead.Subscribe(
@@ -1233,12 +1224,7 @@ namespace hole
               if (this->neighbourhood.Exist(locus) == elle::StatusTrue)
                 continue;
 
-              // allocate the host.
-              auto      host = std::unique_ptr<Host>(new Host);
-
-              // connect the host.
-              if (host->Connect(locus) == elle::StatusError)
-                escape("unable to connect the host");
+              auto host = std::unique_ptr<Host>(new Host(locus));
 
               // subscribe to the signal.
               if (host->signal.dead.Subscribe(
