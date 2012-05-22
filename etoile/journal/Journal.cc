@@ -1,16 +1,6 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [fri jun 24 14:23:50 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <cassert>
+#include <stdexcept>
 
 #include <etoile/journal/Journal.hh>
 
@@ -18,16 +8,15 @@
 
 #include <etoile/depot/Depot.hh>
 
+#include <elle/concurrency/Scheduler.hh>
+
 #include <Infinit.hh>
 
 namespace etoile
 {
   namespace journal
   {
-
-//
-// ---------- methods ---------------------------------------------------------
-//
+    std::set<gear::Scope*> Journal::_scopes;
 
     ///
     /// this method records a given scope so as to trigger the action
@@ -36,6 +25,25 @@ namespace etoile
     /// XXX the scope is orphan at this point!
     ///
     elle::Status        Journal::Record(gear::Scope*            scope)
+    {
+      assert(scope != nullptr);
+      try
+        {
+          Journal::_scopes.insert(scope);
+          elle::concurrency::scheduler().mt_run<int>(
+              __FUNCTION__,
+              boost::bind(&Journal::_Record, scope)
+          );
+        }
+      catch (std::exception const& err)
+        {
+          Journal::_scopes.erase(scope);
+          escape("Cannot spawn a new fiber: %s", err.what());
+        }
+      return elle::StatusOk;
+    }
+
+    elle::Status        Journal::_Record(gear::Scope*            scope)
     {
       nucleus::Transcript::Scoutor      scoutor;
 
@@ -91,11 +99,51 @@ namespace etoile
       // set the context's state.
       scope->context->state = gear::Context::StateCleaned;
 
+      Journal::_scopes.erase(scope);
+
       // bury the scope i.e a scope may have recorded itself; thus bury
       // it in order to avoid problems.
       bury(scope);
 
       return elle::StatusOk;
+    }
+
+    elle::Boolean Journal::get_block(nucleus::proton::Address const& address,
+                                     nucleus::proton::Version const& version,
+                                     nucleus::proton::Block& out_block)
+    {
+      foreach (gear::Scope* scope, Journal::_scopes)
+        foreach (nucleus::Action* action, scope->context->transcript.container)
+          {
+            if (address != action->address)
+              continue;
+
+            if (version == nucleus::proton::Version::Any)
+              {
+                if (action->type == nucleus::Action::TypeWipe)
+                  {
+                    throw std::runtime_error("Block scheduled for deletion");
+                  }
+                out_block = *action->block;
+                return true;
+              }
+            else
+              {
+                switch (address.family)
+                  {
+                  case nucleus::FamilyContentHashBlock:
+                    throw std::runtime_error("version should be any for an immutable block");
+                  case nucleus::FamilyPublicKeyBlock:
+                  case nucleus::FamilyOwnerKeyBlock:
+                  case nucleus::FamilyImprintBlock:
+                    out_block = *action->block;
+                    return true;
+                  default:
+                    throw std::runtime_error("Unkwown address family");
+                  }
+              }
+          }
+      return false;
     }
 
   }

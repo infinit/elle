@@ -12,7 +12,7 @@
  *
  * void f()
  * {
- *    using namespace tcp = boost::asio::tcp;
+ *    namespace tcp = boost::asio::tcp;
  *    tcp::socket s(io_service);
  * }
  *

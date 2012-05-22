@@ -1,5 +1,3 @@
-#include <elle/Foreach.hh>
-
 #include <reactor/debug.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
