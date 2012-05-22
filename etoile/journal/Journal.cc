@@ -27,19 +27,20 @@ namespace etoile
     elle::Status        Journal::Record(gear::Scope*            scope)
     {
       assert(scope != nullptr);
-      try
-        {
-          Journal::_scopes.insert(scope);
-          elle::concurrency::scheduler().mt_run<int>(
-              __FUNCTION__,
-              boost::bind(&Journal::_Record, scope)
-          );
-        }
-      catch (std::exception const& err)
-        {
-          Journal::_scopes.erase(scope);
-          escape("Cannot spawn a new fiber: %s", err.what());
-        }
+      return Journal::_Record(scope);
+      //try
+      //  {
+      //    Journal::_scopes.insert(scope);
+      //    elle::concurrency::scheduler().mt_run<int>(
+      //        __FUNCTION__,
+      //        boost::bind(&Journal::_Record, scope)
+      //    );
+      //  }
+      //catch (std::exception const& err)
+      //  {
+      //    Journal::_scopes.erase(scope);
+      //    escape("Cannot spawn a new fiber: %s", err.what());
+      //  }
       return elle::StatusOk;
     }
 
