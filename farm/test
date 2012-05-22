@@ -9,21 +9,33 @@ import subprocess
 import sys
 import tempfile
 import time
-
+import threading
 
 BUILD = os.environ['DIR_BUILD']
 
 os.environ['INFINIT_RANDOM_SOURCE'] = '/dev/urandom'
+
+MONITOR_SLEEP=5
+
+def monitor(p, cmd):
+  while p.poll() == None:
+    rss = subprocess.check_output("ps -p %d -o rss | tail -n 1" % p.pid,
+                                  shell = True)
+    print("[%s] RSS: %d MB" % (cmd[0], int(rss.strip()) / 1024))
+    time.sleep(MONITOR_SLEEP)
 
 def run(cmd, stdin = b'', cwd = None):
   print('Run: %s' % ' '.join(map(pipes.quote, cmd)), file = sys.stderr)
   sys.stderr.flush()
   p = subprocess.Popen(cmd,
                        cwd = cwd,
-                       stdin = subprocess.PIPE)
+                       stdin = subprocess.PIPE,
+                       shell = False)
   p.stdin.write(stdin)
   p.stdin.close()
-  p.wait()
+  t = threading.Thread(target=monitor, args=(p, cmd))
+  t.start()
+  t.join()
   assert p.returncode == 0
 
 #############################################################################
