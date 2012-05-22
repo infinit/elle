@@ -1,3 +1,4 @@
+#include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
 
 #include <elle/network/TCPSocket.hh>
@@ -124,13 +125,16 @@ namespace hole
           // for every locus in the set.
           for (; iterator != end; ++iterator)
             {
-              // allocate the host.
-              auto              host = std::unique_ptr<Host>(new Host);
-
-              // create the host.
-              if (host->Connect(*iterator) == elle::StatusError)
-                escape("unable to create the host");
-
+              std::unique_ptr<Host> host;
+              try
+                {
+                  host = std::unique_ptr<Host>(new Host(*iterator));
+                }
+              catch (reactor::network::Exception&)
+                {
+                  // The host wasn't up, just ignore it.
+                  continue;
+                }
               // subscribe to the signal.
               if (host->signal.dead.Subscribe(
                     elle::Callback<>::Infer(&Machine::Sweep,
@@ -1031,7 +1035,7 @@ namespace hole
       elle::Status      Machine::Alone()
       {
         // If we were attached in the meantime, do nothing.
-        if (this->state == Machine::StateDetached)
+        if (this->state == Machine::StateAttached)
           return elle::StatusOk;
 
         // debug.
@@ -1076,11 +1080,7 @@ namespace hole
                 case Machine::StateAttached:
                 {
                   // allocate the host.
-                  auto      host = std::unique_ptr<Host>(new Host);
-
-                  // create the host.
-                  if (host->Create(connection) == elle::StatusError)
-                    throw std::runtime_error("unable to create the host");
+                  auto      host = std::unique_ptr<Host>(new Host(connection));
 
                   // subscribe to the signal.
                   if (host->signal.dead.Subscribe(
@@ -1233,12 +1233,7 @@ namespace hole
               if (this->neighbourhood.Exist(locus) == elle::StatusTrue)
                 continue;
 
-              // allocate the host.
-              auto      host = std::unique_ptr<Host>(new Host);
-
-              // connect the host.
-              if (host->Connect(locus) == elle::StatusError)
-                escape("unable to connect the host");
+              auto host = std::unique_ptr<Host>(new Host(locus));
 
               // subscribe to the signal.
               if (host->signal.dead.Subscribe(

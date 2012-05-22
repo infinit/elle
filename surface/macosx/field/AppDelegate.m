@@ -33,10 +33,31 @@
     statusItem = [[[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength] retain];
     [statusItem setMenu:statusMenu];
     //[statusItem setTitle:@"⌘"];
-    NSImage *icon = [[NSImage alloc] initWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"sidebar-18" ofType:@"png"]];
+    NSImage *icon = [NSImage imageNamed:[NSString stringWithFormat:@"19px-active",currentFrame]];
     [icon setTemplate:YES];
     [statusItem setImage:icon];
     [statusItem setHighlightMode:YES];
+    [self startAnimatingStatusItem];
+}
+
+- (void)startAnimatingStatusItem
+{
+    currentFrame = 0;
+    animTimer = [NSTimer scheduledTimerWithTimeInterval:1.0/7.0 target:self selector:@selector(updateStatusItemImage:) userInfo:nil repeats:YES];
+}
+
+- (void)stopAnimatingStatusItem
+{
+    [animTimer invalidate];
+}
+
+- (void)updateStatusItemImageWithTimer:(NSTimer*)arg1
+{
+    //get the image for the current frame
+    currentFrame = (++currentFrame % 18) + 1;
+    NSImage* image = [NSImage imageNamed:[NSString stringWithFormat:@"%d",currentFrame]];
+    [image setTemplate:YES];
+    [statusItem setImage:image];
 }
 
 - (IBAction)openInfinitNeworks:(id)sender

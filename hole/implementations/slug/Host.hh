@@ -42,15 +42,13 @@ namespace hole
         //
         // constructors & destructors
         //
-        Host();
+        Host(const elle::Locus& locus);
+        Host(elle::TCPSocket* connection);
         ~Host();
 
         //
         // methods
         //
-        elle::Status    Create(elle::TCPSocket*);
-
-        elle::Status    Connect(const elle::Locus&);
         elle::Status    Disconnect();
 
         elle::Status    Authenticated();

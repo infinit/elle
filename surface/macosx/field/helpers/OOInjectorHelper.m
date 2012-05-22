@@ -9,7 +9,7 @@
 #import "OOInjectorHelper.h"
 #import <ServiceManagement/ServiceManagement.h>
 #import <Security/Authorization.h>
-#import "OONurseInjector.h"
+#import "OONurseManager.h"
 
 @implementation OOInjectorHelper
 
@@ -23,15 +23,16 @@
             return NO;
         }
     }
-    // Connect to D
+    // Connect
     NSConnection *c = [NSConnection connectionWithRegisteredName:@"io.infinit.Nurse.helper" host:nil]; 
-    OONurseInjector *proxy = (OONurseInjector *)[c rootProxy];
+    OONurseManager *proxy = (OONurseManager *)[c rootProxy];
     
     NSString *currentDir = [[NSFileManager defaultManager] currentDirectoryPath];
 
     
-    BOOL returnValie = [proxy injectWithAppPath:currentDir forceInstall:YES];
-    return returnValie;
+    BOOL returnValue = [proxy manage:currentDir];
+    
+    return returnValue;
 
 }
 

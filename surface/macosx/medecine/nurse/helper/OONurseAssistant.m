@@ -10,6 +10,7 @@
 #import <AppKit/AppKit.h>
 
 @implementation OONurseAssistant
+
 + (pid_t) getFinderPid
 {
     NSLog(@"Start Finding processes...");
@@ -20,4 +21,5 @@
     }
     return [[finders objectAtIndex:0] processIdentifier]; // Return the pid of the first Finder
 }
+
 @end
