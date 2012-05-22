@@ -111,12 +111,12 @@ void IdentityUpdater::_OnLogin(std::string const& password,
       if (!homeDirectory.exists("infinit.ppt"))
         {
           std::cout << "Checking out a new passport.\n";
-          this->_UpdatePassport();
+          this->_CreateDevice();
         }
       else
         {
           std::cout << "Found a passport file.\n";
-          Q_EMIT identityUpdated(true);
+          this->_UpdateDevice();
         }
     }
 
@@ -169,6 +169,24 @@ void IdentityUpdater::_OnDeviceCreated(meta::CreateDeviceResponse const& res)
   Q_EMIT identityUpdated(true);
 }
 
+void IdentityUpdater::_OnDeviceUpdated(meta::UpdateDeviceResponse const& res)
+{
+  std::cout << "Updated device " << res.updated_device_id
+            << " with passport: " << res.passport << "\n";
+
+  lune::Passport passport;
+
+  // XXX check the old passport here ?
+
+  if (passport.Restore(res.passport) == elle::StatusError)
+    throw std::runtime_error("Cannot load the passport");
+  if (passport.Store() == elle::StatusError)
+    throw std::runtime_error("Cannot save the passport");
+
+  Q_EMIT identityUpdated(true);
+
+}
+
 std::string IdentityUpdater::_DecryptIdentity(std::string const& password,
                                               std::string const& identityString)
 {
@@ -200,23 +218,54 @@ void IdentityUpdater::_StoreIdentity(std::string const& identityString)
     }
 }
 
-void IdentityUpdater::_UpdatePassport()
+namespace
 {
-  elle::network::Host::Container hosts;
+    std::string get_local_address()
+    {
+      elle::network::Host::Container hosts;
 
-  if (elle::network::Host::Hosts(hosts) == elle::StatusError)
-    throw std::runtime_error("Couldn't retreive host list");
+      if (elle::network::Host::Hosts(hosts) == elle::StatusError)
+        throw std::runtime_error("Couldn't retreive host list");
 
-  if (!hosts.size())
-    throw std::runtime_error("No usable host found !");
+      if (!hosts.size())
+        throw std::runtime_error("No usable host found !");
 
-  std::string host;
-  hosts[0].Convert(host);
+      std::string host;
+      hosts[0].Convert(host);
+      return host;
+    }
+}
+
+void IdentityUpdater::_UpdateDevice()
+{
+  lune::Passport passport;
+
+  if (passport.Load() == elle::StatusError)
+    {
+      show();
+      throw std::runtime_error("Couldn't load the passport file :'(");
+    }
+
+  std::string host = get_local_address();
+  this->_api.UpdateDevice(
+      passport.id,
+      nullptr,
+      host.c_str(),
+      1912,
+      boost::bind(&IdentityUpdater::_OnDeviceUpdated, this, _1),
+      boost::bind(&IdentityUpdater::_OnError, this, _1, _2)
+  );
+}
+
+void IdentityUpdater::_CreateDevice()
+{
+  std::string host = get_local_address();
 
   std::cout << "Registering host: '" << host << "'\n";
 
   // XXX should be done in infinit instance
-  this->_api.CreateDevice("default device name", host, 1912,
+  this->_api.CreateDevice(
+      "default device name", host, 1912,
       boost::bind(&IdentityUpdater::_OnDeviceCreated, this, _1),
       boost::bind(&IdentityUpdater::_OnError, this, _1, _2)
   );

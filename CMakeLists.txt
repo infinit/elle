@@ -117,7 +117,9 @@ include_directories(BEFORE SYSTEM ${INFINIT_LIBRARIES_PREFIX}/include .)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/elle/reactor/src)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DQT_NO_KEYWORDS")
+set(CMAKE_CXX_FLAGS
+	"${CMAKE_CXX_FLAGS} -DQT_NO_KEYWORDS --include ${CMAKE_CURRENT_SOURCE_DIR}/elle/extensions.hh"
+)
 
 #
 # MSVC CXXFLAGS

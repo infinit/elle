@@ -66,10 +66,13 @@ namespace plasma
       void _OnError(meta::MetaClient::Error error,
                     std::string const& error_string);
       void _OnDeviceCreated(meta::CreateDeviceResponse const& res);
+      void _OnDeviceUpdated(meta::UpdateDeviceResponse const& res);
       void _UpdatePassport();
       std::string _DecryptIdentity(std::string const& password,
                                    std::string const& identity);
       void _StoreIdentity(std::string const& identityString);
+      void _CreateDevice();
+      void _UpdateDevice();
 
     private Q_SLOTS:
       void _DoLogin(std::string const& login, std::string const& password);

@@ -236,6 +236,12 @@ namespace {
       response.passport          =          _GetNonEmptyString(map, "passport");
     }
 
+    FILLER(UpdateDeviceResponse)
+    {
+      response.updated_device_id = _GetNonEmptyString(map, "updated_device_id");
+      response.passport          = _GetNonEmptyString(map, "passport");
+    }
+
     FILLER(UpdateNetworkResponse)
     {
       response.updated_network_id = _GetNonEmptyString(map, "updated_network_id");
@@ -328,6 +334,31 @@ void MetaClient::CreateDevice(std::string const& name,
   this->_Post("/devices", req, new CreateDeviceResponseHandler(callback, errback));
 }
 
+void MetaClient::UpdateDevice(std::string const& _id,
+                              char const* name,
+                              char const* endpoint,
+                              short port,
+                              UpdateDeviceCallback callback,
+                              Errback errback)
+{
+  QVariantMap req;
+  req.insert("_id", _id.c_str());
+  if (name != nullptr)
+    req.insert("name", name);
+  if (endpoint != nullptr)
+    req.insert("ip", endpoint);
+  if (port != 0)
+    {
+      std::stringstream ss;
+      ss << port;
+      req.insert("port", ss.str().c_str());
+    }
+  this->_Post(
+      "/devices",
+      req,
+      new UpdateDeviceResponseHandler(callback, errback)
+  );
+}
 
 void MetaClient::UpdateNetwork(std::string const& id,
                                std::string const* name,

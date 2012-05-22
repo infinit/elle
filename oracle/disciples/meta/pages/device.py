@@ -134,11 +134,14 @@ class Device(Page):
             ip = device['ip'].strip()
             if not ip:
                 return self.error("You have to provide a valid device ip address")
-            to_save['ip'] = ip_address
+            to_save['ip'] = ip
         if 'port' in device:
             to_save['port'] = int(device['port'])
         id = database.devices.save(to_save)
-        return self.success({'updated_device_id': str(id)})
+        return self.success({
+            'updated_device_id': str(id),
+            'passport': to_save['passport'],
+        })
 
     def DELETE(self, id):
         self.requireLoggedIn()

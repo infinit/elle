@@ -65,6 +65,12 @@ namespace plasma
       std::string             passport;
     };
 
+    struct UpdateDeviceResponse : Response
+    {
+      std::string             updated_device_id;
+      std::string             passport;
+    };
+
     struct UpdateNetworkResponse : Response
     {
       std::string             updated_network_id;
@@ -100,6 +106,7 @@ namespace plasma
       typedef std::function<void(NetworksResponse const&)> NetworksCallback;
       typedef std::function<void(NetworkResponse const&)> NetworkCallback;
       typedef std::function<void(CreateDeviceResponse const&)> CreateDeviceCallback;
+      typedef std::function<void(UpdateDeviceResponse const&)> UpdateDeviceCallback;
       typedef std::function<void(UpdateNetworkResponse const&)> UpdateNetworkCallback;
       typedef std::function<void(NetworkNodesResponse const&)> NetworkNodesCallback;
 
@@ -135,6 +142,13 @@ namespace plasma
                         std::string const& endpoint,
                         short port,
                         CreateDeviceCallback callback,
+                        Errback errback = nullptr);
+
+      void UpdateDevice(std::string const& _id,
+                        char const* name,
+                        char const* endpoint,
+                        short port,
+                        UpdateDeviceCallback callback,
                         Errback errback = nullptr);
 
       void GetNetworks(NetworksCallback callback,
