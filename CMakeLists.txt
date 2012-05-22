@@ -14,7 +14,7 @@ ELSEIF(INFINIT_WINDOWS)
     utility/Unicode-win32.cc)
 ENDIF()
 
-set_property (SOURCE reactor/src/reactor/backend/coro_io/libcoroutine/asm.S PROPERTY LANGUAGE CXX)
+set_property (SOURCE reactor/src/reactor/backend/coro_io/libcoroutine/asm.S PROPERTY LANGUAGE C)
 
 ADD_LIBRARY(elle
   core/Integer.cc
