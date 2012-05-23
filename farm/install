@@ -117,7 +117,8 @@ def to_add(lib):
             "Carbon",
             "AppKit",
             "libobjc",
-            "Foundation"
+            "Foundation",
+            "libfuse.so.",
         ],
 
         'contains': [
@@ -194,7 +195,7 @@ for f in infinit_path:
 
 infinit_app = os.path.join(DIR_BUILD, "surface/macosx/Infinit.app")
 if os.path.exists(infinit_app):
-    
+
     print("copy qt_menu.nib dependancy")
     shutil.copytree("/Library/Frameworks/QtGui.framework/Versions/4/Resources/qt_menu.nib", os.path.join(DIR_INSTALL_CLIENT_LIB, "qt_menu.nib"))
     shutil.copytree("/Library/Extensions/fuse4x.kext", os.path.join(DIR_INSTALL_CLIENT_LIB, "fuse4x.kext"))
