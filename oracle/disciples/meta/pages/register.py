@@ -56,7 +56,7 @@ class Register(Page):
                 'errors': errors,
             })
 
-        user["_id"] = database.users.save({})
+        user["_id"] = str(database.users.save({}))
 
         identity, identity_pub = metalib.generate_identity(
             user["_id"],
