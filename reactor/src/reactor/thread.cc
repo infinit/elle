@@ -203,21 +203,7 @@ namespace reactor
 
   void Thread::terminate()
   {
-    INFINIT_REACTOR_DEBUG(*this << ": terminate");
-    if (_scheduler.current() == this)
-      throw Terminate();
-    switch (state())
-      {
-        case state::running:
-          raise(new Terminate());
-          break;
-        case state::frozen:
-          raise(new Terminate());
-          _wait_abort();
-          break;
-        case state::done:
-          break;
-      }
+    _scheduler._terminate(this);
   }
 
   bool

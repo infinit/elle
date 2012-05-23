@@ -159,6 +159,26 @@ namespace reactor
       t->terminate();
   }
 
+  void
+  Scheduler::_terminate(Thread* thread)
+  {
+    INFINIT_REACTOR_DEBUG(*this << ": terminate");
+    if (current() == thread)
+      throw Terminate();
+    switch (thread->state())
+      {
+        case Thread::state::running:
+          thread->raise(new Terminate());
+          break;
+        case Thread::state::frozen:
+          thread->raise(new Terminate());
+          thread->_wait_abort();
+          break;
+        case Thread::state::done:
+          break;
+      }
+  }
+
   /*-------.
   | Status |
   `-------*/
