@@ -23,12 +23,14 @@ namespace reactor
     public:
       Scheduler();
 
-    /*----.
-    | Run |
-    `----*/
-    public:
-      void run();
-      bool step();
+  /*----.
+  | Run |
+  `----*/
+  public:
+    void run();
+    bool step();
+  private:
+    void _step(Thread* t);
 
   /*-------------------.
   | Threads management |
