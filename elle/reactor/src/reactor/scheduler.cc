@@ -15,7 +15,7 @@ namespace reactor
     , _running()
     , _frozen()
     , _io_service()
-    , _io_service_work(_io_service)
+    , _io_service_work(new boost::asio::io_service::work(_io_service))
     , _manager()
   {}
 
@@ -28,6 +28,9 @@ namespace reactor
   {
     while (step())
       /* nothing */;
+    delete _io_service_work;
+    _io_service_work = 0;
+    _io_service.run();
     INFINIT_REACTOR_DEBUG("Scheduler: done");
     assert(_frozen.empty());
   }
