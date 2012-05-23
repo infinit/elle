@@ -18,11 +18,19 @@ namespace reactor
     Thread* current = _sched.current();
     assert(current);
     start();
-    if (!current->wait(*this, timeout))
-    {
-      abort();
-      return false;
-    }
+    try
+      {
+        if (!current->wait(*this, timeout))
+          {
+            abort();
+            return false;
+          }
+      }
+    catch (const Terminate&)
+      {
+        abort();
+        throw;
+      }
     return true;
   }
 
