@@ -74,6 +74,7 @@ namespace reactor
 
       Thread::~Thread()
       {
+        assert(status() == status::done);
         INFINIT_REACTOR_DEBUG(_name << ": die");
         if (_coro)
           {

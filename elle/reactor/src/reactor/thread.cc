@@ -33,6 +33,7 @@ namespace reactor
 
   Thread::~Thread()
   {
+    assert(state() == state::done);
     _destructed();
   }
 
