@@ -56,13 +56,17 @@ class Register(Page):
                 'errors': errors,
             })
 
+        user["_id"] = database.users.save({})
+
         identity, identity_pub = metalib.generate_identity(
+            user["_id"],
             user['email'], user['password'],
             conf.INFINIT_AUTHORITY_PATH,
             conf.INFINIT_AUTHORITY_PASSWORD
         )
 
         user_id = self.registerUser(
+            _id=user["_id"],
             email=user['email'],
             fullname=user['fullname'],
             password=self.hashPassword(user['password']),

@@ -31,7 +31,8 @@
 /// this method creates a new user by generating a new key pair and
 /// storing a user block.
 ///
-static lune::Identity create_identity(elle::String const& authority_file,
+static lune::Identity create_identity(elle::String const& id,
+                                      elle::String const& authority_file,
                                       elle::String const& authority_password,
                                       elle::String const& login,
                                       elle::String const& password)
@@ -61,7 +62,7 @@ static lune::Identity create_identity(elle::String const& authority_file,
     throw std::runtime_error("unable to generate the key pair");
 
   // create the identity.
-  if (identity.Create(login, pair) == elle::StatusError)
+  if (identity.Create(id, login, pair) == elle::StatusError)
     throw std::runtime_error("unable to create the identity");
 
   // encrypt the identity.
@@ -77,17 +78,18 @@ static lune::Identity create_identity(elle::String const& authority_file,
 
 extern "C" PyObject* metalib_generate_identity(PyObject* self, PyObject* args)
 {
-  char const* login = nullptr,
+  char const* id = nullptr,
+            * login = nullptr,
             * password = nullptr,
             * auth_path = nullptr,
             * auth_password = nullptr;
   PyObject* ret = nullptr;
 
-  if (!PyArg_ParseTuple(args, "ssss:generate_identity",
-                        &login, &password, &auth_path, &auth_password))
+  if (!PyArg_ParseTuple(args, "sssss:generate_identity",
+                        &id, &login, &password, &auth_path, &auth_password))
     return nullptr;
 
-  if (!login || !password || !auth_path || !auth_password)
+  if (!id || !login || !password || !auth_path || !auth_password)
     return nullptr;
 
 
@@ -96,7 +98,7 @@ extern "C" PyObject* metalib_generate_identity(PyObject* self, PyObject* args)
 
   try
     {
-      auto identity = create_identity(auth_path, auth_password, login, password);
+      auto identity = create_identity(id, auth_path, auth_password, login, password);
       elle::String all, pub;
       bool res = (
           identity.Save(all) != elle::StatusError &&

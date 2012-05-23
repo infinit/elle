@@ -486,8 +486,7 @@ namespace satellite
           elle::String          administrator;
 
           // retrieve the identifier.
-          if (Infinit::Parser->Value("Identifier", identifier,
-                                     "") == elle::StatusError)
+          if (Infinit::Parser->Value("Identifier", identifier) == elle::StatusError)
             escape("unable to retrieve the identifier value");
 
           // retrieve the name.

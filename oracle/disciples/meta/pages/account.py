@@ -29,4 +29,3 @@ class Account(Page):
             'identity': self.user['identity'],
             'identity_pub': self.user['identity_pub'],
         })
-

@@ -15,9 +15,10 @@ def check_root_block_signature(root_block, root_address, public_key):
     """
     return _meta.check_root_block_signature(root_block, root_address, public_key)
 
-def generate_identity(login, password, authority_file, authority_password):
+def generate_identity(id, login, password, authority_file, authority_password):
     """Generate an identity.
 
+        :param id: The user unique identifier
         :param login: The user unique id (its email)
         :param password: The user password
         :param authority_file: The path to the authority file
@@ -26,7 +27,7 @@ def generate_identity(login, password, authority_file, authority_password):
         :return: a pair of strings: the whole identity and the public part of the identity
     """
     identity, identity_pub = _meta.generate_identity(
-        login, password, authority_file, authority_password
+        id, login, password, authority_file, authority_password
     )
     return (identity, identity_pub)
 

@@ -48,7 +48,8 @@ namespace satellite
     //
     // static methods
     //
-    static elle::Status         Create(const elle::String&);
+    static elle::Status         Create(elle::String const& id,
+                                       const elle::String&);
     static elle::Status         Destroy(const elle::String&);
     static elle::Status         Information(const elle::String&);
   };
