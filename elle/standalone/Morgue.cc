@@ -92,8 +92,10 @@ namespace elle
     ///
     Morgue::~Morgue()
     {
-      // bury the pending instances.
+      // Bury the pending instances.
       this->Bury();
+      // Stop the gravedigger.
+      _deleter.terminate_now();
     }
 
 //
