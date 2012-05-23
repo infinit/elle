@@ -51,6 +51,5 @@ namespace elle
 # include <elle/concurrency/Routine.hh>
 # include <elle/concurrency/Section.hh>
 # include <elle/concurrency/Signal.hh>
-# include <elle/concurrency/Thread.hh>
 
 #endif
