@@ -244,7 +244,7 @@ int                     main(int                                argc,
           reactor::VThread<elle::Status> main(sched, "Infinit main",
                                               boost::bind(&Main, argc, argv));
           sched.run();
-          return main.result();
+          return main.result() == elle::StatusOk ? 0 : 1;
         }
     }
   catch (...)
