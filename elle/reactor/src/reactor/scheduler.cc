@@ -161,7 +161,8 @@ namespace reactor
         delete t;
     _starting.clear();
     BOOST_FOREACH(Thread* t, _running)
-      t->terminate();
+      if (t != _current)
+        t->terminate();
     BOOST_FOREACH(Thread* t, _frozen)
       t->terminate();
   }
