@@ -182,7 +182,15 @@ namespace reactor
                                            timeout.get());
         _timeout = false;
         _timer.async_wait(boost::bind(&Thread::_wait_timeout, this, _1));
-        _freeze();
+        try
+          {
+            _freeze();
+          }
+        catch (const Terminate&)
+          {
+            _timer.cancel();
+            throw;
+          }
         if (_timeout)
           return false;
         else
