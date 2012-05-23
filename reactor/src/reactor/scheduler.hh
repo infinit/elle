@@ -86,7 +86,7 @@ namespace reactor
       boost::asio::io_service& io_service();
     private:
       boost::asio::io_service _io_service;
-      boost::asio::io_service::work _io_service_work;
+      boost::asio::io_service::work* _io_service_work;
 
     /*--------.
     | Details |
