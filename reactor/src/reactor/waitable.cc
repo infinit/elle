@@ -17,7 +17,9 @@ namespace reactor
   {}
 
   Waitable::~Waitable()
-  {}
+  {
+    assert(_threads.empty());
+  }
 
   /*-------.
   | Status |
