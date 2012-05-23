@@ -206,6 +206,11 @@ namespace reactor
     _scheduler._terminate(this);
   }
 
+  void Thread::terminate_now()
+  {
+    _scheduler._terminate_now(this);
+  }
+
   bool
   Thread::_wait(Thread* thread)
   {

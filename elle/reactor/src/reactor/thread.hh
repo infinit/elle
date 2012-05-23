@@ -120,6 +120,7 @@ namespace reactor
        *
        */
       void terminate();
+      void terminate_now();
     protected:
       virtual bool _wait(Thread* thread);
     private:

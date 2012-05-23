@@ -186,6 +186,14 @@ namespace reactor
       }
   }
 
+  void
+  Scheduler::_terminate_now(Thread* thread)
+  {
+    _terminate(thread);
+    _step(thread);
+    assert(thread->state() == Thread::state::done);
+  }
+
   /*-------.
   | Status |
   `-------*/
