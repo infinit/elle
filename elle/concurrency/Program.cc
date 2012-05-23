@@ -74,12 +74,6 @@ namespace elle
     ///
     Status              Program::Setup()
     {
-      int               n;
-
-      // set the number of arguments as zero since we do not want
-      // QCoreApplication to bother parsing arguments.
-      n = 0;
-
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // set the signal handlers.
       ::signal(SIGINT, &Program::Exception);

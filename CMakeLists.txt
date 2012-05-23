@@ -134,7 +134,7 @@ endiF(MSVC)
 # MACOSX FLAGS
 #
 if(INFINIT_MACOSX)
-  include_directories(/usr/local/include /opt/local/include /usr/local/include/osxfuse)
+  include_directories(/usr/local/include /opt/local/include)
   link_directories(/usr/local/lib /opt/local/lib)
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
@@ -164,12 +164,12 @@ add_library(infinit
   Infinit.cc
   ${HEADERS}
 )
+add_dependencies(infinit dependencies)
 
 add_executable(8infinit
   _infinit.cc
 )
 add_dependencies(8infinit dependencies)
-add_dependencies(infinit dependencies)
 target_link_libraries(8infinit
   infinit elle etoile nucleus lune agent hole horizon ${Boost_LIBRARIES}
 )
@@ -189,3 +189,4 @@ configure_file("${CMAKE_SOURCE_DIR}/config.hh.cmake" "${CMAKE_SOURCE_DIR}/config
 
 # tests
 add_subdirectory(tests)
+
