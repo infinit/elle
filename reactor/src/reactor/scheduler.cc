@@ -160,10 +160,10 @@ namespace reactor
       if (t->_dispose)
         delete t;
     _starting.clear();
-    BOOST_FOREACH(Thread* t, _running)
+    BOOST_FOREACH(Thread* t, Threads(_running))
       if (t != _current)
         t->terminate();
-    BOOST_FOREACH(Thread* t, _frozen)
+    BOOST_FOREACH(Thread* t, Threads(_frozen))
       t->terminate();
   }
 
