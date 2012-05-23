@@ -37,7 +37,7 @@ namespace package
     CodingStandard*
     CodingStandard::generate()
     {
-      CodingStandard = new CodingStandard;
+      CodingStandard* coding_standard = new CodingStandard;
 
       /*
        * every block of logically related operations must be commented so
@@ -61,7 +61,7 @@ namespace package
           // something important is done here.
         }
 
-      return (codingstandard);
+      return (coding_standard);
     }
 
     /*-------------.
@@ -121,6 +121,13 @@ namespace package
     CodingStandard::compute(another::place::SomeOtherClass const& something,
                             Natural32 const somethingelse)
     {
+      /*
+       * Note that every call to a static method, even if local to the
+       * current class, should be prefixed by the name of the class,
+       * as shown below.
+       */
+      CodingStandard coding_standard = CodingStandard::generate();
+
       /*
        * Sometimes, it is more readable to put every argument
        * of a method call on its own line rather than having an
