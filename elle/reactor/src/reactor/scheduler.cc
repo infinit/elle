@@ -47,31 +47,7 @@ namespace reactor
     BOOST_FOREACH (Thread* t, running)
     {
       INFINIT_REACTOR_DEBUG("Scheduler: schedule " << *t);
-      _current = t;
-      try
-      {
-        t->_step();
-      }
-      catch (const std::runtime_error& err)
-      {
-        std::cerr << "thread " << t->name() << ": "
-                  << err.what() << std::endl;
-        std::abort();
-      }
-      catch (...)
-      {
-        std::cerr << "thread " << t->name() << ": "
-                  << "unknown error" << std::endl;
-        std::abort();
-      }
-      _current = 0;
-      if (t->state() == Thread::state::done)
-      {
-        INFINIT_REACTOR_DEBUG("Scheduler: cleanup " << *t);
-        _running.erase(t);
-        if (t->_dispose)
-          delete t;
-      }
+      _step(t);
     }
     INFINIT_REACTOR_DEBUG("Scheduler: run asio callbacks");
     _io_service.reset();
@@ -99,6 +75,37 @@ namespace reactor
           }
         }
     return true;
+  }
+
+  void
+  Scheduler::_step(Thread* thread)
+  {
+    Thread* previous = _current;
+    _current = thread;
+    try
+      {
+        thread->_step();
+      }
+    catch (const std::runtime_error& err)
+      {
+        std::cerr << "thread " << thread->name() << ": "
+                  << err.what() << std::endl;
+        std::abort();
+      }
+    catch (...)
+      {
+        std::cerr << "thread " << thread->name() << ": "
+                  << "unknown error" << std::endl;
+        std::abort();
+      }
+    _current = previous;
+    if (thread->state() == Thread::state::done)
+      {
+        INFINIT_REACTOR_DEBUG("Scheduler: cleanup " << *thread);
+        _running.erase(thread);
+        if (thread->_dispose)
+          delete thread;
+      }
   }
 
   /*-------------------.
