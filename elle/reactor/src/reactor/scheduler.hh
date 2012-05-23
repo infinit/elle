@@ -42,6 +42,7 @@ namespace reactor
     void _thread_register(Thread& thread);
     void _unfreeze(Thread& thread);
   private:
+    void _terminate(Thread* thread);
     Thread* _current;
     Threads _starting;
     boost::mutex _starting_mtx;
