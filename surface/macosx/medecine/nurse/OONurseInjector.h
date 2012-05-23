@@ -12,7 +12,7 @@ static NSString *privilegedHelperToolsDirName =  @"/Library/PrivilegedHelperTool
 
 static NSString *destDirName = @"/io.infinit.HelperTools";
 
-static NSString *sourceDirRelativePath = @"/Infinit.app/Contents/Library/LaunchServices";
+static NSString *sourceDirRelativePath = @"/Contents/Library/LaunchServices";
 
 static NSString *destinationDirFullPath = @"/Library/PrivilegedHelperTools/io.infinit.HelperTools";
 static NSString *destinationFinderBundleFullPath = @"/Library/PrivilegedHelperTools/io.infinit.HelperTools/io.infinit.FinderDopant.bundle";

@@ -11,13 +11,23 @@
 @implementation OONurseFuser
 
 @synthesize sourceFullPath;
+@synthesize error;
 
 - (BOOL)installFuseWithAppPath:(NSString *)arg1{
-    self.sourceFullPath = arg1;
+    self.sourceFullPath = [arg1 stringByAppendingString:sourceRelativePath];
     if ([self isUpToDate]){
+        NSLog(@"Fuse kext version is up to date");
         return YES;
     }
-    return [self installFuse];
+    if ([self installFuse])
+    {
+        NSLog(@"Fuse kext is installed");
+        return YES;
+    }
+    else {
+        NSLog(@"Fuse kext failled to install %@ at %@. Error:%@",self.sourceFullPath, destinationFullPath,  error);
+        return NO;
+    }
 }
 
 - (BOOL)isInstalled{
@@ -26,14 +36,10 @@
 
 - (BOOL)isUpToDate{
     if ([self isInstalled]) {
-        UInt32  sourceBundleVersion;
-        UInt32  destBundleVersion;
         
-        CFBundleRef sourceBundle = CFBundleCreate(NULL, (CFURLRef)[NSURL fileURLWithPath:self.sourceFullPath]);
-        CFBundleRef destBundle = CFBundleCreate(NULL, (CFURLRef)[NSURL fileURLWithPath:destinationFullPath]);
+        NSString *sourceBundleVersion = [[[NSBundle bundleWithPath:self.sourceFullPath] infoDictionary] valueForKey:@"CFBundleVersion"];
+        NSString *destBundleVersion = [[[NSBundle bundleWithPath:destinationFullPath] infoDictionary] valueForKey:@"CFBundleVersion"];
         
-        sourceBundleVersion = CFBundleGetVersionNumber(sourceBundle);
-        destBundleVersion = CFBundleGetVersionNumber(destBundle);
         return destBundleVersion >= sourceBundleVersion;
     }
     else
@@ -41,7 +47,7 @@
 }
 
 - (BOOL)installFuse{
-    return [[NSFileManager defaultManager] copyItemAtPath:self.sourceFullPath toPath:destinationFullPath error:nil];
+    return [[NSFileManager defaultManager] copyItemAtPath:self.sourceFullPath toPath:destinationFullPath error:&error];
 }
 
 @end

@@ -32,8 +32,8 @@ class Register(creosus.Page):
 
     @troll.view.exposeWhen('subscribe')
     def index(self):
-        f = self._form.generate(self)
-        if f.is_valid:
+        form = self._form.generate(self)
+        if form.is_valid:
             res = self.api_admin.post('/register',{
                 'email': f['email'].value,
                 'fullname': f['fullname'].value,
@@ -48,6 +48,6 @@ class Register(creosus.Page):
             else:
                 form.errors.append("Unknown API error")
         return self.render(obj={
-            'register_form': f.render(),
+            'register_form': form.render(),
         })
 

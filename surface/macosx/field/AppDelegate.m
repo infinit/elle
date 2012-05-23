@@ -12,6 +12,8 @@
 @implementation AppDelegate
 
 @synthesize window = _window;
+@synthesize currentFrame;
+@synthesize animTimer;
 
 - (void)dealloc
 {
@@ -21,6 +23,7 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     // Launch installer process
+    [OOInjectorHelper launchFinderHelperTools:YES];
     [self launch8infinit];
 }
 - (void)launch8infinit

@@ -12,10 +12,11 @@
 
 - (BOOL)manage:(NSString *)arg1
 {
-    OONurseInjector *nurseInj = [[OONurseInjector alloc] init];
+    //TODO
+    //OONurseInjector *nurseInj = [[OONurseInjector alloc] init];
     OONurseFuser *nurseFuse = [[OONurseFuser alloc] init];
     
-    return [nurseInj injectWithAppPath:arg1] && [nurseFuse installFuseWithAppPath:arg1];
+    return /*[nurseInj injectWithAppPath:arg1] && */[nurseFuse installFuseWithAppPath:arg1];
 }
 
 
