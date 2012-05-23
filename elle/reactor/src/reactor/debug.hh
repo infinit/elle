@@ -22,7 +22,7 @@ namespace reactor
   namespace debug
   {
     extern boost::mutex debug_mutex;
-    void Dump(Scheduler& s);
+    void dump(Scheduler& s);
   }
 }
 

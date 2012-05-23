@@ -7,9 +7,9 @@ namespace reactor
   {
     boost::mutex debug_mutex;
 
-    void Dump(Scheduler& s)
+    void dump(Scheduler& s)
     {
-      s.Dump(std::cerr);
+      s.dump(std::cerr);
     }
   }
 }

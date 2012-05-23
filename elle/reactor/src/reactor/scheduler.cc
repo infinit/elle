@@ -176,7 +176,7 @@ namespace reactor
   }
 
   void
-  Scheduler::Dump(std::ostream& s)
+  Scheduler::dump(std::ostream& s)
   {
     s << "Scheduler" << std::endl;
     DumpSet(_running, s);

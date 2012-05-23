@@ -52,7 +52,7 @@ namespace reactor
     | Status |
     `-------*/
     public:
-      void Dump(std::ostream&);
+      void dump(std::ostream&);
 
     /*----------------.
     | Multithread API |
