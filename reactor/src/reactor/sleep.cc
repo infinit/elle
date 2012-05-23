@@ -20,6 +20,8 @@ namespace reactor
   void
   Sleep::_wakeup(const boost::system::error_code& error)
   {
+    if (error == boost::system::errc::operation_canceled)
+      return;
     if (error)
       _raise(new Exception(error.message()));
     _signal();
