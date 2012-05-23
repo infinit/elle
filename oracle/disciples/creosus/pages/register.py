@@ -35,9 +35,9 @@ class Register(creosus.Page):
         form = self._form.generate(self)
         if form.is_valid:
             res = self.api_admin.post('/register',{
-                'email': f['email'].value,
-                'fullname': f['fullname'].value,
-                'password': '', # f['password'].value, #XXX
+                'email': form['email'].value,
+                'fullname': form['fullname'].value,
+                'password': '', # form['password'].value, #XXX
             })
             if res['success']:
                 raise web.seeother('/')
