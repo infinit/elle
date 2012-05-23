@@ -218,6 +218,12 @@ namespace reactor
     DumpSet(_frozen, s);
   }
 
+  void
+  Scheduler::debug()
+  {
+    dump(std::cerr);
+  }
+
   /*----------.
   | Shortcuts |
   `----------*/

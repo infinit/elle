@@ -57,6 +57,7 @@ namespace reactor
     `-------*/
     public:
       void dump(std::ostream&);
+      void debug();
 
     /*----------------.
     | Multithread API |
