@@ -118,7 +118,8 @@ namespace elle
       ctx.socket = socket;
       ctx.parcel = &parcel;
       std::string host;
-      locus.host.Convert(host);
+      if (locus.host.Convert(host) == StatusError)
+        escape("unable to convert the host name");
       ctx.host = host;
       elle::network::current_context(ctx);
       status = arguments.Call(this->routine);

@@ -59,7 +59,8 @@ namespace elle
 
       // locate the ':' separator.
       if ((separator = string.find_first_of(':')) == string.npos)
-        escape("unable to locate the host/port separator ':'");
+        escape("unable to locate the host/port separator in '%s'",
+               string.c_str());
 
       // create the host.
       if (this->host.Create(string.substr(0, separator)) == StatusError)
