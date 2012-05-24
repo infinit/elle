@@ -34,9 +34,13 @@ namespace hole
         locus(locus)
       {
         std::string hostname;
-        this->locus.host.Convert(hostname);
-        auto socket = new reactor::network::TCPSocket
-          (elle::concurrency::scheduler(), hostname, this->locus.port);
+        if (this->locus.host.Convert(hostname) == elle::StatusError)
+          throw std::runtime_error("unable to convert the hostname into a "
+                                   "valid locus");
+        auto socket =
+          new reactor::network::TCPSocket(elle::concurrency::scheduler(),
+                                          hostname,
+                                          this->locus.port);
         this->socket = new elle::TCPSocket(socket);
         Connected();
       }

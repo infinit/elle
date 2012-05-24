@@ -363,7 +363,7 @@ void InfinitNetwork::_OnProcessError(QProcess::ProcessError error)
 void InfinitNetwork::_OnProcessFinished(int exit_code, QProcess::ExitStatus)
 {
   LOG() << "Process finished with exit code " << exit_code << "\n";
-  if (exit_code)
+  if (true || exit_code) // XXX
     {
       auto stdout = this->_process.readAllStandardOutput();
       auto stderr = this->_process.readAllStandardError();
