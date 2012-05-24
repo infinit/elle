@@ -15,7 +15,7 @@ namespace elle
     static reactor::LocalStorage<Context>& _current_context()
     {
       static reactor::LocalStorage<Context> res
-        (elle::concurrency::scheduler());
+        (concurrency::scheduler());
       return res;
     }
 
@@ -111,13 +111,19 @@ namespace elle
 
       // Extract the header.
       if (parcel->header->Extract(packet) == StatusError)
+        {
+          printf("XXX ERROR HEADER\n");
         return 0; // No header yet
+        }
 
-      // FIXME: Check if the size is plausible
+      // XXX[Check if the size is plausible]
 
       // Check if there is enough data available.
       if ((packet.size - packet.offset) < parcel->header->size)
+        {
+          printf("XXX IGNORE THIS\n");
         return 0;
+        }
 
       // Extract the data.
       if (packet.Extract(*parcel->data) == StatusError)
@@ -206,11 +212,21 @@ namespace elle
                               "with no registered procedure");
                         }
                     }
+
                   Locus l;
+                  Host h;
                   // FIXME
                   auto socket =
                     reinterpret_cast<reactor::network::TCPSocket*>(_socket);
-                  l.Create(socket->Peer().address().to_string());
+                  if (h.Create(socket->Peer().address().to_string()) ==
+                      StatusError)
+                    continue;
+                  if (l.Create(
+                        h,
+                        static_cast<Natural16>(socket->Peer().port())) ==
+                      StatusError)
+                    continue;
+
                   if (it->second(this, l, *parcel) == StatusError)
                     // FIXME
                     // escape("an error occured while processing the event");

@@ -1080,8 +1080,8 @@ namespace elle
                 << "[Archive] "
                 << "mode(" << archive.mode << ") "
                 << "contents(" << static_cast<Void*>(archive.contents) << ") "
-                << "size(" << archive.size << ") "
-                << "offset(" << archive.offset << ")"
+                << "size(" << std::dec << archive.size << ") "
+                << "offset(" << std::dec << archive.offset << ")"
                 << std::endl;
 
       // go through the archive elements.

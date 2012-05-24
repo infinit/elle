@@ -126,6 +126,7 @@ namespace hole
           for (; iterator != end; ++iterator)
             {
               std::unique_ptr<Host> host;
+
               try
                 {
                   host = std::unique_ptr<Host>(new Host(*iterator));
@@ -135,6 +136,7 @@ namespace hole
                   // The host wasn't up, just ignore it.
                   continue;
                 }
+
               // subscribe to the signal.
               if (host->signal.dead.Subscribe(
                     elle::Callback<>::Infer(&Machine::Sweep,
@@ -1473,7 +1475,7 @@ namespace hole
             }
           }
 
-        // // XXX do not even bother returning TagOk
+        // XXX do not even bother returning TagOk
 
         return elle::StatusOk;
       }
