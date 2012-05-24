@@ -370,13 +370,13 @@ namespace satellite
           elle::String          identifier;
           elle::String          name;
 
-          // retrieve the identifier.
-          if (Infinit::Parser->Value("Identifier", identifier) == elle::StatusError)
-            escape("unable to retrieve the identifier");
-
           // retrieve the name.
           if (Infinit::Parser->Value("Name", name) == elle::StatusError)
             escape("unable to retrieve the name value");
+
+          // retrieve the identifier.
+          if (Infinit::Parser->Value("Identifier", identifier, name) == elle::StatusError)
+            escape("unable to retrieve the identifier");
 
           // create a user.
           if (User::Create(identifier, name) == elle::StatusError)
@@ -455,6 +455,26 @@ namespace satellite
 
 }
 
+static elle::Status    _Main(elle::Natural32    argc,
+                             elle::Character*   argv[])
+{
+  try
+    {
+      if (satellite::Main(argc, argv) == elle::StatusError)
+        {
+          show();
+          throw std::runtime_error("killed by escape");
+        }
+    }
+  catch (std::runtime_error& e)
+    {
+      std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
+      elle::concurrency::scheduler().terminate();
+      return elle::StatusError;
+    }
+  elle::concurrency::scheduler().terminate();
+  return elle::StatusOk;
+}
 //
 // ---------- main ------------------------------------------------------------
 //
@@ -467,11 +487,13 @@ int                     main(int                                argc,
 {
   try
     {
-      if (satellite::Main(argc, argv) == elle::StatusError)
+      reactor::Scheduler& sched = elle::concurrency::scheduler();
+      if (!sched.current())
         {
-          show();
-
-          return (1);
+          reactor::VThread<elle::Status> main(sched, "8user main",
+                                              boost::bind(&_Main, argc, argv));
+          sched.run();
+          return main.result() == elle::StatusOk ? 0 : 1;
         }
     }
   catch (std::exception const& e)

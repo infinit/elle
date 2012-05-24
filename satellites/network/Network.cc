@@ -485,13 +485,13 @@ namespace satellite
           hole::Model           model;
           elle::String          administrator;
 
-          // retrieve the identifier.
-          if (Infinit::Parser->Value("Identifier", identifier) == elle::StatusError)
-            escape("unable to retrieve the identifier value");
-
           // retrieve the name.
           if (Infinit::Parser->Value("Name", name) == elle::StatusError)
             escape("unable to retrieve the name value");
+
+          // retrieve the identifier.
+          if (Infinit::Parser->Value("Identifier", identifier, name) == elle::StatusError)
+            escape("unable to retrieve the identifier value");
 
           // retrieve the model.
           if (Infinit::Parser->Value("Model", string) == elle::StatusError)
