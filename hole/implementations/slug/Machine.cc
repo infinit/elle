@@ -1034,10 +1034,6 @@ namespace hole
       ///
       elle::Status      Machine::Alone()
       {
-        // If we were attached in the meantime, do nothing.
-        if (this->state == Machine::StateAttached)
-          return elle::StatusOk;
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Machine::Alone()\n");

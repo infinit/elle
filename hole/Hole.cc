@@ -150,10 +150,10 @@ namespace hole
           break;
         }
       default:
-      {
-        static boost::format fmt("unknown or not-yet-supported model '%u'");
-        throw std::runtime_error(str(fmt % Hole::Descriptor.model.type));
-      }
+        {
+          static boost::format fmt("unknown or not-yet-supported model '%u'");
+          throw std::runtime_error(str(fmt % Hole::Descriptor.model.type));
+        }
       }
 
     // join the network

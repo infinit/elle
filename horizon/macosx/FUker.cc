@@ -185,6 +185,11 @@ namespace horizon
           "-oauto_cache",
 
           //
+          // XXX
+          //
+          // XXX "-odaemon_timeout=120",
+
+          //
           // this options activates the MacOS X ACLs which are set through
           // extended attributes.
           //
