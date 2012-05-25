@@ -48,7 +48,7 @@ namespace hole
         //
 
         // holeable
-        elle::Status            Join();
+        void                    Join();
         elle::Status            Leave();
 
         elle::Status            Put(const nucleus::Address&,
