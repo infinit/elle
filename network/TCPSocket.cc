@@ -111,19 +111,13 @@ namespace elle
 
       // Extract the header.
       if (parcel->header->Extract(packet) == StatusError)
-        {
-          printf("XXX ERROR HEADER\n");
         return 0; // No header yet
-        }
 
       // XXX[Check if the size is plausible]
 
       // Check if there is enough data available.
       if ((packet.size - packet.offset) < parcel->header->size)
-        {
-          printf("XXX IGNORE THIS\n");
         return 0;
-        }
 
       // Extract the data.
       if (packet.Extract(*parcel->data) == StatusError)
