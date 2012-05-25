@@ -221,6 +221,9 @@ class MountPoint:
         self.__infinit_alive = False
         print("PROCESS", cmd[0], p.pid, "TERMINATED")
 
+    def terminate(self, sig = 15):
+        self.__infinit.send_signal(sig)
+
     def __exit__(self, type_, value, traceback):
         self.__infinit.send_signal(15)
         self.__infinit.wait()
@@ -314,6 +317,7 @@ def simple_file(mount_points, fname, size=4096):
         if all(os.path.exists(m.file_path(fname)) for m in others):
             print("simple file of", size, "bytes: OK")
             break
+        assert all(m.alive for m in mount_points)
         tries += 1
         print("Try ", tries, ": waiting for file")
         time.sleep(1)
@@ -327,12 +331,19 @@ def simple_file(mount_points, fname, size=4096):
 
 
 
-def test_all(mount_points):
+def test_all(mount_points, test_timeout=10):
     for size in [4096, 4096 * 1024, 4096 * 1024 * 1024]:
         fname = 'test-file-%d' % size
         for f in [simple_file]:
             try:
-                f(mount_points, fname, size = size)
+                th = threading.Thread(target=f, args=(mount_points, fname), kwargs={'size': size})
+                th.start()
+                th.join(test_timeout)
+                if th.is_alive():
+                    for m in mount_points:
+                        m.terminate()
+                    th.join()
+                    raise Exception("Timeout: Test took more than %d seconds" % test_timeout)
             except Exception as err:
                 mps = str(tuple(str(m) for m in mount_points))
                 raise Exception("FAILURE: %s with size = %s and mount points: %s: " % (f.__name__, size, mps), err)
