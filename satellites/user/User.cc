@@ -1,34 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       user
-//
-// license       infinit
-//
-// author        julien quintard   [thu mar  4 17:51:46 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <satellites/user/User.hh>
 
 namespace satellite
 {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
   ///
   /// this value defines the component's name.
   ///
   const elle::Character         Component[] = "8user";
-
-//
-// ---------- methods ---------------------------------------------------------
-//
 
   ///
   /// this method creates a new user by generating a new key pair and
@@ -228,37 +205,30 @@ namespace satellite
     return elle::StatusOk;
   }
 
-//
-// ---------- functions -------------------------------------------------------
-//
-
-  ///
-  /// the main function.
-  ///
-  elle::Status          Main(elle::Natural32                    argc,
-                             elle::Character*                   argv[])
+  void
+  User(elle::Natural32 argc, elle::Character* argv[])
   {
     User::Operation     operation;
 
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
-      escape("unable to initialize Elle");
+      throw std::runtime_error("unable to initialize Elle");
 
     // set up the program.
     if (elle::Program::Setup() == elle::StatusError)
-      escape("unable to set up the program");
+      throw std::runtime_error("unable to set up the program");
 
     // initialize the nucleus library.
     if (nucleus::Nucleus::Initialize() == elle::StatusError)
-      escape("unable to initialize Nucleus");
+      throw std::runtime_error("unable to initialize Nucleus");
 
     // initialize the Lune library.
     if (lune::Lune::Initialize() == elle::StatusError)
-      escape("unable to initialize Lune");
+      throw std::runtime_error("unable to initialize Lune");
 
     // initialize Infinit.
     if (Infinit::Initialize() == elle::StatusError)
-      escape("unable to initialize Infinit");
+      throw std::runtime_error("unable to initialize Infinit");
 
     // initialize the operation.
     operation = User::OperationUnknown;
@@ -268,7 +238,7 @@ namespace satellite
 
     // specify a program description.
     if (Infinit::Parser->Description(Infinit::Copyright) == elle::StatusError)
-      escape("unable to set the description");
+      throw std::runtime_error("unable to set the description");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -277,7 +247,7 @@ namespace satellite
           "help",
           "display the help",
           elle::Parser::KindNone) == elle::StatusError)
-      escape("unable to register the option");
+      throw std::runtime_error("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -286,7 +256,7 @@ namespace satellite
           "create",
           "create a user",
           elle::Parser::KindNone) == elle::StatusError)
-      escape("unable to register the option");
+      throw std::runtime_error("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -295,7 +265,7 @@ namespace satellite
           "destroy",
           "destroy an existing network",
           elle::Parser::KindNone) == elle::StatusError)
-      escape("unable to register the option");
+      throw std::runtime_error("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -304,7 +274,7 @@ namespace satellite
           "information",
           "display information regarding the user",
           elle::Parser::KindNone) == elle::StatusError)
-      escape("unable to register the option");
+      throw std::runtime_error("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -313,7 +283,7 @@ namespace satellite
           "identifier",
           "specify the identity",
           elle::Parser::KindOptional) == elle::StatusError)
-      escape("unable to register the option");
+      throw std::runtime_error("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -322,20 +292,18 @@ namespace satellite
           "name",
           "specify the user name",
           elle::Parser::KindRequired) == elle::StatusError)
-      escape("unable to register the option");
+      throw std::runtime_error("unable to register the option");
 
     // parse.
     if (Infinit::Parser->Parse() == elle::StatusError)
-      escape("unable to parse the command line");
+      throw std::runtime_error("unable to parse the command line");
 
     // test the option.
     if (Infinit::Parser->Test("Help") == elle::StatusTrue)
       {
         // display the usage.
         Infinit::Parser->Usage();
-
-        // quit.
-        return elle::StatusOk;
+        return;
       }
 
     // check the mutually exclusive options.
@@ -346,7 +314,7 @@ namespace satellite
         // display the usage.
         Infinit::Parser->Usage();
 
-        escape("the create, destroy and information options are "
+        throw std::runtime_error("the create, destroy and information options are "
                "mutually exclusive");
       }
 
@@ -372,15 +340,15 @@ namespace satellite
 
           // retrieve the name.
           if (Infinit::Parser->Value("Name", name) == elle::StatusError)
-            escape("unable to retrieve the name value");
+            throw std::runtime_error("unable to retrieve the name value");
 
           // retrieve the identifier.
           if (Infinit::Parser->Value("Identifier", identifier, name) == elle::StatusError)
-            escape("unable to retrieve the identifier");
+            throw std::runtime_error("unable to retrieve the identifier");
 
           // create a user.
           if (User::Create(identifier, name) == elle::StatusError)
-            escape("unable to create the user");
+            throw std::runtime_error("unable to create the user");
 
           // display a message.
           std::cout << "The user has been created successfully!"
@@ -394,11 +362,11 @@ namespace satellite
 
           // retrieve the name.
           if (Infinit::Parser->Value("Name", name) == elle::StatusError)
-            escape("unable to retrieve the name value");
+            throw std::runtime_error("unable to retrieve the name value");
 
           // destroy a user.
           if (User::Destroy(name) == elle::StatusError)
-            escape("unable to destroy the user");
+            throw std::runtime_error("unable to destroy the user");
 
           // display a message.
           std::cout << "The user has been destroyed successfully!"
@@ -412,11 +380,11 @@ namespace satellite
 
           // retrieve the name.
           if (Infinit::Parser->Value("Name", name) == elle::StatusError)
-            escape("unable to retrieve the name value");
+            throw std::runtime_error("unable to retrieve the name value");
 
           // display information.
           if (User::Information(name) == elle::StatusError)
-            escape("unable to display information on the user");
+            throw std::runtime_error("unable to display information on the user");
 
           break;
         }
@@ -426,7 +394,7 @@ namespace satellite
           // display the usage.
           Infinit::Parser->Usage();
 
-          escape("please specify an operation to perform");
+          throw std::runtime_error("please specify an operation to perform");
         }
       }
 
@@ -436,73 +404,51 @@ namespace satellite
 
     // clean Infinit.
     if (Infinit::Clean() == elle::StatusError)
-      escape("unable to clean Infinit");
+      throw std::runtime_error("unable to clean Infinit");
 
     // clean Lune
     if (lune::Lune::Clean() == elle::StatusError)
-      escape("unable to clean Lune");
+      throw std::runtime_error("unable to clean Lune");
 
     // clean the nucleus library.
     if (nucleus::Nucleus::Clean() == elle::StatusError)
-      escape("unable to clean Nucleus");
+      throw std::runtime_error("unable to clean Nucleus");
 
     // clean Elle.
     if (elle::Elle::Clean() == elle::StatusError)
-      escape("unable to clean Elle");
-
-    return elle::StatusOk;
+      throw std::runtime_error("unable to clean Elle");
   }
-
 }
 
-static elle::Status    _Main(elle::Natural32    argc,
-                             elle::Character*   argv[])
+// elle::Status
+// Main(elle::Natural32 argc, elle::Character* argv[])
+// {
+//   try
+//     {
+//       satellite::User(argc, argv);
+//     }
+//   catch (std::runtime_error& e)
+//     {
+//       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
+//       elle::concurrency::scheduler().terminate();
+//       return elle::StatusError;
+//     }
+//   elle::concurrency::scheduler().terminate();
+//   return elle::StatusOk;
+// }
+
+int
+main(int argc, char** argv)
 {
   try
     {
-      if (satellite::Main(argc, argv) == elle::StatusError)
-        {
-          show();
-          throw std::runtime_error("killed by escape");
-        }
+      satellite::User(argc, argv);
     }
   catch (std::runtime_error& e)
     {
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
       elle::concurrency::scheduler().terminate();
-      return elle::StatusError;
+      return 1;
     }
-  elle::concurrency::scheduler().terminate();
-  return elle::StatusOk;
-}
-//
-// ---------- main ------------------------------------------------------------
-//
-
-///
-/// this is the program entry point.
-///
-int                     main(int                                argc,
-                             char**                             argv)
-{
-  try
-    {
-      reactor::Scheduler& sched = elle::concurrency::scheduler();
-      if (!sched.current())
-        {
-          reactor::VThread<elle::Status> main(sched, "8user main",
-                                              boost::bind(&_Main, argc, argv));
-          sched.run();
-          return main.result() == elle::StatusOk ? 0 : 1;
-        }
-    }
-  catch (std::exception const& e)
-    {
-      std::cout << "The program has been terminated following "
-                << "a fatal error (" << e.what() << ")." << std::endl;
-
-      return (1);
-    }
-
-  return (0);
+  return 0;
 }
