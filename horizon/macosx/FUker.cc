@@ -187,7 +187,7 @@ namespace horizon
           //
           // XXX
           //
-          // XXX "-odaemon_timeout=120",
+          "-odaemon_timeout=12000",
 
           //
           // this options activates the MacOS X ACLs which are set through
