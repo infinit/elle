@@ -781,6 +781,18 @@ void test_storage()
   sched->run();
 }
 
+/*----------.
+| Terminate |
+`----------*/
+
+void terminate_starting()
+{
+  Fixture f;
+
+  reactor::Thread starting(*sched, "starting", &empty);
+  starting.terminate_now();
+}
+
 /*-----.
 | Main |
 `-----*/

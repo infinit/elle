@@ -176,6 +176,12 @@ namespace reactor
     INFINIT_REACTOR_DEBUG(*this << ": terminate");
     if (current() == thread)
       throw Terminate();
+    // If the underlying coroutine was never run, nothing to do.
+    if (_starting.erase(thread))
+      {
+        thread->_state = Thread::state::done;
+        return;
+      }
     switch (thread->state())
       {
         case Thread::state::running:
@@ -194,8 +200,11 @@ namespace reactor
   Scheduler::_terminate_now(Thread* thread)
   {
     _terminate(thread);
-    _step(thread);
-    assert(thread->state() == Thread::state::done);
+    if (thread->state() != Thread::state::done)
+      {
+        _step(thread);
+        assert(thread->state() == Thread::state::done);
+      }
   }
 
   /*-------.
