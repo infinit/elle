@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       infinit
-//
-// license       infinit
-//
-// author        julien quintard   [wed jun  1 10:53:21 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <Infinit.hh>
 
 #include <elle/Elle.hh>
@@ -22,15 +8,8 @@
 #include <hole/Hole.hh>
 #include <horizon/Horizon.hh>
 
-//
-// ---------- functions -------------------------------------------------------
-//
-
-///
-/// this is the entry point of infinit.
-///
-elle::Status            Infinit(elle::Natural32                    argc,
-                                elle::Character*                   argv[])
+void
+Infinit(elle::Natural32 argc, elle::Character* argv[])
 {
   // initialize the Elle library.
   if (elle::Elle::Initialize() == elle::StatusError)
@@ -85,7 +64,7 @@ elle::Status            Infinit(elle::Natural32                    argc,
       Infinit::Parser->Usage();
 
       // quit.
-      return elle::StatusOk;
+      return;
     }
 
   // retrieve the user name.
@@ -204,24 +183,14 @@ elle::Status            Infinit(elle::Natural32                    argc,
   // clean Elle.
   if (elle::Elle::Clean() == elle::StatusError)
     throw std::runtime_error("unable to clean Elle");
-
-  return elle::StatusOk;
 }
 
-//
-// ---------- main ------------------------------------------------------------
-//
-
-elle::Status    Main(elle::Natural32    argc,
-                     elle::Character*   argv[])
+elle::Status
+Main(elle::Natural32 argc, elle::Character* argv[])
 {
   try
     {
-      if (Infinit(argc, argv) == elle::StatusError)
-        {
-          show();
-          throw std::runtime_error("killed by escape");
-        }
+      Infinit(argc, argv);
     }
   catch (std::runtime_error& e)
     {
@@ -233,27 +202,12 @@ elle::Status    Main(elle::Natural32    argc,
   return elle::StatusOk;
 }
 
-int                     main(int                                argc,
-                             char*                              argv[])
+int
+main(int argc, char* argv[])
 {
-  try
-    {
-      reactor::Scheduler& sched = elle::concurrency::scheduler();
-      if (!sched.current())
-        {
-          reactor::VThread<elle::Status> main(sched, "Infinit main",
-                                              boost::bind(&Main, argc, argv));
-          sched.run();
-          return main.result() == elle::StatusOk ? 0 : 1;
-        }
-    }
-  catch (...)
-    {
-      std::cout << "The program has been terminated following "
-                << "a fatal error" << std::endl;
-
-      return (1);
-    }
-
-  return (0);
+  reactor::Scheduler& sched = elle::concurrency::scheduler();
+  reactor::VThread<elle::Status> main(sched, "Infinit main",
+                                      boost::bind(&Main, argc, argv));
+  sched.run();
+  return main.result() == elle::StatusOk ? 0 : 1;
 }
