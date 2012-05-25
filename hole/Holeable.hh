@@ -37,7 +37,7 @@ namespace hole
     //
     // interface
     //
-    virtual elle::Status        Join() = 0;
+    virtual void                Join() = 0;
     virtual elle::Status        Leave() = 0;
 
     virtual elle::Status        Put(const nucleus::Address&,

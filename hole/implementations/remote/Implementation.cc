@@ -42,16 +42,11 @@ namespace hole
       /// this method tries to connect to the server. if impossible, a server
       /// is author .
       ///
-      elle::Status      Implementation::Join()
+      void
+      Implementation::Join()
       {
-        // allocate the machine.
         Remote::Computer = new Machine;
-
-        // launch it.
-        if (Remote::Computer->Launch() == elle::StatusError)
-          escape("unable to launch the computer");
-
-        return elle::StatusOk;
+        Remote::Computer->Launch();
       }
 
       ///

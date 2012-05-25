@@ -1,7 +1,8 @@
+#include <boost/format.hpp>
+
 #include <reactor/network/exception.hh>
 
 #include <hole/implementations/remote/Machine.hh>
-
 #include <hole/Hole.hh>
 
 namespace hole
@@ -60,15 +61,18 @@ namespace hole
       /// this method launches the machine which tries to act first as a
       /// client and then as a server if no server seems to exist.
       ///
-      elle::Status      Machine::Launch()
+      void
+      Machine::Launch()
       {
         elle::Locus     locus;
 
         // check the number of loci in the set: it should be one for
         // this implementation.
         if (Hole::Set.loci.size() != 1)
-          escape("there should be a single locus in the network's set (%u)",
-                 Hole::Set.loci.size());
+          {
+            static boost::format fmt("there should be a single locus in the network's set (%u)");
+            throw std::runtime_error(str(fmt % Hole::Set.loci.size()));
+          }
 
         // retrieve the locus.
         locus = *Hole::Set.loci.begin();
@@ -91,9 +95,9 @@ namespace hole
 
               // set the hole as ready to receive requests.
               if (Hole::Ready() == elle::StatusError)
-                escape("unable to set the hole online");
+                throw std::runtime_error("unable to set the hole online");
 
-              return elle::StatusOk;
+              return;
             }
 #include <elle/idiom/Close.hh>
           // XXX
@@ -122,11 +126,11 @@ namespace hole
               // set the role.
               this->role = Machine::RoleServer;
 
-              return elle::StatusOk;
+              return;
             }
         }
 
-        escape("unable to create a client or a server");
+        throw std::runtime_error("unable to create a client or a server");
       }
 
 //

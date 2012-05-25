@@ -94,6 +94,7 @@ namespace hole
       private:
         void _accept();
         reactor::network::TCPServer* _server;
+        reactor::Thread* _acceptor;
       };
 
     }

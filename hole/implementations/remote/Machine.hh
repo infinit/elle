@@ -57,7 +57,7 @@ namespace hole
         //
         // methods
         //
-        elle::Status            Launch();
+        void Launch();
 
         //
         // interfaces

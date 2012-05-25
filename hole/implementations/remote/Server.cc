@@ -21,12 +21,16 @@ namespace hole
         : _locus(locus)
         , _server(new reactor::network::TCPServer
                   (elle::concurrency::scheduler()))
+        , _acceptor(0)
       {
         _server->listen(locus.port);
       }
 
       Server::~Server()
       {
+        this->_acceptor->terminate_now();
+        delete this->_acceptor;
+        this->_acceptor = 0;
         Server::Scoutor scoutor;
         for (scoutor = this->container.begin();
              scoutor != this->container.end();
@@ -94,10 +98,9 @@ namespace hole
             escape("unable to register the callback");
         }
 
-        new reactor::Thread(elle::concurrency::scheduler(),
-                            "Remote Server accept",
-                            boost::bind(&Server::_accept, this),
-                            true);
+        _acceptor = new reactor::Thread(elle::concurrency::scheduler(),
+                                        "Remote Server accept",
+                                        boost::bind(&Server::_accept, this));
 
         return elle::StatusOk;
       }

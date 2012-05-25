@@ -157,8 +157,7 @@ namespace hole
       }
 
     // join the network
-    if (Hole::Implementation->Join() == elle::StatusError)
-      throw std::runtime_error("unable to join the network");
+    Hole::Implementation->Join();
   }
 
   ///

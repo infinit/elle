@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [wed aug 31 13:52:21 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <hole/implementations/local/Implementation.hh>
 #include <hole/implementations/local/Local.hh>
 #include <hole/Hole.hh>
@@ -43,16 +29,15 @@ namespace hole
       /// this method tries to connect to the server. if impossible, a server
       /// is author .
       ///
-      elle::Status      Implementation::Join()
+      void
+      Implementation::Join()
       {
         // allocate the machine.
         Local::Computer = new Machine;
 
         // set the hole as ready to receive requests.
         if (Hole::Ready() == elle::StatusError)
-          escape("unable to set the hole online");
-
-        return elle::StatusOk;
+          throw std::runtime_error("unable to set the hole online");
       }
 
       ///
