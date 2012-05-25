@@ -43,13 +43,19 @@ namespace elle
       : _buffer(0)
       , _offset(0)
       , _socket(socket)
+      , _dispatcher(0)
     {
-      new reactor::Thread(concurrency::scheduler(), "TCPSocket read",
-                          boost::bind(&TCPSocket::Dispatch, this), true);
+      _dispatcher = new reactor::Thread(concurrency::scheduler(),
+                                        "TCPSocket read",
+                                        boost::bind(&TCPSocket::Dispatch,
+                                                    this));
     }
 
     TCPSocket::~TCPSocket()
     {
+      _dispatcher->terminate_now();
+      delete _dispatcher;
+      _dispatcher = 0;
       delete this->_socket;
     }
 
