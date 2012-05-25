@@ -760,12 +760,12 @@ void test_rw_mutex_both()
 
 void storage(reactor::LocalStorage<int>& val, int start)
 {
-  val.get() = start;
+  val.Get() = start;
   yield();
-  BOOST_CHECK_EQUAL(val.get(), start);
-  val.get()++;
+  BOOST_CHECK_EQUAL(val.Get(), start);
+  val.Get()++;
   yield();
-  BOOST_CHECK_EQUAL(val.get(), start + 1);
+  BOOST_CHECK_EQUAL(val.Get(), start + 1);
 }
 
 void test_storage()

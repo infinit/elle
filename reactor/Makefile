@@ -46,10 +46,10 @@ TEST=tests/test
 OBJECTS = $(SOURCES:.cc=.o)
 TEST_OBJECTS = $(TEST_SOURCES:.cc=.o)
 
-CPPFLAGS += -I src
+CPPFLAGS += -I src -include boost/foreach.hpp -Dforeach=BOOST_FOREACH
 #CPPFLAGS += -DINFINIT_REACTOR_ENABLE_DEBUG
 CXXFLAGS += -g -Woverloaded-virtual -Wall -Wno-parentheses
-LDFLAGS += -lboost_system -lboost_thread
+LDFLAGS += -lboost_system -lboost_thread -lboost_signals
 LDFLAGS += -lpthread
 
 all: $(LIB) $(TEST)
