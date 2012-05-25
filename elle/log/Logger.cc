@@ -65,6 +65,19 @@ namespace elle
       Level       level;
       std::string name;
       OutStream   streams[max_level_idx];
+      Impl(Level level, std::string const& name)
+        : level(level)
+        , name(name)
+        , streams({
+                {&std::cerr, false},
+                {&std::cerr, false},
+                {&std::cerr, false},
+                {&std::cerr, false},
+                {&std::cerr, false},
+                {&std::cerr, false},
+            })
+      {
+      }
     };
 
     Logger::Logger(Logger::Level level, std::string const& name)
@@ -73,14 +86,6 @@ namespace elle
         this->_impl = new Impl{
             level,
             name,
-            {
-                {&std::cerr, false},
-                {&std::cerr, false},
-                {&std::cerr, false},
-                {&std::cerr, false},
-                {&std::cerr, false},
-                {&std::cerr, false},
-            },
         };
     }
 
