@@ -1,66 +1,35 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [wed may 11 15:20:51 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <Infinit.hh>
 #include <elle/Elle.hh>
-#include <nucleus/Nucleus.hh>
-#include <lune/Lune.hh>
 #include <hole/Hole.hh>
+#include <lune/Lune.hh>
+#include <nucleus/Nucleus.hh>
 
 namespace hole
 {
-
-//
-// ---------- functions -------------------------------------------------------
-//
-
-  ///
-  /// the main function.
-  ///
-  elle::Status          Main(elle::Natural32                    argc,
-                             elle::Character*                   argv[])
+  void
+  Hole(elle::Natural32 argc, elle::Character* argv[])
   {
-    reactor::Scheduler& sched = elle::concurrency::scheduler();
-    if (!sched.current())
-      {
-        reactor::VThread<elle::Status> main(sched, "Hole main",
-                                            boost::bind(&Main, argc, argv));
-        sched.run();
-        return main.result();
-      }
-
     // XXX Infinit::Parser is not deleted in case of error
 
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
-      escape("unable to initialize Elle");
+      throw std::runtime_error("unable to initialize Elle");
 
     // initialize the nucleus library.
     if (nucleus::Nucleus::Initialize() == elle::StatusError)
-      escape("unable to initialize Nucleus");
+      throw std::runtime_error("unable to initialize Nucleus");
 
     // initialize the Lune library.
     if (lune::Lune::Initialize() == elle::StatusError)
-      escape("unable to initialize Lune");
+      throw std::runtime_error("unable to initialize Lune");
 
     // initialize Infinit.
     if (Infinit::Initialize() == elle::StatusError)
-      escape("unable to initialize Infinit");
+      throw std::runtime_error("unable to initialize Infinit");
 
     // set up the program.
     if (elle::Program::Setup() == elle::StatusError)
-      escape("unable to set up the program");
+      throw std::runtime_error("unable to set up the program");
 
     // allocate a new parser.
     Infinit::Parser = new elle::Parser(argc, argv);
@@ -71,7 +40,7 @@ namespace hole
                                      "Copyright (c) 2008, 2009, 2010, 2011, "
                                      "Julien Quintard, All rights "
                                      "reserved.\n") == elle::StatusError)
-      escape("unable to set the description");
+      throw std::runtime_error("unable to set the description");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -80,7 +49,7 @@ namespace hole
           "help",
           "display the help",
           elle::Parser::KindNone) == elle::StatusError)
-      escape("unable to register the option");
+      throw std::runtime_error("unable to register the option");
 
     // register the option.
     if (Infinit::Parser->Register(
@@ -89,20 +58,17 @@ namespace hole
           "network",
           "specifies the name of the network",
           elle::Parser::KindRequired) == elle::StatusError)
-      escape("unable to register the option");
+      throw std::runtime_error("unable to register the option");
 
     // parse.
     if (Infinit::Parser->Parse() == elle::StatusError)
-      escape("unable to parse the command line");
+      throw std::runtime_error("unable to parse the command line");
 
     // test the option.
     if (Infinit::Parser->Test("Help") == elle::StatusTrue)
       {
-        // display the usage.
         Infinit::Parser->Usage();
-
-        // quit.
-        return elle::StatusOk;
+        return;
       }
 
     // retrieve the network name.
@@ -112,7 +78,7 @@ namespace hole
         // display the usage.
         Infinit::Parser->Usage();
 
-        escape("unable to retrieve the network name");
+        throw std::runtime_error("unable to retrieve the network name");
       }
 
     // initialize the Hole library.
@@ -127,55 +93,49 @@ namespace hole
 
     // clean Hole.
     if (hole::Hole::Clean() == elle::StatusError)
-      escape("unable to clean Hole");
+      throw std::runtime_error("unable to clean Hole");
 
     // clean Infinit.
     if (Infinit::Clean() == elle::StatusError)
-      escape("unable to clean Infinit");
+      throw std::runtime_error("unable to clean Infinit");
 
     // clean Lune
     if (lune::Lune::Clean() == elle::StatusError)
-      escape("unable to clean Lune");
+      throw std::runtime_error("unable to clean Lune");
 
     // clean the nucleus library.
     if (nucleus::Nucleus::Clean() == elle::StatusError)
-      escape("unable to clean Nucleus");
+      throw std::runtime_error("unable to clean Nucleus");
 
     // clean Elle.
     if (elle::Elle::Clean() == elle::StatusError)
-      escape("unable to clean Elle");
-
-    return elle::StatusOk;
+      throw std::runtime_error("unable to clean Elle");
   }
-
 }
 
-//
-// ---------- main ------------------------------------------------------------
-//
-
-///
-/// this is the program entry point.
-///
-int                     main(int                                argc,
-                             char*                              argv[])
+elle::Status
+Main(elle::Natural32 argc, elle::Character* argv[])
 {
   try
     {
-      if (hole::Main(argc, argv) == elle::StatusError)
-        {
-          show();
-
-          return (1);
-        }
+      hole::Hole(argc, argv);
     }
-  catch (...)
+  catch (std::runtime_error& e)
     {
-      std::cout << "The program has been terminated following "
-                << "a fatal error" << std::endl;
-
-      return (1);
+      std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
+      elle::concurrency::scheduler().terminate();
+      return elle::StatusError;
     }
+  elle::concurrency::scheduler().terminate();
+  return elle::StatusOk;
+}
 
-  return (0);
+int
+main(int argc, char* argv[])
+{
+  reactor::Scheduler& sched = elle::concurrency::scheduler();
+  reactor::VThread<elle::Status> main(sched, "Hole main",
+                                      boost::bind(&Main, argc, argv));
+  sched.run();
+  return main.result() == elle::StatusOk ? 0 : 1;
 }
