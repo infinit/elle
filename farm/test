@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- python -*-
 
+import copy
 import distutils.dir_util
 import os
 import pipes
@@ -10,12 +11,22 @@ import sys
 import tempfile
 import time
 import threading
+import sys
 
-BUILD = os.environ['DIR_BUILD']
+import platform
+
+BUILD = os.environ.get(
+    'DIR_BUILD',
+    os.path.join(
+        os.path.abspath(os.path.dirname(__file__)),
+        '../build/',
+        platform.system().lower() + platform.architecture()[0][:2]
+    )
+)
 
 os.environ['INFINIT_RANDOM_SOURCE'] = '/dev/urandom'
 
-MONITOR_SLEEP=5
+MONITOR_SLEEP=1
 
 def monitor(p, cmd):
   while p.poll() == None:
@@ -24,13 +35,14 @@ def monitor(p, cmd):
     print("[%s] RSS: %d MB" % (cmd[0], int(rss.strip()) / 1024))
     time.sleep(MONITOR_SLEEP)
 
-def run(cmd, stdin = b'', cwd = None):
+def run(cmd, stdin = b'', cwd = None, env=None):
   print('Run: %s' % ' '.join(map(pipes.quote, cmd)), file = sys.stderr)
   sys.stderr.flush()
   p = subprocess.Popen(cmd,
                        cwd = cwd,
                        stdin = subprocess.PIPE,
-                       shell = False)
+                       shell = False,
+                       env = env)
   p.stdin.write(stdin)
   p.stdin.close()
   t = threading.Thread(target=monitor, args=(p, cmd))
@@ -48,63 +60,297 @@ unit_tests()
 
 #############################################################################
 
-def infinit(cmd, stdin = b'', cwd = None):
-  cmd[0] = '%s/%s' % (BUILD, cmd[0])
-  return run(cmd, stdin)
-
 
 class Network:
+    def __init__(self, user='buildslave', network='network', model='slug'):
+        self._user_name = user
+        self._network_name = network
+        self._root_dir = None
+        self._model = model
 
-  def __init__(self):
-    self.__root = tempfile.mkdtemp()
-    os.environ['INFINIT_HOME'] = self.__root
-    self.__cfg = '%s/.config/infinit' % self.__root
-    self.__mnt = '%s/mnt' % self.__root
-    distutils.dir_util.mkpath(self.__cfg)
-    distutils.dir_util.mkpath(self.__mnt)
-    shutil.copyfile('%s/oracle/infinit.auth' % BUILD, '%s/infinit.auth' % self.__cfg)
-    infinit(['satellites/user/8user', '-c', '-n', 'buildslave'],
-            stdin = b'\n\n')
-    infinit(['satellites/network/8network',
-             '-c', '-n', 'network', '-m', 'local', '-a', 'buildslave'],
-            stdin = b'\n\n')
-    infinit(['satellites/passport/8passport', '-c'],
-            stdin = b'\n')
-    for ext in ['dic', 'idy']:
-      shutil.copyfile('%s/users/buildslave/buildslave.%s' % (self.__cfg, ext),
-                      '%s/infinit.%s' % (self.__cfg, ext))
-    self.__infinit = None
+    @property
+    def model(self):
+        return self._model
 
-  @property
-  def mounted(self):
-    return self.__infinit is not None
+    @property
+    def name(self):
+        return self._network_name
 
-  @property
-  def mountpoint(self):
-    return self.__mnt
+    @property
+    def user_name(self):
+        return self._user_name
 
-  def mount(self):
-    assert not self.mounted
-    self.__infinit = subprocess.Popen(['%s/8infinit' % BUILD, '-n', 'network', '-m', self.__mnt],
-                                      stdin = subprocess.PIPE)
-    self.__infinit.stdin.write(b'\n')
-    self.__infinit.stdin.close()
-    while not os.path.exists('%s/networks/network/network.phr' % self.__cfg):
-      time.sleep(1)
+    @property
+    def root_dir(self):
+        assert self._root_dir is not None
+        return self._root_dir
 
-  def dismount(self):
-    assert self.mounted
-    self.__infinit.send_signal(15)
-    self.__infinit.wait()
-    while os.path.exists('%s/networks/network/network.phr' % self.__cfg):
-      time.sleep(1)
-    self.__infinit = None
+    @property
+    def config_dir(self):
+        return self._config_dir
 
-  def __del__(self):
-    import os, shutil
-    if self.mounted:
-      self.dismount()
-    shutil.rmtree(self.__root)
+    def __enter__(self):
+        self._env = copy.deepcopy(os.environ)
+        self._root_dir = tempfile.mkdtemp()
+        self._env['INFINIT_HOME'] = self._root_dir
+        print("Prepare reference env of", self._network_name, "for user", self._user_name, "in", self._root_dir)
+        self._config_dir = os.path.join(self._root_dir, '.config/infinit')
+        distutils.dir_util.mkpath(self._config_dir)
+        shutil.copyfile(
+            os.path.join(BUILD, 'oracle/infinit.auth'),
+            os.path.join(self._config_dir, 'infinit.auth')
+        )
+        self.infinit_cmd(
+            ['satellites/user/8user', '-c', '-n', self._user_name],
+            stdin = b'\n\n'
+        )
+        self.infinit_cmd(
+            [
+                'satellites/network/8network',
+                '-c', '-n', self._network_name, '-m', self._model, '-a', self._user_name
+            ],
+            stdin = b'\n\n'
+        )
+        self.infinit_cmd(
+            ['satellites/passport/8passport', '-c'],
+            stdin = b'\n'
+        )
+        del self._env
+        for ext in ['dic', 'idy']:
+          shutil.copyfile(
+              '%s/users/%s/%s.%s' % (self._config_dir, self._user_name, self._user_name, ext),
+              '%s/infinit.%s' % (self._config_dir, ext)
+          )
+        return self
+
+    def __exit__(self, type_, value, traceback):
+        if self._root_dir:
+            shutil.rmtree(self._root_dir)
+            self._root_dir = None
+
+
+    def infinit_cmd(self, args, stdin=b'', cwd=None):
+        args[0] = '%s/%s' % (BUILD, args[0])
+        return run(args, stdin=stdin, cwd=cwd, env=self._env)
+
+    def mount(self, port=0, addresses=[]):
+        assert self._root_dir is not None
+        return MountPoint(
+            self,
+            env = copy.deepcopy(os.environ),
+            port = port,
+            addresses = addresses
+        )
+
+    def __str__(self):
+        s = '<Network ' + self.name + ' in ' + self._root_dir
+        if self._root_dir is not None:
+            s += ' (prepared)'
+        else:
+            s += ' (not prepared)'
+        s += '>'
+        return s
+
+
+class MountPoint:
+    def __init__(self, network, env={}, port=0, addresses=[]):
+        self._env = env
+        self._network = network
+        self._ref_dir = network.root_dir
+        self._port = port
+        self._addresses = addresses
+
+    @property
+    def alive(self):
+        return self.__infinit_alive
+
+    @property
+    def mount_dir(self):
+        return self._mount_dir
+
+    def file_path(self, relpath):
+        return os.path.join(self.mount_dir, relpath)
+
+    def __enter__(self):
+        self._temp_dir = tempfile.mkdtemp()
+        self._root_dir = os.path.join(self._temp_dir, 'root')
+        self._conf_dir = os.path.join(self._root_dir, '.config/infinit')
+        self._network_conf_dir = os.path.join(self._conf_dir, 'networks', self._network.name)
+        self._phrase_path = os.path.join(
+            self._network_conf_dir,
+            self._network.name + '.phr'
+        )
+        self._env['INFINIT_HOME'] = self._root_dir
+        shutil.copytree(self._ref_dir, self._root_dir)
+        self._mount_dir = os.path.join(self._root_dir, 'mnt')
+        distutils.dir_util.mkpath(self._mount_dir)
+
+        if self._port != 0:
+            with open(os.path.join(self._root_dir, '.config/infinit/infinit.conf'), 'w') as f:
+                f.write("[hole]\nslug.port = %d\ndebug = 1" % self._port)
+
+        if self._addresses:
+            print("Addresses = ", self._addresses)
+            set_path = os.path.join(self._network_conf_dir, '%s.set' % self._network.name)
+            with open(set_path, 'w') as f:
+                f.write(' '.join(self._addresses))
+
+        # manual, infinit_cmd block
+        self.__infinit_cmd = ['%s/8infinit' % BUILD, '-n', self._network.name, '-m', self._mount_dir]
+        self.__infinit = subprocess.Popen(self.__infinit_cmd, stdin = subprocess.PIPE)
+        self.__infinit_alive = True
+        self.__infinit.stdin.write(b'\n')
+        self.__infinit.stdin.close()
+        self.__monitor_thread = threading.Thread(target=self._monitor)
+        self.__monitor_thread.start()
+        while not os.path.exists(self._phrase_path):
+            time.sleep(1)
+
+        return self
+
+    def _monitor(self):
+        p = self.__infinit
+        cmd = self.__infinit_cmd
+        while p.poll() == None:
+            rss = subprocess.check_output(
+                "ps -p %d -o rss | tail -n 1" % p.pid,
+                shell = True
+            )
+            print("[%s] %d RSS: %d MB" % (cmd[0], p.pid, int(rss.strip()) / 1024))
+            time.sleep(MONITOR_SLEEP)
+        self.__infinit_alive = False
+        print("PROCESS", cmd[0], p.pid, "TERMINATED")
+
+    def __exit__(self, type_, value, traceback):
+        self.__infinit.send_signal(15)
+        self.__infinit.wait()
+        self.__infinit_thread.join()
+        while os.path.exists(self._phrase_path):
+            time.sleep(1)
+        try:
+            os.system('fusermount -u %s' % os.path.abspath(self._mount_dir))
+        except:
+            print("cannot call fusermount")
+            pass
+        self.__infinit = None
+        shutil.rmtree(self._temp_dir)
+        self._root_dir = None
+        self._network = None
+
+    def infinit_cmd(self, args, stdin=b'', cwd=None):
+        args[0] = '%s/%s' % (BUILD, args[0])
+        return run(args, stdin=stdin, cwd=cwd, env=self._env)
+
+    def __str__(self):
+        s = '<MountPoint of ' + str(self._network)
+        if self._root_dir is not None:
+            s += ' mounted in ' + self._mount_dir
+        else:
+            s += ' not mounted'
+        s += '>'
+        return s
+
+
+class NetworkPool:
+
+    def __init__(self, network, size, start_port=0):
+        self._network = network
+        self._size = size
+        self.mount_points = []
+        self._start_port = start_port
+
+    @property
+    def size(self):
+        return self._size
+
+    def __enter__(self):
+        addresses = [
+            '127.0.0.1:%d' % d for d in range(self._start_port, self._start_port + self._size)
+        ]
+        print(addresses)
+        self.mount_points = [
+            self._network.mount(
+                port = (self._start_port != 0 and self._start_port + i or 0),
+                addresses = addresses
+            )
+            for i in range(self._size)
+        ]
+        for i, m in enumerate(self.mount_points):
+            if i > 0:
+                print("XXX Waiting 10 seconds")
+                time.sleep(10)
+            m.__enter__()
+            setattr(self, 'mount_point' + str(i), m)
+        return self
+
+    def __exit__(self, type_, value, traceback):
+        for i, m in enumerate(self.mount_points):
+            try:
+                delattr(self, 'mount_point' + str(i))
+                m.__exit__(type_, value, traceback) #XXX check doc
+            except:
+                print("Cannot umount", m)
+        self.mount_points = []
+
+
+
+def simple_file(mount_points, size=4096):
+    print("simple file of", size, "bytes")
+    first = mount_points[0]
+    others = mount_points[1:]
+    assert all(m.alive for m in mount_points)
+    with open(first.file_path('f1'), 'wb') as f1:
+        with open('/dev/urandom', 'rb') as src:
+            print("Read from random source")
+            buf = src.read(size) # XXX
+            print("Read from random source: DONE")
+        print("Write f1 on node 1")
+        f1.write(buf)
+        print("Write f1 on node 1: DONE")
+
+    assert all(m.alive for m in mount_points)
+    tries = 0
+    while tries < 10:
+        if all(os.path.exists(m.file_path('f1')) for m in others):
+            print("simple file of", size, "bytes: OK")
+            break
+        tries += 1
+        print("Try ", tries, ": waiting for file")
+        time.sleep(1)
+    assert all(os.path.exists(m.file_path('f1')) for m in others)
+    for m in mount_points:
+        assert os.path.getsize(m.file_path('f1')) == size
+        with open(m.file_path('f1'), 'rb') as f1:
+            assert f1.read(size) == buf
+
+
+
+def test_all(mount_points):
+    for size in [4096, 4096 * 1024, 4096 * 1024 * 1024]:
+        for f in [simple_file]:
+            try:
+                f(mount_points, size = size)
+            except Exception as err:
+                mps = str(tuple(str(m) for m in mount_points))
+                raise Exception("FAILURE: %s with size = %s and mount points: %s: " % (f.__name__, size, mps), err)
+
+
+
+if __name__ == '__main__':
+    with Network('user1', 'network1') as network:
+        with NetworkPool(network, 3, start_port=12346) as pool:
+            time.sleep(5)
+            print("Network pool ready:")
+            for m in pool.mount_points:
+                print("\t", m)
+            test_all(pool.mount_points)
+
+
+
+
+
+
+
 
 def test_openssl():
   start = time.time()
@@ -116,32 +362,32 @@ def test_openssl():
   end = time.time()
   print('OpenSSL compilation time: %ss' % (end - start))
 
-for test in [
-  'cryptography',
-  'fiber',
-  'package',
-  ]:
-  run(['%s/elle/test/%s/test-%s' % (BUILD, test.replace('-', '/'), test)])
-
-import time
-
-for test, args in [
-  ('network-local', ['sucemoncul']),
-  ('network-tcp', ['127.0.0.1:6666']),
-#  'network-udp',
-  ]:
-  b = '%s/elle/test/%s/test-%s' % (BUILD, test.replace('-', '/'), test)
-  cmd_server = [b, 'server'] + args
-  cmd_client = [b, 'client'] + args
-  print('Run: %s' % ' '.join(map(pipes.quote, cmd_server)), file = sys.stderr)
-  print('Run: %s' % ' '.join(map(pipes.quote, cmd_client)), file = sys.stderr)
-  sys.stderr.flush()
-  server = subprocess.Popen(cmd_server)
-  time.sleep(1)
-  client = subprocess.Popen(cmd_client)
-  server.wait()
-  client.wait()
-  assert server.returncode == 0
-  assert client.returncode == 0
+#for test in [
+#  'cryptography',
+#  'fiber',
+#  'package',
+#  ]:
+#  run(['%s/elle/test/%s/test-%s' % (BUILD, test.replace('-', '/'), test)])
+#
+#import time
+#
+#for test, args in [
+#  ('network-local', ['sucemoncul']),
+#  ('network-tcp', ['127.0.0.1:6666']),
+##  'network-udp',
+#  ]:
+#  b = '%s/elle/test/%s/test-%s' % (BUILD, test.replace('-', '/'), test)
+#  cmd_server = [b, 'server'] + args
+#  cmd_client = [b, 'client'] + args
+#  print('Run: %s' % ' '.join(map(pipes.quote, cmd_server)), file = sys.stderr)
+#  print('Run: %s' % ' '.join(map(pipes.quote, cmd_client)), file = sys.stderr)
+#  sys.stderr.flush()
+#  server = subprocess.Popen(cmd_server)
+#  time.sleep(1)
+#  client = subprocess.Popen(cmd_client)
+#  server.wait()
+#  client.wait()
+#  assert server.returncode == 0
+#  assert client.returncode == 0
 
 #test_openssl()
