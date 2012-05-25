@@ -129,7 +129,7 @@ namespace elle
       if (packet.Extract(*parcel->data) == StatusError)
         throw std::runtime_error("unable to extract the data");
 
-      this->_offset = this->_offset + packet.offset;
+      this->_offset += packet.size;
 
       // perform some operations on the buffer.
       //
