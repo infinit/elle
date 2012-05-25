@@ -28,6 +28,7 @@ namespace reactor
     , _scheduler(scheduler)
     , _dispose(dispose)
   {
+    assert(action);
     _scheduler._thread_register(*this);
   }
 
