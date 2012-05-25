@@ -104,6 +104,9 @@ ADD_LIBRARY(elle
   Elle.cc
   print.cc
 
+  log.cc
+  log/Logger.cc
+
   reactor/src/reactor/backend/coro_io/libcoroutine/asm.S
   reactor/src/reactor/backend/coro_io/libcoroutine/context.cc
   reactor/src/reactor/backend/coro_io/libcoroutine/coroutine.cc
