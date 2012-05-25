@@ -81,6 +81,7 @@ namespace elle
     private:
       void Dispatch();
       reactor::network::Socket* _socket;
+      reactor::Thread* _dispatcher;
     };
 
     class Context
