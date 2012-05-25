@@ -1,5 +1,6 @@
 
 #include <cstdio>
+#include <fstream>
 #include <iostream>
 
 #include <boost/filesystem.hpp>
@@ -16,6 +17,8 @@ static void _initAll();
 int     main(int ac, char* av[])
 {
   plasma::watchdog::Application app(ac, av);
+
+  std::cout << "Starting the watchdog !\n";
 
   try
     {
@@ -49,16 +52,26 @@ int     main(int ac, char* av[])
  * signals, refer to
  * http://www.comptechdoc.org/os/linux/programming/linux_pgsignals.html
  */
+
+
 static void _signal_handler(int sig)
 {
     switch(sig)
       {
       case SIGHUP:
-        std::cerr << "hangup signal catched\n";
+        std::cerr << "caught SIGHUP\n";
         break;
       case SIGTERM:
-        std::cerr << "terminate signal catched\n";
+        std::cerr << "caught SIGTERM\n";
         break;
+      case SIGCHLD:
+        std::cerr << "caught SIGCHLD\n";
+        break;
+      case SIGKILL:
+        std::cerr << "caught SIGKILL\n";
+        break;
+      default:
+        std::cerr << "Unkwown signal caught\n";
       }
 }
 
@@ -69,41 +82,77 @@ static void _signal_handler(int sig)
 static void _init_daemon(std::string const& infinit_home)
 {
     namespace fs = boost::filesystem;
-    int i,lfp;
+    int lfp;
     char str[10];
-    if(getppid()==1)
-        return; /* already a daemon */
-    i=fork();
-    if (i<0)
-        exit(1); /* fork error */
-    if (i>0)
-        exit(0); /* parent exits */
+    if (::getppid() != 1) // if parent pid
+      {
+        // first fork
+          {
+            int res = fork();
+            if (res < 0)
+              exit(1); /* fork error */
+            if (res > 0)
+              exit(0); /* parent exits */
+          }
 
-    /* child (daemon) continues */
-    setsid(); /* obtain a new process group */
+        /* child (daemon) continues */
+        setsid(); /* obtain a new process group */
 
-    for (i=getdtablesize();i>=0;--i)
-        close(i); /* close all descriptors */
-    i=open("/dev/null",O_RDWR); dup(i); dup(i); /* handle standart I/O */
+        // double fork
+          {
+            int res = ::fork();
+            if (res < 0)
+              exit(1); /* fork error */
+            if (res > 0)
+              exit(0); /* parent exits */
+          }
+        std::cerr << "OK, double fork worked\n";
 
-    umask(027); /* set newly created file permissions */
+        //for (i=getdtablesize();i>=0;--i)
+        //  close(i); /* close all descriptors */
+        //i=open("/dev/null",O_RDWR); dup(i); dup(i); /* handle standart I/O */
 
-    chdir(infinit_home.c_str()); /* change running directory */
-    auto lock_file = fs::path(infinit_home).append("lock.wtg", fs::path::codecvt()).string();
-    lfp = open(lock_file.c_str(), O_RDWR | O_CREAT, 0640);
-    if (lfp < 0)
-        exit(1); /* can not open */
-    if (lockf(lfp, F_TLOCK,0) < 0)
-        exit(0); /* can not lock */
-    /* first instance continues */
-    sprintf(str,"%d\n",getpid());
-    write(lfp, str, strlen(str)); /* record pid to lockfile */
-    signal(SIGCHLD, SIG_IGN); /* ignore child */
+        umask(027); /* set newly created file permissions */
+
+        ::chdir("/");
+        auto lock_file = fs::path(infinit_home).append("lock.wtg", fs::path::codecvt()).string();
+
+        lfp = ::open(lock_file.c_str(), O_RDWR | O_CREAT, 0640);
+        if (lfp < 0)
+          exit(1); /* can not open */
+
+        if (lockf(lfp, F_TLOCK,0) < 0)
+          exit(0); /* can not lock */
+
+        /* first instance continues */
+        sprintf(str,"%d\n",getpid());
+        write(lfp, str, strlen(str)); /* record pid to lockfile */
+      }
+    else
+      std::cerr << "Already a deamon!\n";
+
+#define SIG_CONNECT(sig)                                                      \
+      {                                                                       \
+        struct sigaction sa;                                                  \
+        sa.sa_handler = &_signal_handler;                                     \
+        sigemptyset(&sa.sa_mask);                                             \
+        sa.sa_flags = 0;                                                      \
+        sa.sa_flags |= SA_RESTART;                                            \
+        if (sigaction(sig, &sa, 0) > 0)                                       \
+          std::cerr << "Couldn't connect to " #sig "\n";                      \
+      }                                                                       \
+
+    SIG_CONNECT(SIGCHLD);
+    SIG_CONNECT(SIGHUP);
+    SIG_CONNECT(SIGTERM);
+    SIG_CONNECT(SIGKILL);
+    SIG_CONNECT(SIGQUIT);
+    SIG_CONNECT(SIGINT);
+#undef SIG_CONNECT
+
     signal(SIGTSTP, SIG_IGN); /* ignore tty signals */
     signal(SIGTTOU, SIG_IGN);
     signal(SIGTTIN, SIG_IGN);
-    signal(SIGHUP,  &_signal_handler); /* catch hangup signal */
-    signal(SIGTERM, &_signal_handler); /* catch kill signal */
 }
 
 #include "elle/Elle.hh"

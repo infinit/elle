@@ -216,7 +216,7 @@ class MountPoint:
                 "ps -p %d -o rss | tail -n 1" % p.pid,
                 shell = True
             )
-            print("[%s] %d RSS: %d MB" % (cmd[0], p.pid, int(rss.strip()) / 1024))
+            print("[%s] %d RSS: %d MB" % (self.mount_dir, p.pid, int(rss.strip()) / 1024))
             time.sleep(MONITOR_SLEEP)
         self.__infinit_alive = False
         print("PROCESS", cmd[0], p.pid, "TERMINATED")
@@ -294,42 +294,45 @@ class NetworkPool:
 
 
 
-def simple_file(mount_points, size=4096):
+def simple_file(mount_points, fname, size=4096):
     print("simple file of", size, "bytes")
     first = mount_points[0]
     others = mount_points[1:]
     assert all(m.alive for m in mount_points)
-    with open(first.file_path('f1'), 'wb') as f1:
+    with open(first.file_path(fname), 'wb') as f:
         with open('/dev/urandom', 'rb') as src:
             print("Read from random source")
             buf = src.read(size) # XXX
             print("Read from random source: DONE")
-        print("Write f1 on node 1")
-        f1.write(buf)
-        print("Write f1 on node 1: DONE")
+        print("Write", fname, "on node 1")
+        f.write(buf)
+        print("Write", fname, "on node 1: DONE")
 
     assert all(m.alive for m in mount_points)
     tries = 0
     while tries < 10:
-        if all(os.path.exists(m.file_path('f1')) for m in others):
+        if all(os.path.exists(m.file_path(fname)) for m in others):
             print("simple file of", size, "bytes: OK")
             break
         tries += 1
         print("Try ", tries, ": waiting for file")
         time.sleep(1)
-    assert all(os.path.exists(m.file_path('f1')) for m in others)
+    assert all(os.path.exists(m.file_path(fname)) for m in others)
     for m in mount_points:
-        assert os.path.getsize(m.file_path('f1')) == size
-        with open(m.file_path('f1'), 'rb') as f1:
-            assert f1.read(size) == buf
+        f_size = os.path.getsize(m.file_path(fname))
+        print(fname, "size =", f_size)
+        assert f_size == size
+        with open(m.file_path(fname), 'rb') as f:
+            assert f.read(size) == buf
 
 
 
 def test_all(mount_points):
     for size in [4096, 4096 * 1024, 4096 * 1024 * 1024]:
+        fname = 'test-file-%d' % size
         for f in [simple_file]:
             try:
-                f(mount_points, size = size)
+                f(mount_points, fname, size = size)
             except Exception as err:
                 mps = str(tuple(str(m) for m in mount_points))
                 raise Exception("FAILURE: %s with size = %s and mount points: %s: " % (f.__name__, size, mps), err)

@@ -199,7 +199,7 @@ void Application::_OnIdentityUpdated(bool success)
       QString watchdogPath = this->_infinitHome.filePath("bin/8watchdog");
       std::cerr << "watchdog path: " << watchdogPath.toStdString() << std::endl;
       QProcess p;
-      if (!p.startDetached(watchdogPath))
+      if (p.execute(watchdogPath) < 0)
         throw std::runtime_error("Cannot start the watchdog !");
       std::cerr << "UPDATER: Process started\n";
       // XXX Cannot do that
@@ -264,6 +264,7 @@ void Application::_OnIdentityUpdated(bool success)
   if (!conn.waitForBytesWritten(2000))
     throw std::runtime_error("Couldn't run the watchdog");
 
+  ::sleep(20);
   std::cerr << "UPDATER: Run command sent\n";
   this->exit(EXIT_SUCCESS);
 }
