@@ -6,6 +6,9 @@
 #include <reactor/sleep.hh>
 #include <reactor/thread.hh>
 
+// XXX
+#include <elle/backtrace.hh>
+
 namespace reactor
 {
   /*-------------.
@@ -28,6 +31,12 @@ namespace reactor
     , _scheduler(scheduler)
     , _dispose(dispose)
   {
+    // XXX
+    if (!action)
+      {
+        elle::Backtrace bt;
+        std::cerr << bt << std::endl;
+      }
     assert(action);
     _scheduler._thread_register(*this);
   }
