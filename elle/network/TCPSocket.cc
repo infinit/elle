@@ -8,6 +8,13 @@
 #include <elle/network/Inputs.hh>
 #include <elle/network/Network.hh>
 
+#include <elle/idiom/Close.hh>
+#include <elle/format.hh>
+#include <elle/log.hh>
+#include <elle/idiom/Open.hh>
+
+ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
+
 namespace elle
 {
   namespace network
@@ -17,6 +24,13 @@ namespace elle
       static reactor::LocalStorage<Context> res
         (concurrency::scheduler());
       return res;
+    }
+
+    static std::ostream&
+    operator << (std::ostream& s, const TCPSocket& socket)
+    {
+      s << "TCPSocket " << &socket;
+      return s;
     }
 
     Context current_context()
@@ -71,19 +85,24 @@ namespace elle
     void
     TCPSocket::ReadData()
     {
+      ELLE_LOG_TRACE("%s: read data.", *this);
       // Grow the buffer if needed.
       if (_buffer_size == _buffer_capacity)
         {
+          ELLE_LOG_TRACE("%s: buffer is full (%s bytes), growing.",
+                         *this, _buffer_size);
           _buffer_capacity += BUFSIZ;
           _buffer = reinterpret_cast<unsigned char*>(realloc(_buffer, _buffer_capacity));
         }
 
       // Read data.
       {
+        ELLE_LOG_TRACE("%s: read data ...", *this);
         reactor::network::Buffer buffer(_buffer + _buffer_size,
                                         _buffer_capacity - _buffer_size);
         reactor::network::Size size = this->_socket->read_some(buffer);
         _buffer_size += size;
+        ELLE_LOG_TRACE("%s: %s bytes read.", *this, size);
       }
     }
 
@@ -152,13 +171,16 @@ namespace elle
                     continue;
 
                   // Otherwise dispatch it.
-                  auto it = Network::Procedures.find(parcel->header->tag);
+                  Tag tag = parcel->header->tag;
+                  ELLE_LOG_TRACE("%s: received RPC with tag %s.", *this, tag);
+                  auto it = Network::Procedures.find(tag);
 
                   if (it == Network::Procedures.end())
                     {
                       // Display error messages
-                      if (parcel->header->tag == TagError)
+                      if (tag == TagError)
                         {
+                          ELLE_LOG_TRACE("%s: RPC is an error.", *this);
                           Report  report;
                           // extract the error message.
                           if (report.Extract(*parcel->data) == StatusError)
@@ -170,6 +192,13 @@ namespace elle
                           // log the error.
                           log("an error message has been received "
                               "with no registered procedure");
+                          continue;
+                        }
+                      else
+                        {
+                          ELLE_LOG_TRACE("%s: fatal: unrecognized RPC.", *this);
+                          throw std::runtime_error
+                            (elle::format("unrecognized RPC tag: %s.", tag));
                         }
                     }
 
@@ -187,6 +216,7 @@ namespace elle
                       StatusError)
                     continue;
                   assert(it->second);
+                  ELLE_LOG_TRACE("%s: call procedure.", *this);
                   if (it->second(this, l, *parcel) == StatusError)
                     // FIXME
                     // escape("an error occured while processing the event");
@@ -197,6 +227,11 @@ namespace elle
       catch (const reactor::network::ConnectionClosed&)
         {
           // Nothing.
+        }
+      catch (const std::runtime_error&)
+        {
+          // Any error with the peer. Consider him alienated and
+          // disconnect from him.
         }
     }
 
