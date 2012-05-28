@@ -26,6 +26,13 @@ namespace elle
       return res;
     }
 
+    static std::ostream&
+    operator << (std::ostream& s, const TCPSocket& socket)
+    {
+      s << "TCPSocket " << &socket;
+      return s;
+    }
+
     Context current_context()
     {
       return _current_context().Get();
@@ -78,19 +85,24 @@ namespace elle
     void
     TCPSocket::ReadData()
     {
+      ELLE_LOG_TRACE("%s: read data.", *this);
       // Grow the buffer if needed.
       if (_buffer_size == _buffer_capacity)
         {
+          ELLE_LOG_TRACE("%s: buffer is full (%s bytes), growing.",
+                         *this, _buffer_size);
           _buffer_capacity += BUFSIZ;
           _buffer = reinterpret_cast<unsigned char*>(realloc(_buffer, _buffer_capacity));
         }
 
       // Read data.
       {
+        ELLE_LOG_TRACE("%s: read data ...", *this);
         reactor::network::Buffer buffer(_buffer + _buffer_size,
                                         _buffer_capacity - _buffer_size);
         reactor::network::Size size = this->_socket->read_some(buffer);
         _buffer_size += size;
+        ELLE_LOG_TRACE("%s: %s bytes read.", *this, size);
       }
     }
 
