@@ -12,12 +12,14 @@ void f()
 {
   ELLE_LOG_TRACE("This is usefull!")
   {
+    ELLE_LOG_TRACE("This is usefull inner");
     g();
   }
 }
 
 int main()
 {
+  ELLE_LOG_TRACE_COMPONENT("test_log.biet");
   elle::log::debug("BIET");
   elle::log::info("BIET");
   elle::log::warn("BIET");

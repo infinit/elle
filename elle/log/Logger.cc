@@ -14,12 +14,12 @@ namespace elle
       size_t const max_level_idx = static_cast<size_t>(Logger::Level::_max_value);
 
       std::string const level_strings[max_level_idx] = {
-          "TRACE",
-          "DEBUG",
-          "INFO",
-          "WARNING",
-          "ERROR",
-          "FATAL",
+          "[ TRACE ]",
+          "[ DEBUG ]",
+          "[ INFO  ]",
+          "[WARNING]",
+          "[ ERROR ]",
+          "[ FATAL ]",
       };
 
       struct OutStream
@@ -104,7 +104,7 @@ namespace elle
         assert(idx < max_level_idx);
         std::ostream* out = this->_impl->streams[idx].out;
         assert(out != nullptr);
-        (*out) << '[' << level_strings[idx] << "] " << message << std::endl;
+        (*out) << level_strings[idx] << ' ' << message << std::endl;
       }
 
     void

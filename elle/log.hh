@@ -16,7 +16,8 @@ namespace elle
 
 # define ELLE_LOG_TRACE(...)                                                  \
     if (auto ctx = ::elle::log::detail::TraceContext(__trace_component__)) {} \
-    else if (!ctx.send(__FILE__, __LINE__, ETC_LOG_FUNCTION, ##__VA_ARGS__))  \
+    else if (ctx.send(__FILE__, __LINE__, ETC_LOG_FUNCTION, ##__VA_ARGS__)) {}\
+    else                                                                      \
 
     template<typename... T> void debug(T const&...);
     template<typename... T> void info(T const&...);
