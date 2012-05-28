@@ -66,7 +66,7 @@ namespace hole
           if (elle::Network::Register(
                 elle::Procedure<TagChallenge,
                                 elle::TagNone,
-                                TagException>(
+                                elle::TagError>(
                   elle::Callback<>::Infer(
                     &Server::Challenge, this))) == elle::StatusError)
             escape("unable to register the callback");
@@ -75,7 +75,7 @@ namespace hole
           if (elle::Network::Register(
                 elle::Procedure<TagPush,
                                 elle::TagNone,
-                                TagException>(
+                                elle::TagError>(
                   elle::Callback<>::Infer(
                     &Server::Push, this))) == elle::StatusError)
             escape("unable to register the callback");
@@ -84,7 +84,7 @@ namespace hole
           if (elle::Network::Register(
                 elle::Procedure<TagPull,
                                 elle::TagNone,
-                                TagException>(
+                                elle::TagError>(
                   elle::Callback<>::Infer(
                     &Server::Pull, this))) == elle::StatusError)
             escape("unable to register the callback");
@@ -93,7 +93,7 @@ namespace hole
           if (elle::Network::Register(
                 elle::Procedure<TagWipe,
                                 elle::TagNone,
-                                TagException>(
+                                elle::TagError>(
                   elle::Callback<>::Infer(
                     &Server::Wipe, this))) == elle::StatusError)
             escape("unable to register the callback");

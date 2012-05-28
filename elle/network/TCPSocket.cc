@@ -162,6 +162,7 @@ namespace elle
           _buffer_size -= packet.size;
 
           ELLE_LOG_TRACE("%s: return a parcel.", *this);
+
           return parcel;
         }
     }

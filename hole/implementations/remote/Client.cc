@@ -63,13 +63,6 @@ namespace hole
                   elle::Callback<>::Infer(
                     &Client::Authenticated, this))) == elle::StatusError)
             escape("unable to register the callback");
-
-          // register the message.
-          if (elle::Network::Register(
-                elle::Procedure<TagException>(
-                  elle::Callback<>::Infer(
-                    &Client::Exception, this))) == elle::StatusError)
-            escape("unable to register the callback");
         }
 
         {
@@ -285,24 +278,6 @@ namespace hole
         // this client has succesfully been authenticated, set its state
         // accordingly.
         this->state = Client::StateAuthenticated;
-
-        return elle::StatusOk;
-      }
-
-      ///
-      /// this callback is triggered whenever the Exception message is
-      /// received which indicates the client that an error occured while
-      /// processing one of its requests.
-      ///
-      elle::Status      Client::Exception(const elle::Report&   report)
-      {
-        ELLE_LOG_TRACE_SCOPE("Exception");
-
-        // transpose the given report.
-        transpose(report);
-
-        // log the error.
-        log("an error occured on the server side");
 
         return elle::StatusOk;
       }
