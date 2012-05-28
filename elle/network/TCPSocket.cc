@@ -41,7 +41,8 @@ namespace elle
 
     TCPSocket::TCPSocket(reactor::network::Socket*      socket)
       : _buffer(0)
-      , _offset(0)
+      , _buffer_size(0)
+      , _buffer_capacity(0)
       , _socket(socket)
       , _dispatcher(0)
     {
@@ -70,42 +71,33 @@ namespace elle
     void
     TCPSocket::ReadData()
     {
-      // Get data from the network.
-      char data[BUFSIZ];
-      reactor::network::Buffer buffer(data, sizeof(data));
-      reactor::network::Size size = this->_socket->read_some(buffer);
-
-      // Adjust the buffer if needed.
-      if (this->_buffer == NULL)
+      // Grow the buffer if needed.
+      if (_buffer_size == _buffer_capacity)
         {
-          this->_buffer = new Region;
-          if (this->_buffer->Prepare(size) == StatusError)
-            throw std::runtime_error("unable to prepare the buffer");
-        }
-      else
-        {
-          if (this->_buffer->Adjust(this->_buffer->size + size) == StatusError)
-            throw std::runtime_error("unable to adjust the buffer");
+          _buffer_capacity += BUFSIZ;
+          _buffer = reinterpret_cast<unsigned char*>(realloc(_buffer, _buffer_capacity));
         }
 
-      // Copy data into the buffer
-      memcpy(reinterpret_cast<char*>(this->_buffer->contents +
-                                     this->_buffer->size), data, size);
-      this->_buffer->size = this->_buffer->size + size;
+      // Read data.
+      {
+        reactor::network::Buffer buffer(_buffer + _buffer_size,
+                                        _buffer_capacity - _buffer_size);
+        reactor::network::Size size = this->_socket->read_some(buffer);
+        _buffer_size += size;
+      }
     }
 
     Parcel*
     TCPSocket::Read()
     {
-      if (!this->_buffer || this->_buffer->size - this->_offset == 0)
+      if (!this->_buffer_size)
         return 0;
 
       Packet        packet;
       Region        frame;
 
       // Create the frame based on the previously extracted raw.
-      if (frame.Wrap(this->_buffer->contents + this->_offset,
-                     this->_buffer->size - this->_offset) == StatusError)
+      if (frame.Wrap(this->_buffer, this->_buffer_size) == StatusError)
         throw std::runtime_error("unable to wrap a frame in the raw");
 
       // Prepare the packet based on the frame.
@@ -117,55 +109,23 @@ namespace elle
 
       // Extract the header.
       if (parcel->header->Extract(packet) == StatusError)
-        return 0; // No header yet
+        {
+          purge();
+          return 0; // No header yet
+        }
 
       // XXX[Check if the size is plausible]
 
       // Check if there is enough data available.
       if ((packet.size - packet.offset) < parcel->header->size)
-        return 0;
+          return 0;
 
       // Extract the data.
       if (packet.Extract(*parcel->data) == StatusError)
         throw std::runtime_error("unable to extract the data");
 
-      this->_offset += packet.size;
-
-      // perform some operations on the buffer.
-      //
-      {
-        // if there is no more data in the buffer, delete it in order
-        // to avoid copying data whenever a new packet is
-        // received. indeed, if there is no buffer, the packet becomes
-        // the buffer, hence simplifying the process.
-        if (this->_offset == this->_buffer->size)
-          {
-            // delete the buffer.
-            delete this->_buffer;
-
-            // reinitialize the buffer to NULL.
-            this->_buffer = NULL;
-            this->_offset = 0;
-          }
-
-        // if the offset is too far, move the existing data to the
-        // beginning of the buffer.
-        static const Natural32 capacity = 209715200;
-
-        if (this->_offset >= capacity)
-          {
-            // move the data.
-            ::memmove(this->_buffer->contents,
-                      this->_buffer->contents + this->_offset,
-                      this->_buffer->size - this->_offset);
-
-            // reinitialize the buffer size.
-            this->_buffer->size = this->_buffer->size - this->_offset;
-
-            // reinitialize the offset.
-            this->_offset = 0;
-          }
-      }
+      ::memmove(_buffer, _buffer + packet.size, _buffer_size - packet.size);
+      _buffer_size -= packet.size;
 
       return parcel;
     }
@@ -226,7 +186,7 @@ namespace elle
                         static_cast<Natural16>(socket->Peer().port())) ==
                       StatusError)
                     continue;
-
+                  assert(it->second);
                   if (it->second(this, l, *parcel) == StatusError)
                     // FIXME
                     // escape("an error occured while processing the event");

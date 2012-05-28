@@ -83,6 +83,7 @@ namespace elle
                 const Tag O,
                 const Tag E>
       static Status     Register(const Procedure<I, O, E>&);
+      static Status     Register(Tag i, const Function& f);
 
       static Status     Show(const Natural32 = 0);
 
