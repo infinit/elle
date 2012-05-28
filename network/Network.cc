@@ -1,37 +1,20 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed feb  3 16:49:46 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/network/Network.hh>
 #include <elle/concurrency/Event.hh>
+
+#include <elle/idiom/Close.hh>
+#include <elle/log.hh>
+#include <elle/idiom/Open.hh>
+
+ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
 
 namespace elle
 {
   namespace network
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
     ///
     /// this container holds the list of registered procedures.
     ///
     Network::Container                  Network::Procedures;
-
-//
-// ---------- static methods --------------------------------------------------
-//
 
     ///
     /// this method initializes the network components.
@@ -75,6 +58,7 @@ namespace elle
     Status
     Network::Register(Tag i, const Function& f)
     {
+      ELLE_LOG_TRACE("register procedure for tag %s.", i);
       assert(f);
       std::pair<Network::Iterator, Boolean>     result;
 
