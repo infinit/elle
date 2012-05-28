@@ -45,12 +45,15 @@ namespace elle
 
       Function f(boost::bind(&Procedure<I, O, E>::Skeleton,
                              Procedure<I, O, E>(procedure), _1, _2, _3));
+      assert(f);
       result = Network::Procedures.insert
         (std::pair<const Tag, Function>(I, f));
 
       // check if the insertion was successful.
       if (result.second == false)
         escape("unable to insert the selectoinoid in the container");
+
+      assert(Network::Procedures.find(I)->second);
 
       return StatusOk;
     }
