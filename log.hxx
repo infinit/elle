@@ -1,6 +1,8 @@
 #ifndef  ELLE_LOG_HXX
 # define ELLE_LOG_HXX
 
+# include <elle/log.hh>
+
 namespace elle
 {
   namespace log
@@ -30,6 +32,21 @@ namespace elle
     template<typename... T> void fatal(T const&... values)
     {
       return default_logger.fatal(values...);
+    }
+
+    namespace detail
+    {
+
+      template<typename... T>
+      bool TraceContext::send(char const* file,
+                              unsigned int line,
+                              char const* function,
+                              T const&... values)
+        {
+          this->_send(elle::stringify(file, line, function, values...));
+          return false;
+        }
+
     }
 
   }
