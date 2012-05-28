@@ -56,8 +56,9 @@ namespace elle
       Parcel* Read();
     private:
       void ReadData();
-      Region*   _buffer;
-      int       _offset;
+      unsigned char*    _buffer;
+      int               _buffer_size;
+      int               _buffer_capacity;
 
       //
     public:

@@ -37,25 +37,9 @@ namespace elle
               const Tag E>
     Status              Network::Register(const Procedure<I, O, E>& procedure)
     {
-      std::pair<Network::Iterator, Boolean>     result;
-
-      // check if this tag has already been recorded.
-      if (Network::Procedures.find(I) != Network::Procedures.end())
-        escape("this tag seems to have already been recorded");
-
       Function f(boost::bind(&Procedure<I, O, E>::Skeleton,
                              Procedure<I, O, E>(procedure), _1, _2, _3));
-      assert(f);
-      result = Network::Procedures.insert
-        (std::pair<const Tag, Function>(I, f));
-
-      // check if the insertion was successful.
-      if (result.second == false)
-        escape("unable to insert the selectoinoid in the container");
-
-      assert(Network::Procedures.find(I)->second);
-
-      return StatusOk;
+      return Register(I, f);
     }
   }
 }

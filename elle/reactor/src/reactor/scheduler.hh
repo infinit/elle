@@ -7,7 +7,6 @@
 
 # include <reactor/asio.hh>
 # include <reactor/fwd.hh>
-# include <reactor/scheduler.hh>
 # include <reactor/backend/thread.hh>
 
 namespace reactor
