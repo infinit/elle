@@ -8,6 +8,13 @@
 #include <elle/network/Inputs.hh>
 #include <elle/network/Network.hh>
 
+#include <elle/idiom/Close.hh>
+#include <elle/format.hh>
+#include <elle/log.hh>
+#include <elle/idiom/Open.hh>
+
+ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
+
 namespace elle
 {
   namespace network
@@ -153,6 +160,7 @@ namespace elle
 
                   // Otherwise dispatch it.
                   Tag tag = parcel->header->tag;
+                  ELLE_LOG_TRACE("%s: received RPC with tag %s.", *this, tag);
                   auto it = Network::Procedures.find(tag);
 
                   if (it == Network::Procedures.end())
@@ -160,6 +168,7 @@ namespace elle
                       // Display error messages
                       if (tag == TagError)
                         {
+                          ELLE_LOG_TRACE("%s: RPC is an error.", *this);
                           Report  report;
                           // extract the error message.
                           if (report.Extract(*parcel->data) == StatusError)
@@ -175,6 +184,7 @@ namespace elle
                         }
                       else
                         {
+                          ELLE_LOG_TRACE("%s: fatal: unrecognized RPC.", *this);
                           throw std::runtime_error
                             (elle::format("unrecognized RPC tag: %s.", tag));
                         }
@@ -194,6 +204,7 @@ namespace elle
                       StatusError)
                     continue;
                   assert(it->second);
+                  ELLE_LOG_TRACE("%s: call procedure.", *this);
                   if (it->second(this, l, *parcel) == StatusError)
                     // FIXME
                     // escape("an error occured while processing the event");
