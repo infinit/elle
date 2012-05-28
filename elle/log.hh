@@ -8,6 +8,14 @@ namespace elle
   namespace log
   {
 
+    template<typename... T> void debug(T const&...);
+    template<typename... T> void info(T const&...);
+    template<typename... T> void warn(T const&...);
+    template<typename... T> void error(T const&...);
+    template<typename... T> void fatal(T const&...);
+
+    extern elle::log::Logger default_logger;
+
 # define ELLE_LOG_TRACE_COMPONENT(component)                                  \
     static ::elle::log::detail::TraceComponent                                \
         __trace_component__(component)                                        \
@@ -19,13 +27,6 @@ namespace elle
     else if (ctx.send(__FILE__, __LINE__, ETC_LOG_FUNCTION, ##__VA_ARGS__)) {}\
     else                                                                      \
 
-    template<typename... T> void debug(T const&...);
-    template<typename... T> void info(T const&...);
-    template<typename... T> void warn(T const&...);
-    template<typename... T> void error(T const&...);
-    template<typename... T> void fatal(T const&...);
-
-    extern elle::log::Logger default_logger;
 
     namespace detail
     {
