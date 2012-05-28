@@ -1,19 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed may 25 14:20:06 2011]
-//
-
 #ifndef ELLE_NETWORK_TCPSOCKET_HXX
 #define ELLE_NETWORK_TCPSOCKET_HXX
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <elle/idiom/Close.hh>
 # include <reactor/scheduler.hh>
@@ -31,6 +17,10 @@
 #include <elle/network/Parcel.hh>
 
 #include <elle/Manifest.hh>
+
+#include <elle/idiom/Close.hh>
+#include <elle/log.hh>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -87,9 +77,11 @@ namespace elle
     Status
     TCPSocket::Receive(Event& event, O outputs)
     {
+      ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
       Parcel* parcel;
 
       // block the current fiber until the given event is received.
+      ELLE_LOG_TRACE("wait on event %s", event.Identifier());
       scheduler().current()->wait(event.Signal());
       parcel = event.Signal().Value();
 
@@ -140,6 +132,7 @@ namespace elle
     Status              TCPSocket::Call(const I                 inputs,
                                         O                       outputs)
     {
+      ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
       Event             event;
 
       // generate an event to link the request with the response.
@@ -147,6 +140,8 @@ namespace elle
         escape("unable to generate the event");
 
       // send the inputs.
+      ELLE_LOG_TRACE("call tag %s on event %s and await tag %s",
+                     inputs.tag, event.Identifier(), outputs.tag);
       if (this->Send(inputs, event) == StatusError)
         escape("unable to send the inputs");
 
