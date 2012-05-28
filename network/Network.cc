@@ -72,5 +72,25 @@ namespace elle
       return StatusOk;
     }
 
+    Status
+    Network::Register(Tag i, const Function& f)
+    {
+      assert(f);
+      std::pair<Network::Iterator, Boolean>     result;
+
+      // check if this tag has already been recorded.
+      if (Network::Procedures.find(i) != Network::Procedures.end())
+        escape("this tag seems to have already been recorded");
+      result = Network::Procedures.insert
+        (std::pair<const Tag, Function>(i, f));
+
+      // check if the insertion was successful.
+      if (result.second == false)
+        escape("unable to insert the selectoinoid in the container");
+      // FIXME: duplicate, remove
+      assert(Network::Procedures.find(i)->second);
+
+      return StatusOk;
+    }
   }
 }
