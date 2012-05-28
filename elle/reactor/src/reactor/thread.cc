@@ -21,7 +21,8 @@ namespace reactor
                  std::string const&     name,
                  Action const&          action,
                  bool                   dispose)
-    : _state(state::running)
+    : _dispose(dispose)
+    , _state(state::running)
     , _injection()
     , _exception(0)
     , _waited()
@@ -29,7 +30,6 @@ namespace reactor
     , _thread(scheduler._manager, name, boost::bind(action_wrapper,
                                                     action))
     , _scheduler(scheduler)
-    , _dispose(dispose)
   {
     // XXX
     if (!action)

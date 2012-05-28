@@ -29,6 +29,7 @@ namespace nucleus
     ///
     const Subject::Descriptor   Subject::Descriptors[Subject::Types] =
       {
+        { Subject::TypeUnknown, "unknown" },
         { Subject::TypeUser, "user" },
         { Subject::TypeGroup, "group" },
       };

@@ -30,8 +30,8 @@ namespace hole
       ///
       Host::Host(const elle::Locus& locus):
         state(StateUnknown),
-        socket(0),
-        locus(locus)
+        locus(locus),
+        socket(nullptr)
       {
         std::string hostname;
         if (this->locus.host.Convert(hostname) == elle::StatusError)

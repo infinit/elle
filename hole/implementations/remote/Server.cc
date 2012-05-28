@@ -23,7 +23,7 @@ namespace hole
                   (elle::concurrency::scheduler()))
         , _acceptor(0)
       {
-        _server->listen(locus.port);
+        this->_server->listen(locus.port);
       }
 
       Server::~Server()
@@ -43,8 +43,8 @@ namespace hole
             delete customer;
           }
         this->container.clear();
-        delete _server;
-        _server = 0;
+        delete this->_server;
+        this->_server = nullptr;
       }
 
       ///

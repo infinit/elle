@@ -121,10 +121,12 @@ namespace reactor
         boost::system::error_code error;
         _socket->shutdown(AsioSocket::shutdown_both, error);
         if (error)
-          if (error == boost::asio::error::not_connected)
-            ; // It's ok to try to disconnect a non-connected socket.
-          else
-            throw new Exception(error.message());
+          {
+            if (error == boost::asio::error::not_connected)
+              ; // It's ok to try to disconnect a non-connected socket.
+            else
+              throw new Exception(error.message());
+          }
         _socket->close();
         delete _socket;
         _socket = 0;
@@ -149,6 +151,7 @@ namespace reactor
     Socket::read(Buffer buffer, DurationOpt opt)
     {
       std::abort();
+      // XXX[unused arguments for now, do something with it]
       // Size s = buffer.size();
       // read_some(buffer);
     }
