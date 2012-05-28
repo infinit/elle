@@ -152,12 +152,13 @@ namespace elle
                     continue;
 
                   // Otherwise dispatch it.
-                  auto it = Network::Procedures.find(parcel->header->tag);
+                  Tag tag = parcel->header->tag;
+                  auto it = Network::Procedures.find(tag);
 
                   if (it == Network::Procedures.end())
                     {
                       // Display error messages
-                      if (parcel->header->tag == TagError)
+                      if (tag == TagError)
                         {
                           Report  report;
                           // extract the error message.
@@ -170,6 +171,12 @@ namespace elle
                           // log the error.
                           log("an error message has been received "
                               "with no registered procedure");
+                          continue;
+                        }
+                      else
+                        {
+                          throw std::runtime_error
+                            (elle::format("unrecognized RPC tag: %s.", tag));
                         }
                     }
 
@@ -197,6 +204,11 @@ namespace elle
       catch (const reactor::network::ConnectionClosed&)
         {
           // Nothing.
+        }
+      catch (const std::runtime_error&)
+        {
+          // Any error with the peer. Consider him alienated and
+          // disconnect from him.
         }
     }
 
