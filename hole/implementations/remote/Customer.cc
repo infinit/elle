@@ -59,9 +59,9 @@ namespace hole
         // set the customer's state as dead.
         this->state = Customer::StateDead;
 
-        // Q_EMIT the signal.
+        // emit the signal.
         if (this->signal.dead.Emit(this) == elle::StatusError)
-          escape("unable to Q_EMIT the signal");
+          escape("unable to emit the signal");
 
         return elle::StatusOk;
       }
@@ -99,9 +99,9 @@ namespace hole
         // check if the customer has been authenticated.
         if (this->state != Customer::StateAuthenticated)
           {
-            // Q_EMIT the signal.
+            // emit the signal.
             if (this->signal.dead.Emit(this) == elle::StatusError)
-              escape("unable to Q_EMIT the signal");
+              escape("unable to emit the signal");
           }
 
         return elle::StatusOk;

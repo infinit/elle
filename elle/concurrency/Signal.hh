@@ -43,7 +43,7 @@ namespace elle
 
     ///
     /// a signal represents an event to which one can subscribe so that
-    /// when it is Q_EMITted, the subscribed callbacks are called.
+    /// when it is emitted, the subscribed callbacks are called.
     ///
     template <typename... T>
     class Signal< Parameters<T...> >:

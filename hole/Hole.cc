@@ -188,7 +188,7 @@ namespace hole
       return elle::StatusOk;
 
     if (Hole::ready.Emit() == elle::StatusError)
-      escape("unable to Q_EMIT the signal");
+      escape("unable to emit the signal");
 
     Hole::state = Hole::StateOnline;
 

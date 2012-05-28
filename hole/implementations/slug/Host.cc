@@ -102,9 +102,9 @@ namespace hole
         // if the host has not been authenticated...
         if (this->state != Host::StateAuthenticated)
           {
-            // Q_EMIT the signal.
+            // emit the signal.
             if (this->signal.dead.Emit(this) == elle::StatusError)
-              escape("unable to Q_EMIT the signal");
+              escape("unable to emit the signal");
 
             // set the state.
             this->state = Host::StateDead;
@@ -137,9 +137,9 @@ namespace hole
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::slug::Host::Disconnected()\n");
 
-        // Q_EMIT the signal.
+        // emit the signal.
         if (this->signal.dead.Emit(this) == elle::StatusError)
-          escape("unable to Q_EMIT the signal");
+          escape("unable to emit the signal");
 
         // set the state.
         this->state = Host::StateDead;
