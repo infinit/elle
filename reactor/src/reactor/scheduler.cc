@@ -56,27 +56,29 @@ namespace reactor
     _io_service.reset();
     _io_service.poll();
     if (_running.empty() && _starting.empty())
-      if (_frozen.empty())
-        return false;
-      else
-        while (_running.empty() && _starting.empty())
-        {
-          INFINIT_REACTOR_DEBUG("Scheduler: nothing to do, "
-                                "polling asio in a blocking fashion");
-          _io_service.reset();
-          boost::system::error_code err;
-          std::size_t run = _io_service.run_one(err);
-          if (err)
-          {
-            std::cerr << "fatal ASIO error: " << err << std::endl;
-            std::abort();
-          }
-          else if (run == 0)
-          {
-            std::cerr << "ASIO service is dead." << std::endl;
-            std::abort();
-          }
-        }
+      {
+        if (_frozen.empty())
+          return false;
+        else
+          while (_running.empty() && _starting.empty())
+            {
+              INFINIT_REACTOR_DEBUG("Scheduler: nothing to do, "
+                                    "polling asio in a blocking fashion");
+              _io_service.reset();
+              boost::system::error_code err;
+              std::size_t run = _io_service.run_one(err);
+              if (err)
+                {
+                  std::cerr << "fatal ASIO error: " << err << std::endl;
+                  std::abort();
+                }
+              else if (run == 0)
+                {
+                  std::cerr << "ASIO service is dead." << std::endl;
+                  std::abort();
+                }
+            }
+      }
     return true;
   }
 
