@@ -226,7 +226,7 @@ namespace elle
                         static_cast<Natural16>(socket->Peer().port())) ==
                       StatusError)
                     continue;
-
+                  assert(it->second);
                   if (it->second(this, l, *parcel) == StatusError)
                     // FIXME
                     // escape("an error occured while processing the event");

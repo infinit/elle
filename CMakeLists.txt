@@ -17,6 +17,10 @@ ENDIF()
 set_property (SOURCE reactor/src/reactor/backend/coro_io/libcoroutine/asm.S PROPERTY LANGUAGE C)
 
 ADD_LIBRARY(elle
+
+# XXX
+backtrace.cc
+
   core/Integer.cc
   core/Large.cc
   core/Null.cc
