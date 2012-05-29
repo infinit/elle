@@ -117,8 +117,9 @@ include_directories(BEFORE SYSTEM ${INFINIT_LIBRARIES_PREFIX}/include .)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/elle/reactor/src)
 
+# FIXME: remove -Wno-undef when extensions.hh has been killed off.
 set(CMAKE_CXX_FLAGS
-	"${CMAKE_CXX_FLAGS} -DQT_NO_KEYWORDS --include ${CMAKE_CURRENT_SOURCE_DIR}/elle/extensions.hh"
+	"${CMAKE_CXX_FLAGS} -Wno-undef -DQT_NO_KEYWORDS --include ${CMAKE_CURRENT_SOURCE_DIR}/elle/extensions.hh"
 )
 
 #
