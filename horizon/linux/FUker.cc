@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       horizon
-//
-// license       infinit
-//
-// author        julien quintard   [tue jul 26 15:33:54 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <horizon/linux/FUSE.hh>
 
 #include <hole/Hole.hh>
@@ -33,6 +19,12 @@
 #include <elle/idiom/Open.hh>
 
 #include <elle/concurrency/Scheduler.hh>
+
+#include <elle/idiom/Close.hh>
+# include <elle/log.hh>
+#include <elle/idiom/Open.hh>
+
+ELLE_LOG_TRACE_COMPONENT("Infinit.FUSE");
 
 namespace horizon
 {
@@ -116,6 +108,7 @@ namespace horizon
          BOOST_PP_SEQ_FOR_EACH_I(INFINIT_FUSE_FORMALS, _,               \
                                  BOOST_PP_SEQ_POP_FRONT(Args)))         \
     {                                                                   \
+      ELLE_LOG_TRACE("receive " BOOST_PP_STRINGIZE(Name));              \
       return elle::concurrency::scheduler().mt_run<int>                 \
         (#Name,                                                         \
          boost::bind(FUSE::Operations.Name                              \
@@ -227,12 +220,20 @@ namespace horizon
       }
 
       // finally, initialize FUSE.
-      if (::fuse_main(
-            sizeof (arguments) / sizeof (elle::Character*),
-            const_cast<char**>(arguments),
-            &operations,
-            NULL) != 0)
-        log(::strerror(errno));
+      ELLE_LOG_TRACE("start FUSE main")
+        {
+          if (::fuse_main(
+                sizeof (arguments) / sizeof (elle::Character*),
+                const_cast<char**>(arguments),
+                &operations,
+                NULL) != 0)
+            {
+              std::string error(::strerror(errno));
+              ELLE_LOG_TRACE("FUSE error: %s", error);
+              log(error.c_str());
+            }
+        }
+      ELLE_LOG_TRACE("exit FUSE main");
 
       // now that FUSE has stopped, make sure the program is exiting.
       elle::Program::Exit();
