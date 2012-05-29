@@ -176,32 +176,6 @@ namespace lune
   }
 
 //
-// ---------- archivable ------------------------------------------------------
-//
-
-  ///
-  /// this method serializes the object.
-  ///
-<<<<<<< HEAD
-  elle::Status          Descriptor::Serialize(elle::Archive&    archive) const
-  {
-    // serialize the attributes.
-    if (archive.Serialize(
-          this->_id,
-          this->name,
-          this->model,
-          this->root,
-          this->history,
-          this->extent,
-          this->contention,
-          this->balancing,
-          this->signature) == elle::StatusError)
-      escape("unable to serialize the attributes");
-
-    return elle::StatusOk;
-  }
-
-//
 // ---------- fileable --------------------------------------------------------
 //
 
