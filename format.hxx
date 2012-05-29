@@ -14,11 +14,11 @@ namespace elle
 
     template<typename T, typename... K>
     void
-      format_feed(boost::format& fmt, T const& front, K const&... tail)
-      {
-        fmt % front;
-        format_feed(fmt, tail...);
-      }
+    format_feed(boost::format& fmt, T const& front, K const&... tail)
+    {
+      fmt % front;
+      format_feed(fmt, tail...);
+    }
   }
 
   // XXX virer les const& et utiliser les bon traits
