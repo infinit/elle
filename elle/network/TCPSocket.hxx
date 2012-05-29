@@ -141,8 +141,8 @@ namespace elle
       event.Signal();
 
       // send the inputs.
-      ELLE_LOG_TRACE("call tag %s on event %s and await tag %s",
-                     inputs.tag, event.Identifier(), outputs.tag);
+      ELLE_LOG_TRACE("%s: call tag %s on event %s and await tag %s",
+                     this, inputs.tag, event.Identifier(), outputs.tag);
       if (this->Send(inputs, event) == StatusError)
         escape("unable to send the inputs");
 
