@@ -14,7 +14,7 @@ namespace reactor
     typedef LocalStorage<T> Self;
     LocalStorage(Scheduler& sched);
     operator T&();
-    T& Get();
+    T& Get(T const& def = T());
 
   private:
     void _Clean(Thread* t);
