@@ -144,9 +144,12 @@ namespace elle
       {
         if (!Components::instance().enabled(this->_component.name))
           return;
-        std::string align = std::string((_indent.Get() - 1) * 2, ' ');
-        assert(this->_component.name.size() <= Components::instance().max_string_size());
-        unsigned int pad = Components::instance().max_string_size() - this->_component.name.size();
+        int indent = _indentation.Get();
+        assert(indent >= 1);
+        std::string align = std::string((indent - 1) * 2, ' ');
+        unsigned int size = this->_component.name.size();
+        assert(size <= Components::instance().max_string_size());
+        unsigned int pad = Components::instance().max_string_size() - size;
         std::string s = (
           "[" + std::string(pad / 2, ' ') +
           this->_component.name +
