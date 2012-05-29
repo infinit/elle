@@ -1,3 +1,5 @@
+#include <elle/log.hh>
+
 #include <reactor/network/tcp-server.hh>
 
 #include <hole/Hole.hh>
@@ -6,6 +8,8 @@
 #include <lune/Lune.hh>
 
 #include <Infinit.hh>
+
+ELLE_LOG_TRACE_COMPONENT("Infinit.Hole.Remote.Server");
 
 namespace hole
 {
@@ -52,10 +56,7 @@ namespace hole
       ///
       elle::Status      Server::Launch()
       {
-
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Server::Launch()\n");
+        ELLE_LOG_TRACE_SCOPE("Launch");
 
         //
         // register the messages.
@@ -112,8 +113,7 @@ namespace hole
           {
             reactor::network::TCPSocket* socket = _server->accept();
 
-            if (Infinit::Configuration.hole.debug == true)
-              printf("[hole] implementations::remote::Server::_accept()\n");
+            ELLE_LOG_TRACE_SCOPE("accept");
 
             auto customer = new Customer(new elle::TCPSocket(socket));
 
@@ -227,10 +227,7 @@ namespace hole
       elle::Status      Server::Put(const nucleus::Address&     address,
                                     const nucleus::ImmutableBlock& block)
       {
-
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Server::Put[Immutable]()\n");
+        ELLE_LOG_TRACE_SCOPE("Immutable]");
 
         // does the block already exist.
         if (block.Exist(Hole::Implementation->network,
@@ -251,10 +248,7 @@ namespace hole
       elle::Status      Server::Put(const nucleus::Address&     address,
                                     const nucleus::MutableBlock& block)
       {
-
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Server::Put[Mutable]()\n");
+        ELLE_LOG_TRACE_SCOPE("Mutable]");
 
         // validate the block, depending on its component.
         //
@@ -322,10 +316,7 @@ namespace hole
       elle::Status      Server::Get(const nucleus::Address&     address,
                                     nucleus::ImmutableBlock&    block)
       {
-
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Server::Get[Immutable]()\n");
+        ELLE_LOG_TRACE_SCOPE("Immutable]");
 
         // does the block exist.
         if (block.Exist(Hole::Implementation->network,
@@ -351,9 +342,7 @@ namespace hole
                                     const nucleus::Version&     version,
                                     nucleus::MutableBlock&      block)
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Server::Get[Mutable]()\n");
+        ELLE_LOG_TRACE_SCOPE("Mutable]");
 
         // does the block exist.
         if (block.Exist(Hole::Implementation->network,
@@ -428,10 +417,7 @@ namespace hole
       {
         nucleus::Block  block;
 
-
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Server::Kill()\n");
+        ELLE_LOG_TRACE_SCOPE("Kill");
 
         // treat the request depending on the nature of the block which
         // the addres indicates.
@@ -482,9 +468,7 @@ namespace hole
       {
         Customer*       customer;
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Server::Challenge()\n");
+        ELLE_LOG_TRACE_SCOPE("Challenge");
 
         // retrieve the customer.
         if (this->Retrieve(elle::network::current_context().socket, customer) == elle::StatusError)
@@ -545,9 +529,7 @@ namespace hole
         nucleus::Block* object;
 
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Server::Push()\n");
+        ELLE_LOG_TRACE_SCOPE("Push");
 
         // retrieve the customer.
         if (this->Retrieve(elle::network::current_context().socket,
@@ -617,9 +599,7 @@ namespace hole
         Customer*       customer;
         nucleus::Block* block;
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Server::Pull()\n");
+        ELLE_LOG_TRACE_SCOPE("Pull");
 
         // retrieve the customer.
         if (this->Retrieve(elle::network::current_context().socket,
@@ -693,9 +673,7 @@ namespace hole
       {
         Customer*       customer;
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Server::Wipe()\n");
+        ELLE_LOG_TRACE_SCOPE("Wipe");
 
         // retrieve the customer.
         if (this->Retrieve(elle::network::current_context().socket,

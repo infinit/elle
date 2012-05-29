@@ -1,9 +1,12 @@
+#include <elle/log.hh>
+
+#include <hole/Hole.hh>
 #include <hole/implementations/remote/Client.hh>
 #include <hole/implementations/remote/Manifest.hh>
 
-#include <hole/Hole.hh>
-
 #include <Infinit.hh>
+
+ELLE_LOG_TRACE_COMPONENT("Infinit.Hole.Remote.Client");
 
 namespace hole
 {
@@ -48,9 +51,7 @@ namespace hole
       ///
       elle::Status      Client::Launch()
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Client::Launch()\n");
+        ELLE_LOG_TRACE_SCOPE("Launch");
 
         //
         // register the messages.
@@ -103,9 +104,7 @@ namespace hole
         nucleus::Derivable<nucleus::Block>      derivable(address.component,
                                                           block);
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Client::Put[Immutable]()\n");
+        ELLE_LOG_TRACE_SCOPE("Put[Immutable]");
 
         // check that the client is connected.
         if (this->socket == NULL)
@@ -129,9 +128,7 @@ namespace hole
         nucleus::Derivable<nucleus::Block>      derivable(address.component,
                                                           block);
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Client::Put[Mutable]()\n");
+        ELLE_LOG_TRACE_SCOPE("Put[Mutable]");
 
         // check that the client is connected.
         if (this->socket == NULL)
@@ -158,9 +155,7 @@ namespace hole
       {
         nucleus::Derivable<nucleus::Block>      derivable(block);
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Client::Get[Immutable]()\n");
+        ELLE_LOG_TRACE_SCOPE("Get[Immutable]");
 
         // check that the client is connected.
         if (this->socket == NULL)
@@ -185,9 +180,7 @@ namespace hole
       {
         nucleus::Derivable<nucleus::Block>      derivable(block);
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Client::Get[Mutable]()\n");
+        ELLE_LOG_TRACE_SCOPE("Get[Mutable]");
 
         // check that the client is connected.
         if (this->socket == NULL)
@@ -208,9 +201,7 @@ namespace hole
       ///
       elle::Status      Client::Kill(const nucleus::Address&    address)
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Client::Kill()\n");
+        ELLE_LOG_TRACE_SCOPE("Kill");
 
         // check that the client is connected.
         if (this->socket == NULL)
@@ -235,9 +226,7 @@ namespace hole
       ///
       elle::Status      Client::Connected()
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Client::Connected()\n");
+        ELLE_LOG_TRACE_SCOPE("Connected");
 
         // set the client as connected.
         this->state = Client::StateConnected;
@@ -251,9 +240,7 @@ namespace hole
       ///
       elle::Status      Client::Disconnected()
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Client::Disconnected()\n");
+        ELLE_LOG_TRACE_SCOPE("Disconnected");
 
         // exit if the connection was shut down.
         if ((this->state == Client::StateConnected) ||
@@ -276,9 +263,7 @@ namespace hole
       ///
       elle::Status      Client::Error(elle::String)
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Client::Error()\n");
+        ELLE_LOG_TRACE_SCOPE("Error");
 
         // disconnect the socket, though that may be unecessary.
 
@@ -298,9 +283,7 @@ namespace hole
       elle::Status
       Client::Authenticated()
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Client::Authenticated()\n");
+        ELLE_LOG_TRACE_SCOPE("Authenticated");
 
         // this client has succesfully been authenticated, set its state
         // accordingly.
@@ -316,9 +299,7 @@ namespace hole
       ///
       elle::Status      Client::Exception(const elle::Report&   report)
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Client::Exception()\n");
+        ELLE_LOG_TRACE_SCOPE("Exception");
 
         // transpose the given report.
         transpose(report);
