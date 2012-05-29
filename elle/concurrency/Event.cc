@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar  3 13:55:58 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <boost/unordered_map.hpp>
 
 #include <elle/concurrency/Event.hh>
@@ -29,14 +15,7 @@ namespace elle
 
   namespace concurrency
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
     /// this variable defines an unused hence null Event.
-    ///
     const Event                         Event::Null;
 
 //
@@ -47,7 +26,9 @@ namespace elle
     /// default constructor.
     ///
     Event::Event()
-      : _identifier(0)
+      : waited(false)
+      , parcel(0)
+      , _identifier(0)
       , _signal(0)
     {}
 
@@ -57,7 +38,8 @@ namespace elle
 
 
     // XXX workaround until concurrency is entirely rewritten.
-    typedef boost::unordered_map <Natural64, Event::SignalType*> Signals;
+    typedef std::pair<Event::SignalType*, network::Parcel*> Signal;
+    typedef boost::unordered_map <Natural64, Signal> Signals;
     static Signals _signals;
 
     ///
@@ -72,14 +54,6 @@ namespace elle
           if (Random::Generate(this->_identifier) == StatusError)
             escape("unable to generate the identifier");
         } while (*this == Event::Null);
-
-      // XXX
-      Signals::iterator it = _signals.find(this->_identifier);
-      if (it == _signals.end())
-        _signals[this->_identifier] = _signal =
-          new SignalType();
-      else
-        this->_signal = it->second;
 
       return StatusOk;
     }
@@ -144,10 +118,12 @@ namespace elle
 
       // XXX
       Signals::iterator it = _signals.find(this->_identifier);
-      if (it == _signals.end())
-        _signals[this->_identifier] = _signal = new SignalType();
-      else
-        this->_signal = it->second;
+      if (it != _signals.end())
+        {
+          this->_signal = it->second.first;
+          this->parcel = it->second.second;
+          this->waited = true;
+        }
 
       return StatusOk;
     };
@@ -156,9 +132,11 @@ namespace elle
     Event::Cleanup()
     {
       Signals::iterator it = _signals.find(this->_identifier);
-      assert (it != _signals.end());
-      delete it->second;
-      _signals.erase(it);
+      if (it != _signals.end())
+        {
+          delete it->second.first;
+          _signals.erase(it);
+        }
     }
 
     Natural64
@@ -186,15 +164,30 @@ namespace elle
     Event::SignalType&
     Event::Signal()
     {
-      // XXX
-      printf("SIGNALS\n");
-      for (auto i = _signals.begin(); i != _signals.end(); i++)
+      if (!_signal)
         {
-          std::cout << std::dec << i->first << std::endl;
+          this->_signal = new SignalType();
+          _signals[this->_identifier] = concurrency::Signal(this->_signal, 0);
+          this->waited = true;
         }
-
-      assert(_signal);
       return *_signal;
+    }
+
+    elle::network::Parcel*
+    Event::Parcel()
+    {
+      Signals::iterator it(_signals.find(this->_identifier));
+      assert(it != _signals.end());
+      assert(it->second.second);
+      return it->second.second;
+    }
+
+    void
+    Event::Parcel(elle::network::Parcel* parcel)
+    {
+      Signals::iterator it(_signals.find(this->_identifier));
+      assert(it != _signals.end());
+      it->second.second = parcel;
     }
   }
 }
