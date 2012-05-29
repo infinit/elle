@@ -25,7 +25,7 @@ BUILD = os.environ.get(
 )
 
 os.environ['INFINIT_RANDOM_SOURCE'] = '/dev/urandom'
-
+os.environ['ELLE_LOG_COMPONENTS'] = '*'
 MONITOR_SLEEP=1
 
 def monitor(p, cmd):
@@ -222,16 +222,17 @@ class MountPoint:
         print("PROCESS", cmd[0], p.pid, "TERMINATED")
 
     def terminate(self, sig = 15):
-        self.__infinit.send_signal(sig)
+        if self.__infinit_alive:
+            self.__infinit.send_signal(sig)
 
     def __exit__(self, type_, value, traceback):
-        self.__infinit.send_signal(15)
-        self.__infinit.wait()
-        self.__infinit_thread.join()
+        self.terminate()
+        self.__monitor_thread.join()
         while os.path.exists(self._phrase_path):
             time.sleep(1)
         try:
             os.system('fusermount -u %s' % os.path.abspath(self._mount_dir))
+            print(self._mount_dir, "umounted")
         except:
             print("cannot call fusermount")
             pass
@@ -291,8 +292,8 @@ class NetworkPool:
             try:
                 delattr(self, 'mount_point' + str(i))
                 m.__exit__(type_, value, traceback) #XXX check doc
-            except:
-                print("Cannot umount", m)
+            except Exception as err:
+                print("Cannot umount", m, ':', err)
         self.mount_points = []
 
 
