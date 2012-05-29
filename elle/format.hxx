@@ -8,9 +8,9 @@ namespace elle
 
   namespace detail
   {
-    void
-      format_feed(boost::format&)
-      {}
+    inline void
+    format_feed(boost::format&)
+    {}
 
     template<typename T, typename... K>
     void
