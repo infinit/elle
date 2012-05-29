@@ -1,30 +1,14 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [tue mar 23 14:19:59 2010]
-//
-
 #ifndef ELLE_CONCURRENCY_FRAME_HH
-#define ELLE_CONCURRENCY_FRAME_HH
+# define ELLE_CONCURRENCY_FRAME_HH
+# include <elle/types.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
 
-#include <elle/core/Natural.hh>
-#include <elle/core/Byte.hh>
-
-#include <elle/radix/Status.hh>
-#include <elle/radix/Meta.hh>
-#include <elle/radix/Entity.hh>
+# include <elle/radix/Meta.hh>
+# include <elle/radix/Entity.hh>
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
 
   namespace concurrency

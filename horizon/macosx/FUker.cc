@@ -272,7 +272,7 @@ namespace horizon
       if (::pthread_create(&FUker::Thread, NULL, &FUker::Setup, NULL) != 0)
         escape("unable to create the FUSE-specific thread");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -290,21 +290,21 @@ namespace horizon
         case hole::Hole::StateOffline:
           {
             if (hole::Hole::ready.Subscribe(
-                  elle::Callback<>::Infer(&FUker::Run)) == elle::StatusError)
+                  elle::concurrency::Callback<>::Infer(&FUker::Run)) == elle::Status::Error)
               escape("unable to subscribe to the signal");
 
             break;
           }
         case hole::Hole::StateOnline:
           {
-            if (FUker::Run() == elle::StatusError)
+            if (FUker::Run() == elle::Status::Error)
               escape("unable to run the FUker thread");
 
             break;
           }
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -317,7 +317,7 @@ namespace horizon
       // this operation will normally make FUSE exit.
       ::unmount(Infinit::Mountpoint.c_str(), MNT_FORCE);
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
   }
 }

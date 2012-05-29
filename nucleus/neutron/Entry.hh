@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <nucleus/proton/Address.hh>
 
@@ -33,7 +33,7 @@ namespace nucleus
     /// composed of a name and its object's corresponding address.
     ///
     class Entry:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //
@@ -65,8 +65,8 @@ namespace nucleus
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status      Serialize(elle::Archive&) const;
-      elle::Status      Extract(elle::Archive&);
+      //elle::Status      Serialize(elle::Archive&) const;
+      //elle::Status      Extract(elle::Archive&);
 
       // rangeable
       elle::String&     Symbol();

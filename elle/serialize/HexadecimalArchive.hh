@@ -27,7 +27,11 @@ namespace elle { namespace serialize {
       BaseClass(stream)
     {}
 
-  protected:
+    template<typename T>
+    HexadecimalArchive(StreamType& stream, T& value) :
+      BaseClass(stream)
+    { *this << value; }
+
     void SaveBinary(void const* data, size_t size)
     {
       if (size == 0)
@@ -37,7 +41,8 @@ namespace elle { namespace serialize {
 
       size_t i = 0;
       unsigned char const* ptr = static_cast<unsigned char const*>(data);
-      while (ptr != data + size)
+      unsigned char const* end = ptr + size;
+      while (ptr != end)
         {
           unsigned char c = *ptr++;
           this->_temp[i++] = _hexChars[(c >> 4) & 0xf];
@@ -62,7 +67,6 @@ namespace elle { namespace serialize {
       : BaseClass(stream)
     {}
 
-  protected:
     void LoadBinary(void* data, size_t size)
     {
       char* ptr = static_cast<char*>(data);

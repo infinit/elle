@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
@@ -103,7 +103,7 @@ namespace nucleus
     ///
     template <typename V>
     class Porcupine<V>:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //
@@ -138,7 +138,7 @@ namespace nucleus
       elle::Status              Check(const Pins = PinAll);
       elle::Status              Traverse(const elle::Natural32 = 0);
 
-      elle::Status              Seal(const elle::SecretKey&);
+      elle::Status              Seal(elle::cryptography::SecretKey const&);
 
       //
       // interfaces
@@ -172,35 +172,35 @@ namespace nucleus
       {
         static const elle::Natural32            Length;
 
-        static elle::SecretKey                  Secret;
+        static elle::cryptography::SecretKey                  Secret;
       };
 
       //
       // static methods
       //
       static elle::Status       Initialize(
-        const elle::Callback<
+        const elle::concurrency::Callback<
           elle::Status,
-          elle::Parameters<
+          elle::radix::Parameters<
             Block*,
             Handle&
             >
           >&,
-        const elle::Callback<
+        const elle::concurrency::Callback<
           elle::Status,
-          elle::Parameters<
+          elle::radix::Parameters<
             Handle&
             >
           >&,
-        const elle::Callback<
+        const elle::concurrency::Callback<
           elle::Status,
-          elle::Parameters<
+          elle::radix::Parameters<
             Handle&
             >
           >&,
-        const elle::Callback<
+        const elle::concurrency::Callback<
           elle::Status,
-          elle::Parameters<
+          elle::radix::Parameters<
             Handle&
             >
           >&);
@@ -210,31 +210,31 @@ namespace nucleus
       // static attributes
       //
       static
-      elle::Callback<
+      elle::concurrency::Callback<
         elle::Status,
-        elle::Parameters<
+        elle::radix::Parameters<
           Block*,
           Handle&
           >
         >                       Attach;
       static
-      elle::Callback<
+      elle::concurrency::Callback<
         elle::Status,
-        elle::Parameters<
+        elle::radix::Parameters<
           Handle&
           >
         >                       Detach;
       static
-      elle::Callback<
+      elle::concurrency::Callback<
         elle::Status,
-        elle::Parameters<
+        elle::radix::Parameters<
           Handle&
           >
         >                       Load;
       static
-      elle::Callback<
+      elle::concurrency::Callback<
         elle::Status,
-        elle::Parameters<
+        elle::radix::Parameters<
           Handle&
           >
         >                       Unload;

@@ -1,16 +1,4 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       horizon
-//
-// license       infinit
-//
-// author        julien quintard   [tue jul 26 15:33:54 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/concurrency/Program.hh>
 
 #include <horizon/linux/FUSE.hh>
 
@@ -232,7 +220,7 @@ namespace horizon
             const_cast<char**>(arguments),
             &operations,
             NULL) != 0)
-        log(::strerror(errno));
+        log("%s", ::strerror(errno));
 
       // now that FUSE has stopped, make sure the program is exiting.
       elle::Program::Exit();
@@ -251,7 +239,7 @@ namespace horizon
       if (::pthread_create(&FUker::Thread, NULL, &FUker::Setup, NULL) != 0)
         escape("unable to create the FUSE-specific thread");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -264,7 +252,7 @@ namespace horizon
       // this operation will normally make FUSE exit.
       ::umount2(Infinit::Mountpoint.c_str(), MNT_FORCE);
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
   }
 }

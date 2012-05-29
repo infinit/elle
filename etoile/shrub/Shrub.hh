@@ -1,8 +1,8 @@
 #ifndef ETOILE_SHRUB_SHRUB_HH
 # define ETOILE_SHRUB_SHRUB_HH
 
-# include <elle/Elle.hh>
-
+# include <elle/types.hh>
+# include <elle/container/timeline/Timeline.hh>
 # include <etoile/shrub/Riffle.hh>
 
 # include <etoile/path/Slab.hh>
@@ -17,10 +17,6 @@ namespace etoile
   ///
   namespace shrub
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// the shrub i.e path cache relies on the LRU algorithm by keeping two
@@ -94,7 +90,7 @@ namespace etoile
       //
       static Riffle*                    Riffles;
 
-      static elle::Timeline<Riffle*>    Queue;
+      static elle::container::timeline::Timeline<Riffle*>    Queue;
     };
 
   }

@@ -1,56 +1,33 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       diary
-//
-// license       infinit
-//
-// author        julien quintard   [fri dec 23 13:27:57 2011]
-//
-
 #ifndef DIARY_MEMOIRS_HH
-#define DIARY_MEMOIRS_HH
+# define DIARY_MEMOIRS_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <boost/noncopyable.hpp>
 
-#include <elle/Elle.hh>
+# include <elle/types.hh>
+# include <elle/io/Fileable.hh>
+# include <elle/io/Dumpable.hh>
+# include <elle/utility/Buffer.hh>
+
 
 namespace satellite
 {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
   ///
   /// this class represents the diary in its archived form.
   ///
-  class Memoirs:
-    public elle::Object,
-    public virtual elle::Fileable<elle::FormatRaw>
+  class Memoirs
+    : public elle::radix::Object
+    , public elle::io::Dumpable
+    , public elle::io::Fileable<Memoirs>
+    , private boost::noncopyable
   {
   public:
-    //
-    // interfaces
-    //
-
-    // dumpable
+    Memoirs();
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
-    // archivable
-    elle::Status        Serialize(elle::Archive&) const;
-    elle::Status        Extract(elle::Archive&);
-
-    // fileable
-    elle::Status        Load(const elle::Path&);
-    elle::Status        Store(const elle::Path&) const;
-
-    //
-    // attributes
-    //
-    elle::Archive               archive;
+    // XXX
+    elle::utility::Buffer         archive;
+    size_t                        offset;
   };
 
 }

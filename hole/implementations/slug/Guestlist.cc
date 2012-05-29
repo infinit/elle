@@ -1,18 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [mon nov  7 12:39:09 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/network/Locus.hh>
+#include <elle/utility/Time.hh>
 
 #include <hole/implementations/slug/Guestlist.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace hole
 {
@@ -52,7 +44,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status      Guestlist::Add(elle::TCPSocket*         socket,
+      elle::Status      Guestlist::Add(elle::network::TCPSocket*         socket,
                                        Host*                    host)
       {
         std::pair<Guestlist::Iterator, elle::Boolean>   result;
@@ -64,63 +56,63 @@ namespace hole
         if (result.second == false)
           escape("unable to insert the host in the container");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
       /// XXX
       ///
-      elle::Status      Guestlist::Exist(elle::TCPSocket*       socket) const
+      elle::Status      Guestlist::Exist(elle::network::TCPSocket*       socket) const
       {
         Guestlist::Scoutor      scoutor;
 
         // try to locate the socket.
-        if (this->Locate(socket, scoutor) == elle::StatusTrue)
-          return elle::StatusTrue;
+        if (this->Locate(socket, scoutor) == elle::Status::True)
+          return elle::Status::True;
 
-        return elle::StatusFalse;
+        return elle::Status::False;
       }
 
       ///
       /// XXX
       ///
-      elle::Status      Guestlist::Retrieve(elle::TCPSocket*    socket,
+      elle::Status      Guestlist::Retrieve(elle::network::TCPSocket*    socket,
                                             Host*&              host)
         const
       {
         Guestlist::Scoutor      scoutor;
 
         // try to locate the socket.
-        if (this->Locate(socket, scoutor) == elle::StatusFalse)
+        if (this->Locate(socket, scoutor) == elle::Status::False)
           escape("unable to locate the given socket");
 
         // return the associated host.
         host = scoutor->second;
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
       /// XXX
       ///
-      elle::Status      Guestlist::Remove(elle::TCPSocket*      socket)
+      elle::Status      Guestlist::Remove(elle::network::TCPSocket*      socket)
       {
         Guestlist::Iterator     iterator;
 
         // try to locate the socket.
-        if (this->Locate(socket, iterator) == elle::StatusFalse)
+        if (this->Locate(socket, iterator) == elle::Status::False)
           escape("unable to locate the given socket");
 
         // erase the iterator.
         this->container.erase(iterator);
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
       /// XXX
       ///
-      elle::Status      Guestlist::Locate(elle::TCPSocket*      socket,
+      elle::Status      Guestlist::Locate(elle::network::TCPSocket*      socket,
                                           Scoutor&              scoutor) const
       {
         Guestlist::Scoutor      s;
@@ -131,16 +123,16 @@ namespace hole
             // return the scoutor.
             scoutor = s;
 
-            return elle::StatusTrue;
+            return elle::Status::True;
           }
 
-        return elle::StatusFalse;
+        return elle::Status::False;
       }
 
       ///
       /// XXX
       ///
-      elle::Status      Guestlist::Locate(elle::TCPSocket*      socket,
+      elle::Status      Guestlist::Locate(elle::network::TCPSocket*      socket,
                                           Iterator&             iterator)
       {
         Guestlist::Iterator     i;
@@ -151,10 +143,10 @@ namespace hole
             // return the iterator.
             iterator = i;
 
-            return elle::StatusTrue;
+            return elle::Status::True;
           }
 
-        return elle::StatusFalse;
+        return elle::Status::False;
       }
 
 //
@@ -186,11 +178,11 @@ namespace hole
                       << "[TCPSocket] " << scoutor->first << std::endl;
 
             // dump the host.
-            if (scoutor->second->Dump(margin + 4) == elle::StatusError)
+            if (scoutor->second->Dump(margin + 4) == elle::Status::Error)
               escape("unable to dump the host");
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     }

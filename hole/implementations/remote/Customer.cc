@@ -1,3 +1,4 @@
+
 #include <hole/implementations/remote/Customer.hh>
 #include <hole/implementations/remote/Remote.hh>
 
@@ -63,7 +64,7 @@ namespace hole
         if (this->signal.dead.Emit(this) == elle::StatusError)
           escape("unable to emit the signal");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -77,12 +78,12 @@ namespace hole
           printf("[hole] implementations::remote::Customer::Error()\n");
 
         // log the error.
-        log(error.c_str());
+        log("%s", error.c_str());
 
         // disconnect the socket, though that may be unecessary.
         this->socket->Disconnect();
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -104,7 +105,7 @@ namespace hole
               escape("unable to emit the signal");
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
 //

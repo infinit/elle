@@ -1,39 +1,23 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 14 16:26:10 2009]
-//
-
 #ifndef NUCLEUS_NEUTRON_SUBJECT_HH
-#define NUCLEUS_NEUTRON_SUBJECT_HH
+# define NUCLEUS_NEUTRON_SUBJECT_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/Elle.hh>
+# include <elle/cryptography/PublicKey.hh>
 
-#include <nucleus/proton/Address.hh>
+# include <nucleus/proton/Address.hh>
 
 namespace nucleus
 {
   namespace neutron
   {
 
-//
-// ---------- structures ------------------------------------------------------
-//
-
     ///
     /// this class is used to represents a subject i.e an entity which
     /// can be granted access such as a user or a group.
     ///
-    class Subject:
-      public elle::Object
+    class Subject
+      : public elle::radix::Object
     {
     public:
       //
@@ -81,7 +65,7 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status      Create(const elle::PublicKey&);
+      elle::Status      Create(elle::cryptography::PublicKey const&);
       elle::Status      Create(const proton::Address&);
 
       //
@@ -89,15 +73,17 @@ namespace nucleus
       //
 
       // object
+#include <elle/idiom/Open.hh>
       declare(Subject);
+#include <elle/idiom/Close.hh>
       elle::Boolean     operator==(const Subject&) const;
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      elle::Status      Serialize(elle::Archive&) const;
-      elle::Status      Extract(elle::Archive&);
+      //// archivable
+      //elle::Status      Serialize(elle::Archive&) const;
+      //elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
@@ -106,7 +92,7 @@ namespace nucleus
 
       union
       {
-        elle::PublicKey*        user;
+        elle::cryptography::PublicKey*        user;
         proton::Address*        group;
       };
     };

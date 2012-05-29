@@ -1,7 +1,7 @@
 #ifndef ETOILE_PORTAL_PORTAL_HH
 # define ETOILE_PORTAL_PORTAL_HH
 
-# include <elle/Elle.hh>
+# include <elle/types.hh>
 # include <lune/Lune.hh>
 
 # include <etoile/portal/Application.hh>

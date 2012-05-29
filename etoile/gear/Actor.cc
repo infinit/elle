@@ -37,7 +37,7 @@ namespace etoile
     ///
     elle::Status        Actor::Initialize()
     {
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -63,7 +63,7 @@ namespace etoile
       // clear the container.
       Actor::Actors.clear();
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -87,7 +87,7 @@ namespace etoile
       if (result.second == false)
         escape("unable to insert the actor in the container");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -106,7 +106,7 @@ namespace etoile
       // return the actor.
       actor = scoutor->second;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -124,7 +124,7 @@ namespace etoile
       // erase the entry.
       Actor::Actors.erase(iterator);
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -144,16 +144,16 @@ namespace etoile
            scoutor++)
         {
           // dump the identifier.
-          if (scoutor->first.Dump(margin + 2) == elle::StatusError)
+          if (scoutor->first.Dump(margin + 2) == elle::Status::Error)
             escape("unable to dump the identifier");
 
           // dump the actor.
-          if (scoutor->second->Dump(margin + 2) == elle::StatusError)
+          if (scoutor->second->Dump(margin + 2) == elle::Status::Error)
             escape("unable to dump the actor");
 
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -168,15 +168,15 @@ namespace etoile
       state(Actor::StateClean)
     {
       // generate an identifier.
-      if (this->identifier.Generate() == elle::StatusError)
+      if (this->identifier.Generate() == elle::Status::Error)
         yield(_(), "unable to generate the identifier");
 
       // register the actor.
-      if (Actor::Add(this->identifier, this) == elle::StatusError)
+      if (Actor::Add(this->identifier, this) == elle::Status::Error)
         yield(_(), "unable to register the actor");
 
       // add the actor to the scope's set.
-      if (scope->Attach(this) == elle::StatusError)
+      if (scope->Attach(this) == elle::Status::Error)
         yield(_(), "unable to attach the actor to the scope");
     }
 
@@ -186,11 +186,11 @@ namespace etoile
     Actor::~Actor()
     {
       // remove the actor from the scope's set.
-      if (this->scope->Detach(this) == elle::StatusError)
+      if (this->scope->Detach(this) == elle::Status::Error)
         yield(_(), "unable to detach the actor from the scope");
 
       // unregister the actor.
-      if (Actor::Remove(this->identifier) == elle::StatusError)
+      if (Actor::Remove(this->identifier) == elle::Status::Error)
         yield(_(), "unable to unregister the actor");
     }
 
@@ -287,7 +287,7 @@ namespace etoile
           }
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -304,7 +304,7 @@ namespace etoile
       std::cout << alignment << "[Actor]" << std::endl;
 
       // dump the identifier.
-      if (this->identifier.Dump(margin + 2) == elle::StatusError)
+      if (this->identifier.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the identifier");
 
       // dump the scope's address.
@@ -315,7 +315,7 @@ namespace etoile
       std::cout << alignment << elle::Dumpable::Shift
                 << "[State] " << std::dec << this->state << std::endl;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

@@ -13,13 +13,13 @@
 
 #include "QtObj.hh"
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 using namespace elle;
 
 Status fiber2()
 {
-  return StatusOk;
+  return Status::Ok;
 }
 
 Status fiber1()
@@ -29,7 +29,7 @@ Status fiber1()
 
   Fiber::Spawn(closure);
   log_here;
-  return StatusOk;
+  return Status::Ok;
 }
 
 ucontext_t auc,buc,mainuc;

@@ -15,13 +15,16 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
+#include <elle/utility/Time.hh>
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/MutableBlock.hh>
 
 #include <nucleus/neutron/Component.hh>
 #include <nucleus/neutron/Subject.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -54,7 +57,7 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status      Create(const elle::PublicKey&);
+      elle::Status      Create(elle::cryptography::PublicKey const&);
 
       elle::Status      Bind(Address&) const;
       elle::Status      Validate(const Address&) const;
@@ -70,21 +73,21 @@ namespace nucleus
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status      Serialize(elle::Archive&) const;
-      elle::Status      Extract(elle::Archive&);
+      //elle::Status      Serialize(elle::Archive&) const;
+      //elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      elle::PublicKey           K;
+      elle::cryptography::PublicKey           K;
 
-      elle::Time                stamp;
+      elle::utility::Time                stamp;
 
       struct
       {
-        elle::PublicKey         K;
+        elle::cryptography::PublicKey         K;
 
-        elle::Signature         signature;
+        elle::cryptography::Signature         signature;
 
         neutron::Subject        subject;
       }                         owner;

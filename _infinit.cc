@@ -1,6 +1,8 @@
 #include <Infinit.hh>
 
 #include <elle/Elle.hh>
+#include <elle/utility/Parser.hh>
+
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 #include <agent/Agent.hh>
@@ -20,7 +22,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
     throw std::runtime_error("unable to set up the program");
 
   // allocate a new parser.
-  Infinit::Parser = new elle::Parser(argc, argv);
+  Infinit::Parser = new elle::utility::Parser(argc, argv);
 
   // specify a program description.
   if (Infinit::Parser->Description(Infinit::Copyright) == elle::StatusError)
@@ -58,7 +60,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
     throw std::runtime_error("unable to parse the command line");
 
   // test the option.
-  if (Infinit::Parser->Test("Help") == elle::StatusTrue)
+  if (Infinit::Parser->Test("Help") == elle::Status::True)
     {
       // display the usage.
       Infinit::Parser->Usage();
@@ -101,7 +103,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
 
   // retrieve the network name.
   if (Infinit::Parser->Value("Network",
-                             Infinit::Network) == elle::StatusError)
+                             Infinit::Network) == elle::Status::Error)
     {
       // display the usage.
       Infinit::Parser->Usage();
@@ -111,7 +113,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
 
   // retrieve the mount point.
   if (Infinit::Parser->Value("Mountpoint",
-                             Infinit::Mountpoint) == elle::StatusError)
+                             Infinit::Mountpoint) == elle::Status::Error)
     {
       // display the usage.
       Infinit::Parser->Usage();

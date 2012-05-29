@@ -15,14 +15,15 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/String.hh>
+#include <elle/types.hh>
 
-#include <elle/radix/Status.hh>
 #include <elle/radix/Object.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
 
   namespace io
@@ -69,5 +70,7 @@ namespace elle
 
   }
 }
+
+#include <elle/idiom/Close.hh>
 
 #endif

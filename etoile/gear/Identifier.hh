@@ -1,21 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar  3 13:37:54 2010]
-//
-
 #ifndef ETOILE_GEAR_IDENTIFIER_HH
-#define ETOILE_GEAR_IDENTIFIER_HH
+# define ETOILE_GEAR_IDENTIFIER_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/Elle.hh>
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
 namespace etoile
 {
@@ -31,7 +18,7 @@ namespace etoile
     /// to act on scopes.
     ///
     class Identifier:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //
@@ -66,8 +53,8 @@ namespace etoile
       elle::Boolean             operator<(const Identifier&) const;
 
       // archivable
-      elle::Status              Serialize(elle::Archive&) const;
-      elle::Status              Extract(elle::Archive&);
+      //elle::Status              Serialize(elle::Archive&) const;
+      //elle::Status              Extract(elle::Archive&);
 
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;

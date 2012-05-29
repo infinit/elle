@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 #include <elle/Manifest.hh>
 
 #include <lune/Lune.hh>
@@ -76,7 +76,7 @@ namespace hole
       //
       enum Tag
         {
-          TagAuthenticate = elle::Range<Component>::First + 1,
+          TagAuthenticate = elle::network::Range<Component>::First + 1,
           TagAuthenticated,
 
           TagSynchronise,
@@ -102,7 +102,7 @@ namespace hole
 
 message(hole::implementations::slug::TagAuthenticate,
         parameters(lune::Passport&,
-                   elle::Port&))
+                   elle::network::Port&))
 message(hole::implementations::slug::TagAuthenticated,
         parameters(hole::implementations::slug::Cluster&))
 
@@ -113,12 +113,12 @@ message(hole::implementations::slug::TagBank,
 
 message(hole::implementations::slug::TagPush,
         parameters(nucleus::Address&,
-                   nucleus::Derivable<nucleus::Block>&));
+                   nucleus::Block&));
 message(hole::implementations::slug::TagPull,
         parameters(nucleus::Address&,
                    nucleus::Version&));
 message(hole::implementations::slug::TagBlock,
-        parameters(nucleus::Derivable<nucleus::Block>&));
+        parameters(nucleus::Block&));
 message(hole::implementations::slug::TagWipe,
         parameters(nucleus::Address&));
 

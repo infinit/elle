@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
@@ -34,7 +34,7 @@ namespace nucleus
     /// pushed/wiped to/from the storage layer.
     ///
     class Action:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

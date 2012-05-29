@@ -16,7 +16,7 @@
 //
 
 #include <Infinit.hh>
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 #include <lune/Lune.hh>
 #include <etoile/Etoile.hh>
 #include <hole/Hole.hh>
@@ -71,7 +71,7 @@ namespace satellite
     //
     // static attributes
     //
-    static elle::LocalSocket    Socket;
+    static elle::network::LocalSocket    Socket;
   };
 
 }

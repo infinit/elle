@@ -1,7 +1,8 @@
 #ifndef ETOILE_GEAR_SCOPE_HH
 # define ETOILE_GEAR_SCOPE_HH
 
-# include <elle/Elle.hh>
+#include <elle/types.hh>
+#include <elle/concurrency/Timer.hh>
 
 # include <etoile/gear/Context.hh>
 # include <etoile/gear/Chronicle.hh>
@@ -38,7 +39,7 @@ namespace etoile
     /// structure for as long as necessary.
     ///
     class Scope:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

@@ -26,13 +26,13 @@ namespace nucleus
     ///
     /// this method creates the user given the user's public key.
     ///
-    elle::Status        User::Create(const elle::PublicKey&     K)
+    elle::Status        User::Create(elle::cryptography::PublicKey const&     K)
     {
       // create the underlying public key block.
-      if (PublicKeyBlock::Create(K) == elle::StatusError)
+      if (PublicKeyBlock::Create(K) == elle::Status::Error)
         escape("unable to create the underlying public key block");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //

@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <hole/Label.hh>
 
@@ -34,7 +34,7 @@ namespace hole
       /// XXX
       ///
       class Neighbour:
-        public elle::Entity
+        public elle::radix::Entity
       {
       public:
         //
@@ -60,7 +60,7 @@ namespace hole
         //
         // methods
         //
-        elle::Status    Create(const elle::Locus&);
+        elle::Status    Create(const elle::network::Locus&);
         elle::Status    Create(elle::Gate*);
 
         elle::Status    Connect();
@@ -84,14 +84,14 @@ namespace hole
         //
         State           state;
 
-        elle::Locus     locus;
+        elle::network::Locus     locus;
         Label           label;
 
-        elle::Port      port;
+        elle::network::Port      port;
 
         elle::Gate*     gate;
 
-        elle::Timer*    timer;
+        elle::concurrency::Timer*    timer;
       };
 
     }

@@ -53,7 +53,7 @@ namespace nucleus
       this->address = address;
       this->version = version;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -67,14 +67,14 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return true;
 
       // compare the attributes.
       if ((this->address != element.address) ||
           (this->version != element.version))
-        return elle::StatusFalse;
+        return false;
 
-      return elle::StatusTrue;
+      return true;
     }
 
     ///
@@ -96,14 +96,14 @@ namespace nucleus
       std::cout << alignment << "[Location]" << std::endl;
 
       // dump the address.
-      if (this->address.Dump(margin + 2) == elle::StatusError)
+      if (this->address.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the address");
 
       // dump the version.
-      if (this->version.Dump(margin + 2) == elle::StatusError)
+      if (this->version.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the version");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -113,28 +113,28 @@ namespace nucleus
     ///
     /// this method serializes the location attributes.
     ///
-    elle::Status        Location::Serialize(elle::Archive&      archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(this->address,
-                            this->version) == elle::StatusError)
-        escape("unable to serialize the location's attributes");
+    //elle::Status        Location::Serialize(elle::Archive&      archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(this->address,
+    //                        this->version) == elle::Status::Error)
+    //    escape("unable to serialize the location's attributes");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the attributes.
-    ///
-    elle::Status        Location::Extract(elle::Archive&        archive)
-    {
-      // extracts the attributes.
-      if (archive.Extract(this->address,
-                          this->version) == elle::StatusError)
-        escape("unable to extract the location's attributes");
+    /////
+    ///// this method extracts the attributes.
+    /////
+    //elle::Status        Location::Extract(elle::Archive&        archive)
+    //{
+    //  // extracts the attributes.
+    //  if (archive.Extract(this->address,
+    //                      this->version) == elle::Status::Error)
+    //    escape("unable to extract the location's attributes");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 #include <nucleus/Nucleus.hh>
 
 namespace hole
@@ -25,7 +25,7 @@ namespace hole
   /// this class defines the interface hole implementation should implement.
   ///
   class Holeable:
-    public elle::Entity
+    public elle::radix::Entity
   {
   public:
     //

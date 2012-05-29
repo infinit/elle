@@ -15,10 +15,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/String.hh>
+#include <elle/types.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 
 namespace elle
 {
@@ -118,7 +119,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift << "[Handler] "
                 << std::hex << this->handler << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //

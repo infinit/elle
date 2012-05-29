@@ -1,41 +1,24 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [thu aug 11 13:13:51 2011]
-//
-
 #ifndef LUNE_PASSPORT_HH
-#define LUNE_PASSPORT_HH
+# define LUNE_PASSPORT_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <lune/Authority.hh>
 
-#include <elle/Elle.hh>
+# include <hole/Label.hh>
 
-#include <lune/Authority.hh>
-
-#include <hole/Label.hh>
+# include <elle/idiom/Open.hh>
 
 namespace lune
 {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
   ///
   /// this class uniquely identify a device through a label which is
   /// used by the storage layer to locate the nodes responsible for a
   /// block's replica for instance.
   ///
-  class Passport:
-    public elle::Object,
-    public virtual elle::Fileable<elle::FormatCustom>
+  class Passport
+    : public elle::radix::Object
+    , public elle::io::Fileable<Passport>
+    , public elle::serialize::Uniquable<Passport>
   {
   public:
     //
@@ -63,10 +46,11 @@ namespace lune
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // archivable
-    elle::Status        Serialize(elle::Archive&) const;
-    elle::Status        Extract(elle::Archive&);
+    //elle::Status        Serialize(elle::Archive&) const;
+    //elle::Status        Extract(elle::Archive&);
 
     // fileable
+    ELLE_IO_USING_FILEABLE_METHODS(Passport);
     elle::Status        Load();
     elle::Status        Store() const;
     elle::Status        Erase() const;
@@ -80,9 +64,11 @@ namespace lune
     // XXX[temporary: mongodb id]
     elle::String        id;
 
-    elle::Signature     signature;
+    elle::cryptography::Signature     signature;
   };
 
 }
+
+# include <elle/idiom/Close.hh>
 
 #endif

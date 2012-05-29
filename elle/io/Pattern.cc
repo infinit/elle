@@ -1,21 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       infinit
-//
-// license       elle
-//
-// author        julien quintard   [mon apr 25 11:37:13 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 
 #include <elle/io/Pattern.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -23,10 +12,6 @@ namespace elle
 
   namespace io
   {
-
-//
-// ---------- methods ---------------------------------------------------------
-//
 
     ///
     /// this method creates a pattern.
@@ -36,12 +21,8 @@ namespace elle
       // assign the string.
       this->string = string;
 
-      return StatusOk;
+      return Status::Ok;
     }
-
-//
-// ---------- object ----------------------------------------------------------
-//
 
     ///
     /// this method check if two objects match.
@@ -50,13 +31,13 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return StatusTrue;
+        return true;
 
       // compare the internal.
       if (this->string != element.string)
-        return StatusFalse;
+        return false;
 
-      return StatusTrue;
+      return true;
     }
 
     ///
@@ -78,7 +59,7 @@ namespace elle
       std::cout << alignment << "[Pattern] "
                 << this->string << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

@@ -26,8 +26,6 @@ namespace package
     | Definitions |
     `------------*/
 
-    const Natural32 CodingStandard::zero = 0;
-
     Natural32 CodingStandard::average_size = 42;
 
     /*---------------.

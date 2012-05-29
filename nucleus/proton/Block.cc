@@ -1,18 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri sep 11 22:44:58 2009]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/standalone/Log.hh>
 
 #include <nucleus/proton/Block.hh>
+#include <nucleus/proton/BlockSerializer.hxx>
+
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -66,7 +58,7 @@ namespace nucleus
     }
 
     ///
-    /// this method returns StatusTrue if the block is valid, StatusFalse
+    /// this method returns Status::True if the block is valid, Status::False
     /// otherwise.
     ///
     elle::Status        Block::Validate(const Address&) const
@@ -97,7 +89,7 @@ namespace nucleus
       std::cout << alignment << "[Block]" << std::endl;
 
       // dump the network.
-      if (this->network.Dump(margin + 2) == elle::StatusError)
+      if (this->network.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the network");
 
       // dump the family.
@@ -112,7 +104,7 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift << "[State] "
                 << std::dec << this->state << std::endl;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -122,33 +114,33 @@ namespace nucleus
     ///
     /// this method archives the block attributes.
     ///
-    elle::Status        Block::Serialize(elle::Archive& archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(
-            this->network,
-            static_cast<elle::Natural8>(this->family),
-            static_cast<elle::Natural8>(this->component)) == elle::StatusError)
-        escape("unable to serialize the block's attributes");
+    //elle::Status        Block::Serialize(elle::Archive& archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(
+    //        this->network,
+    //        static_cast<elle::Natural8>(this->family),
+    //        static_cast<elle::Natural8>(this->component)) == elle::Status::Error)
+    //    escape("unable to serialize the block's attributes");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the attributes.
-    ///
-    elle::Status        Block::Extract(elle::Archive&           archive)
-    {
-      // extracts the attributes.
-      if (archive.Extract(
-            this->network,
-            reinterpret_cast<elle::Natural8&>(this->family),
-            reinterpret_cast<elle::Natural8&>(this->component)) ==
-          elle::StatusError)
-        escape("unable to extract the block's attributes");
+    /////
+    ///// this method extracts the attributes.
+    /////
+    //elle::Status        Block::Extract(elle::Archive&           archive)
+    //{
+    //  // extracts the attributes.
+    //  if (archive.Extract(
+    //        this->network,
+    //        reinterpret_cast<elle::Natural8&>(this->family),
+    //        reinterpret_cast<elle::Natural8&>(this->component)) ==
+    //      elle::Status::Error)
+    //    escape("unable to extract the block's attributes");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
 //
 // ---------- fileable --------------------------------------------------------

@@ -64,7 +64,7 @@ namespace hole
       void
       Machine::Launch()
       {
-        elle::Locus     locus;
+        elle::network::Locus     locus;
 
         // check the number of loci in the set: it should be one for
         // this implementation.
@@ -85,7 +85,7 @@ namespace hole
 
           // launch the client.
 
-          if (client->Launch() == elle::StatusOk)
+          if (client->Launch() == elle::Status::Ok)
             {
               // set the client as the host.
               this->client = client.release();
@@ -118,7 +118,7 @@ namespace hole
           auto server = std::unique_ptr<Server>(new Server(locus));
 
           // launch the server.
-          if (server->Launch() == elle::StatusOk)
+          if (server->Launch() == elle::Status::Ok)
             {
               // set the server as the host.
               this->server = server.release();
@@ -156,7 +156,7 @@ namespace hole
           case Machine::RoleServer:
             {
               // dump the server.
-              if (this->server->Dump(margin + 2) == elle::StatusError)
+              if (this->server->Dump(margin + 2) == elle::Status::Error)
                 escape("unable to dump the server");
 
               break;
@@ -164,7 +164,7 @@ namespace hole
           case Machine::RoleClient:
             {
               // dump the client.
-              if (this->client->Dump(margin + 2) == elle::StatusError)
+              if (this->client->Dump(margin + 2) == elle::Status::Error)
                 escape("unable to dump the client");
 
               break;
@@ -177,7 +177,7 @@ namespace hole
             }
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     }

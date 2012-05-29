@@ -5,7 +5,7 @@
 #  define FUSE_USE_VERSION 26
 # endif
 
-# include <elle/Elle.hh>
+# include <elle/types.hh>
 
 # include <satellites/diary/unix/Upcall.hh>
 
@@ -113,10 +113,6 @@ namespace satellite
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <satellites/diary/unix/Memoirs.hh>
 

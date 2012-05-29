@@ -1,7 +1,7 @@
 #ifndef HOLE_IMPLEMENTATIONS_SLUG_SLUG_HH
 # define HOLE_IMPLEMENTATIONS_SLUG_SLUG_HH
 
-# include <elle/Elle.hh>
+# include <elle/types.hh>
 # include <hole/implementations/slug/Machine.hh>
 
 namespace hole

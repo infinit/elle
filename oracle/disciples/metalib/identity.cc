@@ -8,11 +8,12 @@
 // author        Raphael Londeix   [Mon 20 Feb 2012 03:17:55 PM CET]
 //
 
-#include "elle/cryptography/KeyPair.hh"
-#include "elle/io/Path.hh"
-#include "elle/core/String.hh"
+#include <elle/cryptography/KeyPairSerializer.hxx>
+#include <elle/io/Path.hh>
+#include <elle/types.hh>
 
-#include "lune/Identity.hh"
+#include <lune/IdentitySerializer.hxx>
+#include <lune/AuthoritySerializer.hxx>
 
 // XXX When Qt is out, remove this
 #ifdef slots
@@ -37,40 +38,40 @@ static lune::Identity create_identity(elle::String const& id,
                                       elle::String const& login,
                                       elle::String const& password)
 {
-  elle::KeyPair       pair;
-  lune::Authority     authority;
-  elle::Path          authority_path;
-  lune::Identity      identity;
+  elle::cryptography::KeyPair       pair;
+  lune::Authority                   authority;
+  elle::Path                        authority_path;
+  lune::Identity                    identity;
 
   // check the argument.
   if (login.empty() == true)
     throw std::runtime_error("unable to create a user without a user name");
 
-  if (authority_path.Create(authority_file) == elle::StatusError)
+  if (authority_path.Create(authority_file) == elle::Status::Error)
     throw std::runtime_error("unable to create authority path");
 
   // load the authority file
-  if (authority.Load(authority_path) == elle::StatusError)
+  if (authority.Load(authority_path) == elle::Status::Error)
     throw std::runtime_error("unable to load the authority file");
 
   // decrypt the authority.
-  if (authority.Decrypt(authority_password) == elle::StatusError)
+  if (authority.Decrypt(authority_password) == elle::Status::Error)
     throw std::runtime_error("unable to decrypt the authority");
 
   // generate a key pair.
-  if (pair.Generate() == elle::StatusError)
+  if (pair.Generate() == elle::Status::Error)
     throw std::runtime_error("unable to generate the key pair");
 
   // create the identity.
-  if (identity.Create(id, login, pair) == elle::StatusError)
+  if (identity.Create(id, login, pair) == elle::Status::Error)
     throw std::runtime_error("unable to create the identity");
 
   // encrypt the identity.
-  if (identity.Encrypt(password) == elle::StatusError)
+  if (identity.Encrypt(password) == elle::Status::Error)
     throw std::runtime_error("unable to encrypt the identity");
 
   // seal the identity.
-  if (identity.Seal(authority) == elle::StatusError)
+  if (identity.Seal(authority) == elle::Status::Error)
     throw std::runtime_error("unable to seal the identity");
 
   return identity;
@@ -101,8 +102,8 @@ extern "C" PyObject* metalib_generate_identity(PyObject* self, PyObject* args)
       auto identity = create_identity(id, auth_path, auth_password, login, password);
       elle::String all, pub;
       bool res = (
-          identity.Save(all) != elle::StatusError &&
-          identity.pair.K.Save(pub) != elle::StatusError
+          identity.Save(all) != elle::Status::Error &&
+          identity.pair.K.Save(pub) != elle::Status::Error
       );
       // WARNING: restore state before setting exception !
       PyEval_RestoreThread(_save);

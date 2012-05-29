@@ -1,16 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       dictionary
-//
-// license       infinit
-//
-// author        julien quintard   [thu mar  4 17:51:46 2010]
-//
+#include <elle/Elle.hh>
+#include <elle/utility/Parser.hh>
+#include <elle/cryptography/PublicKeySerializer.hxx>
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <nucleus/proton/AddressSerializer.hxx>
 
 #include <satellites/dictionary/Dictionary.hh>
 
@@ -46,7 +38,7 @@ namespace satellite
       lune::Identity    identity;
 
       // does the user identity exist.
-      if (identity.Exist() == elle::StatusFalse)
+      if (identity.Exist() == elle::Status::False)
         escape("this user does not seem to exist");
     }
 
@@ -55,10 +47,10 @@ namespace satellite
     //
     {
       // load the dictionary if it exists.
-      if (dictionary.Exist() == elle::StatusTrue)
+      if (dictionary.Exist() == elle::Status::True)
         {
           // load the dictionary.
-          if (dictionary.Load() == elle::StatusError)
+          if (dictionary.Load() == elle::Status::Error)
             escape("unable to load the dictionary");
         }
     }
@@ -68,14 +60,14 @@ namespace satellite
       {
       case Dictionary::TypeUser:
         {
-          elle::PublicKey       K;
+          elle::cryptography::PublicKey       K;
 
           // restore the public key from the identifier.
-          if (K.Restore(identifier) == elle::StatusError)
+          if (K.Restore(identifier) == elle::Status::Error)
             escape("unable to restore the public key");
 
           // add an entry.
-          if (dictionary.users.Add(name, K) == elle::StatusError)
+          if (dictionary.users.Add(name, K) == elle::Status::Error)
             escape("unable to add the user entry to the dictionary");
 
           break;
@@ -85,11 +77,11 @@ namespace satellite
           nucleus::Address      address;
 
           // restore the address from the identifier.
-          if (address.Restore(identifier) == elle::StatusError)
+          if (address.Restore(identifier) == elle::Status::Error)
             escape("unable to restore the address");
 
           // add an entry.
-          if (dictionary.groups.Add(name, address) == elle::StatusError)
+          if (dictionary.groups.Add(name, address) == elle::Status::Error)
             escape("unable to add the group entry to the dictionary");
 
           break;
@@ -106,11 +98,11 @@ namespace satellite
     //
     {
       // store the dictionary file.
-      if (dictionary.Store() == elle::StatusError)
+      if (dictionary.Store() == elle::Status::Error)
         escape("unable to store the dictionary");
     }
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -128,7 +120,7 @@ namespace satellite
       lune::Identity    identity;
 
       // does the user identity exist.
-      if (identity.Exist() == elle::StatusFalse)
+      if (identity.Exist() == elle::Status::False)
         escape("this user does not seem to exist");
     }
 
@@ -137,10 +129,10 @@ namespace satellite
     //
     {
       // load the dictionary if it exists.
-      if (dictionary.Exist() == elle::StatusTrue)
+      if (dictionary.Exist() == elle::Status::True)
         {
           // load the dictionary file.
-          if (dictionary.Load() == elle::StatusError)
+          if (dictionary.Load() == elle::Status::Error)
             escape("unable to load the dictionary");
         }
     }
@@ -151,7 +143,7 @@ namespace satellite
       case Dictionary::TypeUser:
         {
           // remove an entry.
-          if (dictionary.users.Remove(name) == elle::StatusError)
+          if (dictionary.users.Remove(name) == elle::Status::Error)
             escape("unable to remove the user entry");
 
           break;
@@ -159,7 +151,7 @@ namespace satellite
       case Dictionary::TypeGroup:
         {
           // remove an entry.
-          if (dictionary.groups.Remove(name) == elle::StatusError)
+          if (dictionary.groups.Remove(name) == elle::Status::Error)
             escape("unable to remove the group entry");
 
           break;
@@ -176,11 +168,11 @@ namespace satellite
     //
     {
       // store the dictionary file.
-      if (dictionary.Store() == elle::StatusError)
+      if (dictionary.Store() == elle::Status::Error)
         escape("unable to store the dictionary");
     }
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -197,7 +189,7 @@ namespace satellite
       lune::Identity    identity;
 
       // does the user identity exist.
-      if (identity.Exist() == elle::StatusFalse)
+      if (identity.Exist() == elle::Status::False)
         escape("this user does not seem to exist");
     }
 
@@ -206,10 +198,10 @@ namespace satellite
     //
     {
       // load the dictionary if it exists.
-      if (dictionary.Exist() == elle::StatusTrue)
+      if (dictionary.Exist() == elle::Status::True)
         {
           // load the dictionary file.
-          if (dictionary.Load() == elle::StatusError)
+          if (dictionary.Load() == elle::Status::Error)
             escape("unable to load the dictionary");
         }
     }
@@ -219,17 +211,18 @@ namespace satellite
       {
       case Dictionary::TypeUser:
         {
-          lune::Map<elle::PublicKey>::Scoutor scoutor;
+          lune::Map<elle::cryptography::PublicKey>::Scoutor scoutor;
 
           // go through the user dictionary.
           for (scoutor = dictionary.users.container.begin();
                scoutor != dictionary.users.container.end();
                scoutor++)
             {
-              lune::Map<elle::PublicKey>::Entry* entry = *scoutor;
+              lune::Map<elle::cryptography::PublicKey>::Entry* entry = *scoutor;
 
               std::cout << entry->name << " :: "
-                        << entry->value << std::endl;
+                        // XXX << entry->value
+                        << std::endl;
             }
 
           break;
@@ -246,7 +239,8 @@ namespace satellite
               lune::Map<nucleus::Address>::Entry* entry = *scoutor;
 
               std::cout << entry->name << " :: "
-                        << entry->value << std::endl;
+                        // XXX << entry->value
+                        << std::endl;
             }
 
           break;
@@ -258,7 +252,7 @@ namespace satellite
         }
       }
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -276,7 +270,7 @@ namespace satellite
       lune::Identity    identity;
 
       // does the user identity exist.
-      if (identity.Exist() == elle::StatusFalse)
+      if (identity.Exist() == elle::Status::False)
         escape("this user does not seem to exist");
     }
 
@@ -285,10 +279,10 @@ namespace satellite
     //
     {
       // load the dictionary if it exists.
-      if (dictionary.Exist() == elle::StatusTrue)
+      if (dictionary.Exist() == elle::Status::True)
         {
           // load the dictionary file.
-          if (dictionary.Load() == elle::StatusError)
+          if (dictionary.Load() == elle::Status::Error)
             escape("unable to load the dictionary");
         }
     }
@@ -298,15 +292,15 @@ namespace satellite
       {
       case Dictionary::TypeUser:
         {
-          elle::PublicKey*      K;
+          elle::cryptography::PublicKey*      K;
           elle::Unique          unique;
 
           // retrieve the entry.
-          if (dictionary.users.Lookup(name, K) != elle::StatusTrue)
+          if (dictionary.users.Lookup(name, K) != elle::Status::True)
             escape("unable to look up the user entry");
 
           // retrive the public key's unique.
-          if (K->Save(unique) == elle::StatusError)
+          if (K->Save(unique) == elle::Status::Error)
             escape("unable to save the public key's unique");
 
           // dump the information.
@@ -321,11 +315,11 @@ namespace satellite
           elle::Unique          unique;
 
           // retrieve the entry.
-          if (dictionary.groups.Lookup(name, address) != elle::StatusTrue)
+          if (dictionary.groups.Lookup(name, address) != elle::Status::True)
             escape("unable to look up the group entry");
 
           // retrive the address's unique.
-          if (address->Save(unique) == elle::StatusError)
+          if (address->Save(unique) == elle::Status::Error)
             escape("unable to save the address's unique");
 
           // dump the information.
@@ -341,7 +335,7 @@ namespace satellite
         }
       }
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 //
@@ -359,27 +353,27 @@ namespace satellite
     // XXX Infinit::Parser is not deleted in case of errors
 
     // initialize the Elle library.
-    if (elle::Elle::Initialize() == elle::StatusError)
+    if (elle::Elle::Initialize() == elle::Status::Error)
       escape("unable to initialize Elle");
 
     // set up the program.
-    if (elle::Program::Setup() == elle::StatusError)
+    if (elle::concurrency::Program::Setup() == elle::Status::Error)
       escape("unable to set up the program");
 
     // initialize the nucleus library.
-    if (nucleus::Nucleus::Initialize() == elle::StatusError)
+    if (nucleus::Nucleus::Initialize() == elle::Status::Error)
       escape("unable to initialize Nucleus");
 
     // initialize the Lune library.
-    if (lune::Lune::Initialize() == elle::StatusError)
+    if (lune::Lune::Initialize() == elle::Status::Error)
       escape("unable to initialize Lune");
 
     // initialize Infinit.
-    if (Infinit::Initialize() == elle::StatusError)
+    if (Infinit::Initialize() == elle::Status::Error)
       escape("unable to initialize Infinit");
 
     // initialize the Etoile library.
-    if (etoile::Etoile::Initialize() == elle::StatusError)
+    if (etoile::Etoile::Initialize() == elle::Status::Error)
       escape("unable to initialize Etoile");
 
     // initialize the operation.
@@ -389,7 +383,7 @@ namespace satellite
     Infinit::Parser = new elle::Parser(argc, argv);
 
     // specify a program description.
-    if (Infinit::Parser->Description(Infinit::Copyright) == elle::StatusError)
+    if (Infinit::Parser->Description(Infinit::Copyright) == elle::Status::Error)
       escape("unable to set the description");
 
     // register the options.
@@ -398,7 +392,7 @@ namespace satellite
           'h',
           "help",
           "display the help",
-          elle::Parser::KindNone) == elle::StatusError)
+          elle::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -407,7 +401,7 @@ namespace satellite
           'a',
           "add",
           "add a dictionary record",
-          elle::Parser::KindNone) == elle::StatusError)
+          elle::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -416,7 +410,7 @@ namespace satellite
           'r',
           "remove",
           "remove a dictionary record",
-          elle::Parser::KindNone) == elle::StatusError)
+          elle::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -425,7 +419,7 @@ namespace satellite
           's',
           "show",
           "show all the dictionary records",
-          elle::Parser::KindNone) == elle::StatusError)
+          elle::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -434,7 +428,7 @@ namespace satellite
           'd',
           "dump",
           "dump a specific dictionary record",
-          elle::Parser::KindNone) == elle::StatusError)
+          elle::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -443,7 +437,7 @@ namespace satellite
           'u',
           "user",
           "indicate the type of the record to be a user",
-          elle::Parser::KindNone) == elle::StatusError)
+          elle::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -452,7 +446,7 @@ namespace satellite
           'g',
           "group",
           "indicate the type of the record to be a group",
-          elle::Parser::KindNone) == elle::StatusError)
+          elle::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -461,7 +455,7 @@ namespace satellite
           'n',
           "name",
           "specify the local UNIX/Windows/etc. name of the user/group entry",
-          elle::Parser::KindRequired) == elle::StatusError)
+          elle::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -470,28 +464,28 @@ namespace satellite
           'i',
           "identifier",
           "specify the user/group Infinit base64 identifier",
-          elle::Parser::KindRequired) == elle::StatusError)
+          elle::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
     // parse.
-    if (Infinit::Parser->Parse() == elle::StatusError)
+    if (Infinit::Parser->Parse() == elle::Status::Error)
       escape("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::StatusTrue)
+    if (Infinit::Parser->Test("Help") == elle::Status::True)
       {
         // display the usage.
         Infinit::Parser->Usage();
 
         // quit.
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("Add") == elle::StatusTrue) &&
-        (Infinit::Parser->Test("Remove") == elle::StatusTrue) &&
-        (Infinit::Parser->Test("Dump") == elle::StatusTrue) &&
-        (Infinit::Parser->Test("Show") == elle::StatusTrue))
+    if ((Infinit::Parser->Test("Add") == elle::Status::True) &&
+        (Infinit::Parser->Test("Remove") == elle::Status::True) &&
+        (Infinit::Parser->Test("Dump") == elle::Status::True) &&
+        (Infinit::Parser->Test("Show") == elle::Status::True))
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -501,8 +495,8 @@ namespace satellite
       }
 
     // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("User") == elle::StatusTrue) &&
-        (Infinit::Parser->Test("Group") == elle::StatusTrue))
+    if ((Infinit::Parser->Test("User") == elle::Status::True) &&
+        (Infinit::Parser->Test("Group") == elle::Status::True))
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -511,19 +505,19 @@ namespace satellite
       }
 
     // test the option.
-    if (Infinit::Parser->Test("Add") == elle::StatusTrue)
+    if (Infinit::Parser->Test("Add") == elle::Status::True)
       operation = Dictionary::OperationAdd;
 
     // test the option.
-    if (Infinit::Parser->Test("Remove") == elle::StatusTrue)
+    if (Infinit::Parser->Test("Remove") == elle::Status::True)
       operation = Dictionary::OperationRemove;
 
     // test the option.
-    if (Infinit::Parser->Test("Dump") == elle::StatusTrue)
+    if (Infinit::Parser->Test("Dump") == elle::Status::True)
       operation = Dictionary::OperationDump;
 
     // test the option.
-    if (Infinit::Parser->Test("Show") == elle::StatusTrue)
+    if (Infinit::Parser->Test("Show") == elle::Status::True)
       operation = Dictionary::OperationShow;
 
     // trigger a command.
@@ -536,26 +530,26 @@ namespace satellite
           elle::Unique          identifier;
 
           // retrieve the name.
-          if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+          if (Infinit::Parser->Value("Name", name) == elle::Status::Error)
             escape("unable to retrieve the name value");
 
           // retrieve the type.
-          if (Infinit::Parser->Test("User") == elle::StatusTrue)
+          if (Infinit::Parser->Test("User") == elle::Status::True)
             type = Dictionary::TypeUser;
-          else if (Infinit::Parser->Test("Group") == elle::StatusTrue)
+          else if (Infinit::Parser->Test("Group") == elle::Status::True)
             type = Dictionary::TypeGroup;
           else
             escape("please specify the type of the entity: user or group");
 
           // retrieve the identifier.
           if (Infinit::Parser->Value("Identifier",
-                                     identifier) == elle::StatusError)
+                                     identifier) == elle::Status::Error)
             escape("unable to retrieve the identifier value");
 
           // add a record.
           if (Dictionary::Add(type,
                               name,
-                              identifier) == elle::StatusError)
+                              identifier) == elle::Status::Error)
             escape("unable to add a mapping");
 
           // display a message.
@@ -570,20 +564,20 @@ namespace satellite
           elle::String          name;
 
           // retrieve the name.
-          if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+          if (Infinit::Parser->Value("Name", name) == elle::Status::Error)
             escape("unable to retrieve the name value");
 
           // retrieve the type.
-          if (Infinit::Parser->Test("User") == elle::StatusTrue)
+          if (Infinit::Parser->Test("User") == elle::Status::True)
             type = Dictionary::TypeUser;
-          else if (Infinit::Parser->Test("Group") == elle::StatusTrue)
+          else if (Infinit::Parser->Test("Group") == elle::Status::True)
             type = Dictionary::TypeGroup;
           else
             escape("please specify the type of the entity: user or group");
 
           // remove a record.
           if (Dictionary::Remove(type,
-                                 name) == elle::StatusError)
+                                 name) == elle::Status::Error)
             escape("unable to remove the mapping");
 
           // display a message.
@@ -598,20 +592,20 @@ namespace satellite
           elle::String          name;
 
           // retrieve the name.
-          if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+          if (Infinit::Parser->Value("Name", name) == elle::Status::Error)
             escape("unable to retrieve the name value");
 
           // retrieve the type.
-          if (Infinit::Parser->Test("User") == elle::StatusTrue)
+          if (Infinit::Parser->Test("User") == elle::Status::True)
             type = Dictionary::TypeUser;
-          else if (Infinit::Parser->Test("Group") == elle::StatusTrue)
+          else if (Infinit::Parser->Test("Group") == elle::Status::True)
             type = Dictionary::TypeGroup;
           else
             escape("please specify the type of the entity: user or group");
 
           // dump the record.
           if (Dictionary::Dump(type,
-                               name) == elle::StatusError)
+                               name) == elle::Status::Error)
             escape("unable to dump the mapping");
 
           break;
@@ -621,15 +615,15 @@ namespace satellite
           Dictionary::Type      type;
 
           // retrieve the type.
-          if (Infinit::Parser->Test("User") == elle::StatusTrue)
+          if (Infinit::Parser->Test("User") == elle::Status::True)
             type = Dictionary::TypeUser;
-          else if (Infinit::Parser->Test("Group") == elle::StatusTrue)
+          else if (Infinit::Parser->Test("Group") == elle::Status::True)
             type = Dictionary::TypeGroup;
           else
             escape("please specify the type of the entity: user or group");
 
           // show the records.
-          if (Dictionary::Show(type) == elle::StatusError)
+          if (Dictionary::Show(type) == elle::Status::Error)
             escape("unable to show the mappings");
 
           break;
@@ -649,26 +643,26 @@ namespace satellite
     Infinit::Parser = nullptr;
 
     // clean the Etoile.
-    if (etoile::Etoile::Clean() == elle::StatusError)
+    if (etoile::Etoile::Clean() == elle::Status::Error)
       escape("unable to clean Etoile");
 
     // clean Infinit.
-    if (Infinit::Clean() == elle::StatusError)
+    if (Infinit::Clean() == elle::Status::Error)
       escape("unable to clean Infinit");
 
     // clean Lune
-    if (lune::Lune::Clean() == elle::StatusError)
+    if (lune::Lune::Clean() == elle::Status::Error)
       escape("unable to clean Lune");
 
     // clean the nucleus library.
-    if (nucleus::Nucleus::Clean() == elle::StatusError)
+    if (nucleus::Nucleus::Clean() == elle::Status::Error)
       escape("unable to clean Nucleus");
 
     // clean Elle.
-    if (elle::Elle::Clean() == elle::StatusError)
+    if (elle::Elle::Clean() == elle::Status::Error)
       escape("unable to clean Elle");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 }
@@ -685,7 +679,7 @@ int                     main(int                                argc,
 {
   try
     {
-      if (satellite::Main(argc, argv) == elle::StatusError)
+      if (satellite::Main(argc, argv) == elle::Status::Error)
         {
           show();
 

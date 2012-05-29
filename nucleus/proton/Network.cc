@@ -1,18 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [mon feb 16 21:42:37 2009]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 
 #include <nucleus/proton/Network.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -51,7 +43,7 @@ namespace nucleus
       // assign the name.
       this->name = name;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -65,13 +57,13 @@ namespace nucleus
     {
       // check the network as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return true;
 
       // compare the names.
       if (this->name != element.name)
-        return elle::StatusFalse;
+        return false;
 
-      return elle::StatusTrue;
+      return true;
     }
 
     ///
@@ -81,13 +73,13 @@ namespace nucleus
     {
       // check the network as this may actually be the same object.
       if (this == &element)
-        return elle::StatusFalse;
+        return false;
 
       // compare the names.
       if (this->name < element.name)
-        return elle::StatusFalse;
+        return false;
 
-      return elle::StatusFalse;
+      return false;
     }
 
     ///
@@ -110,7 +102,7 @@ namespace nucleus
       std::cout << alignment << "[Network] "
                 << this->name << std::endl;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -120,26 +112,26 @@ namespace nucleus
     ///
     /// this method serializes the network object.
     ///
-    elle::Status        Network::Serialize(elle::Archive&       archive) const
-    {
-      // serialize the internal.
-      if (archive.Serialize(this->name) == elle::StatusError)
-        escape("unable to serialize the name");
+    //elle::Status        Network::Serialize(elle::Archive&       archive) const
+    //{
+    //  // serialize the internal.
+    //  if (archive.Serialize(this->name) == elle::Status::Error)
+    //    escape("unable to serialize the name");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the network object.
-    ///
-    elle::Status        Network::Extract(elle::Archive&         archive)
-    {
-      // extract the internal.
-      if (archive.Extract(this->name) == elle::StatusError)
-        escape("unable to extract the name");
+    /////
+    ///// this method extracts the network object.
+    /////
+    //elle::Status        Network::Extract(elle::Archive&         archive)
+    //{
+    //  // extract the internal.
+    //  if (archive.Extract(this->name) == elle::Status::Error)
+    //    escape("unable to extract the name");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

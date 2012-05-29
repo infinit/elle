@@ -55,7 +55,7 @@ namespace hole
         if (result.second == false)
           escape("unable to insert the neighbour in the container");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -64,10 +64,10 @@ namespace hole
       elle::Status      RoutingTable::Exist(const Label&        label)
       {
         // try to locate the label.
-        if (this->Locate(label) == elle::StatusTrue)
-          return elle::StatusTrue;
+        if (this->Locate(label) == elle::Status::True)
+          return elle::Status::True;
 
-        return elle::StatusFalse;
+        return elle::Status::False;
       }
 
       ///
@@ -79,13 +79,13 @@ namespace hole
         RoutingTable::Iterator  iterator;
 
         // try to locate the label.
-        if (this->Locate(label, &iterator) == elle::StatusFalse)
+        if (this->Locate(label, &iterator) == elle::Status::False)
           escape("unable to locate the given label");
 
         // return the associated neighbour.
         neighbour = iterator->second;
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -99,13 +99,13 @@ namespace hole
         RoutingTable::Iterator  iterator;
 
         // try to locate the label.
-        if (this->Locate(label, &iterator) == elle::StatusFalse)
+        if (this->Locate(label, &iterator) == elle::Status::False)
           escape("unable to locate the given label");
 
         // erase the iterator.
         this->container.erase(iterator);
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -122,10 +122,10 @@ namespace hole
             if (iterator != NULL)
               *iterator = i;
 
-            return elle::StatusTrue;
+            return elle::Status::True;
           }
 
-        return elle::StatusFalse;
+        return elle::Status::False;
       }
 
 //
@@ -153,7 +153,7 @@ namespace hole
                       << "[Entry]" << std::endl;
 
             // dump the label.
-            if (scoutor->first.Dump(margin + 4) == elle::StatusError)
+            if (scoutor->first.Dump(margin + 4) == elle::Status::Error)
               escape("unable to dump the label");
 
             // dump the neighbour address.
@@ -164,7 +164,7 @@ namespace hole
                       << std::hex << scoutor->second << std::endl;
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     }

@@ -15,12 +15,13 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
 
 #include <hole/Model.hh>
 
 #include <lune/Authority.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace lune
 {
@@ -35,9 +36,10 @@ namespace lune
   /// note that the network name is supposed to be unique as it plays the
   /// role of identifier.
   ///
-  class Descriptor:
-    public elle::Object,
-    public virtual elle::Fileable<elle::FormatCustom>
+  class Descriptor
+    : public elle::radix::Object
+    , public elle::io::Fileable<Descriptor>
+    , public elle::serialize::Uniquable<Descriptor>
   {
   public:
     //
@@ -76,10 +78,12 @@ namespace lune
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // archivable
-    elle::Status        Serialize(elle::Archive&) const;
-    elle::Status        Extract(elle::Archive&);
+    //elle::Status        Serialize(elle::Archive&) const;
+    //elle::Status        Extract(elle::Archive&);
 
     // fileable
+    using elle::io::Fileable<Descriptor>::Load;
+    using elle::io::Fileable<Descriptor>::Store;
     elle::Status        Load(const elle::String&);
     elle::Status        Store(const elle::String&) const;
     elle::Status        Erase(const elle::String&) const;
@@ -99,7 +103,7 @@ namespace lune
     elle::Natural32     extent;
     elle::Real          contention;
     elle::Real          balancing;
-    elle::Signature     signature;
+    elle::cryptography::Signature     signature;
 
   public:
     elle::String const& id() const { return this->_id; }
@@ -107,5 +111,7 @@ namespace lune
   };
 
 }
+
+#include <elle/idiom/Close.hh>
 
 #endif

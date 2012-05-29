@@ -26,7 +26,7 @@ namespace etoile
     {
       // check if the access has already been opened.
       if (context.access != NULL)
-        return elle::StatusOk;
+        return elle::Status::Ok;
 
       // allocate an access block.
       context.access = new nucleus::Access;
@@ -37,7 +37,7 @@ namespace etoile
           // retrieve the access block.
           if (depot::Depot::Pull(context.object.meta.access,
                                  nucleus::Version::Any,
-                                 *context.access) == elle::StatusError)
+                                 *context.access) == elle::Status::Error)
             escape("unable to load the access block");
         }
       else
@@ -45,7 +45,7 @@ namespace etoile
           // otherwise the block is left empty.
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -58,7 +58,7 @@ namespace etoile
                           const nucleus::Permissions&           permissions)
     {
       // determine the rights over the object.
-      if (Rights::Determine(context) == elle::StatusError)
+      if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // verify that the user can modify the accesses.
@@ -76,7 +76,7 @@ namespace etoile
           // update the permissions.
           if (context.object.Administrate(
                 context.object.meta.attributes,
-                permissions) == elle::StatusError)
+                permissions) == elle::Status::Error)
             escape("unable to administrate the object");
         }
       else
@@ -86,11 +86,11 @@ namespace etoile
           //
 
           // open the access block.
-          if (Access::Open(context) == elle::StatusError)
+          if (Access::Open(context) == elle::Status::Error)
             escape("unable to open the access block");
 
           // look in the access object.
-          if (context.access->Exist(subject) == elle::StatusTrue)
+          if (context.access->Exist(subject) == elle::Status::True)
             {
               // update the access block according to the given permissions.
               if (permissions == nucleus::PermissionNone)
@@ -108,7 +108,7 @@ namespace etoile
                   //
 
                   // remove the record.
-                  if (context.access->Remove(subject) == elle::StatusError)
+                  if (context.access->Remove(subject) == elle::Status::Error)
                     escape("unable to remove the access record");
                 }
               else
@@ -121,7 +121,7 @@ namespace etoile
                   if (context.access->Update(
                         subject,
                         permissions,
-                        context.rights.key) == elle::StatusError)
+                        context.rights.key) == elle::Status::Error)
                     escape("unable to update the access");
                 }
             }
@@ -133,11 +133,11 @@ namespace etoile
               // create the new record.
               if (record->Update(subject,
                                  permissions,
-                                 context.rights.key) == elle::StatusError)
+                                 context.rights.key) == elle::Status::Error)
                 escape("unable to create the new record");
 
               // add the record to the access object.
-              if (context.access->Add(record.get()) == elle::StatusError)
+              if (context.access->Add(record.get()) == elle::Status::Error)
                 escape("unable to add the new record");
 
               // stop tracking record.
@@ -151,27 +151,27 @@ namespace etoile
           // for more information, please refer to the Object class.
           if (context.object.Administrate(
                 context.object.meta.attributes,
-                context.object.meta.owner.permissions) == elle::StatusError)
+                context.object.meta.owner.permissions) == elle::Status::Error)
             escape("unable to administrate the object");
         }
 
       // try to audit the object because the current author may have
       // lost its write permission in the process.
-      if (Access::Audit(context, subject) == elle::StatusError)
+      if (Access::Audit(context, subject) == elle::Status::Error)
         escape("unable to audit the object");
 
       // is the target subject the user i.e the object owner in this case.
       if (agent::Agent::Subject == subject)
         {
           // update the context rights.
-          if (Rights::Update(context, permissions) == elle::StatusError)
+          if (Rights::Update(context, permissions) == elle::Status::Error)
             escape("unable to update the rigths");
         }
 
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -192,7 +192,7 @@ namespace etoile
           //
 
           // determine the user's rights on the object.
-          if (Rights::Determine(context) == elle::StatusError)
+          if (Rights::Determine(context) == elle::Status::Error)
             escape("unable to determine the user's rights");
 
           // return the record.
@@ -225,17 +225,17 @@ namespace etoile
               //
 
               // open the access.
-              if (Access::Open(context) == elle::StatusError)
+              if (Access::Open(context) == elle::Status::Error)
                 escape("unable to open the access block");
 
               // lookup the subject.
               if (context.access->Lookup(subject,
-                                         record) == elle::StatusError)
+                                         record) == elle::Status::Error)
                 escape("unable to lookup in the access object");
             }
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -248,7 +248,7 @@ namespace etoile
                           nucleus::Range<nucleus::Record>&      range)
     {
       // open the access.
-      if (Access::Open(context) == elle::StatusError)
+      if (Access::Open(context) == elle::Status::Error)
         escape("unable to open the access block");
 
       // if the index starts with 0, include the owner by creating
@@ -261,7 +261,7 @@ namespace etoile
           );
 
           // add the record to the range.
-          if (range.Add(record.get()) == elle::StatusError)
+          if (range.Add(record.get()) == elle::Status::Error)
             escape("unable to add the owner record");
 
           // waive.
@@ -271,7 +271,7 @@ namespace etoile
           // record less.
           if (context.access->Consult(index,
                                       size - 1,
-                                      range) == elle::StatusError)
+                                      range) == elle::Status::Error)
             escape("unable to consult the access object");
         }
       else
@@ -281,11 +281,11 @@ namespace etoile
           // is not located in the access block, counts as one record.
           if (context.access->Consult(index - 1 ,
                                       size,
-                                      range) == elle::StatusError)
+                                      range) == elle::Status::Error)
             escape("unable to consult the access object");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -296,7 +296,7 @@ namespace etoile
                           const nucleus::Subject&               subject)
     {
       // determine the rights over the object.
-      if (Rights::Determine(context) == elle::StatusError)
+      if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // verify that the user can modify the accesses.
@@ -314,7 +314,7 @@ namespace etoile
           // update the permissions.
           if (context.object.Administrate(
                 context.object.meta.attributes,
-                nucleus::PermissionNone) == elle::StatusError)
+                nucleus::PermissionNone) == elle::Status::Error)
             escape("unable to administrate the object");
         }
       else
@@ -324,11 +324,11 @@ namespace etoile
           //
 
           // open the access.
-          if (Access::Open(context) == elle::StatusError)
+          if (Access::Open(context) == elle::Status::Error)
             escape("unable to open the access block");
 
           // remove the record associated with the given subject.
-          if (context.access->Remove(subject) == elle::StatusTrue)
+          if (context.access->Remove(subject) == elle::Status::True)
             escape("unable to remove the subject's access record");
 
           // the object must be marked as administered i.e dirty so
@@ -338,13 +338,13 @@ namespace etoile
           // for more information, please refer to the Object class.
           if (context.object.Administrate(
                 context.object.meta.attributes,
-                context.object.meta.owner.permissions) == elle::StatusError)
+                context.object.meta.owner.permissions) == elle::Status::Error)
             escape("unable to administrate the object");
         }
 
       // try to audit the object because the current author may have
       // lost its write permission in the process.
-      if (Access::Audit(context, subject) == elle::StatusError)
+      if (Access::Audit(context, subject) == elle::Status::Error)
         escape("unable to audit the object");
 
       // is the target subject the user i.e the object owner in this case.
@@ -352,14 +352,14 @@ namespace etoile
         {
           // update the context rights.
           if (Rights::Update(context,
-                             nucleus::PermissionNone) == elle::StatusError)
+                             nucleus::PermissionNone) == elle::Status::Error)
             escape("unable to update the rigths");
         }
 
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -373,16 +373,16 @@ namespace etoile
     ///
     elle::Status        Access::Upgrade(
                           gear::Object&                         context,
-                          const elle::SecretKey&                key)
+                          elle::cryptography::SecretKey const&                key)
     {
       nucleus::Token    token;
 
       // open the access.
-      if (Access::Open(context) == elle::StatusError)
+      if (Access::Open(context) == elle::Status::Error)
         escape("unable to open the access");
 
       // upgrate the access block's records.
-      if (context.access->Upgrade(key) == elle::StatusError)
+      if (context.access->Upgrade(key) == elle::Status::Error)
         escape("unable to upgrade the access records");
 
       // then, create a new object's owner token.
@@ -391,7 +391,7 @@ namespace etoile
       // the owner may not have the permission to read. this is required if the
       // owner wants to grant herself back or anyone else the permission
       // to read.
-      if (token.Update(key, context.object.owner.K) == elle::StatusError)
+      if (token.Update(key, context.object.owner.K) == elle::Status::Error)
         escape("unable to update the owner's token");
 
       // update the object with the new owner token.
@@ -404,11 +404,11 @@ namespace etoile
             context.object.data.contents,
             context.object.data.size,
             context.object.meta.access,
-            token) == elle::StatusError)
+            token) == elle::Status::Error)
         escape("unable to update the object");
 
       // determine the rights over the object.
-      if (Rights::Determine(context) == elle::StatusError)
+      if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // finally, if the user has the permission to read, update its rights.
@@ -416,14 +416,14 @@ namespace etoile
           nucleus::PermissionRead)
         {
           // recompute the rights with the new key.
-          if (Rights::Recompute(context) == elle::StatusError)
+          if (Rights::Recompute(context) == elle::Status::Error)
             escape("unable to recompute the rights");
         }
 
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -439,11 +439,11 @@ namespace etoile
                           gear::Object&                         context)
     {
       // open the access.
-      if (Access::Open(context) == elle::StatusError)
+      if (Access::Open(context) == elle::Status::Error)
         escape("unable to open the access");
 
       // downgrade the access block's records.
-      if (context.access->Downgrade() == elle::StatusError)
+      if (context.access->Downgrade() == elle::Status::Error)
         escape("unable to downgrade the access records");
 
       // also update the owner's token.
@@ -452,11 +452,11 @@ namespace etoile
             context.object.data.contents,
             context.object.data.size,
             context.object.meta.access,
-            nucleus::Token::Null) == elle::StatusError)
+            nucleus::Token::Null) == elle::Status::Error)
         escape("unable to update the object");
 
       // determine the rights over the object.
-      if (Rights::Determine(context) == elle::StatusError)
+      if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // finally, if the user has the permission to read, update its rights.
@@ -464,14 +464,14 @@ namespace etoile
           nucleus::PermissionRead)
         {
           // recompute the rights.
-          if (Rights::Recompute(context) == elle::StatusError)
+          if (Rights::Recompute(context) == elle::Status::Error)
             escape("unable to recompute the rights");
         }
 
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -486,11 +486,11 @@ namespace etoile
         {
           // mark the access block for removal.
           if (context.transcript.Wipe(context.object.meta.access) ==
-              elle::StatusError)
+              elle::Status::Error)
             escape("unable to mark the access block for removal");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -512,15 +512,15 @@ namespace etoile
       {
         // if there is no loaded access, then there is nothing to do.
         if (context.access == NULL)
-          return elle::StatusOk;
+          return elle::Status::Ok;
 
         // if the access has not changed, do nothing.
         if (context.access->state == nucleus::StateClean)
-          return elle::StatusOk;
+          return elle::Status::Ok;
       }
 
       // retrieve the access's size.
-      if (context.access->Capacity(size) == elle::StatusError)
+      if (context.access->Capacity(size) == elle::Status::Error)
         escape("unable to retrieve the access's size");
 
       //
@@ -551,7 +551,7 @@ namespace etoile
           if (hole::Hole::Descriptor.history == false)
             {
               // destroy the access block.
-              if (Access::Destroy(context) == elle::StatusError)
+              if (Access::Destroy(context) == elle::Status::Error)
                 escape("unable to destroy the access block");
             }
 
@@ -561,7 +561,7 @@ namespace etoile
                 context.object.data.contents,
                 context.object.data.size,
                 nucleus::Address::Null,
-                context.object.meta.owner.token) == elle::StatusError)
+                context.object.meta.owner.token) == elle::Status::Error)
             escape("unable to update the object");
         }
       else
@@ -581,13 +581,13 @@ namespace etoile
           if (hole::Hole::Descriptor.history == false)
             {
               // destroy the access block.
-              if (Access::Destroy(context) == elle::StatusError)
+              if (Access::Destroy(context) == elle::Status::Error)
                 escape("unable to destroy the access block");
             }
 
           // bind the access as, since the block has changed, its address
           // is going to be different.
-          if (context.access->Bind(address) == elle::StatusError)
+          if (context.access->Bind(address) == elle::Status::Error)
             escape("unable to bind the access");
 
           // set the state as consistent.
@@ -599,16 +599,16 @@ namespace etoile
                 context.object.data.contents,
                 context.object.data.size,
                 address,
-                context.object.meta.owner.token) == elle::StatusError)
+                context.object.meta.owner.token) == elle::Status::Error)
             escape("unable to update the object");
 
           // mark the block as needing to be stored.
           if (context.transcript.Push(address,
-                                      context.access) == elle::StatusError)
+                                      context.access) == elle::Status::Error)
             escape("unable to record the object for storing");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -658,18 +658,18 @@ namespace etoile
             // the write permission.
 
             // open the access block.
-            if (Access::Open(context) == elle::StatusError)
+            if (Access::Open(context) == elle::Status::Error)
               escape("unable to open the access block");
 
             // check whether a record exist for the subject as it
             // could very well have been removed.
-            if (context.access->Exist(subject) == elle::StatusTrue)
+            if (context.access->Exist(subject) == elle::Status::True)
               {
                 nucleus::Record*        record;
 
                 // retrieve the access record.
                 if (context.access->Lookup(subject,
-                                           record) == elle::StatusError)
+                                           record) == elle::Status::Error)
                   escape("unable to lookup the access record");
 
                 // check that the subject, also author, still has the
@@ -684,7 +684,7 @@ namespace etoile
             // this point is reached if the subject no longer has the
             // write permission, in which case the object's access
             // control mechanism is regulated.
-            if (Access::Regulate(context) == elle::StatusError)
+            if (Access::Regulate(context) == elle::Status::Error)
               escape("unable to regulate the object");
 
             break;
@@ -697,7 +697,7 @@ namespace etoile
           }
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -713,7 +713,7 @@ namespace etoile
       nucleus::Author   author;
 
       // build a new author, representing the object's owner.
-      if (author.Create() == elle::StatusError)
+      if (author.Create() == elle::Status::Error)
         escape("unable to create the author");
 
       // update the object with a new author. since the object gets updated,
@@ -723,10 +723,10 @@ namespace etoile
             context.object.data.contents,
             context.object.data.size,
             context.object.meta.access,
-            context.object.meta.owner.token) == elle::StatusError)
+            context.object.meta.owner.token) == elle::Status::Error)
         escape("unable to update the object");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

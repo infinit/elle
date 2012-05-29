@@ -1,16 +1,14 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [tue may  4 23:47:55 2010]
-//
+#include <elle/cryptography/PublicKeySerializer.hxx>
+#include <elle/cryptography/PrivateKeySerializer.hxx>
+#include <elle/cryptography/CipherSerializer.hxx>
+#include <elle/serialize/TupleSerializer.hxx>
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <lune/AuthoritySerializer.hxx>
+
+#include <nucleus/proton/AddressSerializer.hxx>
+#include <nucleus/proton/AddressSerializer.hxx>
+
+#include <elle/io/File.hh>
 
 #include <lune/Authority.hh>
 #include <lune/Lune.hh>
@@ -61,7 +59,7 @@ namespace lune
   ///
   /// this method creates an authority based on the given key pair.
   ///
-  elle::Status          Authority::Create(const elle::KeyPair&  pair)
+  elle::Status          Authority::Create(elle::cryptography::KeyPair const&  pair)
   {
     // set the type.
     this->type = Authority::TypePair;
@@ -70,15 +68,15 @@ namespace lune
     this->K = pair.K;
 
     // allocate the private key.
-    this->k = new elle::PrivateKey(pair.k);
+    this->k = new elle::cryptography::PrivateKey(pair.k);
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
   /// this method creates an authority based on the given public key only.
   ///
-  elle::Status          Authority::Create(const elle::PublicKey&        K)
+  elle::Status          Authority::Create(elle::cryptography::PublicKey const& K)
   {
     // set the type.
     this->type = Authority::TypePublic;
@@ -86,7 +84,7 @@ namespace lune
     // set the public key.
     this->K = K;
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -94,23 +92,28 @@ namespace lune
   ///
   elle::Status          Authority::Encrypt(const elle::String&          pass)
   {
-    elle::SecretKey     key;
+    elle::cryptography::SecretKey     key;
 
     // create a secret key with this pass.
-    if (key.Create(pass) == elle::StatusError)
+    if (key.Create(pass) == elle::Status::Error)
       escape("unable to create the secret key");
 
+    delete this->cipher;
+    this->cipher = nullptr;
+
     // allocate the cipher.
-    this->cipher = new elle::Cipher;
+    this->cipher = new elle::cryptography::Cipher;
 
     // encrypt depending on the type.
     switch (this->type)
       {
       case Authority::TypePair:
         {
-          // encrypt the authority.
-          if (key.Encrypt(this->K, *this->k,
-                          *this->cipher) == elle::StatusError)
+          std::tuple<
+            elle::cryptography::PublicKey const&,
+            elle::cryptography::PrivateKey const&
+          >                                     res{this->K, *this->k};
+          if (key.Encrypt(res, *this->cipher) == elle::Status::Error)
             escape("unable to encrypt the authority");
 
           break;
@@ -119,19 +122,18 @@ namespace lune
         {
           // encrypt the authority.
           if (key.Encrypt(this->K,
-                          *this->cipher) == elle::StatusError)
+                          *this->cipher) == elle::Status::Error)
             escape("unable to encrypt the authority");
 
           break;
         }
       case Authority::TypeUnknown:
+        escape("unknown type");
       default:
-        {
-          escape("unknown type");
-        }
+        escape("invalid type");
       }
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -139,14 +141,14 @@ namespace lune
   ///
   elle::Status          Authority::Decrypt(const elle::String&          pass)
   {
-    elle::SecretKey     key;
+    elle::cryptography::SecretKey     key;
 
     // check the cipher.
     if (this->cipher == NULL)
       escape("unable to decrypt an unencrypted authority");
 
     // create a secret key with this pass.
-    if (key.Create(pass) == elle::StatusError)
+    if (key.Create(pass) == elle::Status::Error)
       escape("unable to create the secret key");
 
     // decrypt depending on the type.
@@ -155,11 +157,15 @@ namespace lune
       case Authority::TypePair:
         {
           // allocate the private key.
-          this->k = new elle::PrivateKey;
+          this->k = new elle::cryptography::PrivateKey;
 
           // decrypt the authority.
-          if (key.Decrypt(*this->cipher,
-                          this->K, *this->k) == elle::StatusError)
+          std::tuple<
+            elle::cryptography::PublicKey&,
+            elle::cryptography::PrivateKey&
+          >                                     res{this->K, *this->k};
+
+          if (key.Decrypt(*this->cipher, res) == elle::Status::Error)
             escape("unable to decrypt the authority");
 
           break;
@@ -168,19 +174,18 @@ namespace lune
         {
           // decrypt the authority.
           if (key.Decrypt(*this->cipher,
-                          this->K) == elle::StatusError)
+                          this->K) == elle::Status::Error)
             escape("unable to decrypt the authority");
 
           break;
         }
       case Authority::TypeUnknown:
+        escape("unknown type");
       default:
-        {
-          escape("unknown type");
-        }
+        escape("invalid type");
       }
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 //
@@ -211,25 +216,25 @@ namespace lune
               << "[Type] " << this->type << std::endl;
 
     // dump the public key.
-    if (this->K.Dump(margin + 2) == elle::StatusError)
+    if (this->K.Dump(margin + 2) == elle::Status::Error)
       escape("unable to dump the public key");
 
     // if present...
     if (this->k != NULL)
       {
         // ...dump the private key.
-        if (this->k->Dump(margin + 2) == elle::StatusError)
+        if (this->k->Dump(margin + 2) == elle::Status::Error)
           escape("unable to dump the private key");
       }
 
     // dump the cipher.
     if (this->cipher != NULL)
       {
-        if (this->cipher->Dump(margin + 2) == elle::StatusError)
+        if (this->cipher->Dump(margin + 2) == elle::Status::Error)
           escape("unable to dump the cipher");
       }
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 //
@@ -239,39 +244,39 @@ namespace lune
   ///
   /// this method serializes the object.
   ///
-  elle::Status          Authority::Serialize(elle::Archive&     archive) const
-  {
-    // check the cipher.
-    if (this->cipher == NULL)
-      escape("unable to serialize an unencrypted authority");
+  //elle::Status          Authority::Serialize(elle::Archive&     archive) const
+  //{
+  //  // check the cipher.
+  //  if (this->cipher == NULL)
+  //    escape("unable to serialize an unencrypted authority");
 
-    // serialize the type and cipher.
-    if (archive.Serialize(static_cast<elle::Natural8>(this->type),
-                          *this->cipher) == elle::StatusError)
-      escape("unable to serialize the attributes");
+  //  // serialize the type and cipher.
+  //  if (archive.Serialize(static_cast<elle::Natural8>(this->type),
+  //                        *this->cipher) == elle::Status::Error)
+  //    escape("unable to serialize the attributes");
 
-    return elle::StatusOk;
-  }
+  //  return elle::Status::Ok;
+  //}
 
-  ///
-  /// this method extracts the object.
-  ///
-  elle::Status          Authority::Extract(elle::Archive&       archive)
-  {
-    elle::Natural8      type;
+  /////
+  ///// this method extracts the object.
+  /////
+  //elle::Status          Authority::Extract(elle::Archive&       archive)
+  //{
+  //  elle::Natural8      type;
 
-    // allocate the cipher.
-    this->cipher = new elle::Cipher;
+  //  // allocate the cipher.
+  //  this->cipher = new elle::cryptography::Cipher;
 
-    // extract the type and cipher.
-    if (archive.Extract(type, *this->cipher) == elle::StatusError)
-      escape("unable to extract the attributes");
+  //  // extract the type and cipher.
+  //  if (archive.Extract(type, *this->cipher) == elle::Status::Error)
+  //    escape("unable to extract the attributes");
 
-    // set the type.
-    this->type = static_cast<Authority::Type>(type);
+  //  // set the type.
+  //  this->type = static_cast<Authority::Type>(type);
 
-    return elle::StatusOk;
-  }
+  //  return elle::Status::Ok;
+  //}
 
 //
 // ---------- fileable --------------------------------------------------------
@@ -280,26 +285,26 @@ namespace lune
   ///
   /// this method loads an authority file.
   ///
-  elle::Status          Authority::Load(elle::Path const& path)
-  {
-    elle::Region        region;
+  //elle::Status          Authority::Load(elle::Path const& path)
+  //{
+  //  elle::standalone::Region        region;
 
-    // read the file's content.
-    if (elle::File::Read(path, region) == elle::StatusError)
-      escape("unable to read the file's content");
+  //  // read the file's content.
+  //  if (elle::io::File::Read(path, region) == elle::Status::Error)
+  //    escape("unable to read the file's content");
 
-    // decode and extract the object.
-    auto status = elle::Hexadecimal::Decode(
-        // XXX this copy the whole buffer, not opti
-        elle::String(reinterpret_cast<char*>(region.contents), region.size),
-        *this
-    );
+  //  // decode and extract the object.
+  //  auto status = elle::Hexadecimal::Decode(
+  //      // XXX this copy the whole buffer, not opti
+  //      elle::String(reinterpret_cast<char*>(region.contents), region.size),
+  //      *this
+  //  );
 
-    if (status == elle::StatusError)
-      escape("unable to decode the object");
+  //  if (status == elle::Status::Error)
+  //    escape("unable to decode the object");
 
-    return elle::StatusOk;
-  }
+  //  return elle::Status::Ok;
+  //}
 
   ///
   /// this method loads the system's authority file.
@@ -309,7 +314,7 @@ namespace lune
     elle::Path          path;
 
     // create the path.
-    if (path.Create(Lune::Authority) == elle::StatusError)
+    if (path.Create(Lune::Authority) == elle::Status::Error)
       escape("unable to create the path");
 
     return this->Load(path);
@@ -321,27 +326,17 @@ namespace lune
   elle::Status          Authority::Store() const
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
     elle::String        string;
 
     // create the path.
-    if (path.Create(Lune::Authority) == elle::StatusError)
+    if (path.Create(Lune::Authority) == elle::Status::Error)
       escape("unable to create the path");
 
-    // encode in hexadecimal.
-    if (elle::Hexadecimal::Encode(*this, string) == elle::StatusError)
-      escape("unable to encode the object in hexadecimal");
+    if (this->Store(path) == elle::Status::Error)
+      escape("unable to store");
 
-    // wrap the string.
-    if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
-                    string.length()) == elle::StatusError)
-      escape("unable to wrap the string in a region");
-
-    // write the file's content.
-    if (elle::File::Write(path, region) == elle::StatusError)
-      escape("unable to write the file's content");
-
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -352,14 +347,14 @@ namespace lune
     elle::Path          path;
 
     // create the path.
-    if (path.Create(Lune::Authority) == elle::StatusError)
+    if (path.Create(Lune::Authority) == elle::Status::Error)
       escape("unable to create the path");
 
     // erase the file.
-    if (elle::File::Erase(path) == elle::StatusError)
+    if (elle::io::File::Erase(path) == elle::Status::Error)
       escape("unable to erase the file");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -370,14 +365,14 @@ namespace lune
     elle::Path          path;
 
     // create the path.
-    if (path.Create(Lune::Authority) == elle::StatusError)
+    if (path.Create(Lune::Authority) == elle::Status::Error)
       escape("unable to create the path");
 
     // test the file.
-    if (elle::File::Exist(path) == elle::StatusFalse)
-      return elle::StatusFalse;
+    if (elle::io::File::Exist(path) == elle::Status::False)
+      return elle::Status::False;
 
-    return elle::StatusTrue;
+    return elle::Status::True;
   }
 
 }

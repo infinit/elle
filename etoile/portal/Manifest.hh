@@ -15,7 +15,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
+#include <elle/Manifest.hh>
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 
@@ -76,7 +77,7 @@ namespace etoile
     enum Tag
       {
         // general
-        TagAuthenticate = elle::Range<Component>::First + 1,
+        TagAuthenticate = elle::network::Range<Component>::First + 1,
         TagAuthenticated,
         TagIdentifier,
 
@@ -197,13 +198,13 @@ message(etoile::portal::TagFileLoad,
 message(etoile::portal::TagFileWrite,
         parameters(etoile::gear::Identifier&,
                    nucleus::Offset&,
-                   elle::Region&));
+                   elle::standalone::Region&));
 message(etoile::portal::TagFileRead,
         parameters(etoile::gear::Identifier&,
                    nucleus::Offset&,
                    nucleus::Size&));
 message(etoile::portal::TagFileRegion,
-        parameters(elle::Region&));
+        parameters(elle::standalone::Region&));
 message(etoile::portal::TagFileAdjust,
         parameters(etoile::gear::Identifier&,
                    nucleus::Size&));

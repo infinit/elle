@@ -1,21 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [sun may  8 01:21:07 2011]
-//
+#ifndef  NUCLEUS_PROTON_NETWORK_HH
+# define NUCLEUS_PROTON_NETWORK_HH
 
-#ifndef NUCLEUS_PROTON_NETWORK_HH
-#define NUCLEUS_PROTON_NETWORK_HH
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/Elle.hh>
+# include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -26,7 +15,7 @@ namespace nucleus
     /// this class identifies a network through a unique name.
     ///
     class Network:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //
@@ -61,12 +50,14 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      elle::Status      Serialize(elle::Archive&) const;
-      elle::Status      Extract(elle::Archive&);
+      //// archivable
+      //elle::Status      Serialize(elle::Archive&) const;
+      //elle::Status      Extract(elle::Archive&);
     };
 
   }
 }
+
+# include <elle/idiom/Close.hh>
 
 #endif

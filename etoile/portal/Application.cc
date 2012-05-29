@@ -1,4 +1,6 @@
 #include <Infinit.hh>
+#include <elle/standalone/Morgue.hh>
+
 #include <etoile/portal/Application.hh>
 #include <etoile/portal/Portal.hh>
 
@@ -66,7 +68,7 @@ namespace etoile
         (boost::bind(&Application::Abort, this),
          "Application abort", Application::Timeout);
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -91,14 +93,14 @@ namespace etoile
       if (this->processing == Application::ProcessingOff)
         {
           // remove the application from the portal.
-          if (Portal::Remove(this->socket) == elle::StatusError)
+          if (Portal::Remove(this->socket) == elle::Status::Error)
             escape("unable to remove the application from the portal");
 
           // bury the application.
           bury(this);
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -116,7 +118,7 @@ namespace etoile
       // check the return status.
       this->socket->Disconnect();
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///

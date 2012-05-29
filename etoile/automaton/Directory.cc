@@ -1,16 +1,6 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [mon jun 20 13:22:27 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <nucleus/neutron/CatalogSerializer.hxx>
+#include <nucleus/neutron/RangeSerializer.hxx>
+#include <nucleus/neutron/EntrySerializer.hxx>
 
 #include <etoile/automaton/Directory.hh>
 #include <etoile/automaton/Object.hh>
@@ -39,21 +29,21 @@ namespace etoile
       // create the directory.
       if (context.object.Create(
             nucleus::GenreDirectory,
-            agent::Agent::Identity.pair.K) == elle::StatusError)
+            agent::Agent::Identity.pair.K) == elle::Status::Error)
         escape("unable to create the directory object");
 
       // bind the object to its address i.e this will never changed.
-      if (context.object.Bind(address) == elle::StatusError)
+      if (context.object.Bind(address) == elle::Status::Error)
         escape("unable to bind the object");
 
       // create the context's location with an initial version number.
-      if (context.location.Create(address) == elle::StatusError)
+      if (context.location.Create(address) == elle::Status::Error)
         escape("unable to create the location");
 
       // set the context's state.
       context.state = gear::Context::StateCreated;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -65,10 +55,10 @@ namespace etoile
     {
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
-        return elle::StatusOk;
+        return elle::Status::Ok;
 
       // load the object.
-      if (Object::Load(context) == elle::StatusError)
+      if (Object::Load(context) == elle::Status::Error)
         escape("unable to fetch the object");
 
       // check that the object is a directory.
@@ -78,7 +68,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateLoaded;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -92,7 +82,7 @@ namespace etoile
       nucleus::Size     size;
 
       // determine the rights.
-      if (Rights::Determine(context) == elle::StatusError)
+      if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // check if the current user has the right the write the catalog.
@@ -102,7 +92,7 @@ namespace etoile
                "this directory");
 
       // open the contents.
-      if (Contents::Open(context) == elle::StatusError)
+      if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
 
       // allocate a new directory entry.
@@ -115,14 +105,14 @@ namespace etoile
                "directory");
 
       // add the entry in the directory.
-      if (context.contents->content->Add(entry.get()) == elle::StatusError)
+      if (context.contents->content->Add(entry.get()) == elle::Status::Error)
         escape("unable to add the entry in the directory");
 
       // stop tracking since the entry has been properly added to the catalog.
       entry.release();
 
       // retrieve the new contents's size.
-      if (context.contents->content->Capacity(size) == elle::StatusError)
+      if (context.contents->content->Capacity(size) == elle::Status::Error)
         escape("unable to retrieve the contents's size");
 
       // update the object.
@@ -131,13 +121,13 @@ namespace etoile
             context.object.data.contents,
             size,
             context.object.meta.access,
-            context.object.meta.owner.token) == elle::StatusError)
+            context.object.meta.owner.token) == elle::Status::Error)
         escape("unable to update the object");
 
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -150,7 +140,7 @@ namespace etoile
                           nucleus::Entry*&                      entry)
     {
       // determine the rights.
-      if (Rights::Determine(context) == elle::StatusError)
+      if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
@@ -160,7 +150,7 @@ namespace etoile
                "this directory");
 
       // open the contents.
-      if (Contents::Open(context) == elle::StatusError)
+      if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
 
       // check that the content exists: the subject may have lost the
@@ -171,10 +161,10 @@ namespace etoile
 
       // look up the entry.
       if (context.contents->content->Lookup(name,
-                                            entry) == elle::StatusError)
+                                            entry) == elle::Status::Error)
         escape("unable to find the entry in the directory");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -189,7 +179,7 @@ namespace etoile
                           nucleus::Range<nucleus::Entry>&       range)
     {
       // determine the rights.
-      if (Rights::Determine(context) == elle::StatusError)
+      if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
@@ -199,7 +189,7 @@ namespace etoile
                "this directory");
 
       // open the contents.
-      if (Contents::Open(context) == elle::StatusError)
+      if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
 
       // check that the content exists: the subject may have lost the
@@ -211,10 +201,10 @@ namespace etoile
       // consult the directory catalog.
       if (context.contents->content->Consult(index,
                                              size,
-                                             range) == elle::StatusError)
+                                             range) == elle::Status::Error)
         escape("unable to consult the directory");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -228,7 +218,7 @@ namespace etoile
       nucleus::Size     size;
 
       // determine the rights.
-      if (Rights::Determine(context) == elle::StatusError)
+      if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
@@ -238,7 +228,7 @@ namespace etoile
                "this directory");
 
       // open the contents.
-      if (Contents::Open(context) == elle::StatusError)
+      if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
 
       // check that the content exists: the subject may have lost the
@@ -248,11 +238,11 @@ namespace etoile
                "directory");
 
       // rename the entry.
-      if (context.contents->content->Rename(from, to) == elle::StatusError)
+      if (context.contents->content->Rename(from, to) == elle::Status::Error)
         escape("unable to rename the directory's entry");
 
       // retrieve the new contents's size.
-      if (context.contents->content->Capacity(size) == elle::StatusError)
+      if (context.contents->content->Capacity(size) == elle::Status::Error)
         escape("unable to retrieve the contents's size");
 
       // update the object though renaming an entry may not impact
@@ -262,13 +252,13 @@ namespace etoile
             context.object.data.contents,
             size,
             context.object.meta.access,
-            context.object.meta.owner.token) == elle::StatusError)
+            context.object.meta.owner.token) == elle::Status::Error)
         escape("unable to update the object");
 
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -281,7 +271,7 @@ namespace etoile
       nucleus::Size     size;
 
       // determine the rights.
-      if (Rights::Determine(context) == elle::StatusError)
+      if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
@@ -291,7 +281,7 @@ namespace etoile
                "this directory");
 
       // open the contents.
-      if (Contents::Open(context) == elle::StatusError)
+      if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
 
       // check that the content exists: the subject may have lost the
@@ -301,11 +291,11 @@ namespace etoile
                "directory");
 
       // remove the entry.
-      if (context.contents->content->Remove(name) == elle::StatusError)
+      if (context.contents->content->Remove(name) == elle::Status::Error)
         escape("unable to remove the directory's entry");
 
       // retrieve the new contents's size.
-      if (context.contents->content->Capacity(size) == elle::StatusError)
+      if (context.contents->content->Capacity(size) == elle::Status::Error)
         escape("unable to retrieve the contents's size");
 
       // update the object.
@@ -314,13 +304,13 @@ namespace etoile
             context.object.data.contents,
             size,
             context.object.meta.access,
-            context.object.meta.owner.token) == elle::StatusError)
+            context.object.meta.owner.token) == elle::Status::Error)
         escape("unable to update the object");
 
       // set the context's state.
       context.state = gear::Context::StateModified;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -333,7 +323,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateDiscarded;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -344,7 +334,7 @@ namespace etoile
                           gear::Directory&                      context)
     {
       // determine the rights.
-      if (Rights::Determine(context) == elle::StatusError)
+      if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // check if the current user is the object owner.
@@ -353,21 +343,21 @@ namespace etoile
                "this directory");
 
       // open the contents.
-      if (Contents::Open(context) == elle::StatusError)
+      if (Contents::Open(context) == elle::Status::Error)
         escape("unable to open the contents");
 
       // destroy the contents.
-      if (Contents::Destroy(context) == elle::StatusError)
+      if (Contents::Destroy(context) == elle::Status::Error)
         escape("unable to destroy the contents");
 
       // destroy the object-related information.
-      if (Object::Destroy(context) == elle::StatusError)
+      if (Object::Destroy(context) == elle::Status::Error)
         escape("unable to destroy the object");
 
       // set the context's state.
       context.state = gear::Context::StateDestroyed;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -378,17 +368,17 @@ namespace etoile
                           gear::Directory&                      context)
     {
       // close the contents.
-      if (Contents::Close(context) == elle::StatusError)
+      if (Contents::Close(context) == elle::Status::Error)
         escape("unable to close the contents");
 
       // store the object-related information.
-      if (Object::Store(context) == elle::StatusError)
+      if (Object::Store(context) == elle::Status::Error)
         escape("unable to store the object");
 
       // set the context's state.
       context.state = gear::Context::StateStored;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

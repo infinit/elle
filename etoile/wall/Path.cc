@@ -1,17 +1,4 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [tue jun 14 12:57:24 2011]
-//
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/system/System.hh>
 
 #include <etoile/wall/Path.hh>
 
@@ -23,10 +10,6 @@ namespace etoile
 {
   namespace wall
   {
-
-//
-// ---------- methods ---------------------------------------------------------
-//
 
     ///
     /// this method takes a string-based path i.e a way and resolves it
@@ -48,18 +31,18 @@ namespace etoile
         printf("[etoile] wall::Path::Resolve()\n");
 
       // create a route from the way.
-      if (route.Create(way) == elle::StatusError)
+      if (route.Create(way) == elle::Status::Error)
         escape("unable to create the route");
 
       // resolve the route.
-      if (path::Path::Resolve(route, venue) == elle::StatusError)
+      if (path::Path::Resolve(route, venue) == elle::Status::Error)
         escape("unable to resolve the route");
 
       // create the chemin.
-      if (chemin.Create(route, venue) == elle::StatusError)
+      if (chemin.Create(route, venue) == elle::Status::Error)
         escape("unable to create the chemin");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -85,9 +68,9 @@ namespace etoile
 
       // if the relative path is empty, just return the root directory.
       if (relative.path.empty() == true)
-        relative.path = elle::System::Path::Root;
+        relative.path = elle::system::System::Path::Root;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

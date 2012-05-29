@@ -54,7 +54,7 @@ namespace elle
       // allocate a new program.
       program = new Program;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -66,7 +66,7 @@ namespace elle
       if (program != NULL)
         delete program;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -86,7 +86,7 @@ namespace elle
 # error "unsupported platform"
 #endif
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     void

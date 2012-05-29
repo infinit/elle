@@ -1,28 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [sun apr 18 10:49:35 2010]
-//
-
 #ifndef LUNE_MAP_HH
-#define LUNE_MAP_HH
+# define LUNE_MAP_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/Elle.hh>
+# include <elle/types.hh>
+# include <elle/idiom/Open.hh>
 
 namespace lune
 {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
   ///
   /// this class represents an map of links between local user/group
@@ -30,7 +13,7 @@ namespace lune
   ///
   template <typename T>
   class Map:
-    public elle::Object
+    public elle::radix::Object
   {
   public:
     //
@@ -88,8 +71,8 @@ namespace lune
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // archivable
-    elle::Status        Serialize(elle::Archive&) const;
-    elle::Status        Extract(elle::Archive&);
+    //elle::Status        Serialize(elle::Archive&) const;
+    //elle::Status        Extract(elle::Archive&);
 
     //
     // attributes
@@ -99,10 +82,8 @@ namespace lune
 
 }
 
-//
-// ---------- templates -------------------------------------------------------
-//
+# include <lune/Map.hxx>
 
-#include <lune/Map.hxx>
+# include <elle/idiom/Close.hh>
 
 #endif

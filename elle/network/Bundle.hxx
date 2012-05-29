@@ -1,30 +1,13 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [fri jun  3 22:22:21 2011]
-//
-
 #ifndef ELLE_NETWORK_BUNDLE_HXX
 #define ELLE_NETWORK_BUNDLE_HXX
 
-//
-// ---------- includes --------------------------------------------------------
-//
 
-#include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
 #include <elle/radix/Trait.hh>
-
-#include <elle/package/Archivable.hh>
 
 namespace elle
 {
   using namespace radix;
-  using namespace package;
 
   namespace network
   {
@@ -69,39 +52,39 @@ namespace elle
     /// this method serializes the variables referenced through the Arguments
     /// attribute.
     ///
-    template <const Tag G,
-              typename... T>
-    Status
-    Bundle::Inputs< G,
-                    Parameters<T...> >::Serialize(Archive&      archive) const
-    {
-      Callback<
-        Status,
-        typename Trait::Reference<
-          typename Trait::Constant<
-            typename Message<G>::P
-            >::Type
-          >::Type
-        >               callback(&Archive::Serialize, &archive);
+    //template <const Tag G,
+    //          typename... T>
+    //Status
+    //Bundle::Inputs< G,
+    //                Parameters<T...> >::Serialize(Archive&      archive) const
+    //{
+    //  Callback<
+    //    Status,
+    //    typename Trait::Reference<
+    //      typename Trait::Constant<
+    //        typename Message<G>::P
+    //        >::Type
+    //      >::Type
+    //    >               callback(&Archive::Serialize, &archive);
 
-      // trigger the serialization callback.
-      if (this->arguments.Call(callback) == StatusError)
-        escape("unable to serialize the arguments");
+    //  // trigger the serialization callback.
+    //  if (this->arguments.Call(callback) == Status::Error)
+    //    escape("unable to serialize the arguments");
 
-      return StatusOk;
-    }
+    //  return Status::Ok;
+    //}
 
     ///
     /// this method does nothing when it comes to Inputs bundles.
     ///
-    template <const Tag G,
-              typename... T>
-    Status
-    Bundle::Inputs< G,
-                    Parameters<T...> >::Extract(Archive&)
-    {
-      escape("unable to extract from an inputs bundle");
-    }
+    //template <const Tag G,
+    //          typename... T>
+    //Status
+    //Bundle::Inputs< G,
+    //                Parameters<T...> >::Extract(Archive&)
+    //{
+    //  escape("unable to extract from an inputs bundle");
+    //}
 
     ///
     /// this method dumps the bundle.
@@ -122,10 +105,10 @@ namespace elle
                 << "[Tag] " << static_cast<Natural32>(this->tag) << std::endl;
 
       // dump the arguments.
-      if (this->arguments.Dump() == StatusError)
+      if (this->arguments.Dump() == Status::Error)
         escape("unable to dump the arguments");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -167,39 +150,39 @@ namespace elle
     ///
     /// this method does nothing when it comes to Outputs bundles.
     ///
-    template <const Tag G,
-              typename... T>
-    Status
-    Bundle::Outputs< G,
-                     Parameters<T...> >::Serialize(Archive&) const
-    {
-      escape("unable to serialize to an outputs bundle");
-    }
+    //template <const Tag G,
+    //          typename... T>
+    //Status
+    //Bundle::Outputs< G,
+    //                 Parameters<T...> >::Serialize(Archive&) const
+    //{
+    //  escape("unable to serialize to an outputs bundle");
+    //}
 
     ///
     /// this method extract information from the given archive in order
     /// to set the values of the variables referenced through the Arguments
     /// attribute.
     ///
-    template <const Tag G,
-              typename... T>
-    Status
-    Bundle::Outputs< G,
-                     Parameters<T...> >::Extract(Archive&       archive)
-    {
-      Callback<
-        Status,
-        typename Trait::Reference<
-          typename Message<G>::P
-          >::Type
-        >               callback(&Archive::Extract, &archive);
+    //template <const Tag G,
+    //          typename... T>
+    //Status
+    //Bundle::Outputs< G,
+    //                 Parameters<T...> >::Extract(Archive&       archive)
+    //{
+    //  Callback<
+    //    Status,
+    //    typename Trait::Reference<
+    //      typename Message<G>::P
+    //      >::Type
+    //    >               callback(&Archive::Extract, &archive);
 
-      // trigger the serialization callback.
-      if (this->arguments.Call(callback) == StatusError)
-        escape("unable to extract the arguments");
+    //  // trigger the serialization callback.
+    //  if (this->arguments.Call(callback) == Status::Error)
+    //    escape("unable to extract the arguments");
 
-      return StatusOk;
-    }
+    //  return Status::Ok;
+    //}
 
 
     ///
@@ -221,10 +204,10 @@ namespace elle
                 << "[Tag] " << static_cast<Natural32>(this->tag) << std::endl;
 
       // dump the arguments.
-      if (this->arguments.Dump() == StatusError)
+      if (this->arguments.Dump() == Status::Error)
         escape("unable to dump the arguments");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

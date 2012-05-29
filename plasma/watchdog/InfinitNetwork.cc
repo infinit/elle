@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       plasma/watchdog
-//
-// license       infinit
-//
-// author        Raphael Londeix   [Sun 04 Mar 2012 11:40:29 AM CET]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <stdexcept>
 #include <iostream>
 
@@ -21,6 +7,12 @@
 
 #include "InfinitNetwork.hh"
 #include "Manager.hh"
+
+#include <lune/IdentitySerializer.hxx>
+#include <lune/DescriptorSerializer.hxx>
+#include <nucleus/proton/AddressSerializer.hxx>
+#include <nucleus/neutron/ObjectSerializer.hxx>
+#include <nucleus/neutron/TraitSerializer.hxx>
 
 using namespace plasma::watchdog;
 
@@ -108,7 +100,7 @@ void InfinitNetwork::_CreateNetworkRootBlock()
   nucleus::neutron::Object      directory;
   nucleus::proton::Address      address;
 
-  auto e              = elle::StatusError;
+  auto e              = elle::Status::Error;
   auto genreDirectory = nucleus::neutron::GenreDirectory;
   auto access         = nucleus::neutron::Access::Null;
 
@@ -148,7 +140,7 @@ void InfinitNetwork::_PrepareDirectory()
 
   lune::Descriptor descriptor;
 
-  auto e = elle::StatusError;
+  auto e = elle::Status::Error;
   if (descriptor.Restore(this->_description.descriptor) == e ||
       descriptor.Store(this->_description.name)         == e)
     {
@@ -179,7 +171,7 @@ void InfinitNetwork::_RegisterDevice()
   LOG() << "~~ Check if the device is registered for this network\n";
   lune::Passport passport;
 
-  if (passport.Load() == elle::StatusError)
+  if (passport.Load() == elle::Status::Error)
     {
       show();
       throw std::runtime_error("Couldn't load the passport file :'(");
@@ -251,7 +243,7 @@ void InfinitNetwork::_OnNetworkNodes(meta::NetworkNodesResponse const& response)
       }
   }
 
-  if (locusSet.Store(this->_description.name) == elle::StatusError)
+  if (locusSet.Store(this->_description.name) == elle::Status::Error)
     throw std::runtime_error("Cannot store the locus set");
   this->_StartProcess();
 
@@ -355,7 +347,7 @@ void InfinitNetwork::_OnProcessStarted()
   LOG() << "Process successfully started!\n";
 }
 
-void InfinitNetwork::_OnProcessError(QProcess::ProcessError error)
+void InfinitNetwork::_OnProcessError(QProcess::ProcessError)
 {
   LOG() << "Process has an error\n";
 }

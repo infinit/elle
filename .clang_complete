@@ -1,0 +1,1 @@
+-I. -std=c++0x -x c++ -I/usr/include/QtNetwork -I/usr/include/QtCore

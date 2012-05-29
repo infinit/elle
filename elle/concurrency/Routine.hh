@@ -1,36 +1,19 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar 24 19:50:08 2010]
-//
-
 #ifndef ELLE_CONCURRENCY_ROUTINE_HH
-#define ELLE_CONCURRENCY_ROUTINE_HH
+# define ELLE_CONCURRENCY_ROUTINE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/core/Natural.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Object.hh>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
 
   namespace concurrency
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a routine, being a function, a method
@@ -75,5 +58,7 @@ namespace elle
 
   }
 }
+
+# include <elle/idiom/Close.hh>
 
 #endif

@@ -53,7 +53,7 @@ Guard::~Guard()
 
       if (this->_scope != nullptr)
         {
-          if (Scope::Annihilate(this->_scope) == elle::StatusError)
+          if (Scope::Annihilate(this->_scope) == elle::Status::Error)
             log("unable to annihilate the scope");
         }
     }
@@ -70,7 +70,7 @@ elle::Status            Guard::Release()
 {
   this->_track = false;
 
-  return (elle::StatusOk);
+  return (elle::Status::Ok);
 }
 
 //

@@ -1,7 +1,7 @@
 #ifndef ELLE_CONCURRENCY_CLOSURE_HH
 # define ELLE_CONCURRENCY_CLOSURE_HH
 
-# include <elle/radix/Status.hh>
+# include <elle/types.hh>
 # include <elle/radix/Entity.hh>
 # include <elle/radix/Parameters.hh>
 # include <elle/radix/Arguments.hh>

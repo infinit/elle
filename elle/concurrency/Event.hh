@@ -3,11 +3,11 @@
 
 # include <elle/core/Natural.hh>
 # include <elle/core/Boolean.hh>
-
-# include <elle/radix/Status.hh>
 # include <elle/radix/Object.hh>
 
-# include <elle/package/Archive.hh>
+# include <elle/types.hh>
+# include <elle/serialize/fwd.hh>
+# include <elle/radix/Object.hh>
 
 # include <elle/idiom/Close.hh>
 #  include <openssl/err.h>
@@ -16,9 +16,8 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
-  using namespace package;
 
   // XXX
   namespace network
@@ -66,9 +65,7 @@ namespace elle
       Boolean           operator==(const Event&) const;
       Boolean           operator<(const Event&) const;
 
-      // archivable
-      Status            Serialize(Archive&) const;
-      Status            Extract(Archive&);
+      void            XXX_OLD_Extract();
 
       // dumpable
       Status            Dump(const Natural32 = 0) const;
@@ -82,8 +79,10 @@ namespace elle
       typedef reactor::VSignal<elle::network::Parcel*> SignalType;
       SignalType& Signal();
     private:
-      Natural64                                 _identifier;
-      SignalType*  _signal;
+      Natural64                       _identifier;
+      SignalType*                     _signal;
+
+      ELLE_SERIALIZE_FRIEND_FOR(Event);
     };
 
   }

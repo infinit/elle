@@ -28,7 +28,7 @@ const elle::Natural32                   Porcupine<>::Default::Length = 16;
 ///
 /// XXX
 ///
-elle::SecretKey                         Porcupine<>::Default::Secret;
+elle::cryptography::SecretKey                         Porcupine<>::Default::Secret;
 
 //
 // ---------- definitions -----------------------------------------------------
@@ -37,9 +37,9 @@ elle::SecretKey                         Porcupine<>::Default::Secret;
 ///
 /// XXX
 ///
-elle::Callback<
+elle::concurrency::Callback<
   elle::Status,
-  elle::Parameters<
+  elle::radix::Parameters<
     Block*,
     Handle&
     >
@@ -48,9 +48,9 @@ elle::Callback<
 ///
 /// XXX
 ///
-elle::Callback<
+elle::concurrency::Callback<
   elle::Status,
-  elle::Parameters<
+  elle::radix::Parameters<
     Handle&
     >
   >                                     Porcupine<>::Detach;
@@ -58,9 +58,9 @@ elle::Callback<
 ///
 /// XXX
 ///
-elle::Callback<
+elle::concurrency::Callback<
   elle::Status,
-  elle::Parameters<
+  elle::radix::Parameters<
     Handle&
     >
   >                                     Porcupine<>::Load;
@@ -68,9 +68,9 @@ elle::Callback<
 ///
 /// XXX
 ///
-elle::Callback<
+elle::concurrency::Callback<
   elle::Status,
-  elle::Parameters<
+  elle::radix::Parameters<
     Handle&
     >
   >                                     Porcupine<>::Unload;
@@ -83,28 +83,28 @@ elle::Callback<
 /// this method initializes the porcupine.
 ///
 elle::Status        Porcupine<>::Initialize(
-  const elle::Callback<
+  const elle::concurrency::Callback<
   elle::Status,
-  elle::Parameters<
+  elle::radix::Parameters<
     Block*,
     Handle&
     >
   >&                                                        attach,
-  const elle::Callback<
+  const elle::concurrency::Callback<
   elle::Status,
-  elle::Parameters<
+  elle::radix::Parameters<
     Handle&
     >
   >&                                                        detach,
-  const elle::Callback<
+  const elle::concurrency::Callback<
   elle::Status,
-  elle::Parameters<
+  elle::radix::Parameters<
     Handle&
     >
   >&                                                        load,
-  const elle::Callback<
+  const elle::concurrency::Callback<
   elle::Status,
-  elle::Parameters<
+  elle::radix::Parameters<
     Handle&
     >
   >&                                                        unload)
@@ -119,7 +119,7 @@ elle::Status        Porcupine<>::Initialize(
   //
   // this is required for nodules' footprint to be computed properly.
   if (Porcupine<>::Default::Secret.Create(
-        elle::String(Porcupine<>::Default::Length, 'B')) == elle::StatusError)
+        elle::String(Porcupine<>::Default::Length, 'B')) == elle::Status::Error)
     escape("unable to generate the default key");
 
   //
@@ -127,17 +127,17 @@ elle::Status        Porcupine<>::Initialize(
   //
   {
     // initialize the seam.
-    if (Seam<nucleus::Catalog>::Initialize() == elle::StatusError)
+    if (Seam<nucleus::Catalog>::Initialize() == elle::Status::Error)
       escape("unable to initialize the seam");
 
     // initialize the quill.
-    if (Quill<nucleus::Catalog>::Initialize() == elle::StatusError)
+    if (Quill<nucleus::Catalog>::Initialize() == elle::Status::Error)
       escape("unable to initialize the quill");
   }
 
   // XXX
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -150,15 +150,15 @@ elle::Status        Porcupine<>::Clean()
   //
   {
     // clean the quill.
-    if (Quill<nucleus::Catalog>::Clean() == elle::StatusError)
+    if (Quill<nucleus::Catalog>::Clean() == elle::Status::Error)
       escape("unable to clean the quill");
 
     // clean the seam.
-    if (Seam<nucleus::Catalog>::Clean() == elle::StatusError)
+    if (Seam<nucleus::Catalog>::Clean() == elle::Status::Error)
       escape("unable to clean the seam");
   }
 
   // XXX
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }

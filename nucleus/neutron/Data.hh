@@ -15,7 +15,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
+#include <elle/radix/Object.hh>
+#include <elle/standalone/Region.hh>
 
 #include <nucleus/neutron/Offset.hh>
 
@@ -48,7 +50,7 @@ namespace nucleus
     /// Catalog for directories, Data for files etc.
     ///
     class Data:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //
@@ -63,10 +65,10 @@ namespace nucleus
       elle::Status      Create();
 
       elle::Status      Write(const Offset&,
-                              const elle::Region&);
+                              const elle::standalone::Region&);
       elle::Status      Read(const Offset&,
                              const Size&,
-                             elle::Region&) const;
+                             elle::standalone::Region&) const;
       elle::Status      Adjust(const Size&);
 
       elle::Status      Capacity(Size&) const;
@@ -79,15 +81,15 @@ namespace nucleus
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status      Serialize(elle::Archive&) const;
-      elle::Status      Extract(elle::Archive&);
+      //elle::Status      Serialize(elle::Archive&) const;
+      //elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
       proton::Contents<Data>&           contents;
 
-      elle::Region                      region;
+      elle::standalone::Region                      region;
     };
 
   }

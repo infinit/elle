@@ -62,7 +62,7 @@ Pod::Pod(const nucleus::Placement&                              placement,
 /// XXX
 ///
 Pod::Pod(const Pod&                                             element):
-  elle::Object(element),
+  elle::radix::Object(element),
 
   nature(element.nature),
   state(element.state),
@@ -104,7 +104,7 @@ elle::Status            Pod::Load(nucleus::Handle&              handle)
 
   this->state = Pod::StateLoaded;
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -121,7 +121,7 @@ elle::Status            Pod::Unload(nucleus::Handle&            handle)
   if (this->counter == 0)
     this->state = Pod::StateUnloaded;
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 //
@@ -152,15 +152,15 @@ elle::Status            Pod::Dump(elle::Natural32               margin) const
   std::cout << alignment << elle::Dumpable::Shift << "[State] "
             << std::dec << this->state << std::endl;
 
-  if (this->placement.Dump(margin + 2) == elle::StatusError)
+  if (this->placement.Dump(margin + 2) == elle::Status::Error)
     escape("unable to dump the placement");
 
-  if (this->address.Dump(margin + 2) == elle::StatusError)
+  if (this->address.Dump(margin + 2) == elle::Status::Error)
     escape("unable to dump the address");
 
   if (this->block != nullptr)
     {
-      if (this->block->Dump(margin + 2) == elle::StatusError)
+      if (this->block->Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the block");
     }
   else
@@ -172,5 +172,5 @@ elle::Status            Pod::Dump(elle::Natural32               margin) const
   std::cout << alignment << elle::Dumpable::Shift << "[Counter] "
             << std::dec << this->counter << std::endl;
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }

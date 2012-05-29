@@ -1,18 +1,6 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [thu apr  1 22:00:03 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <nucleus/neutron/Record.hh>
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -60,7 +48,7 @@ namespace nucleus
     ///
     elle::Status        Record::Update(const Subject&           subject,
                                        const Permissions&       permissions,
-                                       const elle::SecretKey&   key)
+                                       elle::cryptography::SecretKey const&   key)
     {
       // set the subject.
       this->subject = subject;
@@ -79,7 +67,7 @@ namespace nucleus
               {
                 // create the token with the user's public key.
                 if (this->token.Update(key,
-                                       *subject.user) == elle::StatusError)
+                                       *subject.user) == elle::Status::Error)
                   escape("unable to create the token");
 
                 break;
@@ -102,7 +90,7 @@ namespace nucleus
           this->token = Token::Null;
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -121,7 +109,7 @@ namespace nucleus
       // set the token.
       this->token = token;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -135,15 +123,15 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return true;
 
       // compare the attributes.
       if ((this->subject != element.subject) ||
           (this->permissions != element.permissions) ||
           (this->token != element.token))
-        return elle::StatusFalse;
+        return false;
 
-      return elle::StatusTrue;
+      return true;
     }
 
     ///
@@ -165,7 +153,7 @@ namespace nucleus
       std::cout << alignment << "[Record]" << std::endl;
 
       // dump the subject.
-      if (this->subject.Dump(margin + 2) == elle::StatusError)
+      if (this->subject.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the subject");
 
       // dump the permissions.
@@ -174,10 +162,10 @@ namespace nucleus
                 << this->permissions << std::endl;
 
       // dump the token.
-      if (this->token.Dump(margin + 2) == elle::StatusError)
+      if (this->token.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the token");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -187,30 +175,30 @@ namespace nucleus
     ///
     /// this method serializes the record object.
     ///
-    elle::Status        Record::Serialize(elle::Archive&        archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(this->subject,
-                            this->permissions,
-                            this->token) == elle::StatusError)
-        escape("unable to serialize the record");
+    //elle::Status        Record::Serialize(elle::Archive&        archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(this->subject,
+    //                        this->permissions,
+    //                        this->token) == elle::Status::Error)
+    //    escape("unable to serialize the record");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the record object.
-    ///
-    elle::Status        Record::Extract(elle::Archive&          archive)
-    {
-      // extract the attributes.
-      if (archive.Extract(this->subject,
-                          this->permissions,
-                          this->token) == elle::StatusError)
-        escape("unable to extract the record");
+    /////
+    ///// this method extracts the record object.
+    /////
+    //elle::Status        Record::Extract(elle::Archive&          archive)
+    //{
+    //  // extract the attributes.
+    //  if (archive.Extract(this->subject,
+    //                      this->permissions,
+    //                      this->token) == elle::Status::Error)
+    //    escape("unable to extract the record");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
 //
 // ---------- rangeable -------------------------------------------------------

@@ -43,7 +43,7 @@ namespace elle
                     << " :: " << scoutor->second << std::endl;
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

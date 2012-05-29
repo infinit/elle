@@ -1,7 +1,7 @@
 #ifndef SHELL_SHELL_HH
 # define SHELL_SHELL_HH
 
-# include <elle/Elle.hh>
+# include <elle/types.hh>
 # include <nucleus/Nucleus.hh>
 
 # include <elle/idiom/Close.hh>

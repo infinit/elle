@@ -1,21 +1,12 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [tue mar  6 15:01:36 2012]
-//
+#ifndef  LUNE_SET_HH
+# define LUNE_SET_HH
 
-#ifndef LUNE_SET_HH
-#define LUNE_SET_HH
+# include <elle/types.hh>
+# include <elle/io/Fileable.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/network/Locus.hh>
 
-#include <elle/Elle.hh>
+# include <elle/idiom/Open.hh>
 
 namespace lune
 {
@@ -29,8 +20,8 @@ namespace lune
   /// a hole implementation to initiate connections.
   ///
   class Set:
-    public elle::Object,
-    public virtual elle::Fileable<elle::FormatCustom>
+    public elle::radix::Object,
+    public elle::io::Fileable<Set>
   {
   public:
     //
@@ -41,14 +32,14 @@ namespace lune
     //
     // types
     //
-    // XXX use std::set<elle::Locus> !
-    typedef std::vector<elle::Locus>    Container;
+    // XXX use std::set<elle::network::Locus> !
+    typedef std::vector<elle::network::Locus>    Container;
 
     //
     // methods
     //
-    elle::Status        Add(const elle::Locus&);
-    elle::Status        Remove(const elle::Locus&);
+    elle::Status        Add(const elle::network::Locus&);
+    elle::Status        Remove(const elle::network::Locus&);
 
     //
     // interfaces
@@ -61,8 +52,8 @@ namespace lune
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // archivable
-    elle::Status        Serialize(elle::Archive&) const;
-    elle::Status        Extract(elle::Archive&);
+    //elle::Status        Serialize(elle::Archive&) const;
+    //elle::Status        Extract(elle::Archive&);
 
     // fileable
     elle::Status        Load(const elle::String&);

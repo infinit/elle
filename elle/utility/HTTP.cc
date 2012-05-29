@@ -14,7 +14,7 @@
 
 #include <elle/utility/HTTP.hh>
 
-#include <elle/core/Byte.hh>
+#include <elle/types.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
@@ -116,13 +116,13 @@ namespace elle
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      return StatusOk;
+      return Status::Ok;
 
     _error:
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      escape(HTTP::Error);
+      escape("%s", HTTP::Error);
     }
 
     ///
@@ -230,13 +230,13 @@ namespace elle
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      return StatusOk;
+      return Status::Ok;
 
     _error:
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      escape(HTTP::Error);
+      escape("%s", HTTP::Error);
     }
 
     ///
@@ -362,13 +362,13 @@ namespace elle
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      return StatusOk;
+      return Status::Ok;
 
     _error:
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      escape(HTTP::Error);
+      escape("%s", HTTP::Error);
     }
 
     ///
@@ -441,13 +441,13 @@ namespace elle
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      return StatusOk;
+      return Status::Ok;
 
     _error:
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      escape(HTTP::Error);
+      escape("%s", HTTP::Error);
     }
 
 //
@@ -502,7 +502,7 @@ namespace elle
 
       // append the given data to the region.
       if (region->Append(reinterpret_cast<const Byte*>(ptr),
-                         static_cast<Natural64>(size * nmemb)) == StatusError)
+                         static_cast<Natural64>(size * nmemb)) == Status::Error)
         return (0);
 
       return (size * nmemb);

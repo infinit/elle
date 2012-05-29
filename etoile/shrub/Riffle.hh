@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 #include <nucleus/Nucleus.hh>
 
 #include <etoile/path/Slab.hh>
@@ -46,7 +46,7 @@ namespace etoile
     /// variable, it would have been too much burden for no benefit.
     ///
     class Riffle:
-      public elle::Entity
+      public elle::radix::Entity
     {
     public:
       //
@@ -90,7 +90,7 @@ namespace etoile
       path::Slab                slab;
       nucleus::Location         location;
 
-      elle::Time                timestamp;
+      elle::utility::Time                timestamp;
 
       Riffle*                   parent;
       Container                 children;

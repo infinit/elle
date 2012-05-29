@@ -10,7 +10,7 @@ namespace elle { namespace serialize {
 
     template<typename First, typename Second>
       struct ArchiveSerializer<std::pair<First, Second>>
-        : public SplittedSerializer<std::pair<First, Second>>
+        : public SplitSerializer<std::pair<First, Second>>
       {
         template<typename Archive>
           static void Load(Archive& ar,

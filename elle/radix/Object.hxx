@@ -40,8 +40,8 @@ namespace elle
           new (this) T(*object);
         }
 
-      // return StatusOk in order to avoid including Report, Status and Maid.
-      return (StatusOk);
+      // return Status::Ok in order to avoid including Report, Status and Maid.
+      return Status::Ok;
     }
 
   }

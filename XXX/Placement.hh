@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 namespace nucleus
 {
@@ -26,7 +26,7 @@ namespace nucleus
     /// XXX
     ///
     class Placement:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //
@@ -56,8 +56,8 @@ namespace nucleus
       elle::Boolean             operator<(const Placement&) const;
 
       // archivable
-      elle::Status              Serialize(elle::Archive&) const;
-      elle::Status              Extract(elle::Archive&);
+      //elle::Status              Serialize(elle::Archive&) const;
+      //elle::Status              Extract(elle::Archive&);
 
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;

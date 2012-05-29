@@ -42,9 +42,9 @@ Nest::A::Container      Nest::Addresses;
 elle::Status            Nest::Exist(const nucleus::Placement&   placement)
 {
   if (Nest::Placements.find(placement) == Nest::Placements.end())
-    return elle::StatusFalse;
+    return elle::Status::False;
 
-  return elle::StatusTrue;
+  return elle::Status::True;
 }
 
 ///
@@ -53,9 +53,9 @@ elle::Status            Nest::Exist(const nucleus::Placement&   placement)
 elle::Status            Nest::Exist(const nucleus::Address&     address)
 {
   if (Nest::Addresses.find(address) == Nest::Addresses.end())
-    return elle::StatusFalse;
+    return elle::Status::False;
 
-  return elle::StatusTrue;
+  return elle::Status::True;
 }
 
 ///
@@ -75,7 +75,7 @@ elle::Status            Nest::Insert(const nucleus::Placement&  placement,
   if (result.second == false)
     escape("unable to insert the pod in the container");
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -109,7 +109,7 @@ elle::Status            Nest::Insert(const nucleus::Placement&  placement,
   if (result.address.second == false)
     escape("unable to insert the pod in the container");
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -125,7 +125,7 @@ elle::Status            Nest::Retrieve(const nucleus::Placement& placement,
 
   pod = iterator->second;
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -141,7 +141,7 @@ elle::Status            Nest::Retrieve(const nucleus::Address&  address,
 
   pod = iterator->second;
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -155,7 +155,7 @@ elle::Status            Nest::Delete(const nucleus::Placement&  placement)
   // retrieve the pod.
   //
 
-  if (Nest::Retrieve(placement, pod) == elle::StatusError)
+  if (Nest::Retrieve(placement, pod) == elle::Status::Error)
     escape("unable to retrieve the pod associated with this placement");
 
   //
@@ -173,7 +173,7 @@ elle::Status            Nest::Delete(const nucleus::Placement&  placement)
 
   delete pod;
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -187,7 +187,7 @@ elle::Status            Nest::Delete(const nucleus::Address&    address)
   // retrieve the pod.
   //
 
-  if (Nest::Retrieve(address, pod) == elle::StatusError)
+  if (Nest::Retrieve(address, pod) == elle::Status::Error)
     escape("unable to retrieve the pod associated with this address");
 
   assert(pod->placement != nucleus::Placement::Null);
@@ -206,7 +206,7 @@ elle::Status            Nest::Delete(const nucleus::Address&    address)
 
   delete pod;
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -225,7 +225,7 @@ elle::Status            Nest::Attach(nucleus::Block*            block,
   assert(handle.placement == nucleus::Placement::Null);
 
   // generate a placement.
-  if (nucleus::Placement::Generate(placement) == elle::StatusError)
+  if (nucleus::Placement::Generate(placement) == elle::Status::Error)
     escape("unable to generate a unique placement");
 
   // create a new selectionoid.
@@ -233,7 +233,7 @@ elle::Status            Nest::Attach(nucleus::Block*            block,
     std::unique_ptr<Pod>(new Pod(placement, block));
 
   // insert the pod.
-  if (Nest::Insert(pod.get()->placement, pod.get()) == elle::StatusError)
+  if (Nest::Insert(pod.get()->placement, pod.get()) == elle::Status::Error)
     escape("unable to insert the pod");
 
   // return a handle.
@@ -242,7 +242,7 @@ elle::Status            Nest::Attach(nucleus::Block*            block,
   // release track.
   pod.release();
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -262,7 +262,7 @@ elle::Status            Nest::Detach(nucleus::Handle&           handle)
   assert(handle.placement != nucleus::Placement::Null);
 
   // retrieve the pod.
-  if (Nest::Retrieve(handle.placement, pod) == elle::StatusError)
+  if (Nest::Retrieve(handle.placement, pod) == elle::Status::Error)
     escape("unable to retrieve the pod");
 
   // update the pod's nature.
@@ -270,11 +270,11 @@ elle::Status            Nest::Detach(nucleus::Handle&           handle)
 
   if (pod->counter == 0)
     {
-      if (Nest::Delete(pod->placement) == elle::StatusError)
+      if (Nest::Delete(pod->placement) == elle::Status::Error)
         escape("unable to delete the pod");
     }
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -293,26 +293,26 @@ elle::Status            Nest::Load(nucleus::Handle&             handle)
     {
       Pod*              pod;
 
-      if (Nest::Retrieve(handle.placement, pod) == elle::StatusError)
+      if (Nest::Retrieve(handle.placement, pod) == elle::Status::Error)
         escape("unable to retrieve the pod");
 
-      if (pod->Load(handle) == elle::StatusError)
+      if (pod->Load(handle) == elle::Status::Error)
         escape("unable to load the pod");
     }
   else if (handle.address != nucleus::Address::Null)
     {
       Pod*              pod;
 
-      if (Nest::Retrieve(handle.address, pod) == elle::StatusError)
+      if (Nest::Retrieve(handle.address, pod) == elle::Status::Error)
         escape("unable to retrieve the pod");
 
-      if (pod->Load(handle) == elle::StatusError)
+      if (pod->Load(handle) == elle::Status::Error)
         escape("unable to load the pod");
     }
   else
     escape("unable to load a null handle");
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -329,20 +329,20 @@ elle::Status            Nest::Unload(nucleus::Handle&             handle)
   // make sure the given handle is valid.
   assert(handle.placement != nucleus::Placement::Null);
 
-  if (Nest::Retrieve(handle.placement, pod) == elle::StatusError)
+  if (Nest::Retrieve(handle.placement, pod) == elle::Status::Error)
     escape("unable to retrieve the pod");
 
-  if (pod->Unload(handle) == elle::StatusError)
+  if (pod->Unload(handle) == elle::Status::Error)
     escape("unable to unload the pod");
 
   if ((pod->nature == Pod::NatureOrphan) &&
       (pod->counter == 0))
     {
-      if (Nest::Delete(pod->placement) == elle::StatusError)
+      if (Nest::Delete(pod->placement) == elle::Status::Error)
         escape("unable to delete the pod");
     }
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -361,7 +361,7 @@ elle::Status            Nest::Show(const elle::Natural32        margin)
 
   for (; i != e; ++i)
     {
-      if (i->second->Dump(margin + 4) == elle::StatusError)
+      if (i->second->Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the pod");
     }
 
@@ -377,5 +377,5 @@ elle::Status            Nest::Show(const elle::Natural32        margin)
                 << "[Pod] " << std::hex << j->second << std::endl;
     }
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }

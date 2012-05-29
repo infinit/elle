@@ -1,30 +1,15 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri jul 24 16:28:56 2009]
-//
-
 #ifndef NUCLEUS_NEUTRON_TOKEN_HH
-#define NUCLEUS_NEUTRON_TOKEN_HH
+# define NUCLEUS_NEUTRON_TOKEN_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/Elle.hh>
+# include <elle/cryptography/fwd.hh>
 
 namespace nucleus
 {
   namespace neutron
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// a token is a secret key enabling a user to access encrypted
@@ -32,7 +17,7 @@ namespace nucleus
     /// use this key, it is encrypted with the user's public key.
     ///
     class Token:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //
@@ -50,30 +35,32 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status      Update(const elle::SecretKey&,
-                               const elle::PublicKey&);
-      elle::Status      Extract(const elle::PrivateKey&,
-                                elle::SecretKey&) const;
+      elle::Status      Update(elle::cryptography::SecretKey const&,
+                               elle::cryptography::PublicKey const&);
+      elle::Status      Extract(elle::cryptography::PrivateKey const&,
+                                elle::cryptography::SecretKey&) const;
 
       //
       // interfaces
       //
 
       // object
+#include <elle/idiom/Open.hh>
       declare(Token);
+#include <elle/idiom/Close.hh>
       elle::Boolean     operator==(const Token&) const;
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      elle::Status      Serialize(elle::Archive&) const;
-      elle::Status      Extract(elle::Archive&);
+      //// archivable
+      //elle::Status      Serialize(elle::Archive&) const;
+      //elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      elle::Code*       code;
+      elle::cryptography::Code*       code;
     };
 
   }

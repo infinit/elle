@@ -15,16 +15,17 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/String.hh>
+#include <elle/types.hh>
 
-#include <elle/radix/Status.hh>
 #include <elle/radix/Object.hh>
 
 #include <elle/io/Pattern.hh>
 
+#include <elle/idiom/Open.hh>
+
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
 
   namespace io
@@ -72,10 +73,14 @@ namespace elle
 
       // archivable: nothing
 
-      //
-      // attributes
-      //
-      String            string;
+    private:
+      String            _string;
+
+    public:
+      std::string const& str() const
+        { return this->_string; }
+      std::string& str()
+        { return this->_string; }
     };
 
   }
@@ -86,5 +91,7 @@ namespace elle
 //
 
 #include <elle/io/Path.hxx>
+
+#include <elle/idiom/Close.hh>
 
 #endif

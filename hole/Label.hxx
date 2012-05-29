@@ -1,15 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [thu aug 11 14:27:39 2011]
-//
-
 #ifndef HOLE_LABEL_HXX
-#define HOLE_LABEL_HXX
+# define HOLE_LABEL_HXX
+
+# include <elle/standalone/Report.hh>
+# include <elle/cryptography/Digest.hh>
+# include <elle/cryptography/OneWay.hh>
+
+# include <elle/idiom/Open.hh>
 
 namespace hole
 {
@@ -30,16 +26,18 @@ namespace hole
       delete this->digest;
 
     // allocate the digest object.
-    this->digest = new elle::Digest;
+    this->digest = new elle::cryptography::Digest;
 
     // compute the digest based on the parameters including the family.
-    if (elle::OneWay::Hash(parameter,
-                           *this->digest) == elle::StatusError)
+    if (elle::cryptography::OneWay::Hash(parameter,
+                           *this->digest) == elle::Status::Error)
       escape("unable to hash the given parameter(s)");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 }
+
+# include <elle/idiom/Close.hh>
 
 #endif

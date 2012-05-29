@@ -15,15 +15,10 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Natural.hh>
-#include <elle/core/String.hh>
-
-#include <elle/radix/Status.hh>
+#include <elle/types.hh>
 
 namespace elle
 {
-  using namespace core;
-  using namespace radix;
 
   namespace io
   {
@@ -38,22 +33,11 @@ namespace elle
     class Dumpable
     {
     public:
-      //
-      // constants
-      //
       static const String               Shift;
 
-      //
-      // constructors & destructors
-      //
-      virtual ~Dumpable()
-      {
-      }
+      virtual ~Dumpable() {}
 
-      //
-      // methods
-      //
-      virtual Status    Dump(const Natural32 = 0) const;
+      virtual Status    Dump(const Natural32 shift = 0) const = 0;
     };
 
   }

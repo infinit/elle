@@ -48,8 +48,8 @@ namespace elle
     ///
     class Entity:
       public Meta,
-      public Resource,
-      public virtual Dumpable
+      public Resource
+      //public virtual Dumpable
     {
     public:
       //

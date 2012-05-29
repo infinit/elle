@@ -1,16 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [sat aug  8 16:21:09 2009]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <boost/lexical_cast.hpp>
 
 #include <etoile/path/Path.hh>
 
@@ -40,10 +29,10 @@ namespace etoile
     elle::Status        Path::Initialize()
     {
       // initialize the route.
-      if (Route::Initialize() == elle::StatusError)
+      if (Route::Initialize() == elle::Status::Error)
         escape("unable to initialize the route");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -52,10 +41,10 @@ namespace etoile
     elle::Status        Path::Clean()
     {
       // clean the route.
-      if (Route::Clean() == elle::StatusError)
+      if (Route::Clean() == elle::Status::Error)
         escape("unable to clean the route");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -77,12 +66,12 @@ namespace etoile
       Route::Scoutor    scoutor;
 
       // first ask the shrub i.e path cache to resolve as much as it can.
-      if (shrub::Shrub::Resolve(route, venue) == elle::StatusError)
+      if (shrub::Shrub::Resolve(route, venue) == elle::Status::Error)
         escape("unable to resolve part of the route through the shrub");
 
       // if complete, return the address i.e without updating the cache.
       if (route.elements.size() == venue.elements.size())
-        return elle::StatusOk;
+        return elle::Status::Ok;
 
       // if the cache did not resolve anything.
       if (venue == Venue::Null)
@@ -90,14 +79,14 @@ namespace etoile
           Slice         slice;
 
           // retrieve the root directory's address.
-          if (depot::Depot::Origin(address) == elle::StatusError)
+          if (depot::Depot::Origin(address) == elle::Status::Error)
             escape("unable to retrieve the address of the root directory");
 
           // parse the very first slab i.e the root slab in order
           // to extract the version number. note that the root slab is
           // always empty.
           if (Path::Parse(route.elements[0],
-                          slice, version) == elle::StatusError)
+                          slice, version) == elle::Status::Error)
             escape("unable to extract the version number from the root slab");
 
           // check that the slice is empty, as it should for the root
@@ -106,7 +95,7 @@ namespace etoile
             escape("the root slice should always be empty");
 
           // record the root directory in the venue.
-          if (venue.Record(address, version) == elle::StatusError)
+          if (venue.Record(address, version) == elle::Status::Error)
             escape("unable to record the root directory in the venue");
         }
 
@@ -127,7 +116,7 @@ namespace etoile
           // extract the slice/version from the current slab.
           if (Path::Parse(*scoutor,
                           slice,
-                          version) == elle::StatusError)
+                          version) == elle::Status::Error)
             escape("unable to extract the slice/version from the "
                    "current slab");
 
@@ -137,20 +126,20 @@ namespace etoile
 
           // create the chemin.
           if (chemin.Create(route, venue,
-                            venue.elements.size()) == elle::StatusError)
+                            venue.elements.size()) == elle::Status::Error)
             escape("unable to create the chemin");
 
           // load the directory.
-          if (wall::Directory::Load(chemin, identifier) == elle::StatusError)
+          if (wall::Directory::Load(chemin, identifier) == elle::Status::Error)
             escape("unable to load the directory");
 
           // lookup the slice.
           if (wall::Directory::Lookup(identifier,
                                       slice,
-                                      entry) == elle::StatusError)
+                                      entry) == elle::Status::Error)
             {
               // discard the directory.
-              if (wall::Directory::Discard(identifier) == elle::StatusError)
+              if (wall::Directory::Discard(identifier) == elle::Status::Error)
                 escape("unable to discard the directory");
 
               escape("unable to lookup the slice");
@@ -162,7 +151,7 @@ namespace etoile
             address = entry->address;
 
           // discard the directory.
-          if (wall::Directory::Discard(identifier) == elle::StatusError)
+          if (wall::Directory::Discard(identifier) == elle::Status::Error)
             escape("unable to discard the directory");
 
           // if there is no such entry, abort.
@@ -176,15 +165,15 @@ namespace etoile
                    slice.c_str());
 
           // first, record the address/version in the venue.
-          if (venue.Record(address, version) == elle::StatusError)
+          if (venue.Record(address, version) == elle::Status::Error)
             escape("unable to record the venue address");
         }
 
       // update the shrub with the resolved path.
-      if (shrub::Shrub::Update(route, venue) == elle::StatusError)
+      if (shrub::Shrub::Update(route, venue) == elle::Status::Error)
         escape("unable to update the shrub");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -244,15 +233,18 @@ namespace etoile
               // retrieve the slice.
               slice = elle::String(slab, 0, start);
 
-              // transform the string into a number.
-              if (elle::Variable::Convert(elle::String(slab,
-                                                       start + 1,
-                                                       length - (start + 1)),
-                                          n) == elle::StatusError)
-                escape("unable to convert the string-based version number");
+              try
+                {
+                  n = boost::lexical_cast<nucleus::Version::Type>(
+                      elle::String(slab, start + 1, length - (start + 1))
+                  );
+                }
+              catch (std::exception const& err)
+                {
+                  escape("unable to retreive the version number: %s", err.what());
+                }
 
-              // create the version.
-              if (version.Create(n) == elle::StatusError)
+              if (version.Create(n) == elle::Status::Error)
                 escape("unable to create the version");
             }
           else
@@ -270,7 +262,7 @@ namespace etoile
             }
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

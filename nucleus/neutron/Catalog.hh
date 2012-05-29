@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <nucleus/neutron/Offset.hh>
 #include <nucleus/neutron/Range.hh>
@@ -52,7 +52,7 @@ namespace nucleus
     /// Catalog for directories, Data for files etc.
     ///
     class Catalog:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //
@@ -97,8 +97,8 @@ namespace nucleus
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status      Serialize(elle::Archive&) const;
-      elle::Status      Extract(elle::Archive&);
+      //elle::Status      Serialize(elle::Archive&) const;
+      //elle::Status      Extract(elle::Archive&);
 
       //
       // attributes

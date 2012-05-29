@@ -44,7 +44,7 @@ namespace nucleus
     {
       this->contents.state = proton::StateDirty;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -58,7 +58,7 @@ namespace nucleus
       // set the reference as dirty.
       this->contents.state = proton::StateDirty;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -69,7 +69,7 @@ namespace nucleus
       // retrieve the target.
       target = this->target;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -80,7 +80,7 @@ namespace nucleus
       // retrieve the length.
       size = static_cast<Size>(this->target.length());
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -100,7 +100,7 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift << "[Target] "
                 << this->target << std::endl;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -110,26 +110,26 @@ namespace nucleus
     ///
     /// this method serializes the object.
     ///
-    elle::Status        Reference::Serialize(elle::Archive&     archive) const
-    {
-      // serialize the target.
-      if (archive.Serialize(this->target) == elle::StatusError)
-        escape("unable to serialize the target");
+    //elle::Status        Reference::Serialize(elle::Archive&     archive) const
+    //{
+    //  // serialize the target.
+    //  if (archive.Serialize(this->target) == elle::Status::Error)
+    //    escape("unable to serialize the target");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the object.
-    ///
-    elle::Status        Reference::Extract(elle::Archive&       archive)
-    {
-      // extract the target.
-      if (archive.Extract(this->target) == elle::StatusError)
-        escape("unable to extract the target");
+    /////
+    ///// this method extracts the object.
+    /////
+    //elle::Status        Reference::Extract(elle::Archive&       archive)
+    //{
+    //  // extract the target.
+    //  if (archive.Extract(this->target) == elle::Status::Error)
+    //    escape("unable to extract the target");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

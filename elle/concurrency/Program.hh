@@ -1,6 +1,9 @@
 #ifndef ELLE_CONCURRENCY_PROGRAM_HH
 # define ELLE_CONCURRENCY_PROGRAM_HH
 
+
+#include <elle/idiom/Close.hh>
+
 # include <list>
 # include <signal.h>
 

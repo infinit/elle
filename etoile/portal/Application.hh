@@ -1,16 +1,12 @@
 #ifndef ETOILE_PORTAL_APPLICATION_HH
 # define ETOILE_PORTAL_APPLICATION_HH
 
-# include <elle/Elle.hh>
+# include <elle/types.hh>
 
 namespace etoile
 {
   namespace portal
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents an external client triggering operations
@@ -20,7 +16,7 @@ namespace etoile
     /// use the message interface.
     ///
     class Application:
-      public elle::Entity
+      public elle::radix::Entity
     {
     public:
       //

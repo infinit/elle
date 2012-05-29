@@ -1,5 +1,12 @@
 #include <Infinit.hh>
+
+#include <elle/types.hh>
 #include <elle/Elle.hh>
+#include <elle/utility/Parser.hh>
+#include <elle/concurrency/Program.hh>
+
+#include <nucleus/Nucleus.hh>
+#include <lune/Lune.hh>
 #include <hole/Hole.hh>
 #include <lune/Lune.hh>
 #include <nucleus/Nucleus.hh>
@@ -65,7 +72,7 @@ namespace hole
       throw std::runtime_error("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::StatusTrue)
+    if (Infinit::Parser->Test("Help") == elle::Status::True)
       {
         Infinit::Parser->Usage();
         return;
@@ -73,7 +80,7 @@ namespace hole
 
     // retrieve the network name.
     if (Infinit::Parser->Value("Network",
-                               Infinit::Network) == elle::StatusError)
+                               Infinit::Network) == elle::Status::Error)
       {
         // display the usage.
         Infinit::Parser->Usage();

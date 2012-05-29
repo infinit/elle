@@ -1,16 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [tue feb 23 00:18:03 2010]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <iostream>
+
+#include <elle/standalone/Log.hh>
+#include <elle/standalone/Report.hh>
 
 #include <elle/network/Header.hh>
 
@@ -58,7 +50,7 @@ namespace elle
       this->tag = tag;
       this->size = size;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -84,7 +76,7 @@ namespace elle
       std::cout << alignment << "[Header] " << std::endl;
 
       // dump the event.
-      if (this->event.Dump(margin + 2) == StatusError)
+      if (this->event.Dump(margin + 2) == Status::Error)
         escape("unable to dump the event");
 
       // dump the tag.
@@ -95,49 +87,45 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Size] " << this->size << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
 
     ///
     /// this method serializes the name, size and tag.
     ///
-    Status              Header::Serialize(Archive&              archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(Header::Name,
-                            this->event,
-                            this->tag,
-                            this->size) == StatusError)
-        escape("unable to serialize the header attributes");
+    //Status              Header::Serialize(Archive&              archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(Header::Name,
+    //                        this->event,
+    //                        this->tag,
+    //                        this->size) == Status::Error)
+    //    escape("unable to serialize the header attributes");
 
-      return StatusOk;
-    }
+    //  return Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the name, size and tag.
-    ///
-    Status              Header::Extract(Archive&                archive)
-    {
-      String            name;
+    /////
+    ///// this method extracts the name, size and tag.
+    /////
+    //Status              Header::Extract(Archive&                archive)
+    //{
+    //  String            name;
 
-      // extract the attributes.
-      if (archive.Extract(name,
-                          this->event,
-                          this->tag,
-                          this->size) == StatusError)
-        escape("unable to extract the header attributes");
+    //  // extract the attributes.
+    //  if (archive.Extract(name,
+    //                      this->event,
+    //                      this->tag,
+    //                      this->size) == Status::Error)
+    //    escape("unable to extract the header attributes");
 
-      // verify the name.
-      if (Header::Name != name)
-        escape("incorrect name event");
+    //  // verify the name.
+    //  if (Header::Name != name)
+    //    escape("incorrect name event");
 
-      return StatusOk;
+    //  return Status::Ok;
 
-    }
+    //}
 
   }
 }

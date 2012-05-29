@@ -1,18 +1,6 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [thu apr  1 22:00:03 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <nucleus/neutron/Trait.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -60,14 +48,14 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return true;
 
       // compare the name and value.
       if ((this->name != element.name) ||
           (this->value != element.value))
-        return elle::StatusFalse;
+        return false;
 
-      return elle::StatusTrue;
+      return true;
     }
 
     ///
@@ -96,7 +84,7 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Value] " << this->value << std::endl;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -106,28 +94,28 @@ namespace nucleus
     ///
     /// this method serializes the trait object.
     ///
-    elle::Status        Trait::Serialize(elle::Archive&         archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(this->name,
-                            this->value) == elle::StatusError)
-        escape("unable to serialize the trait");
+    //elle::Status        Trait::Serialize(elle::Archive&         archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(this->name,
+    //                        this->value) == elle::Status::Error)
+    //    escape("unable to serialize the trait");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the trait object.
-    ///
-    elle::Status        Trait::Extract(elle::Archive&           archive)
-    {
-      // extract the attributes.
-      if (archive.Extract(this->name,
-                          this->value) == elle::StatusError)
-        escape("unable to extract the trait");
+    /////
+    ///// this method extracts the trait object.
+    /////
+    //elle::Status        Trait::Extract(elle::Archive&           archive)
+    //{
+    //  // extract the attributes.
+    //  if (archive.Extract(this->name,
+    //                      this->value) == elle::Status::Error)
+    //    escape("unable to extract the trait");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
 //
 // ---------- rangeable -------------------------------------------------------

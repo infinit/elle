@@ -1,7 +1,10 @@
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_CLIENT_HH
 # define HOLE_IMPLEMENTATIONS_REMOTE_CLIENT_HH
 
-# include <elle/Elle.hh>
+# include <elle/types.hh>
+
+# include <elle/network/fwd.hh>
+
 # include <nucleus/Nucleus.hh>
 
 namespace hole
@@ -21,7 +24,7 @@ namespace hole
       /// i.e the server.
       ///
       class Client:
-        public elle::Entity
+        public elle::radix::Entity
       {
       public:
         //
@@ -37,7 +40,7 @@ namespace hole
         //
         // constructors & destructors
         //
-        Client(const elle::Locus&);
+        Client(const elle::network::Locus&);
         ~Client();
 
         //
@@ -79,8 +82,8 @@ namespace hole
         //
         State                   state;
 
-        elle::Locus             locus;
-        elle::TCPSocket*        socket;
+        elle::network::Locus             locus;
+        elle::network::TCPSocket*        socket;
       };
 
     }

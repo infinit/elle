@@ -7,6 +7,7 @@
 # include <elle/network/TCPSocket.hh>
 # include <elle/radix/Arguments.hh>
 # include <elle/radix/Variables.hh>
+# include <elle/serialize/BufferArchive.hh>
 # include <elle/standalone/Maid.hh>
 # include <elle/standalone/Report.hh>
 
@@ -50,6 +51,34 @@ namespace elle
 // ---------- methods ---------------------------------------------------------
 //
 
+    namespace {
+      struct ProcedureSkeletonExtractor
+      {
+      private:
+        elle::serialize::InputBufferArchive& archive;
+
+      public:
+        ProcedureSkeletonExtractor(elle::serialize::InputBufferArchive& archive)
+          : archive(archive)
+        {}
+
+        elle::Status Load()
+        {
+          return elle::Status::Ok;
+        }
+
+        //template<template<typename...> class P, typename ...T>
+        //elle::Status Load(P<T...>& value)
+        //{
+        //  //static_assert(false, "NON1");
+        //}
+        template<typename ...T>
+        elle::Status Load(T&... value)
+        {
+          //static_assert(false, "NON1");
+        }
+      };
+    }
     ///
     /// this method is called by the network manager whenever a message
     /// of tag I is received.
@@ -61,14 +90,17 @@ namespace elle
                                                      Locus& locus,
                                                      Parcel&   parcel) const
     {
-      Archive& archive = *parcel.data;
+      elle::serialize::InputBufferArchive archive(parcel.data);
+      ProcedureSkeletonExtractor extractor(archive);
+
 
       Callback<
-        Status,
-        typename Trait::Reference<
-          typename Message<I>::P
+          Status,
+          typename Trait::Reference<
+              typename Message<I>::P
           >::Type
-        >               extract(&Archive::Extract, &archive);
+      >               extract(&ProcedureSkeletonExtractor::Load, &extractor);
+
       Variables<
         typename Trait::Bare<
           typename Message<I>::P
@@ -82,18 +114,18 @@ namespace elle
       Status            status;
 
       // call the prolog.
-      if (this->prolog.Call() == StatusError)
+      if (this->prolog.Call() == Status::Error)
         escape("an error occured in the procedure's prolog");
 
       // extract the values from the archive given the types required
       // for the callback.
-      if (inputs.Call(extract) == StatusError)
+      if (inputs.Call(extract) == Status::Error)
         escape("unable to extract from the archive");
 
       // check that the end of the archive has been reached i.e all
       // the information has been extracted. this step ensures that
       // the archive does not contain more variables that extracted.
-      if (archive.offset != archive.size)
+      if (archive.Stream().BytesLeft() > 0)
         escape("the archive seems to contain additional information");
 
       // at this point, an Arguments is created which references both
@@ -125,13 +157,13 @@ namespace elle
       status = arguments.Call(this->routine);
 
       // call the epilog.
-      if (this->epilog.Call() == StatusError)
+      if (this->epilog.Call() == Status::Error)
         escape("an error occured in the procedure's epilog");
 
       //
       // send back the report to the client if an error occured.
       //
-      if (status == StatusError)
+      if (status == Status::Error)
         {
           //
           // serialize the report and send it to the caller.
@@ -146,7 +178,7 @@ namespace elle
           // to the sender.
           report.Flush();
 
-          return StatusOk;
+          return Status::Ok;
         }
 
       // reply according to the output tag.
@@ -178,7 +210,7 @@ namespace elle
           }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -213,24 +245,24 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Routine]" << std::endl;
 
-      if (this->routine.Dump(margin + 2) == StatusError)
+      if (this->routine.Dump(margin + 2) == Status::Error)
         escape("unable to dump the callback");
 
       // dump the callback.
       std::cout << alignment << Dumpable::Shift
                 << "[Prolog]" << std::endl;
 
-      if (this->prolog.Dump(margin + 2) == StatusError)
+      if (this->prolog.Dump(margin + 2) == Status::Error)
         escape("unable to dump the callback");
 
       // dump the epilog.
       std::cout << alignment << Dumpable::Shift
                 << "[Epilog]" << std::endl;
 
-      if (this->epilog.Dump(margin + 2) == StatusError)
+      if (this->epilog.Dump(margin + 2) == Status::Error)
         escape("unable to dump the callback");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

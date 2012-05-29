@@ -1,3 +1,11 @@
+
+#include <elle/Elle.hh>
+#include <elle/cryptography/PublicKeySerializer.hxx>
+#include <elle/io/Console.hh>
+#include <elle/io/Piece.hh>
+#include <elle/io/Directory.hh>
+#include <elle/utility/Parser.hh>
+
 #include <satellites/user/User.hh>
 
 namespace satellite
@@ -16,7 +24,7 @@ namespace satellite
   {
     elle::String        prompt;
     elle::String        pass;
-    elle::KeyPair       pair;
+    elle::cryptography::KeyPair       pair;
     lune::Authority     authority;
     lune::Identity      identity;
     lune::Dictionary    dictionary;
@@ -26,64 +34,64 @@ namespace satellite
       escape("unable to create a user without a user name");
 
     // check if the user already exists.
-    if (identity.Exist(name) == elle::StatusTrue)
+    if (identity.Exist(name) == elle::Status::True)
       escape("this user seems to already exist");
 
     // check if the authority exists.
-    if (authority.Exist() == elle::StatusFalse)
+    if (authority.Exist() == elle::Status::False)
       escape("unable to locate the authority file");
 
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for the authority: ";
 
-    if (elle::Console::Input(
+    if (elle::io::Console::Input(
           pass,
           prompt,
-          elle::Console::OptionPassword) == elle::StatusError)
+          elle::io::Console::OptionPassword) == elle::Status::Error)
       escape("unable to read the input");
 
     // load the authority.
-    if (authority.Load() == elle::StatusError)
+    if (authority.Load() == elle::Status::Error)
       escape("unable to load the authority");
 
     // decrypt the authority.
-    if (authority.Decrypt(pass) == elle::StatusError)
+    if (authority.Decrypt(pass) == elle::Status::Error)
       escape("unable to decrypt the authority");
 
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for keypair '" + name + "': ";
 
-    if (elle::Console::Input(
+    if (elle::io::Console::Input(
           pass,
           prompt,
-          elle::Console::OptionPassword) == elle::StatusError)
+          elle::io::Console::OptionPassword) == elle::Status::Error)
       escape("unable to read the input");
 
     // generate a key pair.
-    if (pair.Generate() == elle::StatusError)
+    if (pair.Generate() == elle::Status::Error)
       escape("unable to generate the key pair");
 
     // create the identity.
-    if (identity.Create(id, name, pair) == elle::StatusError)
+    if (identity.Create(id, name, pair) == elle::Status::Error)
       escape("unable to create the identity");
 
     // encrypt the identity.
-    if (identity.Encrypt(pass) == elle::StatusError)
+    if (identity.Encrypt(pass) == elle::Status::Error)
       escape("unable to encrypt the identity");
 
     // seal the identity.
-    if (identity.Seal(authority) == elle::StatusError)
+    if (identity.Seal(authority) == elle::Status::Error)
       escape("unable to seal the identity");
 
     // store the identity.
-    if (identity.Store(name) == elle::StatusError)
+    if (identity.Store(name) == elle::Status::Error)
       escape("unable to store the identity");
 
     // store an empty dictionary.
-    if (dictionary.Store(name) == elle::StatusError)
+    if (dictionary.Store(name) == elle::Status::Error)
       escape("unable to store the dictionary");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -102,11 +110,11 @@ namespace satellite
         escape("unable to destroy a user without a user name");
 
       // check if the user already exists.
-      if (identity.Exist(name) == elle::StatusFalse)
+      if (identity.Exist(name) == elle::Status::False)
         escape("this user does not seem to exist");
 
       // destroy the identity.
-      if (identity.Erase(name) == elle::StatusFalse)
+      if (identity.Erase(name) == elle::Status::False)
         escape("unable to erase the identity file");
     }
 
@@ -117,10 +125,10 @@ namespace satellite
       lune::Dictionary  dictionary;
 
       // if the dictionary exists...
-      if (dictionary.Exist(name) == elle::StatusTrue)
+      if (dictionary.Exist(name) == elle::Status::True)
         {
           // remove it.
-          if (dictionary.Erase(name) == elle::StatusError)
+          if (dictionary.Erase(name) == elle::Status::Error)
             escape("unable to erase the dictionary");
         }
     }
@@ -132,23 +140,23 @@ namespace satellite
       elle::Path        path;
 
       // create the user path.
-      if (path.Create(lune::Lune::User::Root) == elle::StatusError)
+      if (path.Create(lune::Lune::User::Root) == elle::Status::Error)
         escape("unable to create the path");
 
       // complete the path with the user name.
-      if (path.Complete(elle::Piece("%USER%", name)) == elle::StatusError)
+      if (path.Complete(elle::io::Piece("%USER%", name)) == elle::Status::Error)
         escape("unable to complete the path");
 
       // clear the user directory content.
-      if (elle::Directory::Clear(path) == elle::StatusError)
+      if (elle::io::Directory::Clear(path) == elle::Status::Error)
         escape("unable to clear the directory");
 
       // remove the directory.
-      if (elle::Directory::Remove(path) == elle::StatusError)
+      if (elle::io::Directory::Remove(path) == elle::Status::Error)
         escape("unable to erase the directory");
     }
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -159,7 +167,7 @@ namespace satellite
     elle::String        prompt;
     elle::String        pass;
     lune::Identity      identity;
-    elle::PublicKey     K;
+    elle::cryptography::PublicKey     K;
     elle::Unique        unique;
 
     // check the argument.
@@ -167,42 +175,42 @@ namespace satellite
       escape("unable to create a user without a user name");
 
     // check if the user already exists.
-    if (identity.Exist(name) == elle::StatusFalse)
+    if (identity.Exist(name) == elle::Status::False)
       escape("this user does not seem to exist");
 
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for keypair '" + name + "': ";
 
-    if (elle::Console::Input(
+    if (elle::io::Console::Input(
           pass,
           prompt,
-          elle::Console::OptionPassword) == elle::StatusError)
+          elle::io::Console::OptionPassword) == elle::Status::Error)
       escape("unable to read the input");
 
     // load the identity.
-    if (identity.Load(name) == elle::StatusError)
+    if (identity.Load(name) == elle::Status::Error)
       escape("unable to load the identity");
 
     // verify the identity.
-    if (identity.Validate(Infinit::Authority) == elle::StatusError)
+    if (identity.Validate(Infinit::Authority) == elle::Status::Error)
       escape("the identity seems to be invalid");
 
     // decrypt the identity.
-    if (identity.Decrypt(pass) == elle::StatusError)
+    if (identity.Decrypt(pass) == elle::Status::Error)
       escape("unable to decrypt the identity");
 
     // dump the identity.
-    if (identity.Dump() == elle::StatusError)
+    if (identity.Dump() == elle::Status::Error)
       escape("unable to dump the identity");
 
     // retrieve the user's public key unique.
-    if (identity.pair.K.Save(unique) == elle::StatusError)
+    if (identity.pair.K.Save(unique) == elle::Status::Error)
       escape("unable to save the public key's unique");
 
     // display the unique.
     std::cout << "[Unique] " << unique << std::endl;
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   void
@@ -237,7 +245,7 @@ namespace satellite
     Infinit::Parser = new elle::Parser(argc, argv);
 
     // specify a program description.
-    if (Infinit::Parser->Description(Infinit::Copyright) == elle::StatusError)
+    if (Infinit::Parser->Description(Infinit::Copyright) == elle::Status::Error)
       throw std::runtime_error("unable to set the description");
 
     // register the options.
@@ -299,7 +307,7 @@ namespace satellite
       throw std::runtime_error("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::StatusTrue)
+    if (Infinit::Parser->Test("Help") == elle::Status::True)
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -307,9 +315,9 @@ namespace satellite
       }
 
     // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("Create") == elle::StatusTrue) &&
-        (Infinit::Parser->Test("Destroy") == elle::StatusTrue) &&
-        (Infinit::Parser->Test("Information") == elle::StatusTrue))
+    if ((Infinit::Parser->Test("Create") == elle::Status::True) &&
+        (Infinit::Parser->Test("Destroy") == elle::Status::True) &&
+        (Infinit::Parser->Test("Information") == elle::Status::True))
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -319,15 +327,15 @@ namespace satellite
       }
 
     // test the option.
-    if (Infinit::Parser->Test("Create") == elle::StatusTrue)
+    if (Infinit::Parser->Test("Create") == elle::Status::True)
       operation = User::OperationCreate;
 
     // test the option.
-    if (Infinit::Parser->Test("Destroy") == elle::StatusTrue)
+    if (Infinit::Parser->Test("Destroy") == elle::Status::True)
       operation = User::OperationDestroy;
 
     // test the option.
-    if (Infinit::Parser->Test("Information") == elle::StatusTrue)
+    if (Infinit::Parser->Test("Information") == elle::Status::True)
       operation = User::OperationInformation;
 
     // trigger the operation.

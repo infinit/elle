@@ -1,17 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [fri sep  2 14:12:04 2011]
-//
-
 #ifndef ELLE_CONCURRENCY_SIGNAL_HXX
 # define ELLE_CONCURRENCY_SIGNAL_HXX
 
+# include <elle/standalone/Log.hh>
 # include <elle/concurrency/Scheduler.hh>
+
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -95,7 +88,7 @@ namespace elle
           escape("unable to insert the selectoinoid in the container");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -121,7 +114,7 @@ namespace elle
       // remove the functionoid from the container.
       this->container.erase(iterator);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -143,7 +136,7 @@ namespace elle
         EmitOne(functionoid, arguments...);
       }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     template <typename... T>
@@ -163,7 +156,7 @@ namespace elle
                                         f, arguments...), true);
       }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 
@@ -174,9 +167,9 @@ namespace elle
       T... arguments)
     {
       assert(f);
-      if (f->Call(arguments...) == StatusError)
+      if (f->Call(arguments...) == Status::Error)
         log("an error occured while processing a signal");
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -203,7 +196,7 @@ namespace elle
       // clear the container.
       this->container.clear();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -223,7 +216,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Functionoids] " << this->container.size() << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     template <typename ...T>

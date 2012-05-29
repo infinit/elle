@@ -51,10 +51,10 @@ namespace elle
     Status              Server::Setup(const String&             line)
     {
       // set the locus.
-      if (this->locus.Create(line) == StatusError)
+      if (this->locus.Create(line) == Status::Error)
         escape("unable to create the locus");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -67,10 +67,10 @@ namespace elle
       // listen for incoming connections.
       if (TCPServer::Listen(locus,
                             Callback<>::Infer(&Server::Connection,
-                                              this)) == StatusError)
+                                              this)) == Status::Error)
         escape("unable to listen for TCP connections");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -96,7 +96,7 @@ namespace elle
 
       // call the challenge.
       if (socket->Call(Inputs<TagChallenge>(challenge),
-                       Outputs<TagResponse>(response)) == StatusError)
+                       Outputs<TagResponse>(response)) == Status::Error)
         escape("unable to call the challenge");
 
       std::cout << "[response] " << response << std::endl;
@@ -105,9 +105,9 @@ namespace elle
       if (response != elle::String("RESPONSE"))
         std::cerr << "unexpected response '" << response << "'" << std::endl;
 
-      elle::Program::Exit();
+      elle::concurrency::Program::Exit();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

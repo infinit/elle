@@ -43,8 +43,8 @@ namespace hole
   ///
   /// XXX[to replace by a new signal]
   ///
-  elle::Signal<
-    elle::Parameters<>
+  elle::concurrency::Signal<
+    elle::radix::Parameters<>
     >                           Hole::ready;
 
 //
@@ -80,7 +80,7 @@ namespace hole
     //
     // retrieve the set, if present.
     //
-    if (Hole::Set.Exist(Infinit::Network) == elle::StatusTrue)
+    if (Hole::Set.Exist(Infinit::Network) == elle::Status::True)
       {
         // load the set.
         if (Hole::Set.Load(Infinit::Network) == elle::StatusError)
@@ -169,13 +169,13 @@ namespace hole
   elle::Status          Hole::Clean()
   {
     // leave the network
-    if (Hole::Implementation->Leave() == elle::StatusError)
+    if (Hole::Implementation->Leave() == elle::Status::Error)
       escape("unable to leave the network");
 
     // delete the implementation.
     delete Hole::Implementation;
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -185,14 +185,14 @@ namespace hole
   elle::Status          Hole::Ready()
   {
     if (Hole::state == Hole::StateOnline)
-      return elle::StatusOk;
+      return elle::Status::Ok;
 
     if (Hole::ready.Emit() == elle::StatusError)
       escape("unable to emit the signal");
 
     Hole::state = Hole::StateOnline;
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -203,7 +203,7 @@ namespace hole
     // return the address.
     address = Hole::Descriptor.root;
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -226,7 +226,7 @@ namespace hole
           ib = static_cast<const nucleus::ImmutableBlock*>(&block);
 
           // store the immutable block.
-          if (Hole::Implementation->Put(address, *ib) == elle::StatusError)
+          if (Hole::Implementation->Put(address, *ib) == elle::Status::Error)
             escape("unable to put the block");
 
           break;
@@ -241,7 +241,7 @@ namespace hole
           mb = static_cast<const nucleus::MutableBlock*>(&block);
 
           // store the mutable block.
-          if (Hole::Implementation->Put(address, *mb) == elle::StatusError)
+          if (Hole::Implementation->Put(address, *mb) == elle::Status::Error)
             escape("unable to put the block");
 
           break;
@@ -253,7 +253,7 @@ namespace hole
         }
       }
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -275,7 +275,7 @@ namespace hole
           ib = static_cast<nucleus::ImmutableBlock*>(&block);
 
           // retrieve the immutable block.
-          if (Hole::Implementation->Get(address, *ib) == elle::StatusError)
+          if (Hole::Implementation->Get(address, *ib) == elle::Status::Error)
             escape("unable to get the block");
 
           break;
@@ -291,7 +291,7 @@ namespace hole
 
           // retrieve the mutable block.
           if (Hole::Implementation->Get(address, version,
-                                        *mb) == elle::StatusError)
+                                        *mb) == elle::Status::Error)
             escape("unable to get the block");
 
           break;
@@ -303,7 +303,7 @@ namespace hole
         }
       }
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -312,10 +312,10 @@ namespace hole
   elle::Status          Hole::Wipe(const nucleus::Address&      address)
   {
     // forward the kill request to the implementation.
-    if (Hole::Implementation->Kill(address) == elle::StatusError)
+    if (Hole::Implementation->Kill(address) == elle::Status::Error)
       escape("unable to erase the block");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 }

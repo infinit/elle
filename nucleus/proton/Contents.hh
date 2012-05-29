@@ -11,11 +11,10 @@
 #ifndef NUCLEUS_PROTON_CONTENTS_HH
 #define NUCLEUS_PROTON_CONTENTS_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
+#include <elle/cryptography/SecretKey.hh>
 #include <nucleus/proton/ContentHashBlock.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -61,8 +60,8 @@ namespace nucleus
       //
       elle::Status      Create();
 
-      elle::Status      Encrypt(const elle::SecretKey&);
-      elle::Status      Decrypt(const elle::SecretKey&);
+      elle::Status Encrypt(elle::cryptography::SecretKey const& key);
+      elle::Status Decrypt(elle::cryptography::SecretKey const& key);
 
       //
       // interfaces
@@ -75,15 +74,15 @@ namespace nucleus
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status      Serialize(elle::Archive&) const;
-      elle::Status      Extract(elle::Archive&);
+      //elle::Status      Serialize(elle::Archive&) const;
+      //elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
       T*                content;
 
-      elle::Cipher*     cipher;
+      elle::cryptography::Cipher*     cipher;
     };
 
   }

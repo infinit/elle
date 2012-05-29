@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/MutableBlock.hh>
@@ -47,14 +47,14 @@ namespace nucleus
     public:
       //
       // constructors & destructors
-      // 
+      //
       PublicKeyBlock();
       PublicKeyBlock(const neutron::Component);
 
       //
       // methods
       //
-      elle::Status      Create(const elle::PublicKey&);
+      elle::Status      Create(elle::cryptography::PublicKey const&);
 
       elle::Status      Bind(Address&) const;
       elle::Status      Validate(const Address&) const;
@@ -64,19 +64,21 @@ namespace nucleus
       //
 
       // object
+#include <elle/idiom/Open.hh>
       declare(PublicKeyBlock);
+#include <elle/idiom/Close.hh>
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status      Serialize(elle::Archive&) const;
-      elle::Status      Extract(elle::Archive&);
+      //elle::Status      Serialize(elle::Archive&) const;
+      //elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      elle::PublicKey   K;
+      elle::cryptography::PublicKey   K;
     };
 
   }

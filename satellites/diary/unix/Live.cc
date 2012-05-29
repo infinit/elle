@@ -1,18 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       diary
-//
-// license       infinit
-//
-// author        julien quintard   [fri jul  1 11:42:31 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <sstream>
+#include <iostream>
+#include <memory>
 
 #include <satellites/diary/unix/Live.hh>
+#include <elle/standalone/Report.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace satellite
 {
@@ -55,7 +48,7 @@ namespace satellite
     {
       // nothing to do.
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -79,7 +72,7 @@ namespace satellite
       // clear the container.
       Live::Items.clear();
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -97,7 +90,7 @@ namespace satellite
       // stop tracking.
       item.release();
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -122,7 +115,7 @@ namespace satellite
             {
               active = item->active;
 
-              return elle::StatusOk;
+              return elle::Status::Ok;
             }
         }
 
@@ -152,7 +145,7 @@ namespace satellite
               // remove it from the container.
               Live::Items.erase(iterator);
 
-              return elle::StatusOk;
+              return elle::Status::Ok;
             }
         }
 
@@ -169,7 +162,7 @@ namespace satellite
 
       std::cout << alignment << "[Live]" << std::endl;
 
-      std::cout << alignment << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Items]" << std::endl;
 
       // go through the items.
@@ -187,7 +180,7 @@ namespace satellite
                     << std::hex << item->active << std::endl;
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

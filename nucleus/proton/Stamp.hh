@@ -1,23 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri jun 17 13:44:59 2011]
-//
-
 #ifndef NUCLEUS_PROTON_HH
-#define NUCLEUS_PROTON_HH
+# define NUCLEUS_PROTON_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/cryptography/PrivateKey.hh>
 
-#include <elle/Elle.hh>
-
-#include <nucleus/proton/Location.hh>
+# include <nucleus/proton/Location.hh>
 
 namespace nucleus
 {
@@ -45,7 +32,7 @@ namespace nucleus
     /// their memberships or permissions.
     ///
     class Stamp:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //
@@ -54,7 +41,7 @@ namespace nucleus
       elle::Status      Create(const Location&,
                                const Location&);
 
-      elle::Status      Seal(const elle::PrivateKey&);
+      elle::Status      Seal(elle::cryptography::PrivateKey const&);
       elle::Status      Validate();
 
       //
@@ -69,8 +56,8 @@ namespace nucleus
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status      Serialize(elle::Archive&) const;
-      elle::Status      Extract(elle::Archive&);
+      //elle::Status      Serialize(elle::Archive&) const;
+      //elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
@@ -79,7 +66,7 @@ namespace nucleus
       Location          master;
       Location          slave;
 
-      elle::Signature   signature;
+      elle::cryptography::Signature   signature;
     };
 
   }

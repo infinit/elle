@@ -1,34 +1,16 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu feb  4 23:03:30 2010]
-//
-
 #ifndef ELLE_CONCURRENCY_METHOD_HH
-#define ELLE_CONCURRENCY_METHOD_HH
+# define ELLE_CONCURRENCY_METHOD_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/core/Natural.hh>
+# include <elle/radix/Object.hh>
+# include <elle/radix/Entity.hh>
+# include <elle/radix/Parameters.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Object.hh>
-#include <elle/radix/Entity.hh>
-#include <elle/radix/Parameters.hh>
-
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
-  using namespace core;
-  using namespace radix;
-  using namespace package;
 
   namespace concurrency
   {
@@ -70,7 +52,8 @@ namespace elle
       /// this class is a base for inheritance.
       ///
       class Shell:
-        public Object
+        public Object,
+        public Dumpable
       {
       public:
         //

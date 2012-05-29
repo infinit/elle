@@ -1,21 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [fri may 20 17:46:53 2011]
-//
-
 #ifndef HOLE_MODEL_HH
-#define HOLE_MODEL_HH
+# define HOLE_MODEL_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/Elle.hh>
+# include <elle/idiom/Open.hh>
 
 namespace hole
 {
@@ -28,7 +17,7 @@ namespace hole
   /// this class defines the model of a network i.e its implementation.
   ///
   class Model:
-    public elle::Object
+    public elle::radix::Object
   {
   public:
     //
@@ -94,8 +83,8 @@ namespace hole
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // archivable
-    elle::Status        Serialize(elle::Archive&) const;
-    elle::Status        Extract(elle::Archive&);
+    //elle::Status        Serialize(elle::Archive&) const;
+    //elle::Status        Extract(elle::Archive&);
 
     //
     // attributes
@@ -104,5 +93,7 @@ namespace hole
   };
 
 }
+
+# include <elle/idiom/Close.hh>
 
 #endif

@@ -80,7 +80,7 @@ namespace elle
       value = Random::Generate(Generator::MinimumBooleanSize,
                                Generator::MaximumBooleanSize);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status              Generator::Create(Character&            value)
@@ -88,7 +88,7 @@ namespace elle
       value = Random::Generate(Generator::MinimumCharacterSize,
                                Generator::MaximumCharacterSize);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status              Generator::Create(Real&                 value)
@@ -99,7 +99,7 @@ namespace elle
         ((Real)(1 / (Real)Random::Generate(Generator::MinimumRealSize,
                                            Generator::MaximumRealSize)));
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status              Generator::Create(Integer8&             value)
@@ -107,7 +107,7 @@ namespace elle
       value = Random::Generate(Generator::MinimumInteger8Size,
                                Generator::MaximumInteger8Size);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status              Generator::Create(Integer16&            value)
@@ -115,7 +115,7 @@ namespace elle
       value = Random::Generate(Generator::MinimumInteger16Size,
                                Generator::MaximumInteger16Size);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status              Generator::Create(Integer32&            value)
@@ -123,7 +123,7 @@ namespace elle
       value = Random::Generate(Generator::MinimumInteger32Size,
                                Generator::MaximumInteger32Size);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status              Generator::Create(Integer64&            value)
@@ -131,7 +131,7 @@ namespace elle
       value = Random::Generate(Generator::MinimumInteger64Size,
                                Generator::MaximumInteger64Size);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status              Generator::Create(Natural8&             value)
@@ -139,7 +139,7 @@ namespace elle
       value = Random::Generate(Generator::MinimumNatural8Size,
                                Generator::MaximumNatural8Size);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status              Generator::Create(Natural16&            value)
@@ -147,7 +147,7 @@ namespace elle
       value = Random::Generate(Generator::MinimumNatural16Size,
                                Generator::MaximumNatural16Size);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status              Generator::Create(Natural32&            value)
@@ -155,7 +155,7 @@ namespace elle
       value = Random::Generate(Generator::MinimumNatural32Size,
                                Generator::MaximumNatural32Size);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status              Generator::Create(Natural64&            value)
@@ -163,7 +163,7 @@ namespace elle
       value = Random::Generate(Generator::MinimumNatural64Size,
                                Generator::MaximumNatural64Size);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status              Generator::Create(Large&                value)
@@ -175,7 +175,7 @@ namespace elle
                 0,
                 0);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status              Generator::Create(String&               value)
@@ -191,7 +191,7 @@ namespace elle
                      (char)Random::Generate(Generator::MinimumCharacterSize,
                                             Generator::MaximumCharacterSize));
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status              Generator::Create(Region&               value)
@@ -200,7 +200,7 @@ namespace elle
                                                 Generator::MaximumRegionSize);
       Natural32         i;
 
-      if (value.Prepare(size) == StatusError)
+      if (value.Prepare(size) == Status::Error)
         escape("unable to prepare the region");
 
       value.size = size;
@@ -209,7 +209,7 @@ namespace elle
         value.contents[i] = Random::Generate(Generator::MinimumCharacterSize,
                                              Generator::MaximumCharacterSize);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status              Generator::Create(Archive&              value)
@@ -219,17 +219,17 @@ namespace elle
 
       if (choice == 0)
         {
-          if (value.Create() == StatusError)
+          if (value.Create() == Status::Error)
             escape("unable to create the archive");
 
           if (Pack::Create(value,
                            Random::Generate(Generator::MinimumArchiveSize,
                                             Generator::MaximumArchiveSize),
-                           false) == StatusError)
+                           false) == Status::Error)
             escape("unable to create a pack");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

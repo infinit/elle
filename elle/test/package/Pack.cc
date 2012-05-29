@@ -48,13 +48,13 @@ namespace elle
               }
             case Archive::TypeNull:
               {
-                if (archive.Serialize(none) == StatusError)
+                if (archive.Serialize(none) == Status::Error)
                   escape("unable to serialize the element");
 
                 if (refer)
                   if (Referee::Push(Archive::TypeNull,
                                     &none,
-                                    sizeof (Null)) == StatusError)
+                                    sizeof (Null)) == Status::Error)
                     escape("unable to push the element into the referee");
 
                 break;
@@ -63,16 +63,16 @@ namespace elle
               {
                 Boolean         value;
 
-                if (Generator::Create(value) == StatusError)
+                if (Generator::Create(value) == Status::Error)
                   escape("unable to create a boolean");
 
-                if (archive.Serialize(value) == StatusError)
+                if (archive.Serialize(value) == Status::Error)
                   escape("unable to serialize the element");
 
                 if (refer)
                   if (Referee::Push(Archive::TypeBoolean,
                                     &value,
-                                    sizeof (Boolean)) == StatusError)
+                                    sizeof (Boolean)) == Status::Error)
                     escape("unable to push the element into the referee");
 
                 break;
@@ -81,16 +81,16 @@ namespace elle
               {
                 Character       value;
 
-                if (Generator::Create(value) == StatusError)
+                if (Generator::Create(value) == Status::Error)
                   escape("unable to create a character");
 
-                if (archive.Serialize(value) == StatusError)
+                if (archive.Serialize(value) == Status::Error)
                   escape("unable to serialize the element");
 
                 if (refer)
                   if (Referee::Push(Archive::TypeCharacter,
                                     &value,
-                                    sizeof (Character)) == StatusError)
+                                    sizeof (Character)) == Status::Error)
                     escape("unable to push the element into the referee");
 
                 break;
@@ -99,16 +99,16 @@ namespace elle
               {
                 Real            value;
 
-                if (Generator::Create(value) == StatusError)
+                if (Generator::Create(value) == Status::Error)
                   escape("unable to create a real");
 
-                if (archive.Serialize(value) == StatusError)
+                if (archive.Serialize(value) == Status::Error)
                   escape("unable to serialize the element");
 
                 if (refer)
                   if (Referee::Push(Archive::TypeReal,
                                     &value,
-                                    sizeof (Real)) == StatusError)
+                                    sizeof (Real)) == Status::Error)
                     escape("unable to push the element into the referee");
 
                 break;
@@ -117,16 +117,16 @@ namespace elle
               {
                 Integer8        value;
 
-                if (Generator::Create(value) == StatusError)
+                if (Generator::Create(value) == Status::Error)
                   escape("unable to create a integer 8-bit");
 
-                if (archive.Serialize(value) == StatusError)
+                if (archive.Serialize(value) == Status::Error)
                   escape("unable to serialize the element");
 
                 if (refer)
                   if (Referee::Push(Archive::TypeInteger8,
                                     &value,
-                                    sizeof (Integer8)) == StatusError)
+                                    sizeof (Integer8)) == Status::Error)
                     escape("unable to push the element into the referee");
 
                 break;
@@ -135,16 +135,16 @@ namespace elle
               {
                 Integer16       value;
 
-                if (Generator::Create(value) == StatusError)
+                if (Generator::Create(value) == Status::Error)
                   escape("unable to create a integer 16-bit");
 
-                if (archive.Serialize(value) == StatusError)
+                if (archive.Serialize(value) == Status::Error)
                   escape("unable to serialize the element");
 
                 if (refer)
                   if (Referee::Push(Archive::TypeInteger16,
                                     &value,
-                                    sizeof (Integer16)) == StatusError)
+                                    sizeof (Integer16)) == Status::Error)
                     escape("unable to push the element into the referee");
 
                 break;
@@ -153,16 +153,16 @@ namespace elle
               {
                 Integer32       value;
 
-                if (Generator::Create(value) == StatusError)
+                if (Generator::Create(value) == Status::Error)
                   escape("unable to create a integer 32-bit");
 
-                if (archive.Serialize(value) == StatusError)
+                if (archive.Serialize(value) == Status::Error)
                   escape("unable to serialize the element");
 
                 if (refer)
                   if (Referee::Push(Archive::TypeInteger32,
                                     &value,
-                                    sizeof (Integer32)) == StatusError)
+                                    sizeof (Integer32)) == Status::Error)
                     escape("unable to push the element into the referee");
 
                 break;
@@ -171,16 +171,16 @@ namespace elle
               {
                 Integer64       value;
 
-                if (Generator::Create(value) == StatusError)
+                if (Generator::Create(value) == Status::Error)
                   escape("unable to create a integer 64-bit");
 
-                if (archive.Serialize(value) == StatusError)
+                if (archive.Serialize(value) == Status::Error)
                   escape("unable to serialize the element");
 
                 if (refer)
                   if (Referee::Push(Archive::TypeInteger64,
                                     &value,
-                                    sizeof (Integer64)) == StatusError)
+                                    sizeof (Integer64)) == Status::Error)
                     escape("unable to push the element into the referee");
 
                 break;
@@ -189,16 +189,16 @@ namespace elle
               {
                 Natural8        value;
 
-                if (Generator::Create(value) == StatusError)
+                if (Generator::Create(value) == Status::Error)
                   escape("unable to create a natural 8-bit");
 
-                if (archive.Serialize(value) == StatusError)
+                if (archive.Serialize(value) == Status::Error)
                   escape("unable to serialize the element");
 
                 if (refer)
                   if (Referee::Push(Archive::TypeNatural8,
                                     &value,
-                                    sizeof (Natural8)) == StatusError)
+                                    sizeof (Natural8)) == Status::Error)
                     escape("unable to push the element into the referee");
 
                 break;
@@ -207,16 +207,16 @@ namespace elle
               {
                 Natural16       value;
 
-                if (Generator::Create(value) == StatusError)
+                if (Generator::Create(value) == Status::Error)
                   escape("unable to create a natural 16-bit");
 
-                if (archive.Serialize(value) == StatusError)
+                if (archive.Serialize(value) == Status::Error)
                   escape("unable to serialize the element");
 
                 if (refer)
                   if (Referee::Push(Archive::TypeNatural16,
                                     &value,
-                                    sizeof (Natural16)) == StatusError)
+                                    sizeof (Natural16)) == Status::Error)
                     escape("unable to push the element into the referee");
 
                 break;
@@ -225,16 +225,16 @@ namespace elle
               {
                 Natural32       value;
 
-                if (Generator::Create(value) == StatusError)
+                if (Generator::Create(value) == Status::Error)
                   escape("unable to create a natural 32-bit");
 
-                if (archive.Serialize(value) == StatusError)
+                if (archive.Serialize(value) == Status::Error)
                   escape("unable to serialize the element");
 
                 if (refer)
                   if (Referee::Push(Archive::TypeNatural32,
                                     &value,
-                                    sizeof (Natural32)) == StatusError)
+                                    sizeof (Natural32)) == Status::Error)
                     escape("unable to push the element into the referee");
 
                 break;
@@ -243,16 +243,16 @@ namespace elle
               {
                 Natural64       value;
 
-                if (Generator::Create(value) == StatusError)
+                if (Generator::Create(value) == Status::Error)
                   escape("unable to create a natural 64-bit");
 
-                if (archive.Serialize(value) == StatusError)
+                if (archive.Serialize(value) == Status::Error)
                   escape("unable to serialize the element");
 
                 if (refer)
                   if (Referee::Push(Archive::TypeNatural64,
                                     &value,
-                                    sizeof (Natural64)) == StatusError)
+                                    sizeof (Natural64)) == Status::Error)
                     escape("unable to push the element into the referee");
 
                 break;
@@ -263,10 +263,10 @@ namespace elle
                 void*           buffer;
                 Natural32       size;
 
-                if (Generator::Create(value) == StatusError)
+                if (Generator::Create(value) == Status::Error)
                   escape("unable to create a large");
 
-                if (archive.Serialize(value) == StatusError)
+                if (archive.Serialize(value) == Status::Error)
                   escape("unable to serialize the element");
 
                 size = BN_num_bytes(&value);
@@ -281,7 +281,7 @@ namespace elle
                 if (refer)
                   if (Referee::Push(Archive::TypeLarge,
                                     buffer,
-                                    size) == StatusError)
+                                    size) == Status::Error)
                     escape("unable to push the element into the referee");
 
                 free(buffer);
@@ -292,16 +292,16 @@ namespace elle
               {
                 String          value;
 
-                if (Generator::Create(value) == StatusError)
+                if (Generator::Create(value) == Status::Error)
                   escape("unable to create a string");
 
-                if (archive.Serialize(value) == StatusError)
+                if (archive.Serialize(value) == Status::Error)
                   escape("unable to serialize the element");
 
                 if (refer)
                   if (Referee::Push(Archive::TypeString,
                                     value.data(),
-                                    value.length()) == StatusError)
+                                    value.length()) == Status::Error)
                     escape("unable to push the element into the referee");
 
                 break;
@@ -310,16 +310,16 @@ namespace elle
               {
                 Region          value;
 
-                if (Generator::Create(value) == StatusError)
+                if (Generator::Create(value) == Status::Error)
                   escape("unable to create a region");
 
-                if (archive.Serialize(value) == StatusError)
+                if (archive.Serialize(value) == Status::Error)
                   escape("unable to serialize the element");
 
                 if (refer)
                   if (Referee::Push(Archive::TypeRegion,
                                     value.contents,
-                                    value.size) == StatusError)
+                                    value.size) == Status::Error)
                     escape("unable to push the element into the referee");
 
                 break;
@@ -328,18 +328,18 @@ namespace elle
               {
                 Archive         value;
 
-                if (Generator::Create(value) == StatusError)
+                if (Generator::Create(value) == Status::Error)
                   escape("unable to create a archive");
 
                 if (value.size != 0)
                   {
-                    if (archive.Serialize(value) == StatusError)
+                    if (archive.Serialize(value) == Status::Error)
                       escape("unable to serialize the element");
 
                     if (refer)
                       if (Referee::Push(Archive::TypeArchive,
                                         value.contents,
-                                        value.size) == StatusError)
+                                        value.size) == Status::Error)
                         escape("unable to push the element into the referee");
                   }
 
@@ -348,7 +348,7 @@ namespace elle
             }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status              Pack::Verify(Archive&                   archive)
@@ -360,12 +360,12 @@ namespace elle
 
       while (archive.offset != archive.size)
         {
-          if (archive.Fetch(fetch) == StatusError)
+          if (archive.Fetch(fetch) == Status::Error)
             escape("unable to fetch the archive's next type");
 
           if (Referee::Pop(type,
                            data,
-                           size) == StatusError)
+                           size) == Status::Error)
             escape("unable to pop the element from the referee");
 
           if (fetch != type)
@@ -381,7 +381,7 @@ namespace elle
               }
             case Archive::TypeNull:
               {
-                if (archive.Extract(none) == StatusError)
+                if (archive.Extract(none) == Status::Error)
                   escape("unable to extract the element");
 
                 break;
@@ -390,7 +390,7 @@ namespace elle
               {
                 Boolean         value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the element");
 
                 if (::memcmp(&value, data, size) != 0)
@@ -403,7 +403,7 @@ namespace elle
               {
                 Character       value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the element");
 
                 if (::memcmp(&value, data, size) != 0)
@@ -416,7 +416,7 @@ namespace elle
               {
                 Real            value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the element");
 
                 if (::memcmp(&value, data, size) != 0)
@@ -429,7 +429,7 @@ namespace elle
               {
                 Integer8        value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the element");
 
                 if (::memcmp(&value, data, size) != 0)
@@ -442,7 +442,7 @@ namespace elle
               {
                 Integer16       value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the element");
 
                 if (::memcmp(&value, data, size) != 0)
@@ -455,7 +455,7 @@ namespace elle
               {
                 Integer32       value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the element");
 
                 if (::memcmp(&value, data, size) != 0)
@@ -468,7 +468,7 @@ namespace elle
               {
                 Integer64       value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the element");
 
                 if (::memcmp(&value, data, size) != 0)
@@ -481,7 +481,7 @@ namespace elle
               {
                 Natural8        value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the element");
 
                 if (::memcmp(&value, data, size) != 0)
@@ -494,7 +494,7 @@ namespace elle
               {
                 Natural16       value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the element");
 
                 if (::memcmp(&value, data, size) != 0)
@@ -507,7 +507,7 @@ namespace elle
               {
                 Natural32       value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the element");
 
                 if (::memcmp(&value, data, size) != 0)
@@ -520,7 +520,7 @@ namespace elle
               {
                 Natural64       value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the element");
 
                 if (::memcmp(&value, data, size) != 0)
@@ -535,7 +535,7 @@ namespace elle
                 Natural32       s;
                 void*           buffer;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the element");
 
                 s = BN_num_bytes(&value);
@@ -562,7 +562,7 @@ namespace elle
               {
                 String          value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the element");
 
                 if (value.length() != size)
@@ -578,7 +578,7 @@ namespace elle
               {
                 Region          value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the element");
 
                 if (value.size != size)
@@ -594,7 +594,7 @@ namespace elle
               {
                 Archive         value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the element");
 
                 if (value.size != size)
@@ -615,7 +615,7 @@ namespace elle
       if (Referee::List.empty() == false)
         escape("some elements remain in the referee's list");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

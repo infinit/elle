@@ -1,18 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       dictionary
-//
-// author        julien quintard   [mon may 10 16:14:02 2010]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/io/File.hh>
+#include <elle/io/Piece.hh>
 
-#include <lune/Dictionary.hh>
+#include <lune/DictionarySerializer.hxx>
+#include <elle/cryptography/PublicKeySerializer.hxx>
+
 #include <lune/Lune.hh>
 
 namespace lune
@@ -50,14 +42,14 @@ namespace lune
     std::cout << alignment << "[Dictionary]" << std::endl;
 
     // dump the users map.
-    if (this->users.Dump(margin + 2) == elle::StatusError)
+    if (this->users.Dump(margin + 2) == elle::Status::Error)
       escape("unable to dump the users map");
 
     // dump the groups map.
-    if (this->groups.Dump(margin + 2) == elle::StatusError)
+    if (this->groups.Dump(margin + 2) == elle::Status::Error)
       escape("unable to dump the groups map");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 //
@@ -67,26 +59,26 @@ namespace lune
   ///
   /// this method serializes a dictionary.
   ///
-  elle::Status          Dictionary::Serialize(elle::Archive&    archive) const
-  {
-    // serialize the maps.
-    if (archive.Serialize(this->users, this->groups) == elle::StatusError)
-      escape("unable to serialize the maps");
+  //elle::Status          Dictionary::Serialize(elle::Archive&    archive) const
+  //{
+  //  // serialize the maps.
+  //  if (archive.Serialize(this->users, this->groups) == elle::Status::Error)
+  //    escape("unable to serialize the maps");
 
-    return elle::StatusOk;
-  }
+  //  return elle::Status::Ok;
+  //}
 
-  ///
-  /// this method extract a public key from the given archive.
-  ///
-  elle::Status          Dictionary::Extract(elle::Archive&      archive)
-  {
-    // extract the maps.
-    if (archive.Extract(this->users, this->groups) == elle::StatusError)
-      escape("unable to extract the maps");
+  /////
+  ///// this method extract a public key from the given archive.
+  /////
+  //elle::Status          Dictionary::Extract(elle::Archive&      archive)
+  //{
+  //  // extract the maps.
+  //  if (archive.Extract(this->users, this->groups) == elle::Status::Error)
+  //    escape("unable to extract the maps");
 
-    return elle::StatusOk;
-  }
+  //  return elle::Status::Ok;
+  //}
 
 //
 // ---------- fileable --------------------------------------------------------
@@ -98,24 +90,16 @@ namespace lune
   elle::Status          Dictionary::Load()
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
 
     // create the path.
-    if (path.Create(Lune::Dictionary) == elle::StatusError)
+    if (path.Create(Lune::Dictionary) == elle::Status::Error)
       escape("unable to create the path");
 
-    // read the file's content.
-    if (elle::File::Read(path, region) == elle::StatusError)
-      escape("unable to read the file's content");
+    if (this->Load(path) == elle::Status::Error)
+      escape("unable to load '%s'", path.str().c_str());
 
-    // decode and extract the object.
-    if (elle::Hexadecimal::Decode(
-          elle::String(reinterpret_cast<char*>(region.contents),
-                       region.size),
-          *this) == elle::StatusError)
-      escape("unable to decode the object");
-
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -124,27 +108,17 @@ namespace lune
   elle::Status          Dictionary::Store() const
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
     elle::String        string;
 
     // create the path.
-    if (path.Create(Lune::Dictionary) == elle::StatusError)
+    if (path.Create(Lune::Dictionary) == elle::Status::Error)
       escape("unable to create the path");
 
-    // encode in hexadecimal.
-    if (elle::Hexadecimal::Encode(*this, string) == elle::StatusError)
-      escape("unable to encode the object in hexadecimal");
+    if (this->Store(path) == elle::Status::Error)
+      escape("unable to store '%s'", path.str().c_str());
 
-    // wrap the string.
-    if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
-                    string.length()) == elle::StatusError)
-      escape("unable to wrap the string in a region");
-
-    // write the file's content.
-    if (elle::File::Write(path, region) == elle::StatusError)
-      escape("unable to write the file's content");
-
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -155,14 +129,14 @@ namespace lune
     elle::Path          path;
 
     // create the path.
-    if (path.Create(Lune::Dictionary) == elle::StatusError)
+    if (path.Create(Lune::Dictionary) == elle::Status::Error)
       escape("unable to create the path");
 
     // erase the file.
-    if (elle::File::Erase(path) == elle::StatusError)
+    if (elle::io::File::Erase(path) == elle::Status::Error)
       escape("unable to erase the file");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -173,14 +147,14 @@ namespace lune
     elle::Path          path;
 
     // create the path.
-    if (path.Create(Lune::Dictionary) == elle::StatusError)
+    if (path.Create(Lune::Dictionary) == elle::Status::Error)
       escape("unable to create the path");
 
     // test the file.
-    if (elle::File::Exist(path) == elle::StatusFalse)
-      return elle::StatusFalse;
+    if (elle::io::File::Exist(path) == elle::Status::False)
+      return elle::Status::False;
 
-    return elle::StatusTrue;
+    return elle::Status::True;
   }
 
   ///
@@ -189,28 +163,20 @@ namespace lune
   elle::Status          Dictionary::Load(const elle::String&    name)
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
 
     // create the path.
-    if (path.Create(Lune::User::Dictionary) == elle::StatusError)
+    if (path.Create(Lune::User::Dictionary) == elle::Status::Error)
       escape("unable to create the path");
 
     // complete the path's pattern.
-    if (path.Complete(elle::Piece("%USER%", name)) == elle::StatusError)
+    if (path.Complete(elle::io::Piece("%USER%", name)) == elle::Status::Error)
       escape("unable to complete the path");
 
-    // read the file's content.
-    if (elle::File::Read(path, region) == elle::StatusError)
-      escape("unable to read the file's content");
-
-    // decode and extract the object.
-    if (elle::Hexadecimal::Decode(
-          elle::String(reinterpret_cast<char*>(region.contents),
-                       region.size),
-          *this) == elle::StatusError)
+    if (this->Load(path) == elle::Status::Error)
       escape("unable to decode the object");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -219,31 +185,21 @@ namespace lune
   elle::Status          Dictionary::Store(const elle::String&   name) const
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
     elle::String        string;
 
     // create the path.
-    if (path.Create(Lune::User::Dictionary) == elle::StatusError)
+    if (path.Create(Lune::User::Dictionary) == elle::Status::Error)
       escape("unable to create the path");
 
     // complete the path's pattern.
-    if (path.Complete(elle::Piece("%USER%", name)) == elle::StatusError)
+    if (path.Complete(elle::io::Piece("%USER%", name)) == elle::Status::Error)
       escape("unable to complete the path");
 
-    // encode in hexadecimal.
-    if (elle::Hexadecimal::Encode(*this, string) == elle::StatusError)
-      escape("unable to encode the object in hexadecimal");
+    if (this->Store(path) == elle::Status::Error)
+      escape("unable to store the object");
 
-    // wrap the string.
-    if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
-                    string.length()) == elle::StatusError)
-      escape("unable to wrap the string in a region");
-
-    // write the file's content.
-    if (elle::File::Write(path, region) == elle::StatusError)
-      escape("unable to write the file's content");
-
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -254,18 +210,18 @@ namespace lune
     elle::Path          path;
 
     // create the path.
-    if (path.Create(Lune::User::Dictionary) == elle::StatusError)
+    if (path.Create(Lune::User::Dictionary) == elle::Status::Error)
       escape("unable to create the path");
 
     // complete the path's pattern.
-    if (path.Complete(elle::Piece("%USER%", name)) == elle::StatusError)
+    if (path.Complete(elle::io::Piece("%USER%", name)) == elle::Status::Error)
       escape("unable to complete the path");
 
     // erase the file.
-    if (elle::File::Erase(path) == elle::StatusError)
+    if (elle::io::File::Erase(path) == elle::Status::Error)
       escape("unable to erase the file");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -276,18 +232,18 @@ namespace lune
     elle::Path          path;
 
     // create the path.
-    if (path.Create(Lune::User::Dictionary) == elle::StatusError)
+    if (path.Create(Lune::User::Dictionary) == elle::Status::Error)
       escape("unable to create the path");
 
     // complete the path's pattern.
-    if (path.Complete(elle::Piece("%USER%", name)) == elle::StatusError)
+    if (path.Complete(elle::io::Piece("%USER%", name)) == elle::Status::Error)
       escape("unable to complete the path");
 
     // test the file.
-    if (elle::File::Exist(path) == elle::StatusFalse)
-      return elle::StatusFalse;
+    if (elle::io::File::Exist(path) == elle::Status::False)
+      return elle::Status::False;
 
-    return elle::StatusTrue;
+    return elle::Status::True;
   }
 
 }

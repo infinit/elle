@@ -12,10 +12,12 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/types.hh>
+
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
-#include <elle/core/String.hh>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

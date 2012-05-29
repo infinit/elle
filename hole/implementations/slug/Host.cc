@@ -1,3 +1,6 @@
+#include <elle/utility/Time.hh>
+#include <elle/standalone/Morgue.hh>
+
 #include <hole/implementations/slug/Host.hh>
 #include <hole/implementations/slug/Slug.hh>
 #include <hole/implementations/slug/Manifest.hh>
@@ -74,7 +77,7 @@ namespace hole
       {
         this->socket->Disconnect();
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -83,7 +86,8 @@ namespace hole
       elle::Status      Host::Authenticated()
       {
         this->state = Host::StateAuthenticated;
-        return elle::StatusOk;
+
+        return elle::Status::Ok;
       }
 
 //
@@ -110,7 +114,7 @@ namespace hole
             this->state = Host::StateDead;
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -125,7 +129,7 @@ namespace hole
         // set the state.
         this->state = Host::StateConnected;
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -144,7 +148,7 @@ namespace hole
         // set the state.
         this->state = Host::StateDead;
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -160,7 +164,7 @@ namespace hole
         // nothing to do.
         //
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
 //
@@ -183,10 +187,10 @@ namespace hole
                   << "[State] " << std::dec << this->state << std::endl;
 
         // dump the locus.
-        if (this->locus.Dump(margin + 2) == elle::StatusError)
+        if (this->locus.Dump(margin + 2) == elle::Status::Error)
           escape("unable to dump the locus");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     }

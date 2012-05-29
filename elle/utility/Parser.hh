@@ -1,31 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed apr 28 11:11:05 2010]
-//
-
 #ifndef ELLE_UTILITY_PARSER_HH
-#define ELLE_UTILITY_PARSER_HH
+# define ELLE_UTILITY_PARSER_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/types.hh>
 
-#include <elle/core/Natural.hh>
-#include <elle/core/Character.hh>
-#include <elle/core/String.hh>
-#include <elle/core/Type.hh>
-
-#include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
-
-#include <elle/io/Format.hh>
-#include <elle/io/Uniquable.hh>
-#include <elle/io/Unique.hh>
 
 #include <elle/idiom/Close.hh>
 # include <vector>
@@ -35,8 +13,6 @@
 
 namespace elle
 {
-  using namespace core;
-  using namespace radix;
 
   namespace utility
   {
@@ -203,19 +179,19 @@ namespace elle
                               const T);
       };
 
-      template <typename T>
-      struct            Behaviour<T, true>
-      {
-        template <const Format F>
-        static Status   Value(Parser&,
-                              const String&,
-                              Uniquable<F>&);
-        template <const Format F>
-        static Status   Value(Parser&,
-                              const String&,
-                              Uniquable<F>&,
-                              const Uniquable<F>);
-      };
+      //template <typename T>
+      //struct            Behaviour<T, true>
+      //{
+      //  template <const Format F>
+      //  static Status   Value(Parser&,
+      //                        const String&,
+      //                        Uniquable<F>&);
+      //  template <const Format F>
+      //  static Status   Value(Parser&,
+      //                        const String&,
+      //                        Uniquable<F>&,
+      //                        const Uniquable<F>);
+      //};
 
       Void              Usage();
 

@@ -44,7 +44,7 @@ elle::Status            Crib::Add(const elle::String&           path,
   if (result.second == false)
     escape("unable to insert the scope in the container");
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -56,9 +56,9 @@ elle::Status            Crib::Exist(const elle::String&         path)
   Crib::Iterator        iterator;
 
   if ((iterator = Crib::Handles.find(path)) != Crib::Handles.end())
-    return elle::StatusTrue;
+    return elle::Status::True;
 
-  return elle::StatusFalse;
+  return elle::Status::False;
 }
 
 ///
@@ -74,7 +74,7 @@ elle::Status            Crib::Retrieve(const elle::String&      path,
 
   handle = iterator->second;
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -89,5 +89,5 @@ elle::Status            Crib::Remove(const elle::String&        path)
 
   Crib::Handles.erase(iterator);
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }

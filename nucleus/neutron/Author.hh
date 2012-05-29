@@ -1,24 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 21 22:04:45 2009]
-//
+#ifndef  NUCLEUS_NEUTRON_AUTHOR_HH
+# define NUCLEUS_NEUTRON_AUTHOR_HH
 
-#ifndef NUCLEUS_NEUTRON_AUTHOR_HH
-#define NUCLEUS_NEUTRON_AUTHOR_HH
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/Elle.hh>
-
-#include <nucleus/neutron/Role.hh>
-#include <nucleus/neutron/Index.hh>
+# include <nucleus/neutron/Role.hh>
+# include <nucleus/neutron/Index.hh>
 
 namespace nucleus
 {
@@ -34,7 +21,7 @@ namespace nucleus
     /// the author.
     ///
     class Author:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //
@@ -66,8 +53,8 @@ namespace nucleus
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status      Serialize(elle::Archive&) const;
-      elle::Status      Extract(elle::Archive&);
+      //elle::Status      Serialize(elle::Archive&) const;
+      //elle::Status      Extract(elle::Archive&);
 
       //
       // attributes

@@ -1,16 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [wed aug 31 00:35:44 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/network/Locus.hh>
+
+#include <elle/utility/Time.hh>
 
 #include <hole/implementations/remote/Implementation.hh>
 #include <hole/implementations/remote/Remote.hh>
@@ -57,7 +48,7 @@ namespace hole
         // delete the machine.
         delete Remote::Computer;
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -72,10 +63,10 @@ namespace hole
           escape("the hole is not acting as a remote client as it should");
 
         // forward the request to the machine.
-        if (Remote::Computer->client->Put(address, block) == elle::StatusError)
+        if (Remote::Computer->client->Put(address, block) == elle::Status::Error)
           escape("unable to put the block");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -90,10 +81,10 @@ namespace hole
           escape("the hole is not acting as a remote client as it should");
 
         // forward the request to the machine.
-        if (Remote::Computer->client->Put(address, block) == elle::StatusError)
+        if (Remote::Computer->client->Put(address, block) == elle::Status::Error)
           escape("unable to put the block");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -108,10 +99,10 @@ namespace hole
           escape("the hole is not acting as a remote client as it should");
 
         // forward the request to the machine.
-        if (Remote::Computer->client->Get(address, block) == elle::StatusError)
+        if (Remote::Computer->client->Get(address, block) == elle::Status::Error)
           escape("unable to get the block");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -129,10 +120,10 @@ namespace hole
         // forward the request to the machine.
         if (Remote::Computer->client->Get(address,
                                           version,
-                                          block) == elle::StatusError)
+                                          block) == elle::Status::Error)
           escape("unable to get the block");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -146,10 +137,10 @@ namespace hole
           escape("the hole is not acting as a remote client as it should");
 
         // forward the request to the machine.
-        if (Remote::Computer->client->Kill(address) == elle::StatusError)
+        if (Remote::Computer->client->Kill(address) == elle::Status::Error)
           escape("unable to kill the block");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
 //
@@ -167,14 +158,14 @@ namespace hole
         std::cout << alignment << "[Implementation] Remote" << std::endl;
 
         // dump the parent.
-        if (Holeable::Dump(margin + 2) == elle::StatusError)
+        if (Holeable::Dump(margin + 2) == elle::Status::Error)
           escape("unable to dump the holeabl");
 
         // dump the machine.
-        if (Remote::Computer->Dump(margin + 2) == elle::StatusError)
+        if (Remote::Computer->Dump(margin + 2) == elle::Status::Error)
           escape("unable to dump the machine");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     }

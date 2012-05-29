@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 #include <nucleus/Nucleus.hh>
 
 #include <etoile/gear/Object.hh>
@@ -55,9 +55,9 @@ namespace etoile
       //
       typedef wall::Link                        W;
       typedef automaton::Link                   A;
-      typedef elle::Callback<
+      typedef elle::concurrency::Callback<
                 elle::Status,
-                elle::Parameters<
+                elle::radix::Parameters<
                   Link&
                   >
                 >                               S;
@@ -78,8 +78,8 @@ namespace etoile
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status      Serialize(elle::Archive&) const;
-      elle::Status      Extract(elle::Archive&);
+      //elle::Status      Serialize(elle::Archive&) const;
+      //elle::Status      Extract(elle::Archive&);
 
       //
       // attributes

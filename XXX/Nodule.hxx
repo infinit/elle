@@ -100,7 +100,7 @@ namespace nucleus
           left->footprint.size -= inlet->footprint.size;
 
           // insert the inlet into the right nodule.
-          if (right->Insert(inlet) == elle::StatusError)
+          if (right->Insert(inlet) == elle::Status::Error)
             escape("unable to add the inlet");
         }
 
@@ -115,7 +115,7 @@ namespace nucleus
       left->footprint.state = elle::Footprint::StateConsistent;
       right->footprint.state = elle::Footprint::StateConsistent;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -175,7 +175,7 @@ namespace nucleus
           right->footprint.size -= inlet->footprint.size;
 
           // insert the inlet into the left nodule.
-          if (left->Insert(inlet) == elle::StatusError)
+          if (left->Insert(inlet) == elle::Status::Error)
             escape("unable to add the inlet");
         }
 
@@ -190,7 +190,7 @@ namespace nucleus
       left->footprint.state = elle::Footprint::StateConsistent;
       right->footprint.state = elle::Footprint::StateConsistent;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -216,31 +216,31 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Parent]" << std::endl;
 
-      if (this->parent.Dump(margin + 4) == elle::StatusError)
+      if (this->parent.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the parent");
 
       // dump the left.
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Left]" << std::endl;
 
-      if (this->left.Dump(margin + 4) == elle::StatusError)
+      if (this->left.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the left");
 
       // dump the right.
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Right]" << std::endl;
 
-      if (this->right.Dump(margin + 4) == elle::StatusError)
+      if (this->right.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the right");
 
       // dump the footprint.
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Footprint]" << std::endl;
 
-      if (this->footprint.Dump(margin + 4) == elle::StatusError)
+      if (this->footprint.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the footprint");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -250,43 +250,43 @@ namespace nucleus
     ///
     /// this method archives the nodule.
     ///
-    template <typename V>
-    elle::Status        Nodule<V>::Serialize(elle::Archive&     archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(
-            static_cast<elle::Natural8>(this->type),
-            this->parent,
-            this->left,
-            this->right) == elle::StatusError)
-        escape("unable to serialize the attributes");
+    //template <typename V>
+    //elle::Status        Nodule<V>::Serialize(elle::Archive&     archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(
+    //        static_cast<elle::Natural8>(this->type),
+    //        this->parent,
+    //        this->left,
+    //        this->right) == elle::Status::Error)
+    //    escape("unable to serialize the attributes");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the attributes.
-    ///
-    template <typename V>
-    elle::Status        Nodule<V>::Extract(elle::Archive&       archive)
-    {
-      elle::Natural8    type;
+    /////
+    ///// this method extracts the attributes.
+    /////
+    //template <typename V>
+    //elle::Status        Nodule<V>::Extract(elle::Archive&       archive)
+    //{
+    //  elle::Natural8    type;
 
-      // extract the attributes.
-      if (archive.Extract(type,
-                          this->parent,
-                          this->left,
-                          this->right) == elle::StatusError)
-        escape("unable to extract the attributes");
+    //  // extract the attributes.
+    //  if (archive.Extract(type,
+    //                      this->parent,
+    //                      this->left,
+    //                      this->right) == elle::Status::Error)
+    //    escape("unable to extract the attributes");
 
-      // cast the type.
-      this->type = static_cast<Nodule<V>::Type>(type);
+    //  // cast the type.
+    //  this->type = static_cast<Nodule<V>::Type>(type);
 
-      // XXX[ne devrait-t-on pas calculer le footprint? ou juste que c'est
-      //     toujours calcule au dernier moment?]
+    //  // XXX[ne devrait-t-on pas calculer le footprint? ou juste que c'est
+    //  //     toujours calcule au dernier moment?]
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

@@ -61,7 +61,7 @@ namespace elle
            static_cast<Byte*>(::malloc(this->size))) == NULL)
         escape("unable to allocate the stack");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -81,7 +81,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift << "[Stack] "
                 << std::hex << static_cast<Void*>(this->stack) << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

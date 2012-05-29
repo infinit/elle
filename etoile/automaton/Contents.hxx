@@ -40,7 +40,7 @@ namespace etoile
     {
       // if the contents is already opened, return.
       if (context.contents != NULL)
-        return elle::StatusOk;
+        return elle::Status::Ok;
 
       // otherwise create a new contents according to the context's type.
       context.contents = new nucleus::Contents<typename T::C>;
@@ -51,11 +51,11 @@ namespace etoile
           // load the block.
           if (depot::Depot::Pull(context.object.data.contents,
                                  nucleus::Version::Any,
-                                 *context.contents) == elle::StatusError)
+                                 *context.contents) == elle::Status::Error)
             escape("unable to load the contents");
 
           // determine the rights the current user has on this object.
-          if (Rights::Determine(context) == elle::StatusError)
+          if (Rights::Determine(context) == elle::Status::Error)
             escape("unable to determine the user's rights");
 
           // if the user has the permission to read, decrypt the content.
@@ -64,18 +64,18 @@ namespace etoile
             {
               // decrypt the contents i.e the contents.
               if (context.contents->Decrypt(context.rights.key) ==
-                  elle::StatusError)
+                  elle::Status::Error)
                 escape("unable to decrypt the contents");
             }
         }
       else
         {
           // otherwise, create an empty contents.
-          if (context.contents->Create() == elle::StatusError)
+          if (context.contents->Create() == elle::Status::Error)
             escape("unable to create the contents");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -90,11 +90,11 @@ namespace etoile
         {
           // mark the content block for removal.
           if (context.transcript.Wipe(context.object.data.contents) ==
-              elle::StatusError)
+              elle::Status::Error)
             escape("unable to mark the content block for removal");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -107,7 +107,7 @@ namespace etoile
     elle::Status        Contents::Close(
                           T&                                    context)
     {
-      elle::SecretKey   key;
+      elle::cryptography::SecretKey   key;
       nucleus::Size     size;
 
       //
@@ -118,15 +118,15 @@ namespace etoile
         // is nothing to do.
         if (!((context.contents != NULL) &&
               (context.contents->content != NULL)))
-          return elle::StatusOk;
+          return elle::Status::Ok;
 
         // if the contents has not changed, do nothing.
         if (context.contents->state == nucleus::StateClean)
-          return elle::StatusOk;
+          return elle::Status::Ok;
       }
 
       // retrieve the contents's size.
-      if (context.contents->content->Capacity(size) == elle::StatusError)
+      if (context.contents->content->Capacity(size) == elle::Status::Error)
         escape("unable to retrieve the contents's size");
 
       //
@@ -134,7 +134,7 @@ namespace etoile
       //
 
       // forge the author which will be attached to the modified object.
-      if (Author::Forge(context) == elle::StatusError)
+      if (Author::Forge(context) == elle::Status::Error)
         escape("unable to forge an author");
 
       // modify the object according to the content.
@@ -159,7 +159,7 @@ namespace etoile
           if (hole::Hole::Descriptor.history == false)
             {
               // destroy the contents block.
-              if (Contents::Destroy(context) == elle::StatusError)
+              if (Contents::Destroy(context) == elle::Status::Error)
                 escape("unable to destroy the contents block");
             }
 
@@ -169,7 +169,7 @@ namespace etoile
                 nucleus::Address::Null,
                 0,
                 context.object.meta.access,
-                context.object.meta.owner.token) == elle::StatusError)
+                context.object.meta.owner.token) == elle::Status::Error)
             escape("unable to update the object");
 
           //
@@ -178,12 +178,12 @@ namespace etoile
           //
 
           // open the access.
-          if (Access::Open(context) == elle::StatusError)
+          if (Access::Open(context) == elle::Status::Error)
             escape("unable to open the access");
 
           // downgrade the access entries i.e set the tokens as null
           // since no content is present.
-          if (Access::Downgrade(context) == elle::StatusError)
+          if (Access::Downgrade(context) == elle::Status::Error)
             escape("unable to downgrade the accesses");
         }
       else
@@ -203,20 +203,20 @@ namespace etoile
           if (hole::Hole::Descriptor.history == false)
             {
               // destroy the contents block.
-              if (Contents::Destroy(context) == elle::StatusError)
+              if (Contents::Destroy(context) == elle::Status::Error)
                 escape("unable to destroy the contents block");
             }
 
           // generate a secret key.
-          if (key.Generate() == elle::StatusError) // XXX[should provide a len]
+          if (key.Generate() == elle::Status::Error) // XXX[should provide a len]
             escape("unable to generate the secret key");
 
           // encrypt the contents.
-          if (context.contents->Encrypt(key) == elle::StatusError)
+          if (context.contents->Encrypt(key) == elle::Status::Error)
             escape("unable to encrypt the contents");
 
           // bind the contents i.e seal it by computing its address.
-          if (context.contents->Bind(address) == elle::StatusError)
+          if (context.contents->Bind(address) == elle::Status::Error)
             escape("unable to bind the contents");
 
           // set the content as consistent.
@@ -228,12 +228,12 @@ namespace etoile
                 address,
                 size,
                 context.object.meta.access,
-                context.object.meta.owner.token) == elle::StatusError)
+                context.object.meta.owner.token) == elle::Status::Error)
             escape("unable to update the object");
 
           // mark the block as needing to be stored.
           if (context.transcript.Push(address,
-                                      context.contents) == elle::StatusError)
+                                      context.contents) == elle::Status::Error)
             escape("unable to record the object for storing");
 
           //
@@ -243,15 +243,15 @@ namespace etoile
           //
 
           // open the access.
-          if (Access::Open(context) == elle::StatusError)
+          if (Access::Open(context) == elle::Status::Error)
             escape("unable to open the access block");
 
           // upgrade the access entries with the new key.
-          if (Access::Upgrade(context, key) == elle::StatusError)
+          if (Access::Upgrade(context, key) == elle::Status::Error)
             escape("unable to upgrade the accesses");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

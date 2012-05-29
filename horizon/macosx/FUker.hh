@@ -23,7 +23,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <elle/idiom/Close.hh>
 # define _GNU_SOURCE
@@ -57,7 +57,7 @@ namespace horizon
     /// result of the operation.
     ///
     class FUker:
-      public elle::Entity
+      public elle::radix::Entity
     {
     public:
       //

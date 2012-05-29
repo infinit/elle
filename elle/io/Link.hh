@@ -1,25 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun may 22 13:07:04 2011]
-//
-
 #ifndef ELLE_IO_LINK_HH
-#define ELLE_IO_LINK_HH
+# define ELLE_IO_LINK_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/standalone/Region.hh>
 
-#include <elle/standalone/Region.hh>
-
-#include <elle/radix/Status.hh>
-
-#include <elle/io/Path.hh>
+# include <elle/io/Path.hh>
 
 namespace elle
 {

@@ -1,3 +1,4 @@
+#include <elle/standalone/ReportSerializer.hxx>
 #include <elle/network/Network.hh>
 #include <elle/concurrency/Event.hh>
 
@@ -22,10 +23,10 @@ namespace elle
     Status              Network::Initialize()
     {
       // initialize the session.
-      if (Session::Initialize() == StatusError)
+      if (Session::Initialize() == Status::Error)
         escape("unable to initialize the session");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -34,12 +35,12 @@ namespace elle
     Status              Network::Clean()
     {
       // clean the session.
-      if (Session::Clean() == StatusError)
+      if (Session::Clean() == Status::Error)
         escape("unable to clean the session");
 
       Network::Procedures.clear();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///

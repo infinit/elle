@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar  3 13:55:58 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <boost/unordered_map.hpp>
 
 #include <elle/concurrency/Event.hh>
@@ -20,6 +6,7 @@
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 
 #include <elle/cryptography/Random.hh>
 
@@ -69,7 +56,7 @@ namespace elle
       do
         {
           // generate the identifier.
-          if (Random::Generate(this->_identifier) == StatusError)
+          if (Random::Generate(this->_identifier) == Status::Error)
             escape("unable to generate the identifier");
         } while (*this == Event::Null);
 
@@ -81,7 +68,7 @@ namespace elle
       else
         this->_signal = it->second;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -95,13 +82,12 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return StatusTrue;
+        return true;
 
-      // compare the identifier.
       if (this->_identifier != element._identifier)
-        return StatusFalse;
+        return false;
 
-      return StatusTrue;
+      return true;
     }
 
     ///
@@ -120,36 +106,15 @@ namespace elle
 //
 // ---------- archivable ------------------------------------------------------
 //
-
-    ///
-    /// this method serializes the event.
-    ///
-    Status              Event::Serialize(Archive&               archive) const
+    void
+    Event::XXX_OLD_Extract()
     {
-      // serialize the attributes.
-      if (archive.Serialize(this->_identifier) == StatusError)
-        escape("unable to serialize the event attributes");
-
-      return StatusOk;
-    };
-
-    ///
-    /// this method extracts the event.
-    ///
-    Status              Event::Extract(Archive&                 archive)
-    {
-      // extract the attributes.
-      if (archive.Extract(this->_identifier) == StatusError)
-        escape("unable to extract the event attributes");
-
       // XXX
       Signals::iterator it = _signals.find(this->_identifier);
       if (it == _signals.end())
         _signals[this->_identifier] = _signal = new SignalType();
       else
         this->_signal = it->second;
-
-      return StatusOk;
     };
 
     void
@@ -180,7 +145,7 @@ namespace elle
 
       std::cout << alignment << "[Event] " << this->_identifier << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Event::SignalType&

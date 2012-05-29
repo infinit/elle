@@ -60,21 +60,21 @@ namespace elle
       Natural32         roffset = 0;
 
       // does the file exist.
-      if (File::Exist(path) == StatusFalse)
+      if (File::Exist(path) == Status::False)
         escape("the file does not seem to exist");
 
       // retrieve information.
-      if (::stat(path.string.c_str(), &status) == -1)
-        escape(::strerror(errno));
+      if (::stat(path.str().c_str(), &status) == -1)
+        escape("%s", ::strerror(errno));
 
       // prepare the data.
-      if (data.Prepare(static_cast<Natural32>(status.st_size)) == StatusError)
+      if (data.Prepare(static_cast<Natural32>(status.st_size)) == Status::Error)
         escape("unable to prepare the region");
 
       // open the file.
-      if ((fd = ::open(path.string.c_str(), O_RDONLY)) == -1)
+      if ((fd = ::open(path.str().c_str(), O_RDONLY)) == -1)
         escape("failed to open %s: %s",
-               path.string.c_str(), ::strerror(errno));
+               path.str().c_str(), ::strerror(errno));
 
       // read the file's content.
       while (roffset < data.capacity)
@@ -105,7 +105,7 @@ namespace elle
       // close the file.
       ::close(fd);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -118,14 +118,14 @@ namespace elle
       Natural32         woffset = 0;
 
       // dig the directory which will hold the target file.
-      if (File::Dig(path) == StatusError)
+      if (File::Dig(path) == Status::Error)
         escape("unable to dig the chain of directories");
 
       // open the file.
-      if ((fd = ::open(path.string.c_str(),
+      if ((fd = ::open(path.str().c_str(),
                        O_CREAT | O_TRUNC | O_WRONLY,
                        0600)) == -1)
-        escape(::strerror(errno));
+        escape("%s", ::strerror(errno));
 
       // write the text to the file.
       while (woffset < data.size)
@@ -141,7 +141,7 @@ namespace elle
                 continue;
 
               ::close(fd);
-              escape(::strerror(errno));
+              escape("%s", ::strerror(errno));
             }
 
           if (wbytes == 0)
@@ -153,7 +153,7 @@ namespace elle
       // close the file.
       ::close(fd);
 
-      return StatusOk;
+      return Status::Ok;
     }
 #elif defined(INFINIT_WINDOWS)
     ///
@@ -167,25 +167,25 @@ namespace elle
       DWORD             roffset = 0;
 
       // does the file exist.
-      if (File::Exist(path) == StatusFalse)
+      if (File::Exist(path) == Status::False)
         escape("the file does not seem to exist");
 
       // retrieve information.
-      if (::stat(path.string.c_str(), &status) == -1)
+      if (::stat(path.str().c_str(), &status) == -1)
         escape(::strerror(errno));
 
       // prepare the data.
-      if (data.Prepare(static_cast<Natural32>(status.st_size)) == StatusError)
+      if (data.Prepare(static_cast<Natural32>(status.st_size)) == Status::Error)
         escape("unable to prepare the region");
 
       // open the file.
-      fd = ::CreateFile(path.string.c_str(), GENERIC_READ,
+      fd = ::CreateFile(path.str().c_str(), GENERIC_READ,
                         FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
                         NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,
                         NULL);
 
       if (fd == INVALID_HANDLE_VALUE)
-        escape("failed to open %s", path.string.c_str());
+        escape("failed to open %s", path.str().c_str());
 
       // read the file's content.
       while (roffset < data.capacity)
@@ -215,7 +215,7 @@ namespace elle
       // close the file.
       ::CloseHandle(fd);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -228,17 +228,17 @@ namespace elle
       DWORD             woffset = 0;
 
       // dig the directory which will hold the target file.
-      if (File::Dig(path) == StatusError)
+      if (File::Dig(path) == Status::Error)
         escape("unable to dig the chain of directories");
 
       // open the file.
-      fd = ::CreateFile(path.string.c_str(), GENERIC_WRITE,
+      fd = ::CreateFile(path.str().c_str(), GENERIC_WRITE,
                         FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
                         NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL,
                         NULL);
 
       if (fd == INVALID_HANDLE_VALUE)
-        escape("failed to open %s", path.string.c_str());
+        escape("failed to open %s", path.str().c_str());
 
       // write the text to the file.
       while (woffset < data.size)
@@ -265,7 +265,7 @@ namespace elle
       // close the file.
       ::CloseHandle(fd);
 
-      return StatusOk;
+      return Status::Ok;
     }
 #else
 # error "unsupported platform"
@@ -277,13 +277,13 @@ namespace elle
     Status              File::Erase(const Path&                 path)
     {
       // does the file exist.
-      if (File::Exist(path) == StatusFalse)
+      if (File::Exist(path) == Status::False)
         escape("the file does not seem to exist");
 
       // unlink the file.
-      ::unlink(path.string.c_str());
+      ::unlink(path.str().c_str());
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -294,14 +294,14 @@ namespace elle
       struct ::stat             stat;
 
       // does the path points to something.
-      if (::stat(path.string.c_str(), &stat) != 0)
-        return StatusFalse;
+      if (::stat(path.str().c_str(), &stat) != 0)
+        return Status::False;
 
       // does the path points to a regular file.
       if (!S_ISREG(stat.st_mode))
-        return StatusFalse;
+        return Status::False;
 
-      return StatusTrue;
+      return Status::True;
     }
 
     ///
@@ -310,8 +310,8 @@ namespace elle
     ///
     Status              File::Dig(const Path&                   path)
     {
-      String            target(path.string);
-      char *            tmp_str = ::strdup(path.string.c_str());
+      String            target(path.str());
+      char *            tmp_str = ::strdup(path.str().c_str());
       String            directory(::dirname(tmp_str));
       std::stringstream stream(directory);
       String            item;
@@ -324,25 +324,25 @@ namespace elle
       while (std::getline(stream, item, System::Path::Separator))
         {
           // update the intermediate chemin.
-          if (chemin.string.empty() && item.empty())
-            chemin.string = System::Path::Separator;
+          if (chemin.str().empty() && item.empty())
+            chemin.str() = System::Path::Separator;
           else
             {
-              chemin.string.append(item);
-              chemin.string.append(1, System::Path::Separator);
+              chemin.str().append(item);
+              chemin.str().append(1, System::Path::Separator);
             }
 
           // retrieve information on the path. should this operation fail
           // would mean that the target directory does not exist.
-          if (Directory::Exist(chemin) == StatusFalse)
+          if (Directory::Exist(chemin) == Status::False)
             {
               // create the intermediate directory.
-              if (Directory::Create(chemin) == StatusError)
+              if (Directory::Create(chemin) == Status::Error)
                 escape("unable to create the intermediate directory");
             }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

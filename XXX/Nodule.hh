@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/State.hh>
@@ -56,7 +56,7 @@ namespace nucleus
     ///
     template <typename V>
     class Nodule:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //
@@ -94,7 +94,7 @@ namespace nucleus
                                       Handle&,
                                       const Pins = PinNone) = 0;
       virtual elle::Status      Traverse(const elle::Natural32 = 0) = 0;
-      virtual elle::Status      Seal(const elle::SecretKey&,
+      virtual elle::Status      Seal(elle::cryptography::SecretKey const&,
                                      Address&) = 0;
 
       //
@@ -105,8 +105,8 @@ namespace nucleus
       elle::Status              Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status              Serialize(elle::Archive&) const;
-      elle::Status              Extract(elle::Archive&);
+      //elle::Status              Serialize(elle::Archive&) const;
+      //elle::Status              Extract(elle::Archive&);
 
       //
       // attributes

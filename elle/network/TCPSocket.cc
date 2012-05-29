@@ -1,3 +1,7 @@
+
+#include <elle/network/HeaderSerializer.hxx>
+#include <elle/utility/BufferSerializer.hxx>
+
 #include <string>
 
 #include <reactor/network/buffer.hh>
@@ -113,36 +117,25 @@ namespace elle
       if (!this->_buffer_size)
         return 0;
 
-      Packet        packet;
-      Region        frame;
+      elle::utility::WeakBuffer packet(this->_buffer, this->_buffer_size);
+      auto reader = packet.Reader();
 
-      // Create the frame based on the previously extracted raw.
-      if (frame.Wrap(this->_buffer, this->_buffer_size) == StatusError)
-        throw std::runtime_error("unable to wrap a frame in the raw");
+      // allocate the parcel.
+      auto parcel = std::unique_ptr<Parcel>(new Parcel);
 
-      // Prepare the packet based on the frame.
-      if (packet.Wrap(frame) == StatusError)
-        throw std::runtime_error("unable to prepare the packet");
-
-      // Allocate the parcel.
-      Parcel* parcel = new Parcel;
-
-      // Extract the header.
-      if (parcel->header->Extract(packet) == StatusError)
-        {
-          purge();
-          return 0; // No header yet
-        }
+      // extract the header.
+      reader >> *(parcel->header);
 
       // XXX[Check if the size is plausible]
 
       // Check if there is enough data available.
-      if ((packet.size - packet.offset) < parcel->header->size)
+      if (reader.Stream().BytesLeft() < parcel->header->size)
+        {
+          elle::log::warn("XXX: Ignore header ??!!");
           return 0;
+        }
 
-      // Extract the data.
-      if (packet.Extract(*parcel->data) == StatusError)
-        throw std::runtime_error("unable to extract the data");
+      reader >> *(parcel->data);
 
       ::memmove(_buffer, _buffer + packet.size, _buffer_size - packet.size);
       _buffer_size -= packet.size;

@@ -15,12 +15,14 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <nucleus/neutron/Trait.hh>
 #include <nucleus/neutron/Index.hh>
 #include <nucleus/neutron/Size.hh>
 #include <nucleus/neutron/Range.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -36,7 +38,7 @@ namespace nucleus
     /// used for storing object-specific extra information.
     ///
     class Attributes:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //
@@ -66,8 +68,8 @@ namespace nucleus
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status      Serialize(elle::Archive&) const;
-      elle::Status      Extract(elle::Archive&);
+      //elle::Status      Serialize(elle::Archive&) const;
+      //elle::Status      Extract(elle::Archive&);
 
       //
       // attributes

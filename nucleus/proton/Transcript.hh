@@ -1,21 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri jun 17 13:10:45 2011]
-//
-
 #ifndef NUCLEUS_PROTON_TRANSCRIPT_HH
-#define NUCLEUS_PROTON_TRANSCRIPT_HH
+# define NUCLEUS_PROTON_TRANSCRIPT_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <vector>
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <nucleus/proton/Action.hh>
 #include <nucleus/proton/Address.hh>
@@ -36,7 +24,7 @@ namespace nucleus
     /// on.
     ///
     class Transcript:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

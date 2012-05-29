@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 #include <nucleus/Nucleus.hh>
 
 #include <XXX/Placement.hh>
@@ -34,7 +34,7 @@ namespace etoile
     /// XXX
     ///
     class Pod:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //
