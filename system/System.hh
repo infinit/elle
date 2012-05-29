@@ -1,29 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon jan 26 20:21:10 2009]
-//
-
 #ifndef ELLE_SYSTEM_SYSTEM_HH
-#define ELLE_SYSTEM_SYSTEM_HH
+# define ELLE_SYSTEM_SYSTEM_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/core/String.hh>
-#include <elle/core/Character.hh>
-
-#include <elle/radix/Status.hh>
+# include <elle/types.hh>
 
 namespace elle
 {
-  using namespace core;
-  using namespace radix;
 
   ///
   /// this namespace contains system-related stuff especially useful
@@ -31,10 +12,6 @@ namespace elle
   ///
   namespace system
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class contains system-wide information.

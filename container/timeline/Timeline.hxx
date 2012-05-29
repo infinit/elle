@@ -18,7 +18,7 @@
 #include <cassert>
 #include <memory>
 
-#include <elle/core/String.hh>
+#include <elle/types.hh>
 
 #include <elle/standalone/Report.hh>
 
@@ -95,10 +95,10 @@ namespace elle
         assert(bucket != 0);
 
         // add the object to the bucket.
-        if (bucket->Add(object) == StatusError)
+        if (bucket->Add(object) == Status::Error)
           escape("unable to add the object to the bucket");
 
-        return StatusOk;
+        return Status::Ok;
       }
 
       ///
@@ -121,7 +121,7 @@ namespace elle
         assert(bucket != nullptr);
 
         // remove the object from the bucket.
-        if (bucket->Remove(object) == StatusError)
+        if (bucket->Remove(object) == Status::Error)
           escape("unable to remove the object");
 
         // check if the bucket is empty.
@@ -130,7 +130,7 @@ namespace elle
             this->container.erase(it);
             delete bucket;
           }
-        return StatusOk;
+        return Status::Ok;
       }
 
       ///
@@ -140,7 +140,7 @@ namespace elle
       Status            Timeline<T>::Clear()
       {
         this->container.clear();
-        return StatusOk;
+        return Status::Ok;
       }
 
 //
@@ -163,14 +163,14 @@ namespace elle
         for (; it != end; ++it)
           {
             // dump the timestamp.
-            if (it->first.Dump(margin + 2) == StatusError)
+            if (it->first.Dump(margin + 2) == Status::Error)
               escape("unable to dump the timestamp");
 
             // dump the bucket.
-            if (it->second->Dump(margin + 2) == StatusError)
+            if (it->second->Dump(margin + 2) == Status::Error)
               escape("unable to dump the bucket");
           }
-        return StatusOk;
+        return Status::Ok;
       }
 
     }

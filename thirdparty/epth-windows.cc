@@ -65,7 +65,7 @@ XXX dans spawn egalement.
       this->frame = new Frame;
 
       // create the frame.
-      if (this->frame->Create(size) == StatusError)
+      if (this->frame->Create(size) == Status::Error)
         escape("unable to create the frame");
 
 int getcontext(ucontext_t *ucp)

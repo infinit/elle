@@ -42,32 +42,34 @@ namespace elle
       Data              data;
       Header            header;
 
-      // create an data for the inputs.
-      if (data.Create() == StatusError)
-        escape("unable to create the data");
-
-      // serialize the inputs.
-      if (inputs.Serialize(data) == StatusError)
-        escape("unable to serialize the inputs");
+      try
+        {
+          data.Writer() << inputs;
+        }
+      catch (std::exception const& err)
+        {
+          escape(err.what());
+        }
 
       // create the header now that we know that final archive's size.
       if (header.Create(event,
                         inputs.tag,
-                        data.size) == StatusError)
+                        data.Size()) == Status::Error)
         escape("unable to create the header");
 
-      // prepare the packet.
-      if (packet.Create() == StatusError)
-        escape("unable to create the packet");
-
-      // serialize the the header and data.
-      if (packet.Serialize(header, data) == StatusError)
-        escape("unable to serialize the header and data");
+      try
+        {
+          packet.Writer() << header << data;
+        }
+      catch (std::exception const& err)
+        {
+          escape(err.what());
+        }
 
       // write the socket.
       this->Write(packet);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -102,9 +104,7 @@ namespace elle
             {
               Report    report;
 
-              // extract the error message.
-              if (report.Extract(*parcel->data) == StatusError)
-                escape("unable to extract the error message");
+              parcel->data->Reader() >> report;
 
               // report the remote error.
               transpose(report);
@@ -113,15 +113,19 @@ namespace elle
             escape("fiber was awaken by a packet with the wrong tag");
 
           // in any case, return an error from the Receive() method.
-          escape("received a packet with an unexpected tag '%u'",
-                 tag);
+          escape("received a packet with an unexpected tag '%u'", tag);
         }
 
-      // extract the arguments.
-      if (outputs.Extract(*parcel->data) == StatusError)
-        escape("unable to extract the arguments");
+      try
+        {
+          parcel->data->Writer() << outputs;
+        }
+      catch (std::exception const& err)
+        {
+          escape(err.what());
+        }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -136,22 +140,21 @@ namespace elle
       Event             event;
 
       // generate an event to link the request with the response.
-      if (event.Generate() == StatusError)
+      if (event.Generate() == Status::Error)
         escape("unable to generate the event");
 
       // send the inputs.
       ELLE_LOG_TRACE("call tag %s on event %s and await tag %s",
                      inputs.tag, event.Identifier(), outputs.tag);
-      if (this->Send(inputs, event) == StatusError)
+      if (this->Send(inputs, event) == Status::Error)
         escape("unable to send the inputs");
 
       // wait for the reply.
-      if (this->Receive(event, outputs) == StatusError)
+      if (this->Receive(event, outputs) == Status::Error)
         escape("unable to receive the outputs");
 
       event.Cleanup();
-
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -165,7 +168,7 @@ namespace elle
         escape("unable to send the reply");
       current_context().parcel->header->event.Cleanup();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

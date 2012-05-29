@@ -35,7 +35,7 @@ namespace elle
     ///
     Status              Session::Initialize()
     {
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -45,7 +45,7 @@ namespace elle
     {
       // nothing to do.
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -56,7 +56,7 @@ namespace elle
       // set the current session.
       session.Get() = s;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -65,7 +65,7 @@ namespace elle
     ///
     Status              Session::Clear()
     {
-      return StatusOk;
+      return Status::Ok;
     }
 
 
@@ -97,7 +97,7 @@ namespace elle
       this->locus = locus;
       this->event = event;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -121,14 +121,14 @@ namespace elle
         }
 
       // dump the locus.
-      if (this->locus.Dump(margin + 2) == StatusError)
+      if (this->locus.Dump(margin + 2) == Status::Error)
         escape("unable to dump the locus");
 
       // dump the event.
-      if (this->event.Dump(margin + 2) == StatusError)
+      if (this->event.Dump(margin + 2) == Status::Error)
         escape("unable to dump the event");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

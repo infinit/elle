@@ -1,28 +1,14 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       infinit
-//
-// license       elle
-//
-// author        julien quintard   [mon apr 25 11:55:19 2011]
-//
-
 #ifndef ELLE_IO_PIECE_HH
-#define ELLE_IO_PIECE_HH
+# define ELLE_IO_PIECE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/core/String.hh>
-
-#include <elle/radix/Status.hh>
-#include <elle/radix/Object.hh>
+# include <elle/radix/Object.hh>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
 
   namespace io

@@ -11,6 +11,8 @@
 #ifndef ELLE_RADIX_VARIABLES_HH
 #define ELLE_RADIX_VARIABLES_HH
 
+#include <elle/radix/Parameters.hh>
+
 namespace elle
 {
   namespace radix

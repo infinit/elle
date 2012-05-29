@@ -55,7 +55,7 @@ namespace elle
       // clear the container.
       this->container.clear();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -81,7 +81,7 @@ namespace elle
                     << scoutor->first << std::endl;
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

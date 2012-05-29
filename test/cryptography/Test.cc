@@ -1,21 +1,17 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed jan 28 11:22:24 2009]
-//
+#include <elle/Elle.hh>
+#include <elle/cryptography/SecretKey.hh>
+#include <elle/cryptography/PublicKey.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/standalone/RegionSerializer.hxx>
+#include <elle/utility/BufferSerializer.hxx>
 
 #include "Test.hh"
 
 namespace elle
 {
+
+  using namespace elle::cryptography;
+
   namespace test
   {
 
@@ -47,7 +43,7 @@ namespace elle
       Natural32         i;
 
       // init the library.
-      if (Elle::Initialize() == StatusError)
+      if (Elle::Initialize() == Status::Error)
         escape("unable to initialize the Elle library");
 
       // allocate an initialize key pair.
@@ -56,7 +52,7 @@ namespace elle
       // generate a key pair
       if (kp->Generate(Random::Generate(Test::MinimumKeyLength,
                                         Test::MaximumKeyLength)) ==
-          StatusError)
+          Status::Error)
         escape("unable to generate the initial key pair");
 
       // allocate a secret key.
@@ -65,7 +61,7 @@ namespace elle
       // generate the secret key.
       if (sk->Generate(Random::Generate(Test::MinimumKeyLength,
                                         Test::MaximumKeyLength)) ==
-          StatusError)
+          Status::Error)
         escape("unable to generate the initial secret key");
 
       // compute the number of tests.
@@ -98,12 +94,12 @@ namespace elle
                 // generate the new keys.
                 if (kp->Generate(Random::Generate(Test::MinimumKeyLength,
                                                   Test::MaximumKeyLength)) ==
-                    StatusError)
+                    Status::Error)
                   escape("unable to generate a new key pair");
 
                 if (sk->Generate(Random::Generate(Test::MinimumKeyLength,
                                                   Test::MaximumKeyLength)) ==
-                    StatusError)
+                    Status::Error)
                   escape("unable to generate a secret key");
 
                 break;
@@ -120,16 +116,19 @@ namespace elle
                 K = kp->K;
                 k = kp->k;
 
+                std::cout << "generate\n";
                 // generate an input.
-                if (Random::Generate(plain) == StatusError)
+                if (Random::Generate(plain) == Status::Error)
                   escape("unable to generate a plain");
 
+                std::cout << "encrypt " << plain.size << " bytes\n";
                 // encrypt the input.
-                if (K.Encrypt(plain, code) == StatusError)
+                if (K.Encrypt(plain, code) == Status::Error)
                   escape("unable to encrypt the plain");
 
+                std::cout << "decrypt\n";
                 // decrypt it.
-                if (k.Decrypt(code, clear) == StatusError)
+                if (k.Decrypt(code, clear) == Status::Error)
                   escape("unable to decrypt the code");
 
                 // compare the input and output.
@@ -151,15 +150,15 @@ namespace elle
                 k = kp->k;
 
                 // generate an input.
-                if (Random::Generate(plain) == StatusError)
+                if (Random::Generate(plain) == Status::Error)
                   escape("unable to generate a plain");
 
                 // encrypt the input with the private key.
-                if (k.Encrypt(plain, code) == StatusError)
+                if (k.Encrypt(plain, code) == Status::Error)
                   escape("unable to encrypt the plain");
 
                 // decrypt it with the public key.
-                if (K.Decrypt(code, clear) == StatusError)
+                if (K.Decrypt(code, clear) == Status::Error)
                   escape("unable to decrypt the code");
 
                 // compare the input and output.
@@ -180,15 +179,15 @@ namespace elle
                 k = kp->k;
 
                 // generate an input.
-                if (Random::Generate(plain) == StatusError)
+                if (Random::Generate(plain) == Status::Error)
                   escape("unable to generate a plain");
 
                 // sign the plain.
-                if (k.Sign(plain, signature) == StatusError)
+                if (k.Sign(plain, signature) == Status::Error)
                   escape("unable to sign the plain");
 
                 // verify the signature.
-                if (K.Verify(signature, plain) == StatusError)
+                if (K.Verify(signature, plain) == Status::Error)
                   escape("unable to verify the signature or "
                          "the signature differs from the plain");
 
@@ -205,15 +204,15 @@ namespace elle
                 s = *sk;
 
                 // generate a plain.
-                if (Random::Generate(plain) == StatusError)
+                if (Random::Generate(plain) == Status::Error)
                   escape("unable to generate a plain");
 
                 // cipher the plain.
-                if (s.Encrypt(plain, cipher) == StatusError)
+                if (s.Encrypt(plain, cipher) == Status::Error)
                   escape("unable to cipher the plain");
 
                 // decypher the code.
-                if (s.Decrypt(cipher, clear) == StatusError)
+                if (s.Decrypt(cipher, clear) == Status::Error)
                   escape("unable to cipher the code");
 
                 // compare the clear with the initial plain.
@@ -235,12 +234,12 @@ namespace elle
                 PublicKey       K;
 
                 // generate the initial seed.
-                if (seed.Generate() == StatusError)
+                if (seed.Generate() == Status::Error)
                   escape("unable to generate the seed");
 
                 // rotate the key pair once in order to be truly random
                 // i.e without a small exponent 'e' such as 3.
-                if (kp->Rotate(seed, initial) == StatusError)
+                if (kp->Rotate(seed, initial) == Status::Error)
                   escape("unable to rotate the initial key pair");
 
                 // generate a random number of rotations to apply.
@@ -258,14 +257,14 @@ namespace elle
                     KeyPair     _p;
 
                     // rotate the seed.
-                    if (s.Rotate(kp->k, _s) == StatusError)
+                    if (s.Rotate(kp->k, _s) == Status::Error)
                       escape("unable to rotate the seed");
 
                     // assign the seed.
                     s = _s;
 
                     // rotate the key pair.
-                    if (p.Rotate(s, _p) == StatusError)
+                    if (p.Rotate(s, _p) == Status::Error)
                       escape("unable to rotate the key pair");
 
                     // assign the key pair.
@@ -282,7 +281,7 @@ namespace elle
                     Seed        _s;
 
                     // derive the seed.
-                    if (s.Derive(kp->K, _s) == StatusError)
+                    if (s.Derive(kp->K, _s) == Status::Error)
                       escape("unable to derive the seed");
 
                     // assign the seed.
@@ -290,7 +289,7 @@ namespace elle
                   }
 
                 // derive the key from the seed.
-                if (k.Derive(s, K) == StatusError)
+                if (k.Derive(s, K) == Status::Error)
                   escape("unable to derive the key");
 
                 // finally, compare the public and private key
@@ -309,10 +308,10 @@ namespace elle
       delete sk;
 
       // clean the library.
-      if (Elle::Clean() == StatusError)
+      if (Elle::Clean() == Status::Error)
         escape("unable to clean the Elle library");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }
@@ -324,7 +323,7 @@ namespace elle
 
 int                     main()
 {
-  if (elle::test::Main() == elle::radix::StatusError)
+  if (elle::test::Main() == elle::Status::Error)
     {
       show();
 

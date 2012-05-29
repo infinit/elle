@@ -15,11 +15,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/String.hh>
+#include <elle/types.hh>
 
 namespace elle
 {
-  using namespace core;
+
 
   namespace utility
   {

@@ -13,12 +13,9 @@ namespace elle { namespace serialize {
       Output = 0x3417e,
     };
 
-    inline std::ostream& operator <<(std::ostream& out, ArchiveMode mode)
-      {
-        assert(mode == ArchiveMode::Input || mode == ArchiveMode::Output);
-        return out << (mode == ArchiveMode::Input ? "Input" : "Output");
-      }
 }} // !namespace elle::serialize
+
+inline std::ostream& operator <<(std::ostream& out, elle::serialize::ArchiveMode mode);
 
 #endif /* ! ARCHIVEMODE_HH */
 

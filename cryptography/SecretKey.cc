@@ -1,21 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu nov  1 12:24:32 2007]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/Digest.hh>
 #include <elle/cryptography/OneWay.hh>
 #include <elle/cryptography/Random.hh>
+
+#include <elle/standalone/Log.hh>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -77,10 +67,10 @@ namespace elle
       // assign the password to the internal key object.
       if (this->region.Duplicate(
             reinterpret_cast<const Byte*>(password.c_str()),
-            password.length()) == StatusError)
+            password.length()) == Status::Error)
         escape("unable to assign the given password to the key");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -104,21 +94,21 @@ namespace elle
       size = length / 8;
 
       // prepare the password.
-      if (this->region.Prepare(size) == StatusError)
+      if (this->region.Prepare(size) == Status::Error)
         escape("unable to prepare the key");
 
       // generate the key.
-      if (Random::Generate(this->region, size) == StatusError)
+      if (Random::Generate(this->region, size) == Status::Error)
         escape("unable to generate the region");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
     /// this method encrypts the given plain text.
     ///
-    Status              SecretKey::Encrypt(const Plain&         plain,
-                                           Cipher&              cipher) const
+    Status SecretKey::Encrypt(elle::utility::WeakBuffer const&  in,
+                              Cipher&                           cipher) const
     {
       unsigned char     key[EVP_MAX_KEY_LENGTH];
       unsigned char     iv[EVP_MAX_IV_LENGTH];
@@ -154,7 +144,7 @@ namespace elle
                                NULL,
                                key,
                                iv) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       // retreive the cipher-specific block size.
       capacity = ::EVP_CIPHER_CTX_block_size(&scope.context);
@@ -163,8 +153,8 @@ namespace elle
       if (cipher.region.Prepare(sizeof (SecretKey::Magic) -
                                 1 +
                                 sizeof (salt) +
-                                plain.size +
-                                capacity) == StatusError)
+                                in.Size() +
+                                capacity) == Status::Error)
         escape("unable to reserve memory for the cipher");
 
       // push the magic string directly into the cipher.
@@ -184,9 +174,9 @@ namespace elle
       if (::EVP_EncryptUpdate(&scope.context,
                               cipher.region.contents + cipher.region.size,
                               &size,
-                              plain.contents,
-                              plain.size) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+                              in.Contents(),
+                              in.Size()) == 0)
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       // update the cipher size.
       cipher.region.size += size;
@@ -195,19 +185,19 @@ namespace elle
       if (::EVP_EncryptFinal_ex(&scope.context,
                                 cipher.region.contents + cipher.region.size,
                                 &size) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       // update the cipher size.
       cipher.region.size += size;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
     /// this method decrypts the given cipher.
     ///
-    Status              SecretKey::Decrypt(const Cipher&        cipher,
-                                           Clear&               clear) const
+    Status SecretKey::Decrypt(const Cipher&             cipher,
+                              elle::utility::Buffer&    out) const
     {
       unsigned char     key[EVP_MAX_KEY_LENGTH];
       unsigned char     iv[EVP_MAX_IV_LENGTH];
@@ -251,20 +241,20 @@ namespace elle
                                NULL,
                                key,
                                iv) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       // retreive the cipher-specific block size.
       capacity = ::EVP_CIPHER_CTX_block_size(&scope.context);
 
-      // allocate the clear.
-      if (clear.Prepare(cipher.region.size -
-                        (sizeof (SecretKey::Magic) - 1 + sizeof (salt)) +
-                        capacity) == StatusError)
-        escape("unable to reserve memory for the clear text");
+      // allocate the out buffer
+      out.Size(
+          cipher.region.size -
+          (sizeof (SecretKey::Magic) - 1 + sizeof (salt)) +
+          capacity
+      );
 
-      // cipher the cipher text.
       if (::EVP_DecryptUpdate(&scope.context,
-                              clear.contents,
+                              out.MutableContents(),
                               &size,
                               cipher.region.contents +
                               sizeof (SecretKey::Magic) - 1 +
@@ -272,21 +262,21 @@ namespace elle
                               cipher.region.size -
                               (sizeof (SecretKey::Magic) - 1 +
                                sizeof (salt))) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       // update the clear size.
-      clear.size += size;
+      out.Size(out.Size() + size);
 
       // finalise the ciphering process.
       if (::EVP_DecryptFinal_ex(&scope.context,
-                                clear.contents + size,
+                                out.MutableContents() + size,
                                 &size) == 0)
-        escape(::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
 
       // update the clear size.
-      clear.size += size;
+      out.Size(out.Size() + size);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -300,13 +290,10 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return StatusTrue;
+        return true;
 
       // compare the internal region.
-      if (this->region != element.region)
-        return StatusFalse;
-
-      return StatusTrue;
+      return (this->region == element.region);
     }
 
     ///
@@ -335,11 +322,11 @@ namespace elle
           std::cout << alignment << "[SecretKey] " << std::endl;
 
           // dump the region.
-          if (this->region.Dump(margin + 2) == StatusError)
+          if (this->region.Dump(margin + 2) == Status::Error)
             escape("unable to dump the secret key");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -349,26 +336,26 @@ namespace elle
     ///
     /// this method serializes a secret key object.
     ///
-    Status              SecretKey::Serialize(Archive&           archive) const
-    {
-      // serialize the internal key.
-      if (archive.Serialize(this->region) == StatusError)
-        escape("unable to serialize the internal key");
+    //Status              SecretKey::Serialize(Archive&           archive) const
+    //{
+    //  // serialize the internal key.
+    //  if (archive.Serialize(this->region) == Status::Error)
+    //    escape("unable to serialize the internal key");
 
-      return StatusOk;
-    }
+    //  return Status::Ok;
+    //}
 
-    ///
-    /// this method extract a secret key from the given archive.
-    ///
-    Status              SecretKey::Extract(Archive&             archive)
-    {
-      // extract the key.
-      if (archive.Extract(this->region) == StatusError)
-        escape("unable to extract the internal key");
+    /////
+    ///// this method extract a secret key from the given archive.
+    /////
+    //Status              SecretKey::Extract(Archive&             archive)
+    //{
+    //  // extract the key.
+    //  if (archive.Extract(this->region) == Status::Error)
+    //    escape("unable to extract the internal key");
 
-      return StatusOk;
-    }
+    //  return Status::Ok;
+    //}
 
   }
 }

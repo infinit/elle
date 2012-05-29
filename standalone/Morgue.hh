@@ -9,6 +9,8 @@
 #  include <reactor/signal.hh>
 #  include <reactor/thread.hh>
 # include <elle/idiom/Open.hh>
+#include <elle/types.hh>
+
 
 # include <elle/core/Void.hh>
 # include <elle/core/Natural.hh>
@@ -19,7 +21,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace concurrency;
 
   namespace standalone

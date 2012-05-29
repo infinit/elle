@@ -44,8 +44,8 @@ namespace elle
 //
 
 outward(elle::test::TagChallenge,
-        parameters(elle::core::String&));
+        parameters(elle::String&));
 inward(elle::test::TagResponse,
-       parameters(elle::core::String&));
+       parameters(elle::String&));
 
 #endif

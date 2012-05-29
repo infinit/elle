@@ -1,9 +1,9 @@
 #ifndef ELLE_SERIALIZE_BINARYARCHIVE_HH
 # define ELLE_SERIALIZE_BINARYARCHIVE_HH
 
-# include "BaseArchive.hh"
+# include <elle/serialize/fwd.hh>
 
-# include "BinaryArchive.fwd.hh"
+# include "BaseArchive.hh"
 
 namespace elle { namespace serialize {
 
@@ -18,17 +18,64 @@ namespace elle { namespace serialize {
     ///
     /// @see elle::serialize::BaseArchive for general informations about archives
     ///
-    template<ArchiveMode mode>
-      class BinaryArchive :
-        public BaseArchive<mode, BinaryArchive<mode>>
+    template<
+          ArchiveMode mode
+        , typename Archive
+        , typename CharType = DefaultCharType
+        , template<ArchiveMode, typename>
+            class StreamTypeSelect = DefaultStreamTypeSelect
+      >
+      class BaseBinaryArchive
+        : public BaseArchive<
+              mode
+            , Archive
+            , CharType
+            , StreamTypeSelect
+          >
       {
       private:
-        typedef BaseArchive<mode, BinaryArchive<mode>> BaseClass;
-        typedef typename BaseClass::StreamType StreamType;
+        typedef BaseArchive<
+            mode
+          , Archive
+          , CharType
+          , StreamTypeSelect
+        >                                         BaseClass;
+      protected:
+        typedef typename BaseClass::StreamType    StreamType;
 
       public:
-        BinaryArchive(StreamType& stream) : BaseClass(stream) {}
+        BaseBinaryArchive(StreamType& stream)
+          : BaseClass(stream)
+        {}
+
+        template<typename T> BaseBinaryArchive(StreamType& stream, T& value)
+          : BaseClass(stream, value)
+        {}
+      public:
+        using BaseClass::SaveBinary;
+        using BaseClass::LoadBinary;
       };
+
+    ///
+    /// Simple binary archive.
+    ///
+    template<ArchiveMode mode>
+      class BinaryArchive
+        : public BaseBinaryArchive<mode, BinaryArchive<mode>>
+      {
+      private:
+        typedef BaseBinaryArchive<mode, BinaryArchive<mode>>  BaseClass;
+        typedef typename BaseClass::StreamType                StreamType;
+      public:
+        BinaryArchive(StreamType& stream)
+          : BaseClass(stream)
+        {}
+
+        template<typename T> BinaryArchive(StreamType& stream, T& value)
+          : BaseClass(stream, value)
+        {}
+      };
+
 
 }} // !elle::serialize
 

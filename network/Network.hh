@@ -15,26 +15,24 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Natural.hh>
+#include <elle/types.hh>
 
-#include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
 #include <elle/radix/Trait.hh>
-
-#include <elle/package/Archive.hh>
 
 #include <elle/network/Tag.hh>
 #include <elle/network/Parcel.hh>
 #include <elle/network/Message.hh>
 #include <elle/network/Procedure.hh>
 
+#include <elle/utility/Buffer.hh>
+
 #include <elle/idiom/Open.hh>
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
-  using namespace package;
   using namespace utility;
 
   ///

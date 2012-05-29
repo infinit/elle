@@ -1,27 +1,12 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun may  2 12:21:39 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <elle/radix/Object.hh>
+#include <elle/standalone/Log.hh>
+#include <elle/standalone/Report.hh>
 
 namespace elle
 {
   namespace radix
   {
-
-//
-// ---------- methods ---------------------------------------------------------
-//
 
     ///
     /// this method returns the memory footprint of the actual object.
@@ -43,16 +28,12 @@ namespace elle
       escape("this method should never have been called");
     }
 
-//
-// ---------- operators -------------------------------------------------------
-//
-
     ///
     /// this operator compares two objects.
     ///
     Boolean             Object::operator==(const Object&) const
     {
-      flee("this method should never have been called");
+      throw("this method should never have been called");
     }
 
     ///
@@ -60,7 +41,7 @@ namespace elle
     ///
     Boolean             Object::operator<(const Object&) const
     {
-      flee("this method should never have been called");
+      throw("this method should never have been called");
     }
 
     ///
@@ -68,7 +49,7 @@ namespace elle
     ///
     Boolean             Object::operator>(const Object&) const
     {
-      flee("this method should never have been called");
+      throw("this method should never have been called");
     }
 
     ///
@@ -76,7 +57,7 @@ namespace elle
     ///
     Object              Object::operator+(const Object&)
     {
-      yield(*this, "this method should never have been called");
+      throw("this method should never have been called");
     }
 
     ///
@@ -87,7 +68,7 @@ namespace elle
     ///
     Object&             Object::operator=(const Object&)
     {
-      yield(*this, "this method should never have been called");
+      throw("this method should never have been called");
     }
 
     ///
@@ -97,7 +78,7 @@ namespace elle
     ///
     Boolean             Object::operator!=(const Object&) const
     {
-      flee("this method should never have been called");
+      throw("this method should never have been called");
     }
 
     ///
@@ -105,7 +86,7 @@ namespace elle
     ///
     Boolean             Object::operator<=(const Object&) const
     {
-      flee("this method should never have been called");
+      throw("this method should never have been called");
     }
 
     ///
@@ -113,7 +94,7 @@ namespace elle
     ///
     Boolean             Object::operator>=(const Object&) const
     {
-      flee("this method should never have been called");
+      throw("this method should never have been called");
     }
 
   }

@@ -1,36 +1,20 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu oct 20 17:52:03 2011]
-//
-
 #ifndef ELLE_CONTAINER_TIMELINE_TIMELINE_HH
-#define ELLE_CONTAINER_TIMELINE_TIMELINE_HH
+# define ELLE_CONTAINER_TIMELINE_TIMELINE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/radix/Entity.hh>
 
-#include <elle/core/Natural.hh>
+# include <elle/utility/Time.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Entity.hh>
+# include <elle/container/timeline/Bucket.hh>
 
-#include <elle/utility/Time.hh>
-
-#include <elle/container/timeline/Bucket.hh>
-
-#include <elle/idiom/Close.hh>
-# include <map>
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  include <map>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
   using namespace utility;
 

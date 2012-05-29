@@ -17,7 +17,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace standalone;
   using namespace radix;
   using namespace concurrency;

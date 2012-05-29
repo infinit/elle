@@ -1,29 +1,14 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [tue oct 30 12:15:12 2007]
-//
-
 #ifndef ELLE_CRYPTOGRAPHY_CRYPTOGRAPHYGRAPHY_HH
-#define ELLE_CRYPTOGRAPHY_CRYPTOGRAPHYGRAPHY_HH
+# define ELLE_CRYPTOGRAPHY_CRYPTOGRAPHYGRAPHY_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/radix/Status.hh>
+# include <elle/types.hh>
 
 namespace elle
 {
-  using namespace radix;
-
   ///
   /// this namespace contains everything necessary for performing
   /// cryptographic operations.
+  /// You don't say !
   ///
   namespace cryptography
   {
