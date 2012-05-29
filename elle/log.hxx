@@ -1,6 +1,7 @@
 #ifndef  ELLE_LOG_HXX
 # define ELLE_LOG_HXX
 
+# include <elle/format.hh>
 # include <elle/log.hh>
 
 namespace elle
@@ -36,16 +37,28 @@ namespace elle
 
     namespace detail
     {
+      template<typename... T>
+      TraceContext::TraceContext(TraceComponent const& component,
+                                 char const* file,
+                                 unsigned int line,
+                                 char const* function,
+                                 T const&... values)
+        : _component(component)
+      {
+        _indent();
+        send(file, line, function, values...);
+      }
+
 
       template<typename... T>
       bool TraceContext::send(char const* file,
                               unsigned int line,
                               char const* function,
                               T const&... values)
-        {
-          this->_send(elle::stringify(file, line, function, values...));
-          return false;
-        }
+      {
+        this->_send(file, line, function, elle::format(values...));
+        return false;
+      }
 
     }
 

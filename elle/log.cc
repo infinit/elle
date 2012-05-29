@@ -24,7 +24,7 @@ namespace elle
 
     namespace detail
     {
-      static ::reactor::LocalStorage<unsigned int> _indent{
+      static ::reactor::LocalStorage<unsigned int> _indentation{
           elle::concurrency::scheduler()
       };
 
@@ -96,7 +96,7 @@ namespace elle
           this->_patterns = new std::vector<std::string>();
 
           std::vector<std::string> res;
-          char const* components_str = getenv("ELLE_LOG_COMPONENTS");
+          static char const* components_str = getenv("ELLE_LOG_COMPONENTS");
           if (components_str == nullptr)
               return *this->_patterns;
 
@@ -132,15 +132,32 @@ namespace elle
       TraceContext::TraceContext(TraceComponent const& component)
         : _component(component)
       {
-        _indent.Get() += 1;
+        _indent();
       }
 
       TraceContext::~TraceContext()
       {
-        _indent.Get() -= 1;
+        _unindent();
       }
 
-      void TraceContext::_send(std::string const& msg)
+      void
+      TraceContext::_send(char const* file,
+                          unsigned int line,
+                          char const* function,
+                          const std::string& msg)
+      {
+        static bool const location = getenv("ELLE_LOG_LOCATIONS");
+        if (location)
+          {
+            static boost::format fmt("%s:%s: %s (%s)");
+            this->_send(str(fmt % file % line % msg % function));
+          }
+        else
+          this->_send(msg);
+      }
+
+      void
+      TraceContext::_send(std::string const& msg)
       {
         if (!Components::instance().enabled(this->_component.name))
           return;
@@ -159,8 +176,18 @@ namespace elle
         default_logger.trace(s, align, msg);
       }
 
-    }
+      void
+      TraceContext::_indent()
+      {
+        _indentation.Get() += 1;
+      }
 
+      void
+      TraceContext::_unindent()
+      {
+        _indentation.Get() -= 1;
+      }
+    }
   }
 }
 
