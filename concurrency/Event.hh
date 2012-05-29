@@ -11,7 +11,7 @@
 
 # include <elle/idiom/Close.hh>
 #  include <openssl/err.h>
-#  include <reactor/signal.hh>
+#  include <reactor/semaphore.hh>
 # include <elle/idiom/Open.hh>
 
 namespace elle
@@ -79,9 +79,13 @@ namespace elle
       Natural64 Identifier() const;
 
     public:
-      typedef reactor::VSignal<elle::network::Parcel*> SignalType;
+      typedef reactor::Semaphore SignalType;
+      bool waited;
+      void Parcel(elle::network::Parcel*);
+      elle::network::Parcel* Parcel();
       SignalType& Signal();
     private:
+      elle::network::Parcel* parcel;
       Natural64                                 _identifier;
       SignalType*  _signal;
     };

@@ -83,7 +83,7 @@ namespace elle
       // block the current fiber until the given event is received.
       ELLE_LOG_TRACE("wait on event %s", event.Identifier());
       scheduler().current()->wait(event.Signal());
-      parcel = event.Signal().Value();
+      parcel = event.Parcel();
 
       assert(parcel != nullptr && "The event should have filled the parcel");
 
@@ -138,6 +138,7 @@ namespace elle
       // generate an event to link the request with the response.
       if (event.Generate() == StatusError)
         escape("unable to generate the event");
+      event.Signal();
 
       // send the inputs.
       ELLE_LOG_TRACE("call tag %s on event %s and await tag %s",
