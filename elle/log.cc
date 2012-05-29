@@ -131,10 +131,14 @@ namespace elle
 
       TraceContext::TraceContext(TraceComponent const& component)
         : _component(component)
-      { _indent.Get() += 1; }
+      {
+        _indent.Get() += 1;
+      }
 
       TraceContext::~TraceContext()
-      { _indent.Get() -= 1; }
+      {
+        _indent.Get() -= 1;
+      }
 
       void TraceContext::_send(std::string const& msg)
       {
