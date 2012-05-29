@@ -36,15 +36,13 @@ elle::Status          Etoile::Initialize()
     if (path::Path::Initialize() == elle::StatusError)
       escape("unable to initialize the path");
 
-    if (depot::Depot::Initialize() == elle::StatusError)
-      escape("unable to initialize the depot");
-
     if (gear::Gear::Initialize() == elle::StatusError)
       escape("unable to initialize the gear");
 
     if (shrub::Shrub::Initialize() == elle::StatusError)
       escape("unable to initialize the shrub");
 
+    // XXX
     // if (portal::Portal::Initialize() == elle::StatusError)
     //   escape("unable to initialize the portal");
   }
@@ -90,6 +88,7 @@ elle::Status          Etoile::Clean()
   // clean the components.
   //
   {
+    // XXX
     // if (portal::Portal::Clean() == elle::StatusError)
     //   escape("unable to clean the portal");
 
@@ -98,9 +97,6 @@ elle::Status          Etoile::Clean()
 
     if (gear::Gear::Clean() == elle::StatusError)
       escape("unable to clean the gear");
-
-    if (depot::Depot::Clean() == elle::StatusError)
-      escape("unable to clean the depot");
 
     if (path::Path::Clean() == elle::StatusError)
       escape("unable to clean the path");

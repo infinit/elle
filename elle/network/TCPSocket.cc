@@ -77,6 +77,7 @@ namespace elle
     void
     TCPSocket::Write(const Packet&      packet)
     {
+      ELLE_LOG_TRACE("%s: writing %s data.", *this, packet.size);
       reactor::network::Buffer buffer
         (reinterpret_cast<const char*>(packet.contents), packet.size);
       this->_socket->write(buffer);
@@ -166,9 +167,16 @@ namespace elle
               this->ReadData();
               while (Parcel* parcel = this->Read())
                 {
+                  ELLE_LOG_TRACE("%s: trying to waking up threads "
+                                 "on event %s.",
+                                 *this, parcel->header->event.Identifier());
                   // Try waking up a slot.
                   if (parcel->header->event.Signal().Emit(parcel))
-                    continue;
+                    {
+                      ELLE_LOG_TRACE("%s: at least one thread has been awaken",
+                                     *this);
+                      continue;
+                    }
 
                   // Otherwise dispatch it.
                   Tag tag = parcel->header->tag;

@@ -186,6 +186,13 @@ namespace elle
     Event::SignalType&
     Event::Signal()
     {
+      // XXX
+      printf("SIGNALS\n");
+      for (auto i = _signals.begin(); i != _signals.end(); i++)
+        {
+          std::cout << std::dec << i->first << std::endl;
+        }
+
       assert(_signal);
       return *_signal;
     }

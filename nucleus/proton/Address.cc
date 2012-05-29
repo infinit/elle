@@ -49,6 +49,10 @@ namespace nucleus
     ///
     elle::Status        Address::Initialize()
     {
+      // disable the meta logging.
+      if (elle::Meta::Disable() == elle::StatusError)
+        escape("unable to disable the meta logging");
+
       // create the any address with default meaningless values.
       if (Address::Any.Create(
             Address::Any.family, Address::Any.component,
@@ -56,6 +60,10 @@ namespace nucleus
             static_cast<elle::Natural8>(Address::Any.component)) ==
           elle::StatusError)
         escape("unable to create the any address");
+
+    // enable the meta logging.
+    if (elle::Meta::Enable() == elle::StatusError)
+      escape("unable to enable the meta logging");
 
       return elle::StatusOk;
     }

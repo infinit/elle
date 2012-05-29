@@ -39,12 +39,6 @@ namespace etoile
     {
     public:
       //
-      // static methods
-      //
-      static elle::Status       Initialize();
-      static elle::Status       Clean();
-
-      //
       // methods
       //
       static elle::Status       Origin(nucleus::Address&);

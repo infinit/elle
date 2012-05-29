@@ -24,7 +24,6 @@ namespace etoile
     elle::Status        Access::Open(
                           gear::Object&                         context)
     {
-
       // check if the access has already been opened.
       if (context.access != NULL)
         return elle::StatusOk;
@@ -58,7 +57,6 @@ namespace etoile
                           const nucleus::Subject&               subject,
                           const nucleus::Permissions&           permissions)
     {
-
       // determine the rights over the object.
       if (Rights::Determine(context) == elle::StatusError)
         escape("unable to determine the rights");
@@ -185,7 +183,6 @@ namespace etoile
                           const nucleus::Subject&               subject,
                           nucleus::Record*&                     record)
     {
-
       // try to make the best of this call.
       if (agent::Agent::Subject == subject)
         {
@@ -250,7 +247,6 @@ namespace etoile
                           const nucleus::Size&                  size,
                           nucleus::Range<nucleus::Record>&      range)
     {
-
       // open the access.
       if (Access::Open(context) == elle::StatusError)
         escape("unable to open the access block");
@@ -299,7 +295,6 @@ namespace etoile
                           gear::Object&                         context,
                           const nucleus::Subject&               subject)
     {
-
       // determine the rights over the object.
       if (Rights::Determine(context) == elle::StatusError)
         escape("unable to determine the rights");
@@ -382,7 +377,6 @@ namespace etoile
     {
       nucleus::Token    token;
 
-
       // open the access.
       if (Access::Open(context) == elle::StatusError)
         escape("unable to open the access");
@@ -444,7 +438,6 @@ namespace etoile
     elle::Status        Access::Downgrade(
                           gear::Object&                         context)
     {
-
       // open the access.
       if (Access::Open(context) == elle::StatusError)
         escape("unable to open the access");
@@ -488,7 +481,6 @@ namespace etoile
     elle::Status        Access::Destroy(
                           gear::Object&                         context)
     {
-
       // if the block is present.
       if (context.object.meta.access != nucleus::Address::Null)
         {
@@ -513,7 +505,6 @@ namespace etoile
                           gear::Object&                         context)
     {
       nucleus::Size     size;
-
 
       //
       // first, check if the block has been modified i.e exists and is dirty.

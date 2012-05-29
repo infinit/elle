@@ -26,26 +26,6 @@ namespace etoile
 //
 
     ///
-    /// this method initializes the depot.
-    ///
-    elle::Status        Depot::Initialize()
-    {
-      // nothing to do.
-
-      return elle::StatusOk;
-    }
-
-    ///
-    /// this method cleans the depot.
-    ///
-    elle::Status        Depot::Clean()
-    {
-      // nothing to do.
-
-      return elle::StatusOk;
-    }
-
-    ///
     /// this method returns the address of the network's root block.
     ///
     elle::Status        Depot::Origin(nucleus::Address&         address)

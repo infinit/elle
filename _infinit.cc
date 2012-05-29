@@ -194,6 +194,9 @@ Main(elle::Natural32 argc, elle::Character* argv[])
     }
   catch (std::runtime_error& e)
     {
+      // XXX
+      show();
+
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
       elle::concurrency::scheduler().terminate();
       return elle::StatusError;

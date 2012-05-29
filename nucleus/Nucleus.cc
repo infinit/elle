@@ -77,9 +77,9 @@ namespace nucleus
   ///
   elle::Status          Nucleus::Clean()
   {
-    // initialize the proton.
-    if (proton::Proton::Initialize() == elle::StatusError)
-      escape("unable to initialize the proton");
+    // clean the proton.
+    if (proton::Proton::Clean() == elle::StatusError)
+      escape("unable to clean the proton");
 
     // clear the nucleus factory.
     if (Nucleus::Factory.Clear() == elle::StatusError)
