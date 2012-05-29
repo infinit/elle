@@ -7,11 +7,7 @@
 #include <map>
 #include <vector>
 
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/constants.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/trim_all.hpp>
-#include <boost/algorithm/string/erase.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include <elle/concurrency/Scheduler.hh>
 #include <elle/log.hh>
