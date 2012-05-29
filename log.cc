@@ -24,9 +24,13 @@ namespace elle
 
     namespace detail
     {
-      static ::reactor::LocalStorage<unsigned int> _indentation{
-          elle::concurrency::scheduler()
-      };
+      static unsigned int&
+      _indentation()
+      {
+        typedef ::reactor::LocalStorage<unsigned int> Storage;
+        static Storage indentation(elle::concurrency::scheduler());
+        return indentation.Get(0);
+      }
 
       struct Components
       {
@@ -161,7 +165,7 @@ namespace elle
       {
         if (!Components::instance().enabled(this->_component.name))
           return;
-        int indent = _indentation.Get();
+        int indent = _indentation();
         assert(indent >= 1);
         std::string align = std::string((indent - 1) * 2, ' ');
         unsigned int size = this->_component.name.size();
@@ -179,13 +183,13 @@ namespace elle
       void
       TraceContext::_indent()
       {
-        _indentation.Get() += 1;
+        _indentation() += 1;
       }
 
       void
       TraceContext::_unindent()
       {
-        _indentation.Get() -= 1;
+        _indentation() -= 1;
       }
     }
   }
