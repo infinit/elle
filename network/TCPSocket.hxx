@@ -81,9 +81,12 @@ namespace elle
       Parcel* parcel;
 
       // block the current fiber until the given event is received.
-      ELLE_LOG_TRACE("wait on event %s", event.Identifier());
+      ELLE_LOG_TRACE("%s: wait on event %s for tag %s",
+                     *this, event.Identifier(), outputs.tag);
       scheduler().current()->wait(event.Signal());
       parcel = event.Parcel();
+      ELLE_LOG_TRACE("%s: awaken on event %s with tag %s",
+                     *this, event.Identifier(), parcel->header->tag);
 
       assert(parcel != nullptr && "The event should have filled the parcel");
 
@@ -142,7 +145,7 @@ namespace elle
 
       // send the inputs.
       ELLE_LOG_TRACE("%s: call tag %s on event %s and await tag %s",
-                     this, inputs.tag, event.Identifier(), outputs.tag);
+                     *this, inputs.tag, event.Identifier(), outputs.tag);
       if (this->Send(inputs, event) == StatusError)
         escape("unable to send the inputs");
 
