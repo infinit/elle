@@ -6,6 +6,7 @@ namespace elle
   namespace network
   {
     class TCPSocket;
+    class Locus;
   }
 }
 
