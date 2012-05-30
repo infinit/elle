@@ -148,6 +148,7 @@ namespace reactor
         _status = status::running;
         try
         {
+          assert(_action);
           _action();
         }
         catch (const std::exception& e)
