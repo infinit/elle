@@ -8,6 +8,10 @@
 
 #include <Infinit.hh>
 
+#include <elle/log.hh>
+
+ELLE_LOG_TRACE_COMPONENT("Infinit.Hole.Slug.Machine");
+
 namespace hole
 {
   namespace implementations
@@ -62,9 +66,7 @@ namespace hole
       {
         elle::Locus     locus;
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Launch()\n");
+        ELLE_LOG_TRACE("Launch");
 
         //
         // register the messages.
@@ -194,9 +196,7 @@ namespace hole
         nucleus::Derivable<nucleus::Block>      derivable(address.component,
                                                           block);
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Put[Immutable]()\n");
+        ELLE_LOG_TRACE("Put[Immutable]");
 
         // depending on the machine's state.
         switch (this->state)
@@ -276,9 +276,7 @@ namespace hole
         nucleus::Derivable<nucleus::Block>      derivable(address.component,
                                                           block);
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Put[Mutable]()\n");
+        ELLE_LOG_TRACE("Put[Mutable]");
 
         // depending on the machine's state.
         switch (this->state)
@@ -400,9 +398,7 @@ namespace hole
       elle::Status      Machine::Get(const nucleus::Address&    address,
                                      nucleus::ImmutableBlock&   block)
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Get[Immutable]()\n");
+        ELLE_LOG_TRACE("Get[Immutable]");
 
         // depending on the machine's state.
         switch (this->state)
@@ -512,9 +508,7 @@ namespace hole
       {
         nucleus::Derivable<nucleus::Block>      derivable(block);
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Get[Mutable]()\n");
+        ELLE_LOG_TRACE("Get[Mutable]");
 
         // depending on the machine's state.
         switch (this->state)
@@ -934,9 +928,7 @@ namespace hole
       ///
       elle::Status      Machine::Kill(const nucleus::Address&   address)
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Kill()\n");
+        ELLE_LOG_TRACE("Kill");
 
         // depending on the machine's state.
         switch (this->state)
@@ -1036,9 +1028,7 @@ namespace hole
       ///
       elle::Status      Machine::Alone()
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Alone()\n");
+        ELLE_LOG_TRACE("Alone");
 
         // if the machine has been neither connected nor authenticated
         // to existing nodes...
@@ -1069,8 +1059,8 @@ namespace hole
           {
             reactor::network::TCPSocket* socket = _server->accept();
             auto connection = new elle::network::TCPSocket(socket);
-            if (Infinit::Configuration.hole.debug == true)
-              printf("[hole] implementations::slug::Machine::_accept()\n");
+
+            ELLE_LOG_TRACE("_accept");
 
             // depending on the machine's state.
             switch (this->state)
@@ -1129,9 +1119,7 @@ namespace hole
       {
         Host*           host;
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Authenticate()\n");
+        ELLE_LOG_TRACE("Authenticate");
 
         // if the host exists in the guestlist, handle its authentication.
         if (this->guestlist.Exist(
@@ -1201,9 +1189,7 @@ namespace hole
       ///
       elle::Status      Machine::Authenticated(const Cluster&   cluster)
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Authenticated()\n");
+        ELLE_LOG_TRACE("Authenticated");
 
         // set the machine as being authenticated and is therefore now
         // considered attached to the network.
@@ -1257,9 +1243,7 @@ namespace hole
       ///
       elle::Status      Machine::Sweep(Host*                    host)
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Sweep()\n");
+        ELLE_LOG_TRACE("Sweep");
 
         // depending on the host's state.
         switch (host->state)
@@ -1302,9 +1286,7 @@ namespace hole
       ///
       elle::Status      Machine::Synchronised()
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Push()\n");
+        ELLE_LOG_TRACE("Push");
 
         return elle::StatusOk;
       }
@@ -1320,9 +1302,7 @@ namespace hole
         Host*           host;
         nucleus::Block* object;
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Push()\n");
+        ELLE_LOG_TRACE("Push");
 
         // retrieve the host from the guestlist.
         if (this->guestlist.Retrieve(
@@ -1489,9 +1469,7 @@ namespace hole
         Host*           host;
         nucleus::Block* block;
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Pull()\n");
+        ELLE_LOG_TRACE("Pull");
 
         // retrieve the host from the guestlist.
         if (this->guestlist.Retrieve(
@@ -1636,9 +1614,7 @@ namespace hole
       {
         Host*           host;
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Wipe()\n");
+        ELLE_LOG_TRACE("Wipe");
 
         // retrieve the host from the guestlist.
         if (this->guestlist.Retrieve(
