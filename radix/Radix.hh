@@ -1,21 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun may  2 11:55:25 2010]
-//
-
 #ifndef ELLE_RADIX_RADIX_HH
-#define ELLE_RADIX_RADIX_HH
+# define ELLE_RADIX_RADIX_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/radix/Status.hh>
+# include <elle/types.hh>
 
 namespace elle
 {
@@ -57,7 +43,6 @@ namespace elle
 #include <elle/radix/Object.hh>
 #include <elle/radix/Parameters.hh>
 #include <elle/radix/Set.hh>
-#include <elle/radix/Status.hh>
 #include <elle/radix/Trace.hh>
 #include <elle/radix/Trait.hh>
 #include <elle/radix/Variables.hh>

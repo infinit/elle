@@ -5,7 +5,7 @@
 
 namespace elle { namespace format { namespace json {
 
-    struct Null : public Object
+    class Null : public Object
     {
     protected:
       void Save(elle::serialize::OutputJSONArchive& ar) const;

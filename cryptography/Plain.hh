@@ -1,21 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed feb 11 12:39:47 2009]
-//
-
 #ifndef ELLE_CRYPTOGRAPHY_PLAIN_HH
-#define ELLE_CRYPTOGRAPHY_PLAIN_HH
+# define ELLE_CRYPTOGRAPHY_PLAIN_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/standalone/Region.hh>
+# include <elle/standalone/Region.hh>
 
 namespace elle
 {
@@ -24,15 +10,11 @@ namespace elle
   namespace cryptography
   {
 
-//
-// ---------- types -----------------------------------------------------------
-//
-
     ///
     /// this class represents plain data that can be used for cryptographic
     /// purposes.
     ///
-    typedef Region      Plain;
+    typedef elle::standalone::Region      Plain;
 
   }
 }

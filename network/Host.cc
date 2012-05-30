@@ -16,6 +16,7 @@
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QNetworkInterface>
@@ -72,7 +73,7 @@ namespace elle
             continue;
 
           // create a host.
-          if (host.Create(qha.toString().toStdString()) == StatusError)
+          if (host.Create(qha.toString().toStdString()) == Status::Error)
             escape("unable to create the host from '%s'",
                    qha.toString().toStdString().c_str());
 
@@ -80,7 +81,7 @@ namespace elle
           container.push_back(host);
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -129,7 +130,7 @@ namespace elle
           }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -144,7 +145,7 @@ namespace elle
       if (this->location.setAddress(string.c_str()) == false)
         escape("unable to set the location");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -154,7 +155,7 @@ namespace elle
     {
       string = this->location.toString().toStdString();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -168,14 +169,14 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return StatusTrue;
+        return true;
 
       // compare the internal values.
       if ((this->type != element.type) ||
           (this->location != element.location))
-        return StatusFalse;
+        return false;
 
-      return StatusTrue;
+      return true;
     }
 
     ///
@@ -185,13 +186,13 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return StatusFalse;
+        return false;
 
       // compare the type
       if (this->type < element.type)
-        return StatusTrue;
+        return true;
       else if (this->type > element.type)
-        return StatusFalse;
+        return false;
       else
         {
           ::QString     first;
@@ -203,12 +204,12 @@ namespace elle
 
           // compare the string.
           if (first < second)
-            return StatusTrue;
+            return true;
           else if (first > second)
-            return StatusFalse;
+            return false;
         }
 
-      return StatusFalse;
+      return false;
     }
 
     ///
@@ -231,38 +232,38 @@ namespace elle
     ///
     /// this method serializes the host.
     ///
-    Status              Host::Serialize(Archive&                archive) const
-    {
-      String            host(this->location.toString().toStdString());
+    //Status              Host::Serialize(Archive&                archive) const
+    //{
+    //  String            host(this->location.toString().toStdString());
 
-      // serialize the host and port.
-      if (archive.Serialize(static_cast<Natural8>(this->type),
-                            host) == StatusError)
-        escape("unable to serialize the host");
+    //  // serialize the host and port.
+    //  if (archive.Serialize(static_cast<Natural8>(this->type),
+    //                        host) == Status::Error)
+    //    escape("unable to serialize the host");
 
-      return StatusOk;
-    }
+    //  return Status::Ok;
+    //}
 
-    ///
-    /// this method extracts a host.
-    ///
-    Status              Host::Extract(Archive&                  archive)
-    {
-      Natural8          type;
-      String            host;
+    /////
+    ///// this method extracts a host.
+    /////
+    //Status              Host::Extract(Archive&                  archive)
+    //{
+    //  Natural8          type;
+    //  String            host;
 
-      // extract the host.
-      if (archive.Extract(type, host) == StatusError)
-        escape("unable to extract the host");
+    //  // extract the host.
+    //  if (archive.Extract(type, host) == Status::Error)
+    //    escape("unable to extract the host");
 
-      // set the type.
-      this->type = static_cast<Host::Type>(type);
+    //  // set the type.
+    //  this->type = static_cast<Host::Type>(type);
 
-      // set the location.
-      this->location.setAddress(host.c_str());
+    //  // set the location.
+    //  this->location.setAddress(host.c_str());
 
-      return StatusOk;
-    }
+    //  return Status::Ok;
+    //}
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -283,7 +284,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift << "[Location] "
                 << this->location.toString().toStdString() << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

@@ -9,7 +9,7 @@
 //
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <elle/idiom/Close.hh>
 # include <windows.h>
@@ -51,7 +51,7 @@ namespace elle
       if (nchars != *output_size)
         escape("failed to convert string");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     Status Utf16To8(const wchar_t * input,
@@ -88,7 +88,7 @@ namespace elle
       if (nchars != *output_size)
         escape("failed to convert string");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

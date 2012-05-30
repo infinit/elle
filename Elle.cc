@@ -1,24 +1,38 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar  3 23:26:52 2010]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/system/Platform.hh>
+#include <elle/system/System.hh>
 
-#include <elle/core/Character.hh>
+#include <elle/standalone/Log.hh>
+#include <elle/standalone/Report.hh>
+#include <elle/standalone/Standalone.hh>
+
+#include <elle/cryptography/Cryptography.hh>
+
+#include <elle/concurrency/Concurrency.hh>
+
+#include <elle/network/Network.hh>
+
+#include <elle/radix/Radix.hh>
 
 #include <elle/Elle.hh>
+
+#include <elle/idiom/Open.hh>
+
 
 namespace elle
 {
 
+  using namespace system;
+  using namespace standalone;
+  using namespace radix;
+//  using namespace package;
+//  using namespace container;
+//  using namespace io;
+  using namespace cryptography;
+//  using namespace concurrency;
+  using namespace network;
+//  using namespace utility;
+//  using namespace thirdparty;
 //
 // ---------- definitions -----------------------------------------------------
 //
@@ -38,30 +52,30 @@ namespace elle
   Status                Elle::Initialize()
   {
     // initialize the system module.
-    if (System::Initialize() == StatusError)
+    if (System::Initialize() == Status::Error)
       escape("unable to initialize the system module");
 
     // initialize the radix module.
-    if (Radix::Initialize() == StatusError)
+    if (Radix::Initialize() == Status::Error)
       escape("unable to initialize the radix module");
 
     // initialize the standalone module.
-    if (Standalone::Initialize() == StatusError)
+    if (Standalone::Initialize() == Status::Error)
       escape("unable to initialize the standalone module");
 
     // initialize the crypto module.
-    if (Cryptography::Initialize() == StatusError)
+    if (Cryptography::Initialize() == Status::Error)
       escape("unable to initialize the cryptographic module");
 
     // initialize the concurrency module.
-    if (Concurrency::Initialize() == StatusError)
+    if (Concurrency::Initialize() == Status::Error)
       escape("unable to initialize the concurrency module");
 
     // initialize the network module.
-    if (Network::Initialize() == StatusError)
+    if (Network::Initialize() == Status::Error)
       escape("unable to initialize the network module");
 
-    return StatusOk;
+    return Status::Ok;
   }
 
   ///
@@ -70,30 +84,30 @@ namespace elle
   Status                Elle::Clean()
   {
     // clean the network module.
-    if (Network::Clean() == StatusError)
+    if (Network::Clean() == Status::Error)
       escape("unable to clean the network module");
 
     // clean the concurrency module.
-    if (Concurrency::Clean() == StatusError)
+    if (Concurrency::Clean() == Status::Error)
       escape("unable to clean the concurrency module");
 
     // clean the crypto module.
-    if (Cryptography::Clean() == StatusError)
+    if (Cryptography::Clean() == Status::Error)
       escape("unable to clean the cryptographic module");
 
     // clean the standalone module.
-    if (Standalone::Clean() == StatusError)
+    if (Standalone::Clean() == Status::Error)
       escape("unable to clean the standalone module");
 
     // clean the radix module.
-    if (Radix::Clean() == StatusError)
+    if (Radix::Clean() == Status::Error)
       escape("unable to clean the radix module");
 
     // clean the system module.
-    if (System::Clean() == StatusError)
+    if (System::Clean() == Status::Error)
       escape("unable to clean the system module");
 
-    return StatusOk;
+    return Status::Ok;
   }
 
 }

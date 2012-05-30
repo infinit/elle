@@ -1,28 +1,13 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [fri jun  3 22:23:13 2011]
-//
-
 #ifndef ELLE_NETWORK_BUNDLE_HH
-#define ELLE_NETWORK_BUNDLE_HH
+# define ELLE_NETWORK_BUNDLE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/radix/Entity.hh>
+# include <elle/radix/Arguments.hh>
+# include <elle/radix/Variables.hh>
+# include <elle/radix/Parameters.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Entity.hh>
-#include <elle/radix/Arguments.hh>
-#include <elle/radix/Variables.hh>
-#include <elle/radix/Parameters.hh>
-
-#include <elle/network/Tag.hh>
-#include <elle/network/Message.hh>
+# include <elle/network/Tag.hh>
+# include <elle/network/Message.hh>
 
 namespace elle
 {
@@ -30,10 +15,6 @@ namespace elle
 
   namespace network
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a set of arguments associated with a network
@@ -58,9 +39,8 @@ namespace elle
       ///
       template <const Tag G,
                 typename... T>
-      class Inputs< G, Parameters<T...> >:
-        public Entity,
-        public virtual Archivable
+      class Inputs< G, Parameters<T...> >
+        : public Entity
       {
       public:
         //
@@ -81,8 +61,8 @@ namespace elle
         //
 
         // archivable
-        Status          Serialize(Archive&) const;
-        Status          Extract(Archive&);
+        //Status          Serialize(Archive&) const;
+        //Status          Extract(Archive&);
 
         // dumpable
         Status          Dump(const Natural32 = 0) const;
@@ -108,9 +88,8 @@ namespace elle
       ///
       template <const Tag G,
                 typename... T>
-      class Outputs< G, Parameters<T...> >:
-        public Entity,
-        public virtual Archivable
+      class Outputs< G, Parameters<T...> >
+        : public Entity
       {
       public:
         //
@@ -131,8 +110,8 @@ namespace elle
         //
 
         // archivable
-        Status          Serialize(Archive&) const;
-        Status          Extract(Archive&);
+        //Status          Serialize(Archive&) const;
+        //Status          Extract(Archive&);
 
         // dumpable
         Status          Dump(const Natural32 = 0) const;

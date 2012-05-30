@@ -1,47 +1,22 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sat oct 27 18:00:55 2007]
-//
-
 #ifndef ELLE_CRYPTOGRAPHY_KEYPAIR_HH
-#define ELLE_CRYPTOGRAPHY_KEYPAIR_HH
+# define ELLE_CRYPTOGRAPHY_KEYPAIR_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/core/Natural.hh>
-#include <elle/core/Boolean.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Object.hh>
+# include <elle/io/Fileable.hh>
 
-#include <elle/package/Archive.hh>
+# include <elle/cryptography/PublicKey.hh>
+# include <elle/cryptography/PrivateKey.hh>
+# include <elle/cryptography/Seed.hh>
 
-#include <elle/io/Fileable.hh>
-#include <elle/io/Format.hh>
-
-#include <elle/cryptography/PublicKey.hh>
-#include <elle/cryptography/PrivateKey.hh>
-#include <elle/cryptography/Seed.hh>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
-  using namespace core;
-  using namespace package;
-  using namespace io;
-
   namespace cryptography
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a cryptographic key pair _i.e_ a pair of public
@@ -52,7 +27,7 @@ namespace elle
     ///
     class KeyPair:
       public Object,
-      public virtual Fileable<FormatCustom>
+      public Fileable<KeyPair>
     {
     public:
       //
@@ -96,14 +71,14 @@ namespace elle
 
       // object
       declare(KeyPair);
-      Boolean           operator==(const KeyPair&) const;
+      Boolean           operator ==(const KeyPair&) const;
 
       // dumpable
       Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status            Serialize(Archive&) const;
-      Status            Extract(Archive&);
+      //Status            Serialize(Archive&) const;
+      //Status            Extract(Archive&);
 
       // fileable
       Status            Load(const Path&,
@@ -127,5 +102,7 @@ namespace elle
 
   }
 }
+
+# include <elle/idiom/Close.hh>
 
 #endif

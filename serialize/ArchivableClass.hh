@@ -4,9 +4,9 @@
 namespace elle { namespace serialize {
 
     ///
-    /// This structure is used to determine the version of a class serialization.
-    /// The version defaults to 0, but you may want to specialize this class
-    /// to set a superior version number.
+    /// This structure is used to determine the version of a class
+    /// serialization.  The version defaults to 0, but you may want to
+    /// specialize this class to set a superior version number.
     ///
     template<typename T> struct ArchivableClass
       {

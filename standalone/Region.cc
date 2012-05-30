@@ -20,7 +20,7 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace standalone;
 
   namespace standalone
@@ -97,7 +97,7 @@ namespace elle
           {
             this->options = Region::OptionNone;
 
-            if (this->Duplicate(region.contents, region.size) == StatusError)
+            if (this->Duplicate(region.contents, region.size) == Status::Error)
               fail("unable to assign the element's data");
           }
         }
@@ -142,7 +142,7 @@ namespace elle
       this->contents = const_cast<Byte*>(contents);
       this->size = size;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -163,7 +163,7 @@ namespace elle
       this->size = size;
       this->capacity = size;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -179,17 +179,18 @@ namespace elle
       // set the type.
       this->type = Region::TypeBuffer;
 
+      // XXX leak when realloc fails
       // allocate memory.
       if ((this->contents =
            static_cast<Byte*>(::realloc(this->contents, capacity))) == NULL)
-        escape(::strerror(errno));
+        escape("%s", ::strerror(errno));
 
       // update the capacity. note that the size should be updated
       // manually when the direct copy is made.
       this->size = 0;
       this->capacity = capacity;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -205,10 +206,11 @@ namespace elle
       // set the type.
       this->type = Region::TypeBuffer;
 
+      // XXX leak when realloc fails
       // allocate the required memory.
       if ((this->contents =
            static_cast<Byte*>(::realloc(this->contents, size))) == NULL)
-        escape(::strerror(errno));
+        escape("%s", ::strerror(errno));
 
       // copy the data.
       ::memcpy(this->contents, contents, size);
@@ -217,7 +219,7 @@ namespace elle
       this->size = size;
       this->capacity = size;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -240,7 +242,7 @@ namespace elle
       // if the region is a virgin.
       if (this->type == Region::TypeUnknown)
         {
-          if (this->Prepare(size) == StatusError)
+          if (this->Prepare(size) == Status::Error)
             escape("unable to prepare the region for the first time");
 
 #ifdef REGION_CLEAR
@@ -252,15 +254,16 @@ namespace elle
         {
           // if there is enough space, just leave.
           if (size <= this->capacity)
-            return StatusOk;
+            return Status::Ok;
 
           // otherwise, enlarge the buffer's capacity.
           this->capacity = size;
 
+          // XXX this->contents set to nullptr, but old pointer not freed.
           if ((this->contents =
                static_cast<Byte*>(::realloc(this->contents,
                                             this->capacity))) == NULL)
-            escape(::strerror(errno));
+            escape("%s", ::strerror(errno));
 
 #ifdef REGION_CLEAR
           // initialize the memory's content.
@@ -270,7 +273,7 @@ namespace elle
 #endif
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -284,14 +287,14 @@ namespace elle
         escape("unable to prepare an already in use chunk region");
 
       // make sure the buffer is large enough.
-      if (this->Adjust(this->size + size) == StatusError)
+      if (this->Adjust(this->size + size) == Status::Error)
         escape("unable to reserve enough space for the new piece");
 
       // copy the region into the buffer.
-      if (this->Write(this->size, contents, size) == StatusError)
+      if (this->Write(this->size, contents, size) == Status::Error)
         escape("unable to append the data");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -309,7 +312,7 @@ namespace elle
       // copy the data.
       ::memcpy(contents, this->contents + offset, size);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -331,7 +334,7 @@ namespace elle
       if ((offset + size) > this->size)
         this->size = offset + size;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -347,7 +350,7 @@ namespace elle
       // activate the option.
       this->options = Region::OptionDetach;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -409,7 +412,7 @@ namespace elle
           std::cout << std::endl;
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -424,7 +427,7 @@ namespace elle
       // return the size.
       size = sizeof (Region);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -435,7 +438,7 @@ namespace elle
       // allocate the object.
       object = new Region(*this);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -445,17 +448,17 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return StatusTrue;
+        return true;
 
       // check the size.
       if (this->size != element.size)
-        return StatusFalse;
+        return false;
 
       // check the content.
       if (::memcmp(this->contents, element.contents, element.size) == 0)
-        return StatusTrue;
+        return true;
 
-      return StatusFalse;
+      return false;
     }
 
     ///
@@ -465,17 +468,17 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return StatusTrue;
+        return true;
 
       // check the size.
       if (this->size != element.size)
-        return StatusFalse;
+        return false;
 
       // check the content.
       if (::memcmp(this->contents, element.contents, element.size) < 0)
-        return StatusTrue;
+        return true;
 
-      return StatusFalse;
+      return false;
     }
 
     ///
@@ -496,7 +499,7 @@ namespace elle
         return (*this);
 
       // recycle the region.
-      if (this->Recycle(&element) == StatusError)
+      if (this->Recycle(&element) == Status::Error)
         yield(*this, "unable to recycle the region");
 
       return (*this);

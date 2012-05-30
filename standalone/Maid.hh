@@ -15,8 +15,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Natural.hh>
-#include <elle/core/Void.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
 
 #include <elle/idiom/Close.hh>
 # include <cstdarg>
@@ -27,7 +27,7 @@
 
 namespace elle
 {
-  using namespace core;
+
 
   namespace standalone
   {
@@ -138,7 +138,7 @@ namespace elle
     /// the system has been designed with intrusion in mind
     /// such that the developer only has to specify the
     /// variables to track in the  macro-function. then,
-    /// whenever the function leaves the scope through a return StatusOk,
+    /// whenever the function leaves the scope through a return Status::Ok,
     /// escape() etc. the pointers are released if necessary.
     ///
     /// note that since pointers are considered as requiring
@@ -167,7 +167,7 @@ namespace elle
     ///
     ///   [...]
     ///
-    ///   return StatusOk;
+    ///   return Status::Ok;
     /// }
     ///
     /// noteworthy is that non-pointer variables can also
@@ -197,7 +197,7 @@ namespace elle
     ///
     ///   untrack(context);
     ///
-    ///   return StatusOk;
+    ///   return Status::Ok;
     /// }
     ///
     class Maid

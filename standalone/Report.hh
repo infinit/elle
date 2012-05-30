@@ -1,17 +1,10 @@
 #ifndef ELLE_STANDALONE_REPORT_HH
 # define ELLE_STANDALONE_REPORT_HH
 
-# include <elle/core/String.hh>
-# include <elle/core/Void.hh>
-
-# include <elle/radix/Status.hh>
-# include <elle/radix/Meta.hh>
-
-# include <elle/package/Archivable.hh>
-
 # include <elle/io/Dumpable.hh>
-
 # include <elle/concurrency/Phase.hh>
+# include <elle/radix/Meta.hh>
+# include <elle/types.hh>
 
 # include <elle/idiom/Close.hh>
 #  include <sstream>
@@ -29,19 +22,6 @@
 namespace elle
 {
 
-  namespace package
-  {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    ///
-    /// the Archive must be forward declared to prevent conflicts.
-    ///
-    class Archive;
-  }
-
   namespace concurrency
   {
 
@@ -55,9 +35,8 @@ namespace elle
     class Fiber;
   }
 
-  using namespace core;
+
   using namespace radix;
-  using namespace package;
   using namespace io;
   using namespace concurrency;
 
@@ -96,7 +75,7 @@ namespace elle
     ///
     class Report:
       public Meta,
-      public virtual Dumpable, public virtual Archivable
+      public Dumpable
     {
     public:
       //
@@ -163,9 +142,9 @@ namespace elle
       // dumpable
       Status            Dump(const Natural32 = 0) const;
 
-      // archivable
-      Status            Serialize(Archive&) const;
-      Status            Extract(Archive&);
+      //// archivable
+      //Status            Serialize(Archive&) const;
+      //Status            Extract(Archive&);
 
       // object-like
       template <typename T>

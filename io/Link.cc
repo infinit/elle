@@ -55,29 +55,29 @@ namespace elle
                                      const Path&                target)
     {
       // does the link exist.
-      if (Link::Exist(link) == StatusTrue)
+      if (Link::Exist(link) == Status::True)
         escape("the link seems to already exist");
 
       // does the target exist.
-      if ((File::Exist(target) == StatusFalse) &&
-          (Directory::Exist(target) == StatusFalse))
+      if ((File::Exist(target) == Status::False) &&
+          (Directory::Exist(target) == Status::False))
         escape("the target does not seem to exist");
 
       // create the link.
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
-      if (::symlink(target.string.c_str(), link.string.c_str()))
-        escape("symlink failed: %s -> %s: %s", link.string.c_str(),
-               target.string.c_str(), ::strerror(errno));
+      if (::symlink(target.str().c_str(), link.str().c_str()))
+        escape("symlink failed: %s -> %s: %s", link.str().c_str(),
+               target.str().c_str(), ::strerror(errno));
 #elif defined(INFINIT_WINDOWS)
-      if (!QFile::link(QString::fromStdString(link.string),
-                       QString::fromStdString(target.string)))
-        escape("symlink failed: %s -> %s", link.string.c_str(),
-               target.string.c_str());
+      if (!QFile::link(QString::fromStdString(link.str()),
+                       QString::fromStdString(target.str())))
+        escape("symlink failed: %s -> %s", link.str().c_str(),
+               target.str().c_str());
 #else
 # error "unsupported platform"
 #endif
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -86,13 +86,13 @@ namespace elle
     Status              Link::Erase(const Path&                 path)
     {
       // does the link exist.
-      if (Link::Exist(path) == StatusFalse)
+      if (Link::Exist(path) == Status::False)
         escape("the link does not seem to exist");
 
       // unlink the link.
-      ::unlink(path.string.c_str());
+      ::unlink(path.str().c_str());
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -104,21 +104,21 @@ namespace elle
 
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // does the path points to something.
-      if (::lstat(path.string.c_str(), &stat) != 0)
-        return StatusFalse;
+      if (::lstat(path.str().c_str(), &stat) != 0)
+        return Status::False;
 
       // does the path points to a regular file.
       if (!S_ISLNK(stat.st_mode))
-        return StatusFalse;
+        return Status::False;
 #elif defined(INFINIT_WINDOWS)
       // does the path points to something.
-      if (::stat(path.string.c_str(), &stat) != 0)
-        return StatusFalse;
+      if (::stat(path.str().c_str(), &stat) != 0)
+        return Status::False;
 #else
 # error "unsupported platform"
 #endif
 
-      return StatusTrue;
+      return Status::True;
     }
 
     ///
@@ -127,8 +127,8 @@ namespace elle
     ///
     Status              Link::Dig(const Path&                   path)
     {
-      String            target(path.string);
-      char *            tmp_str = ::strdup(path.string.c_str());
+      String            target(path.str());
+      char *            tmp_str = ::strdup(path.str().c_str());
       String            directory(::dirname(tmp_str));
       std::stringstream stream(directory);
       String            item;
@@ -141,25 +141,25 @@ namespace elle
       while (std::getline(stream, item, System::Path::Separator))
         {
           // update the intermediate chemin.
-          if (chemin.string.empty() && item.empty())
-            chemin.string = System::Path::Separator;
+          if (chemin.str().empty() && item.empty())
+            chemin.str() = System::Path::Separator;
           else
             {
-              chemin.string.append(item);
-              chemin.string.append(1, System::Path::Separator);
+              chemin.str().append(item);
+              chemin.str().append(1, System::Path::Separator);
             }
 
           // retrieve information on the path. should this operation fail
           // would mean that the target directory does not exist.
-          if (Directory::Exist(chemin) == StatusFalse)
+          if (Directory::Exist(chemin) == Status::False)
             {
               // create the intermediate directory.
-              if (Directory::Create(chemin) == StatusError)
+              if (Directory::Create(chemin) == Status::Error)
                 escape("unable to create the intermediate directory");
             }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

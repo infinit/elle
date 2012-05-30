@@ -38,7 +38,7 @@ namespace elle
       Archive           a;
 
       // init the library.
-      if (Elle::Initialize() == StatusError)
+      if (Elle::Initialize() == Status::Error)
         escape("unable to initialize the Elle library");
 
       // compute the archive's size.
@@ -46,13 +46,13 @@ namespace elle
                               Test::MaximumPackSize);
 
       // prepare the archive.
-      if (archive.Create() == StatusError)
+      if (archive.Create() == Status::Error)
         escape("unable to prepare the serialization archive");
 
       // generate the archive's contents.
       if (Pack::Create(archive,
                        size,
-                       true) == StatusError)
+                       true) == Status::Error)
         escape("unable to create a pack");
 
       // test the assignment.
@@ -63,18 +63,18 @@ namespace elle
         escape("the two archives should be detected as identical");
 
       // prepare the archive to be extracted.
-      if (a.Wrap(Region(ar.contents, ar.size)) == StatusError)
+      if (a.Wrap(Region(ar.contents, ar.size)) == Status::Error)
         escape("unable to prepare the extraction archive");
 
       // verify the archive.
-      if (Pack::Verify(a) == StatusError)
+      if (Pack::Verify(a) == Status::Error)
         escape("an error has been detected while verifying the archive");
 
       // clean the elle library.
-      if (Elle::Clean() == StatusError)
+      if (Elle::Clean() == Status::Error)
         escape("unable to clean the Elle library");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }
@@ -86,7 +86,7 @@ namespace elle
 
 int                     main()
 {
-  if (elle::test::Main() == elle::radix::StatusError)
+  if (elle::test::Main() == elle::Status::Error)
     {
       show();
 

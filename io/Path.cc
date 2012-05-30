@@ -1,18 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       infinit
-//
-// license       elle
-//
-// author        julien quintard   [mon apr 25 11:12:59 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
+#include <elle/standalone/Log.hh>
 #include <elle/io/Path.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -29,9 +19,9 @@ namespace elle
     Status              Path::Create(const String&              string)
     {
       // assign the string.
-      this->string = string;
+      this->_string = string;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -40,9 +30,9 @@ namespace elle
     Status              Path::Create(const Pattern&             pattern)
     {
       // assign the pattern.
-      this->string = pattern.string;
+      this->_string = pattern.string;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -54,13 +44,13 @@ namespace elle
       String::size_type position;
 
       // as long as the name is located within the string.
-      while ((position = this->string.find(name)) != String::npos)
+      while ((position = this->_string.find(name)) != String::npos)
         {
           // replace the name with the value.
-          this->string.replace(position, name.length(), value);
+          this->_string.replace(position, name.length(), value);
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -74,13 +64,13 @@ namespace elle
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return StatusTrue;
+        return true;
 
       // compare the internal.
-      if (this->string != element.string)
-        return StatusFalse;
+      if (this->_string != element.str())
+        return false;
 
-      return StatusTrue;
+      return true;
     }
 
     ///
@@ -100,10 +90,10 @@ namespace elle
       String            alignment(margin, ' ');
 
       std::cout << alignment << "[Path] "
-                << this->string
+                << this->_string
                 << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

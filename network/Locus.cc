@@ -14,10 +14,11 @@
 
 #include <elle/network/Locus.hh>
 
-#include <elle/core/String.hh>
+#include <elle/types.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 
 namespace elle
 {
@@ -63,7 +64,7 @@ namespace elle
                string.c_str());
 
       // create the host.
-      if (this->host.Create(string.substr(0, separator)) == StatusError)
+      if (this->host.Create(string.substr(0, separator)) == Status::Error)
         escape("unable to create the host");
 
       // create the port.
@@ -71,7 +72,7 @@ namespace elle
         static_cast<Port>(::strtoul(string.substr(separator + 1).c_str(),
                                     NULL, 0));
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -83,7 +84,7 @@ namespace elle
       this->host = host;
       this->port = port;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -97,14 +98,14 @@ namespace elle
     {
       // check the locus as this may actually be the same object.
       if (this == &element)
-        return StatusTrue;
+        return true;
 
       // compare the internal values.
       if ((this->host != element.host) ||
           (this->port != element.port))
-        return StatusFalse;
+        return false;
 
-      return StatusTrue;
+      return true;
     }
 
     ///
@@ -114,21 +115,21 @@ namespace elle
     {
       // check the locus as this may actually be the same object.
       if (this == &element)
-        return StatusFalse;
+        return false;
 
       // compare the host.
       if (this->host < element.host)
-        return StatusTrue;
+        return true;
       else if (this->host > element.host)
-        return StatusFalse;
+        return false;
 
       // compare the port.
       if (this->port < element.port)
-        return StatusTrue;
+        return true;
       else if (this->port > element.port)
-        return StatusFalse;
+        return false;
 
-      return StatusFalse;
+      return false;
     }
 
     ///
@@ -151,28 +152,28 @@ namespace elle
     ///
     /// this method serializes the locus.
     ///
-    Status              Locus::Serialize(Archive&               archive) const
-    {
-      // serialize the host and port.
-      if (archive.Serialize(this->host,
-                            this->port) == StatusError)
-        escape("unable to serialize the locus attributes");
+    //Status              Locus::Serialize(Archive&               archive) const
+    //{
+    //  // serialize the host and port.
+    //  if (archive.Serialize(this->host,
+    //                        this->port) == Status::Error)
+    //    escape("unable to serialize the locus attributes");
 
-      return StatusOk;
-    }
+    //  return Status::Ok;
+    //}
 
-    ///
-    /// this method extracts an locus.
-    ///
-    Status              Locus::Extract(Archive&                 archive)
-    {
-      // extract the locus.
-      if (archive.Extract(this->host,
-                          this->port) == StatusError)
-        escape("unable to extract the locus attributes");
+    /////
+    ///// this method extracts an locus.
+    /////
+    //Status              Locus::Extract(Archive&                 archive)
+    //{
+    //  // extract the locus.
+    //  if (archive.Extract(this->host,
+    //                      this->port) == Status::Error)
+    //    escape("unable to extract the locus attributes");
 
-      return StatusOk;
-    }
+    //  return Status::Ok;
+    //}
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -187,13 +188,13 @@ namespace elle
 
       std::cout << alignment << "[Locus]" << std::endl;
 
-      if (this->host.Dump(margin + 2) == StatusError)
+      if (this->host.Dump(margin + 2) == Status::Error)
         escape("unable to dump the host");
 
       std::cout << alignment << Dumpable::Shift << "[Port] "
                 << std::dec << this->port << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

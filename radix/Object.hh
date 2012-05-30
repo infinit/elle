@@ -15,26 +15,14 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Boolean.hh>
-#include <elle/core/Natural.hh>
+#include <elle/types.hh>
 
 #include <elle/radix/Meta.hh>
-#include <elle/radix/Status.hh>
-
-#include <elle/package/Archivable.hh>
-
-#include <elle/io/Dumpable.hh>
-#include <elle/io/Format.hh>
-#include <elle/io/Uniquable.hh>
 
 #include <elle/concurrency/Resource.hh>
 
 namespace elle
 {
-  using namespace core;
-  using namespace package;
-  using namespace io;
-  using namespace concurrency;
 
   namespace radix
   {
@@ -55,10 +43,7 @@ namespace elle
     ///
     class Object:
       public Meta,
-      public Resource,
-      public virtual Dumpable,
-      public virtual Archivable,
-      public virtual Uniquable<FormatBase64>
+      public elle::concurrency::Resource
     {
     public:
       //

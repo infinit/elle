@@ -1,3 +1,7 @@
+
+#include <elle/network/HeaderSerializer.hxx>
+#include <elle/utility/BufferSerializer.hxx>
+
 #include <string>
 
 #include <reactor/network/buffer.hh>
@@ -123,40 +127,25 @@ namespace elle
             }
           ELLE_LOG_TRACE("%s: %s bytes available.", *this, _buffer_size);
 
-          Packet        packet;
-          Region        frame;
+          elle::utility::WeakBuffer packet(this->_buffer, this->_buffer_size);
+          auto reader = packet.Reader();
 
-          // Create the frame based on the previously extracted raw.
-          if (frame.Wrap(this->_buffer, this->_buffer_size) == StatusError)
-            throw std::runtime_error("unable to wrap a frame in the raw");
+          // allocate the parcel.
+          auto parcel = std::unique_ptr<Parcel>(new Parcel);
 
-          // Prepare the packet based on the frame.
-          if (packet.Wrap(frame) == StatusError)
-            throw std::runtime_error("unable to prepare the packet");
-
-          // Allocate the parcel.
-          Parcel* parcel = new Parcel;
-
-          // Extract the header.
-          if (parcel->header->Extract(packet) == StatusError)
-            {
-              purge();
-              ELLE_LOG_TRACE("%s: not enough data for header, bail out.", *this);
-              return 0; // No header yet
-            }
+          // extract the header.
+          reader >> *(parcel->header);
 
           // XXX[Check if the size is plausible]
 
           // Check if there is enough data available.
-          if ((packet.size - packet.offset) < parcel->header->size)
+          if (reader.Stream().BytesLeft() < parcel->header->size)
             {
-              ELLE_LOG_TRACE("%s: not enough data for body, bail out.", *this);
+              elle::log::warn(*this, "XXX: Ignore header ??!!");
               return 0;
             }
 
-          // Extract the data.
-          if (packet.Extract(*parcel->data) == StatusError)
-            throw std::runtime_error("unable to extract the data");
+          reader >> *(parcel->data);
 
           ::memmove(_buffer, _buffer + packet.size, _buffer_size - packet.size);
           _buffer_size -= packet.size;
@@ -211,7 +200,7 @@ namespace elle
                               ELLE_LOG_TRACE("%s: RPC is an error.", *this);
                               Report  report;
                               // extract the error message.
-                              if (report.Extract(*parcel->data) == StatusError)
+                              if (report.Extract(*parcel->data) == Status::Error)
                                 // FIXME
                                 //escape("unable to extract the error message");
                                 continue;
@@ -239,16 +228,16 @@ namespace elle
                       auto socket =
                         reinterpret_cast<reactor::network::TCPSocket*>(_socket);
                       if (h.Create(socket->Peer().address().to_string()) ==
-                          StatusError)
+                          Status::Error)
                         continue;
                       if (l.Create(
                             h,
                             static_cast<Natural16>(socket->Peer().port())) ==
-                          StatusError)
+                          Status::Error)
                         continue;
                       assert(it->second);
                       ELLE_LOG_TRACE("%s: call procedure.", *this);
-                      if (it->second(this, l, *parcel) == StatusError)
+                      if (it->second(this, l, *parcel) == Status::Error)
                         // FIXME
                         // escape("an error occured while processing the event");
                         continue;

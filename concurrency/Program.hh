@@ -1,15 +1,18 @@
 #ifndef ELLE_CONCURRENCY_PROGRAM_HH
 # define ELLE_CONCURRENCY_PROGRAM_HH
 
+
+#include <elle/idiom/Close.hh>
+
 # include <list>
 # include <signal.h>
 
 # include <elle/concurrency/Callback.hh>
 
 # include <elle/idiom/Close.hh>
+#  include <elle/types.hh>
 #  include <elle/radix/Entity.hh>
 #  include <elle/radix/Parameters.hh>
-#  include <elle/radix/Status.hh>
 # include <elle/idiom/Open.hh>
 
 namespace reactor

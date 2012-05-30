@@ -29,10 +29,10 @@ namespace elle
     Status              Concurrency::Initialize()
     {
       // initialize the program.
-      if (Program::Initialize() == StatusError)
+      if (Program::Initialize() == Status::Error)
         escape("unable to initialize the program");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -41,10 +41,10 @@ namespace elle
     Status              Concurrency::Clean()
     {
       // clean the program.
-      if (Program::Clean() == StatusError)
+      if (Program::Clean() == Status::Error)
         escape("unable to clean the program");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

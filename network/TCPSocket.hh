@@ -1,23 +1,22 @@
 #ifndef ELLE_NETWORK_TCPSOCKET_HH
 # define ELLE_NETWORK_TCPSOCKET_HH
 
+# include <elle/types.hh>
+
 # include <elle/concurrency/Event.hh>
 # include <elle/concurrency/Signal.hh>
-# include <elle/core/Natural.hh>
-# include <elle/core/String.hh>
 # include <elle/fwd.hh>
 # include <elle/network/Packet.hh>
 # include <elle/network/Parcel.hh>
 # include <elle/network/Port.hh>
 # include <elle/network/Session.hh>
 # include <elle/network/fwd.hh>
-# include <elle/radix/Status.hh>
 # include <elle/standalone/Region.hh>
 # include <reactor/network/tcp-socket.hh>
 
 namespace elle
 {
-  using namespace core;
+
   using namespace standalone;
   using namespace radix;
   using namespace concurrency;
