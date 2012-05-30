@@ -81,10 +81,11 @@ namespace elle
     void
     TCPSocket::Write(const Packet&      packet)
     {
-      ELLE_LOG_TRACE("%s: write packet of %s bytes.", *this, packet.size)
+      ELLE_LOG_TRACE("%s: write packet of %s bytes.", *this, packet.Size())
         {
-          reactor::network::Buffer buffer
-            (reinterpret_cast<const char*>(packet.contents), packet.size);
+          reactor::network::Buffer buffer(
+              packet.Contents(), packet.Size()
+          );
           this->_socket->write(buffer);
         }
     }
@@ -141,17 +142,18 @@ namespace elle
           // Check if there is enough data available.
           if (reader.Stream().BytesLeft() < parcel->header->size)
             {
-              elle::log::warn(*this, "XXX: Ignore header ??!!");
+              elle::log::warn(*this, "XXX: Ignore header ?!");
               return 0;
             }
 
           reader >> *(parcel->data);
 
-          ::memmove(_buffer, _buffer + packet.size, _buffer_size - packet.size);
-          _buffer_size -= packet.size;
+          // XXX overlap correctly handled on every libc ?
+          ::memmove(_buffer, _buffer + reader.Stream().Offset(), reader.Stream().BytesLeft());
+          _buffer_size = reader.Stream().BytesLeft();
 
           ELLE_LOG_TRACE("%s: return a parcel.", *this);
-          return parcel;
+          return parcel.release();
         }
     }
 
