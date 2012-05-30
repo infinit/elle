@@ -158,10 +158,12 @@ namespace elle
           if (packet.Extract(*parcel->data) == StatusError)
             throw std::runtime_error("unable to extract the data");
 
-          ::memmove(_buffer, _buffer + packet.size, _buffer_size - packet.size);
-          _buffer_size -= packet.size;
+          unsigned int eaten = packet.offset;
+          ::memmove(_buffer, _buffer + eaten, _buffer_size - eaten);
+          _buffer_size -= eaten;
 
-          ELLE_LOG_TRACE("%s: return a parcel.", *this);
+          ELLE_LOG_TRACE("%s: return a parcel (%s bytes eaten).",
+                         *this, eaten);
 
           return parcel;
         }
