@@ -6,6 +6,7 @@
 #include <reactor/network/socket-operation.hh>
 #include <reactor/network/tcp-socket.hh>
 #include <reactor/scheduler.hh>
+#include <reactor/thread.hh>
 
 namespace reactor
 {
@@ -18,12 +19,14 @@ namespace reactor
     TCPSocket::TCPSocket(Scheduler& sched,
                          const std::string& hostname, const std::string& port)
       : Super(sched, resolve_tcp(sched, hostname, port))
+      , _write_mutex()
     {}
 
     TCPSocket::TCPSocket(Scheduler& sched,
                          const std::string& hostname, int port)
       : Super(sched, resolve_tcp(sched, hostname,
                                  boost::lexical_cast<std::string>(port)))
+      , _write_mutex()
     {}
 
     TCPSocket::~TCPSocket()
@@ -163,8 +166,18 @@ namespace reactor
     void
     TCPSocket::write(Buffer buffer)
     {
-      Write write(scheduler(), this, buffer);
-      write.run();
+      scheduler().current()->wait(_write_mutex);
+      try
+        {
+          Write write(scheduler(), this, buffer);
+          write.run();
+        }
+      catch (...)
+        {
+          _write_mutex.release();
+          throw;
+        }
+      _write_mutex.release();
     }
 
     /*-----------.
