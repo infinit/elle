@@ -2,6 +2,10 @@
 
 #include <reactor/network/exception.hh>
 
+#include <elle/log.hh>
+
+ELLE_LOG_TRACE_COMPONENT("Infinit.Hole.Remote.Machine");
+
 #include <hole/implementations/remote/Machine.hh>
 #include <hole/Hole.hh>
 
@@ -64,6 +68,8 @@ namespace hole
       void
       Machine::Launch()
       {
+        ELLE_LOG_TRACE_SCOPE("Launch");
+
         elle::Locus     locus;
 
         // check the number of loci in the set: it should be one for
@@ -78,41 +84,45 @@ namespace hole
         locus = *Hole::Set.loci.begin();
 
         // try to connect to the server's host.
-        try
-        {
-          // allocate a client.
-          auto client = std::unique_ptr<Client>(new Client(locus));
-
-          // launch the client.
-
-          if (client->Launch() == elle::StatusOk)
+        ELLE_LOG_TRACE("try starting as a client")
+          try
             {
-              // set the client as the host.
-              this->client = client.release();
+              // allocate a client.
+              auto client = std::unique_ptr<Client>(new Client(locus));
 
-              // set the role.
-              this->role = Machine::RoleClient;
+              // launch the client.
 
-              // set the hole as ready to receive requests.
-              if (Hole::Ready() == elle::StatusError)
-                throw std::runtime_error("unable to set the hole online");
+              if (client->Launch() == elle::StatusOk)
+                {
+                  // set the client as the host.
+                  this->client = client.release();
 
-              return;
-            }
+                  // set the role.
+                  this->role = Machine::RoleClient;
+
+                  // set the hole as ready to receive requests.
+                  if (Hole::Ready() == elle::StatusError)
+                    throw std::runtime_error("unable to set the hole online");
+
+                  ELLE_LOG_TRACE("successfully started as a client")
+                  return;
+                }
 #include <elle/idiom/Close.hh>
-          // XXX
-          elle::concurrency::scheduler().current()->yield();
+              // XXX
+              elle::concurrency::scheduler().current()->yield();
 #include <elle/idiom/Open.hh>
-        }
-        catch (reactor::network::Exception&)
-          {
-            // Nothing.
-          }
+              ELLE_LOG_TRACE("error while starting as a client");
+            }
+          catch (reactor::network::Exception& e)
+            {
+              ELLE_LOG_TRACE("network error while starting as a client: %s", e.what());
+            }
 
         // purge the error messages.
         purge();
 
         // if the client did not succeed, create a server a wait for a client.
+        ELLE_LOG_TRACE("start as a server")
         {
           // allocate a server.
           auto server = std::unique_ptr<Server>(new Server(locus));
