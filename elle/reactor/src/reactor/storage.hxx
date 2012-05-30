@@ -18,16 +18,17 @@ namespace reactor
 
   template <typename T>
   T&
-  LocalStorage<T>::Get()
+  LocalStorage<T>::Get(T const& def)
   {
     Thread* current = this->_sched.current();
     typename Content::iterator it = this->_content.find(current);
     if (it == this->_content.end())
       {
-        this->_content[this->_sched.current()] = T();
+        this->_content[this->_sched.current()] = def;
         if (current != nullptr)
-          current->destructed().connect
-            (boost::bind(&Self::_Clean, this, current));
+          current->destructed().connect(
+              boost::bind(&Self::_Clean, this, current)
+          );
         return this->_content[this->_sched.current()];
       }
     else

@@ -152,9 +152,6 @@ namespace hole
         if (this->socket == NULL)
           escape("the client seems to have been disconnected");
 
-        printf("XXX CALLING %u WAITING %u\n",
-               TagPush, elle::TagOk);
-
         // transfer to the remote.
         if (this->socket->Call(
               elle::network::Inputs<TagPush>(address, block),
@@ -326,9 +323,6 @@ namespace hole
         return elle::Status::Ok;
       }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
 
       ///
       /// this method dumps the client.

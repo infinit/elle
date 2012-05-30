@@ -62,9 +62,7 @@ namespace hole
           TagPush,
           TagPull,
           TagBlock,
-          TagWipe,
-
-          TagException
+          TagWipe
         };
 
     }
@@ -93,8 +91,5 @@ message(hole::implementations::remote::TagBlock,
         parameters(nucleus::Block&));
 message(hole::implementations::remote::TagWipe,
         parameters(nucleus::Address&));
-
-message(hole::implementations::remote::TagException,
-        parameters(elle::Report&));
 
 #endif

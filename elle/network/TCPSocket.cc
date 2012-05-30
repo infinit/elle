@@ -30,7 +30,7 @@ namespace elle
       return res;
     }
 
-    static std::ostream&
+    std::ostream&
     operator << (std::ostream& s, const TCPSocket& socket)
     {
       s << "TCPSocket " << &socket;
@@ -148,11 +148,13 @@ namespace elle
 
           reader >> *(parcel->data);
 
-          // XXX overlap correctly handled on every libc ?
-          ::memmove(_buffer, _buffer + reader.Stream().Offset(), reader.Stream().BytesLeft());
-          _buffer_size = reader.Stream().BytesLeft();
+          unsigned int eaten = reader.Offset();
+          ::memmove(_buffer, _buffer + eaten, _buffer_size - eaten);
+          _buffer_size -= eaten;
 
-          ELLE_LOG_TRACE("%s: return a parcel.", *this);
+          ELLE_LOG_TRACE("%s: return a parcel (%s bytes eaten).",
+                         *this, eaten);
+
           return parcel.release();
         }
     }

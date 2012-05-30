@@ -25,6 +25,10 @@
 
 #include <Infinit.hh>
 
+#include <elle/log.hh>
+
+ELLE_LOG_TRACE_COMPONENT("Infinit.Hole.Slug.Machine");
+
 namespace hole
 {
   namespace implementations
@@ -79,9 +83,7 @@ namespace hole
       {
         elle::network::Locus     locus;
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Launch()\n");
+        ELLE_LOG_TRACE("Launch");
 
         //
         // register the messages.
@@ -207,9 +209,7 @@ namespace hole
         //nucleus::Derivable<nucleus::Block>      derivable(address.component,
         //                                                  block);
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Put[Immutable]()\n");
+        ELLE_LOG_TRACE("Put[Immutable]");
 
         // depending on the machine's state.
         switch (this->state)
@@ -289,9 +289,7 @@ namespace hole
         //nucleus::Derivable<nucleus::Block>      derivable(address.component,
         //                                                  block);
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Put[Mutable]()\n");
+        ELLE_LOG_TRACE("Put[Mutable]");
 
         // depending on the machine's state.
         switch (this->state)
@@ -413,9 +411,7 @@ namespace hole
       elle::Status      Machine::Get(const nucleus::Address&    address,
                                      nucleus::ImmutableBlock&   block)
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Get[Immutable]()\n");
+        ELLE_LOG_TRACE("Get[Immutable]");
 
         // depending on the machine's state.
         switch (this->state)
@@ -524,9 +520,7 @@ namespace hole
       {
         //nucleus::Derivable<nucleus::Block>      derivable(block);
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Get[Mutable]()\n");
+        ELLE_LOG_TRACE("Get[Mutable]");
 
         // depending on the machine's state.
         switch (this->state)
@@ -942,9 +936,7 @@ namespace hole
       ///
       elle::Status      Machine::Kill(const nucleus::Address&   address)
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Kill()\n");
+        ELLE_LOG_TRACE("Kill");
 
         // depending on the machine's state.
         switch (this->state)
@@ -1044,9 +1036,7 @@ namespace hole
       ///
       elle::Status      Machine::Alone()
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Alone()\n");
+        ELLE_LOG_TRACE("Alone");
 
         // if the machine has been neither connected nor authenticated
         // to existing nodes...
@@ -1077,8 +1067,8 @@ namespace hole
           {
             reactor::network::TCPSocket* socket = _server->accept();
             auto connection = new elle::network::TCPSocket(socket);
-            if (Infinit::Configuration.hole.debug == true)
-              printf("[hole] implementations::slug::Machine::_accept()\n");
+
+            ELLE_LOG_TRACE("_accept");
 
             // depending on the machine's state.
             switch (this->state)
@@ -1137,9 +1127,7 @@ namespace hole
       {
         Host*           host;
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Authenticate()\n");
+        ELLE_LOG_TRACE("Authenticate");
 
         // if the host exists in the guestlist, handle its authentication.
         if (this->guestlist.Exist(
@@ -1209,9 +1197,7 @@ namespace hole
       ///
       elle::Status      Machine::Authenticated(const Cluster&   cluster)
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Authenticated()\n");
+        ELLE_LOG_TRACE("Authenticated");
 
         // set the machine as being authenticated and is therefore now
         // considered attached to the network.
@@ -1265,9 +1251,7 @@ namespace hole
       ///
       elle::Status      Machine::Sweep(Host*                    host)
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Sweep()\n");
+        ELLE_LOG_TRACE("Sweep");
 
         // depending on the host's state.
         switch (host->state)
@@ -1310,9 +1294,7 @@ namespace hole
       ///
       elle::Status      Machine::Synchronised()
       {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Push()\n");
+        ELLE_LOG_TRACE("Push");
 
         return elle::Status::Ok;
       }
@@ -1326,9 +1308,7 @@ namespace hole
         Host*           host;
         nucleus::Block* object;
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Push()\n");
+        ELLE_LOG_TRACE("Push");
 
         // retrieve the host from the guestlist.
         if (this->guestlist.Retrieve(
@@ -1348,6 +1328,7 @@ namespace hole
             {
               nucleus::ImmutableBlock const& ib =
                   static_cast<nucleus::ImmutableBlock const&>(block);
+              ELLE_LOG_TRACE("pushing immutable block");
 
               //
               // first, store the block locally.
@@ -1373,6 +1354,8 @@ namespace hole
               nucleus::MutableBlock const& mb =
                   static_cast<nucleus::MutableBlock const&>(block);
 
+              ELLE_LOG_TRACE("pushing mutable block");
+
               //
               // first, store the block locally.
               //
@@ -1388,11 +1371,15 @@ namespace hole
                       const nucleus::Object*    object =
                         static_cast<const nucleus::Object*>(&mb);
 
+                      ELLE_LOG_TRACE("validating the object mutable block");
+
                       // validate the object according to the presence of
                       // a referenced access block.
                       if (object->meta.access != nucleus::Address::Null)
                         {
                           nucleus::Access       access;
+
+                          ELLE_LOG_TRACE("retrieving the access block");
 
                           // load the access block.
                           if (Hole::Pull(object->meta.access,
@@ -1418,6 +1405,8 @@ namespace hole
                     }
                   default:
                     {
+                      ELLE_LOG_TRACE("validating the mutable block");
+
                       // validate the block through the common interface.
                       if (mb.Validate(address) == elle::Status::Error)
                         escape("the block seems to be invalid");
@@ -1437,6 +1426,10 @@ namespace hole
                               nucleus::Version::Last) == elle::Status::True)
                   {
                     nucleus::MutableBlock*      current;
+
+                    ELLE_LOG_TRACE("the mutable block seems to exist "
+                                   "locally, make sure it derives the "
+                                   "current version");
 
                     // build a block according to the component.
                     if (nucleus::Nucleus::Factory.Build(address.component,
@@ -1458,6 +1451,8 @@ namespace hole
                       escape("the block to store does not seem to derive "
                              "the current version");
                   }
+
+                ELLE_LOG_TRACE("now storing the validated mutable block locally");
 
                 // store the block.
                 if (mb.Store(Hole::Implementation->network,
@@ -1487,9 +1482,7 @@ namespace hole
         Host*           host;
         nucleus::Block* block;
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Pull()\n");
+        ELLE_LOG_TRACE("Pull");
 
         // retrieve the host from the guestlist.
         if (this->guestlist.Retrieve(
@@ -1516,6 +1509,8 @@ namespace hole
             {
               nucleus::ImmutableBlock*  ib;
 
+              ELLE_LOG_TRACE("pulling immutable block");
+
               // cast to an immutable block.
               ib = static_cast<nucleus::ImmutableBlock*>(block);
 
@@ -1540,6 +1535,8 @@ namespace hole
           case nucleus::FamilyImprintBlock:
             {
               nucleus::MutableBlock*    mb;
+
+              ELLE_LOG_TRACE("pushing mutable block");
 
               // cast to a mutable block.
               mb = static_cast<nucleus::MutableBlock*>(block);
@@ -1634,9 +1631,7 @@ namespace hole
       {
         Host*           host;
 
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Machine::Wipe()\n");
+        ELLE_LOG_TRACE("Wipe");
 
         // retrieve the host from the guestlist.
         if (this->guestlist.Retrieve(

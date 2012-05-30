@@ -92,6 +92,9 @@ namespace elle
       std::string host;
     };
 
+    std::ostream&
+    operator << (std::ostream& s, const TCPSocket& socket);
+
     Context current_context();
     void current_context(Context socket);
   }

@@ -81,9 +81,9 @@ namespace hole
           if (elle::network::Network::Register(
                 elle::network::Procedure<TagPush,
                                 elle::TagNone,
-                                TagException>(
-                  elle::concurrency::Callback<>::Infer(
-                    &Server::Push, this))) == elle::Status::Error)
+                                elle::TagError>(
+                  elle::Callback<>::Infer(
+                    &Server::Push, this))) == elle::StatusError)
             escape("unable to register the callback");
 
           // register the pull message.
@@ -232,7 +232,7 @@ namespace hole
       elle::Status      Server::Put(const nucleus::Address&     address,
                                     const nucleus::ImmutableBlock& block)
       {
-        ELLE_LOG_TRACE_SCOPE("Immutable]");
+        ELLE_LOG_TRACE_SCOPE("Put[Immutable]");
 
         // does the block already exist.
         if (block.Exist(Hole::Implementation->network,
@@ -253,7 +253,7 @@ namespace hole
       elle::Status      Server::Put(const nucleus::Address&     address,
                                     const nucleus::MutableBlock& block)
       {
-        ELLE_LOG_TRACE_SCOPE("Mutable]");
+        ELLE_LOG_TRACE_SCOPE("Put[Mutable]");
 
         // validate the block, depending on its component.
         //
@@ -321,7 +321,7 @@ namespace hole
       elle::Status      Server::Get(const nucleus::Address&     address,
                                     nucleus::ImmutableBlock&    block)
       {
-        ELLE_LOG_TRACE_SCOPE("Immutable]");
+        ELLE_LOG_TRACE_SCOPE("Get[Immutable]");
 
         // does the block exist.
         if (block.Exist(Hole::Implementation->network,
@@ -347,7 +347,7 @@ namespace hole
                                     const nucleus::Version&     version,
                                     nucleus::MutableBlock&      block)
       {
-        ELLE_LOG_TRACE_SCOPE("Mutable]");
+        ELLE_LOG_TRACE_SCOPE("Get[Mutable]");
 
         // does the block exist.
         if (block.Exist(Hole::Implementation->network,
