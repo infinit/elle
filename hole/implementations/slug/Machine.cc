@@ -1539,7 +1539,7 @@ namespace hole
             {
               nucleus::MutableBlock*    mb;
 
-              ELLE_LOG_TRACE("pushing mutable block");
+              ELLE_LOG_TRACE("pulling mutable block");
 
               // cast to a mutable block.
               mb = static_cast<nucleus::MutableBlock*>(block);
