@@ -20,17 +20,17 @@ namespace elle
   ///   - Use the default behavior of Stringify class
   ///
   template<typename... T>
-    void sprint(std::ostream& out, T const&... values);
+    void fprint(std::ostream& out, T const&... values);
 
-  /// Same as `sprint' with standard output stream.
+  /// Same as `fprint' with standard output stream.
   template<typename... T>
     void print(T const&... values);
 
-  /// Same as `sprint' but returns a string instead of printing it, and do not
+  /// Same as `fprint' but returns a string instead of printing it, and do not
   /// terminate the line with a line feed (this can be overriden with
   /// elle::iomanip::newline manipulator).
   template<typename... T>
-    std::string stringify(T const&... values);
+    std::string sprint(T const&... values);
 
   /// manipulators for print functions are defined here
   namespace iomanip

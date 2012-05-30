@@ -65,7 +65,7 @@ namespace hole
     //
     {
       // does the network exist.
-      if (Hole::Descriptor.Exist(Infinit::Network) == elle::StatusFalse)
+      if (Hole::Descriptor.Exist(Infinit::Network) == elle::Status::False)
         throw std::runtime_error("this network does not seem to exist");
 
       // load the descriptor.
@@ -92,7 +92,7 @@ namespace hole
     //
     {
       // does the network exist.
-      if (Hole::Passport.Exist() == elle::StatusFalse)
+      if (Hole::Passport.Exist() == elle::Status::False)
         throw std::runtime_error("the device passport does not seem to exist");
 
       // load the passport.

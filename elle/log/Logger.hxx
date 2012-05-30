@@ -12,7 +12,7 @@ namespace elle
     void
       Logger::message(Level level, T const&... values)
       {
-        this->_message(level, elle::stringify(values...));
+        this->_message(level, elle::sprint(values...));
       }
 
     template<typename... T>

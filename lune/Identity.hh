@@ -102,6 +102,8 @@ namespace lune
     elle::cryptography::Signature     signature;
 
     elle::cryptography::Cipher*       cipher;
+
+    ELLE_SERIALIZE_FRIEND_FOR(Identity);
   };
 
 }

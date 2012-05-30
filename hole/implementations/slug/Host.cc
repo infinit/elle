@@ -1,5 +1,6 @@
 #include <elle/utility/Time.hh>
 #include <elle/standalone/Morgue.hh>
+#include <elle/network/TCPSocket.hh>
 
 #include <hole/implementations/slug/Host.hh>
 #include <hole/implementations/slug/Slug.hh>

@@ -1,7 +1,7 @@
 #ifndef  ELLE_LOG_HXX
 # define ELLE_LOG_HXX
 
-# include <elle/format.hh>
+# include <elle/print.hh>
 # include <elle/log.hh>
 
 namespace elle
@@ -56,7 +56,7 @@ namespace elle
                               char const* function,
                               T const&... values)
       {
-        this->_send(file, line, function, elle::format(values...));
+        this->_send(file, line, function, elle::sprint(values...));
         return false;
       }
 

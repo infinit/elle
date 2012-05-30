@@ -81,13 +81,6 @@ namespace hole
                   elle::concurrency::Callback<>::Infer(
                     &Client::Authenticated, this))) == elle::Status::Error)
             escape("unable to register the callback");
-
-          // register the message.
-          if (elle::network::Network::Register(
-                elle::network::Procedure<TagException>(
-                  elle::concurrency::Callback<>::Infer(
-                    &Client::Exception, this))) == elle::Status::Error)
-            escape("unable to register the callback");
         }
 
         {

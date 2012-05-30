@@ -19,7 +19,7 @@ namespace elle
   {
 
     bool
-    sprint_value(std::ostream&                      /*out*/,
+    fprint_value(std::ostream&                      /*out*/,
                  PrintFlags&                        flags,
                  bool                               is_first,
                  elle::iomanip::Separator const&    value)
@@ -29,7 +29,7 @@ namespace elle
     }
 
     bool
-    sprint_value(std::ostream&                      /*out*/,
+    fprint_value(std::ostream&                      /*out*/,
                  PrintFlags&                        flags,
                  bool                               is_first,
                  elle::iomanip::EndOfLine const&    value)
@@ -39,7 +39,7 @@ namespace elle
     }
 
     void
-    sprint(std::ostream&                            out,
+    fprint(std::ostream&                            out,
            PrintFlags&                              flags,
            bool                                     /*is_first*/)
     {

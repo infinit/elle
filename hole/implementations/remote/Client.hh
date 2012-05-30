@@ -4,6 +4,7 @@
 # include <elle/types.hh>
 
 # include <elle/network/fwd.hh>
+# include <elle/network/Locus.hh>
 
 # include <nucleus/Nucleus.hh>
 

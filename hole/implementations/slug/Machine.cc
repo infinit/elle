@@ -148,7 +148,7 @@ namespace hole
               catch (reactor::network::Exception& err)
                 {
                   // The host wasn't up, just ignore it.
-                  etc::log::warn("Ignore one host:", err.what());
+                  elle::log::warn("Ignore one host:", err.what());
                   continue;
                 }
 
@@ -1096,7 +1096,7 @@ namespace hole
                   // also authenticate to this host now that it is
                   // considered a potentiel peer.
                   if (h->socket->Send(
-                        elle::Inputs<TagAuthenticate>(
+                        elle::network::Inputs<TagAuthenticate>(
                           Hole::Passport,
                           this->port)) == elle::Status::Error)
                     throw std::runtime_error("unable to send a message");
@@ -1132,7 +1132,7 @@ namespace hole
         // if the host exists in the guestlist, handle its authentication.
         if (this->guestlist.Exist(
               static_cast<elle::network::TCPSocket*>(elle::network::current_context().socket)) ==
-            elle::StatusTrue)
+            elle::Status::True)
           {
             Cluster     cluster;
 
@@ -1306,7 +1306,6 @@ namespace hole
                                       const nucleus::Block&     block)
       {
         Host*           host;
-        nucleus::Block* object;
 
         ELLE_LOG_TRACE("Push");
 

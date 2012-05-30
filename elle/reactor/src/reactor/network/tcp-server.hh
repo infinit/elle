@@ -13,7 +13,7 @@ namespace reactor
       public:
         typedef Server Super;
         TCPServer(Scheduler& sched);
-        ~TCPServer();
+        virtual ~TCPServer();
 
       /*----------.
       | Listening |

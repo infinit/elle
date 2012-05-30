@@ -90,7 +90,7 @@ namespace elle
                                                      Locus& locus,
                                                      Parcel&   parcel) const
     {
-      elle::serialize::InputBufferArchive archive(parcel.data);
+      elle::serialize::InputBufferArchive archive(*parcel.data);
       ProcedureSkeletonExtractor extractor(archive);
 
 

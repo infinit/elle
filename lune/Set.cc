@@ -201,10 +201,10 @@ elle::Status          Set::Store(const elle::String&       network) const
   if (path.Complete(elle::io::Piece("%NETWORK%", network)) == elle::Status::Error)
     escape("unable to complete the path");
 
-  std::ofstream out(path.string);
+  std::ofstream out(path.str());
 
   if (!out.good())
-    escape("cannot open file %s", path.string.c_str());
+    escape("cannot open file %s", path.str().c_str());
 
   auto it = this->loci.begin(), end = this->loci.end();
   for (; it != end; ++it)

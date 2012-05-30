@@ -2,6 +2,7 @@
 # define ETOILE_PORTAL_APPLICATION_HH
 
 # include <elle/types.hh>
+# include <elle/network/TCPSocket.hh>
 
 namespace etoile
 {

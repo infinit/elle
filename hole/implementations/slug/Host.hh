@@ -6,6 +6,7 @@
 # include <elle/network/fwd.hh>
 # include <elle/concurrency/fwd.hh>
 # include <elle/concurrency/Signal.hh>
+# include <elle/network/Locus.hh>
 
 
 # include <hole/Label.hh>

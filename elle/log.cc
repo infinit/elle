@@ -8,6 +8,7 @@
 #include <vector>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/format.hpp>
 
 #include <elle/concurrency/Scheduler.hh>
 #include <elle/log.hh>

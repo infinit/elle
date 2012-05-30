@@ -84,14 +84,14 @@ namespace lune
   elle::Status          Descriptor::Seal(const Authority&       authority)
   {
     // sign the attributesr with the authority.
-    if (authority.k->Sign(this->_id,
-                          this->name,
-                          this->model,
-                          this->root,
-                          this->history,
-                          this->extent,
-                          this->contention,
-                          this->balancing,
+    if (authority.k->Sign(elle::serialize::make_tuple(this->_id,
+                                                      this->name,
+                                                      this->model,
+                                                      this->root,
+                                                      this->history,
+                                                      this->extent,
+                                                      this->contention,
+                                                      this->balancing),
                           this->signature) == elle::Status::Error)
       escape("unable to sign the attributes with the authority");
 

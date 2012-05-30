@@ -1,4 +1,6 @@
 
+#include <elle/network/TCPSocket.hh>
+
 #include <hole/implementations/remote/Customer.hh>
 #include <hole/implementations/remote/Remote.hh>
 

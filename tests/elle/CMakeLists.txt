@@ -2,11 +2,11 @@
 link_libraries(
 	elle
 	pthread
+    ${Boost_LIBRARIES}
 )
 
 simple_test(print "" "tests done." "")
 simple_test(log "" "tests done." "")
-simple_test(format "" "tests done." "")
 
 add_subdirectory(cryptography)
 add_subdirectory(format)

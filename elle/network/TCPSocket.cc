@@ -1,6 +1,7 @@
 
 #include <elle/network/HeaderSerializer.hxx>
 #include <elle/utility/BufferSerializer.hxx>
+#include <elle/standalone/ReportSerializer.hxx>
 
 #include <string>
 
@@ -13,7 +14,7 @@
 #include <elle/network/Network.hh>
 
 #include <elle/idiom/Close.hh>
-#include <elle/format.hh>
+#include <elle/printf.hh>
 #include <elle/log.hh>
 #include <elle/idiom/Open.hh>
 
@@ -148,7 +149,7 @@ namespace elle
 
           reader >> *(parcel->data);
 
-          unsigned int eaten = reader.Offset();
+          unsigned int eaten = reader.Stream().Offset();
           ::memmove(_buffer, _buffer + eaten, _buffer_size - eaten);
           _buffer_size -= eaten;
 
@@ -157,6 +158,8 @@ namespace elle
 
           return parcel.release();
         }
+      assert(false && "never reached");
+      throw false;
     }
 
 //
@@ -203,11 +206,16 @@ namespace elle
                             {
                               ELLE_LOG_TRACE("%s: RPC is an error.", *this);
                               Report  report;
-                              // extract the error message.
-                              if (report.Extract(*parcel->data) == Status::Error)
-                                // FIXME
-                                //escape("unable to extract the error message");
-                                continue;
+                              try
+                                {
+                                  parcel->data->Reader() >> report;
+                                }
+                              catch (std::exception const& err)
+                                {
+                                  elle::log::warn("Cannot build the report:", err.what());
+                                  continue;
+                                }
+
                               // report the remote error.
                               transpose(report);
                               // log the error.
@@ -221,8 +229,9 @@ namespace elle
                           else
                             {
                               ELLE_LOG_TRACE("%s: fatal: unrecognized RPC.", *this);
-                              throw std::runtime_error
-                                (elle::format("unrecognized RPC tag: %s.", tag));
+                              throw std::runtime_error(
+                                  elle::sprintf("unrecognized RPC tag: %s.", tag)
+                              );
                             }
                         }
 

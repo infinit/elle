@@ -1,16 +1,4 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar  3 20:50:57 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/concurrency/Scheduler.hh>
 
 #include <etoile/wall/Object.hh>
 

@@ -2,6 +2,7 @@
 # define HOLE_IMPLEMENTATIONS_SLUG_MACHINE_HH
 
 # include <elle/types.hh>
+# include <reactor/network/tcp-server.hh>
 # include <nucleus/Nucleus.hh>
 # include <lune/Lune.hh>
 
