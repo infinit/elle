@@ -155,6 +155,11 @@ namespace elle { namespace serialize {
 
 }} // !namespace elle::serialize
 
+# define _ELLE_SERIALIZE_LOG_ACTION(T, mode)                                    \
+  ELLE_LOG_TRACE_COMPONENT("Infinit.Serialize");                                \
+  ELLE_LOG_TRACE("%s " #T, mode == ArchiveMode::Input ? "Loading" : "Saving")   \
+  /**/
+
 /// Define a simple serializer for the type T
 # define ELLE_SERIALIZE_SIMPLE(T, archive, value, version)                      \
 namespace elle { namespace serialize {                                          \
@@ -186,9 +191,8 @@ template<typename Archive>                                                      
                                               T& value,                         \
                                               unsigned int version)             \
 {                                                                               \
-  std::cout << (Archive::mode == ArchiveMode::Input ? "Loading" : "Saving")     \
-            << " " #T << std::endl;                                             \
-  _Serialize(archive, value, version);                                          \
+  _ELLE_SERIALIZE_LOG_ACTION(T, Archive::mode)                                  \
+    { _Serialize(archive, value, version); }                                    \
 }                                                                               \
 template<typename Archive>                                                      \
   void elle::serialize::ArchiveSerializer<T>::_Serialize(                       \
@@ -267,9 +271,8 @@ namespace elle { namespace serialize {                                          
               Type                                                              \
             , Archive::mode                                                     \
           > Method;                                                             \
-          std::cout << (Archive::mode == ArchiveMode::Input ? "Loading" : "Saving")     \
-                    << " " #T << std::endl;                                             \
-          Method::Serialize(ar, val, version);                                  \
+          _ELLE_SERIALIZE_LOG_ACTION(T, Archive::mode)                          \
+            { Method::Serialize(ar, val, version); }                            \
         }                                                                       \
         template<typename Archive>                                              \
           static void Save(Archive& ar, Type const& val, unsigned int version); \
@@ -311,13 +314,12 @@ namespace elle { namespace serialize {                                          
       template<typename Archive>                                                \
         static void Serialize(Archive& ar, Type& val, unsigned int version)     \
         {                                                                       \
-          std::cout << (Archive::mode == ArchiveMode::Input ? "Loading" : "Saving")     \
-                    << " " #T << std::endl;                                             \
           typedef detail::_SplitSerializerSelectMethod<                         \
               Type                                                              \
             , Archive::mode                                                     \
           > Method;                                                             \
-          Method::Serialize(ar, val, version);                                  \
+          _ELLE_SERIALIZE_LOG_ACTION(T, Archive::mode)                          \
+            { Method::Serialize(ar, val, version); }                            \
         }                                                                       \
         template<typename Archive>                                              \
           static void Save(Archive& ar, Type const& val, unsigned int version); \
@@ -345,5 +347,9 @@ template<typename Archive>                                                      
                                               Archive& archive,                 \
                                               Type& value,                      \
                                               unsigned int version)             \
+
+# include <elle/idiom/Close.hh>
+# include <elle/log.hh>
+# include <elle/idiom/Close.hh>
 
 #endif
