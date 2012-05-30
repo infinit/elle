@@ -100,6 +100,7 @@ namespace reactor
   {
     try
       {
+        assert(action);
         action();
       }
     catch (const Terminate&)
