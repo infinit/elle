@@ -1346,6 +1346,8 @@ namespace hole
             {
               nucleus::ImmutableBlock*  ib;
 
+              ELLE_LOG_TRACE("pushing immutable block");
+
               // cast to an immutable block.
               ib = static_cast<nucleus::ImmutableBlock*>(object);
 
@@ -1372,6 +1374,8 @@ namespace hole
             {
               nucleus::MutableBlock*    mb;
 
+              ELLE_LOG_TRACE("pushing mutable block");
+
               // cast to a mutable block.
               mb = static_cast<nucleus::MutableBlock*>(object);
 
@@ -1390,11 +1394,15 @@ namespace hole
                       const nucleus::Object*    object =
                         static_cast<const nucleus::Object*>(mb);
 
+                      ELLE_LOG_TRACE("validating the object mutable block");
+
                       // validate the object according to the presence of
                       // a referenced access block.
                       if (object->meta.access != nucleus::Address::Null)
                         {
                           nucleus::Access       access;
+
+                          ELLE_LOG_TRACE("retrieving the access block");
 
                           // load the access block.
                           if (Hole::Pull(object->meta.access,
@@ -1420,6 +1428,8 @@ namespace hole
                     }
                   default:
                     {
+                      ELLE_LOG_TRACE("validating the mutable block");
+
                       // validate the block through the common interface.
                       if (mb->Validate(address) == elle::StatusError)
                         escape("the block seems to be invalid");
@@ -1439,6 +1449,10 @@ namespace hole
                               nucleus::Version::Last) == elle::StatusTrue)
                   {
                     nucleus::MutableBlock*      current;
+
+                    ELLE_LOG_TRACE("the mutable block seems to exist "
+                                   "locally, make sure it derives the "
+                                   "current version");
 
                     // build a block according to the component.
                     if (nucleus::Nucleus::Factory.Build(address.component,
@@ -1460,6 +1474,8 @@ namespace hole
                       escape("the block to store does not seem to derive "
                              "the current version");
                   }
+
+                ELLE_LOG_TRACE("now storing the validated mutable block locally");
 
                 // store the block.
                 if (mb->Store(Hole::Implementation->network,
@@ -1518,6 +1534,8 @@ namespace hole
             {
               nucleus::ImmutableBlock*  ib;
 
+              ELLE_LOG_TRACE("pulling immutable block");
+
               // cast to an immutable block.
               ib = static_cast<nucleus::ImmutableBlock*>(block);
 
@@ -1542,6 +1560,8 @@ namespace hole
           case nucleus::FamilyImprintBlock:
             {
               nucleus::MutableBlock*    mb;
+
+              ELLE_LOG_TRACE("pushing mutable block");
 
               // cast to a mutable block.
               mb = static_cast<nucleus::MutableBlock*>(block);
