@@ -26,7 +26,7 @@ namespace elle
       return res;
     }
 
-    static std::ostream&
+    std::ostream&
     operator << (std::ostream& s, const TCPSocket& socket)
     {
       s << "TCPSocket " << &socket;
