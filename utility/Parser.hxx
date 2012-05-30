@@ -266,7 +266,7 @@ namespace elle
                                       const T&                  D)
     {
       Option* option;
-      if (this->Locate(name, option) == Status::False)
+      if (this->Locate(name, option) == Status::False || option->value == nullptr)
         {
           value = D;
           return elle::Status::Ok;
