@@ -3,14 +3,8 @@
 
 namespace elle
 {
-  namespace package
-  {
-    class Archive;
-  }
-
   namespace network
   {
-    typedef package::Archive Packet;
   }
 }
 
