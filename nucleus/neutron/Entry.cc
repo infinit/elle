@@ -60,14 +60,14 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return true;
 
       // compare the attributes.
       if ((this->name != element.name) ||
           (this->address != element.address))
-        return elle::StatusFalse;
+        return false;
 
-      return elle::StatusTrue;
+      return true;
     }
 
     ///
@@ -93,10 +93,10 @@ namespace nucleus
                 << this->name << std::endl;
 
       // dump the address.
-      if (this->address.Dump(margin + 2) == elle::StatusError)
+      if (this->address.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the token");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -106,28 +106,28 @@ namespace nucleus
     ///
     /// this method serializes the entry object.
     ///
-    elle::Status        Entry::Serialize(elle::Archive&         archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(this->name,
-                            this->address) == elle::StatusError)
-        escape("unable to serialize the entry");
+    //elle::Status        Entry::Serialize(elle::Archive&         archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(this->name,
+    //                        this->address) == elle::Status::Error)
+    //    escape("unable to serialize the entry");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the entry object.
-    ///
-    elle::Status        Entry::Extract(elle::Archive&           archive)
-    {
-      // extract the attributes.
-      if (archive.Extract(this->name,
-                          this->address) == elle::StatusError)
-        escape("unable to extract the entry");
+    /////
+    ///// this method extracts the entry object.
+    /////
+    //elle::Status        Entry::Extract(elle::Archive&           archive)
+    //{
+    //  // extract the attributes.
+    //  if (archive.Extract(this->name,
+    //                      this->address) == elle::Status::Error)
+    //    escape("unable to extract the entry");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
 //
 // ---------- rangeable -------------------------------------------------------

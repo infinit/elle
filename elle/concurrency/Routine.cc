@@ -1,23 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar 24 21:12:54 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/concurrency/Routine.hh>
 
-#include <elle/core/String.hh>
+#include <elle/types.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 
 namespace elle
 {
@@ -70,7 +57,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
                 << "[Scheme] " << this->scheme << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

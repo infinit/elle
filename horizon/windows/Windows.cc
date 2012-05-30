@@ -15,7 +15,7 @@
 #include <horizon/windows/Windows.hh>
 #include <horizon/Horizon.hh>
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 #include <agent/Agent.hh>
 #include <Infinit.hh>
 

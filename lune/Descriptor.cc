@@ -1,16 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [sat may  1 21:19:13 2010]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <nucleus/proton/AddressSerializer.hxx>
+#include <lune/DescriptorSerializer.hxx>
+
+#include <elle/io/File.hh>
+#include <elle/io/Piece.hh>
 
 #include <lune/Descriptor.hh>
 #include <lune/Lune.hh>
@@ -82,7 +75,7 @@ namespace lune
     this->contention = contention;
     this->balancing = balancing;
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -99,10 +92,10 @@ namespace lune
                           this->extent,
                           this->contention,
                           this->balancing,
-                          this->signature) == elle::StatusError)
+                          this->signature) == elle::Status::Error)
       escape("unable to sign the attributes with the authority");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -113,17 +106,17 @@ namespace lune
   {
     // verify the signature.
     if (authority.K.Verify(this->signature,
-                           this->_id,
-                           this->name,
-                           this->model,
-                           this->root,
-                           this->history,
-                           this->extent,
-                           this->contention,
-                           this->balancing) == elle::StatusError)
+                           elle::serialize::make_tuple(this->_id,
+                                                       this->name,
+                                                       this->model,
+                                                       this->root,
+                                                       this->history,
+                                                       this->extent,
+                                                       this->contention,
+                                                       this->balancing)) == elle::Status::Error)
       escape("unable to verify the signature");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 //
@@ -156,12 +149,12 @@ namespace lune
               << alignment << elle::Dumpable::Shift << "[Name] "
               << this->name << std::endl;
 
-    if (this->model.Dump(margin + 2) == elle::StatusError)
+    if (this->model.Dump(margin + 2) == elle::Status::Error)
       escape("unable to dump the model");
 
     std::cout << alignment << elle::Dumpable::Shift << "[Root] " << std::endl;
 
-    if (this->root.Dump(margin + 4) == elle::StatusError)
+    if (this->root.Dump(margin + 4) == elle::Status::Error)
       escape("unable to dump the address");
 
     std::cout << alignment << elle::Dumpable::Shift << "[History] "
@@ -176,55 +169,10 @@ namespace lune
     std::cout << alignment << elle::Dumpable::Shift << "[Balancing] "
               << this->balancing << std::endl;
 
-    if (this->signature.Dump(margin + 2) == elle::StatusError)
+    if (this->signature.Dump(margin + 2) == elle::Status::Error)
       escape("unable to dump the signature");
 
-    return elle::StatusOk;
-  }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-  ///
-  /// this method serializes the object.
-  ///
-  elle::Status          Descriptor::Serialize(elle::Archive&    archive) const
-  {
-    // serialize the attributes.
-    if (archive.Serialize(
-          this->_id,
-          this->name,
-          this->model,
-          this->root,
-          this->history,
-          this->extent,
-          this->contention,
-          this->balancing,
-          this->signature) == elle::StatusError)
-      escape("unable to serialize the attributes");
-
-    return elle::StatusOk;
-  }
-
-  ///
-  /// this method extracts the object.
-  ///
-  elle::Status          Descriptor::Extract(elle::Archive&      archive)
-  {
-    // extract the attributes.
-    if (archive.Extract(this->_id,
-                        this->name,
-                        this->model,
-                        this->root,
-                        this->history,
-                        this->extent,
-                        this->contention,
-                        this->balancing,
-                        this->signature) == elle::StatusError)
-      escape("unable to extract the attributes");
-
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 //
@@ -237,28 +185,20 @@ namespace lune
   elle::Status          Descriptor::Load(const elle::String&    name)
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
 
     // create the path.
-    if (path.Create(Lune::Network::Descriptor) == elle::StatusError)
+    if (path.Create(Lune::Network::Descriptor) == elle::Status::Error)
       escape("unable to create the path");
 
     // complete the path's pattern.
-    if (path.Complete(elle::Piece("%NETWORK%", name)) == elle::StatusError)
+    if (path.Complete(elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
       escape("unable to complete the path");
 
-    // read the file's content.
-    if (elle::File::Read(path, region) == elle::StatusError)
-      escape("unable to read the file's content");
+    if (this->Load(path) == elle::Status::Error)
+      escape("unable to load '%s'", path.str().c_str());
 
-    // decode and extract the object.
-    if (elle::Hexadecimal::Decode(
-          elle::String(reinterpret_cast<char*>(region.contents),
-                       region.size),
-          *this) == elle::StatusError)
-      escape("unable to decode the object");
-
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -267,31 +207,21 @@ namespace lune
   elle::Status          Descriptor::Store(const elle::String&   name) const
   {
     elle::Path          path;
-    elle::Region        region;
+    elle::standalone::Region        region;
     elle::String        string;
 
     // create the path.
-    if (path.Create(Lune::Network::Descriptor) == elle::StatusError)
+    if (path.Create(Lune::Network::Descriptor) == elle::Status::Error)
       escape("unable to create the path");
 
     // complete the path's pattern.
-    if (path.Complete(elle::Piece("%NETWORK%", name)) == elle::StatusError)
+    if (path.Complete(elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
       escape("unable to complete the path");
 
-    // encode in hexadecimal.
-    if (elle::Hexadecimal::Encode(*this, string) == elle::StatusError)
-      escape("unable to encode the object in hexadecimal");
+    if (this->Store(path) == elle::Status::Error)
+      escape("unable to store '%s'", path.str().c_str());
 
-    // wrap the string.
-    if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
-                    string.length()) == elle::StatusError)
-      escape("unable to wrap the string in a region");
-
-    // write the file's content.
-    if (elle::File::Write(path, region) == elle::StatusError)
-      escape("unable to write the file's content");
-
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -302,18 +232,18 @@ namespace lune
     elle::Path          path;
 
     // create the path.
-    if (path.Create(Lune::Network::Descriptor) == elle::StatusError)
+    if (path.Create(Lune::Network::Descriptor) == elle::Status::Error)
       escape("unable to create the path");
 
     // complete the path's pattern.
-    if (path.Complete(elle::Piece("%NETWORK%", name)) == elle::StatusError)
+    if (path.Complete(elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
       escape("unable to complete the path");
 
     // erase the file.
-    if (elle::File::Erase(path) == elle::StatusError)
+    if (elle::io::File::Erase(path) == elle::Status::Error)
       escape("unable to erase the file");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -324,18 +254,18 @@ namespace lune
     elle::Path          path;
 
     // create the path.
-    if (path.Create(Lune::Network::Descriptor) == elle::StatusError)
+    if (path.Create(Lune::Network::Descriptor) == elle::Status::Error)
       escape("unable to create the path");
 
     // complete the path's pattern.
-    if (path.Complete(elle::Piece("%NETWORK%", name)) == elle::StatusError)
+    if (path.Complete(elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
       escape("unable to complete the path");
 
     // test the file.
-    if (elle::File::Exist(path) == elle::StatusFalse)
-      return elle::StatusFalse;
+    if (elle::io::File::Exist(path) == elle::Status::False)
+      return elle::Status::False;
 
-    return elle::StatusTrue;
+    return elle::Status::True;
   }
 
 }

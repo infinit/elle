@@ -35,7 +35,7 @@ namespace elle
       this->host = host;
       this->port = port;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -47,11 +47,11 @@ namespace elle
       Locus             remote;
 
       // create an host.
-      if (local.Create(this->host) == StatusError)
+      if (local.Create(this->host) == Status::Error)
         escape("unable to create an host");
 
       // create the socket.
-      if (this->socket.Create() == StatusError)
+      if (this->socket.Create() == Status::Error)
         escape("unable to create the socket");
 
       std::cout << "[port] " << this->socket.port << std::endl;
@@ -59,24 +59,24 @@ namespace elle
       // register the probe message.
       if (Network::Register(
             Procedure<TagProbe>(
-              Callback<>::Infer(&Node::Handle, this))) == StatusError)
+              Callback<>::Infer(&Node::Handle, this))) == Status::Error)
         escape("unable to register the probe message");
 
       // create the table.
-      if (this->table.Create(this) == StatusError)
+      if (this->table.Create(this) == Status::Error)
         escape("unable to create the table");
 
       // create an locus.
-      if (remote.Create(local, this->port) == StatusError)
+      if (remote.Create(local, this->port) == Status::Error)
         escape("unable to create a location");
 
       // probe the first peer.
       if (this->socket.Send(remote,
                             Inputs<TagProbe>(this->name,
-                                             this->table)) == StatusError)
+                                             this->table)) == Status::Error)
         escape("unable to send the probe");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -92,22 +92,22 @@ namespace elle
       Session*          session;
 
       // retrieve the current session.
-      if (Session::Instance(session) == StatusError)
+      if (Session::Instance(session) == Status::Error)
         escape("unable to retrieve the instance of the current session");
 
       // simply add the sender to the table.
-      if (this->table.Update(session->locus, name) == StatusError)
+      if (this->table.Update(session->locus, name) == Status::Error)
         escape("unable to add the new neighbour");
 
       // refresh the sender.
-      if (this->table.Refresh(session->locus) == StatusError)
+      if (this->table.Refresh(session->locus) == Status::Error)
         escape("unable to refresh the sender's entry");
 
       // merge the table with the received one.
-      if (this->table.Merge(table) == StatusError)
+      if (this->table.Merge(table) == Status::Error)
         escape("unable to update the table");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

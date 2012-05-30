@@ -1,7 +1,13 @@
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_CUSTOMER_HH
 # define HOLE_IMPLEMENTATIONS_REMOTE_CUSTOMER_HH
 
-# include <elle/Elle.hh>
+# include <elle/types.hh>
+
+# include <elle/radix/Entity.hh>
+# include <elle/concurrency/Signal.hh>
+# include <elle/concurrency/fwd.hh>
+
+# include <elle/network/fwd.hh>
 
 namespace hole
 {
@@ -19,7 +25,7 @@ namespace hole
       /// i.e the machine.
       ///
       class Customer:
-        public elle::Entity
+        public elle::radix::Entity
       {
       public:
         //
@@ -41,7 +47,7 @@ namespace hole
         //
         // constructors & destructors
         //
-        Customer(elle::TCPSocket* socket);
+        Customer(elle::network::TCPSocket* socket);
         ~Customer();
 
         //
@@ -65,8 +71,8 @@ namespace hole
         //
         struct
         {
-          elle::Signal<
-            elle::Parameters<
+          elle::concurrency::Signal<
+            elle::radix::Parameters<
               Customer*
               >
             >                   dead;
@@ -77,7 +83,7 @@ namespace hole
         //
         State                   state;
 
-        elle::TCPSocket*        socket;
+        elle::network::TCPSocket*        socket;
       };
 
     }

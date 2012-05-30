@@ -45,7 +45,7 @@ namespace elle
       // allocate the object.
       meta = new T;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -77,7 +77,7 @@ namespace elle
           escape("unable to insert the generatoid into the container");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -97,10 +97,10 @@ namespace elle
 
       // allocate an object of the type handled by the generatoid.
       if (scoutor->second->Allocate(
-            reinterpret_cast<Meta*&>(object)) == StatusError)
+            reinterpret_cast<Meta*&>(object)) == Status::Error)
         escape("unable to allocate the object");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

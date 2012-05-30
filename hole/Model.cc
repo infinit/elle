@@ -1,22 +1,13 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [mon jun 27 09:15:33 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <iostream>
+#include <algorithm>
+#include <string>
+
+#include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 
 #include <hole/Model.hh>
 
-#include <elle/idiom/Close.hh>
-# include <algorithm>
-# include <string>
 #include <elle/idiom/Open.hh>
 
 namespace hole
@@ -70,7 +61,7 @@ namespace hole
             // set the model type.
             type = Model::Descriptors[i].type;
 
-            return elle::StatusOk;
+            return elle::Status::Ok;
           }
       }
 
@@ -94,7 +85,7 @@ namespace hole
             // set the model name.
             name = Model::Descriptors[i].name;
 
-            return elle::StatusOk;
+            return elle::Status::Ok;
           }
       }
 
@@ -133,7 +124,7 @@ namespace hole
     // set the type.
     this->type = type;
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -142,10 +133,10 @@ namespace hole
   elle::Status          Model::Create(const elle::String&       name)
   {
     // convert the name into a type.
-    if (Model::Convert(name, this->type) == elle::StatusError)
+    if (Model::Convert(name, this->type) == elle::Status::Error)
       escape("unable to convert the model name into a valid type");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 //
@@ -159,13 +150,13 @@ namespace hole
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return true;
 
       // check the attributes.
       if (this->type != element.type)
-        return elle::StatusFalse;
+        return false;
 
-      return elle::StatusTrue;
+      return true;
     }
 
     ///
@@ -187,7 +178,7 @@ namespace hole
       // display the name.
       std::cout << alignment << "[Model] " << this->type << std::endl;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -197,27 +188,27 @@ namespace hole
     ///
     /// this method serializes the model object.
     ///
-    elle::Status        Model::Serialize(elle::Archive& archive) const
-    {
-      // serialize the internal digest.
-      if (archive.Serialize(static_cast<elle::Natural8>(this->type)) ==
-          elle::StatusError)
-        escape("unable to serialize the attributes");
+    //elle::Status        Model::Serialize(elle::Archive& archive) const
+    //{
+    //  // serialize the internal digest.
+    //  if (archive.Serialize(static_cast<elle::Natural8>(this->type)) ==
+    //      elle::Status::Error)
+    //    escape("unable to serialize the attributes");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the model object.
-    ///
-    elle::Status        Model::Extract(elle::Archive&           archive)
-    {
-      // extract the internal digest.
-      if (archive.Extract(reinterpret_cast<elle::Natural8&>(this->type)) ==
-          elle::StatusError)
-        escape("unable to extract the attributes");
+    /////
+    ///// this method extracts the model object.
+    /////
+    //elle::Status        Model::Extract(elle::Archive&           archive)
+    //{
+    //  // extract the internal digest.
+    //  if (archive.Extract(reinterpret_cast<elle::Natural8&>(this->type)) ==
+    //      elle::Status::Error)
+    //    escape("unable to extract the attributes");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
 }

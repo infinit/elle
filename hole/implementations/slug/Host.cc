@@ -1,3 +1,6 @@
+#include <elle/utility/Time.hh>
+#include <elle/standalone/Morgue.hh>
+
 #include <hole/implementations/slug/Host.hh>
 #include <hole/implementations/slug/Slug.hh>
 #include <hole/implementations/slug/Manifest.hh>
@@ -28,27 +31,27 @@ namespace hole
       ///
       /// XXX
       ///
-      Host::Host(const elle::Locus& locus):
+      Host::Host(const elle::network::Locus& locus):
         state(StateUnknown),
         locus(locus),
         socket(nullptr)
       {
         std::string hostname;
-        if (this->locus.host.Convert(hostname) == elle::StatusError)
+        if (this->locus.host.Convert(hostname) == elle::Status::Error)
           throw std::runtime_error("unable to convert the hostname into a "
                                    "valid locus");
         auto socket =
           new reactor::network::TCPSocket(elle::concurrency::scheduler(),
                                           hostname,
                                           this->locus.port);
-        this->socket = new elle::TCPSocket(socket);
+        this->socket = new elle::network::TCPSocket(socket);
         Connected();
       }
 
       ///
       /// XXX
       ///
-      Host::Host(elle::TCPSocket* connection)
+      Host::Host(elle::network::TCPSocket* connection)
       {
         this->socket = connection;
         this->state = Host::StateConnected;
@@ -74,7 +77,7 @@ namespace hole
       {
         this->socket->Disconnect();
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -83,7 +86,8 @@ namespace hole
       elle::Status      Host::Authenticated()
       {
         this->state = Host::StateAuthenticated;
-        return elle::StatusOk;
+
+        return elle::Status::Ok;
       }
 
 //
@@ -103,14 +107,14 @@ namespace hole
         if (this->state != Host::StateAuthenticated)
           {
             // emit the signal.
-            if (this->signal.dead.Emit(this) == elle::StatusError)
+            if (this->signal.dead.Emit(this) == elle::Status::Error)
               escape("unable to emit the signal");
 
             // set the state.
             this->state = Host::StateDead;
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -125,7 +129,7 @@ namespace hole
         // set the state.
         this->state = Host::StateConnected;
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -138,13 +142,13 @@ namespace hole
           printf("[hole] implementations::slug::Host::Disconnected()\n");
 
         // emit the signal.
-        if (this->signal.dead.Emit(this) == elle::StatusError)
+        if (this->signal.dead.Emit(this) == elle::Status::Error)
           escape("unable to emit the signal");
 
         // set the state.
         this->state = Host::StateDead;
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -160,7 +164,7 @@ namespace hole
         // nothing to do.
         //
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
 //
@@ -183,10 +187,10 @@ namespace hole
                   << "[State] " << std::dec << this->state << std::endl;
 
         // dump the locus.
-        if (this->locus.Dump(margin + 2) == elle::StatusError)
+        if (this->locus.Dump(margin + 2) == elle::Status::Error)
           escape("unable to dump the locus");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     }

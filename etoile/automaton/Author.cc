@@ -35,10 +35,10 @@ namespace etoile
     {
       // if an author exists, return.
       if (context.author != nucleus::Author::Null)
-        return elle::StatusOk;
+        return elle::Status::Ok;
 
       // determine the rights.
-      if (Rights::Determine(context) == elle::StatusError)
+      if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // build the author object according to the subject's role.
@@ -47,7 +47,7 @@ namespace etoile
         case nucleus::RoleOwner:
           {
             // create an owner author.
-            if (context.author.Create() == elle::StatusError)
+            if (context.author.Create() == elle::Status::Error)
               escape("unable to create the author");
 
             break;
@@ -57,17 +57,17 @@ namespace etoile
             nucleus::Index      index;
 
             // open the access.
-            if (Access::Open(context) == elle::StatusError)
+            if (Access::Open(context) == elle::Status::Error)
               escape("unable to open the access");
 
             // lookup the user's subject in the access records.
             if (context.access->Lookup(agent::Agent::Subject,
-                                       index) == elle::StatusError)
+                                       index) == elle::Status::Error)
               escape("unable to lookup the user's identity in the "
                      "access block");
 
             // create a lord author.
-            if (context.author.Create(index) == elle::StatusError)
+            if (context.author.Create(index) == elle::Status::Error)
               escape("unable to create the author");
 
             break;
@@ -80,7 +80,7 @@ namespace etoile
           }
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

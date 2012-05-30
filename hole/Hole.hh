@@ -1,7 +1,8 @@
 #ifndef HOLE_HOLE_HH
 # define HOLE_HOLE_HH
 
-# include <elle/Elle.hh>
+# include <elle/types.hh>
+# include <elle/concurrency/Signal.hh>
 # include <nucleus/Nucleus.hh>
 # include <lune/Lune.hh>
 
@@ -60,8 +61,8 @@ namespace hole
     // XXX
     static State                state;
     static
-    elle::Signal<
-      elle::Parameters<>
+    elle::concurrency::Signal<
+      elle::radix::Parameters<>
       >                         ready;
   };
 

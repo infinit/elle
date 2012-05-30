@@ -38,7 +38,7 @@ namespace etoile
     {
       // if the rights have already been determined, return.
       if (context.rights.role != nucleus::RoleUnknown)
-        return elle::StatusOk;
+        return elle::Status::Ok;
 
       // determine the rights according to the subject.
       if (agent::Agent::Subject == context.object.owner.subject)
@@ -60,7 +60,7 @@ namespace etoile
               // extract the secret key from the token.
               if (context.object.meta.owner.token.Extract(
                     agent::Agent::Identity.pair.k,
-                    context.rights.key) == elle::StatusError)
+                    context.rights.key) == elle::Status::Error)
                 escape("unable to extract the secret key from the token");
             }
 
@@ -76,11 +76,11 @@ namespace etoile
           //
 
           // open the access.
-          if (Access::Open(context) == elle::StatusError)
+          if (Access::Open(context) == elle::Status::Error)
             escape("unable to open the access block");
 
           // check that the subject is referenced in the access block.
-          if (context.access->Exist(agent::Agent::Subject) == elle::StatusTrue)
+          if (context.access->Exist(agent::Agent::Subject) == elle::Status::True)
             {
               //
               // in this case, the subject is referenced in the ACL, hence
@@ -90,7 +90,7 @@ namespace etoile
 
               // retrieve the record associated with this subject.
               if (context.access->Lookup(agent::Agent::Subject,
-                                         record) == elle::StatusError)
+                                         record) == elle::Status::Error)
                 escape("unable to retrieve the access record");
 
               // set the role.
@@ -105,7 +105,7 @@ namespace etoile
                   // extract the secret key from the token.
                   if (record->token.Extract(
                         agent::Agent::Identity.pair.k,
-                        context.rights.key) == elle::StatusError)
+                        context.rights.key) == elle::Status::Error)
                     escape("unable to extract the secret key from the token");
                 }
 
@@ -128,7 +128,7 @@ namespace etoile
             }
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -143,10 +143,10 @@ namespace etoile
       context.rights.role = nucleus::RoleUnknown;
 
       // call Determine().
-      if (Rights::Determine(context) == elle::StatusError)
+      if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -165,7 +165,7 @@ namespace etoile
       // also update the record which also include the user's permission.
       context.rights.record.permissions = permissions;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -215,7 +215,7 @@ namespace etoile
             //
 
             // determine the user's rights on this context.
-            if (Rights::Determine(context) == elle::StatusError)
+            if (Rights::Determine(context) == elle::Status::Error)
               escape("unable to determine the rights");
 
             // check if the current user has the given role.
@@ -227,7 +227,7 @@ namespace etoile
           }
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

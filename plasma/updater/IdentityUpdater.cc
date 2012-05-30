@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       @FIXME@
-//
-// license       infinit
-//
-// author        Raphael Londeix   [Fri 17 Feb 2012 05:49:28 PM CET]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <iostream>
 #include <stdexcept>
 
@@ -20,6 +6,9 @@
 #include "plasma/common/resources.hh"
 
 #include "IdentityUpdater.hh"
+
+#include <lune/IdentitySerializer.hxx>
+#include <lune/PassportSerializer.hxx>
 
 using namespace plasma::updater;
 
@@ -56,12 +45,11 @@ void IdentityUpdater::_DoLogin(std::string const& login,
     }
 
     {
-      using namespace std::placeholders;
       std::cout << "LOGIN NOW !\n";
       this->_api.Login(
           login, password,
-          std::bind(&IdentityUpdater::_OnLogin, this, password, _1),
-          std::bind(&IdentityUpdater::_OnError, this, _1, _2)
+          std::bind(&IdentityUpdater::_OnLogin, this, password, std::placeholders::_1),
+          std::bind(&IdentityUpdater::_OnError, this, std::placeholders::_1, std::placeholders::_2)
       );
     }
   this->_loginDialog.setDisabled(true);
@@ -161,9 +149,9 @@ void IdentityUpdater::_OnDeviceCreated(meta::CreateDeviceResponse const& res)
 
   lune::Passport passport;
 
-  if (passport.Restore(res.passport) == elle::StatusError)
+  if (passport.Restore(res.passport) == elle::Status::Error)
     throw std::runtime_error("Cannot load the passport");
-  if (passport.Store() == elle::StatusError)
+  if (passport.Store() == elle::Status::Error)
     throw std::runtime_error("Cannot save the passport");
 
   Q_EMIT identityUpdated(true);
@@ -178,9 +166,9 @@ void IdentityUpdater::_OnDeviceUpdated(meta::UpdateDeviceResponse const& res)
 
   // XXX check the old passport here ?
 
-  if (passport.Restore(res.passport) == elle::StatusError)
+  if (passport.Restore(res.passport) == elle::Status::Error)
     throw std::runtime_error("Cannot load the passport");
-  if (passport.Store() == elle::StatusError)
+  if (passport.Store() == elle::Status::Error)
     throw std::runtime_error("Cannot save the passport");
 
   Q_EMIT identityUpdated(true);
@@ -193,10 +181,10 @@ std::string IdentityUpdater::_DecryptIdentity(std::string const& password,
   elle::Unique        id;
   lune::Identity      identity;
 
-  if (identity.Restore(identityString)  == elle::StatusError ||
-      identity.Decrypt(password)        == elle::StatusError ||
-      identity.Clear()                  == elle::StatusError ||
-      identity.Save(id)                 == elle::StatusError
+  if (identity.Restore(identityString)  == elle::Status::Error ||
+      identity.Decrypt(password)        == elle::Status::Error ||
+      identity.Clear()                  == elle::Status::Error ||
+      identity.Save(id)                 == elle::Status::Error
       )
     {
       show();
@@ -210,8 +198,8 @@ void IdentityUpdater::_StoreIdentity(std::string const& identityString)
 {
   lune::Identity        identity;
 
-  if (identity.Restore(identityString)  == elle::StatusError ||
-      identity.Store()                  == elle::StatusError)
+  if (identity.Restore(identityString)  == elle::Status::Error ||
+      identity.Store()                  == elle::Status::Error)
     {
       show();
       throw std::runtime_error("Cannot save the identity file.\n");
@@ -224,7 +212,7 @@ namespace
     {
       elle::network::Host::Container hosts;
 
-      if (elle::network::Host::Hosts(hosts) == elle::StatusError)
+      if (elle::network::Host::Hosts(hosts) == elle::Status::Error)
         throw std::runtime_error("Couldn't retreive host list");
 
       if (!hosts.size())
@@ -240,7 +228,7 @@ void IdentityUpdater::_UpdateDevice()
 {
   lune::Passport passport;
 
-  if (passport.Load() == elle::StatusError)
+  if (passport.Load() == elle::Status::Error)
     {
       show();
       throw std::runtime_error("Couldn't load the passport file :'(");

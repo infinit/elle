@@ -17,7 +17,7 @@
 
 #include <elle/system/Platform.hh>
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 ///
 /// this namespace contains several implementations related to the

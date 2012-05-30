@@ -1,3 +1,5 @@
+#include <elle/concurrency/Program.hh>
+
 #include <horizon/linux/FUSE.hh>
 
 #include <hole/Hole.hh>
@@ -252,7 +254,7 @@ namespace horizon
       if (::pthread_create(&FUker::Thread, NULL, &FUker::Setup, NULL) != 0)
         escape("unable to create the FUSE-specific thread");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -265,7 +267,7 @@ namespace horizon
       // this operation will normally make FUSE exit.
       ::umount2(Infinit::Mountpoint.c_str(), MNT_FORCE);
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
   }
 }

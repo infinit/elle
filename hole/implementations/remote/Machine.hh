@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <hole/implementations/remote/Client.hh>
 #include <hole/implementations/remote/Server.hh>
@@ -35,7 +35,7 @@ namespace hole
       /// this class represents the current host.
       ///
       class Machine:
-        public elle::Entity
+        public elle::radix::Entity
       {
       public:
         //

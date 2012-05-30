@@ -1,18 +1,12 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu aug 11 10:44:19 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <iostream>
+
+#include <elle/standalone/Log.hh>
+#include <elle/standalone/Report.hh>
 
 #include <elle/utility/Duration.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -54,9 +48,9 @@ namespace elle
       // compare the attributes.
       if ((this->unit != element.unit) ||
           (this->value != element.value))
-        return StatusFalse;
+        return false;
 
-      return StatusTrue;
+      return true;
     }
 
     ///
@@ -74,17 +68,17 @@ namespace elle
     Status              Duration::Dump(Natural32                margin) const
     {
       String            alignment(margin, ' ');
- 
+
       std::cout << alignment << "[Duration]" << std::endl;
 
       std::cout << alignment << Dumpable::Shift << "[Unit] "
-                << std::nouppercase << std::dec 
+                << std::nouppercase << std::dec
                 << this->unit << std::endl;
       std::cout << alignment << Dumpable::Shift << "[Value] "
-                << std::nouppercase << std::dec 
+                << std::nouppercase << std::dec
                 << this->value << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -94,28 +88,28 @@ namespace elle
     ///
     /// this method serializes the duration object.
     ///
-    Status              Duration::Serialize(Archive&            archive) const
-    {
-      // serialize the internal attributes.
-      if (archive.Serialize(static_cast<Natural8>(this->unit),
-                            this->value) == StatusError)
-        escape("unable to serialize the attributes");
+    //Status              Duration::Serialize(Archive&            archive) const
+    //{
+    //  // serialize the internal attributes.
+    //  if (archive.Serialize(static_cast<Natural8>(this->unit),
+    //                        this->value) == Status::Error)
+    //    escape("unable to serialize the attributes");
 
-      return StatusOk;
-    }
+    //  return Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the duration object.
-    ///
-    Status              Duration::Extract(Archive&              archive)
-    {
-      // extract the internal attributes.
-      if (archive.Extract(reinterpret_cast<Natural8&>(this->unit),
-                          this->value) == StatusError)
-        escape("unable to extract the attributes");
+    /////
+    ///// this method extracts the duration object.
+    /////
+    //Status              Duration::Extract(Archive&              archive)
+    //{
+    //  // extract the internal attributes.
+    //  if (archive.Extract(reinterpret_cast<Natural8&>(this->unit),
+    //                      this->value) == Status::Error)
+    //    escape("unable to extract the attributes");
 
-      return StatusOk;
-    }
+    //  return Status::Ok;
+    //}
 
   }
 }

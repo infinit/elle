@@ -7,18 +7,15 @@
 //
 // author        julien quintard   [mon may 10 15:52:06 2010]
 //
-
 #ifndef LUNE_DICTIONARY_HH
-#define LUNE_DICTIONARY_HH
+# define LUNE_DICTIONARY_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <nucleus/Nucleus.hh>
 
-#include <elle/Elle.hh>
-#include <nucleus/Nucleus.hh>
+# include <lune/Map.hh>
 
-#include <lune/Map.hh>
+# include <elle/idiom/Open.hh>
 
 namespace lune
 {
@@ -32,9 +29,9 @@ namespace lune
   /// Infinit identifiers so that Infinit can be used with local file
   /// system entities such as UNIX's UIDs/GIDs for instance.
   ///
-  class Dictionary:
-    public elle::Object,
-    public virtual elle::Fileable<elle::FormatCustom>
+  class Dictionary
+    : public elle::radix::Object
+    , public elle::io::Fileable<Dictionary>
   {
   public:
     //
@@ -53,10 +50,12 @@ namespace lune
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // archivable
-    elle::Status        Serialize(elle::Archive&) const;
-    elle::Status        Extract(elle::Archive&);
+    //elle::Status        Serialize(elle::Archive&) const;
+    //elle::Status        Extract(elle::Archive&);
 
     // fileable
+    using elle::io::Fileable<Dictionary>::Load;
+    using elle::io::Fileable<Dictionary>::Store;
     elle::Status        Load();
     elle::Status        Store() const;
     elle::Status        Erase() const;
@@ -70,7 +69,7 @@ namespace lune
     //
     // attributes
     //
-    Map<elle::PublicKey>        users;
+    Map<elle::cryptography::PublicKey>        users;
     Map<nucleus::Address>       groups;
   };
 

@@ -1,16 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [wed apr  7 00:29:12 2010]
-//
+#include <iostream>
+#include <sstream>
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/standalone/Log.hh>
+#include <elle/standalone/Report.hh>
+#include <elle/system/System.hh>
 
 #include <etoile/path/Way.hh>
 #include <elle/utility/Unicode.hh>
@@ -80,7 +73,7 @@ namespace etoile
       if (elle::utility::Utf16To8(u16_str,
                                   -1,
                                   &str,
-                                  &str_size) == elle::StatusError)
+                                  &str_size) == elle::Status::Error)
         fail("failed to convert the path to uft8");
 
       // assign the string.
@@ -105,7 +98,7 @@ namespace etoile
       name.clear();
 
       // find the position.
-      last_slash = way.path.rfind(elle::System::Path::Separator);
+      last_slash = way.path.rfind(elle::system::System::Path::Separator);
 
       // check if way.path contains at least a slash
       if (last_slash == elle::String::npos)
@@ -128,7 +121,7 @@ namespace etoile
       // return the length.
       length = static_cast<Length>(this->path.length());
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -142,13 +135,13 @@ namespace etoile
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return true;
 
       // compare the attributes..
       if (this->path != element.path)
-        return elle::StatusFalse;
+        return false;
 
-      return elle::StatusTrue;
+      return true;
     }
 
     ///
@@ -169,7 +162,7 @@ namespace etoile
 
       std::cout << alignment << "[Way] " << this->path << std::endl;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -179,26 +172,26 @@ namespace etoile
     ///
     /// this method serializes the object.
     ///
-    elle::Status        Way::Serialize(elle::Archive&   archive) const
-    {
-      // serialize the target.
-      if (archive.Serialize(this->path) == elle::StatusError)
-        escape("unable to serialize the path");
+    //elle::Status        Way::Serialize(elle::Archive&   archive) const
+    //{
+    //  // serialize the target.
+    //  if (archive.Serialize(this->path) == elle::Status::Error)
+    //    escape("unable to serialize the path");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the object.
-    ///
-    elle::Status        Way::Extract(elle::Archive&     archive)
-    {
-      // extract the target.
-      if (archive.Extract(this->path) == elle::StatusError)
-        escape("unable to extract the path");
+    /////
+    ///// this method extracts the object.
+    /////
+    //elle::Status        Way::Extract(elle::Archive&     archive)
+    //{
+    //  // extract the target.
+    //  if (archive.Extract(this->path) == elle::Status::Error)
+    //    escape("unable to extract the path");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

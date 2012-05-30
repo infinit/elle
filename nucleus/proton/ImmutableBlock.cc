@@ -1,18 +1,12 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [sat may 21 12:22:14 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/io/File.hh>
+#include <elle/io/Piece.hh>
 
-#include <nucleus/proton/ImmutableBlock.hh>
+#include <elle/utility/BufferSerializer.hxx>
+
+#include <elle/serialize/HexadecimalArchive.hh>
+
+#include <nucleus/proton/ImmutableBlockSerializer.hxx>
 
 #include <lune/Lune.hh>
 #include <Infinit.hh>
@@ -56,6 +50,34 @@ namespace nucleus
 // ---------- fileable --------------------------------------------------------
 //
 
+# define STRINGIFY_ADDRESS(address, unique)                                   \
+    do {                                                                      \
+      try                                                                     \
+        {                                                                     \
+          elle::utility::WeakBuffer buf(                                      \
+              address.digest->region.contents,                                \
+              address.digest->region.size                                     \
+          );                                                                  \
+          buf.Save<elle::serialize::HexadecimalArchive>(unique);              \
+        }                                                                     \
+      catch (std::exception const& err)                                       \
+        {                                                                     \
+          escape("%s", err.what());                                           \
+        }                                                                     \
+    } while (false)                                                           \
+
+    namespace
+      {
+
+        elle::Status StringifyAddress(Address const& address,
+                                      elle::String unique)
+        {
+          STRINGIFY_ADDRESS(address, unique);
+          return elle::Status::Ok;
+        }
+
+      }
+
     ///
     /// this method loads the block.
     ///
@@ -64,13 +86,8 @@ namespace nucleus
     {
       elle::Path        path;
       elle::String      unique;
-      elle::Region      region;
-      elle::Archive     archive;
 
-      // first, turn the block's address into a hexadecimal string.
-      if (elle::Hexadecimal::Encode(address.digest->region,
-                                    unique) == elle::StatusError)
-        escape("unable to convert the address in its hexadecimal form");
+      STRINGIFY_ADDRESS(address, unique);
 
       // debug.
       if (Infinit::Configuration.nucleus.debug == true)
@@ -79,27 +96,15 @@ namespace nucleus
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::ImmutableBlock) ==
-          elle::StatusError)
+          elle::Status::Error)
         escape("unable to create the path");
 
       // complete the path with the network name.
-      if (path.Complete(elle::Piece("%NETWORK%", network.name),
-                        elle::Piece("%ADDRESS%", unique)) == elle::StatusError)
+      if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
+                        elle::io::Piece("%ADDRESS%", unique)) == elle::Status::Error)
         escape("unable to complete the path");
 
-      // read the file's content.
-      if (elle::File::Read(path, region) == elle::StatusError)
-        escape("unable to read the file's content");
-
-      // wrap the region into an archive.
-      if (archive.Wrap(region) == elle::StatusError)
-        escape("unable to prepare the archive");
-
-      // extract from the archive.
-      if (archive.Extract(*this) == elle::StatusError)
-        escape("unable to extract the archive");
-
-      return elle::StatusOk;
+      return elle::io::Fileable<ImmutableBlock>::Load(path);
     }
 
     ///
@@ -110,13 +115,8 @@ namespace nucleus
     {
       elle::Path        path;
       elle::String      unique;
-      elle::Region      region;
-      elle::Archive     archive;
 
-      // first, turn the block's address into a hexadecimal string.
-      if (elle::Hexadecimal::Encode(address.digest->region,
-                                    unique) == elle::StatusError)
-        escape("unable to convert the address in its hexadecimal form");
+      STRINGIFY_ADDRESS(address, unique);
 
       // debug.
       if (Infinit::Configuration.nucleus.debug == true)
@@ -125,32 +125,15 @@ namespace nucleus
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::ImmutableBlock) ==
-          elle::StatusError)
+          elle::Status::Error)
         escape("unable to create the path");
 
       // complete the path with the network name.
-      if (path.Complete(elle::Piece("%NETWORK%", network.name),
-                        elle::Piece("%ADDRESS%", unique)) == elle::StatusError)
+      if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
+                        elle::io::Piece("%ADDRESS%", unique)) == elle::Status::Error)
         escape("unable to complete the path");
 
-      // create the archive.
-      if (archive.Create() == elle::StatusError)
-        escape("unable to create the archive");
-
-      // serialize the object.
-      if (archive.Serialize(*this) == elle::StatusError)
-        escape("unable to serialize the object");
-
-      // wrap the string.
-      if (region.Wrap(reinterpret_cast<const elle::Byte*>(archive.contents),
-                      archive.size) == elle::StatusError)
-        escape("unable to wrap the archive in a region");
-
-      // write the file's content.
-      if (elle::File::Write(path, region) == elle::StatusError)
-        escape("unable to write the file's content");
-
-      return elle::StatusOk;
+      return elle::io::Fileable<ImmutableBlock>::Store(path);
     }
 
     ///
@@ -162,10 +145,7 @@ namespace nucleus
       elle::Path        path;
       elle::String      unique;
 
-      // first, turn the block's address into a hexadecimal string.
-      if (elle::Hexadecimal::Encode(address.digest->region,
-                                    unique) == elle::StatusError)
-        escape("unable to convert the address in its hexadecimal form");
+      STRINGIFY_ADDRESS(address, unique);
 
       // debug.
       if (Infinit::Configuration.nucleus.debug == true)
@@ -174,23 +154,23 @@ namespace nucleus
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::ImmutableBlock) ==
-          elle::StatusError)
+          elle::Status::Error)
         escape("unable to create the path");
 
       // complete the path with the network name.
-      if (path.Complete(elle::Piece("%NETWORK%", network.name),
-                        elle::Piece("%ADDRESS%", unique)) == elle::StatusError)
+      if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
+                        elle::io::Piece("%ADDRESS%", unique)) == elle::Status::Error)
         escape("unable to complete the path");
 
       // is the file present...
-      if (elle::File::Exist(path) == elle::StatusTrue)
+      if (elle::io::File::Exist(path) == elle::Status::True)
         {
           // erase the file.
-          if (elle::File::Erase(path) == elle::StatusError)
+          if (elle::io::File::Erase(path) == elle::Status::Error)
             escape("unable to erase the file");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -203,8 +183,7 @@ namespace nucleus
       elle::String      unique;
 
       // first, turn the block's address into a hexadecimal string.
-      if (elle::Hexadecimal::Encode(address.digest->region,
-                                    unique) == elle::StatusError)
+      if (StringifyAddress(address, unique) == elle::Status::Error)
         flee("unable to convert the address in its hexadecimal form");
 
       // debug.
@@ -214,19 +193,19 @@ namespace nucleus
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::ImmutableBlock) ==
-          elle::StatusError)
+          elle::Status::Error)
         flee("unable to create the path");
 
       // complete the path with the network name.
-      if (path.Complete(elle::Piece("%NETWORK%", network.name),
-                        elle::Piece("%ADDRESS%", unique)) == elle::StatusError)
+      if (path.Complete(elle::io::Piece("%NETWORK%", network.name),
+                        elle::io::Piece("%ADDRESS%", unique)) == elle::Status::Error)
         flee("unable to complete the path");
 
       // test the file.
-      if (elle::File::Exist(path) == elle::StatusTrue)
-        return elle::StatusTrue;
+      if (elle::io::File::Exist(path) == elle::Status::True)
+        return elle::Status::True;
 
-      return elle::StatusFalse;
+      return elle::Status::False;
     }
 
   }

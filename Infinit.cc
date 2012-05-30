@@ -1,16 +1,6 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       infinit
-//
-// license       infinit
-//
-// author        julien quintard   [tue may  4 22:01:45 2010]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/cryptography/PublicKeySerializer.hxx>
+#include <elle/utility/Time.hh>
 
 #include <Infinit.hh>
 
@@ -23,7 +13,18 @@
 /// can be used to verify the authenticity of the various certificates
 /// populating the Infinit system.
 ///
-const elle::String              Infinit::Key("DdoCALF1pjOayQtUIHujHB5z7lNUBKIhhalQ893t48U5A6SNWJOzKwx+oi7fD7fZXEenaBnor+hPdF4KuhEIhQMWsPIwlJCvSQm-YzG5x75ab4EjC5ghvAnRQVHbhhbHyuzy4DbS8c6hM5L6yXP0ExtQHKnCZlYjf59jtb6xb691t6zMeILxeWK8F1M19oLPcJd3Gq2EXRFrGb+Zy9fXK4OmjtnzrFk13T5GJ9WiLfeFQ+PlPDlIYc0iyuanvVPQcBHCC0XgGnI5WfGyCgp9zQ17fQAfHy-RvjRlHcx3A1uFjwLRjcNKSjcs1gwetPl6l2hemtNGDUpxephuw7bmDQiisGziv4JJdNhEBn7mXLBD+bJC6-KerrKamb7pWWEsp2Pz09AKrw+1uuIFJVGmQDkgqBI83aqYQV4bPjIBB498TgyNCZxhWviA4DisUi+t4PnNUysbz6+5vgkIMw+ewnF01tDwp7W7g6x-M5Abr15H47d0lGHJpCjFZY+vJeOyLhFM3bDbP9WieHTiia+GuU2yK7JL-pPrVPeoxGUblT8WedxipTxRtBrx4Z9G5pNSF7tVa7G2wp-9pjoaphMpDbyhqi5K91qT7PcdYUS9yCD3Y8u1As1XOPIIbYgSayNWe2-JCvK1i-uzxWQDNpgQE-6gcuvt--G57mOS7jP5-0BGGR5lDaMBAAE=");
+const elle::String              Infinit::Key{
+    "AAAAAAACtdQhPIswro5dUmN7mgacsdxvYhRKXoi9D72nC9cUieMT9FtwP7eqVyeCVV+FMBTZD"
+    "GSxVrh7f9b0TeYqAu8sUbSCkQY+Qcbd2DOoOpuJztINuF2+2nP1LlMFYICeomUKj8wfDSoYo3"
+    "Y7FEuSy2AeJzHnrV+DUjGcJGu02WswraqqQbf/6wNwcXBg0hcvegwuLTjyzmA9TzwT7lHvF3s"
+    "Q2olxjOwk3+leRpiYHwV1yjlU+fR0cQeK+ouNmmIXaDbkM+BhoQDCmzD1nefNucf5J5cSRPHt"
+    "kJiB9LU+Cz226e+Js91zrKEzxhLfaiVNrhIL5PSSz/jD+t7MpA8kTtT002JFOJTDhkuoAVSSN"
+    "5By+/BTQa0609XRQ6+pEvyyZunRYkaZzciYHsg6PxfiURKyeWklK9ltqB2s/bmGLks5Bkblhk"
+    "0ms/V5y2950oc6tUOur/FgnDLGegssriZQpxZ6rwx77/Y1jB8yg+MKu4u7/R/uMfkqrkEbUbY"
+    "bUNRaIvhLOMTXCXKfMA8LrBDmzLiawozl0pVoMPqd1HQCZbl37hEh4afHf3Coivn0uZopdL+/"
+    "xthQTYzR8eTQmyV89lVY/bA4dou2SHtx/potV3a+w3yF8NHzZ0y+Zzfukfs1eY15vTVFn4KHm"
+    "p0npuc430bSNUoWB9KFgw+SOLZL83oTI8cAAAMAAQAB"
+};
 
 ///
 /// this constant contains the version string.
@@ -79,14 +80,14 @@ elle::String                    Infinit::Mountpoint;
 elle::Status            Infinit::Initialize()
 {
   // disable the meta logging.
-  if (elle::Meta::Disable() == elle::StatusError)
+  if (elle::Meta::Disable() == elle::Status::Error)
     escape("unable to disable the meta logging");
 
   //
   // create the autority.
   //
   {
-    elle::PublicKey     K;
+    elle::cryptography::PublicKey     K;
 
     // ignore this step if the key is empty.
     //
@@ -95,11 +96,11 @@ elle::Status            Infinit::Initialize()
     if (Infinit::Key.empty() == false)
       {
         // restore the authority's public key.
-        if (K.Restore(Infinit::Key) == elle::StatusError)
+        if (K.Restore(Infinit::Key) == elle::Status::Error)
           escape("unable to restore the authority's public key");
 
         // create the authority based on the hard-coded public key.
-        if (Infinit::Authority.Create(K) == elle::StatusError)
+        if (Infinit::Authority.Create(K) == elle::Status::Error)
           escape("unable to create the authority");
       }
   }
@@ -109,23 +110,23 @@ elle::Status            Infinit::Initialize()
   //
   {
     // if the configuration file exists...
-    if (Infinit::Configuration.Exist() == elle::StatusTrue)
+    if (Infinit::Configuration.Exist() == elle::Status::True)
       {
         // load the configuration file.
-        if (Infinit::Configuration.Load() == elle::StatusError)
+        if (Infinit::Configuration.Load() == elle::Status::Error)
           escape("unable to load the configuration");
       }
 
     // pull the parameters.
-    if (Infinit::Configuration.Pull() == elle::StatusError)
+    if (Infinit::Configuration.Pull() == elle::Status::Error)
       escape("unable to pull the configuration parameters");
   }
 
   // enable the meta logging.
-  if (elle::Meta::Enable() == elle::StatusError)
+  if (elle::Meta::Enable() == elle::Status::Error)
     escape("unable to enable the meta logging");
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -135,5 +136,5 @@ elle::Status            Infinit::Clean()
 {
   // nothing to do.
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }

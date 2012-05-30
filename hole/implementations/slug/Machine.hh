@@ -1,7 +1,7 @@
 #ifndef HOLE_IMPLEMENTATIONS_SLUG_MACHINE_HH
 # define HOLE_IMPLEMENTATIONS_SLUG_MACHINE_HH
 
-# include <elle/Elle.hh>
+# include <elle/types.hh>
 # include <nucleus/Nucleus.hh>
 # include <lune/Lune.hh>
 
@@ -24,7 +24,7 @@ namespace hole
       /// XXX represents the current host
       ///
       class Machine:
-        public elle::Entity
+        public elle::radix::Entity
       {
       public:
         //
@@ -74,15 +74,14 @@ namespace hole
         elle::Status            Alone();
 
         elle::Status            Authenticate(const lune::Passport&,
-                                             const elle::Port&);
+                                             const elle::network::Port&);
         elle::Status            Authenticated(const Cluster&);
 
         elle::Status            Sweep(Host*);
         elle::Status            Synchronised();
 
         elle::Status            Push(const nucleus::Address&,
-                                     const
-                                       nucleus::Derivable<nucleus::Block>&);
+                                     const nucleus::Block&);
         elle::Status            Pull(const nucleus::Address&,
                                      const nucleus::Version&);
         elle::Status            Wipe(const nucleus::Address&);
@@ -98,7 +97,7 @@ namespace hole
         // attributes
         //
         State                   state;
-        elle::Port              port;
+        elle::network::Port     port;
 
         Guestlist               guestlist;
         Neighbourhood           neighbourhood;

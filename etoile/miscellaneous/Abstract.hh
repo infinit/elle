@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 #include <nucleus/Nucleus.hh>
 
 namespace etoile
@@ -31,7 +31,7 @@ namespace etoile
     /// this class describes an object's meta data.
     ///
     class Abstract:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //
@@ -61,8 +61,8 @@ namespace etoile
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status      Serialize(elle::Archive&) const;
-      elle::Status      Extract(elle::Archive&);
+      //elle::Status      Serialize(elle::Archive&) const;
+      //elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
@@ -71,16 +71,16 @@ namespace etoile
 
       struct
       {
-        elle::Time              creation;
-        elle::Time              modification;
+        elle::utility::Time              creation;
+        elle::utility::Time              modification;
       }                         stamps;
 
       nucleus::Offset           size;
 
       struct
       {
-        elle::PublicKey         owner;
-        elle::PublicKey         author;
+        elle::cryptography::PublicKey         owner;
+        elle::cryptography::PublicKey         author;
       }                         keys;
 
       struct

@@ -1,18 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri jun 24 14:52:08 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <nucleus/proton/Action.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -66,11 +56,11 @@ namespace nucleus
         case Action::TypePush:
           {
             // display the address.
-            if (this->address.Dump(margin + 2) == elle::StatusError)
+            if (this->address.Dump(margin + 2) == elle::Status::Error)
               escape("unable to dump the address");
 
             // display the block.
-            if (this->block->Dump(margin + 2) == elle::StatusError)
+            if (this->block->Dump(margin + 2) == elle::Status::Error)
               escape("unable to dump the block");
 
             break;
@@ -78,7 +68,7 @@ namespace nucleus
         case Action::TypeWipe:
           {
             // display the address.
-            if (this->address.Dump(margin + 2) == elle::StatusError)
+            if (this->address.Dump(margin + 2) == elle::Status::Error)
               escape("unable to dump the address");
 
             break;
@@ -88,8 +78,8 @@ namespace nucleus
             escape("unknown action type");
           }
         }
-      
-      return elle::StatusOk;
+
+      return elle::Status::Ok;
     }
 
   }

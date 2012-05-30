@@ -1,37 +1,18 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon feb 22 11:21:39 2010]
-//
-
 #ifndef ELLE_NETWORK_PACKET_HH
-#define ELLE_NETWORK_PACKET_HH
+# define ELLE_NETWORK_PACKET_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/package/Archive.hh>
+# include <elle/utility/Buffer.hh>
+# include <elle/utility/BufferSerializer.hxx>
+# include <elle/utility/BufferStream.hh>
+# include <elle/serialize/BufferArchive.hh>
 
 namespace elle
 {
-  using namespace package;
-
   namespace network
   {
 
-//
-// ---------- types -----------------------------------------------------------
-//
-
-    ///
     /// this type represents a message in its network format i.e an archive.
-    ///
-    typedef Archive             Packet;
+    typedef elle::utility::Buffer             Packet;
 
   }
 }

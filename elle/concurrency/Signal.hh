@@ -1,30 +1,13 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu sep  1 12:58:07 2011]
-//
-
 #ifndef ELLE_CONCURRENCY_SIGNAL_HH
-#define ELLE_CONCURRENCY_SIGNAL_HH
+# define ELLE_CONCURRENCY_SIGNAL_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#  include <map>
 
-#include <elle/core/Natural.hh>
+# include <elle/types.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Parameters.hh>
-#include <elle/radix/Object.hh>
-#include <elle/radix/Entity.hh>
-
-#include <elle/idiom/Close.hh>
-# include <map>
-#include <elle/idiom/Open.hh>
+# include <elle/radix/Parameters.hh>
+# include <elle/radix/Object.hh>
+# include <elle/radix/Entity.hh>
 
 namespace elle
 {
@@ -47,7 +30,7 @@ namespace elle
     ///
     template <typename... T>
     class Signal< Parameters<T...> >:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //

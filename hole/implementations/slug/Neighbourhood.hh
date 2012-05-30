@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <hole/Label.hh>
 #include <hole/implementations/slug/Host.hh>
@@ -35,14 +35,14 @@ namespace hole
       /// XXX
       ///
       class Neighbourhood:
-        public elle::Entity
+        public elle::radix::Entity
       {
       public:
         //
         // types
         //
-        typedef std::pair<const elle::Locus, Host*>     Value;
-        typedef std::map<const elle::Locus, Host*>      Container;
+        typedef std::pair<const elle::network::Locus, Host*>     Value;
+        typedef std::map<const elle::network::Locus, Host*>      Container;
         typedef typename Container::iterator            Iterator;
         typedef typename Container::const_iterator      Scoutor;
 
@@ -54,15 +54,15 @@ namespace hole
         //
         // methods
         //
-        elle::Status            Add(const elle::Locus&,
+        elle::Status            Add(const elle::network::Locus&,
                                     Host*);
-        elle::Status            Exist(const elle::Locus&) const;
-        elle::Status            Retrieve(const elle::Locus&,
+        elle::Status            Exist(const elle::network::Locus&) const;
+        elle::Status            Retrieve(const elle::network::Locus&,
                                          Host*&) const;
-        elle::Status            Remove(const elle::Locus&);
-        elle::Status            Locate(const elle::Locus&,
+        elle::Status            Remove(const elle::network::Locus&);
+        elle::Status            Locate(const elle::network::Locus&,
                                        Scoutor&) const;
-        elle::Status            Locate(const elle::Locus&,
+        elle::Status            Locate(const elle::network::Locus&,
                                        Iterator&);
 
         //

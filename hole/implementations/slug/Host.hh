@@ -1,7 +1,12 @@
 #ifndef HOLE_IMPLEMENTATIONS_SLUG_HOST_HH
 # define HOLE_IMPLEMENTATIONS_SLUG_HOST_HH
 
-# include <elle/Elle.hh>
+# include <elle/types.hh>
+
+# include <elle/network/fwd.hh>
+# include <elle/concurrency/fwd.hh>
+# include <elle/concurrency/Signal.hh>
+
 
 # include <hole/Label.hh>
 
@@ -12,15 +17,11 @@ namespace hole
     namespace slug
     {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
       ///
       /// XXX
       ///
       class Host:
-        public elle::Entity
+        public elle::radix::Entity
       {
       public:
         //
@@ -42,8 +43,8 @@ namespace hole
         //
         // constructors & destructors
         //
-        Host(const elle::Locus& locus);
-        Host(elle::TCPSocket* connection);
+        Host(const elle::network::Locus& locus);
+        Host(elle::network::TCPSocket* connection);
         ~Host();
 
         //
@@ -74,8 +75,8 @@ namespace hole
         //
         struct
         {
-          elle::Signal<
-            elle::Parameters<
+          elle::concurrency::Signal<
+            elle::radix::Parameters<
               Host*
               >
             >                   dead;
@@ -86,9 +87,8 @@ namespace hole
         //
         State                   state;
 
-        elle::Locus             locus;
-
-        elle::TCPSocket*        socket;
+        elle::network::Locus             locus;
+        elle::network::TCPSocket*        socket;
       };
 
     }

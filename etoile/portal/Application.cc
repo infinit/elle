@@ -1,4 +1,6 @@
 #include <Infinit.hh>
+#include <elle/standalone/Morgue.hh>
+
 #include <etoile/portal/Application.hh>
 #include <etoile/portal/Portal.hh>
 
@@ -48,7 +50,7 @@ namespace etoile
     ///
     /// this method creates the application given its socket.
     ///
-    elle::Status        Application::Create(elle::TCPSocket*  socket)
+    elle::Status        Application::Create(elle::network::TCPSocket*  socket)
     {
       // set the socket.
       this->socket = socket;
@@ -59,14 +61,14 @@ namespace etoile
       // // subscribe to the signal.
       // if (this->socket->signal.error.Subscribe(
       //       elle::Callback<>::Infer(&Application::Error,
-      //                               this)) == elle::StatusError)
+      //                               this)) == elle::Status::Error)
       //   escape("unable to subscribe to the signal");
 
       elle::concurrency::scheduler().CallLater
         (boost::bind(&Application::Abort, this),
          "Application abort", Application::Timeout);
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -91,14 +93,14 @@ namespace etoile
       if (this->processing == Application::ProcessingOff)
         {
           // remove the application from the portal.
-          if (Portal::Remove(this->socket) == elle::StatusError)
+          if (Portal::Remove(this->socket) == elle::Status::Error)
             escape("unable to remove the application from the portal");
 
           // bury the application.
           bury(this);
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -116,7 +118,7 @@ namespace etoile
       // check the return status.
       this->socket->Disconnect();
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -128,10 +130,10 @@ namespace etoile
     {
       // Check if the application has been authenticated.
       if (this->state == Application::StateAuthenticated)
-        return elle::StatusOk;
+        return elle::Status::Ok;
       if (Infinit::Configuration.etoile.debug == true)
         std::cout << "[etoile] portal::Application::Abort()" << std::endl;
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -156,7 +158,7 @@ namespace etoile
                 << "[Processing] " << std::dec
                 << this->processing << std::endl;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

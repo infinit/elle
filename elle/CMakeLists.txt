@@ -17,15 +17,8 @@ ENDIF()
 set_property (SOURCE reactor/src/reactor/backend/coro_io/libcoroutine/asm.S PROPERTY LANGUAGE C)
 
 ADD_LIBRARY(elle
-
 # XXX
 backtrace.cc
-
-  core/Integer.cc
-  core/Large.cc
-  core/Null.cc
-  core/Natural.cc
-  core/Type.cc
 
   standalone/Log.cc
   standalone/Maid.cc
@@ -49,11 +42,9 @@ backtrace.cc
   io/Piece.cc
   io/Path.cc
 
-  package/Archivable.cc
-  package/Archive.cc
-  package/Footprint.cc
-
   system/System.cc
+
+  types.cc
 
   concurrency/Concurrency.cc
   concurrency/Environment.cc
@@ -84,16 +75,18 @@ backtrace.cc
   network/Session.cc
   network/TCPSocket.cc
 
-  utility/Base64.cc
+  utility/Buffer.cc
+  utility/BufferStream.cc
   utility/Duration.cc
   utility/Factory.cc
-  utility/Hexadecimal.cc
   utility/HTTP.cc
-  utility/JSON.cc
   utility/Parser.cc
   utility/REST.cc
   utility/Settings.cc
   utility/Time.cc
+
+  format/ini/Section.cc
+  format/ini/File.cc
 
   format/json/Null.cc
   format/json/Bool.cc
@@ -104,6 +97,12 @@ backtrace.cc
   format/json/Object.cc
   format/json/Integer.cc
   format/json/String.cc
+
+  serialize/ArchiveMode.cc
+  serialize/Base64Archive.cc
+  serialize/JSONArchive.cc
+  serialize/IniArchive.cc
+  serialize/BufferArchive.cc
 
   Elle.cc
   print.cc

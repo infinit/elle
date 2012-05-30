@@ -92,7 +92,7 @@ namespace elle
           }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -102,7 +102,7 @@ namespace elle
     {
       // nothing to do
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

@@ -14,4 +14,9 @@ IF(INFINIT_LINUX OR INFINIT_MACOSX)
   )
 ENDIF(INFINIT_LINUX OR INFINIT_MACOSX)
 
-TARGET_LINK_LIBRARIES(8diary infinit elle nucleus lune etoile horizon ${Boost_LIBRARIES})
+TARGET_LINK_LIBRARIES(
+	8diary
+	infinit elle nucleus lune etoile horizon
+	${Boost_LIBRARIES}
+	boost_thread
+)

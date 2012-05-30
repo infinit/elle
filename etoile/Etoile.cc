@@ -1,4 +1,8 @@
 #include <Infinit.hh>
+
+#include <elle/cryptography/Random.hh>
+
+#include <etoile/Etoile.hh>
 #include <agent/Agent.hh>
 #include <etoile/Etoile.hh>
 #include <hole/Hole.hh>
@@ -33,17 +37,17 @@ elle::Status          Etoile::Initialize()
   // initialize the components.
   //
   {
-    if (path::Path::Initialize() == elle::StatusError)
+    if (path::Path::Initialize() == elle::Status::Error)
       escape("unable to initialize the path");
 
-    if (gear::Gear::Initialize() == elle::StatusError)
+    if (gear::Gear::Initialize() == elle::Status::Error)
       escape("unable to initialize the gear");
 
-    if (shrub::Shrub::Initialize() == elle::StatusError)
+    if (shrub::Shrub::Initialize() == elle::Status::Error)
       escape("unable to initialize the shrub");
 
     // XXX
-    // if (portal::Portal::Initialize() == elle::StatusError)
+    // if (portal::Portal::Initialize() == elle::Status::Error)
     //   escape("unable to initialize the portal");
   }
 
@@ -54,21 +58,22 @@ elle::Status          Etoile::Initialize()
   // generate a random string, create a phrase with it along with
   // the socket used by portal so that applications have everything
   // to connect to and authenticate to portal.
-  {
-    elle::String string;
+  if (!Infinit::Network.empty())
+    {
+      elle::String string;
 
-    if (elle::Random::Generate(string) == elle::StatusError)
-      escape("unable to generate a random string");
+      if (elle::cryptography::Random::Generate(string) == elle::Status::Error)
+        escape("unable to generate a random string");
 
     // if (Etoile::Phrase.Create(string,
-    //                           portal::Portal::Line) == elle::StatusError)
+    //                           portal::Portal::Line) == elle::Status::Error)
     //   escape("unable to create the phrase");
 
-    if (Etoile::Phrase.Store(Infinit::Network) == elle::StatusError)
-      escape("unable to store the phrase");
-  }
+      if (Etoile::Phrase.Store(Infinit::Network) == elle::Status::Error)
+        escape("unable to store the phrase");
+    }
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -79,28 +84,27 @@ elle::Status          Etoile::Clean()
   //
   // delete the phrase.
   //
-  {
-    if (Etoile::Phrase.Erase(Infinit::Network) == elle::StatusError)
+  if (!Infinit::Network.empty() &&
+      Etoile::Phrase.Erase(Infinit::Network) == elle::Status::Error)
       escape("unable to erase the phrase");
-  }
 
   //
   // clean the components.
   //
   {
     // XXX
-    // if (portal::Portal::Clean() == elle::StatusError)
+    // if (portal::Portal::Clean() == elle::Status::Error)
     //   escape("unable to clean the portal");
 
-    if (shrub::Shrub::Clean() == elle::StatusError)
+    if (shrub::Shrub::Clean() == elle::Status::Error)
       escape("unable to clean the shrub");
 
-    if (gear::Gear::Clean() == elle::StatusError)
+    if (gear::Gear::Clean() == elle::Status::Error)
       escape("unable to clean the gear");
 
-    if (path::Path::Clean() == elle::StatusError)
+    if (path::Path::Clean() == elle::Status::Error)
       escape("unable to clean the path");
   }
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }

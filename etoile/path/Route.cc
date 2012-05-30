@@ -1,16 +1,4 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [sat aug  8 16:26:41 2009]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/system/System.hh>
 
 #include <etoile/path/Path.hh>
 #include <etoile/path/Route.hh>
@@ -46,13 +34,13 @@ namespace etoile
     ///
     elle::Status        Route::Initialize()
     {
-      Way               root(elle::System::Path::Separator);
+      Way               root(elle::system::System::Path::Separator);
 
       // create the reference root route.
-      if (Route::Root.Create(root) == elle::StatusError)
+      if (Route::Root.Create(root) == elle::Status::Error)
         escape("unable to create the route");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -62,7 +50,7 @@ namespace etoile
     {
       // nothing to do.
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -108,18 +96,18 @@ namespace etoile
       Slab                      slab;
 
       // check that the way starts with a leading '/'
-      if (way.path[0] != elle::System::Path::Separator)
+      if (way.path[0] != elle::system::System::Path::Separator)
         escape("the path must contain the leading path separator '%c'",
-               elle::System::Path::Separator);
+               elle::system::System::Path::Separator);
 
       // clear the elements.
       this->elements.clear();
 
       // compute the next offsets.
       start =
-        way.path.find_first_not_of(elle::System::Path::Separator);
+        way.path.find_first_not_of(elle::system::System::Path::Separator);
       end =
-        way.path.find_first_of(elle::System::Path::Separator, start);
+        way.path.find_first_of(elle::system::System::Path::Separator, start);
 
       // check if at least one slab is present.
       if (start < way.path.length())
@@ -143,9 +131,9 @@ namespace etoile
 
               // compute the next offsets.
               start =
-                way.path.find_first_not_of(elle::System::Path::Separator, end);
+                way.path.find_first_not_of(elle::system::System::Path::Separator, end);
               end =
-                way.path.find_first_of(elle::System::Path::Separator, start);
+                way.path.find_first_of(elle::system::System::Path::Separator, start);
             }
         }
 
@@ -169,12 +157,12 @@ namespace etoile
 
           // compute the next offsets.
           start =
-            way.path.find_first_not_of(elle::System::Path::Separator, end);
+            way.path.find_first_not_of(elle::system::System::Path::Separator, end);
           end =
-            way.path.find_first_of(elle::System::Path::Separator, start);
+            way.path.find_first_of(elle::system::System::Path::Separator, start);
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -189,7 +177,7 @@ namespace etoile
       // add the slab.
       this->elements.push_back(slab);
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -203,15 +191,15 @@ namespace etoile
       auto              end = base.elements.end();
 
       if (base.elements.size() > this->elements.size())
-        return (elle::StatusFalse);
+        return (elle::Status::False);
 
       for(; i != end; ++i, ++j)
         {
           if (*i != *j)
-            return (elle::StatusFalse);
+            return (elle::Status::False);
         }
 
-      return (elle::StatusTrue);
+      return (elle::Status::True);
     }
 
     ///
@@ -222,7 +210,7 @@ namespace etoile
       // clear the container.
       this->elements.clear();
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -239,20 +227,20 @@ namespace etoile
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return true;
 
       // compare the size.
       if (this->elements.size() != element.elements.size())
-        return elle::StatusFalse;
+        return false;
 
       // for every element.
       for (s = this->elements.begin(), t = element.elements.begin();
            s != this->elements.end();
            s++, t++)
         if (*s != *t)
-          return elle::StatusFalse;
+          return false;
 
-      return elle::StatusTrue;
+      return true;
     }
 
     ///
@@ -265,13 +253,13 @@ namespace etoile
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusFalse;
+        return false;
 
       // compare the size.
       if (this->elements.size() < element.elements.size())
-        return elle::StatusTrue;
+        return true;
       else if (this->elements.size() > element.elements.size())
-        return elle::StatusFalse;
+        return false;
 
       // for every element.
       for (s = this->elements.begin(), t = element.elements.begin();
@@ -279,13 +267,13 @@ namespace etoile
            s++, t++)
         {
           if (*s < *t)
-            return elle::StatusTrue;
+            return true;
           else if (*s > *t)
-            return elle::StatusFalse;
+            return false;
         }
 
       // at this point, both routes seem identical.
-      return elle::StatusFalse;
+      return false;
     }
 
     ///
@@ -319,7 +307,7 @@ namespace etoile
                     << *scoutor << std::endl;
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -329,58 +317,58 @@ namespace etoile
     ///
     /// this method serializes the object.
     ///
-    elle::Status        Route::Serialize(elle::Archive&         archive) const
-    {
-      Route::Scoutor    scoutor;
-      elle::Natural32   size;
+    //elle::Status        Route::Serialize(elle::Archive&         archive) const
+    //{
+    //  Route::Scoutor    scoutor;
+    //  elle::Natural32   size;
 
-      // retrieve the container size.
-      size = this->elements.size();
+    //  // retrieve the container size.
+    //  size = this->elements.size();
 
-      // serialize the size.
-      if (archive.Serialize(size) == elle::StatusError)
-        escape("unable to serialize the size");
+    //  // serialize the size.
+    //  if (archive.Serialize(size) == elle::Status::Error)
+    //    escape("unable to serialize the size");
 
-      // for every element.
-      for (scoutor = this->elements.begin();
-           scoutor != this->elements.end();
-           scoutor++)
-        {
-          // serialize the slab.
-          if (archive.Serialize(*scoutor) == elle::StatusError)
-            escape("unable to serialize the slab");
-        }
+    //  // for every element.
+    //  for (scoutor = this->elements.begin();
+    //       scoutor != this->elements.end();
+    //       scoutor++)
+    //    {
+    //      // serialize the slab.
+    //      if (archive.Serialize(*scoutor) == elle::Status::Error)
+    //        escape("unable to serialize the slab");
+    //    }
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the object.
-    ///
-    elle::Status        Route::Extract(elle::Archive&           archive)
-    {
-      elle::Natural32   size;
-      elle::Natural32   i;
+    /////
+    ///// this method extracts the object.
+    /////
+    //elle::Status        Route::Extract(elle::Archive&           archive)
+    //{
+    //  elle::Natural32   size;
+    //  elle::Natural32   i;
 
-      // extract the size.
-      if (archive.Extract(size) == elle::StatusError)
-        escape("unable to extract the size");
+    //  // extract the size.
+    //  if (archive.Extract(size) == elle::Status::Error)
+    //    escape("unable to extract the size");
 
-      // for every element.
-      for (i = 0; i < size; i++)
-        {
-          Slab          slab;
+    //  // for every element.
+    //  for (i = 0; i < size; i++)
+    //    {
+    //      Slab          slab;
 
-          // extract the slab.
-          if (archive.Extract(slab) == elle::StatusError)
-            escape("unable to extract the slab");
+    //      // extract the slab.
+    //      if (archive.Extract(slab) == elle::Status::Error)
+    //        escape("unable to extract the slab");
 
-          // add the slab.
-          this->elements.push_back(slab);
-        }
+    //      // add the slab.
+    //      this->elements.push_back(slab);
+    //    }
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

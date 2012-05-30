@@ -15,7 +15,6 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
 
 #include <nucleus/proton/Version.hh>
@@ -38,8 +37,8 @@ namespace nucleus
     /// a given mutable block.
     ///
     class History:
-      public elle::Object,
-      public virtual elle::Fileable<elle::FormatCustom>
+      public elle::radix::Object,
+      public elle::io::Fileable<History>
     {
     public:
       //
@@ -76,8 +75,8 @@ namespace nucleus
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status      Serialize(elle::Archive&) const;
-      elle::Status      Extract(elle::Archive&);
+      //elle::Status      Serialize(elle::Archive&) const;
+      //elle::Status      Extract(elle::Archive&);
 
       // fileable
       elle::Status      Load(const Network&,

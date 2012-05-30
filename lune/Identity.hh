@@ -1,26 +1,20 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [wed may  5 20:55:12 2010]
-//
-
 #ifndef LUNE_IDENTITY_HH
-#define LUNE_IDENTITY_HH
+# define LUNE_IDENTITY_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/cryptography.fwd.hh>
+# include <elle/cryptography/KeyPair.hh>
+# include <elle/cryptography/Signature.hh>
 
-#include <elle/Elle.hh>
+# include <elle/io/Fileable.hh>
+# include <elle/radix/Object.hh>
+# include <elle/serialize/Uniquable.hh>
 
-#include <lune/Authority.hh>
+# include <elle/idiom/Open.hh>
 
 namespace lune
 {
+
+  class Authority;
 
 //
 // ---------- classes ---------------------------------------------------------
@@ -33,14 +27,12 @@ namespace lune
   /// note that the name attribute is supposed to be unique as it plays the
   /// role of identifier.
   ///
-  class Identity:
-    public elle::Object,
-    public virtual elle::Fileable<elle::FormatCustom>
+  class Identity
+    : public elle::radix::Object
+    , public elle::io::Fileable<Identity>
+    , public elle::serialize::Uniquable<Identity>
   {
   public:
-    //
-    // constants
-    //
     static const elle::String           Extension;
 
     //
@@ -63,7 +55,7 @@ namespace lune
     //
     elle::Status        Create(elle::String const&,
                                const elle::String&,
-                               const elle::KeyPair&);
+                               elle::cryptography::KeyPair const&);
 
     elle::Status        Encrypt(const elle::String&);
     elle::Status        Decrypt(const elle::String&);
@@ -84,10 +76,11 @@ namespace lune
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // archivable
-    elle::Status        Serialize(elle::Archive&) const;
-    elle::Status        Extract(elle::Archive&);
+    //elle::Status        Serialize(elle::Archive&) const;
+    //elle::Status        Extract(elle::Archive&);
 
     // fileable
+    ELLE_IO_USING_FILEABLE_METHODS(Identity);
     elle::Status        Load();
     elle::Status        Store() const;
     elle::Status        Erase() const;
@@ -104,13 +97,15 @@ namespace lune
   private:
     elle::String        _id;
   public: // XXX
-    elle::String        name;
-    elle::KeyPair       pair;
-    elle::Signature     signature;
+    elle::String                      name;
+    elle::cryptography::KeyPair       pair;
+    elle::cryptography::Signature     signature;
 
-    elle::Cipher*       cipher;
+    elle::cryptography::Cipher*       cipher;
   };
 
 }
+
+# include <elle/idiom/Close.hh>
 
 #endif

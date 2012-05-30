@@ -18,11 +18,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Character.hh>
-#include <elle/core/Void.hh>
-#include <elle/core/Natural.hh>
-
-#include <elle/radix/Status.hh>
+#include <elle/types.hh>
 
 #include <elle/io/Dumpable.hh>
 
@@ -34,7 +30,7 @@
 namespace elle
 {
   using namespace system;
-  using namespace core;
+
   using namespace io;
 
   namespace radix

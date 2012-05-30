@@ -11,6 +11,7 @@
 # include <boost/noncopyable.hpp>
 # include <boost/call_traits.hpp>
 
+# include "fwd.hh"
 # include "ArchiveMode.hh"
 # include "ArchivableClass.hh"
 
@@ -36,13 +37,24 @@ namespace elle { namespace serialize {
         {}
       };
 
+    namespace detail
+    {
+      // assume clean type
+      template<typename T> struct IsNamedValue
+        { static bool const value = false; };
+      template<typename T> struct IsNamedValue<NamedValue<T>>
+        { static bool const value = true;  };
+
+    }
+
+    /// Check whether or not the type T could be expressed as NamedValue<K>.
     template<typename T> struct IsNamedValue
       {
-        static bool const value = false;
-      };
-    template<typename T> struct IsNamedValue<NamedValue<T>>
-      {
-        static bool const value = true;
+        static bool const value = detail::IsNamedValue<
+            typename std::remove_cv<
+              typename std::remove_reference<T>::type
+            >::type
+        >::value;
       };
 
     /// Helper to infer the right NamedValue<T> type.
@@ -79,12 +91,35 @@ namespace elle { namespace serialize {
     /// for each type that doesn't need to store its version.
     ///
     template<typename T> struct StoreClassVersion
-      {
-        static bool const value = true;
-      };
+      { static bool const value = true; };
 
-    // Helper to select to right stream type depending on the archive mode
-    template<ArchiveMode mode, typename CharType> struct _TypeToStreamType;
+    template<typename T> struct StoreClassVersion<T&>
+      { static bool const value = StoreClassVersion<T>::value; };
+    template<typename T> struct StoreClassVersion<T const>
+      { static bool const value = StoreClassVersion<T>::value; };
+    template<typename T> struct StoreClassVersion<T volatile>
+      { static bool const value = StoreClassVersion<T>::value; };
+    template<typename T> struct StoreClassVersion<T*>
+      { static_assert(std::is_same<T,T>::value, "Should not happen !"); };
+
+    /// Default stream type selector. Select the right stream type depending on
+    /// the archive mode.
+    template<
+        ArchiveMode mode
+      , typename CharType
+    > struct DefaultStreamTypeSelect;
+
+    template<typename CharType>
+      struct DefaultStreamTypeSelect<ArchiveMode::Input, CharType>
+        { typedef std::basic_istream<CharType> type; };
+
+    template<typename CharType>
+      struct DefaultStreamTypeSelect<ArchiveMode::Output, CharType>
+        { typedef std::basic_ostream<CharType> type; };
+
+
+    /// Default char type used in BaseArchive
+    typedef char DefaultCharType;
 
     ///
     /// The base archive class implements portable raw binary operations, but
@@ -93,13 +128,31 @@ namespace elle { namespace serialize {
     /// c string are not supported by default, but you can make your own archive
     /// and add methods Load(char const*) and Save(char const*) to achieve that.
     ///
-    /// STL containers and strings are fully supported with some limitations :
+    /// STL containers and strings are fully supported with some limitations:
     ///   - string size is limited to the maximum number contained in
     ///     BaseArchive::StringSizeType
     ///   - list size is limited to the maximum number  contained in
     ///     BaseArchive::SequenceSizeType
     ///
-    template<ArchiveMode mode_, typename Archive, typename CharType_ = char>
+    /// Template parameters:
+    ///   - mode_: an archive can only in Input mode, or in Output mode.
+    ///   - Archive: the child class (SRTP)
+    ///   - CharType_: expected character type for the stream
+    ///   - StreamTypeSelect: allows to select any kind of stream types. See
+    ///     the default value DefaultStreamTypeSelect for an example.
+    ///
+    /// A stream type has to implement some of `std::[io]stream' methods in
+    /// order to be compatible with archive types. Fortunatly, most of them
+    /// only need that streams provide the two methods `read(char*, size_t)'
+    /// and `write(char const*, size_t)'.
+    ///
+    template<
+        ArchiveMode mode_
+      , typename Archive
+      , typename CharType_ = DefaultCharType
+      , template<ArchiveMode mode__, typename CharType__>
+          class StreamTypeSelect = DefaultStreamTypeSelect
+    >
     class BaseArchive : private boost::noncopyable
     {
     public:
@@ -110,9 +163,10 @@ namespace elle { namespace serialize {
       typedef CharType_                                     CharType;
 
       /// The StreamType might be overriden by a derived class
-      typedef typename _TypeToStreamType<
-          mode_, CharType_
-      >::StreamType                                         StreamType;
+      typedef typename StreamTypeSelect<
+          mode_
+        , CharType_
+      >::type                                               StreamType;
 
       // String type
       typedef std::basic_string<CharType_>                  StringType;
@@ -147,6 +201,11 @@ namespace elle { namespace serialize {
       BaseArchive(StreamType& stream) :
         _stream(stream)
       {}
+
+      template<typename T>
+      BaseArchive(StreamType& stream, T& value) :
+        _stream(stream)
+      { *this & value; }
 
     protected:
       /// return the most derived type
@@ -222,6 +281,13 @@ namespace elle { namespace serialize {
           return this->self();
         }
 
+      template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::NotPointer::
+        type operator >>(T const&& val)
+        {
+          Access::Load(this->self(), val);
+          return this->self();
+        }
+
       /// input_ar >> named_value
       template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::NamedValue::
         type operator >>(T const& val)
@@ -247,6 +313,13 @@ namespace elle { namespace serialize {
           return *this >> val;
         }
 
+      template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::NotPointer::
+        type operator &(T const&& val)
+        {
+          Access::Load(this->self(), val);
+          return this->self();
+        }
+
       ///
       /// Load an object on the heap.  If the constructors need arguments, you
       /// will have to override the LoadConstruct function of the
@@ -255,7 +328,7 @@ namespace elle { namespace serialize {
       template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::ConstructPtr::
         type Construct()
         {
-          T* ptr = static_cast<T*>(::malloc(sizeof(T)));
+          T* ptr = static_cast<T*>(::operator new(sizeof(T)));
           if (ptr == nullptr)
             throw std::bad_alloc();
           try
@@ -264,7 +337,8 @@ namespace elle { namespace serialize {
             }
           catch (std::exception const&)
             {
-              ::free(ptr);
+              //::free(ptr);
+              delete ptr;
               throw;
             }
           return std::unique_ptr<T, ConstructDeleter<T>>(ptr);
@@ -281,6 +355,7 @@ namespace elle { namespace serialize {
         *this >> value;
       }
 
+      inline void Save(bool val);
       inline void Save(char val);
       inline void Save(uint8_t val);
       inline void Save(uint16_t val);
@@ -294,9 +369,15 @@ namespace elle { namespace serialize {
       inline void Save(double val);
       inline void Save(std::string const& val);
       inline void Save(ClassVersionType const& classVersion);
-      template<typename T> inline void Save(T const& val);
+      template<typename T>
+        inline typename std::enable_if<std::is_enum<T>::value == true>::type
+        Save(T value);
+      template<typename T>
+        inline typename std::enable_if<std::is_enum<T>::value == false>::type
+        Save(T const& value);
       inline void SaveBinary(void const* data, std::streamsize size);
 
+      inline void Load(bool& val);
       inline void Load(char& val);
       inline void Load(int8_t& val);
       inline void Load(uint8_t& val);
@@ -310,8 +391,17 @@ namespace elle { namespace serialize {
       inline void Load(double& val);
       inline void Load(std::string& val);
       inline void Load(ClassVersionType& classVersion);
-      template<typename T> inline void Load(T& val);
-      template<typename T> inline void LoadConstruct(T* ptr);
+      template<typename T>
+        inline typename std::enable_if<std::is_enum<T>::value == true>::type
+        Load(T& value);
+      template<typename T>
+        inline typename std::enable_if<
+              std::is_enum<T>::value == false
+          &&  IsNamedValue<T>::value == false
+        >::type
+        Load(T& val);
+      template<typename T>
+        inline void LoadConstruct(T* ptr);
       inline void LoadBinary(void* data, std::streamsize size);
 
       // This allows you to write raw c string into an archive
@@ -320,17 +410,6 @@ namespace elle { namespace serialize {
       //inline void Save(wchar_t const* val)
       //  { this->self().Save(std::wstring(val)); }
     };
-
-    template<typename CharType>
-      struct _TypeToStreamType<ArchiveMode::Input, CharType>
-      {
-        typedef std::basic_istream<CharType> StreamType;
-      };
-    template<typename CharType>
-      struct _TypeToStreamType<ArchiveMode::Output, CharType>
-      {
-        typedef std::basic_ostream<CharType> StreamType;
-      };
 
 }} // !namespace elle::serialize
 

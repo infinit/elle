@@ -45,7 +45,7 @@ namespace elle
 //
 
 outward(elle::test::TagProbe,
-        parameters(elle::core::String&,
+        parameters(elle::String&,
                    elle::test::Table&));
 
 #endif

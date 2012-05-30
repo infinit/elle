@@ -31,10 +31,10 @@ namespace nucleus
     elle::Status        Proton::Initialize()
     {
       // initialize the address.
-      if (Address::Initialize() == elle::StatusError)
+      if (Address::Initialize() == elle::Status::Error)
         escape("unable to initialize the address");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -43,10 +43,10 @@ namespace nucleus
     elle::Status        Proton::Clean()
     {
       // clean the address.
-      if (Address::Clean() == elle::StatusError)
+      if (Address::Clean() == elle::Status::Error)
         escape("unable to clean the address");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

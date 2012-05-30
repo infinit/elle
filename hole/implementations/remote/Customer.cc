@@ -1,3 +1,4 @@
+
 #include <hole/implementations/remote/Customer.hh>
 #include <hole/implementations/remote/Remote.hh>
 
@@ -27,7 +28,7 @@ namespace hole
       ///
       /// default constructor.
       ///
-      Customer::Customer(elle::TCPSocket*         socket)
+      Customer::Customer(elle::network::TCPSocket*         socket)
         : state(Customer::StateUnknown)
         , socket(socket)
       {}
@@ -60,10 +61,10 @@ namespace hole
         this->state = Customer::StateDead;
 
         // emit the signal.
-        if (this->signal.dead.Emit(this) == elle::StatusError)
+        if (this->signal.dead.Emit(this) == elle::Status::Error)
           escape("unable to emit the signal");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -77,12 +78,12 @@ namespace hole
           printf("[hole] implementations::remote::Customer::Error()\n");
 
         // log the error.
-        log(error.c_str());
+        log("%s", error.c_str());
 
         // disconnect the socket, though that may be unecessary.
         this->socket->Disconnect();
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -100,11 +101,11 @@ namespace hole
         if (this->state != Customer::StateAuthenticated)
           {
             // emit the signal.
-            if (this->signal.dead.Emit(this) == elle::StatusError)
+            if (this->signal.dead.Emit(this) == elle::Status::Error)
               escape("unable to emit the signal");
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
 //
@@ -124,7 +125,7 @@ namespace hole
         std::cout << alignment << elle::Dumpable::Shift
                   << "[State] " << this->state << std::endl;
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     }

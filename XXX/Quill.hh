@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
@@ -148,15 +148,15 @@ namespace nucleus
                                       Handle&,
                                       const Pins = PinAll);
       elle::Status              Traverse(const elle::Natural32 = 0);
-      elle::Status              Seal(const elle::SecretKey&,
+      elle::Status              Seal(elle::cryptography::SecretKey const&,
                                      Address&);
 
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status              Serialize(elle::Archive&) const;
-      elle::Status              Extract(elle::Archive&);
+      //elle::Status              Serialize(elle::Archive&) const;
+      //elle::Status              Extract(elle::Archive&);
 
       //
       // attributes

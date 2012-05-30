@@ -1,54 +1,31 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 21 23:56:01 2009]
-//
-
 #ifndef ELLE_UTILITY_TIME_HH
-#define ELLE_UTILITY_TIME_HH
+# define ELLE_UTILITY_TIME_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/core/Boolean.hh>
-#include <elle/core/Natural.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Object.hh>
+# include <elle/utility/Duration.hh>
 
-#include <elle/package/Archive.hh>
+# include <elle/system/Platform.hh>
 
-#include <elle/utility/Duration.hh>
+# include <elle/idiom/Close.hh>
+#  include <QDateTime>
+#  include <ctime>
 
-#include <elle/system/Platform.hh>
+#  if defined(INFINIT_WINDOWS)
+#   include <windows.h>
+#  endif
 
-#include <elle/idiom/Close.hh>
-# include <QDateTime>
-# include <ctime>
-
-# if defined(INFINIT_WINDOWS)
-#  include <windows.h>
-# endif
-
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
-  using namespace package;
 
   namespace utility
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a timestamp through the number of nanoseconds
@@ -99,8 +76,8 @@ namespace elle
       Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status            Serialize(Archive&) const;
-      Status            Extract(Archive&);
+      //Status            Serialize(Archive&) const;
+      //Status            Extract(Archive&);
 
       //
       // attributes

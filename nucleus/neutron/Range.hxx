@@ -1,30 +1,13 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar 31 23:36:12 2010]
-//
-
 #ifndef NUCLEUS_NEUTRON_RANGE_HXX
-#define NUCLEUS_NEUTRON_RANGE_HXX
+# define NUCLEUS_NEUTRON_RANGE_HXX
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <nucleus/neutron/Index.hh>
+# include <elle/standalone/Log.hh>
+# include <nucleus/neutron/Index.hh>
 
 namespace nucleus
 {
   namespace neutron
   {
-
-//
-// ---------- constructors & destructors --------------------------------------
-//
 
     ///
     /// default constructor.
@@ -74,7 +57,7 @@ namespace nucleus
             }
 
           // add the item to the container.
-          if (this->Add(item) == elle::StatusError)
+          if (this->Add(item) == elle::Status::Error)
             fail("unable to add the item to the container");
         }
     }
@@ -118,7 +101,7 @@ namespace nucleus
       // add the item to the container.
       this->container.push_back(item);
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -130,10 +113,10 @@ namespace nucleus
       Range<T>::Scoutor scoutor;
 
       // try to locate the entry.
-      if (this->Locate(symbol, scoutor) != elle::StatusTrue)
-        return elle::StatusFalse;
+      if (this->Locate(symbol, scoutor) != elle::Status::True)
+        return elle::Status::False;
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -152,12 +135,12 @@ namespace nucleus
 
       // try to locate the item.
       if (this->Locate(symbol, scoutor) == false)
-        return elle::StatusFalse;
+        return elle::Status::False;
 
       // return the item.
       item = *scoutor;
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -178,7 +161,7 @@ namespace nucleus
       // erase the item from the container.
       this->container.erase(iterator);
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -190,7 +173,7 @@ namespace nucleus
       // return the size.
       size = this->container.size();
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -215,11 +198,11 @@ namespace nucleus
               // return the scoutor.
               scoutor = s;
 
-              return elle::StatusTrue;
+              return elle::Status::True;
             }
         }
 
-      return elle::StatusFalse;
+      return elle::Status::False;
     }
 
     ///
@@ -246,11 +229,11 @@ namespace nucleus
               // return the iterator.
               iterator = i;
 
-              return elle::StatusTrue;
+              return elle::Status::True;
             }
         }
 
-      return elle::StatusFalse;
+      return elle::Status::False;
     }
 
     ///
@@ -264,7 +247,7 @@ namespace nucleus
       // activate the option.
       this->options = Range<T>::OptionDetach;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -282,11 +265,11 @@ namespace nucleus
 
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return true;
 
       // compare the sizes.
       if (this->container.size() != element.container.size())
-        return elle::StatusFalse;
+        return false;
 
       // go through the elements.
       for (s = this->container.begin(), t = element.container.begin();
@@ -295,10 +278,10 @@ namespace nucleus
         {
           // compare the entries.
           if (*s != *t)
-            return elle::StatusFalse;
+            return false;
         }
 
-      return elle::StatusTrue;
+      return true;
     }
 
     ///
@@ -334,11 +317,11 @@ namespace nucleus
           T*            item = *scoutor;
 
           // dump the item.
-          if (item->Dump(margin + 2) == elle::StatusError)
+          if (item->Dump(margin + 2) == elle::Status::Error)
             escape("unable to dump the item");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -348,66 +331,66 @@ namespace nucleus
     ///
     /// this method serializes the range object.
     ///
-    template <typename T>
-    elle::Status        Range<T>::Serialize(elle::Archive&      archive) const
-    {
-      Range<T>::Scoutor scoutor;
-      Size              size;
+    //template <typename T>
+    //elle::Status        Range<T>::Serialize(elle::Archive&      archive) const
+    //{
+    //  Range<T>::Scoutor scoutor;
+    //  Size              size;
 
-      // retrieve the number of items.
-      size = this->container.size();
+    //  // retrieve the number of items.
+    //  size = this->container.size();
 
-      // serialize the number of items.
-      if (archive.Serialize(size) == elle::StatusError)
-        escape("unable to serialize the number of items");
+    //  // serialize the number of items.
+    //  if (archive.Serialize(size) == elle::Status::Error)
+    //    escape("unable to serialize the number of items");
 
-      // serialize every item.
-      for (scoutor = this->container.begin();
-           scoutor != this->container.end();
-           scoutor++)
-        {
-          T*            item = *scoutor;
+    //  // serialize every item.
+    //  for (scoutor = this->container.begin();
+    //       scoutor != this->container.end();
+    //       scoutor++)
+    //    {
+    //      T*            item = *scoutor;
 
-          // serialize the item.
-          if (archive.Serialize(*item) == elle::StatusError)
-            escape("unable to serialize the item");
-        }
+    //      // serialize the item.
+    //      if (archive.Serialize(*item) == elle::Status::Error)
+    //        escape("unable to serialize the item");
+    //    }
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
     ///
     /// this method extracts the range object.
     ///
-    template <typename T>
-    elle::Status        Range<T>::Extract(elle::Archive&        archive)
-    {
-      Size              size;
-      Index             i;
+    //template <typename T>
+    //elle::Status        Range<T>::Extract(elle::Archive&        archive)
+    //{
+    //  Size              size;
+    //  Index             i;
 
-      // extract the number of items.
-      if (archive.Extract(size) == elle::StatusError)
-        escape("unable to extract the number of items");
+    //  // extract the number of items.
+    //  if (archive.Extract(size) == elle::Status::Error)
+    //    escape("unable to extract the number of items");
 
-      // extract every item.
-      for (i = 0; i < size; i++)
-        {
-          // allocate a new item.
-          auto item = new T;
+    //  // extract every item.
+    //  for (i = 0; i < size; i++)
+    //    {
+    //      // allocate a new item.
+    //      auto item = new T;
 
-          // extract the item.
-          if (archive.Extract(*item) == elle::StatusError)
-            {
-              delete item;
-              escape("unable to extract the item");
-            }
+    //      // extract the item.
+    //      if (archive.Extract(*item) == elle::Status::Error)
+    //        {
+    //          delete item;
+    //          escape("unable to extract the item");
+    //        }
 
-          // add the item to the container.
-          this->container.push_back(item);
-        }
+    //      // add the item to the container.
+    //      this->container.push_back(item);
+    //    }
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

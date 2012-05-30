@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 #include <elle/Manifest.hh>
 
 #include <lune/Lune.hh>
@@ -75,7 +75,7 @@ namespace hole
       //
       enum Tag
         {
-          TagChallenge = elle::Range<Component>::First + 1,
+          TagChallenge = elle::network::Range<Component>::First + 1,
           TagPassport,
           TagPort,
           TagAuthenticated,
@@ -105,7 +105,7 @@ message(hole::implementations::cirkle::TagChallenge,
 message(hole::implementations::cirkle::TagPassport,
         parameters(lune::Passport))
 message(hole::implementations::cirkle::TagPort,
-        parameters(elle::Port))
+        parameters(elle::network::Port))
 message(hole::implementations::cirkle::TagAuthenticated,
         parameters())
 

@@ -1,16 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       network
-//
-// license       infinit
-//
-// author        julien quintard   [thu mar  4 17:51:46 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/Elle.hh>
+#include <elle/io/Console.hh>
+#include <elle/io/Directory.hh>
+#include <elle/io/Piece.hh>
+#include <elle/utility/Parser.hh>
 
 #include <satellites/network/Network.hh>
 
@@ -51,7 +43,7 @@ namespace satellite
     //
     {
       // does the network already exist.
-      if (descriptor.Exist(name) == elle::StatusTrue)
+      if (descriptor.Exist(name) == elle::Status::True)
         escape("this network seems to already exist");
 
       // check the model.
@@ -59,11 +51,11 @@ namespace satellite
         escape("please specify the model of the network");
 
       // does the administrator user exist.
-      if (identity.Exist(administrator) == elle::StatusFalse)
+      if (identity.Exist(administrator) == elle::Status::False)
         escape("the administrator user does not seem to exist");
 
       // check if the authority exists.
-      if (authority.Exist() == elle::StatusFalse)
+      if (authority.Exist() == elle::Status::False)
         escape("unable to locate the authority file");
     }
 
@@ -77,18 +69,18 @@ namespace satellite
       // prompt the user for the passphrase.
       prompt = "Enter passphrase for the authority: ";
 
-      if (elle::Console::Input(
+      if (elle::io::Console::Input(
             pass,
             prompt,
-            elle::Console::OptionPassword) == elle::StatusError)
+            elle::io::Console::OptionPassword) == elle::Status::Error)
         escape("unable to read the input");
 
       // load the authority.
-      if (authority.Load() == elle::StatusError)
+      if (authority.Load() == elle::Status::Error)
         escape("unable to load the authority");
 
       // decrypt the authority.
-      if (authority.Decrypt(pass) == elle::StatusError)
+      if (authority.Decrypt(pass) == elle::Status::Error)
         escape("unable to decrypt the authority");
     }
 
@@ -102,18 +94,18 @@ namespace satellite
       // prompt the user for the passphrase.
       prompt = "Enter passphrase for keypair '" + administrator + "': ";
 
-      if (elle::Console::Input(
+      if (elle::io::Console::Input(
             pass,
             prompt,
-            elle::Console::OptionPassword) == elle::StatusError)
+            elle::io::Console::OptionPassword) == elle::Status::Error)
         escape("unable to read the input");
 
       // load the identity.
-      if (identity.Load(administrator) == elle::StatusError)
+      if (identity.Load(administrator) == elle::Status::Error)
         escape("unable to load the administrator's identity");
 
       // decrypt the authority.
-      if (identity.Decrypt(pass) == elle::StatusError)
+      if (identity.Decrypt(pass) == elle::Status::Error)
         escape("unable to decrypt the identity");
     }
 
@@ -122,21 +114,21 @@ namespace satellite
     //
     {
       // create the network object.
-      if (network.Create(name) == elle::StatusError)
+      if (network.Create(name) == elle::Status::Error)
         escape("unable to create the network object");
 
       // create directory object, setting the user's as the administrator.
       if (directory.Create(nucleus::GenreDirectory,
-                           identity.pair.K) == elle::StatusError)
+                           identity.pair.K) == elle::Status::Error)
         escape("unable to create the object directory");
 
       // seal the directory.
       if (directory.Seal(identity.pair.k,
-                         nucleus::Access::Null) == elle::StatusError)
+                         nucleus::Access::Null) == elle::Status::Error)
         escape("unable to seal the object");
 
       // compute the directory's address.
-      if (directory.Bind(address) == elle::StatusError)
+      if (directory.Bind(address) == elle::Status::Error)
         escape("unable to bind the object to an address");
     }
 
@@ -153,15 +145,15 @@ namespace satellite
             lune::Descriptor::History,
             lune::Descriptor::Extent,
             lune::Descriptor::Contention,
-            lune::Descriptor::Balancing) == elle::StatusError)
+            lune::Descriptor::Balancing) == elle::Status::Error)
         escape("unable to create the network's descriptor");
 
       // seal the descriptor.
-      if (descriptor.Seal(authority) == elle::StatusError)
+      if (descriptor.Seal(authority) == elle::Status::Error)
         escape("unable to seal the descriptor");
 
       // store the descriptor.
-      if (descriptor.Store(name) == elle::StatusError)
+      if (descriptor.Store(name) == elle::Status::Error)
         escape("unable to store the descriptor file");
     }
 
@@ -171,11 +163,11 @@ namespace satellite
     {
       // store the block.
       if (directory.Store(network,
-                          address) == elle::StatusError)
+                          address) == elle::Status::Error)
         escape("unable to store the block");
     }
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -191,10 +183,10 @@ namespace satellite
       elle::Path        path;
 
       // does the network exist.
-      if (descriptor.Exist(name) == elle::StatusTrue)
+      if (descriptor.Exist(name) == elle::Status::True)
         {
           // remove the descriptor.
-          if (descriptor.Erase(name) == elle::StatusError)
+          if (descriptor.Erase(name) == elle::Status::Error)
             escape("unable to erase the descriptor");
         }
     }
@@ -206,22 +198,22 @@ namespace satellite
       elle::Path        path;
 
       // create the reserve path.
-      if (path.Create(lune::Lune::Network::Reserve::Root) == elle::StatusError)
+      if (path.Create(lune::Lune::Network::Reserve::Root) == elle::Status::Error)
         escape("unable to create the path");
 
       // complete the path with the network name.
-      if (path.Complete(elle::Piece("%NETWORK%", name)) == elle::StatusError)
+      if (path.Complete(elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
         escape("unable to complete the path");
 
       // if the reserve exists, clear it and remove it.
-      if (elle::Directory::Exist(path) == elle::StatusTrue)
+      if (elle::io::Directory::Exist(path) == elle::Status::True)
         {
           // clear the reserve content.
-          if (elle::Directory::Clear(path) == elle::StatusError)
+          if (elle::io::Directory::Clear(path) == elle::Status::Error)
             escape("unable to clear the directory");
 
           // remove the directory.
-          if (elle::Directory::Remove(path) == elle::StatusError)
+          if (elle::io::Directory::Remove(path) == elle::Status::Error)
             escape("unable to remove the directory");
         }
     }
@@ -233,22 +225,22 @@ namespace satellite
       elle::Path        path;
 
       // create the shelter path.
-      if (path.Create(lune::Lune::Network::Shelter::Root) == elle::StatusError)
+      if (path.Create(lune::Lune::Network::Shelter::Root) == elle::Status::Error)
         escape("unable to create the path");
 
       // complete the path with the network name.
-      if (path.Complete(elle::Piece("%NETWORK%", name)) == elle::StatusError)
+      if (path.Complete(elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
         escape("unable to complete the path");
 
       // if the shelter exists, clear it and remove it.
-      if (elle::Directory::Exist(path) == elle::StatusTrue)
+      if (elle::io::Directory::Exist(path) == elle::Status::True)
         {
           // clear the reserve content.
-          if (elle::Directory::Clear(path) == elle::StatusError)
+          if (elle::io::Directory::Clear(path) == elle::Status::Error)
             escape("unable to clear the directory");
 
           // remove the directory.
-          if (elle::Directory::Remove(path) == elle::StatusError)
+          if (elle::io::Directory::Remove(path) == elle::Status::Error)
             escape("unable to remove the directory");
         }
     }
@@ -260,23 +252,23 @@ namespace satellite
       elle::Path        path;
 
       // create the network path.
-      if (path.Create(lune::Lune::Network::Root) == elle::StatusError)
+      if (path.Create(lune::Lune::Network::Root) == elle::Status::Error)
         escape("unable to create the path");
 
       // complete the path with the network name.
-      if (path.Complete(elle::Piece("%NETWORK%", name)) == elle::StatusError)
+      if (path.Complete(elle::io::Piece("%NETWORK%", name)) == elle::Status::Error)
         escape("unable to complete the path");
 
       // clear the network directory content.
-      if (elle::Directory::Clear(path) == elle::StatusError)
+      if (elle::io::Directory::Clear(path) == elle::Status::Error)
         escape("unable to clear the directory");
 
       // remove the directory.
-      if (elle::Directory::Remove(path) == elle::StatusError)
+      if (elle::io::Directory::Remove(path) == elle::Status::Error)
         escape("unable to remove the directory");
     }
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -291,7 +283,7 @@ namespace satellite
     //
     {
       // does the network exist.
-      if (descriptor.Exist(name) == elle::StatusFalse)
+      if (descriptor.Exist(name) == elle::Status::False)
         escape("this network does not seem to exist");
     }
 
@@ -300,11 +292,11 @@ namespace satellite
     //
     {
       // load the descriptor.
-      if (descriptor.Load(name) == elle::StatusError)
+      if (descriptor.Load(name) == elle::Status::Error)
         escape("unable to load the descriptor");
 
       // validate the descriptor.
-      if (descriptor.Validate(Infinit::Authority) == elle::StatusError)
+      if (descriptor.Validate(Infinit::Authority) == elle::Status::Error)
         escape("unable to validate the descriptor");
     }
 
@@ -313,11 +305,11 @@ namespace satellite
     //
     {
       // dump the descriptor.
-      if (descriptor.Dump() == elle::StatusError)
+      if (descriptor.Dump() == elle::Status::Error)
         escape("unable to dump the descriptor");
     }
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 //
@@ -335,23 +327,23 @@ namespace satellite
     // XXX Infinit::Parser is not deleted in case of errors
 
     // initialize the Elle library.
-    if (elle::Elle::Initialize() == elle::StatusError)
+    if (elle::Elle::Initialize() == elle::Status::Error)
       escape("unable to initialize Elle");
 
     // set up the program.
-    if (elle::Program::Setup() == elle::StatusError)
+    if (elle::concurrency::Program::Setup() == elle::Status::Error)
       escape("unable to set up the program");
 
     // initialize the nucleus library.
-    if (nucleus::Nucleus::Initialize() == elle::StatusError)
+    if (nucleus::Nucleus::Initialize() == elle::Status::Error)
       escape("unable to initialize Nucleus");
 
     // initialize the Lune library.
-    if (lune::Lune::Initialize() == elle::StatusError)
+    if (lune::Lune::Initialize() == elle::Status::Error)
       escape("unable to initialize Lune");
 
     // initialize Infinit.
-    if (Infinit::Initialize() == elle::StatusError)
+    if (Infinit::Initialize() == elle::Status::Error)
       escape("unable to initialize Infinit");
 
     // initialize the operation.
@@ -361,7 +353,7 @@ namespace satellite
     Infinit::Parser = new elle::Parser(argc, argv);
 
     // specify a program description.
-    if (Infinit::Parser->Description(Infinit::Copyright) == elle::StatusError)
+    if (Infinit::Parser->Description(Infinit::Copyright) == elle::Status::Error)
       escape("unable to set the description");
 
     // register the options.
@@ -370,7 +362,7 @@ namespace satellite
           'h',
           "help",
           "display the help",
-          elle::Parser::KindNone) == elle::StatusError)
+          elle::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -379,7 +371,7 @@ namespace satellite
           'c',
           "create",
           "create a new network",
-          elle::Parser::KindNone) == elle::StatusError)
+          elle::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -388,7 +380,7 @@ namespace satellite
           'd',
           "destroy",
           "destroy an existing network",
-          elle::Parser::KindNone) == elle::StatusError)
+          elle::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -397,7 +389,7 @@ namespace satellite
           'x',
           "information",
           "display information regarding a network",
-          elle::Parser::KindNone) == elle::StatusError)
+          elle::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -406,7 +398,7 @@ namespace satellite
           'i',
           "identifier",
           "specify the network identifier",
-          elle::Parser::KindOptional) == elle::StatusError)
+          elle::Parser::KindOptional) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -415,7 +407,7 @@ namespace satellite
           'n',
           "name",
           "specify the network name",
-          elle::Parser::KindRequired) == elle::StatusError)
+          elle::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -424,7 +416,7 @@ namespace satellite
           'm',
           "model",
           "specify the network model: Local, Remote, Kool etc.",
-          elle::Parser::KindRequired) == elle::StatusError)
+          elle::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -433,27 +425,27 @@ namespace satellite
           'a',
           "administrator",
           "specify the network administrator",
-          elle::Parser::KindRequired) == elle::StatusError)
+          elle::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
     // parse.
-    if (Infinit::Parser->Parse() == elle::StatusError)
+    if (Infinit::Parser->Parse() == elle::Status::Error)
       escape("unable to parse the command line");
 
     // test the option.
-    if (Infinit::Parser->Test("Help") == elle::StatusTrue)
+    if (Infinit::Parser->Test("Help") == elle::Status::True)
       {
         // display the usage.
         Infinit::Parser->Usage();
 
         // quit.
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("Create") == elle::StatusTrue) &&
-        (Infinit::Parser->Test("Destroy") == elle::StatusTrue) &&
-        (Infinit::Parser->Test("Information") == elle::StatusTrue))
+    if ((Infinit::Parser->Test("Create") == elle::Status::True) &&
+        (Infinit::Parser->Test("Destroy") == elle::Status::True) &&
+        (Infinit::Parser->Test("Information") == elle::Status::True))
       {
         // display the usage.
         Infinit::Parser->Usage();
@@ -463,15 +455,15 @@ namespace satellite
       }
 
     // test the option.
-    if (Infinit::Parser->Test("Create") == elle::StatusTrue)
+    if (Infinit::Parser->Test("Create") == elle::Status::True)
       operation = Network::OperationCreate;
 
     // test the option.
-    if (Infinit::Parser->Test("Destroy") == elle::StatusTrue)
+    if (Infinit::Parser->Test("Destroy") == elle::Status::True)
       operation = Network::OperationDestroy;
 
     // test the option.
-    if (Infinit::Parser->Test("Information") == elle::StatusTrue)
+    if (Infinit::Parser->Test("Information") == elle::Status::True)
       operation = Network::OperationInformation;
 
     // trigger the operation.
@@ -486,31 +478,31 @@ namespace satellite
           elle::String          administrator;
 
           // retrieve the name.
-          if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+          if (Infinit::Parser->Value("Name", name) == elle::Status::Error)
             escape("unable to retrieve the name value");
 
           // retrieve the identifier.
-          if (Infinit::Parser->Value("Identifier", identifier, name) == elle::StatusError)
+          if (Infinit::Parser->Value("Identifier", identifier, name) == elle::Status::Error)
             escape("unable to retrieve the identifier value");
 
           // retrieve the model.
-          if (Infinit::Parser->Value("Model", string) == elle::StatusError)
+          if (Infinit::Parser->Value("Model", string) == elle::Status::Error)
             escape("unable to retrieve the model value");
 
           // build the model.
-          if (model.Create(string) == elle::StatusError)
+          if (model.Create(string) == elle::Status::Error)
             escape("unable to create the model");
 
           // retrieve the administrator.
           if (Infinit::Parser->Value("Administrator",
-                                     administrator) == elle::StatusError)
+                                     administrator) == elle::Status::Error)
             escape("unable to retrieve the administrator value");
 
           // create the network.
           if (Network::Create(identifier,
                               name,
                               model,
-                              administrator) == elle::StatusError)
+                              administrator) == elle::Status::Error)
             escape("unable to create the network");
 
           // display a message.
@@ -524,11 +516,11 @@ namespace satellite
           elle::String          name;
 
           // retrieve the name.
-          if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+          if (Infinit::Parser->Value("Name", name) == elle::Status::Error)
             escape("unable to retrieve the name value");
 
           // destroy the network.
-          if (Network::Destroy(name) == elle::StatusError)
+          if (Network::Destroy(name) == elle::Status::Error)
             escape("unable to destroy the network");
 
           // display a message.
@@ -542,11 +534,11 @@ namespace satellite
           elle::String          name;
 
           // retrieve the name.
-          if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+          if (Infinit::Parser->Value("Name", name) == elle::Status::Error)
             escape("unable to retrieve the name value");
 
           // get information on the network.
-          if (Network::Information(name) == elle::StatusError)
+          if (Network::Information(name) == elle::Status::Error)
             escape("unable to retrieve information on the network");
 
           break;
@@ -566,22 +558,22 @@ namespace satellite
     Infinit::Parser = nullptr;
 
     // clean Infinit.
-    if (Infinit::Clean() == elle::StatusError)
+    if (Infinit::Clean() == elle::Status::Error)
       escape("unable to clean Infinit");
 
     // clean Lune
-    if (lune::Lune::Clean() == elle::StatusError)
+    if (lune::Lune::Clean() == elle::Status::Error)
       escape("unable to clean Lune");
 
     // clean the nucleus library.
-    if (nucleus::Nucleus::Clean() == elle::StatusError)
+    if (nucleus::Nucleus::Clean() == elle::Status::Error)
       escape("unable to clean Nucleus");
 
     // clean Elle.
-    if (elle::Elle::Clean() == elle::StatusError)
+    if (elle::Elle::Clean() == elle::Status::Error)
       escape("unable to clean Elle");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 }
@@ -598,7 +590,7 @@ int                     main(int                                argc,
 {
   try
     {
-      if (satellite::Main(argc, argv) == elle::StatusError)
+      if (satellite::Main(argc, argv) == elle::Status::Error)
         {
           show();
 

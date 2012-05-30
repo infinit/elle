@@ -44,33 +44,33 @@ namespace nucleus
     {
       this->contents.state = proton::StateDirty;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
     /// this method updates a segment of the data object.
     ///
     elle::Status        Data::Write(const Offset&               offset,
-                                    const elle::Region&         region)
+                                    const elle::standalone::Region& region)
     {
       // expand if necessary.
       if ((offset + region.size) > this->region.capacity)
         {
           // adjust the region capacity.
-          if (this->region.Adjust(offset + region.size) == elle::StatusError)
+          if (this->region.Adjust(offset + region.size) == elle::Status::Error)
             escape("unable to expand the region");
         }
 
       // write the data.
       if (this->region.Write(offset,
                              region.contents,
-                             region.size) == elle::StatusError)
+                             region.size) == elle::Status::Error)
         escape("unable to write the data");
 
       // set the data as dirty.
       this->contents.state = proton::StateDirty;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -78,7 +78,7 @@ namespace nucleus
     ///
     elle::Status        Data::Read(const Offset&                offset,
                                    const Size&                  size,
-                                   elle::Region&                region) const
+                                   elle::standalone::Region&    region) const
     {
       Size              length;
 
@@ -86,7 +86,7 @@ namespace nucleus
       // calls are frequent, no warning or error is raised. instead, no data
       // is simply returned.
       if (offset > this->region.size)
-        return elle::StatusOk;
+        return elle::Status::Ok;
 
       // set size to the maximum between the request size and the available
       // size.
@@ -95,7 +95,7 @@ namespace nucleus
         size;
 
       // prepare the output region.
-      if (region.Prepare(length) == elle::StatusError)
+      if (region.Prepare(length) == elle::Status::Error)
         escape("unable to prepare the output region");
 
       // set the current size.
@@ -104,10 +104,10 @@ namespace nucleus
       // read the data from the region.
       if (this->region.Read(offset,
                             region.contents,
-                            region.size) == elle::StatusError)
+                            region.size) == elle::Status::Error)
         escape("unable to read the data");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -117,7 +117,7 @@ namespace nucleus
     elle::Status        Data::Adjust(const Size&                size)
     {
       // first, make sure the region's capacity is large enough.
-      if (this->region.Adjust(size) == elle::StatusError)
+      if (this->region.Adjust(size) == elle::Status::Error)
         escape("unable to adjust the region size");
 
       // then, manually set the region size.
@@ -126,7 +126,7 @@ namespace nucleus
       // set the data as dirty.
       this->contents.state = proton::StateDirty;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -137,7 +137,7 @@ namespace nucleus
       // set the size.
       size = this->region.size;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -154,10 +154,10 @@ namespace nucleus
       std::cout << alignment << "[Data]" << std::endl;
 
       // dump the region attribute.
-      if (this->region.Dump(margin + 2) == elle::StatusError)
+      if (this->region.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the region");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -167,26 +167,26 @@ namespace nucleus
     ///
     /// this method serializes the block object.
     ///
-    elle::Status        Data::Serialize(elle::Archive&          archive) const
-    {
-      // serialize the internal region.
-      if (archive.Serialize(this->region) == elle::StatusError)
-        escape("unable to serialize the internal region");
+    //elle::Status        Data::Serialize(elle::Archive&          archive) const
+    //{
+    //  // serialize the internal region.
+    //  if (archive.Serialize(this->region) == elle::Status::Error)
+    //    escape("unable to serialize the internal region");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the block object.
-    ///
-    elle::Status        Data::Extract(elle::Archive&            archive)
-    {
-      // extract the region.
-      if (archive.Extract(this->region) == elle::StatusError)
-        escape("unable to extract the region");
+    /////
+    ///// this method extracts the block object.
+    /////
+    //elle::Status        Data::Extract(elle::Archive&            archive)
+    //{
+    //  // extract the region.
+    //  if (archive.Extract(this->region) == elle::Status::Error)
+    //    escape("unable to extract the region");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

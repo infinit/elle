@@ -1,21 +1,15 @@
 #ifndef ELLE_CONCURRENCY_CONCURRENCY_HH
 # define ELLE_CONCURRENCY_CONCURRENCY_HH
 
-# include <elle/radix/Status.hh>
+# include <elle/types.hh>
 
 namespace elle
 {
-  using namespace radix;
-
   ///
   /// this namespace contains functionalities for concurrency purposes.
   ///
   namespace concurrency
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class provides control over the concurrency module.

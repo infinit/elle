@@ -23,7 +23,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <satellites/diary/Memoirs.hh>
 #include <satellites/diary/unix/Upcall.hh>

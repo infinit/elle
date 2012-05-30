@@ -1,16 +1,6 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri jun 17 14:01:30 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/serialize/TupleSerializer.hxx>
+#include <nucleus/proton/LocationSerializer.hxx>
 
 #include <nucleus/proton/Stamp.hh>
 
@@ -35,20 +25,20 @@ namespace nucleus
       this->master = master;
       this->slave = slave;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
     /// this method seals the stamp with the oracle's private key.
     ///
-    elle::Status        Stamp::Seal(const elle::PrivateKey&     k)
+    elle::Status        Stamp::Seal(elle::cryptography::PrivateKey const&     k)
     {
       // sign the attributes.
-      if (k.Sign(this->master, this->slave,
-                 this->signature) == elle::StatusError)
+      if (k.Sign(elle::serialize::make_tuple(this->master, this->slave),
+                 this->signature) == elle::Status::Error)
         escape("unable to sign the attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -60,10 +50,10 @@ namespace nucleus
       // sign the attributes.
       if (Infinit::Authority.K.Verify(
             this->signature,
-            this->master, this->slave) == elle::StatusError)
+            elle::serialize::make_tuple(this->master, this->slave)) == elle::Status::Error)
         escape("this stamp seems not to have been issued by the oracle");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -77,15 +67,15 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return true;
 
       // compare the attributes.
       if ((this->master != element.master) ||
           (this->slave != element.slave) ||
           (this->signature != element.signature))
-        return elle::StatusFalse;
+        return false;
 
-      return elle::StatusTrue;
+      return true;
     }
 
     ///
@@ -111,7 +101,7 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Master]" << std::endl;
 
-      if (this->master.Dump(margin + 4) == elle::StatusError)
+      if (this->master.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the master");
 
       // dump the master.
@@ -119,14 +109,14 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Slave]" << std::endl;
 
-      if (this->slave.Dump(margin + 4) == elle::StatusError)
+      if (this->slave.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the slave");
 
       // dump the signature.
-      if (this->signature.Dump(margin + 2) == elle::StatusError)
+      if (this->signature.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the signature");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -136,30 +126,30 @@ namespace nucleus
     ///
     /// this method serializes the stamp.
     ///
-    elle::Status        Stamp::Serialize(elle::Archive&         archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(this->master,
-                            this->slave,
-                            this->signature) == elle::StatusError)
-        escape("unable to serialize the attributes");
+    //elle::Status        Stamp::Serialize(elle::Archive&         archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(this->master,
+    //                        this->slave,
+    //                        this->signature) == elle::Status::Error)
+    //    escape("unable to serialize the attributes");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the stamp.
-    ///
-    elle::Status        Stamp::Extract(elle::Archive&           archive)
-    {
-      // extract the attributes.
-      if (archive.Extract(this->master,
-                          this->slave,
-                          this->signature) == elle::StatusError)
-        escape("unable to extract the attributes");
+    /////
+    ///// this method extracts the stamp.
+    /////
+    //elle::Status        Stamp::Extract(elle::Archive&           archive)
+    //{
+    //  // extract the attributes.
+    //  if (archive.Extract(this->master,
+    //                      this->slave,
+    //                      this->signature) == elle::Status::Error)
+    //    escape("unable to extract the attributes");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

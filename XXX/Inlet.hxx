@@ -64,17 +64,17 @@ namespace nucleus
                 << "[Key] " << this->key << std::endl;
 
       // dump the value.
-      if (this->value.Dump(margin + 2) == elle::StatusError)
+      if (this->value.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the value");
 
       // dump the footprint.
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Footprint]" << std::endl;
 
-      if (this->footprint.Dump(margin + 4) == elle::StatusError)
+      if (this->footprint.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the footprint");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -90,10 +90,10 @@ namespace nucleus
     {
       // serialize the attributes.
       if (archive.Serialize(this->key,
-                            this->value) == elle::StatusError)
+                            this->value) == elle::Status::Error)
         escape("unable to serialize the attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -105,10 +105,10 @@ namespace nucleus
     {
       // extracts the attributes.
       if (archive.Extract(this->key,
-                          this->value) == elle::StatusError)
+                          this->value) == elle::Status::Error)
         escape("unable to extract the attributes");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

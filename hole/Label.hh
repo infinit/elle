@@ -1,21 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [thu aug 11 14:01:43 2011]
-//
-
 #ifndef HOLE_LABEL_HH
-#define HOLE_LABEL_HH
+# define HOLE_LABEL_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
+# include <elle/cryptography/fwd.hh>
 
-#include <elle/Elle.hh>
+# include <elle/idiom/Open.hh>
 
 namespace hole
 {
@@ -37,7 +27,7 @@ namespace hole
   /// can be easily turned into hexadecimal strings for instance.
   ///
   class Label:
-    public elle::Object
+    public elle::radix::Object
   {
   public:
     //
@@ -71,13 +61,13 @@ namespace hole
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // archivable
-    elle::Status        Serialize(elle::Archive&) const;
-    elle::Status        Extract(elle::Archive&);
+    //elle::Status        Serialize(elle::Archive&) const;
+    //elle::Status        Extract(elle::Archive&);
 
     //
     // attributes
     //
-    elle::Digest*       digest;
+    elle::cryptography::Digest*       digest;
   };
 
 }
@@ -87,5 +77,7 @@ namespace hole
 //
 
 #include <hole/Label.hxx>
+
+# include <elle/idiom/Close.hh>
 
 #endif

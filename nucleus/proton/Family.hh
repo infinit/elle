@@ -1,15 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri dec 18 13:40:40 2009]
-//
-
-#ifndef NUCLEUS_PROTON_FAMILY_HH
-#define NUCLEUS_PROTON_FAMILY_HH
+#ifndef  NUCLEUS_PROTON_FAMILY_HH
+# define NUCLEUS_PROTON_FAMILY_HH
 
 namespace nucleus
 {

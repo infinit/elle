@@ -1,0 +1,20 @@
+#ifndef  ETOILE_PATH_WAYSERIALIZER_HXX
+# define ETOILE_PATH_WAYSERIALIZER_HXX
+
+# include <cassert>
+
+# include <elle/serialize/ArchiveSerializer.hxx>
+
+# include <etoile/path/Way.hh>
+
+ELLE_SERIALIZE_SIMPLE(etoile::path::Way,
+                      archive,
+                      value,
+                      version)
+{
+  assert(version == 0);
+
+  archive & value.path;
+}
+
+#endif

@@ -1,7 +1,7 @@
 #ifndef ETOILE_JOURNAL_JOURNAL_HH
 # define ETOILE_JOURNAL_JOURNAL_HH
 
-# include <elle/Elle.hh>
+# include <elle/types.hh>
 
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/Version.hh>

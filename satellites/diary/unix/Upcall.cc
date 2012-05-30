@@ -31,8 +31,10 @@ namespace satellite
     {
       // set the operation.
       this->operation = operation;
+      this->_inputs.Reset();
+      this->_outputs.Reset();
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -44,17 +46,8 @@ namespace satellite
       // set the result;
       this->result = result;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
-
-//
-// ---------- object ----------------------------------------------------------
-//
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Upcall, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -78,21 +71,21 @@ namespace satellite
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Inputs]" << std::endl;
 
-      if (this->inputs.Dump(margin + 4) == elle::StatusError)
+      if (this->_inputs.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the archive");
 
       // display the outputs.
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Outputs]" << std::endl;
 
-      if (this->outputs.Dump(margin + 4) == elle::StatusError)
+      if (this->_outputs.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the archive");
 
       // display the result.
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Result] " << this->operation << std::endl;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -102,37 +95,37 @@ namespace satellite
     ///
     /// this method serializes the diary object.
     ///
-    elle::Status        Upcall::Serialize(elle::Archive&        archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(static_cast<elle::Natural32>(this->operation),
-                            this->inputs,
-                            this->outputs,
-                            this->result) == elle::StatusError)
-        escape("unable to serialize the attributes");
+    //elle::Status        Upcall::Serialize(elle::Archive&        archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(static_cast<elle::Natural32>(this->operation),
+    //                        this->inputs,
+    //                        this->outputs,
+    //                        this->result) == elle::Status::Error)
+    //    escape("unable to serialize the attributes");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the diary object.
-    ///
-    elle::Status        Upcall::Extract(elle::Archive&          archive)
-    {
-      elle::Natural32   operation;
+    /////
+    ///// this method extracts the diary object.
+    /////
+    //elle::Status        Upcall::Extract(elle::Archive&          archive)
+    //{
+    //  elle::Natural32   operation;
 
-      // extract the attributes.
-      if (archive.Extract(operation,
-                          this->inputs,
-                          this->outputs,
-                          this->result) == elle::StatusError)
-        escape("unable to extract the attributes");
+    //  // extract the attributes.
+    //  if (archive.Extract(operation,
+    //                      this->inputs,
+    //                      this->outputs,
+    //                      this->result) == elle::Status::Error)
+    //    escape("unable to extract the attributes");
 
-      // set the operation.
-      this->operation = static_cast<Upcall::Operation>(operation);
+    //  // set the operation.
+    //  this->operation = static_cast<Upcall::Operation>(operation);
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

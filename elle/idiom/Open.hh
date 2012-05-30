@@ -32,7 +32,7 @@
 
 #include <cstdio>
 
-#include <elle/core/Character.hh>
+#include <elle/types.hh>
 
 //
 // ---------- elle ------------------------------------------------------------
@@ -72,15 +72,15 @@
 #define declare(_type_)                                                 \
   _type_&               operator=(const _type_&);                       \
                                                                         \
-  elle::core::Boolean   operator!=(const _type_&) const;                \
+  elle::Boolean   operator!=(const _type_&) const;                \
                                                                         \
-  elle::core::Boolean   operator<=(const _type_&) const;                \
+  elle::Boolean   operator<=(const _type_&) const;                \
                                                                         \
-  elle::core::Boolean   operator>=(const _type_&) const;                \
+  elle::Boolean   operator>=(const _type_&) const;                \
                                                                         \
-  elle::radix::Status   Imprint(elle::core::Natural32&) const;          \
+  elle::Status   Imprint(elle::Natural32&) const;          \
                                                                         \
-  elle::radix::Status   Clone(elle::radix::Object*&)                    \
+  elle::Status   Clone(elle::radix::Object*&)                    \
     const;
 
 ///
@@ -100,49 +100,49 @@
                                                                         \
     if (this == &object)                                                \
       return (*this);                                                   \
-    if (this->Recycle(&object) == elle::radix::StatusError)             \
+    if (this->Recycle(&object) == elle::Status::Error)             \
       yield(*this, "unable to recycle the object");                     \
                                                                         \
     return (*this);                                                     \
   }                                                                     \
                                                                         \
   _template_                                                            \
-  elle::core::Boolean   _type_::operator!=(const _type_& object) const  \
+  elle::Boolean   _type_::operator!=(const _type_& object) const  \
   {                                                                     \
     return (!(this->operator==(object)));                               \
   }                                                                     \
                                                                         \
   _template_                                                            \
-  elle::core::Boolean   _type_::operator<=(const _type_& object) const  \
+  elle::Boolean   _type_::operator<=(const _type_& object) const  \
   {                                                                     \
     return ((this->operator<(object) || this->operator==(object)));     \
   }                                                                     \
                                                                         \
   _template_                                                            \
-  elle::core::Boolean   _type_::operator>=(const _type_& object) const  \
+  elle::Boolean   _type_::operator>=(const _type_& object) const  \
   {                                                                     \
     return ((this->operator>(object) || this->operator==(object)));     \
   }                                                                     \
                                                                         \
   _template_                                                            \
-  elle::radix::Status   _type_::Imprint(elle::core::Natural32& size)    \
+  elle::Status   _type_::Imprint(elle::Natural32& size)    \
     const                                                               \
   {                                                                     \
                                                                         \
     size = sizeof (_type_);                                             \
                                                                         \
-    return elle::radix::StatusOk;                                       \
+    return elle::Status::Ok;                                       \
   }                                                                     \
                                                                         \
   _template_                                                            \
-  elle::radix::Status   _type_::Clone(                                  \
+  elle::Status   _type_::Clone(                                  \
                           elle::radix::Object*&                         \
                             object)                                     \
     const                                                               \
   {                                                                     \
     object = new _type_(*this);                                         \
                                                                         \
-    return elle::radix::StatusOk;                                       \
+    return elle::Status::Ok;                                       \
   }
 
 //
@@ -157,20 +157,20 @@
     {                                                                   \
       elle::standalone::Log*    _log_;                                  \
       std::ostringstream        _tmp_;                                  \
-      elle::core::Character     _message_[1024];                        \
+      elle::Character     _message_[1024];                        \
                                                                         \
       _tmp_ << __FILE__ << ":" << __LINE__ << " # " << __FUNCTION__;    \
                                                                         \
-      elle::core::String        _location_(_tmp_.str());                \
-      elle::core::String        _time_(__DATE__ " " __TIME__);          \
+      elle::String        _location_(_tmp_.str());                \
+      elle::String        _time_(__DATE__ " " __TIME__);          \
                                                                         \
       ::sprintf(_message_, _format_, ##__VA_ARGS__);                    \
                                                                         \
       if (elle::standalone::Log::Instance(_log_) ==                     \
-          elle::radix::StatusTrue)                                      \
+          elle::Status::True)                                      \
         _log_->Record(_location_,                                       \
                       _time_,                                           \
-                      elle::core::String(_message_));                   \
+                      elle::String(_message_));                   \
       else                                                              \
         {                                                               \
           std::cerr << _message_                                        \
@@ -196,19 +196,19 @@
   do                                                                    \
   {                                                                     \
     std::ostringstream        _tmp_;                                    \
-    elle::core::Character     _message_[1024];                          \
+    elle::Character     _message_[1024];                                \
                                                                         \
     _tmp_ << __FILE__ << ":" << __LINE__ << " # " << __FUNCTION__;      \
                                                                         \
-    elle::core::String        _location_(_tmp_.str());                  \
-    elle::core::String        _time_(__DATE__ " " __TIME__);            \
+      elle::String        _location_(_tmp_.str());                      \
+      elle::String        _time_(__DATE__ " " __TIME__);                \
                                                                         \
     ::sprintf(_message_, _format_, ##__VA_ARGS__);                      \
                                                                         \
     elle::standalone::Report::report.Get().Record(_location_,           \
                                       _time_,                           \
-                                      elle::core::String(_message_));   \
-  } while (false)
+                                      elle::String(_message_));         \
+  } while (false)                                                       \
 
 ///
 /// this macro-function transposes an existing report.
@@ -218,26 +218,26 @@
 
 ///
 /// this macro-function indicates that an error occured
-/// and returns StatusError.
+/// and returns Status::Error.
 ///
 #define escape(_format_, ...)                                           \
   do                                                                    \
     {                                                                   \
       report(_format_, ##__VA_ARGS__);                                  \
                                                                         \
-      return (elle::radix::StatusError);                                \
-    } while (false)
+      return (elle::Status::Error);                                     \
+    } while (false)                                                     \
 
 ///
 /// this macro-function logs the fact that an error occured
-/// and returns StatusFalse.
+/// and returns Status::False.
 ///
 #define flee(_format_, ...)                                             \
   do                                                                    \
     {                                                                   \
       log(_format_, ##__VA_ARGS__);                                     \
                                                                         \
-      return (elle::radix::StatusFalse);                                \
+      return (elle::Status::False);                                \
     } while (false)                                                     \
 
 ///
@@ -284,7 +284,7 @@
                                                                         \
       _report_.Dump();                                                  \
       _report_.Flush();                                                 \
-    } while (false)
+    } while (false)                                                     \
 
 ///
 /// this macro-function, in the case of reported errors, displays them
@@ -330,10 +330,10 @@
       elle::standalone::Morgue* _morgue_;                               \
                                                                         \
       if (elle::standalone::Morgue::Instance(_morgue_) ==               \
-          elle::radix::StatusTrue)                                      \
+          elle::Status::True)                                      \
         {                                                               \
           if (_morgue_->Register(_instance_) ==                         \
-              elle::radix::StatusError)                                 \
+              elle::Status::Error)                                 \
             log("unable to register the instance for burial");          \
         }                                                               \
     } while (false)

@@ -1,34 +1,21 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [thu mar  5 16:04:08 2009]
-//
-
 #ifndef NUCLEUS_NEUTRON_OBJECT_HH
-#define NUCLEUS_NEUTRON_OBJECT_HH
+# define NUCLEUS_NEUTRON_OBJECT_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/utility/Time.hh>
 
-#include <elle/Elle.hh>
+# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/ImprintBlock.hh>
+# include <nucleus/proton/Version.hh>
 
-#include <nucleus/proton/Address.hh>
-#include <nucleus/proton/ImprintBlock.hh>
-#include <nucleus/proton/Version.hh>
-
-#include <nucleus/neutron/Genre.hh>
-#include <nucleus/neutron/Author.hh>
-#include <nucleus/neutron/Size.hh>
-#include <nucleus/neutron/Permissions.hh>
-#include <nucleus/neutron/Token.hh>
-#include <nucleus/neutron/Attributes.hh>
-#include <nucleus/neutron/Access.hh>
-#include <nucleus/neutron/Role.hh>
+# include <nucleus/neutron/Genre.hh>
+# include <nucleus/neutron/Author.hh>
+# include <nucleus/neutron/Size.hh>
+# include <nucleus/neutron/Permissions.hh>
+# include <nucleus/neutron/Token.hh>
+# include <nucleus/neutron/Attributes.hh>
+# include <nucleus/neutron/Access.hh>
+# include <nucleus/neutron/Role.hh>
 
 namespace nucleus
 {
@@ -64,8 +51,9 @@ namespace nucleus
     /// make it as easy to manipulate the owner entry as for other access
     /// records. thus, this attribute is never serialized.
     ///
-    class Object:
-      public proton::ImprintBlock
+    class Object
+      : public proton::ImprintBlock
+      , public elle::serialize::Uniquable<Object>
     {
     public:
       //
@@ -77,7 +65,7 @@ namespace nucleus
       // methods
       //
       elle::Status      Create(const Genre,
-                               const elle::PublicKey&);
+                               elle::cryptography::PublicKey const&);
 
       elle::Status      Update(const Author&,
                                const proton::Address&,
@@ -87,7 +75,7 @@ namespace nucleus
       elle::Status      Administrate(const Attributes&,
                                      const Permissions&);
 
-      elle::Status      Seal(const elle::PrivateKey&,
+      elle::Status      Seal(elle::cryptography::PrivateKey const&,
                              const Access&);
 
       elle::Status      Validate(const proton::Address&) const;
@@ -99,14 +87,16 @@ namespace nucleus
       //
 
       // object
+#include <elle/idiom/Open.hh>
       declare(Object);
+#include <elle/idiom/Close.hh>
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status      Serialize(elle::Archive&) const;
-      elle::Status      Extract(elle::Archive&);
+      //elle::Status      Serialize(elle::Archive&) const;
+      //elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
@@ -126,14 +116,14 @@ namespace nucleus
         }                       owner;
 
         Genre                   genre;
-        elle::Time              stamp;
+        elle::utility::Time              stamp;
 
         Attributes              attributes;
 
         proton::Address         access;
 
         proton::Version         version;
-        elle::Signature         signature;
+        elle::cryptography::Signature         signature;
 
         proton::State           state;
       }                         meta;
@@ -145,10 +135,10 @@ namespace nucleus
         proton::Address         contents;
 
         Size                    size;
-        elle::Time              stamp;
+        elle::utility::Time              stamp;
 
         proton::Version         version;
-        elle::Signature         signature;
+        elle::cryptography::Signature         signature;
 
         proton::State           state;
       }                         data;

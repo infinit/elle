@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 
@@ -38,7 +38,7 @@ namespace hole
       /// XXX represents the current host
       ///
       class Machine:
-        public elle::Entity
+        public elle::radix::Entity
       {
       public:
         //
@@ -88,7 +88,7 @@ namespace hole
 
         elle::Status            Challenge();
         elle::Status            Passport(const lune::Passport&);
-        elle::Status            Port(const elle::Port&);
+        elle::Status            Port(const elle::network::Port&);
         elle::Status            Authenticated();
         elle::Status            Update(const Cluster&);
 
@@ -116,9 +116,9 @@ namespace hole
         Neighbourhood           neighbourhood;
         RoutingTable            routingtable;
 
-        elle::Timer             timer;
+        elle::concurrency::Timer             timer;
 
-        elle::Port              port;
+        elle::network::Port              port;
       };
 
     }

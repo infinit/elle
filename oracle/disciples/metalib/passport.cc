@@ -1,21 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       @FIXME@
-//
-// license       infinit
-//
-// author        Raphaël Londeix   [Tue 21 Feb 2012 11:36:47 AM CET]
-//
+#include <elle/cryptography/Random.hh>
+#include <elle/io/Path.hh>
+#include <elle/types.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include "elle/io/Path.hh"
-#include "elle/core/String.hh"
-
-#include "lune/Passport.hh"
+#include <lune/PassportSerializer.hxx>
+#include <lune/AuthoritySerializer.hxx>
 
 // XXX When Qt is out, remove this
 #ifdef slots
@@ -40,15 +28,15 @@ static lune::Passport create_passport(elle::String const& id,
   elle::Path          authority_path;
   lune::Passport      passport;
 
-  if (authority_path.Create(authority_file) == elle::StatusError)
+  if (authority_path.Create(authority_file) == elle::Status::Error)
     throw std::runtime_error("unable to create authority path");
 
   // load the authority file
-  if (authority.Load(authority_path) == elle::StatusError)
+  if (authority.Load(authority_path) == elle::Status::Error)
     throw std::runtime_error("unable to load the authority file");
 
   // decrypt the authority.
-  if (authority.Decrypt(authority_password) == elle::StatusError)
+  if (authority.Decrypt(authority_password) == elle::Status::Error)
     throw std::runtime_error("unable to decrypt the authority");
 
   //
@@ -56,22 +44,22 @@ static lune::Passport create_passport(elle::String const& id,
   //
   {
     hole::Label               label;
-    elle::Region              region;
+    elle::standalone::Region              region;
 
     // generate a random region.
-    if (elle::Random::Generate(region) == elle::StatusError)
+    if (elle::cryptography::Random::Generate(region) == elle::Status::Error)
       throw std::runtime_error("unable to generate a random region");
 
     // create a label.
-    if (label.Create(region) == elle::StatusError)
+    if (label.Create(region) == elle::Status::Error)
       throw std::runtime_error("unable to create a label");
 
     // create the passport.
-    if (passport.Create(label, id) == elle::StatusError)
+    if (passport.Create(label, id) == elle::Status::Error)
       throw std::runtime_error("unable to create the passport");
 
     // seal the passport.
-    if (passport.Seal(authority) == elle::StatusError)
+    if (passport.Seal(authority) == elle::Status::Error)
       throw std::runtime_error("unable to seal the passport");
   }
 
@@ -96,7 +84,7 @@ extern "C" PyObject* metalib_generate_passport(PyObject* self, PyObject* args)
     {
       auto passport = create_passport(id, authority_file, authority_password);
       elle::String passport_string;
-      if (passport.Save(passport_string) != elle::StatusError)
+      if (passport.Save(passport_string) != elle::Status::Error)
         {
           ret = Py_BuildValue("s", passport_string.c_str());
         }

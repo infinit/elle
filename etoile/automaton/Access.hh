@@ -1,6 +1,7 @@
 #ifndef ETOILE_AUTOMATON_ACCESS_HH
 # define ETOILE_AUTOMATON_ACCESS_HH
 
+# include <elle/types.hh>
 # include <elle/Elle.hh>
 # include <nucleus/Nucleus.hh>
 
@@ -42,7 +43,7 @@ namespace etoile
                                        const nucleus::Subject&);
 
       static elle::Status       Upgrade(gear::Object&,
-                                        const elle::SecretKey&);
+                                        elle::cryptography::SecretKey const&);
       static elle::Status       Downgrade(gear::Object&);
 
       static elle::Status       Destroy(gear::Object&);

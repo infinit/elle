@@ -33,7 +33,7 @@ Ambit<T>::Ambit(Handle&                                         handle,
     {
     case Ambit<T>::ModeTransparent:
       {
-        if (this->handle.Load() == elle::StatusError)
+        if (this->handle.Load() == elle::Status::Error)
           log("an error occured while loading the handle");
 
         break;
@@ -60,7 +60,7 @@ Ambit<T>::~Ambit()
       {
         if (this->handle.state == Handle::StateLoaded)
           {
-            if (this->handle.Unload() == elle::StatusError)
+            if (this->handle.Unload() == elle::Status::Error)
               log("an error occured while unloading the handle");
           }
 
@@ -147,10 +147,10 @@ elle::Status        Ambit<T>::Dump(const elle::Natural32        margin) const
             << "[Mode] " << std::dec << this->mode << std::endl;
 
   // dump the handle.
-  if (this->handle.Dump(margin + 2) == elle::StatusError)
+  if (this->handle.Dump(margin + 2) == elle::Status::Error)
     escape("unable to dump the handle");
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 #endif

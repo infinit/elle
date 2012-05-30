@@ -1,7 +1,7 @@
 #ifndef ETOILE_PORTAL_PORTAL_HH
 # define ETOILE_PORTAL_PORTAL_HH
 
-# include <elle/Elle.hh>
+# include <elle/types.hh>
 # include <lune/Lune.hh>
 
 # include <etoile/portal/Application.hh>
@@ -36,8 +36,8 @@ namespace etoile
       //
       // types
       //
-      typedef std::pair<elle::TCPSocket*, Application*>       Value;
-      typedef std::map<elle::TCPSocket*, Application*>        Container;
+      typedef std::pair<elle::network::TCPSocket*, Application*>       Value;
+      typedef std::map<elle::network::TCPSocket*, Application*>        Container;
       typedef Container::iterator                               Iterator;
       typedef Container::const_iterator                         Scoutor;
 
@@ -48,16 +48,16 @@ namespace etoile
       static elle::Status       Clean();
 
       static elle::Status       Add(Application*);
-      static elle::Status       Retrieve(elle::TCPSocket*,
+      static elle::Status       Retrieve(elle::network::TCPSocket*,
                                          Application*&);
-      static elle::Status       Remove(elle::TCPSocket*);
+      static elle::Status       Remove(elle::network::TCPSocket*);
 
       static elle::Status       Show(const elle::Natural32 = 0);
 
       //
       // static callbacks
       //
-      static elle::Status       Connection(elle::TCPSocket*);
+      static elle::Status       Connection(elle::network::TCPSocket*);
       static elle::Status       Authenticate(const elle::String&);
       static elle::Status       Prolog();
       static elle::Status       Epilog();

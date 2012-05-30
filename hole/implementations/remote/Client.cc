@@ -1,8 +1,26 @@
 #include <elle/log.hh>
 
-#include <hole/Hole.hh>
+#include <elle/standalone/ReportSerializer.hxx>
+#include <elle/network/BundleSerializer.hxx>
+#include <elle/utility/BufferSerializer.hxx>
+#include <elle/network/HeaderSerializer.hxx>
+
+#include <elle/concurrency/Program.hh>
+#include <elle/network/Locus.hh>
+#include <elle/network/Range.hh>
+#include <elle/network/TCPSocket.hh>
+#include <elle/utility/Time.hh>
+#include <elle/network/Network.hh>
+
+#include <lune/PassportSerializer.hxx>
+#include <nucleus/proton/AddressSerializer.hxx>
+#include <nucleus/proton/VersionSerializer.hxx>
+#include <nucleus/proton/BlockSerializer.hxx>
+
 #include <hole/implementations/remote/Client.hh>
 #include <hole/implementations/remote/Manifest.hh>
+
+#include <hole/Hole.hh>
 
 #include <Infinit.hh>
 
@@ -22,7 +40,7 @@ namespace hole
       ///
       /// default constructor.
       ///
-      Client::Client(const elle::Locus&                         locus):
+      Client::Client(const elle::network::Locus&                         locus):
         state(Client::StateUnknown),
         locus(locus),
         socket(NULL)
@@ -58,17 +76,17 @@ namespace hole
         //
         {
           // register the message.
-          if (elle::Network::Register(
-                elle::Procedure<TagAuthenticated>(
-                  elle::Callback<>::Infer(
-                    &Client::Authenticated, this))) == elle::StatusError)
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagAuthenticated>(
+                  elle::concurrency::Callback<>::Infer(
+                    &Client::Authenticated, this))) == elle::Status::Error)
             escape("unable to register the callback");
 
           // register the message.
-          if (elle::Network::Register(
-                elle::Procedure<TagException>(
-                  elle::Callback<>::Infer(
-                    &Client::Exception, this))) == elle::StatusError)
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagException>(
+                  elle::concurrency::Callback<>::Infer(
+                    &Client::Exception, this))) == elle::Status::Error)
             escape("unable to register the callback");
         }
 
@@ -77,7 +95,7 @@ namespace hole
           this->locus.host.Convert(hostname);
           auto socket = new reactor::network::TCPSocket
             (elle::concurrency::scheduler(), hostname, this->locus.port);
-          this->socket = new elle::TCPSocket(socket);
+          this->socket = new elle::network::TCPSocket(socket);
           Connected();
         }
 
@@ -87,12 +105,12 @@ namespace hole
         {
           // send the passport.
           if (this->socket->Send(
-                elle::Inputs<TagChallenge>(Hole::Passport)) ==
-              elle::StatusError)
+                elle::network::Inputs<TagChallenge>(Hole::Passport)) ==
+              elle::Status::Error)
             escape("unable to send the challenge");
         }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -101,8 +119,8 @@ namespace hole
       elle::Status      Client::Put(const nucleus::Address&     address,
                                     const nucleus::ImmutableBlock& block)
       {
-        nucleus::Derivable<nucleus::Block>      derivable(address.component,
-                                                          block);
+        //nucleus::Derivable<nucleus::Block>      derivable(address.component,
+        //                                                  block);
 
         ELLE_LOG_TRACE_SCOPE("Put[Immutable]");
 
@@ -112,11 +130,11 @@ namespace hole
 
         // transfer to the remote.
         if (this->socket->Call(
-              elle::Inputs<TagPush>(address, derivable),
-              elle::Outputs<elle::TagOk>()) == elle::StatusError)
+              elle::network::Inputs<TagPush>(address, block),
+              elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to transfer the request");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -125,8 +143,8 @@ namespace hole
       elle::Status      Client::Put(const nucleus::Address&     address,
                                     const nucleus::MutableBlock& block)
       {
-        nucleus::Derivable<nucleus::Block>      derivable(address.component,
-                                                          block);
+        //nucleus::Derivable<nucleus::Block>      derivable(address.component,
+        //                                                  block);
 
         ELLE_LOG_TRACE_SCOPE("Put[Mutable]");
 
@@ -139,12 +157,11 @@ namespace hole
 
         // transfer to the remote.
         if (this->socket->Call(
-              elle::Inputs<TagPush>(address,
-                                    derivable),
-              elle::Outputs<elle::TagOk>()) == elle::StatusError)
+              elle::network::Inputs<TagPush>(address, block),
+              elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to transfer the request");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -153,7 +170,7 @@ namespace hole
       elle::Status      Client::Get(const nucleus::Address&     address,
                                     nucleus::ImmutableBlock&    block)
       {
-        nucleus::Derivable<nucleus::Block>      derivable(block);
+        //nucleus::Derivable<nucleus::Block>      derivable(block);
 
         ELLE_LOG_TRACE_SCOPE("Get[Immutable]");
 
@@ -163,12 +180,12 @@ namespace hole
 
         // transfer to the remote.
         if (this->socket->Call(
-              elle::Inputs<TagPull>(address,
+              elle::network::Inputs<TagPull>(address,
                                     nucleus::Version::Any),
-              elle::Outputs<TagBlock>(derivable)) == elle::StatusError)
+              elle::network::Outputs<TagBlock>(block)) == elle::Status::Error)
           escape("unable to transfer the request");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -178,7 +195,7 @@ namespace hole
                                     const nucleus::Version&     version,
                                     nucleus::MutableBlock&      block)
       {
-        nucleus::Derivable<nucleus::Block>      derivable(block);
+        //nucleus::Derivable<nucleus::Block>      derivable(block);
 
         ELLE_LOG_TRACE_SCOPE("Get[Mutable]");
 
@@ -188,12 +205,11 @@ namespace hole
 
         // transfer to the remote.
         if (this->socket->Call(
-              elle::Inputs<TagPull>(address,
-                                    version),
-              elle::Outputs<TagBlock>(derivable)) == elle::StatusError)
+              elle::network::Inputs<TagPull>(address, version),
+              elle::network::Outputs<TagBlock>(block)) == elle::Status::Error)
           escape("unable to transfer the request");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -209,11 +225,11 @@ namespace hole
 
         // transfer to the remote.
         if (this->socket->Call(
-              elle::Inputs<TagWipe>(address),
-              elle::Outputs<elle::TagOk>()) == elle::StatusError)
+              elle::network::Inputs<TagWipe>(address),
+              elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to transfer the request");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
 //
@@ -231,7 +247,7 @@ namespace hole
         // set the client as connected.
         this->state = Client::StateConnected;
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -255,7 +271,7 @@ namespace hole
             elle::Program::Exit();
           }
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -273,7 +289,7 @@ namespace hole
         if (this->socket)
           this->socket->Disconnect();
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -289,7 +305,7 @@ namespace hole
         // accordingly.
         this->state = Client::StateAuthenticated;
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
       ///
@@ -307,7 +323,7 @@ namespace hole
         // log the error.
         log("an error occured on the server side");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
 //
@@ -324,10 +340,10 @@ namespace hole
         std::cout << alignment << "[Client]" << std::endl;
 
         // dump the locus.
-        if (this->locus.Dump(margin + 2) == elle::StatusError)
+        if (this->locus.Dump(margin + 2) == elle::Status::Error)
           escape("unable to dump the locus");
 
-        return elle::StatusOk;
+        return elle::Status::Ok;
       }
 
     }

@@ -77,7 +77,7 @@ namespace nucleus
       // set the state.
       this->contents()->state = StateDirty;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -103,7 +103,7 @@ namespace nucleus
         escape("unable to insert the inlet in the container");
 
       // compute the inlet's footprint.
-      if (inlet->footprint.Compute() == elle::StatusError)
+      if (inlet->footprint.Compute() == elle::Status::Error)
         escape("unable to compute the inlet's footprint");
 
       // add the inlet footprint to the quill's.
@@ -112,7 +112,7 @@ namespace nucleus
       // set the state.
       this->contents()->state = StateDirty;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -128,13 +128,13 @@ namespace nucleus
           new typename Quill<V>::I(key, value));
 
       // add the inlet to the quill.
-      if (this->Insert(inlet.get()) == elle::StatusError)
+      if (this->Insert(inlet.get()) == elle::Status::Error)
         escape("unable to add the value to the quill");
 
       // release the tracking.
       inlet.release();
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -150,7 +150,7 @@ namespace nucleus
       inlet = iterator->second;
 
       // compute the inlet's footprint.
-      if (inlet->footprint.Compute() == elle::StatusError)
+      if (inlet->footprint.Compute() == elle::Status::Error)
         escape("unable to compute the inlet's footprint");
 
       // substract the inlet footprint to the quill's.
@@ -165,7 +165,7 @@ namespace nucleus
       // set the state.
       this->contents()->state = StateDirty;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -177,14 +177,14 @@ namespace nucleus
       typename Quill<V>::Iterator::Forward      iterator;
 
       // locate the inlet for the given key.
-      if (this->Locate(key, iterator) == elle::StatusError)
+      if (this->Locate(key, iterator) == elle::Status::Error)
         escape("unable to locate the given key");
 
       // delete the entry associated with the given iterator.
-      if (this->Delete(iterator) == elle::StatusError)
+      if (this->Delete(iterator) == elle::Status::Error)
         escape("unable to delete the entry associated with the iterator");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -195,9 +195,9 @@ namespace nucleus
     {
       // locate the given key.
       if (this->container.find(key) == this->container.end())
-        return elle::StatusFalse;
+        return elle::Status::False;
 
-      return elle::StatusTrue;
+      return elle::Status::True;
     }
 
     ///
@@ -225,7 +225,7 @@ namespace nucleus
           if ((key <= iterator->first) || (inlet == rbegin->second))
             {
               // return with the correct iterator set.
-              return elle::StatusOk;
+              return elle::Status::Ok;
             }
         }
 
@@ -242,13 +242,13 @@ namespace nucleus
       typename Quill<V>::Iterator::Forward      iterator;
 
       // lookup the entry responsible for the given key.
-      if (this->Lookup(key, iterator) == elle::StatusError)
+      if (this->Lookup(key, iterator) == elle::Status::Error)
         escape("unable to locate the entry");
 
       // return the inlet.
       inlet = iterator->second;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -261,13 +261,13 @@ namespace nucleus
       Quill<V>::I*      inlet;
 
       // lookup the inlet associated with the given key.
-      if (this->Lookup(key, inlet) == elle::StatusError)
+      if (this->Lookup(key, inlet) == elle::Status::Error)
         escape("unable to locate the inlet");
 
       // return the handle.
       handle = inlet->value;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -283,7 +283,7 @@ namespace nucleus
       if ((iterator = this->container.find(key)) == this->container.end())
         escape("unable to locate the given key");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -296,13 +296,13 @@ namespace nucleus
       typename Quill<V>::Iterator::Forward      iterator;
 
       // locate the given key.
-      if (this->Locate(key, iterator) == elle::StatusError)
+      if (this->Locate(key, iterator) == elle::Status::Error)
         escape("unable to locate the entry associated with the given key");
 
       // return the inlet.
       inlet = iterator->second;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -315,13 +315,13 @@ namespace nucleus
       Quill<V>::I*      inlet;
 
       // locate the given key.
-      if (this->Locate(key, inlet) == elle::StatusError)
+      if (this->Locate(key, inlet) == elle::Status::Error)
         escape("unable to locate the inlet associated with the given key");
 
       // return the handle.
       handle = inlet->value;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -338,7 +338,7 @@ namespace nucleus
     elle::Status        Quill<V>::Link(I*,
                                        Handle&)
     {
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -347,7 +347,7 @@ namespace nucleus
     template <typename V>
     elle::Status        Quill<V>::Link(Handle&)
     {
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -361,28 +361,28 @@ namespace nucleus
       typename V::K     q;
 
       // retrieve the mayor key.
-      if (this->Mayor(t) == elle::StatusError)
+      if (this->Mayor(t) == elle::Status::Error)
         escape("unable to retrieve the mayor key");
 
       // retrieve the mayor key.
-      if (quill->Mayor(q) == elle::StatusError)
+      if (quill->Mayor(q) == elle::Status::Error)
         escape("unable to retrieve the mayor key");
 
       // check which nodule has the lowest keys.
       if (q < t)
         {
           // in this case, export the lower quill's inlets into the current's.
-          if (quill->Export(this) == elle::StatusError)
+          if (quill->Export(this) == elle::Status::Error)
             escape("unable to export the inlets");
         }
       else
         {
           // otherwise, import the higher quill's inlets into the current's.
-          if (this->Import(quill) == elle::StatusError)
+          if (this->Import(quill) == elle::Status::Error)
             escape("unable to import the inlets");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -402,7 +402,7 @@ namespace nucleus
           Ambit< Contents<V> >  value(inlet->value);
 
           // load the value block.
-          if (value.Load() == elle::StatusError)
+          if (value.Load() == elle::Status::Error)
             escape("unable to load the block");
 
           // the value block must have been loaded.
@@ -414,7 +414,7 @@ namespace nucleus
               Address   address;
 
               // bind the value block.
-              if (value.contents()->Bind(address) == elle::StatusError)
+              if (value.contents()->Bind(address) == elle::Status::Error)
                 escape("unable to bind the block");
 
               // compare the addresses.
@@ -431,11 +431,11 @@ namespace nucleus
             }
 
           // unload the value block.
-          if (value.Unload() == elle::StatusError)
+          if (value.Unload() == elle::Status::Error)
             escape("unable to unload the block");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -451,7 +451,7 @@ namespace nucleus
       // return the mayor key.
       mayor = this->container.rbegin()->first;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -467,7 +467,7 @@ namespace nucleus
       // return the maiden key.
       maiden = this->container.begin()->first;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -482,7 +482,7 @@ namespace nucleus
       // do nothing as the seam's Search() method will have updated the
       // handle with the reference to _this_ quill..
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -509,13 +509,13 @@ namespace nucleus
             {
               Ambit< Contents< Quill<V> > >     left(this->left);
 
-              if (left.Load() == elle::StatusError)
+              if (left.Load() == elle::Status::Error)
                 escape("unable to load the nodule");
 
               if (left.nodule()->right != current)
                 escape("the neighbour link differs");
 
-              if (left.Unload() == elle::StatusError)
+              if (left.Unload() == elle::Status::Error)
                 escape("unable to unload the nodule");
             }
 
@@ -523,22 +523,22 @@ namespace nucleus
             {
               Ambit< Contents< Quill<V> > >     right(this->right);
 
-              if (right.Load() == elle::StatusError)
+              if (right.Load() == elle::Status::Error)
                 escape("unable to load the nodule");
 
               if (right.nodule()->left != current)
                 escape("the neighbour link differs");
 
-              if (right.Unload() == elle::StatusError)
+              if (right.Unload() == elle::Status::Error)
                 escape("unable to unload the nodule");
             }
         }
 
       if (this->Check(current,
-                      pins) == elle::StatusError)
+                      pins) == elle::Status::Error)
         escape("unable to check the quill consistency");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -554,7 +554,7 @@ namespace nucleus
       std::cout << alignment << "[Quill] " << this << std::endl;
 
       // dump the parent nodule.
-      if (Nodule<V>::Dump(margin + 2) == elle::StatusError)
+      if (Nodule<V>::Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the parent nodule");
 
       // dump the inlets.
@@ -567,18 +567,18 @@ namespace nucleus
           Quill<V>::I*  inlet = iterator->second;
 
           // dump the inlet.
-          if (inlet->Dump(margin + 4) == elle::StatusError)
+          if (inlet->Dump(margin + 4) == elle::Status::Error)
             escape("unable to dump the inlet");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
     /// XXX
     ///
     template <typename V>
-    elle::Status        Quill<V>::Seal(const elle::SecretKey&   secret,
+    elle::Status        Quill<V>::Seal(elle::cryptography::SecretKey const&   secret,
                                        Address&                 address)
     {
       auto              iterator = this->container.begin();
@@ -598,7 +598,7 @@ namespace nucleus
             continue;
 
           // load the value block.
-          if (value.Load() == elle::StatusError)
+          if (value.Load() == elle::Status::Error)
             escape("unable to load the block");
 
           // the value block must have been loaded.
@@ -619,15 +619,15 @@ namespace nucleus
           inlet->value.secret = secret;
 
           // encrypt the value contents.
-          if (value.contents()->Encrypt(inlet->value.secret) == elle::StatusError)
+          if (value.contents()->Encrypt(inlet->value.secret) == elle::Status::Error)
             escape("unable to encrypt the block");
 
           // bind the value block.
-          if (value.contents()->Bind(inlet->value.address) == elle::StatusError)
+          if (value.contents()->Bind(inlet->value.address) == elle::Status::Error)
             escape("unable to bind the block");
 
           // unload the value block.
-          if (value.Unload() == elle::StatusError)
+          if (value.Unload() == elle::Status::Error)
             escape("unable to unload the block");
 
           // set the quill as dirty i.e the nodule has been
@@ -647,12 +647,12 @@ namespace nucleus
           //
 
           // encrypt the seam itself with the secret.
-          if (this->contents()->Encrypt(secret) == elle::StatusError)
+          if (this->contents()->Encrypt(secret) == elle::Status::Error)
             escape("unable to encrypt the seam contents");
 
           // once the child addresses have been computed and recorded,
           // the seam contents can, in turn, be bound.
-          if (this->contents()->Bind(address) == elle::StatusError)
+          if (this->contents()->Bind(address) == elle::Status::Error)
             escape("unable to bind the block");
 
           //
@@ -675,7 +675,7 @@ namespace nucleus
           //
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -696,7 +696,7 @@ namespace nucleus
       std::cout << alignment << "[Quill] " << this << std::endl;
 
       // dump the parent nodule.
-      if (Nodule<V>::Dump(margin + 2) == elle::StatusError)
+      if (Nodule<V>::Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the parent nodule");
 
       // dump the inlets.
@@ -707,11 +707,11 @@ namespace nucleus
       for (; iterator != end; ++iterator)
         {
           // dump the inlet.
-          if (iterator->second->Dump(margin + 4) == elle::StatusError)
+          if (iterator->second->Dump(margin + 4) == elle::Status::Error)
             escape("unable to dump the inlet");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -729,25 +729,25 @@ namespace nucleus
       elle::Natural32   size;
 
       // serialize the parent nodule.
-      if (Nodule<V>::Serialize(archive) == elle::StatusError)
+      if (Nodule<V>::Serialize(archive) == elle::Status::Error)
         escape("unable to serialize the parent nodule");
 
       // retrieve the container size.
       size = this->container.size();
 
       // serialize the container size.
-      if (archive.Serialize(size) == elle::StatusError)
+      if (archive.Serialize(size) == elle::Status::Error)
         escape("unable to serialize the size");
 
       // go through the container.
       for (; iterator != end; ++iterator)
         {
           // serialize the key and inlet.
-          if (archive.Serialize(*iterator->second) == elle::StatusError)
+          if (archive.Serialize(*iterator->second) == elle::Status::Error)
             escape("unable to serialize the key/inlet tuple");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -760,11 +760,11 @@ namespace nucleus
       elle::Natural32   i;
 
       // extract the parent nodule.
-      if (Nodule<V>::Extract(archive) == elle::StatusError)
+      if (Nodule<V>::Extract(archive) == elle::Status::Error)
         escape("unable to extract the parent nodule");
 
       // extract the container size.
-      if (archive.Extract(size) == elle::StatusError)
+      if (archive.Extract(size) == elle::Status::Error)
         escape("unable to extract the size");
 
       // iterator.
@@ -776,18 +776,18 @@ namespace nucleus
               new Quill<V>::I);
 
           // extract the key and inlet.
-          if (archive.Extract(*inlet.get()) == elle::StatusError)
+          if (archive.Extract(*inlet.get()) == elle::Status::Error)
             escape("unable to extract the key/inlet tuple");
 
           // add the tuple to the quill.
-          if (this->Insert(inlet.get()) == elle::StatusError)
+          if (this->Insert(inlet.get()) == elle::Status::Error)
             escape("unable to add the key/tuple inlet to the quill");
 
           // release the tracking.
           inlet.release();
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -813,12 +813,12 @@ namespace nucleus
       Contents< Quill<V> >      contents;
 
       // create the contents.
-      if (contents.Create() == elle::StatusError)
+      if (contents.Create() == elle::Status::Error)
         escape("unable to create the contents");
 
       // compute the initial footprint from which the Insert(), Delete()
       // methods will work in order to adjust it.
-      if (contents.content->footprint.Compute() == elle::StatusError)
+      if (contents.content->footprint.Compute() == elle::Status::Error)
         escape("unable to compute the footprint");
 
       // retrieve the initial quill footprint.
@@ -829,14 +829,14 @@ namespace nucleus
         /* XXX[i.e Contents<>]
         // register the catalog-specific quill.
         if (Nucleus::Factory.Register< proton::Quill<neutron::Catalog> >
-            (neutron::ComponentQuillCatalog) == elle::StatusError)
+            (neutron::ComponentQuillCatalog) == elle::Status::Error)
           escape("unable to register the factory product");
         */
 
         // XXX
       }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -845,7 +845,7 @@ namespace nucleus
     template <typename V>
     elle::Status        Quill<V>::Clean()
     {
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

@@ -18,9 +18,9 @@
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
-#include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
 #include <elle/radix/Parameters.hh>
+#include <elle/radix/Allege.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -77,7 +77,7 @@ namespace elle
       }
 
       //
-      // methods 
+      // methods
       //
 
       template <typename C,
@@ -128,7 +128,7 @@ namespace elle
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -245,7 +245,7 @@ namespace elle
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -387,7 +387,7 @@ namespace elle
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -556,7 +556,7 @@ namespace elle
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -757,7 +757,7 @@ namespace elle
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -994,7 +994,7 @@ namespace elle
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -1275,7 +1275,7 @@ namespace elle
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -1602,7 +1602,7 @@ namespace elle
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -1979,7 +1979,7 @@ namespace elle
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
@@ -2410,14 +2410,14 @@ namespace elle
                   << "[Variables " << P::Quantum << "]"
                   << std::endl;
 
-        return StatusOk;
+        return Status::Ok;
       }
     };
 
 //
 // ---------- methods ---------------------------------------------------------
 //
- 
+
     ///
     /// this method merges an ensemble with another hence returning
     /// an Variables class referencing the inner elements of the two

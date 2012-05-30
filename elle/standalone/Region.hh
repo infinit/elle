@@ -1,45 +1,25 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon nov 12 23:19:13 2007]
-//
-
 #ifndef ELLE_STANDALONE_REGION_HH
-#define ELLE_STANDALONE_REGION_HH
+# define ELLE_STANDALONE_REGION_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/core/Natural.hh>
-#include <elle/core/Byte.hh>
+# include <elle/radix/Meta.hh>
 
-#include <elle/radix/Status.hh>
-#include <elle/radix/Meta.hh>
+# include <elle/io/Dumpable.hh>
 
-#include <elle/io/Dumpable.hh>
-
-#include <elle/idiom/Close.hh>
-# include <iostream>
-# include <iomanip>
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  include <iostream>
+#  include <iomanip>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
-  using namespace core;
+
   using namespace radix;
   using namespace io;
 
   namespace standalone
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a memory area.
@@ -52,7 +32,7 @@ namespace elle
     ///
     class Region:
       public Meta,
-      public virtual Dumpable
+      public Dumpable
     {
     public:
       //

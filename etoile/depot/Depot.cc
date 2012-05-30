@@ -25,16 +25,14 @@ namespace etoile
 // ---------- methods ---------------------------------------------------------
 //
 
-    ///
     /// this method returns the address of the network's root block.
-    ///
     elle::Status        Depot::Origin(nucleus::Address&         address)
     {
       // call the Hole.
-      if (hole::Hole::Origin(address) == elle::StatusError)
+      if (hole::Hole::Origin(address) == elle::Status::Error)
         escape("unable to retrieve the origin");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -44,10 +42,10 @@ namespace etoile
                                     const nucleus::Block&       block)
     {
       // call the Hole.
-      if (hole::Hole::Push(address, block) == elle::StatusError)
+      if (hole::Hole::Push(address, block) == elle::Status::Error)
         escape("unable to store the block");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -58,10 +56,10 @@ namespace etoile
                                     nucleus::Block&             block)
     {
       // call the Hole.
-      if (hole::Hole::Pull(address, version, block) == elle::StatusError)
+      if (hole::Hole::Pull(address, version, block) == elle::Status::Error)
         escape("unable to retrieve the block");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -70,10 +68,10 @@ namespace etoile
     elle::Status        Depot::Wipe(const nucleus::Address&     address)
     {
       // call the Hole.
-      if (hole::Hole::Wipe(address) == elle::StatusError)
+      if (hole::Hole::Wipe(address) == elle::Status::Error)
         escape("unable to remove the block");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

@@ -1,21 +1,24 @@
 #ifndef ELLE_SERIALIZE_BASEARCHIVE_HXX
 # define ELLE_SERIALIZE_BASEARCHIVE_HXX
 
+//XXX
+# include <iostream>
+
 # include <boost/detail/endian.hpp>
 
 # include "BaseArchive.hh"
 # include "ArchiveSerializer.hxx"
 
-namespace elle { namespace serialize {
+namespace elle
+{
+  namespace serialize
+  {
 
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
     template<typename T, ArchiveMode _mode>
-      struct BaseArchive<mode_, Archive, CharType_>::_EnableFor
+      struct BaseArchive<mode_, Archive, CT, STS>::_EnableFor
       {
-        template<typename _T> struct _IsNamedValue
-          { static bool const value = false; };
-        template<typename _T> struct _IsNamedValue<NamedValue<_T>>
-          { static bool const value = true; };
 
         typedef typename std::enable_if<
                  (
@@ -28,7 +31,7 @@ namespace elle { namespace serialize {
                   ||  (!std::is_pointer<T>::value && std::is_array<T>::value)
                 )
             &&  mode == _mode
-            &&  !_IsNamedValue<T>::value
+            &&  !IsNamedValue<T>::value
           , Archive&
         > Ref;
 
@@ -38,8 +41,8 @@ namespace elle { namespace serialize {
                     typename std::add_const<T>::type
                 >::value
             &&  mode == _mode
-            &&  !_IsNamedValue<T>::value
-            && !std::is_pointer<T>::value
+            &&  !IsNamedValue<T>::value
+            && std::is_pointer<T>::value == false
           , Archive&
         > Val;
 
@@ -47,6 +50,7 @@ namespace elle { namespace serialize {
                 (!std::is_pointer<T>::value || std::is_array<T>::value)
             &&  !std::is_const<T>::value
             &&  mode == _mode
+            &&  IsNamedValue<T>::value == false
           , Archive&
         > NotPointer;
 
@@ -56,16 +60,24 @@ namespace elle { namespace serialize {
         > ConstructPtr;
 
         typedef typename std::enable_if<
-          _IsNamedValue<T>::value && mode == _mode,
+         IsNamedValue<T>::value && mode == _mode,
           Archive&
         > NamedValue;
       };
 
     /// Generic save method. Uses an explicit specialization of ArchiveSerializer.
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
     template<typename T>
-      inline void BaseArchive<mode_, Archive, CharType_>::Save(T const& val)
+    inline typename std::enable_if<std::is_enum<T>::value == false>::type
+      BaseArchive<mode_, Archive, CT, STS>::Save(T const& val)
       {
+        // XXX
+//# ifndef NDEBUG
+//        std::cout << "Saving type: " << std::string(typeid(T).name()) << std::endl;
+//        Access::Save(this->self(), std::string(typeid(T).name()));
+//# endif
+
         if (StoreClassVersion<T>::value == true)
             Access::Save(this->self(), ClassVersionType(ArchivableClass<T>::version));
 
@@ -79,10 +91,23 @@ namespace elle { namespace serialize {
       }
 
     /// Generic load method. Uses an explicit specialization of ArchiveSerializer.
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
     template<typename T>
-      inline void BaseArchive<mode_, Archive, CharType_>::Load(T& val)
+    inline typename std::enable_if<
+            std::is_enum<T>::value == false
+        &&  IsNamedValue<T>::value == false
+      >::type
+      BaseArchive<mode_, Archive, CT, STS>::Load(T& val)
       {
+        // XXX
+//# ifndef NDEBUG
+//        std::string type_name;
+//        Access::Load(this->self(), type_name);
+//        std::cout << "Loading type: " << type_name << std::endl;
+//        assert(type_name == typeid(T).name());
+//# endif
+
         ClassVersionType classVersion(0);
         if (StoreClassVersion<T>::value == true)
           Access::Load(this->self(), classVersion);
@@ -92,18 +117,22 @@ namespace elle { namespace serialize {
       }
 
     /// Generic load construct. Uses an explicit specialization of ArchiveSerializer.
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
     template<typename T>
-      inline void BaseArchive<mode_, Archive, CharType_>::LoadConstruct(T* ptr)
+      inline void BaseArchive<mode_, Archive, CT, STS>::LoadConstruct(T* ptr)
       {
         assert(ptr != nullptr);
-        ClassVersionType classVersion(0);
-        Access::Load(this->self(), classVersion);
-        ArchiveSerializer<T>::LoadConstruct(this->self(), ptr, classVersion.version);
+        //ClassVersionType classVersion(0);
+        //if (StoreClassVersion<T>::value == true)
+        //  Access::Load(this->self(), classVersion);
+        typedef ArchiveSerializer<typename std::remove_cv<T>::type> Serializer;
+        Serializer::LoadConstruct(this->self(), ptr);
       }
 
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Save(int16_t val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Save(int16_t val)
         {
 # ifdef BOOST_LITTLE_ENDIAN
           Access::SaveBinary(this->self(), &val, sizeof(val));
@@ -117,8 +146,9 @@ namespace elle { namespace serialize {
 # endif
         }
 
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Load(int16_t& val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Load(int16_t& val)
         {
 # ifdef BOOST_LITTLE_ENDIAN
           Access::LoadBinary(this->self(), &val, sizeof(val));
@@ -133,8 +163,9 @@ namespace elle { namespace serialize {
 # endif
         }
 
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Save(int32_t val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Save(int32_t val)
         {
 # ifdef BOOST_LITTLE_ENDIAN
           Access::SaveBinary(this->self(), &val, sizeof(val));
@@ -151,8 +182,9 @@ namespace elle { namespace serialize {
         }
 
       /// Load int32_t
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Load(int32_t& val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Load(int32_t& val)
         {
 # ifdef BOOST_LITTLE_ENDIAN
           Access::LoadBinary(this->self(), &val, sizeof(val));
@@ -170,8 +202,9 @@ namespace elle { namespace serialize {
         }
 
       /// Save int64_t
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Save(int64_t val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Save(int64_t val)
         {
 # ifdef BOOST_LITTLE_ENDIAN
           Access::SaveBinary(this->self(), &val, sizeof(val));
@@ -192,8 +225,9 @@ namespace elle { namespace serialize {
         }
 
       /// Load int64_t
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Load(int64_t& val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Load(int64_t& val)
         {
 # ifdef BOOST_LITTLE_ENDIAN
           Access::LoadBinary(this->self(), &val, sizeof(val));
@@ -215,58 +249,65 @@ namespace elle { namespace serialize {
         }
 
       /// Save float
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Save(float val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Save(float val)
         {
           static_assert(sizeof(val) == 4, "float size is not standard");
           Access::SaveBinary(this->self(), &val, sizeof(val));
         }
 
       /// Load float
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Load(float& val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Load(float& val)
         {
           static_assert(sizeof(val) == 4, "float size is not standard");
           Access::LoadBinary(this->self(), &val, sizeof(val));
         }
 
       /// Save double
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Save(double val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Save(double val)
         {
           static_assert(sizeof(val) == 8, "double size is not standard");
           Access::SaveBinary(this->self(), &val, sizeof(val));
         }
 
       /// Load double
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Load(double& val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Load(double& val)
         {
           static_assert(sizeof(val) == 8, "double size is not standard");
           Access::LoadBinary(this->self(), &val, sizeof(val));
         }
 
+
       /// Save std::string
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Save(std::string const& val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Save(std::string const& val)
         {
           typedef typename Archive::StringSizeType SizeType;
           static_assert(std::is_unsigned<SizeType>::value, "A string size type have to be unsigned");
           size_t sz = val.size();
           if (static_cast<size_t>(static_cast<SizeType>(-1)) < sz)
             throw std::runtime_error("String size too big");
-          this->self().Save(static_cast<SizeType>(sz));
-          Access::SaveBinary(this->self(), val.data(), sz);
+          Access::Save(this->self(), static_cast<SizeType>(sz));
+          Access::SaveBinary(this->self(), val.c_str(), sz);
         }
 
       /// Load std::string
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Load(std::string& val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Load(std::string& val)
         {
           typedef typename Archive::StringSizeType SizeType;
           static_assert(std::is_unsigned<SizeType>::value, "A string size type have to be unsigned");
           SizeType size;
-          this->self().Load(size);
+          Access::Load(this->self(), size);
           val.resize(size);
           char tab[256];
           size_t idx = 0;
@@ -285,88 +326,144 @@ namespace elle { namespace serialize {
         }
 
       /// Save class version
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Save(ClassVersionType const& classVersion)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Save(ClassVersionType const& classVersion)
       {
         Access::Save(this->self(), classVersion.version);
       }
 
       /// Load class version
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Load(ClassVersionType& classVersion)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Load(ClassVersionType& classVersion)
       {
         Access::Load(this->self(), classVersion.version);
       }
 
+
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+    template<typename T>
+      inline typename std::enable_if<std::is_enum<T>::value == true>::type
+      BaseArchive<mode_, Archive, CT, STS>::Save(T value)
+      {
+        assert(static_cast<unsigned int>(value) < 65536);
+        Access::Save(this->self(), static_cast<uint16_t>(value));
+      }
+
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+    template<typename T>
+      inline typename std::enable_if<std::is_enum<T>::value == true>::type
+      BaseArchive<mode_, Archive, CT, STS>::Load(T& value)
+      {
+        uint16_t value_;
+        Access::Load(this->self(), value_);
+        value = static_cast<T>(value_);
+      }
+
+
       /// This is the last method called by any serialization method
       /// You may want to override it to change the serialization format
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::SaveBinary(void const* data, std::streamsize size)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::SaveBinary(void const* data, std::streamsize size)
         {
           this->stream().write(static_cast<char const*>(data), size);
         }
 
       /// This is the last method called by any serialization method
       /// You may want to override it to change the serialization format
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::LoadBinary(void* data, std::streamsize size)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::LoadBinary(void* data, std::streamsize size)
         {
           this->stream().read(static_cast<char*>(data), size);
         }
 
 
 
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Save(int8_t val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Save(int8_t val)
         { Access::SaveBinary(this->self(), &val, sizeof(val)); }
 
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Load(int8_t& val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Load(int8_t& val)
         { Access::LoadBinary(this->self(), &val, sizeof(val)); }
 
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Save(char val)
+
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Save(bool val)
         { Access::Save(this->self(), static_cast<int8_t>(val)); }
 
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Save(uint8_t val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Save(char val)
         { Access::Save(this->self(), static_cast<int8_t>(val)); }
 
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Save(uint16_t val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Save(uint8_t val)
+        { Access::Save(this->self(), static_cast<int8_t>(val)); }
+
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Save(uint16_t val)
         { Access::Save(this->self(), static_cast<int16_t>(val)); }
 
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Save(uint32_t val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Save(uint32_t val)
         { Access::Save(this->self(), static_cast<int32_t>(val)); }
 
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Save(uint64_t val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Save(uint64_t val)
         { Access::Save(this->self(), static_cast<int64_t>(val)); }
 
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Load(char& val)
+
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Load(bool& val)
+        {
+          int8_t val_;
+          Access::Load(this->self(), val_);
+          val = val_;
+        }
+
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Load(char& val)
         { Access::Load(this->self(), reinterpret_cast<int8_t&>(val)); }
 
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Load(uint8_t& val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Load(uint8_t& val)
         { Access::Load(this->self(), reinterpret_cast<int8_t&>(val)); }
 
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Load(uint16_t& val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Load(uint16_t& val)
         { Access::Load(this->self(), reinterpret_cast<int16_t&>(val)); }
 
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Load(uint32_t& val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Load(uint32_t& val)
         { Access::Load(this->self(), reinterpret_cast<int32_t&>(val)); }
 
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      inline void BaseArchive<mode_, Archive, CharType_>::Load(uint64_t& val)
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      inline void BaseArchive<mode_, Archive, CT, STS>::Load(uint64_t& val)
         { Access::Load(this->self(), reinterpret_cast<int64_t&>(val)); }
 
 
-    template<ArchiveMode mode_, typename Archive, typename CharType_>
-      class BaseArchive<mode_, Archive, CharType_>::Access
+    template<ArchiveMode mode_, typename Archive, typename CT,
+             template<ArchiveMode, typename> class STS>
+      class BaseArchive<mode_, Archive, CT, STS>::Access
       {
       public:
         static inline void SaveBinary(Archive& ar, void const* data, size_t size)
@@ -378,6 +475,7 @@ namespace elle { namespace serialize {
           ar.LoadBinary(data, size);
         }
 
+        static inline void Save(Archive& ar, bool val)      { ar.Save(val); }
         static inline void Save(Archive& ar, char val)      { ar.Save(val); }
         static inline void Save(Archive& ar, int8_t val)    { ar.Save(val); }
         static inline void Save(Archive& ar, uint8_t val)   { ar.Save(val); }
@@ -388,6 +486,7 @@ namespace elle { namespace serialize {
         static inline void Save(Archive& ar, uint64_t val)  { ar.Save(val); }
         static inline void Save(Archive& ar, int64_t val)   { ar.Save(val); }
 
+        static inline void Load(Archive& ar, bool& val)     { ar.Load(val); }
         static inline void Load(Archive& ar, char& val)     { ar.Load(val); }
         static inline void Load(Archive& ar, int8_t& val)   { ar.Load(val); }
         static inline void Load(Archive& ar, uint8_t& val)  { ar.Load(val); }

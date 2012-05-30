@@ -1,25 +1,15 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [mon feb 16 21:13:00 2009]
-//
-
 #ifndef NUCLEUS_PROTON_ADDRESS_HH
-#define NUCLEUS_PROTON_ADDRESS_HH
+# define NUCLEUS_PROTON_ADDRESS_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/cryptography/Digest.hh>
+# include <elle/io/Fileable.hh>
+# include <elle/serialize/Uniquable.hh>
 
-#include <elle/Elle.hh>
+# include <nucleus/proton/Family.hh>
 
-#include <nucleus/proton/Family.hh>
+# include <nucleus/neutron/Component.hh>
 
-#include <nucleus/neutron/Component.hh>
+# include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -45,9 +35,10 @@ namespace nucleus
     /// noteworthy is that the family and component are also included in
     /// the generation of the address' digest.
     ///
-    class Address:
-      public elle::Object,
-      public elle::Fileable<elle::FormatBase64>
+    class Address
+      : public elle::radix::Object
+      , public elle::io::Fileable<Address>
+      , public elle::serialize::Uniquable<Address>
     {
     public:
       //
@@ -93,8 +84,8 @@ namespace nucleus
       elle::Status              Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status              Serialize(elle::Archive&) const;
-      elle::Status              Extract(elle::Archive&);
+      //elle::Status              Serialize(elle::Archive&) const;
+      //elle::Status              Extract(elle::Archive&);
 
       //
       // attributes
@@ -102,7 +93,7 @@ namespace nucleus
       Family                    family;
       neutron::Component        component;
 
-      elle::Digest*             digest;
+      elle::cryptography::Digest* digest;
     };
 
   }
@@ -113,5 +104,7 @@ namespace nucleus
 //
 
 #include <nucleus/proton/Address.hxx>
+
+#include <elle/idiom/Open.hh>
 
 #endif

@@ -1,17 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [thu jan 28 22:01:03 2010]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/serialize/BinaryArchive.hh>
 
+#include <nucleus/proton/BlockSerializer.hxx>
 #include <nucleus/Nucleus.hh>
 
 #include <hole/Hole.hh>
@@ -45,31 +35,31 @@ namespace nucleus
     {
       // register the component types.
       if (Nucleus::Factory.Register< neutron::Object >
-          (neutron::ComponentObject) == elle::StatusError)
+          (neutron::ComponentObject) == elle::Status::Error)
         escape("unable to register the factory product");
 
       if (Nucleus::Factory.Register< proton::Contents<neutron::Data> >
-          (neutron::ComponentData) == elle::StatusError)
+          (neutron::ComponentData) == elle::Status::Error)
         escape("unable to register the factory product");
 
       if (Nucleus::Factory.Register< proton::Contents<neutron::Catalog> >
-          (neutron::ComponentCatalog) == elle::StatusError)
+          (neutron::ComponentCatalog) == elle::Status::Error)
         escape("unable to register the factory product");
 
       if (Nucleus::Factory.Register< proton::Contents<neutron::Reference> >
-          (neutron::ComponentReference) == elle::StatusError)
+          (neutron::ComponentReference) == elle::Status::Error)
         escape("unable to register the factory product");
 
       if (Nucleus::Factory.Register< neutron::Access >
-          (neutron::ComponentAccess) == elle::StatusError)
+          (neutron::ComponentAccess) == elle::Status::Error)
         escape("unable to register the factory product");
     }
 
     // initialize the proton.
-    if (proton::Proton::Initialize() == elle::StatusError)
+    if (proton::Proton::Initialize() == elle::Status::Error)
       escape("unable to initialize the proton");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -78,14 +68,14 @@ namespace nucleus
   elle::Status          Nucleus::Clean()
   {
     // clean the proton.
-    if (proton::Proton::Clean() == elle::StatusError)
+    if (proton::Proton::Clean() == elle::Status::Error)
       escape("unable to clean the proton");
 
     // clear the nucleus factory.
-    if (Nucleus::Factory.Clear() == elle::StatusError)
+    if (Nucleus::Factory.Clear() == elle::Status::Error)
       escape("unable to clear the factory");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 }

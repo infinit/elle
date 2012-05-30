@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/String.hh>
+#include <elle/types.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
@@ -185,7 +185,7 @@ namespace elle
         case Routine::SchemeFunction:
           {
             // call the function.
-            if (this->function->Call(arguments...) == StatusError)
+            if (this->function->Call(arguments...) == Status::Error)
               escape("unable to call the function");
 
             break;
@@ -193,7 +193,7 @@ namespace elle
         case Routine::SchemeMethod:
           {
             // call the method.
-            if (this->method->Call(arguments...) == StatusError)
+            if (this->method->Call(arguments...) == Status::Error)
               escape("unable to call the method");
 
             break;
@@ -204,7 +204,7 @@ namespace elle
           }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -269,7 +269,7 @@ namespace elle
       std::cout << alignment << "[Callback]" << std::endl;
 
       // dump the routine.
-      if (Routine::Dump(margin + 2) == StatusError)
+      if (Routine::Dump(margin + 2) == Status::Error)
         escape("unable to dump the routine");
 
       // dump the content.
@@ -278,7 +278,7 @@ namespace elle
         case Routine::SchemeFunction:
           {
             // dump the function.
-            if (this->function->Dump(margin + 2) == StatusError)
+            if (this->function->Dump(margin + 2) == Status::Error)
               escape("unable to dump the function");
 
             break;
@@ -286,7 +286,7 @@ namespace elle
         case Routine::SchemeMethod:
           {
             // dump the method.
-            if (this->method->Dump(margin + 2) == StatusError)
+            if (this->method->Dump(margin + 2) == Status::Error)
               escape("unable to dump the method");
 
             break;
@@ -297,7 +297,7 @@ namespace elle
           }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //

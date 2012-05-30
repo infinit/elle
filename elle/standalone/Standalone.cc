@@ -1,66 +1,46 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun may  2 11:00:51 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <elle/standalone/Standalone.hh>
+#include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
+#include <elle/standalone/Morgue.hh>
 
 namespace elle
 {
   namespace standalone
   {
 
-//
-// ---------- static methods --------------------------------------------------
-//
-
-    ///
-    /// this method initializes the module.
-    ///
     Status              Standalone::Initialize()
     {
       // initialize the report.
-      if (Report::Initialize() == StatusError)
+      if (Report::Initialize() == Status::Error)
         escape("unable to initialize the report");
 
       // initialize the log.
-      if (Log::Initialize() == StatusError)
+      if (Log::Initialize() == Status::Error)
         escape("unable to initialize the log");
 
       // initialize the morgue.
-      if (Morgue::Initialize() == StatusError)
+      if (Morgue::Initialize() == Status::Error)
         escape("unable to initialize the morgue");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
-    ///
-    /// this method cleans the module.
-    ///
     Status              Standalone::Clean()
     {
       // clean the morgue class.
-      if (Morgue::Clean() == StatusError)
+      if (Morgue::Clean() == Status::Error)
         escape("unable to clean the morgue");
 
       // clean the log.
-      if (Log::Clean() == StatusError)
+      if (Log::Clean() == Status::Error)
         escape("unable to clean the log");
 
       // clean the report.
-      if (Report::Clean() == StatusError)
+      if (Report::Clean() == Status::Error)
         escape("unable to clean the report");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

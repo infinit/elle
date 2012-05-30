@@ -47,7 +47,7 @@ namespace etoile
       // forward the call to wall.
       if (wall::Access::Lookup(identifier,
                                subject,
-                               r) == elle::StatusError)
+                               r) == elle::Status::Error)
         escape("unable to lookup the given subject");
 
       // construct the record depending on the value of _r_.
@@ -56,7 +56,7 @@ namespace etoile
       else
         record = nucleus::Record::Null;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -79,13 +79,13 @@ namespace etoile
       if (wall::Access::Consult(identifier,
                                 index,
                                 size,
-                                r) == elle::StatusError)
+                                r) == elle::Status::Error)
         escape("unable to consult the given object's access records");
 
       // copy the range, duplicating every record in it.
       range = r;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -110,7 +110,7 @@ namespace etoile
       // forward the call to wall.
       if (wall::Attributes::Get(identifier,
                                 name,
-                                t) == elle::StatusError)
+                                t) == elle::Status::Error)
         escape("unable to get the attribute");
 
       // construct the trait depending on the value of _t_.
@@ -119,7 +119,7 @@ namespace etoile
       else
         trait = nucleus::Trait::Null;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -138,13 +138,13 @@ namespace etoile
 
       // forward the call to wall.
       if (wall::Attributes::Fetch(identifier,
-                                  r) == elle::StatusError)
+                                  r) == elle::Status::Error)
         escape("unable to fetch the given object's attributes");
 
       // copy the range, duplicating every trait in it.
       range = r;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -169,7 +169,7 @@ namespace etoile
       // forward the call to wall.
       if (wall::Directory::Lookup(identifier,
                                   slab,
-                                  e) == elle::StatusError)
+                                  e) == elle::Status::Error)
         escape("unable to lookup the entry");
 
       // construct the entry depending on the value of _e_.
@@ -178,7 +178,7 @@ namespace etoile
       else
         entry = nucleus::Entry::Null;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -201,13 +201,13 @@ namespace etoile
       if (wall::Directory::Consult(identifier,
                                    index,
                                    size,
-                                   r) == elle::StatusError)
+                                   r) == elle::Status::Error)
         escape("unable to consult the given object's directory entries");
 
       // copy the range, duplicating every entry in it.
       range = r;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

@@ -59,7 +59,7 @@ namespace etoile
         printf("[etoile] wall::Directory::Create()\n");
 
       // acquire the scope.
-      if (gear::Scope::Supply(scope) == elle::StatusError)
+      if (gear::Scope::Supply(scope) == elle::Status::Error)
         escape("unable to supply the scope");
 
       gear::Guard               guard(scope);
@@ -68,7 +68,7 @@ namespace etoile
       reactor::Lock lock(&elle::concurrency::scheduler(), scope->mutex.write());
       {
         // retrieve the context.
-        if (scope->Use(context) == elle::StatusError)
+        if (scope->Use(context) == elle::Status::Error)
           escape("unable to retrieve the context");
 
         // allocate an actor.
@@ -78,18 +78,18 @@ namespace etoile
         identifier = guard.actor()->identifier;
 
         // apply the create automaton on the context.
-        if (automaton::Directory::Create(*context) == elle::StatusError)
+        if (automaton::Directory::Create(*context) == elle::Status::Error)
           escape("unable to create the directory");
 
         // set the actor's state.
         guard.actor()->state = gear::Actor::StateUpdated;
 
         // waive the scope.
-        if (guard.Release() == elle::StatusError)
+        if (guard.Release() == elle::Status::Error)
           escape("unable to release the guard");
       }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -108,7 +108,7 @@ namespace etoile
         printf("[etoile] wall::Directory::Load()\n");
 
       // acquire the scope.
-      if (gear::Scope::Acquire(chemin, scope) == elle::StatusError)
+      if (gear::Scope::Acquire(chemin, scope) == elle::Status::Error)
         escape("unable to acquire the scope");
 
       gear::Guard               guard(scope);
@@ -117,7 +117,7 @@ namespace etoile
       reactor::Lock lock(&elle::concurrency::scheduler(), scope->mutex.write());
       {
         // retrieve the context.
-        if (scope->Use(context) == elle::StatusError)
+        if (scope->Use(context) == elle::Status::Error)
           escape("unable to retrieve the context");
 
         // allocate an actor.
@@ -127,19 +127,19 @@ namespace etoile
         identifier = guard.actor()->identifier;
 
         // locate the object based on the chemin.
-        if (chemin.Locate(context->location) == elle::StatusError)
+        if (chemin.Locate(context->location) == elle::Status::Error)
           escape("unable to locate the directory");
 
         // apply the load automaton on the context.
-        if (automaton::Directory::Load(*context) == elle::StatusError)
+        if (automaton::Directory::Load(*context) == elle::Status::Error)
           escape("unable to load the directory");
 
         // waive the scope.
-        if (guard.Release() == elle::StatusError)
+        if (guard.Release() == elle::Status::Error)
           escape("unable to release the guard");
       }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -157,7 +157,7 @@ namespace etoile
 
       // XXX to implement.
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -172,7 +172,7 @@ namespace etoile
 
       // XXX to implement.
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -194,21 +194,21 @@ namespace etoile
         printf("[etoile] wall::Directory::Add()\n");
 
       // select the actor.
-      if (gear::Actor::Select(child, actor) == elle::StatusError)
+      if (gear::Actor::Select(child, actor) == elle::Status::Error)
         escape("unable to select the actor");
 
       // retrieve the scope.
       scope = actor->scope;
 
       // retrieve the context.
-      if (scope->Use(object) == elle::StatusError)
+      if (scope->Use(object) == elle::Status::Error)
         escape("unable to retrieve the context");
 
       // keep the address.
       address = object->location.address;
 
       // select the actor.
-      if (gear::Actor::Select(parent, actor) == elle::StatusError)
+      if (gear::Actor::Select(parent, actor) == elle::Status::Error)
         escape("unable to select the actor");
 
       // retrieve the scope.
@@ -218,20 +218,20 @@ namespace etoile
       reactor::Lock lock(&elle::concurrency::scheduler(), scope->mutex.write());
       {
         // retrieve the context.
-        if (scope->Use(directory) == elle::StatusError)
+        if (scope->Use(directory) == elle::Status::Error)
           escape("unable to retrieve the context");
 
         // apply the add automaton on the context.
         if (automaton::Directory::Add(*directory,
                                       name,
-                                      address) == elle::StatusError)
+                                      address) == elle::Status::Error)
           escape("unable to add the directory entry");
 
         // set the actor's state.
         actor->state = gear::Actor::StateUpdated;
       }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -256,7 +256,7 @@ namespace etoile
         printf("[etoile] wall::Directory::Lookup()\n");
 
       // select the actor.
-      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+      if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         escape("unable to select the actor");
 
       // retrieve the scope.
@@ -266,17 +266,17 @@ namespace etoile
       reactor::Lock lock(&elle::concurrency::scheduler(), scope->mutex);
       {
         // retrieve the context.
-        if (scope->Use(context) == elle::StatusError)
+        if (scope->Use(context) == elle::Status::Error)
           escape("unable to retrieve the context");
 
         // apply the lookup automaton on the context.
         if (automaton::Directory::Lookup(*context,
                                          name,
-                                         entry) == elle::StatusError)
+                                         entry) == elle::Status::Error)
           escape("unable to lookup the directory entry");
       }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -302,7 +302,7 @@ namespace etoile
         printf("[etoile] wall::Directory::Consult()\n");
 
       // select the actor.
-      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+      if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         escape("unable to select the actor");
 
       // retrieve the scope.
@@ -312,18 +312,18 @@ namespace etoile
       reactor::Lock lock(&elle::concurrency::scheduler(), scope->mutex);
       {
         // retrieve the context.
-        if (scope->Use(context) == elle::StatusError)
+        if (scope->Use(context) == elle::Status::Error)
           escape("unable to retrieve the context");
 
         // apply the consult automaton on the context.
         if (automaton::Directory::Consult(*context,
                                           offset,
                                           size,
-                                          range) == elle::StatusError)
+                                          range) == elle::Status::Error)
           escape("unable to consult the directory entries");
       }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -343,7 +343,7 @@ namespace etoile
         printf("[etoile] wall::Directory::Rename()\n");
 
       // select the actor.
-      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+      if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         escape("unable to select the actor");
 
       // retrieve the scope.
@@ -353,13 +353,13 @@ namespace etoile
       reactor::Lock lock(&elle::concurrency::scheduler(), scope->mutex.write());
       {
         // retrieve the context.
-        if (scope->Use(context) == elle::StatusError)
+        if (scope->Use(context) == elle::Status::Error)
           escape("unable to retrieve the context");
 
         // apply the rename automaton on the context.
         if (automaton::Directory::Rename(*context,
                                          from,
-                                         to) == elle::StatusError)
+                                         to) == elle::Status::Error)
           escape("unable to rename the directory entry");
 
         // set the actor's state.
@@ -378,12 +378,12 @@ namespace etoile
         {
           // build the route associated with the previous version of
           // the renamed entry.
-          if (routes.from.Create(scope->chemin.route, from) == elle::StatusError)
+          if (routes.from.Create(scope->chemin.route, from) == elle::Status::Error)
             escape("unable to create the route");
 
           // build the route associated with the new version of
           // the renamed entry.
-          if (routes.to.Create(scope->chemin.route, to) == elle::StatusError)
+          if (routes.to.Create(scope->chemin.route, to) == elle::Status::Error)
             escape("unable to create the route");
         }
 
@@ -410,23 +410,23 @@ namespace etoile
           }                     chemins;
 
           // resolve the old route _routes.from_ to a venue.
-          if (path::Path::Resolve(routes.from, venue) == elle::StatusError)
+          if (path::Path::Resolve(routes.from, venue) == elle::Status::Error)
             escape("unable to resolve the route");
 
           // create a chemin based on both the old route and venue.
-          if (chemins.from.Create(routes.from, venue) == elle::StatusError)
+          if (chemins.from.Create(routes.from, venue) == elle::Status::Error)
             escape("unable to create the chemin");
 
           // create the new chemin which includes the new route and
           // the venue, which has not changed since.
-          if (chemins.to.Create(routes.to, venue) == elle::StatusError)
+          if (chemins.to.Create(routes.to, venue) == elle::Status::Error)
             escape("unable to create the chemin");
 
           // update the scope so as to update all the scopes
           // whose chemins are now inconsistent---i.e referencing
           // the old chemin _chemin.from_.
           if (gear::Scope::Update(chemins.from,
-                                  chemins.to) == elle::StatusError)
+                                  chemins.to) == elle::Status::Error)
             escape("unable to update the scopes");
         }
 
@@ -435,16 +435,16 @@ namespace etoile
         //
         {
           // evict the route from the shrub.
-          if (shrub::Shrub::Evict(routes.from) == elle::StatusError)
+          if (shrub::Shrub::Evict(routes.from) == elle::Status::Error)
             escape("unable to evict the route from the shrub");
 
           // evict the route from the shrub.
-          if (shrub::Shrub::Evict(routes.to) == elle::StatusError)
+          if (shrub::Shrub::Evict(routes.to) == elle::Status::Error)
             escape("unable to evict the route from the shrub");
         }
       }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -464,7 +464,7 @@ namespace etoile
         printf("[etoile] wall::Directory::Remove()\n");
 
       // select the actor.
-      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+      if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         escape("unable to select the actor");
 
       // retrieve the scope.
@@ -474,12 +474,12 @@ namespace etoile
       reactor::Lock lock(&elle::concurrency::scheduler(), scope->mutex.write());
       {
         // retrieve the context.
-        if (scope->Use(context) == elle::StatusError)
+        if (scope->Use(context) == elle::Status::Error)
           escape("unable to retrieve the context");
 
         // apply the remove automaton on the context.
         if (automaton::Directory::Remove(*context,
-                                         name) == elle::StatusError)
+                                         name) == elle::Status::Error)
           escape("unable to remove the directory entry");
 
         // set the actor's state.
@@ -490,16 +490,16 @@ namespace etoile
         //
         {
           // build the route associated with the removed entry.
-          if (route.Create(scope->chemin.route, name) == elle::StatusError)
+          if (route.Create(scope->chemin.route, name) == elle::Status::Error)
             escape("unable to create the route");
 
           // evict the route from the shrub.
-          if (shrub::Shrub::Evict(route) == elle::StatusError)
+          if (shrub::Shrub::Evict(route) == elle::Status::Error)
             escape("unable to evict the route from the shrub");
         }
       }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -518,7 +518,7 @@ namespace etoile
         printf("[etoile] wall::Directory::Discard()\n");
 
       // select the actor.
-      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+      if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         escape("unable to select the actor");
 
       gear::Guard               guard(actor);
@@ -530,7 +530,7 @@ namespace etoile
       reactor::Lock lock(&elle::concurrency::scheduler(), scope->mutex.write());
       {
         // retrieve the context.
-        if (scope->Use(context) == elle::StatusError)
+        if (scope->Use(context) == elle::Status::Error)
           escape("unable to retrieve the context");
 
         // check the permissions before performing the operation in
@@ -538,24 +538,24 @@ namespace etoile
         // allowed.
         if (automaton::Rights::Operate(
               *context,
-              gear::OperationDiscard) == elle::StatusError)
+              gear::OperationDiscard) == elle::Status::Error)
           escape("the user does not seem to have the necessary permission for "
                  "discarding this directory");
 
         // specify the closing operation performed by the actor.
-        if (actor->Operate(gear::OperationDiscard) == elle::StatusError)
+        if (actor->Operate(gear::OperationDiscard) == elle::Status::Error)
           escape("this operation cannot be performed by this actor");
 
         // delete the actor.
         guard.actor(nullptr);
 
         // specify the closing operation performed on the scope.
-        if (scope->Operate(gear::OperationDiscard) == elle::StatusError)
+        if (scope->Operate(gear::OperationDiscard) == elle::Status::Error)
           escape("unable to specify the operation being performed "
                  "on the scope");
 
         // trigger the shutdown.
-        if (scope->Shutdown() == elle::StatusError)
+        if (scope->Shutdown() == elle::Status::Error)
           escape("unable to trigger the shutdown");
       }
 
@@ -573,11 +573,11 @@ namespace etoile
 
             // relinquish the scope: at this point we know there is no
             // remaining actor.
-            if (gear::Scope::Relinquish(scope) == elle::StatusError)
+            if (gear::Scope::Relinquish(scope) == elle::Status::Error)
               escape("unable to relinquish the scope");
 
             // record the scope in the journal.
-            if (journal::Journal::Record(scope) == elle::StatusError)
+            if (journal::Journal::Record(scope) == elle::Status::Error)
               escape("unable to record the scope in the journal");
 
             break;
@@ -592,7 +592,7 @@ namespace etoile
           }
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -611,7 +611,7 @@ namespace etoile
         printf("[etoile] wall::Directory::Store()\n");
 
       // select the actor.
-      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+      if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         escape("unable to select the actor");
 
       gear::Guard               guard(actor);
@@ -623,7 +623,7 @@ namespace etoile
       reactor::Lock lock(&elle::concurrency::scheduler(), scope->mutex.write());
       {
         // retrieve the context.
-        if (scope->Use(context) == elle::StatusError)
+        if (scope->Use(context) == elle::Status::Error)
           escape("unable to retrieve the context");
 
         // check the permissions before performing the operation in
@@ -631,24 +631,24 @@ namespace etoile
         // allowed.
         if (automaton::Rights::Operate(
               *context,
-              gear::OperationStore) == elle::StatusError)
+              gear::OperationStore) == elle::Status::Error)
           escape("the user does not seem to have the necessary permission for "
                  "storing this directory");
 
         // specify the closing operation performed by the actor.
-        if (actor->Operate(gear::OperationStore) == elle::StatusError)
+        if (actor->Operate(gear::OperationStore) == elle::Status::Error)
           escape("this operation cannot be performed by this actor");
 
         // delete the actor.
         guard.actor(nullptr);
 
         // specify the closing operation performed on the scope.
-        if (scope->Operate(gear::OperationStore) == elle::StatusError)
+        if (scope->Operate(gear::OperationStore) == elle::Status::Error)
           escape("unable to specify the operation being performed "
                  "on the scope");
 
         // trigger the shutdown.
-        if (scope->Shutdown() == elle::StatusError)
+        if (scope->Shutdown() == elle::Status::Error)
           escape("unable to trigger the shutdown");
       }
 
@@ -666,11 +666,11 @@ namespace etoile
 
             // relinquish the scope: at this point we know there is no
             // remaining actor.
-            if (gear::Scope::Relinquish(scope) == elle::StatusError)
+            if (gear::Scope::Relinquish(scope) == elle::Status::Error)
               escape("unable to relinquish the scope");
 
             // record the scope in the journal.
-            if (journal::Journal::Record(scope) == elle::StatusError)
+            if (journal::Journal::Record(scope) == elle::Status::Error)
               escape("unable to record the scope in the journal");
 
             break;
@@ -685,7 +685,7 @@ namespace etoile
           }
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -703,7 +703,7 @@ namespace etoile
         printf("[etoile] wall::Directory::Destroy()\n");
 
       // select the actor.
-      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+      if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
         escape("unable to select the actor");
 
       gear::Guard               guard(actor);
@@ -715,7 +715,7 @@ namespace etoile
       reactor::Lock lock(&elle::concurrency::scheduler(), scope->mutex.write());
       {
         // retrieve the context.
-        if (scope->Use(context) == elle::StatusError)
+        if (scope->Use(context) == elle::Status::Error)
           escape("unable to retrieve the context");
 
         // check the permissions before performing the operation in
@@ -723,24 +723,24 @@ namespace etoile
         // allowed.
         if (automaton::Rights::Operate(
               *context,
-              gear::OperationDestroy) == elle::StatusError)
+              gear::OperationDestroy) == elle::Status::Error)
           escape("the user does not seem to have the necessary permission for "
                  "destroying this directory");
 
         // specify the closing operation performed by the actor.
-        if (actor->Operate(gear::OperationDestroy) == elle::StatusError)
+        if (actor->Operate(gear::OperationDestroy) == elle::Status::Error)
           escape("this operation cannot be performed by this actor");
 
         // delete the actor.
         guard.actor(nullptr);
 
         // specify the closing operation performed on the scope.
-        if (scope->Operate(gear::OperationDestroy) == elle::StatusError)
+        if (scope->Operate(gear::OperationDestroy) == elle::Status::Error)
           escape("unable to specify the operation being performed "
                  "on the scope");
 
         // trigger the shutdown.
-        if (scope->Shutdown() == elle::StatusError)
+        if (scope->Shutdown() == elle::Status::Error)
           escape("unable to trigger the shutdown");
       }
 
@@ -758,11 +758,11 @@ namespace etoile
 
             // relinquish the scope: at this point we know there is no
             // remaining actor.
-            if (gear::Scope::Relinquish(scope) == elle::StatusError)
+            if (gear::Scope::Relinquish(scope) == elle::Status::Error)
               escape("unable to relinquish the scope");
 
             // record the scope in the journal.
-            if (journal::Journal::Record(scope) == elle::StatusError)
+            if (journal::Journal::Record(scope) == elle::Status::Error)
               escape("unable to record the scope in the journal");
 
             break;
@@ -777,7 +777,7 @@ namespace etoile
           }
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -793,7 +793,7 @@ namespace etoile
 
       // XXX to implement.
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

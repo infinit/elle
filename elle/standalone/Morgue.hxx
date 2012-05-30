@@ -44,7 +44,7 @@ namespace elle
     {
       this->container.push_back(static_cast<Meta*>(instance));
       _corpses_available.signal();
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

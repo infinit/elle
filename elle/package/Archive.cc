@@ -81,7 +81,7 @@ namespace elle
                     static_cast<msgpack_sbuffer*>(
                       &this->buffer)->data),
                   static_cast<msgpack_sbuffer*>(
-                    &this->buffer)->size) == StatusError)
+                    &this->buffer)->size) == Status::Error)
               yield(_(), "unable to acquire the buffer");
 
             // reset the buffer's attributes in order to prevent double frees.
@@ -127,7 +127,7 @@ namespace elle
       // set the mode.
       this->mode = Archive::ModeSerialization;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -157,7 +157,7 @@ namespace elle
       // set the control: in this case, the ownership is acquired.
       this->control = Archive::ControlAcquired;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -184,7 +184,7 @@ namespace elle
       // region.
       this->control = Archive::ControlWrapped;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -196,7 +196,7 @@ namespace elle
     ///
     Status              Archive::Serialize()
     {
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -204,7 +204,7 @@ namespace elle
     ///
     Status              Archive::Extract()
     {
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -229,7 +229,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -247,7 +247,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -275,7 +275,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -293,7 +293,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -311,7 +311,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -329,7 +329,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -347,7 +347,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -365,7 +365,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -383,7 +383,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -401,7 +401,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -419,7 +419,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -431,7 +431,7 @@ namespace elle
       Region            region;
 
       // prepare the region.
-      if (region.Prepare(size) == StatusError)
+      if (region.Prepare(size) == Status::Error)
         escape("unable to prepare the region");
 
       // finally, directory copy the data into the region.
@@ -441,10 +441,10 @@ namespace elle
       region.size = size;
 
       // store the region.
-      if (this->Store(region) == StatusError)
+      if (this->Store(region) == Status::Error)
         escape("unable to store the region");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -462,7 +462,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -483,7 +483,7 @@ namespace elle
           escape("an error occured during the serialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -497,10 +497,10 @@ namespace elle
 
       // store the archive's buffer as a region.
       if (this->Store(Region(element.contents,
-                             element.size)) == StatusError)
+                             element.size)) == Status::Error)
         escape("unable to store the region");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -537,7 +537,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -571,7 +571,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -582,7 +582,7 @@ namespace elle
       String            string;
 
       // load the string.
-      if (this->Load(string) == StatusError)
+      if (this->Load(string) == Status::Error)
         escape("unable to load the string");
 
       // test the string length.
@@ -592,7 +592,7 @@ namespace elle
       // return the character.
       element = string[0];
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -626,7 +626,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -661,7 +661,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -696,7 +696,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -731,7 +731,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -766,7 +766,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -804,7 +804,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -839,7 +839,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -874,7 +874,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -909,7 +909,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -920,7 +920,7 @@ namespace elle
       Region            region;
 
       // load a region.
-      if (this->Load(region) == StatusError)
+      if (this->Load(region) == Status::Error)
         escape("unable to load the region");
 
       // initialize the big number.
@@ -929,7 +929,7 @@ namespace elle
       // load directly the bignum from the buffer.
       ::BN_bin2bn(region.contents, region.size, &element);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -963,7 +963,7 @@ namespace elle
           escape("an error occured during the deserialization process");
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -1000,10 +1000,10 @@ namespace elle
 
       // assign the data.
       if (element.Duplicate(reinterpret_cast<const Byte*>(ref.ptr),
-                            ref.size) == StatusError)
+                            ref.size) == Status::Error)
         escape("unable to prepare the buffer");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -1018,18 +1018,18 @@ namespace elle
         escape("unable to load to a serializing archive");
 
       // store the archive's buffer as a region.
-      if (this->Load(region) == StatusError)
+      if (this->Load(region) == Status::Error)
         escape("unable to load the region");
 
       // prepare the given archive.
-      if (element.Acquire(region) == StatusError)
+      if (element.Acquire(region) == Status::Error)
         escape("unable to prepare the archive");
 
       // detach the region.
-      if (region.Detach() == StatusError)
+      if (region.Detach() == Status::Error)
         escape("unable to detach the region");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -1047,7 +1047,7 @@ namespace elle
       Byte              byte;
 
       // load the next byte which should be a type.
-      if (this->Load(byte) == StatusError)
+      if (this->Load(byte) == Status::Error)
         escape("unable to load the next type");
 
       // set the type.
@@ -1056,7 +1056,7 @@ namespace elle
       // setting back the original offset.
       this->offset = offset;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -1073,7 +1073,7 @@ namespace elle
       Archive           archive;
 
       // prepare the archive depending on the current mode.
-      if (archive.Wrap(Region(this->contents, this->size)) == StatusError)
+      if (archive.Wrap(Region(this->contents, this->size)) == Status::Error)
         escape("unable to prepare the archive");
 
       std::cout << alignment
@@ -1089,7 +1089,7 @@ namespace elle
         {
           Archive::Type         type;
 
-          if (archive.Fetch(type) == StatusError)
+          if (archive.Fetch(type) == Status::Error)
             escape("unable to fetch the next element's type");
 
           if (archive.offset == this->offset)
@@ -1099,10 +1099,10 @@ namespace elle
             {
             case Archive::TypeNull:
               {
-                if (archive.Extract(none) == StatusError)
+                if (archive.Extract(none) == Status::Error)
                   escape("unable to extract the next element");
 
-                if (Archive::Print(none, margin + 2) == StatusError)
+                if (Archive::Print(none, margin + 2) == Status::Error)
                   escape("unable to print the element");
 
                 break;
@@ -1111,10 +1111,10 @@ namespace elle
               {
                 Boolean         value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the next element");
 
-                if (Archive::Print(value, margin + 2) == StatusError)
+                if (Archive::Print(value, margin + 2) == Status::Error)
                   escape("unable to print the element");
 
                 break;
@@ -1123,10 +1123,10 @@ namespace elle
               {
                 Character       value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the next element");
 
-                if (Archive::Print(value, margin + 2) == StatusError)
+                if (Archive::Print(value, margin + 2) == Status::Error)
                   escape("unable to print the element");
 
                 break;
@@ -1135,10 +1135,10 @@ namespace elle
               {
                 Real            value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the next element");
 
-                if (Archive::Print(value, margin + 2) == StatusError)
+                if (Archive::Print(value, margin + 2) == Status::Error)
                   escape("unable to print the element");
 
                 break;
@@ -1147,10 +1147,10 @@ namespace elle
               {
                 Integer8        value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the next element");
 
-                if (Archive::Print(value, margin + 2) == StatusError)
+                if (Archive::Print(value, margin + 2) == Status::Error)
                   escape("unable to print the element");
 
                 break;
@@ -1159,10 +1159,10 @@ namespace elle
               {
                 Integer16       value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the next element");
 
-                if (Archive::Print(value, margin + 2) == StatusError)
+                if (Archive::Print(value, margin + 2) == Status::Error)
                   escape("unable to print the element");
 
                 break;
@@ -1171,10 +1171,10 @@ namespace elle
               {
                 Integer32       value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the next element");
 
-                if (Archive::Print(value, margin + 2) == StatusError)
+                if (Archive::Print(value, margin + 2) == Status::Error)
                   escape("unable to print the element");
 
                 break;
@@ -1183,10 +1183,10 @@ namespace elle
               {
                 Integer64       value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the next element");
 
-                if (Archive::Print(value, margin + 2) == StatusError)
+                if (Archive::Print(value, margin + 2) == Status::Error)
                   escape("unable to print the element");
 
                 break;
@@ -1195,10 +1195,10 @@ namespace elle
               {
                 Natural8        value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the next element");
 
-                if (Archive::Print(value, margin + 2) == StatusError)
+                if (Archive::Print(value, margin + 2) == Status::Error)
                   escape("unable to print the element");
 
                 break;
@@ -1207,10 +1207,10 @@ namespace elle
               {
                 Natural16       value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the next element");
 
-                if (Archive::Print(value, margin + 2) == StatusError)
+                if (Archive::Print(value, margin + 2) == Status::Error)
                   escape("unable to print the element");
 
                 break;
@@ -1219,10 +1219,10 @@ namespace elle
               {
                 Natural32       value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the next element");
 
-                if (Archive::Print(value, margin + 2) == StatusError)
+                if (Archive::Print(value, margin + 2) == Status::Error)
                   escape("unable to print the element");
 
                 break;
@@ -1231,10 +1231,10 @@ namespace elle
               {
                 Natural64       value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the next element");
 
-                if (Archive::Print(value, margin + 2) == StatusError)
+                if (Archive::Print(value, margin + 2) == Status::Error)
                   escape("unable to print the element");
 
                 break;
@@ -1243,10 +1243,10 @@ namespace elle
               {
                 Large           value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the next element");
 
-                if (Archive::Print(value, margin + 2) == StatusError)
+                if (Archive::Print(value, margin + 2) == Status::Error)
                   escape("unable to print the element");
 
                 ::BN_clear_free(&value);
@@ -1257,10 +1257,10 @@ namespace elle
               {
                 String          value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the next element");
 
-                if (Archive::Print(value, margin + 2) == StatusError)
+                if (Archive::Print(value, margin + 2) == Status::Error)
                   escape("unable to print the element");
 
                 break;
@@ -1269,10 +1269,10 @@ namespace elle
               {
                 Region          value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the next element");
 
-                if (Archive::Print(value, margin + 2) == StatusError)
+                if (Archive::Print(value, margin + 2) == Status::Error)
                   escape("unable to print the element");
 
                 break;
@@ -1281,10 +1281,10 @@ namespace elle
               {
                 Archive         value;
 
-                if (archive.Extract(value) == StatusError)
+                if (archive.Extract(value) == Status::Error)
                   escape("unable to extract the next element");
 
-                if (value.Dump(margin + 2) == StatusError)
+                if (value.Dump(margin + 2) == Status::Error)
                   escape("unable to print the element");
 
                 break;
@@ -1300,7 +1300,7 @@ namespace elle
             }
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -1315,7 +1315,7 @@ namespace elle
       // return the size.
       size = sizeof (Archive);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -1326,7 +1326,7 @@ namespace elle
       // allocate the object.
       object = new Archive(*this);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -1339,7 +1339,7 @@ namespace elle
         return (*this);
 
       // recycle the object.
-      if (this->Recycle(&element) == StatusError)
+      if (this->Recycle(&element) == Status::Error)
         yield(*this, "unable to recycle the object");
 
       return (*this);
@@ -1392,7 +1392,7 @@ namespace elle
                 << static_cast<Void*>(element.contents) << " :: "
                 << element.size << "/" << element.capacity << std::endl;
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

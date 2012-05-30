@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <etoile/gear/Scope.hh>
 #include <etoile/gear/Actor.hh>

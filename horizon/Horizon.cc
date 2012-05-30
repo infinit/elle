@@ -29,26 +29,26 @@ namespace horizon
 #if defined(INFINIT_LINUX)
     {
       // initialize the Linux implementation.
-      if (linux::Linux::Initialize() == elle::StatusError)
+      if (linux::Linux::Initialize() == elle::Status::Error)
         escape("unable to initialize the Linux implementation");
     }
 #elif defined(INFINIT_MACOSX)
     {
       // initialize the MacOS X implementation.
-      if (macosx::MacOSX::Initialize() == elle::StatusError)
+      if (macosx::MacOSX::Initialize() == elle::Status::Error)
         escape("unable to initialize the MacOS X implementation");
     }
 #elif defined(INFINIT_WINDOWS)
     {
       // initialize the Windows implementation.
-      if (windows::Windows::Initialize() == elle::StatusError)
+      if (windows::Windows::Initialize() == elle::Status::Error)
         escape("unable to initialize the Windows implementation");
     }
 #else
 # error "unsupported platform"
 #endif
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -59,25 +59,25 @@ namespace horizon
 #if defined(INFINIT_LINUX)
     {
       // clean the Linux implementation.
-      if (linux::Linux::Clean() == elle::StatusError)
+      if (linux::Linux::Clean() == elle::Status::Error)
         escape("unable to clean the Linux implementation");
     }
 #elif defined(INFINIT_MACOSX)
     {
       // clean the MacOS X implementation.
-      if (macosx::MacOSX::Clean() == elle::StatusError)
+      if (macosx::MacOSX::Clean() == elle::Status::Error)
         escape("unable to clean the MacOS X implementation");
     }
 #elif defined(INFINIT_WINDOWS)
     {
       // clean the Windows implementation.
-      if (windows::Windows::Clean() == elle::StatusError)
+      if (windows::Windows::Clean() == elle::Status::Error)
         escape("unable to clean the Windows implementation");
     }
 #else
 # error "unsupported platform"
 #endif
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 }

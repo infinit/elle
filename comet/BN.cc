@@ -308,7 +308,7 @@ static const prime_t primes[NUMPRIMES]=
   {
     unsigned char *buf=NULL;
     int ret=0,bit,bytes,mask;
-    time_t tim;
+    ///time_t tim;
 
     if (bits == 0)
       {
@@ -346,7 +346,7 @@ static const prime_t primes[NUMPRIMES]=
 #if 1
     if (pseudorand == 2)
       {
-        /* generate patterns that are more likely to trigger BN                                                                                                                                             
+        /* generate patterns that are more likely to trigger BN
            library bugs */
         int i;
         unsigned char c;
@@ -437,15 +437,15 @@ static const prime_t primes[NUMPRIMES]=
       BN_zero(r);
     else if (!BN_is_bit_set(range, n - 2) && !BN_is_bit_set(range, n - 3))
       {
-        /* range = 100..._2,                                                                                                                                                                                
+        /* range = 100..._2,
          * so  3*range (= 11..._2)  is exactly one bit longer than  range */
                 do
                   {
                     if (!bn_rand(r, n + 1, -1, 0)) return 0;
-                    /* If  r < 3*range,  use  r := r MOD range                                                                                                                                                  
-                     * (which is either  r, r - range,  or  r - 2*range).                                                                                                                                       
-                     * Otherwise, iterate once more.                                                                                                                                                            
-                     * Since  3*range = 11..._2, each iteration succeeds with                                                                                                                                   
+                    /* If  r < 3*range,  use  r := r MOD range
+                     * (which is either  r, r - range,  or  r - 2*range).
+                     * Otherwise, iterate once more.
+                     * Since  3*range = 11..._2, each iteration succeeds with
                      * probability >= .75. */
                     if (BN_cmp(r ,range) >= 0)
                       {
@@ -508,12 +508,12 @@ static const prime_t primes[NUMPRIMES]=
         if (!BN_mod_mul(w, w, w, a, ctx)) /* w := w^2 mod a */
           return -1;
         if (BN_is_one(w))
-          return 1; /* 'a' is composite, otherwise a previous 'w' would                                                                                                                               
+          return 1; /* 'a' is composite, otherwise a previous 'w' would
                      * have been == -1 (mod 'a') */
         if (BN_cmp(w, a1) == 0)
           return 0; /* w == -1 (mod a), 'a' is probably prime */
       }
-    /* If we get here, 'w' is the (a-1)/2-th power of the original 'w',                                                                                                                                         
+    /* If we get here, 'w' is the (a-1)/2-th power of the original 'w',
      * and it is neither -1 nor +1 -- so 'a' cannot be prime */
     bn_check_top(w);
     return 1;
@@ -704,7 +704,7 @@ static const prime_t primes[NUMPRIMES]=
   loop: for (i=1; i<NUMPRIMES; i++)
       {
         /* check that p and q are prime */
-        /* check that for p and q                                                                                                                                                                           
+        /* check that for p and q
          * gcd(p-1,primes) == 1 (except for 2) */
         if (    (BN_mod_word(p,(BN_ULONG)primes[i]) == 0) ||
                 (BN_mod_word(q,(BN_ULONG)primes[i]) == 0))
@@ -738,7 +738,7 @@ static const prime_t primes[NUMPRIMES]=
     delta=0;
   loop: for (i=1; i<NUMPRIMES; i++)
       {
-        /* check that rnd is not a prime and also                                                                                                                                                           
+        /* check that rnd is not a prime and also
          * that gcd(rnd-1,primes) == 1 (except for 2) */
         if (((mods[i]+delta)%primes[i]) <= 1)
           {
@@ -801,9 +801,9 @@ static const prime_t primes[NUMPRIMES]=
       }
     else
       {
-        /* for "safe prime" generation,                                                                                                                                                                     
-         * check that (p-1)/2 is prime.                                                                                                                                                                     
-         * Since a prime is odd, We just                                                                                                                                                                    
+        /* for "safe prime" generation,
+         * check that (p-1)/2 is prime.
+         * Since a prime is odd, We just
          * need to divide by 2 */
         if (!BN_rshift1(t,ret)) goto err;
 

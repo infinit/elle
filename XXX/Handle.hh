@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
@@ -59,7 +59,7 @@ namespace nucleus
     ///     block(version inline chargee en RAM)
     ///
     class Handle:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //
@@ -102,8 +102,8 @@ namespace nucleus
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status      Serialize(elle::Archive&) const;
-      elle::Status      Extract(elle::Archive&);
+      //elle::Status      Serialize(elle::Archive&) const;
+      //elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
@@ -111,7 +111,7 @@ namespace nucleus
       State             state;
       Placement         placement;
       Address           address;
-      elle::SecretKey   secret;
+      elle::cryptography::SecretKey   secret;
       Block*            block;
     };
 

@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <hole/Label.hh>
 #include <hole/implementations/cirkle/Neighbour.hh>
@@ -35,7 +35,7 @@ namespace hole
       /// XXX
       ///
       class RoutingTable:
-        public elle::Entity
+        public elle::radix::Entity
       {
       public:
         //

@@ -44,14 +44,14 @@ namespace elle
       ::SSLeay_add_all_algorithms();
 
       // initialize the random generator.
-      if (Random::Initialize() == StatusError)
+      if (Random::Initialize() == Status::Error)
         escape("unable to initialize the random generator");
 
       // initialize the key pair generation context.
-      if (KeyPair::Initialize() == StatusError)
+      if (KeyPair::Initialize() == Status::Error)
         escape("unable to initialize the key pair generation context");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -60,11 +60,11 @@ namespace elle
     Status              Cryptography::Clean()
     {
       // clean the key pair generation context.
-      if (KeyPair::Clean() == StatusError)
+      if (KeyPair::Clean() == Status::Error)
         escape("unable to initialize the key pair generation context");
 
       // clean the random generator.
-      if (Random::Clean() == StatusError)
+      if (Random::Clean() == Status::Error)
         escape("unable to clean the random generator");
 
       // free the current threads error queue.
@@ -82,7 +82,7 @@ namespace elle
       // release the extra data.
       ::CRYPTO_cleanup_all_ex_data();
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

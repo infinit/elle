@@ -1,22 +1,18 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [tue oct 30 10:07:31 2007]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <elle/cryptography/PrivateKey.hh>
+#include <elle/cryptography/PublicKey.hh>
 #include <elle/cryptography/OneWay.hh>
 #include <elle/cryptography/SecretKey.hh>
+#include <elle/standalone/Log.hh>
+
+#include <elle/cryptography/SecretKeySerializer.hxx>
+#include <elle/cryptography/CodeSerializer.hxx>
+#include <elle/cryptography/CipherSerializer.hxx>
+#include <elle/standalone/RegionSerializer.hxx>
 
 #include <comet/Comet.hh>
+
+#include <elle/idiom/Open.hh>
 
 using namespace elle;
 using namespace elle::cryptography;
@@ -38,19 +34,22 @@ const PrivateKey            PrivateKey::Null;
 /// this method initializes the object.
 ///
 PrivateKey::PrivateKey():
-  _key(nullptr), _contexts{nullptr, nullptr, nullptr}
+  _key(nullptr),
+  _contexts{nullptr, nullptr, nullptr}
 {}
 
 ///
 /// this is the copy constructor.
 ///
 PrivateKey::PrivateKey(PrivateKey const&k) :
-  Object(k)
+  Object(k),
+  _key(nullptr),
+  _contexts{nullptr, nullptr, nullptr}
 {
   assert(k._key != nullptr);
 
   // create the private key by duplicating the internal numbers.
-  if (this->Create(k._key) == StatusError)
+  if (this->Create(k._key) == Status::Error)
     fail("unable to duplicate the private key");
 
   assert(this->_key != nullptr);
@@ -98,12 +97,12 @@ Status              PrivateKey::Create(const ::EVP_PKEY*    key)
                    ::BN_dup(key->pkey.rsa->q),
                    ::BN_dup(key->pkey.rsa->dmp1),
                    ::BN_dup(key->pkey.rsa->dmq1),
-                   ::BN_dup(key->pkey.rsa->iqmp)) == StatusError)
+                   ::BN_dup(key->pkey.rsa->iqmp)) == Status::Error)
     escape("unable to create the private key");
 
   assert(this->_key != nullptr);
 
-  return StatusOk;
+  return Status::Ok;
 }
 
 ///
@@ -129,11 +128,11 @@ Status              PrivateKey::Create(Large*               n,
 
   // initialise the private key structure.
   if ((this->_key = ::EVP_PKEY_new()) == nullptr)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   // create the RSA structure.
   if ((rsa = ::RSA_new()) == nullptr)
-      escape(::ERR_error_string(ERR_get_error(), nullptr));
+      escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
 
   // assign the big numbers relevant to the private key.
@@ -150,7 +149,7 @@ Status              PrivateKey::Create(Large*               n,
   if (::EVP_PKEY_assign_RSA(this->_key, rsa) <= 0)
     {
       ::RSA_free(rsa);
-      escape(::ERR_error_string(ERR_get_error(), nullptr));
+      escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
     }
 
   //
@@ -159,10 +158,10 @@ Status              PrivateKey::Create(Large*               n,
 
   // create, initialize and configure the decrypt context.
   if ((this->_contexts.decrypt = ::EVP_PKEY_CTX_new(this->_key, nullptr)) == nullptr)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   if (::EVP_PKEY_decrypt_init(this->_contexts.decrypt) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   if (::EVP_PKEY_CTX_ctrl(this->_contexts.decrypt,
                           EVP_PKEY_RSA,
@@ -170,15 +169,15 @@ Status              PrivateKey::Create(Large*               n,
                           EVP_PKEY_CTRL_RSA_PADDING,
                           RSA_PKCS1_OAEP_PADDING,
                           nullptr) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   // create and initialize a sign context.
   if ((this->_contexts.sign =
        ::EVP_PKEY_CTX_new(this->_key, nullptr)) == nullptr)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   if (::EVP_PKEY_sign_init(this->_contexts.sign) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   if (::EVP_PKEY_CTX_ctrl(this->_contexts.sign,
                           EVP_PKEY_RSA,
@@ -186,15 +185,15 @@ Status              PrivateKey::Create(Large*               n,
                           EVP_PKEY_CTRL_RSA_PADDING,
                           RSA_PKCS1_PADDING,
                           nullptr) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   // create and initialize a encrypt context.
   if ((this->_contexts.encrypt =
        ::EVP_PKEY_CTX_new(this->_key, nullptr)) == nullptr)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   if (::EVP_PKEY_sign_init(this->_contexts.encrypt) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   if (::EVP_PKEY_CTX_ctrl(this->_contexts.encrypt,
                           EVP_PKEY_RSA,
@@ -202,110 +201,111 @@ Status              PrivateKey::Create(Large*               n,
                           EVP_PKEY_CTRL_RSA_PADDING,
                           RSA_PKCS1_PADDING,
                           nullptr) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   assert(this->_key != nullptr);
 
-  return StatusOk;
+  return Status::Ok;
 }
 
-///
-/// this method decrypts a code which should actually be
-/// an archive containing both a secret key and some data.
-///
-/// this method starts by (i) extracting the key and data
-/// in their encrypted forms (ii) decrypt the symmetric key
-/// with the private key and (iii) decipher the data with the
-/// symmetric key.
-///
-Status              PrivateKey::Decrypt(const Code&         code,
-                                        Clear&              clear) const
+Status PrivateKey::Decrypt(elle::cryptography::Code const&    in,
+                           elle::utility::Buffer&             out) const
 {
   SecretKey         secret;
-
-  Archive           archive;
   Code              key;
   Cipher            data;
 
   // (i)
-  {
-    // prepare the archive.
-    if (archive.Wrap(code.region) == StatusError)
-      escape("unable to prepare the archive");
-
-    // extract the secret key and data, in their encrypted form.
-    if (archive.Extract(key, data) == StatusError)
-      escape("unable to extract the asymetrically-encrypted secret key "
-             "and the symetrically-encrypted data");
-  }
+  try
+    {
+      std::cout << "<<<Load code encrypted secret key / data\n";
+      elle::utility::WeakBuffer(
+          in.region.contents,
+          in.region.size
+      ).Reader() >> key >> data;
+      std::cout << ">>>Load\n";
+    }
+  catch (std::runtime_error const& err)
+    {
+      escape(
+        "unable to extract the asymetrically-encrypted secret key "
+        "and the symetrically-encrypted data: %s",
+        err.what()
+      );
+    }
 
   // (ii)
   {
-    Archive         archive;
-    Region          region;
     size_t          size;
+
+    //std::cout << "Decrypt secret key from:\n";
+    //key.Dump();
+    //std::cout << "-----------------------------------Decrypt secret key\n";
 
     // compute the size of the decrypted portion to come.
     if (::EVP_PKEY_decrypt(
           this->_contexts.decrypt,
           nullptr,
           &size,
-          reinterpret_cast<const unsigned char*>(key.region.contents),
+          key.region.contents,
           key.region.size) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
-    // allocate the required memory for the region object.
-    if (region.Prepare(size) == StatusError)
-      escape("unable to allocate the required memory");
+    std::cout << "Got size: " << size << std::endl;
+    elle::utility::Buffer buf(size);
 
     // perform the decrypt operation.
     if (::EVP_PKEY_decrypt(
           this->_contexts.decrypt,
-          reinterpret_cast<unsigned char*>(region.contents),
+          buf.MutableContents(),
           &size,
-          reinterpret_cast<const unsigned char*>(key.region.contents),
+          key.region.contents,
           key.region.size) <= 0)
-      escape(::ERR_error_string(ERR_get_error(), nullptr));
+      escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
-    // set the region size.
-    region.size = size;
-
-    // prepare the archive.
-    if (archive.Acquire(region) == StatusError)
-      escape("unable to prepare the archive");
-
-    // detach the data from the region so that the data
-    // is not release twice by both 'region' and 'archive'.
-    if (region.Detach() == StatusError)
-      escape("unable to detach the data from the region");
-
-    // extract the secret key.
-    if (archive.Extract(secret) == StatusError)
-      escape("unable to extract the secret key from the archive");
+    try
+      {
+        buf.Reader() >> secret;
+      }
+    catch (std::exception const& err)
+      {
+        escape(
+          "unable to extract the secret key from the archive: %s",
+          err.what()
+        );
+      }
   }
 
   // (iii)
   {
     // finally, decrypt the data with the secret key.
-    if (secret.Decrypt(data, clear) == StatusError)
+    if (secret.Decrypt(data, out) == Status::Error)
       escape("unable to decrypt the data with the secret key");
   }
 
-  return StatusOk;
+  return Status::Ok;
 }
+
+//Status
+//PrivateKey::Sign(Region const& in, Signature& out) const
+//{
+//  return this->Sign(
+//      elle::utility::WeakBuffer(in.contents, in.size),
+//      out
+//  );
+//}
 
 ///
 /// this method signs a plain text.
 ///
-Status              PrivateKey::Sign(const Plain&           plain,
-                                     Signature&             signature)
-  const
+Status PrivateKey::Sign(elle::utility::WeakBuffer const&  buffer,
+                        Signature&                        signature) const
 {
   Digest            digest;
   size_t            size;
 
   // compute the plain's digest.
-  if (OneWay::Hash(plain, digest) == StatusError)
+  if (OneWay::Hash(buffer, digest) == Status::Error)
     escape("unable to hash the plain");
 
   // sign the portion.
@@ -315,10 +315,10 @@ Status              PrivateKey::Sign(const Plain&           plain,
         &size,
         reinterpret_cast<const unsigned char*>(digest.region.contents),
         digest.region.size) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   // prepare the signature so it can receive the upcoming portion.
-  if (signature.region.Prepare(size) == StatusError)
+  if (signature.region.Prepare(size) == Status::Error)
     escape("unable to prepare the signature");
 
   // actually sign the portion.
@@ -328,76 +328,65 @@ Status              PrivateKey::Sign(const Plain&           plain,
         &size,
         reinterpret_cast<const unsigned char*>(digest.region.contents),
         digest.region.size) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   // set the code size.
   signature.region.size = size;
 
-  return StatusOk;
+  return Status::Ok;
 }
 
-///
-/// this method encrypts the given data with the private key.
-///
-/// although unusual, the private key can very well be used for
-/// encrypting in which case the public key would be used for
-/// decrypting.
-///
-/// since (i) the private key size limits the size of the data that
-/// can be encrypted and (ii) raising large data to large exponent
-/// is very slow; the algorithm below consists in (i) generating
-/// a secret key, (ii) ciphering the plain text with this key,
-/// (iii) encrypting the secret key with the private key and finally
-/// (iv) returning an archive containing the asymetrically-encrypted
-/// secret key with the symmetrically-encrypted data.
-///
-Status              PrivateKey::Encrypt(const Plain&        plain,
-                                        Code&               code) const
+
+
+
+Status PrivateKey::Encrypt(elle::utility::WeakBuffer const& in,
+                           Code&                            out) const
 {
   SecretKey         secret;
-
   Code              key;
   Cipher            data;
 
   // (i)
   {
     // generate a secret key.
-    if (secret.Generate() == StatusError)
+    if (secret.Generate() == Status::Error)
       escape("unable to generate the secret key");
   }
 
   // (ii)
   {
     // cipher the plain text with the secret key.
-    if (secret.Encrypt(plain, data) == StatusError)
+    if (secret.Encrypt(in, data) == Status::Error)
       escape("unable to cipher the plain text with the secret key");
   }
 
   // (iii)
   {
-    Archive         archive;
-    size_t          size;
+    size_t                  size;
+    elle::utility::Buffer   buf;
 
-    // first, create an archive.
-    if (archive.Create() == StatusError)
-      escape("unable to create an achive");
-
-    // then, serialize the secret key.
-    if (archive.Serialize(secret) == StatusError)
-      escape("unable to serialize the secret key");
+    std::cout << "Encrypt secret key\n";
+    try
+      {
+        buf.Writer() << secret;
+      }
+    catch (std::exception const& err)
+      {
+        escape("Cannot serialize secret key: %s", err.what());
+      }
 
     // compute the size of the archived symmetric key.
     if (::EVP_PKEY_sign(
           this->_contexts.encrypt,
           nullptr,
           &size,
-          reinterpret_cast<const unsigned char*>(archive.contents),
-          archive.size) <= 0)
-      escape(::ERR_error_string(ERR_get_error(), nullptr));
+          buf.Contents(),
+          buf.Size()) <= 0)
+      escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
     // allocate memory so the key can receive the upcoming
     // encrypted portion.
-    if (key.region.Prepare(size) == StatusError)
+    if (key.region.Prepare(size) == Status::Error)
       escape("unable to prepare the key");
 
     // actually encrypt the secret key's archive, storing the encrypted
@@ -407,36 +396,47 @@ Status              PrivateKey::Encrypt(const Plain&        plain,
     // the operation is equivalent to a signature.
     if (::EVP_PKEY_sign(
           this->_contexts.encrypt,
-          reinterpret_cast<unsigned char*>(key.region.contents),
+          key.region.contents,
           &size,
-          reinterpret_cast<const unsigned char*>(archive.contents),
-          archive.size) <= 0)
-      escape(::ERR_error_string(ERR_get_error(), nullptr));
+          buf.Contents(),
+          buf.Size()) <= 0)
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
     // set the key size.
     key.region.size = size;
+    //std::cout << "Encrypted secret key:\n";
+    //key.Dump();
+    //std::cout << "######################################\n";
   }
 
   // (iv)
   {
-    Archive         archive;
+    elle::utility::Buffer buf;
 
-    // create the main archive.
-    if (archive.Create() == StatusError)
-      escape("unable to create the archive");
+    try
+      {
+        std::cout << "<<<SAVE encrypted secret key / data\n";
+        buf.Writer() << key << data;
+        std::cout << ">>>SAVE " << buf.Size() << "\n";
+      }
+    catch (std::exception const& err)
+      {
+        escape(
+          "unable to serialize the asymetrically-encrypted secret key "
+          "and the symetrically-encrypted data: %s",
+          err.what()
+        );
 
-    // serialize the key.
-    if (archive.Serialize(key, data) == StatusError)
-      escape("unable to serialize the asymetrically-encrypted secret key "
-             "and the symetrically-encrypted data");
+      }
 
     // duplicate the archive's content.
-    if (code.region.Duplicate(archive.contents,
-                              archive.size) == StatusError)
+    // XXX this copy is not necessary
+    if (out.region.Duplicate(buf.Contents(),
+                             buf.Size()) == Status::Error)
       escape("unable to duplicate the archive's content");
   }
 
-  return StatusOk;
+  return Status::Ok;
 }
 
 ///
@@ -457,31 +457,31 @@ Status              PrivateKey::Derive(const Seed&          seed,
 
   // create an EVP key.
   if ((scope.key = ::EVP_PKEY_new()) == nullptr)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   // create a new RSA key.
   if ((scope.rsa = ::RSA_new()) == nullptr)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   // derive the RSA key.
   if (comet::RSA_derive(scope.rsa,
                         this->_key->pkey.rsa->n,
                         seed.region.contents,
                         seed.region.size) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   // assign the RSA key to the EVP's.
   if (::EVP_PKEY_assign_RSA(scope.key, scope.rsa) <= 0)
-    escape(::ERR_error_string(ERR_get_error(), nullptr));
+    escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
   // stop tracking.
   scope.rsa = nullptr;
 
   // create the rotated public key according to the EVP structure.
-  if (K.Create(scope.key) == StatusError)
+  if (K.Create(scope.key) == Status::Error)
     escape("unable to create the public key");
 
-  return StatusOk;
+  return Status::Ok;
 }
 
 //
@@ -495,14 +495,14 @@ Boolean             PrivateKey::operator==(const PrivateKey& element) const
 {
   // check the address as this may actually be the same object.
   if (this == &element)
-    return StatusTrue;
+    return true;
 
   // if one of the key is null....
   if ((this->_key == nullptr) || (element._key == nullptr))
     {
       // compare the addresses.
       if (this->_key != element._key)
-        return StatusFalse;
+        return false;
     }
   else
     {
@@ -515,10 +515,10 @@ Boolean             PrivateKey::operator==(const PrivateKey& element) const
                     element._key->pkey.rsa->p) != 0) ||
           (::BN_cmp(this->_key->pkey.rsa->q,
                     element._key->pkey.rsa->q) != 0))
-        return StatusFalse;
+        return false;
     }
 
-  return StatusTrue;
+  return true;
 }
 
 ///
@@ -560,86 +560,5 @@ Status              PrivateKey::Dump(const Natural32        margin) const
                 << *this->_key->pkey.rsa->q << std::endl;
     }
 
-  return StatusOk;
+  return Status::Ok;
 }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-///
-/// this method serializes a private key object.
-///
-Status              PrivateKey::Serialize(Archive&          archive) const
-{
-  // serialize the internal numbers.
-  if (archive.Serialize(*this->_key->pkey.rsa->n,
-                        *this->_key->pkey.rsa->e,
-                        *this->_key->pkey.rsa->d,
-                        *this->_key->pkey.rsa->p,
-                        *this->_key->pkey.rsa->q,
-                        *this->_key->pkey.rsa->dmp1,
-                        *this->_key->pkey.rsa->dmq1,
-                        *this->_key->pkey.rsa->iqmp) == StatusError)
-    escape("unable to serialize the internal numbers");
-
-  return StatusOk;
-}
-
-///
-/// this method extract a private key from the given archive.
-///
-Status              PrivateKey::Extract(Archive&            archive)
-{
-  struct OnExit
-    {
-      bool              track;
-      Large             n;
-      Large             e;
-      Large             d;
-      Large             p;
-      Large             q;
-      Large             dmp1;
-      Large             dmq1;
-      Large             iqmp;
-      OnExit() : track(false) {}
-      ~OnExit()
-      {
-        if (!this->track)
-          return;
-        ::BN_clear_free(&this->n);
-        ::BN_clear_free(&this->e);
-        ::BN_clear_free(&this->d);
-        ::BN_clear_free(&this->p);
-        ::BN_clear_free(&this->q);
-        ::BN_clear_free(&this->dmp1);
-        ::BN_clear_free(&this->dmq1);
-        ::BN_clear_free(&this->iqmp);
-      }
-    } scope;
-
-
-  // extract the numbers.
-  if (archive.Extract(scope.n, scope.e, scope.d, scope.p, scope.q,
-                      scope.dmp1, scope.dmq1, scope.iqmp) == StatusError)
-    escape("unable to extract the internal numbers");
-
-  // track the local variables' deallocation.
-  scope.track = true;
-
-  // create the EVP_PKEY object from the extract numbers.
-  if (this->Create(::BN_dup(&scope.n),
-                   ::BN_dup(&scope.e),
-                   ::BN_dup(&scope.d),
-                   ::BN_dup(&scope.p),
-                   ::BN_dup(&scope.q),
-                   ::BN_dup(&scope.dmp1),
-                   ::BN_dup(&scope.dmq1),
-                   ::BN_dup(&scope.iqmp)) == StatusError)
-    escape("unable to create the private key from the archive");
-
-  assert(this->_key != nullptr);
-
-  return StatusOk;
-}
-

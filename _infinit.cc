@@ -1,6 +1,8 @@
 #include <Infinit.hh>
 
 #include <elle/Elle.hh>
+#include <elle/utility/Parser.hh>
+
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 #include <agent/Agent.hh>
@@ -12,18 +14,18 @@ void
 Infinit(elle::Natural32 argc, elle::Character* argv[])
 {
   // initialize the Elle library.
-  if (elle::Elle::Initialize() == elle::StatusError)
+  if (elle::Elle::Initialize() == elle::Status::Error)
     throw std::runtime_error("unable to initialize Elle");
 
   // set up the program.
-  if (elle::Program::Setup() == elle::StatusError)
+  if (elle::Program::Setup() == elle::Status::Error)
     throw std::runtime_error("unable to set up the program");
 
   // allocate a new parser.
-  Infinit::Parser = new elle::Parser(argc, argv);
+  Infinit::Parser = new elle::utility::Parser(argc, argv);
 
   // specify a program description.
-  if (Infinit::Parser->Description(Infinit::Copyright) == elle::StatusError)
+  if (Infinit::Parser->Description(Infinit::Copyright) == elle::Status::Error)
     throw std::runtime_error("unable to set the description");
 
   // register the options.
@@ -32,7 +34,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
         'h',
         "help",
         "display the help",
-        elle::Parser::KindNone) == elle::StatusError)
+        elle::Parser::KindNone) == elle::Status::Error)
     throw std::runtime_error("unable to register the option");
 
   // register the option.
@@ -41,7 +43,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
         'n',
         "network",
         "specifies the name of the network",
-        elle::Parser::KindRequired) == elle::StatusError)
+        elle::Parser::KindRequired) == elle::Status::Error)
     throw std::runtime_error("unable to register the option");
 
   // register the option.
@@ -50,15 +52,15 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
         'm',
         "mountpoint",
         "specifies the mount point",
-        elle::Parser::KindRequired) == elle::StatusError)
+        elle::Parser::KindRequired) == elle::Status::Error)
     throw std::runtime_error("unable to register the option");
 
   // parse.
-  if (Infinit::Parser->Parse() == elle::StatusError)
+  if (Infinit::Parser->Parse() == elle::Status::Error)
     throw std::runtime_error("unable to parse the command line");
 
   // test the option.
-  if (Infinit::Parser->Test("Help") == elle::StatusTrue)
+  if (Infinit::Parser->Test("Help") == elle::Status::True)
     {
       // display the usage.
       Infinit::Parser->Usage();
@@ -101,7 +103,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
 
   // retrieve the network name.
   if (Infinit::Parser->Value("Network",
-                             Infinit::Network) == elle::StatusError)
+                             Infinit::Network) == elle::Status::Error)
     {
       // display the usage.
       Infinit::Parser->Usage();
@@ -111,7 +113,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
 
   // retrieve the mount point.
   if (Infinit::Parser->Value("Mountpoint",
-                             Infinit::Mountpoint) == elle::StatusError)
+                             Infinit::Mountpoint) == elle::Status::Error)
     {
       // display the usage.
       Infinit::Parser->Usage();
@@ -120,29 +122,29 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
     }
 
   // initialize the nucleus library.
-  if (nucleus::Nucleus::Initialize() == elle::StatusError)
+  if (nucleus::Nucleus::Initialize() == elle::Status::Error)
     throw std::runtime_error("unable to initialize Nucleus");
 
   // initialize the Lune library.
-  if (lune::Lune::Initialize() == elle::StatusError)
+  if (lune::Lune::Initialize() == elle::Status::Error)
     throw std::runtime_error("unable to initialize Lune");
 
   // initialize Infinit.
-  if (Infinit::Initialize() == elle::StatusError)
+  if (Infinit::Initialize() == elle::Status::Error)
     throw std::runtime_error("unable to initialize Infinit");
 
   hole::Hole::Initialize();
 
   // initialize the Agent library.
-  if (agent::Agent::Initialize() == elle::StatusError)
+  if (agent::Agent::Initialize() == elle::Status::Error)
     throw std::runtime_error("unable to initialize Agent");
 
   // initialize the Etoile library.
-  if (etoile::Etoile::Initialize() == elle::StatusError)
+  if (etoile::Etoile::Initialize() == elle::Status::Error)
     throw std::runtime_error("unable to initialize Etoile");
 
   // initialize the horizon.
-  if (horizon::Horizon::Initialize() == elle::StatusError)
+  if (horizon::Horizon::Initialize() == elle::Status::Error)
     throw std::runtime_error("unable to initialize the horizon");
 
   // launch the program.
@@ -153,35 +155,35 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
   Infinit::Parser = nullptr;
 
   // clean the horizon.
-  if (horizon::Horizon::Clean() == elle::StatusError)
+  if (horizon::Horizon::Clean() == elle::Status::Error)
     throw std::runtime_error("unable to clean the horizon");
 
   // clean the Etoile library.
-  if (etoile::Etoile::Clean() == elle::StatusError)
+  if (etoile::Etoile::Clean() == elle::Status::Error)
     throw std::runtime_error("unable to clean Etoile");
 
   // clean the Agent library.
-  if (agent::Agent::Clean() == elle::StatusError)
+  if (agent::Agent::Clean() == elle::Status::Error)
     throw std::runtime_error("unable to clean Agent");
 
   // clean Hole.
-  if (hole::Hole::Clean() == elle::StatusError)
+  if (hole::Hole::Clean() == elle::Status::Error)
     throw std::runtime_error("unable to clean Hole");
 
   // clean Infinit.
-  if (Infinit::Clean() == elle::StatusError)
+  if (Infinit::Clean() == elle::Status::Error)
     throw std::runtime_error("unable to clean Infinit");
 
   // clean Lune
-  if (lune::Lune::Clean() == elle::StatusError)
+  if (lune::Lune::Clean() == elle::Status::Error)
     throw std::runtime_error("unable to clean Lune");
 
   // clean the nucleus library.
-  if (nucleus::Nucleus::Clean() == elle::StatusError)
+  if (nucleus::Nucleus::Clean() == elle::Status::Error)
     throw std::runtime_error("unable to clean Nucleus");
 
   // clean Elle.
-  if (elle::Elle::Clean() == elle::StatusError)
+  if (elle::Elle::Clean() == elle::Status::Error)
     throw std::runtime_error("unable to clean Elle");
 }
 
@@ -199,10 +201,10 @@ Main(elle::Natural32 argc, elle::Character* argv[])
 
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
       elle::concurrency::scheduler().terminate();
-      return elle::StatusError;
+      return elle::Status::Error;
     }
   elle::concurrency::scheduler().terminate();
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 int
@@ -212,5 +214,5 @@ main(int argc, char* argv[])
   reactor::VThread<elle::Status> main(sched, "Infinit main",
                                       boost::bind(&Main, argc, argv));
   sched.run();
-  return main.result() == elle::StatusOk ? 0 : 1;
+  return main.result() == elle::StatusO::k ? 0 : 1;
 }

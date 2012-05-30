@@ -37,22 +37,22 @@ namespace etoile
     {
       // return if the context has already been loaded.
       if (context.state != gear::Context::StateUnknown)
-        return elle::StatusOk;
+        return elle::Status::Ok;
 
       // retrieve the object block.
       if (depot::Depot::Pull(context.location.address,
                              context.location.version,
-                             context.object) == elle::StatusError)
+                             context.object) == elle::Status::Error)
         escape("unable to retrieve the object block");
 
       // compute the base in order to seal the block's original state.
-      if (context.object.base.Create(context.object) == elle::StatusError)
+      if (context.object.base.Create(context.object) == elle::Status::Error)
         escape("unable to compute the base");
 
       // set the context's state.
       context.state = gear::Context::StateLoaded;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -64,10 +64,10 @@ namespace etoile
                           miscellaneous::Abstract&              abstract)
     {
       // generate the abstract based on the object.
-      if (abstract.Create(context.object) == elle::StatusError)
+      if (abstract.Create(context.object) == elle::Status::Error)
         escape("unable to generate the abstract");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -80,7 +80,7 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateDiscarded;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -106,22 +106,22 @@ namespace etoile
                           gear::Object&                         context)
     {
       // open the access.
-      if (Access::Open(context) == elle::StatusError)
+      if (Access::Open(context) == elle::Status::Error)
         escape("unable to open the access block");
 
       // destroy the access.
-      if (Access::Destroy(context) == elle::StatusError)
+      if (Access::Destroy(context) == elle::Status::Error)
         escape("unable to destroy the access");
 
       // mark the object as needing to be removed.
       if (context.transcript.Wipe(context.location.address) ==
-          elle::StatusError)
+          elle::Status::Error)
         escape("unable to record the object for removal");
 
       // set the context's state.
       context.state = gear::Context::StateDestroyed;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -132,7 +132,7 @@ namespace etoile
                           gear::Object&                         context)
     {
       // close the access.
-      if (Access::Close(context) == elle::StatusError)
+      if (Access::Close(context) == elle::Status::Error)
         escape("unable to close the access");
 
       // if the object has been modified i.e is dirty.
@@ -143,13 +143,13 @@ namespace etoile
           if (context.object.meta.access != nucleus::Address::Null)
             {
               // make sure the access block is loaded.
-              if (Access::Open(context) == elle::StatusError)
+              if (Access::Open(context) == elle::Status::Error)
                 escape("unable to open the access");
 
               // seal the object alone with the access block.
               if (context.object.Seal(
                     agent::Agent::Identity.pair.k,
-                    *context.access) == elle::StatusError)
+                    *context.access) == elle::Status::Error)
                 escape("unable to seal the object");
             }
           else
@@ -157,20 +157,20 @@ namespace etoile
               // seal the object alone i.e without passing an access block.
               if (context.object.Seal(
                     agent::Agent::Identity.pair.k,
-                    nucleus::Access::Null) == elle::StatusError)
+                    nucleus::Access::Null) == elle::Status::Error)
                 escape("unable to seal the object");
             }
 
           // mark the block as needing to be stored.
           if (context.transcript.Push(context.location.address,
-                                      &context.object) == elle::StatusError)
+                                      &context.object) == elle::Status::Error)
             escape("unable to record the object for storing");
         }
 
       // set the context's state.
       context.state = gear::Context::StateStored;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

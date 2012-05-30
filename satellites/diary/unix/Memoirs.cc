@@ -17,6 +17,7 @@
 #include <satellites/diary/unix/Crux.hh>
 #include <satellites/diary/unix/Record.hh>
 #include <satellites/diary/unix/Replay.hh>
+#include <satellites/diary/unix/UpcallSerializer.hxx>
 
 #if defined(INFINIT_LINUX)
 # include <horizon/linux/Linux.hh>
@@ -64,24 +65,22 @@ namespace satellite
                                             const elle::String& mirror)
     {
       // set up the crux.
-      if (Crux::Setup(mirror) == elle::StatusError)
+      if (Crux::Setup(mirror) == elle::Status::Error)
         escape("unable to set up the crux");
 
       // set the mode.
       this->mode = Memoirs::ModeRecord;
 
-      // create the archive.
-      if (this->archive.Create() == elle::StatusError)
-        escape("unable to create the archive");
+      this->archive.Reset();
 
       // initialize the record.
-      if (Record::Initialize(this, mountpoint) == elle::StatusError)
+      if (Record::Initialize(this, mountpoint) == elle::Status::Error)
         escape("unable to initialize the record");
 
       // set the attributes.
       this->fuse = Crux::Operations;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -101,7 +100,7 @@ namespace satellite
       this->offsets.to = to;
 
       // initialize the replay.
-      if (Replay::Initialize(this) == elle::StatusError)
+      if (Replay::Initialize(this) == elle::Status::Error)
         escape("unable to initialize the replay");
 
 #if defined(INFINIT_LINUX)
@@ -112,7 +111,7 @@ namespace satellite
       this->fuse = horizon::macosx::FUSE::Operations;
 #endif
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -126,7 +125,7 @@ namespace satellite
         case Memoirs::ModeRecord:
           {
             // clean the record.
-            if (Record::Clean() == elle::StatusError)
+            if (Record::Clean() == elle::Status::Error)
               escape("unable to clean the recording session");
 
             break;
@@ -134,7 +133,7 @@ namespace satellite
         case Memoirs::ModeReplay:
           {
             // clean the replay.
-            if (Replay::Clean() == elle::StatusError)
+            if (Replay::Clean() == elle::Status::Error)
               escape("unable to clean the replaying session");
 
             break;
@@ -145,7 +144,7 @@ namespace satellite
           }
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -158,10 +157,16 @@ namespace satellite
         escape("unable to write an upcall in a non-recording memoirs");
 
       // serialize the upcall.
-      if (this->archive.Serialize(upcall) == elle::StatusError)
-        escape("unable to serialize the upcall");
+      try
+        {
+          this->archive.Writer() << upcall;
+        }
+      catch (std::exception const& err)
+        {
+          escape("unable to serialize the upcall: %s", err.what());
+        }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -173,11 +178,22 @@ namespace satellite
       if (this->mode != Memoirs::ModeReplay)
         escape("unable to read an upcall from a non-replaying memoirs");
 
-      // extract the upcall.
-      if (this->archive.Extract(upcall) == elle::StatusError)
-        escape("unable to extract the upcall");
+      if (this->archive.Size() >= this->offset)
+        escape("Nothing to read!");
 
-      return elle::StatusOk;
+      try
+        {
+          elle::utility::WeakBuffer(
+              this->archive.Contents() + this->offset,
+              this->archive.Size() - this->offset
+          ).Reader() >> upcall;
+        }
+      catch (std::exception const& err)
+        {
+          escape("unable to extract the upcall: %s", err.what());
+        }
+
+      return elle::Status::Ok;
     }
 
     ///
@@ -185,11 +201,10 @@ namespace satellite
     ///
     elle::Status        Memoirs::End() const
     {
-      // have we reached the end of the archive.
-      if (this->archive.offset == this->archive.size)
-        return elle::StatusTrue;
+      if (this->archive.Size() <= this->offset)
+        return elle::Status::True;
 
-      return elle::StatusFalse;
+      return elle::Status::False;
     }
 
 //
@@ -207,7 +222,7 @@ namespace satellite
       std::cout << alignment << "[Memoirs]" << std::endl;
 
       // dump the parent class.
-      if (satellite::Memoirs::Dump(margin + 2) == elle::StatusError)
+      if (satellite::Memoirs::Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the parent class");
 
       // display the name.
@@ -221,7 +236,7 @@ namespace satellite
                 << ", "
                 << this->offsets.to << std::endl;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

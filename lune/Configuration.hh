@@ -15,7 +15,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
+#include <elle/utility/Settings.hh>
 
 namespace lune
 {
@@ -28,8 +29,8 @@ namespace lune
   /// this class represents a configuration file which can be used to
   /// alterate the Infinit behaviour dynamically.
   ///
-  class Configuration:
-    public elle::Settings
+  class Configuration
+    : public elle::utility::Settings
   {
   public:
     //
@@ -100,7 +101,7 @@ namespace lune
     //
 
     // object
-    declare(Configuration);
+    //declare(Configuration);
 
     // dumpable
     elle::Status                Dump(const elle::Natural32 = 0) const;

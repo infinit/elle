@@ -3,15 +3,12 @@
 #include <elle/standalone/Region.hh>
 #include <elle/standalone/Maid.hh>
 
-#include <elle/package/Archive.hh>
-
 #include <elle/concurrency/Callback.hh>
 #include <elle/concurrency/Program.hh>
 
 namespace elle
 {
-  using namespace core;
-  using namespace package;
+
   using namespace concurrency;
 
   namespace standalone
@@ -31,7 +28,7 @@ namespace elle
     ///
     Status              Report::Initialize()
     {
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -39,7 +36,7 @@ namespace elle
     ///
     Status              Report::Clean()
     {
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -184,7 +181,7 @@ namespace elle
                     << std::endl;
         }
 
-      return StatusOk;
+      return Status::Ok;
     }
 
 //
@@ -194,64 +191,64 @@ namespace elle
     ///
     /// this method serializes a report.
     ///
-    Status              Report::Serialize(Archive&              archive) const
-    {
-      Report::Scoutor   scoutor;
+    //Status              Report::Serialize(Archive&              archive) const
+    //{
+    //  Report::Scoutor   scoutor;
 
-      // serialize the number of messages.
-      if (archive.Serialize(
-            static_cast<Natural32>(this->container.size())) == StatusError)
-        escape("unable to serialize the number of messages");
+    //  // serialize the number of messages.
+    //  if (archive.Serialize(
+    //        static_cast<Natural32>(this->container.size())) == Status::Error)
+    //    escape("unable to serialize the number of messages");
 
-      // go through the container.
-      for (scoutor = this->container.begin();
-           scoutor != this->container.end();
-           scoutor++)
-        {
-          Report::Entry*        entry = *scoutor;
+    //  // go through the container.
+    //  for (scoutor = this->container.begin();
+    //       scoutor != this->container.end();
+    //       scoutor++)
+    //    {
+    //      Report::Entry*        entry = *scoutor;
 
-          // serialize the entry.
-          if (archive.Serialize(entry->location,
-                                entry->time,
-                                entry->message) == StatusError)
-            escape("unable to serialize the entry");
-        }
+    //      // serialize the entry.
+    //      if (archive.Serialize(entry->location,
+    //                            entry->time,
+    //                            entry->message) == Status::Error)
+    //        escape("unable to serialize the entry");
+    //    }
 
-      return StatusOk;
-    }
+    //  return Status::Ok;
+    //}
 
-    ///
-    /// this method extracts a report.
-    ///
-    Status              Report::Extract(Archive&                archive)
-    {
-      Natural32         size;
-      Natural32         i;
+    /////
+    ///// this method extracts a report.
+    /////
+    //Status              Report::Extract(Archive&                archive)
+    //{
+    //  Natural32         size;
+    //  Natural32         i;
 
-      // extract the number of messages.
-      if (archive.Extract(size) == StatusError)
-        escape("unable to extract the number of messages");
+    //  // extract the number of messages.
+    //  if (archive.Extract(size) == Status::Error)
+    //    escape("unable to extract the number of messages");
 
-      // iterate and recreate the messages.
-      for (i = 0; i < size; i++)
-        {
-          Report::Entry*        entry;
+    //  // iterate and recreate the messages.
+    //  for (i = 0; i < size; i++)
+    //    {
+    //      Report::Entry*        entry;
 
-          // allocate a new entry.
-          entry = new Report::Entry;
+    //      // allocate a new entry.
+    //      entry = new Report::Entry;
 
-          // extract the entry.
-          if (archive.Extract(entry->location,
-                              entry->time,
-                              entry->message) == StatusError)
-            escape("unable to serialize the entry");
+    //      // extract the entry.
+    //      if (archive.Extract(entry->location,
+    //                          entry->time,
+    //                          entry->message) == Status::Error)
+    //        escape("unable to serialize the entry");
 
-          // push the extract entry in the container.
-          this->container.push_front(entry);
-        }
+    //      // push the extract entry in the container.
+    //      this->container.push_front(entry);
+    //    }
 
-      return StatusOk;
-    }
+    //  return Status::Ok;
+    //}
 
 //
 // ---------- object-like -----------------------------------------------------
@@ -265,7 +262,7 @@ namespace elle
       // return the size.
       size = sizeof (Report);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -276,7 +273,7 @@ namespace elle
       // allocate the object.
       object = new Report(*this);
 
-      return StatusOk;
+      return Status::Ok;
     }
 
     ///
@@ -284,7 +281,8 @@ namespace elle
     ///
     Boolean             Report::operator==(const Report&) const
     {
-      flee("this method should never have been called");
+      //XXX
+      throw("this method should never have been called");
     }
 
     ///
@@ -292,7 +290,8 @@ namespace elle
     ///
     Boolean             Report::operator<(const Report&) const
     {
-      flee("this method should never have been called");
+      //XXX
+      throw("this method should never have been called");
     }
 
     ///
@@ -300,7 +299,8 @@ namespace elle
     ///
     Boolean             Report::operator>(const Report&) const
     {
-      flee("this method should never have been called");
+      //XXX
+      throw("this method should never have been called");
     }
 
     ///
@@ -313,7 +313,7 @@ namespace elle
         return (*this);
 
       // recycle the report.
-      if (this->Recycle(&element) == StatusError)
+      if (this->Recycle(&element) == Status::Error)
         yield(*this, "unable to recycle the report");
 
       return (*this);
@@ -334,7 +334,8 @@ namespace elle
     ///
     Boolean             Report::operator<=(const Report&) const
     {
-      flee("this method should never have been called");
+      //XXX
+      throw("this method should never have been called");
     }
 
     ///
@@ -342,7 +343,8 @@ namespace elle
     ///
     Boolean             Report::operator>=(const Report&) const
     {
-      flee("this method should never have been called");
+      //XXX
+      throw("this method should never have been called");
     }
 
   }

@@ -1,24 +1,18 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [sun may  8 00:10:37 2011]
-//
-
 #ifndef NUCLEUS_PROTON_ADDRESS_HXX
-#define NUCLEUS_PROTON_ADDRESS_HXX
+# define NUCLEUS_PROTON_ADDRESS_HXX
+
+# include <tuple>
+
+# include <elle/cryptography/OneWay.hxx>
+# include <elle/serialize/TupleSerializer.hxx>
+
+# include <nucleus/proton/Address.hh>
+# include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
     ///
     /// create the address based on an object by serializing it before
@@ -43,20 +37,23 @@ namespace nucleus
         delete this->digest;
 
       // allocate the digest object.
-      this->digest = new elle::Digest;
+      this->digest = new elle::cryptography::Digest;
 
       // compute the digest based on the parameters. note that most of
       // the components requesting this method pass family and component
       // in the parameters as well. for examples, please refer to
       // ContentHashBlock, PublicKeyBlock etc.
-      if (elle::OneWay::Hash(parameter, parameters...,
-                             *this->digest) == elle::StatusError)
+      if (elle::cryptography::OneWay::Hash(
+            elle::serialize::make_tuple(parameter, parameters...),
+            *this->digest) == elle::Status::Error)
         escape("unable to hash the given parameter(s)");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }
 }
+
+# include <elle/idiom/Open.hh>
 
 #endif

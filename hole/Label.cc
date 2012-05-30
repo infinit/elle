@@ -1,18 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [thu aug 11 14:24:46 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/standalone/Log.hh>
 
 #include <hole/Label.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace hole
 {
@@ -47,7 +38,7 @@ namespace hole
     // copy the digest, if present.
     if (label.digest != NULL)
       {
-        this->digest = new elle::Digest(*label.digest);
+        this->digest = new elle::cryptography::Digest(*label.digest);
       }
     else
       {
@@ -76,21 +67,21 @@ namespace hole
   {
     // check the label as this may actually be the same object.
     if (this == &element)
-      return elle::StatusTrue;
+      return true;
 
     // if both are NULL or equal return true, false otherwise
     if ((this->digest == NULL) || (element.digest == NULL))
       {
         if (this->digest != element.digest)
-          return elle::StatusFalse;
+          return false;
       }
     else
       {
         if (*this->digest != *element.digest)
-          return elle::StatusFalse;
+          return false;
       }
 
-    return elle::StatusTrue;
+    return true;
   }
 
   ///
@@ -100,21 +91,21 @@ namespace hole
   {
     // check the address as this may actually be the same object.
     if (this == &element)
-      return elle::StatusFalse;
+      return false;
 
     // test for a null digest.
     if ((this->digest == NULL) && (element.digest == NULL))
-      return elle::StatusFalse;
+      return false;
     else if (this->digest == NULL)
-      return elle::StatusTrue;
+      return true;
     else if (element.digest == NULL)
-      return elle::StatusFalse;
+      return false;
 
     // compare the digests.
     if (*this->digest < *element.digest)
-      return elle::StatusTrue;
+      return true;
 
-    return elle::StatusFalse;
+    return false;
   }
 
   ///
@@ -145,11 +136,11 @@ namespace hole
     else
       {
         // dump the digest.
-        if (this->digest->Dump(margin + 2) == elle::StatusError)
+        if (this->digest->Dump(margin + 2) == elle::Status::Error)
           escape("unable to dump the digest");
       }
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 //
@@ -159,52 +150,52 @@ namespace hole
   ///
   /// this method serializes the label object.
   ///
-  elle::Status          Label::Serialize(elle::Archive& archive) const
-  {
-    if (this->digest != NULL)
-      {
-        // serialize the internal digest.
-        if (archive.Serialize(*this->digest) == elle::StatusError)
-          escape("unable to serialize the digest");
-      }
-    else
-      {
-        // serialize 'none'.
-        if (archive.Serialize(elle::none) == elle::StatusError)
-          escape("unable to serialize 'none'");
-      }
+  //elle::Status          Label::Serialize(elle::Archive& archive) const
+  //{
+  //  if (this->digest != NULL)
+  //    {
+  //      // serialize the internal digest.
+  //      if (archive.Serialize(*this->digest) == elle::Status::Error)
+  //        escape("unable to serialize the digest");
+  //    }
+  //  else
+  //    {
+  //      // serialize 'none'.
+  //      if (archive.Serialize(elle::none) == elle::Status::Error)
+  //        escape("unable to serialize 'none'");
+  //    }
 
-    return elle::StatusOk;
-  }
+  //  return elle::Status::Ok;
+  //}
 
-  ///
-  /// this method extracts the label object.
-  ///
-  elle::Status          Label::Extract(elle::Archive&           archive)
-  {
-    elle::Archive::Type type;
+  /////
+  ///// this method extracts the label object.
+  /////
+  //elle::Status          Label::Extract(elle::Archive&           archive)
+  //{
+  //  elle::Archive::Type type;
 
-    // fetch the next element's type.
-    if (archive.Fetch(type) == elle::StatusError)
-      escape("unable to fetch the next element's type");
+  //  // fetch the next element's type.
+  //  if (archive.Fetch(type) == elle::Status::Error)
+  //    escape("unable to fetch the next element's type");
 
-    if (type == elle::Archive::TypeNull)
-      {
-        // nothing to do, keep the digest to NULL.
-        if (archive.Extract(elle::none) == elle::StatusError)
-          escape("unable to extract null");
-      }
-    else
-      {
-        // allocate a digest.
-        this->digest = new elle::Digest;
+  //  if (type == elle::Archive::TypeNull)
+  //    {
+  //      // nothing to do, keep the digest to NULL.
+  //      if (archive.Extract(elle::none) == elle::Status::Error)
+  //        escape("unable to extract null");
+  //    }
+  //  else
+  //    {
+  //      // allocate a digest.
+  //      this->digest = new elle::cryptography::Digest;
 
-        // extract the internal digest.
-        if (archive.Extract(*this->digest) == elle::StatusError)
-          escape("unable to extract the digest");
-      }
+  //      // extract the internal digest.
+  //      if (archive.Extract(*this->digest) == elle::Status::Error)
+  //        escape("unable to extract the digest");
+  //    }
 
-    return elle::StatusOk;
-  }
+  //  return elle::Status::Ok;
+  //}
 
 }

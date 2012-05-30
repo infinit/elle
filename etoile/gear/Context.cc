@@ -60,10 +60,10 @@ namespace etoile
                 << this->operation << std::endl;
 
       // dump the transcript.
-      if (this->transcript.Dump(margin + 2) == elle::StatusError)
+      if (this->transcript.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the transcript");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -73,31 +73,31 @@ namespace etoile
     ///
     /// this method serializes the context object.
     ///
-    elle::Status        Context::Serialize(elle::Archive&       archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(
-            static_cast<elle::Natural8>(this->nature),
-            static_cast<elle::Natural8>(this->state)) == elle::StatusError)
-        escape("unable to serialize the attributes");
+    //elle::Status        Context::Serialize(elle::Archive&       archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(
+    //        static_cast<elle::Natural8>(this->nature),
+    //        static_cast<elle::Natural8>(this->state)) == elle::Status::Error)
+    //    escape("unable to serialize the attributes");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the context object.
-    ///
-    elle::Status        Context::Extract(elle::Archive&         archive)
-    {
-      // extract the attributes.
-      if (archive.Extract(
-            reinterpret_cast<elle::Natural8&>(this->nature),
-            reinterpret_cast<elle::Natural8&>(this->state)) ==
-          elle::StatusError)
-        escape("unable to extract the attributes");
+    /////
+    ///// this method extracts the context object.
+    /////
+    //elle::Status        Context::Extract(elle::Archive&         archive)
+    //{
+    //  // extract the attributes.
+    //  if (archive.Extract(
+    //        reinterpret_cast<elle::Natural8&>(this->nature),
+    //        reinterpret_cast<elle::Natural8&>(this->state)) ==
+    //      elle::Status::Error)
+    //    escape("unable to extract the attributes");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

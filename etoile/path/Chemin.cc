@@ -52,11 +52,11 @@ namespace etoile
     {
       // clear the route because the chemin may have been used for
       // something else before.
-      if (this->route.Clear() == elle::StatusError)
+      if (this->route.Clear() == elle::Status::Error)
         escape("unable to clear the route");
 
       // do the same for the venue.
-      if (this->venue.Clear() == elle::StatusError)
+      if (this->venue.Clear() == elle::Status::Error)
         escape("unable to clear the venue");
 
       //
@@ -93,7 +93,7 @@ namespace etoile
           }
       }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -107,11 +107,11 @@ namespace etoile
     ///
     elle::Status        Chemin::Derives(const Chemin&            base) const
     {
-      if ((this->route.Derives(base.route) == elle::StatusTrue) &&
-          (this->venue.Derives(base.venue) == elle::StatusTrue))
-        return (elle::StatusTrue);
+      if ((this->route.Derives(base.route) == elle::Status::True) &&
+          (this->venue.Derives(base.venue) == elle::Status::True))
+        return (elle::Status::True);
 
-      return (elle::StatusFalse);
+      return (elle::Status::False);
     }
 
     ///
@@ -129,7 +129,7 @@ namespace etoile
       location.version =
         this->venue.elements[this->venue.elements.size() - 1].version;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -143,14 +143,14 @@ namespace etoile
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return true;
 
       // compare the attributes.
       if ((this->route != element.route) ||
           (this->venue != element.venue))
-        return elle::StatusFalse;
+        return false;
 
-      return elle::StatusTrue;
+      return true;
     }
 
     ///
@@ -160,13 +160,13 @@ namespace etoile
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusFalse;
+        return false;
 
       // compare the route only.
       if (this->route < element.route)
-        return elle::StatusTrue;
+        return true;
 
-      return elle::StatusFalse;
+      return false;
     }
 
     ///
@@ -188,14 +188,14 @@ namespace etoile
       std::cout << alignment << "[Chemin] " << this << std::endl;
 
       // dump the route.
-      if (this->route.Dump(margin + 2) == elle::StatusError)
+      if (this->route.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the route");
 
       // dump the venue.
-      if (this->venue.Dump(margin + 2) == elle::StatusError)
+      if (this->venue.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the venue");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -205,28 +205,28 @@ namespace etoile
     ///
     /// this method serializes the object.
     ///
-    elle::Status        Chemin::Serialize(elle::Archive&        archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(this->route,
-                            this->venue) == elle::StatusError)
-        escape("unable to serialize the attribtues");
+    //elle::Status        Chemin::Serialize(elle::Archive&        archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(this->route,
+    //                        this->venue) == elle::Status::Error)
+    //    escape("unable to serialize the attribtues");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the object.
-    ///
-    elle::Status        Chemin::Extract(elle::Archive&  archive)
-    {
-      // extract the attributes.
-      if (archive.Extract(this->route,
-                          this->venue) == elle::StatusError)
-        escape("unable to extract the attributes");
+    /////
+    ///// this method extracts the object.
+    /////
+    //elle::Status        Chemin::Extract(elle::Archive&  archive)
+    //{
+    //  // extract the attributes.
+    //  if (archive.Extract(this->route,
+    //                      this->venue) == elle::Status::Error)
+    //    escape("unable to extract the attributes");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
 }

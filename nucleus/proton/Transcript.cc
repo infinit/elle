@@ -1,18 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [wed jun 22 13:49:40 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <nucleus/proton/Transcript.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -46,7 +35,7 @@ namespace nucleus
       // add the action to the transcript's container.
       this->container.push_back(new Action(address, block));
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -58,7 +47,7 @@ namespace nucleus
       // add the action to the transcript's container.
       this->container.push_back(new Action(address));
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -95,7 +84,7 @@ namespace nucleus
           iterator = this->container.begin();
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -120,7 +109,7 @@ namespace nucleus
       // clear the container.
       this->container.clear();
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -145,11 +134,11 @@ namespace nucleus
           Action*      action = *scoutor;
 
           // dump the action.
-          if (action->Dump(margin + 2) == elle::StatusError)
+          if (action->Dump(margin + 2) == elle::Status::Error)
             escape("unable to dump the action");
         }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

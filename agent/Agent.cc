@@ -1,16 +1,4 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       agent
-//
-// license       infinit
-//
-// author        julien quintard   [thu mar  4 17:51:46 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/io/Console.hh>
 
 #include <agent/Agent.hh>
 #include <hole/Hole.hh>
@@ -51,7 +39,7 @@ namespace agent
     elle::String        pass;
 
     // disable the meta logging.
-    if (elle::Meta::Disable() == elle::StatusError)
+    if (elle::Meta::Disable() == elle::Status::Error)
       escape("unable to disable the meta logging");
 
     //
@@ -59,7 +47,7 @@ namespace agent
     //
     {
       // does the identity exist.
-      if (Agent::Identity.Exist() == elle::StatusFalse)
+      if (Agent::Identity.Exist() == elle::Status::False)
         escape("the user identity does not seem to exist");
 
       // prompt the user for the passphrase.
@@ -67,25 +55,25 @@ namespace agent
              the watchdog]
       prompt = "Enter passphrase for keypair '" + Infinit::User + "': ";
 
-      if (elle::Console::Input(
+      if (elle::io::Console::Input(
             pass,
             prompt,
-            elle::Console::OptionPassword) == elle::StatusError)
+            elle::io::Console::OptionPassword) == elle::Status::Error)
         escape("unable to read the input");
       */
       // XXX[temporary fix]
       pass = "";
 
       // load the identity.
-      if (Agent::Identity.Load() == elle::StatusError)
+      if (Agent::Identity.Load() == elle::Status::Error)
         escape("unable to load the identity");
 
       // verify the identity.
-      if (Agent::Identity.Validate(Infinit::Authority) == elle::StatusError)
+      if (Agent::Identity.Validate(Infinit::Authority) == elle::Status::Error)
         escape("the identity seems to be invalid");
 
       // decrypt the identity.
-      if (Agent::Identity.Decrypt(pass) == elle::StatusError)
+      if (Agent::Identity.Decrypt(pass) == elle::Status::Error)
         escape("unable to decrypt the identity");
     }
 
@@ -94,15 +82,15 @@ namespace agent
     //
     {
       // create the subject.
-      if (Agent::Subject.Create(Agent::Identity.pair.K) == elle::StatusError)
+      if (Agent::Subject.Create(Agent::Identity.pair.K) == elle::Status::Error)
         escape("unable to create the user's subject");
     }
 
     // enable the meta logging.
-    if (elle::Meta::Enable() == elle::StatusError)
+    if (elle::Meta::Enable() == elle::Status::Error)
       escape("unable to enable the meta logging");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -115,7 +103,7 @@ namespace agent
   {
     // nothing to do.
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 }

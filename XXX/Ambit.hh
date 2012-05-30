@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <nucleus/proton/Block.hh>
 #include <XXX/Handle.hh>
@@ -34,7 +34,7 @@ namespace nucleus
     ///
     template <typename T>
     class Ambit:
-      public elle::Entity
+      public elle::radix::Entity
     {
     public:
       //

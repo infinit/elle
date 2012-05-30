@@ -1,16 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [sat may 21 13:41:42 2011]
-//
 
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <limits>
+
+#include <elle/standalone/Log.hh>
+#include <elle/standalone/Report.hh>
 
 #include <nucleus/proton/Version.hh>
 
@@ -31,8 +23,7 @@ namespace nucleus
     ///
     /// this constant represents the latest version.
     ///
-    const Version               Version::Last(
-                                  elle::Type<Version::Type>::Maximum);
+    const Version Version::Last = std::numeric_limits<Version::Type>::max();
 
     ///
     /// this constant represents any version and is useful whenever
@@ -78,7 +69,7 @@ namespace nucleus
       // assign the number.
       this->number = number;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -92,13 +83,13 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return true;
 
       // compare the numbers.
       if (this->number != element.number)
-        return elle::StatusFalse;
+        return false;
 
-      return elle::StatusTrue;
+      return true;
     }
 
     ///
@@ -108,13 +99,13 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return true;
 
       // compare the numbers.
       if (this->number >= element.number)
-        return elle::StatusFalse;
+        return false;
 
-      return elle::StatusTrue;
+      return true;
     }
 
     ///
@@ -124,13 +115,13 @@ namespace nucleus
     {
       // check the address as this may actually be the same object.
       if (this == &element)
-        return elle::StatusTrue;
+        return true;
 
       // compare the numbers.
       if (this->number <= element.number)
-        return elle::StatusFalse;
+        return false;
 
-      return elle::StatusTrue;
+      return true;
     }
 
     ///
@@ -170,7 +161,7 @@ namespace nucleus
 
       std::cout << alignment << "[Version] " << this->number << std::endl;
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
 //
@@ -180,26 +171,31 @@ namespace nucleus
     ///
     /// this method serializes the version attributes.
     ///
-    elle::Status        Version::Serialize(elle::Archive&       archive) const
-    {
-      // serialize the attributes.
-      if (archive.Serialize(this->number) == elle::StatusError)
-        escape("unable to serialize the version's attributes");
+    //elle::Status        Version::Serialize(elle::Archive&       archive) const
+    //{
+    //  // serialize the attributes.
+    //  if (archive.Serialize(this->number) == elle::Status::Error)
+    //    escape("unable to serialize the version's attributes");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
-    ///
-    /// this method extracts the attributes.
-    ///
-    elle::Status        Version::Extract(elle::Archive&         archive)
-    {
-      // extracts the attributes.
-      if (archive.Extract(this->number) == elle::StatusError)
-        escape("unable to extract the version's attributes");
+    /////
+    ///// this method extracts the attributes.
+    /////
+    //elle::Status        Version::Extract(elle::Archive&         archive)
+    //{
+    //  // extracts the attributes.
+    //  if (archive.Extract(this->number) == elle::Status::Error)
+    //    escape("unable to extract the version's attributes");
 
-      return elle::StatusOk;
-    }
+    //  return elle::Status::Ok;
+    //}
 
   }
+}
+
+std::ostream& operator <<(std::ostream& out, nucleus::proton::Version const& v)
+{
+  return out << v.number;
 }

@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 
 #include <etoile/path/Slab.hh>
 #include <etoile/path/Way.hh>
@@ -41,7 +41,7 @@ namespace etoile
     /// the root directory even though its slab is empty.
     ///
     class Route:
-      public elle::Object
+      public elle::radix::Object
     {
     public:
       //
@@ -92,8 +92,8 @@ namespace etoile
       elle::Status              Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status              Serialize(elle::Archive&) const;
-      elle::Status              Extract(elle::Archive&);
+      //elle::Status              Serialize(elle::Archive&) const;
+      //elle::Status              Extract(elle::Archive&);
 
       //
       // attributes

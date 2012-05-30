@@ -43,8 +43,8 @@ namespace hole
   ///
   /// XXX[to replace by a new signal]
   ///
-  elle::Signal<
-    elle::Parameters<>
+  elle::concurrency::Signal<
+    elle::radix::Parameters<>
     >                           Hole::ready;
 
 //
@@ -57,7 +57,7 @@ namespace hole
     nucleus::Network    network;
 
     // disable the meta logging.
-    if (elle::Meta::Disable() == elle::StatusError)
+    if (elle::Meta::Disable() == elle::Status::Error)
       throw std::runtime_error("unable to disable the meta logging");
 
     //
@@ -69,21 +69,21 @@ namespace hole
         throw std::runtime_error("this network does not seem to exist");
 
       // load the descriptor.
-      if (Hole::Descriptor.Load(Infinit::Network) == elle::StatusError)
+      if (Hole::Descriptor.Load(Infinit::Network) == elle::Status::Error)
         throw std::runtime_error("unable to load the descriptor");
 
       // validate the descriptor.
-      if (Hole::Descriptor.Validate(Infinit::Authority) == elle::StatusError)
+      if (Hole::Descriptor.Validate(Infinit::Authority) == elle::Status::Error)
         throw std::runtime_error("unable to validate the descriptor");
     }
 
     //
     // retrieve the set, if present.
     //
-    if (Hole::Set.Exist(Infinit::Network) == elle::StatusTrue)
+    if (Hole::Set.Exist(Infinit::Network) == elle::Status::True)
       {
         // load the set.
-        if (Hole::Set.Load(Infinit::Network) == elle::StatusError)
+        if (Hole::Set.Load(Infinit::Network) == elle::Status::Error)
           throw std::runtime_error("unable to load the set");
       }
 
@@ -96,20 +96,20 @@ namespace hole
         throw std::runtime_error("the device passport does not seem to exist");
 
       // load the passport.
-      if (Hole::Passport.Load() == elle::StatusError)
+      if (Hole::Passport.Load() == elle::Status::Error)
         throw std::runtime_error("unable to load the passport");
 
       // validate the passport.
-      if (Hole::Passport.Validate(Infinit::Authority) == elle::StatusError)
+      if (Hole::Passport.Validate(Infinit::Authority) == elle::Status::Error)
         throw std::runtime_error("unable to validate the passport");
     }
 
     // enable the meta logging.
-    if (elle::Meta::Enable() == elle::StatusError)
+    if (elle::Meta::Enable() == elle::Status::Error)
       throw std::runtime_error("unable to enable the meta logging");
 
     // create the network instance.
-    if (network.Create(Infinit::Network) == elle::StatusError)
+    if (network.Create(Infinit::Network) == elle::Status::Error)
       throw std::runtime_error("unable to create the network instance");
 
     // create the holeable depending on the model.
@@ -169,13 +169,13 @@ namespace hole
   elle::Status          Hole::Clean()
   {
     // leave the network
-    if (Hole::Implementation->Leave() == elle::StatusError)
+    if (Hole::Implementation->Leave() == elle::Status::Error)
       escape("unable to leave the network");
 
     // delete the implementation.
     delete Hole::Implementation;
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -185,14 +185,14 @@ namespace hole
   elle::Status          Hole::Ready()
   {
     if (Hole::state == Hole::StateOnline)
-      return elle::StatusOk;
+      return elle::Status::Ok;
 
-    if (Hole::ready.Emit() == elle::StatusError)
+    if (Hole::ready.Emit() == elle::Status::Error)
       escape("unable to emit the signal");
 
     Hole::state = Hole::StateOnline;
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -203,7 +203,7 @@ namespace hole
     // return the address.
     address = Hole::Descriptor.root;
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -226,7 +226,7 @@ namespace hole
           ib = static_cast<const nucleus::ImmutableBlock*>(&block);
 
           // store the immutable block.
-          if (Hole::Implementation->Put(address, *ib) == elle::StatusError)
+          if (Hole::Implementation->Put(address, *ib) == elle::Status::Error)
             escape("unable to put the block");
 
           break;
@@ -241,7 +241,7 @@ namespace hole
           mb = static_cast<const nucleus::MutableBlock*>(&block);
 
           // store the mutable block.
-          if (Hole::Implementation->Put(address, *mb) == elle::StatusError)
+          if (Hole::Implementation->Put(address, *mb) == elle::Status::Error)
             escape("unable to put the block");
 
           break;
@@ -253,7 +253,7 @@ namespace hole
         }
       }
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -275,7 +275,7 @@ namespace hole
           ib = static_cast<nucleus::ImmutableBlock*>(&block);
 
           // retrieve the immutable block.
-          if (Hole::Implementation->Get(address, *ib) == elle::StatusError)
+          if (Hole::Implementation->Get(address, *ib) == elle::Status::Error)
             escape("unable to get the block");
 
           break;
@@ -291,7 +291,7 @@ namespace hole
 
           // retrieve the mutable block.
           if (Hole::Implementation->Get(address, version,
-                                        *mb) == elle::StatusError)
+                                        *mb) == elle::Status::Error)
             escape("unable to get the block");
 
           break;
@@ -303,7 +303,7 @@ namespace hole
         }
       }
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
   ///
@@ -312,10 +312,10 @@ namespace hole
   elle::Status          Hole::Wipe(const nucleus::Address&      address)
   {
     // forward the kill request to the implementation.
-    if (Hole::Implementation->Kill(address) == elle::StatusError)
+    if (Hole::Implementation->Kill(address) == elle::Status::Error)
       escape("unable to erase the block");
 
-    return elle::StatusOk;
+    return elle::Status::Ok;
   }
 
 }

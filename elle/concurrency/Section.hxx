@@ -152,14 +152,14 @@ namespace elle
                 << "[State] " << std::dec << this->state << std::endl;
 
       // dump the lock closure.
-      if (this->lock.Dump(margin + 2) == StatusError)
+      if (this->lock.Dump(margin + 2) == Status::Error)
         escape("unable to dump the closure");
 
       // dump the unlock closure.
-      if (this->unlock.Dump(margin + 2) == StatusError)
+      if (this->unlock.Dump(margin + 2) == Status::Error)
         escape("unable to dump the closure");
 
-      return StatusOk;
+      return Status::Ok;
     }
 
   }

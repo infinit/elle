@@ -57,6 +57,12 @@ set(INFINIT_QJSON_SHARED_LIBRARIES
   libqjson${CMAKE_SHARED_LIBRARY_SUFFIX}
 )
 
+
+#set(Boost_USE_STATIC_LIBS TRUE)
+#find_package(Boost COMPONENTS system thread signals REQUIRED)
+#find_package(Threads)
+#include_directories(${Boost_INCLUDE_DIR})
+
 set(INFINIT_EXTERNAL_LIBRARIES
   ${INFINIT_OPENSSL_STATIC_LIBRARIES}
   ${INFINIT_OPENSSL_SHARED_LIBRARIES}
@@ -172,7 +178,11 @@ add_executable(8infinit
 )
 add_dependencies(8infinit dependencies)
 target_link_libraries(8infinit
-  infinit elle etoile nucleus lune agent hole horizon ${Boost_LIBRARIES}
+  infinit
+  ${Boost_LIBRARIES}
+  ${CMAKE_THREAD_LIBS_INIT}
+  boost_thread # XXX why ?
+  elle etoile nucleus lune agent hole horizon
 )
 
 # XXX

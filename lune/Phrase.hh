@@ -1,28 +1,13 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [sat may  1 12:52:01 2010]
-//
-
 #ifndef LUNE_PHRASE_HH
-#define LUNE_PHRASE_HH
+# define LUNE_PHRASE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/radix/Object.hh>
+# include <elle/io/Fileable.hh>
 
-#include <elle/Elle.hh>
+# include <elle/idiom/Open.hh>
 
 namespace lune
 {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
   ///
   /// this class represents a phrase i.e a string enabling applications
@@ -37,8 +22,8 @@ namespace lune
   /// connect to in order to issue requests to Infinit.
   ///
   class Phrase:
-    public elle::Object,
-    public virtual elle::Fileable<elle::FormatCustom>
+    public elle::radix::Object,
+    public elle::io::Fileable<Phrase>
   {
   public:
     //
@@ -64,10 +49,11 @@ namespace lune
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
     // archivable
-    elle::Status        Serialize(elle::Archive&) const;
-    elle::Status        Extract(elle::Archive&);
+    //elle::Status        Serialize(elle::Archive&) const;
+    //elle::Status        Extract(elle::Archive&);
 
     // fileable
+    ELLE_IO_USING_FILEABLE_METHODS(Phrase);
     elle::Status        Load(const elle::String&);
     elle::Status        Store(const elle::String&) const;
     elle::Status        Erase(const elle::String&) const;
@@ -81,5 +67,7 @@ namespace lune
   };
 
 }
+
+# include <elle/idiom/Close.hh>
 
 #endif

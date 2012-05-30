@@ -15,15 +15,12 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Natural.hh>
-#include <elle/core/Boolean.hh>
+#include <elle/types.hh>
+#include <elle/types.hh>
 
 #include <elle/standalone/Region.hh>
 
-#include <elle/radix/Status.hh>
 #include <elle/radix/Object.hh>
-
-#include <elle/package/Archive.hh>
 
 #include <elle/cryptography/Signature.hh>
 
@@ -31,10 +28,9 @@
 
 namespace elle
 {
-  using namespace core;
+
   using namespace standalone;
   using namespace radix;
-  using namespace package;
 
   namespace cryptography
   {
@@ -72,8 +68,9 @@ namespace elle
       Status            Dump(const Natural32 = 0) const;
 
       // archivable
-      Status            Serialize(Archive&) const;
-      Status            Extract(Archive&);
+      // XXX
+      //Status            Serialize(Archive&) const;
+      //Status            Extract(Archive&);
 
       //
       // attributes

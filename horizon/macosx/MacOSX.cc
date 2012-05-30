@@ -16,7 +16,7 @@
 #include <horizon/macosx/Crux.hh>
 #include <horizon/Horizon.hh>
 
-#include <elle/Elle.hh>
+#include <elle/types.hh>
 #include <agent/Agent.hh>
 
 namespace horizon
@@ -78,10 +78,10 @@ namespace horizon
       //
       {
         // if the dictionary exist.
-        if (MacOSX::Dictionary.Exist() == elle::StatusTrue)
+        if (MacOSX::Dictionary.Exist() == elle::Status::True)
           {
             // load the dictionary file.
-            if (MacOSX::Dictionary.Load() == elle::StatusError)
+            if (MacOSX::Dictionary.Load() == elle::Status::Error)
               escape("unable to load the dictionary");
           }
       }
@@ -137,11 +137,11 @@ namespace horizon
         operations.flag_nullpath_ok = 1;
 
         // initialize FUSE.
-        if (FUSE::Initialize(operations) == elle::StatusError)
+        if (FUSE::Initialize(operations) == elle::Status::Error)
           escape("unable to initialize FUSE");
       }
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
@@ -150,10 +150,10 @@ namespace horizon
     elle::Status        MacOSX::Clean()
     {
       // clean FUSE.
-      if (FUSE::Clean() == elle::StatusError)
+      if (FUSE::Clean() == elle::Status::Error)
         escape("unable to clean FUSE");
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
   }

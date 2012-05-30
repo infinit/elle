@@ -1,21 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [sat may 21 12:11:53 2011]
-//
-
 #ifndef NUCLEUS_PROTON_IMMUTABLEBLOCK_HH
-#define NUCLEUS_PROTON_IMMUTABLEBLOCK_HH
+# define NUCLEUS_PROTON_IMMUTABLEBLOCK_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/Elle.hh>
+#include <elle/types.hh>
+#include <elle/io/Fileable.hh>
 
 #include <nucleus/proton/Block.hh>
 #include <nucleus/proton/Address.hh>
@@ -29,16 +16,13 @@ namespace nucleus
   namespace proton
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// this class derives the Block and abstracts the notion of
     /// immutable block.
     ///
-    class ImmutableBlock:
-      public Block
+    class ImmutableBlock
+      : public Block
+      , public elle::io::Fileable<ImmutableBlock>
     {
     public:
       //
@@ -53,7 +37,9 @@ namespace nucleus
       //
 
       // object
+#include <elle/idiom/Open.hh>
       declare(ImmutableBlock);
+#include <elle/idiom/Close.hh>
 
       // fileable
       elle::Status      Load(const Network&,

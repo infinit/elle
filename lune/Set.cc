@@ -1,19 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [tue mar  6 15:15:47 2012]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/io/Piece.hh>
+#include <elle/io/File.hh>
 
 #include <lune/Set.hh>
 #include <lune/Lune.hh>
+
+#include <elle/idiom/Open.hh>
 
 using namespace lune;
 
@@ -33,7 +24,7 @@ const elle::String            Set::Extension = ".set";
 ///
 /// this method adds a locus to the set.
 ///
-elle::Status          Set::Add(const elle::Locus&               locus)
+elle::Status          Set::Add(const elle::network::Locus&               locus)
 {
   if (std::find(this->loci.begin(),
                 this->loci.end(),
@@ -42,13 +33,13 @@ elle::Status          Set::Add(const elle::Locus&               locus)
 
   this->loci.push_back(locus);
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
 /// this method removes a locus from the set.
 ///
-elle::Status          Set::Remove(const elle::Locus&            locus)
+elle::Status          Set::Remove(const elle::network::Locus&            locus)
 {
   auto                iterator =
     std::find(this->loci.begin(),
@@ -60,7 +51,7 @@ elle::Status          Set::Remove(const elle::Locus&            locus)
 
   this->loci.erase(iterator);
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 //
@@ -89,11 +80,11 @@ elle::Status          Set::Dump(const elle::Natural32      margin) const
 
   for (; iterator != end; ++iterator)
     {
-      if (iterator->Dump(margin + 2) == elle::StatusError)
+      if (iterator->Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the locus");
     }
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 //
@@ -103,50 +94,50 @@ elle::Status          Set::Dump(const elle::Natural32      margin) const
 ///
 /// this method serializes the object.
 ///
-elle::Status          Set::Serialize(elle::Archive&        archive) const
-{
-  elle::Natural32     size;
-  auto                iterator = this->loci.begin();
-  auto                end = this->loci.end();
-
-  size = this->loci.size();
-
-  if (archive.Serialize(size) == elle::StatusError)
-    escape("unable to serialize the size");
-
-  for (; iterator != end; ++iterator)
-    {
-      if (archive.Serialize(*iterator) == elle::StatusError)
-        escape("unable to serialize the attributes");
-    }
-
-  return elle::StatusOk;
-}
-
-///
-/// this method extracts the object.
-///
-elle::Status          Set::Extract(elle::Archive&          archive)
-{
-  elle::Natural32     size;
-  elle::Natural32     i;
-
-  if (archive.Extract(size) == elle::StatusError)
-    escape("unable to extract the size");
-
-  for (i = 0; i < size; i++)
-    {
-      elle::Locus     locus;
-
-      if (archive.Extract(locus) == elle::StatusError)
-        escape("unable to extract the attributes");
-
-      if (this->Add(locus) == elle::StatusError)
-        escape("unable to add the locus to the set");
-    }
-
-  return elle::StatusOk;
-}
+//elle::Status          Set::Serialize(elle::Archive&        archive) const
+//{
+//  elle::Natural32     size;
+//  auto                iterator = this->loci.begin();
+//  auto                end = this->loci.end();
+//
+//  size = this->loci.size();
+//
+//  if (archive.Serialize(size) == elle::Status::Error)
+//    escape("unable to serialize the size");
+//
+//  for (; iterator != end; ++iterator)
+//    {
+//      if (archive.Serialize(*iterator) == elle::Status::Error)
+//        escape("unable to serialize the attributes");
+//    }
+//
+//  return elle::Status::Ok;
+//}
+//
+/////
+///// this method extracts the object.
+/////
+//elle::Status          Set::Extract(elle::Archive&          archive)
+//{
+//  elle::Natural32     size;
+//  elle::Natural32     i;
+//
+//  if (archive.Extract(size) == elle::Status::Error)
+//    escape("unable to extract the size");
+//
+//  for (i = 0; i < size; i++)
+//    {
+//      elle::network::Locus     locus;
+//
+//      if (archive.Extract(locus) == elle::Status::Error)
+//        escape("unable to extract the attributes");
+//
+//      if (this->Add(locus) == elle::Status::Error)
+//        escape("unable to add the locus to the set");
+//    }
+//
+//  return elle::Status::Ok;
+//}
 
 //
 // ---------- fileable --------------------------------------------------------
@@ -158,20 +149,20 @@ elle::Status          Set::Extract(elle::Archive&          archive)
 elle::Status          Set::Load(const elle::String&        network)
 {
   elle::Path          path;
-  elle::Region        region;
+  elle::standalone::Region        region;
   std::istringstream  stream;
   elle::String        element;
 
   // create the path.
-  if (path.Create(Lune::Network::Set) == elle::StatusError)
+  if (path.Create(Lune::Network::Set) == elle::Status::Error)
     escape("unable to create the path");
 
   // complete the path's pattern.
-  if (path.Complete(elle::Piece("%NETWORK%", network)) == elle::StatusError)
+  if (path.Complete(elle::io::Piece("%NETWORK%", network)) == elle::Status::Error)
     escape("unable to complete the path");
 
   // read the file's content.
-  if (elle::File::Read(path, region) == elle::StatusError)
+  if (elle::io::File::Read(path, region) == elle::Status::Error)
     escape("unable to read the file's content");
 
   // set up the stream.
@@ -181,18 +172,18 @@ elle::Status          Set::Load(const elle::String&        network)
   // for every string-based locus in the string.
   while (std::getline(stream, element, ' '))
     {
-      elle::Locus       locus;
+      elle::network::Locus       locus;
 
       // build the host locus.
-      if (locus.Create(element) == elle::StatusError)
+      if (locus.Create(element) == elle::Status::Error)
         escape("unable to create the host locus");
 
       // add the locus to the set.
-      if (this->Add(locus) == elle::StatusError)
+      if (this->Add(locus) == elle::Status::Error)
         escape("unable to add the locus");
     }
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -203,11 +194,11 @@ elle::Status          Set::Store(const elle::String&       network) const
   elle::Path          path;
 
   // create the path.
-  if (path.Create(Lune::Network::Set) == elle::StatusError)
+  if (path.Create(Lune::Network::Set) == elle::Status::Error)
     escape("unable to create the path");
 
   // complete the path's pattern.
-  if (path.Complete(elle::Piece("%NETWORK%", network)) == elle::StatusError)
+  if (path.Complete(elle::io::Piece("%NETWORK%", network)) == elle::Status::Error)
     escape("unable to complete the path");
 
   std::ofstream out(path.string);
@@ -221,13 +212,13 @@ elle::Status          Set::Store(const elle::String&       network) const
       elle::String      host;
 
       // convert the current locus into a string.
-      if (it->host.Convert(host) == elle::StatusError)
+      if (it->host.Convert(host) == elle::Status::Error)
         escape("unable to convert the locus into a string");
 
       out << host << ":" << it->port << " ";
     }
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -238,18 +229,18 @@ elle::Status          Set::Erase(const elle::String&       network) const
   elle::Path          path;
 
   // create the path.
-  if (path.Create(Lune::Network::Set) == elle::StatusError)
+  if (path.Create(Lune::Network::Set) == elle::Status::Error)
     escape("unable to create the path");
 
   // complete the path's pattern.
-  if (path.Complete(elle::Piece("%NETWORK%", network)) == elle::StatusError)
+  if (path.Complete(elle::io::Piece("%NETWORK%", network)) == elle::Status::Error)
     escape("unable to complete the path");
 
   // erase the file.
-  if (elle::File::Erase(path) == elle::StatusError)
+  if (elle::io::File::Erase(path) == elle::Status::Error)
     escape("unable to erase the file");
 
-  return elle::StatusOk;
+  return elle::Status::Ok;
 }
 
 ///
@@ -260,16 +251,16 @@ elle::Status          Set::Exist(const elle::String&       network) const
   elle::Path          path;
 
   // create the path.
-  if (path.Create(Lune::Network::Set) == elle::StatusError)
+  if (path.Create(Lune::Network::Set) == elle::Status::Error)
     escape("unable to create the path");
 
   // complete the path's pattern.
-  if (path.Complete(elle::Piece("%NETWORK%", network)) == elle::StatusError)
+  if (path.Complete(elle::io::Piece("%NETWORK%", network)) == elle::Status::Error)
     escape("unable to complete the path");
 
   // test the file.
-  if (elle::File::Exist(path) == elle::StatusFalse)
-    return elle::StatusFalse;
+  if (elle::io::File::Exist(path) == elle::Status::False)
+    return elle::Status::False;
 
-  return elle::StatusTrue;
+  return elle::Status::True;
 }
