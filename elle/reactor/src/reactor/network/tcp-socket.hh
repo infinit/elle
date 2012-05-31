@@ -1,6 +1,7 @@
 #ifndef INFINIT_REACTOR_NETWORK_TCP_SOCKET_HH
 # define INFINIT_REACTOR_NETWORK_TCP_SOCKET_HH
 
+# include <reactor/mutex.hh>
 # include <reactor/network/socket.hh>
 
 namespace reactor
@@ -44,6 +45,8 @@ namespace reactor
     public:
       virtual void write(Buffer buffer);
       using Socket::write;
+    private:
+      Mutex _write_mutex;
 
     /*-----------.
     | Properties |

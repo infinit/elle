@@ -26,6 +26,8 @@
 # include <elle/log.hh>
 #include <elle/idiom/Open.hh>
 
+#include <horizon/operations.hh>
+
 ELLE_LOG_TRACE_COMPONENT("Infinit.FUSE");
 
 namespace horizon
@@ -33,46 +35,6 @@ namespace horizon
   namespace linux
   {
     typedef struct ::timespec timespec2[2];
-
-#if defined(HAVE_SETXATTR)
-# define INFINIT_FUSE_COMMANDS_XATTR                                    \
-    ((setxattr, (const char*)(const char*)(const char*)(size_t)(int)))  \
-    ((getxattr, (const char*)(const char*)(char*) (size_t)))            \
-    ((listxattr, (const char*)(char*)(size_t)))                         \
-    ((removexattr, (const char*)(const char*)))
-#else
-# define INFINIT_FUSE_COMMANDS_XATTR
-#endif
-
-#define INFINIT_FUSE_COMMANDS                                           \
-    ((statfs, (const char*)(struct ::statvfs*)))                        \
-    ((getattr, (const char*)(struct ::stat*)))                          \
-    ((fgetattr, (const char*)(struct ::stat*)                           \
-      (struct ::fuse_file_info*)))                                      \
-    ((utimens, (const char*)(const timespec2)))                         \
-    ((opendir, (const char*)(struct ::fuse_file_info*)))                \
-    ((readdir, (const char*)(void*) (::fuse_fill_dir_t)(off_t)          \
-      (struct ::fuse_file_info*)))                                      \
-    ((releasedir, (const char*)(struct ::fuse_file_info*)))             \
-    ((mkdir, (const char*)(mode_t)))                                    \
-    ((rmdir, (const char*)))                                            \
-    ((access, (const char*)(int)))                                      \
-    ((chmod, (const char*)(mode_t)))                                    \
-    ((chown, (const char*)(uid_t)(gid_t)))                              \
-    INFINIT_FUSE_COMMANDS_XATTR                                         \
-    ((symlink, (const char*)(const char*)))                             \
-    ((readlink, (const char*)(char*)(size_t)))                          \
-    ((create, (const char*)(mode_t)(struct ::fuse_file_info*)))         \
-    ((open, (const char*)(struct ::fuse_file_info*)))                   \
-    ((write, (const char*)(const char*)(size_t)(off_t)                  \
-      (struct ::fuse_file_info*)))                                      \
-    ((read, (const char*)(char*)(size_t)(off_t)                         \
-      (struct ::fuse_file_info*)))                                      \
-    ((truncate, (const char*)(off_t)))                                  \
-    ((ftruncate, (const char*)(off_t)(struct ::fuse_file_info*)))       \
-    ((release, (const char*)(struct ::fuse_file_info*)))                \
-    ((rename, (const char*)(const char*)))                              \
-    ((unlink, (const char*)))                                           \
 
     ///
     /// this is the identifier of the thread which is spawn so as to start
@@ -110,7 +72,6 @@ namespace horizon
          BOOST_PP_SEQ_FOR_EACH_I(INFINIT_FUSE_FORMALS, _,               \
                                  BOOST_PP_SEQ_POP_FRONT(Args)))         \
     {                                                                   \
-      ELLE_LOG_TRACE("receive " BOOST_PP_STRINGIZE(Name));              \
       return elle::concurrency::scheduler().mt_run<int>                 \
         (#Name,                                                         \
          boost::bind(FUSE::Operations.Name                              \
@@ -154,6 +115,7 @@ namespace horizon
 
           // XXX
           "-s",
+          "-d",
 
           //
           // this option does not register FUSE as a daemon but
@@ -225,7 +187,7 @@ namespace horizon
       }
 
       // finally, initialize FUSE.
-      ELLE_LOG_TRACE("start FUSE main")
+      // ELLE_LOG_TRACE("start FUSE main")
         {
           if (::fuse_main(
                 sizeof (arguments) / sizeof (elle::Character*),
@@ -234,11 +196,11 @@ namespace horizon
                 NULL) != 0)
             {
               std::string error(::strerror(errno));
-              ELLE_LOG_TRACE("FUSE error: %s", error);
+              // ELLE_LOG_TRACE("FUSE error: %s", error);
               log(error.c_str());
             }
         }
-      ELLE_LOG_TRACE("exit FUSE main");
+      // ELLE_LOG_TRACE("exit FUSE main");
 
       // now that FUSE has stopped, make sure the program is exiting.
       elle::Program::Exit();
