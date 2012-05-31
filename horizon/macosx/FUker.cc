@@ -110,10 +110,6 @@ namespace horizon
         {
           "horizon",
 
-          // XXX
-          "-d",
-          "-s",
-
           //
           // this option does not register FUSE as a daemon but
           // run it in foreground.
