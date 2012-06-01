@@ -17,4 +17,8 @@
 
 #cmakedefine HAVE_SETXATTR
 
+# if defined(INFINIT_MACOSX)
+#  define HAVE_STATFS
+# endif
+
 #endif

@@ -54,6 +54,8 @@ ReleaseUpdater::~ReleaseUpdater()
 // ---------- methods  --------------------------------------------------------
 //
 
+extern bool g_dirty_hack;
+
 void ReleaseUpdater::Start()
 {
   std::cout << "Checking out " << INFINIT_RELEASE_URI << std::endl;

@@ -1,4 +1,3 @@
-
 #include <horizon/macosx/FUSE.hh>
 
 #include <hole/Hole.hh>
@@ -109,6 +108,10 @@ namespace horizon
       const char*       arguments[] =
         {
           "horizon",
+
+          // XXX
+          "-s",
+          "-d",
 
           //
           // this option does not register FUSE as a daemon but
