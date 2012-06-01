@@ -1,12 +1,11 @@
-
-Getting started doc
-
-dl depuis le wiki le fichier .auth
-8passport -c
-8user -c -n 'johndoe'
-./applications/8network/8network -c -n network_name -m local -a johndoe
+mkdir -p ~/.config/infinit
+cp ./oracle/infinit.auth ~/.config/infinit
+./satellites/passport/8passport -c
+./satellites/user/8user -c -n johndoe
+./satellites/network/8network -c -n network -m local -a johndoe
 cd ~/.config/infinit
 cp users/johndoe/johndoe.idy infinit.idy
 cp users/johndoe/johndoe.dic infinit.dic
 cd -
-./8infinit -n network_name -m ~/mnt
+./8infinit -n network -m ~/mnt
+
