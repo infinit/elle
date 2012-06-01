@@ -59,13 +59,13 @@ static bool check_dirty_demo_hack()
 {
   char const* infinit_home;
 
-  if ((infinit_home = ::getenv("INFINIT_HOME")) == nullptr &&
-      (infinit_home = ::getenv("HOME")) == nullptr)
+  if ((infinit_home = ::getenv("HOME")) == nullptr)
     {
       elle::log::warn("Couldn't find home directory");
       return false;
     }
 
+  elle::log::info("Using infinit home =", infinit_home);
   namespace fs = boost::filesystem;
 
   auto no_network_file = (
@@ -75,7 +75,10 @@ static bool check_dirty_demo_hack()
   );
 
   if (!fs::exists(no_network_file))
-    return false;
+    {
+      elle::log::debug("demo not activated: no file", no_network_file.string());
+      return false;
+    }
 
   auto binary = fs::absolute(
     fs::path{infinit_home}
@@ -84,7 +87,10 @@ static bool check_dirty_demo_hack()
   );
 
   if (!fs::exists(binary))
-    return false;
+    {
+      elle::log::warn("Couldn't find infinit binary:", binary.string());
+      return false;
+    }
 
   auto mount_point = fs::absolute(
     fs::path{infinit_home}
@@ -96,7 +102,7 @@ static bool check_dirty_demo_hack()
       fs::create_directories(mount_point);
     }
 
-  auto cmd = binary.string() + " -n network_demo -m " + mount_point.string();
+  auto cmd = binary.string() + " -n infinit_demo -m " + mount_point.string();
 
   elle::log::info("Starting infinit in rescue mode:", cmd);
   if (int res = ::system(cmd.c_str()) != 0)
