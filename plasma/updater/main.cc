@@ -99,5 +99,7 @@ static bool check_dirty_demo_hack()
   auto cmd = binary.string() + " -n network_demo -m " + mount_point.string();
 
   elle::log::info("Starting infinit in rescue mode:", cmd);
-  return ::system(cmd.c_str()) == 0;
+  if (int res = ::system(cmd.c_str()) != 0)
+      elle::log::fatal("Cannot launch infinit: exit code =", res);
+  return true;
 }
