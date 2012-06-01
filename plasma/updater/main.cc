@@ -102,7 +102,7 @@ static bool check_dirty_demo_hack()
       fs::create_directories(mount_point);
     }
 
-  auto cmd = binary.string() + " -n infinit_demo -m " + mount_point.string();
+  auto cmd = binary.string() + " -n demo -m " + mount_point.string();
 
   elle::log::info("Starting infinit in rescue mode:", cmd);
   if (int res = ::system(cmd.c_str()) != 0)
