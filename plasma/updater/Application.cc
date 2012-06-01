@@ -68,7 +68,7 @@ void Application::_StartUpdate()
 
   this->_StopWatchdog();
 
-  if (QFile(_infinitHome.filePath(".dev_no_update")).exists())
+  if (g_dirty_hack || QFile(_infinitHome.filePath(".dev_no_update")).exists())
     {
       std::cerr << "Skipping update !\n";
       this->_OnReleaseUpdated(true);
