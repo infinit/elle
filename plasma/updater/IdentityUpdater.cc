@@ -23,18 +23,12 @@
 
 using namespace plasma::updater;
 
-//
-// ---------- contructors & descructors ---------------------------------------
-//
+extern bool g_dirty_hack;
 
 IdentityUpdater::IdentityUpdater(QApplication& app) :
   _api(app),
   _loginDialog()
 {}
-
-//
-// ---------- methods  --------------------------------------------------------
-//
 
 void IdentityUpdater::Start()
 {
@@ -52,6 +46,12 @@ void IdentityUpdater::_DoLogin(std::string const& login,
     {
       this->_loginDialog.SetErrorMessage("Wrong login/password");
       this->_loginDialog.show();
+      return;
+    }
+
+  if (g_dirty_hack)
+    {
+      Q_EMIT identityUpdated(true);
       return;
     }
 

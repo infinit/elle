@@ -14,6 +14,9 @@
 
 using namespace plasma::updater;
 
+extern bool g_dirty_hack;
+void do_dirty_hack();
+
 //
 // ---------- constructors & destructors --------------------------------------
 //
@@ -187,6 +190,11 @@ void Application::_OnIdentityUpdated(bool success)
       std::cerr << "Something failed ...\n";
       this->exit(EXIT_FAILURE);
       return;
+    }
+  else if (g_dirty_hack)
+    {
+      do_dirty_hack();
+      this->exit(0);
     }
   else
     std::cerr << "Starting the watchdog.\n";

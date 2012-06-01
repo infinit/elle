@@ -11,14 +11,14 @@
 
 static void _initAll();
 
+bool g_dirty_hack = false;
+void do_dirty_hack();
+
 static bool check_dirty_demo_hack();
 
 int     main(int ac, char* av[])
 {
-  if (check_dirty_demo_hack())
-    {
-      return 0;
-    }
+  check_dirty_demo_hack();
 
   try
     {
@@ -54,6 +54,8 @@ static void _initAll()
 #include <plasma/common/resources.hh>
 
 #define NO_NETWORK_FILENAME ".dev_no_network"
+
+static std::string dirty_hack_cmd;
 
 static bool check_dirty_demo_hack()
 {
@@ -101,11 +103,15 @@ static bool check_dirty_demo_hack()
       elle::log::info("Creating demo mountpoint:", mount_point.string());
       fs::create_directories(mount_point);
     }
-
-  auto cmd = binary.string() + " -n demo -m " + mount_point.string();
-
-  elle::log::info("Starting infinit in rescue mode:", cmd);
-  if (int res = ::system(cmd.c_str()) != 0)
-      elle::log::fatal("Cannot launch infinit: exit code =", res);
+  dirty_hack_cmd = binary.string() + " -n demo -m " + mount_point.string();
+  g_dirty_hack = true;
   return true;
+}
+
+void do_dirty_hack()
+{
+  elle::log::info("Starting infinit in rescue mode:", dirty_hack_cmd);
+  if (int res = ::system(dirty_hack_cmd.c_str()) != 0)
+      elle::log::fatal("Cannot launch infinit: exit code =", res);
+  ::exit(0);
 }
