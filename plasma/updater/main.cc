@@ -85,7 +85,7 @@ static bool check_dirty_demo_hack()
   auto binary = fs::absolute(
     fs::path{infinit_home}
       .append(INFINIT_HOME_DIRECTORY, fs::path::codecvt())
-      .append("bin/8infinit-hack", fs::path::codecvt())
+      .append("bin/8infinit", fs::path::codecvt())
   );
 
   if (!fs::exists(binary))
