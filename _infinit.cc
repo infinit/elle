@@ -192,12 +192,16 @@ Main(elle::Natural32 argc, elle::Character* argv[])
     {
       Infinit(argc, argv);
     }
-  catch (std::runtime_error& e)
+  catch (std::runtime_error const& e)
     {
       // XXX
       show();
 
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
+      if (reactor::Exception const* re
+          = reinterpret_cast<reactor::Exception const*>(&e))
+        std::cerr << re->backtrace() << std::endl;
+
       elle::concurrency::scheduler().terminate();
       return elle::StatusError;
     }
