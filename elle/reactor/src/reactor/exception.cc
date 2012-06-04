@@ -1,3 +1,4 @@
+#include <iostream>
 #include <reactor/exception.hh>
 
 namespace reactor

@@ -8,6 +8,7 @@
 # include <boost/system/error_code.hpp>
 
 # include <reactor/backend/thread.hh>
+# include <reactor/duration.hh>
 # include <reactor/exception.hh>
 # include <reactor/fwd.hh>
 # include <reactor/waitable.hh>
