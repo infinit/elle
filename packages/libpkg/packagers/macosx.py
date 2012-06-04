@@ -2,6 +2,7 @@
 
 import os
 import shutil
+import sys
 
 from libpkg import constants
 from libpkg import tools
@@ -32,7 +33,7 @@ class Packager(BasePackager):
             pkgdir = os.path.join(tempdir, 'pkg')
             os.mkdir(pkgdir)
             shutil.copytree(
-                os.path.join(build_env.directory, 'temp', 'Infinit.app'),
+                os.path.join(build_env.directory, 'temp-app', 'Infinit.app'),
                 os.path.join(pkgdir, 'Infinit.app'),
             )
             params = {
@@ -49,7 +50,10 @@ class Packager(BasePackager):
 
             print(filename)
             print(tempdir)
-            res = os.system('''/Infinit/infinit/packages/libpkg/packagers/macosx/dmger/create-dmg \
+            print(os.path.join(sys.argv[0], "../.."))
+            DIR_SOURCE = os.path.join(os.path.dirname(sys.argv[0]), "libpkg/packagers")
+
+            res = os.system('''%(dir_source)s/macosx/dmger/create-dmg \
                 --window-size %(window_size_x)i %(window_size_y)i \
                 --background "%(background)s" \
                 --icon-size %(icon_size)i \
@@ -58,9 +62,10 @@ class Packager(BasePackager):
                 --icon Infinit.app %(infinit_rect_x)i %(infinit_rect_y)i \
                 "%(dmgfile)s" "%(pkgdir)s"
                 ''' % {
+                'dir_source' : DIR_SOURCE,
                 'window_size_x' : 600,
                 'window_size_y' : 400,
-                'background' : '/Users/charlesguillot/Desktop/Finder_integration/infinit-dmg-bg.png',
+                'background' : DIR_SOURCE + '/macosx/dmger/infinit-dmg-bg.png',
                 'icon_size' : 100,
                 'volname' : 'Infinit',
                 'app_rect_x' : 450,
@@ -72,7 +77,6 @@ class Packager(BasePackager):
             })
             if res != 0:
                 raise Exception("Couldn't create the dmg file")
-
             shutil.copyfile(
                 os.path.join(tempdir, filename),
                 os.path.join(dest_dir, filename)
