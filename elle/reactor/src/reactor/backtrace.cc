@@ -8,6 +8,7 @@
 #include <sstream>
 
 #include <boost/format.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <reactor/backtrace.hh>
 
@@ -114,11 +115,12 @@ namespace reactor
   std::ostream&
   operator<< (std::ostream& out, const StackFrame& frame)
   {
-    out << "0x" << std::hex << frame.address;
+    out << (boost::format("0x%0" + boost::lexical_cast<std::string>(2 * sizeof(void*)) + "x: ") % frame.address);
+
     if (!frame.symbol.empty())
-      out << ": " << frame.symbol << " +0x" << frame.offset;
+      out << (boost::format("%s +0x%x") % frame.symbol % frame.offset);
     else
-      out << ": ???";
+      out << "???";
     return out;
   }
 
@@ -129,7 +131,10 @@ namespace reactor
     // Visual expects a float ... don't ask.
     const size_t width = std::log10(float(bt.size())) + 1;
     foreach (const Backtrace::Frame& f, bt)
-      out << std::setw(width) << "#" << i++ << " " << f << ": " << std::endl;
+      {
+        boost::format fmt("#%-" + boost::lexical_cast<std::string>(width) + "d %s\n");
+        out << (fmt % i++ % f);
+      }
     return out;
   }
 
