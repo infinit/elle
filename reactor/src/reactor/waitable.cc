@@ -1,8 +1,12 @@
 #include <boost/foreach.hpp>
 
+#include <elle/log.hh>
+
 #include <reactor/debug.hh>
 #include <reactor/thread.hh>
 #include <reactor/waitable.hh>
+
+ELLE_LOG_TRACE_COMPONENT("Reactor.Thread");
 
 namespace reactor
 {
@@ -57,11 +61,7 @@ namespace reactor
       return false;
     }
     BOOST_FOREACH (Thread* thread, _threads)
-    {
-      INFINIT_REACTOR_DEBUG(": woken by " << *this);
-      INFINIT_REACTOR_DEBUG(*thread << ": woken by " << *this);
       thread->_wake(this);
-    }
     int res = _threads.size();
     _threads.clear();
     _exception = 0;
@@ -86,7 +86,7 @@ namespace reactor
   bool
   Waitable::_wait(Thread* t)
   {
-    INFINIT_REACTOR_DEBUG(*t << ": wait " << *this);
+    ELLE_LOG_TRACE("%s: wait %s", *t, *this);
     assert(_threads.find(t) == _threads.end());
     _threads.insert(t);
     return true;
@@ -95,7 +95,7 @@ namespace reactor
   void
   Waitable::_unwait(Thread* t)
   {
-    INFINIT_REACTOR_DEBUG(*t << ": unwait " << *this);
+    ELLE_LOG_TRACE("%s: unwait %s", *t, *this);
     assert(_threads.find(t) != _threads.end());
     _threads.erase(t);
   }

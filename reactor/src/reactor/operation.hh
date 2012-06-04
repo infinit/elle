@@ -1,6 +1,7 @@
 #ifndef REACTOR_OPERATION_HH
 # define REACTOR_OPERATION_HH
 
+# include <reactor/duration.hh>
 # include <reactor/waitable.hh>
 
 namespace reactor
