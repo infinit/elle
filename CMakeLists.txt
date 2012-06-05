@@ -1,4 +1,4 @@
-PROJECT(Comet CXX)
+PROJECT(Comet C)
 
 add_definitions(-fPIC)
 add_library(comet
