@@ -8,3 +8,6 @@ script:
   - cmake .
   - make
   - ./json_test
+
+notifications:
+  irc: "irc.freenode.org#sirikata"
