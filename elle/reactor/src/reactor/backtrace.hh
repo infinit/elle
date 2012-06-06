@@ -21,8 +21,10 @@ namespace reactor
   {
   public:
     Backtrace();
+    void strip_base(const Backtrace& base);
     typedef std::vector<StackFrame> SuperType;
     typedef StackFrame Frame;
+    static Backtrace current();
   };
 
   std::ostream& operator<< (std::ostream& output, const StackFrame& frame);

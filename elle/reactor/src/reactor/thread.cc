@@ -16,8 +16,6 @@ namespace reactor
   | Construction |
   `-------------*/
 
-  static void action_wrapper(Thread::Action action);
-
   Thread::Thread(Scheduler&             scheduler,
                  std::string const&     name,
                  Action const&          action,
@@ -26,10 +24,11 @@ namespace reactor
     , _state(state::running)
     , _injection()
     , _exception(0)
+    , _backtrace_root()
     , _waited()
     , _timeout(false)
-    , _thread(scheduler._manager, name, boost::bind(action_wrapper,
-                                                    action))
+    , _thread(scheduler._manager, name, boost::bind(&Thread::_action_wrapper,
+                                                    this, action))
     , _scheduler(scheduler)
   {
     assert(action);
@@ -91,10 +90,12 @@ namespace reactor
   `----*/
 
 
-  static void action_wrapper(Thread::Action action)
+  void
+  Thread::_action_wrapper(const Thread::Action& action)
   {
     try
       {
+        _backtrace_root = Backtrace::current();
         assert(action);
         action();
       }
@@ -289,6 +290,16 @@ namespace reactor
         else
           ELLE_LOG_TRACE("%s: still waiting for %s other elements", *this, _waited.size());
       }
+  }
+
+  /*--------.
+  | Backend |
+  `--------*/
+
+  Scheduler&
+  Thread::scheduler()
+  {
+    return _scheduler;
   }
 
   /*----------------.

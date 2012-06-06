@@ -23,7 +23,7 @@ namespace reactor
     if (error == boost::system::errc::operation_canceled)
       return;
     if (error)
-      _raise(new Exception(error.message()));
+      _raise(new Exception(scheduler(), error.message()));
     _signal();
   }
 

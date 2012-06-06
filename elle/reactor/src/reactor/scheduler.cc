@@ -181,7 +181,7 @@ namespace reactor
     ELLE_LOG_TRACE_COMPONENT("Reactor.Thread");
     ELLE_LOG_TRACE("%s: terminate", *thread);
     if (current() == thread)
-      throw Terminate();
+      throw Terminate(*this);
     // If the underlying coroutine was never run, nothing to do.
     if (_starting.erase(thread))
       {
@@ -191,10 +191,10 @@ namespace reactor
     switch (thread->state())
       {
         case Thread::state::running:
-          thread->raise(new Terminate());
+          thread->raise(new Terminate(*this));
           break;
         case Thread::state::frozen:
-          thread->raise(new Terminate());
+          thread->raise(new Terminate(*this));
           thread->_wait_abort();
           break;
         case Thread::state::done:

@@ -15,23 +15,28 @@ namespace hole
 
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
-        throw Exception("unable to initialize Elle");
+      throw Exception(elle::concurrency::scheduler(),
+                      "unable to initialize Elle");
 
     // initialize the nucleus library.
     if (nucleus::Nucleus::Initialize() == elle::StatusError)
-      throw Exception("unable to initialize Nucleus");
+      throw Exception(elle::concurrency::scheduler(),
+                      "unable to initialize Nucleus");
 
     // initialize the Lune library.
     if (lune::Lune::Initialize() == elle::StatusError)
-      throw Exception("unable to initialize Lune");
+      throw Exception(elle::concurrency::scheduler(),
+                      "unable to initialize Lune");
 
     // initialize Infinit.
     if (Infinit::Initialize() == elle::StatusError)
-      throw Exception("unable to initialize Infinit");
+      throw Exception(elle::concurrency::scheduler(),
+                      "unable to initialize Infinit");
 
     // set up the program.
     if (elle::Program::Setup() == elle::StatusError)
-      throw Exception("unable to set up the program");
+      throw Exception(elle::concurrency::scheduler(),
+                      "unable to set up the program");
 
     // allocate a new parser.
     Infinit::Parser = new elle::Parser(argc, argv);
@@ -42,7 +47,8 @@ namespace hole
                                      "Copyright (c) 2008, 2009, 2010, 2011, "
                                      "Julien Quintard, All rights "
                                      "reserved.\n") == elle::StatusError)
-      throw Exception("unable to set the description");
+      throw Exception(elle::concurrency::scheduler(),
+                      "unable to set the description");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -51,7 +57,8 @@ namespace hole
           "help",
           "display the help",
           elle::Parser::KindNone) == elle::StatusError)
-      throw Exception("unable to register the option");
+      throw Exception(elle::concurrency::scheduler(),
+                      "unable to register the option");
 
     // register the option.
     if (Infinit::Parser->Register(
@@ -60,11 +67,13 @@ namespace hole
           "network",
           "specifies the name of the network",
           elle::Parser::KindRequired) == elle::StatusError)
-      throw Exception("unable to register the option");
+      throw Exception(elle::concurrency::scheduler(),
+                      "unable to register the option");
 
     // parse.
     if (Infinit::Parser->Parse() == elle::StatusError)
-      throw Exception("unable to parse the command line");
+      throw Exception(elle::concurrency::scheduler(),
+                      "unable to parse the command line");
 
     // test the option.
     if (Infinit::Parser->Test("Help") == elle::StatusTrue)
@@ -80,7 +89,8 @@ namespace hole
         // display the usage.
         Infinit::Parser->Usage();
 
-        throw Exception("unable to retrieve the network name");
+        throw Exception(elle::concurrency::scheduler(),
+                        "unable to retrieve the network name");
       }
 
     // initialize the Hole library.
@@ -95,23 +105,28 @@ namespace hole
 
     // clean Hole.
     if (hole::Hole::Clean() == elle::StatusError)
-      throw Exception("unable to clean Hole");
+      throw Exception(elle::concurrency::scheduler(),
+                      "unable to clean Hole");
 
     // clean Infinit.
     if (Infinit::Clean() == elle::StatusError)
-      throw Exception("unable to clean Infinit");
+      throw Exception(elle::concurrency::scheduler(),
+                      "unable to clean Infinit");
 
     // clean Lune
     if (lune::Lune::Clean() == elle::StatusError)
-      throw Exception("unable to clean Lune");
+      throw Exception(elle::concurrency::scheduler(),
+                      "unable to clean Lune");
 
     // clean the nucleus library.
     if (nucleus::Nucleus::Clean() == elle::StatusError)
-      throw Exception("unable to clean Nucleus");
+      throw Exception(elle::concurrency::scheduler(),
+                      "unable to clean Nucleus");
 
     // clean Elle.
     if (elle::Elle::Clean() == elle::StatusError)
-      throw Exception("unable to clean Elle");
+      throw Exception(elle::concurrency::scheduler(),
+                      "unable to clean Elle");
   }
 }
 

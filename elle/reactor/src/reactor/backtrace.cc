@@ -69,7 +69,13 @@ namespace reactor
 
   Backtrace::Backtrace()
     : SuperType()
+  {}
+
+  Backtrace
+  Backtrace::current()
   {
+    Backtrace bt;
+
     static const size_t size = 128;
     void* callstack[size];
     size_t frames = ::backtrace(callstack, size);
@@ -107,9 +113,24 @@ namespace reactor
         std::stringstream stream(addr);
         stream >> std::hex >> frame.address;
       }
-      this->push_back(frame);
+      bt.push_back(frame);
     }
     free(strs);
+
+    return bt;
+  }
+
+  void
+  Backtrace::strip_base(const Backtrace& base)
+  {
+    auto other = base.rbegin();
+
+    while (!this->empty() && other != base.rend()
+           && this->back().address == other->address)
+      {
+        this->pop_back();
+        ++other;
+      }
   }
 
   std::ostream&
@@ -144,5 +165,4 @@ namespace reactor
     s << *this;
     return s.str();
   }
-
 }

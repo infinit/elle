@@ -24,7 +24,8 @@ namespace reactor
   VThread<R>::result() const
   {
     if (state() != Thread::state::done)
-      throw Exception("tried to fetched the result of an unfinished thread");
+      throw Exception(const_cast<Self*>(this)->scheduler(),
+                      "tried to fetched the result of an unfinished thread");
     return _result;
   }
 }

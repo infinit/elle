@@ -1,12 +1,17 @@
 #include <iostream>
 #include <reactor/exception.hh>
+#include <reactor/thread.hh>
 
 namespace reactor
 {
-  Exception::Exception(const std::string& message)
+  Exception::Exception(Scheduler& scheduler, const std::string& message)
     : std::runtime_error(message)
-    , _backtrace()
-  {}
+    , _scheduler(scheduler)
+    , _backtrace(Backtrace::current())
+  {
+    if (Thread* t = scheduler.current())
+      _backtrace.strip_base(t->_backtrace_root);
+  }
 
   Exception::~Exception() throw ()
   {}
@@ -17,7 +22,7 @@ namespace reactor
     return _backtrace;
   }
 
-  Terminate::Terminate()
-    : Super("thread termination")
+  Terminate::Terminate(Scheduler& scheduler)
+    : Super(scheduler, "thread termination")
   {}
 }

@@ -9,26 +9,26 @@ namespace reactor
   {
     class Exception: public reactor::Exception
     {
-      public:
-        typedef reactor::Exception Super;
-        Exception(const std::string& message);
-        INFINIT_REACTOR_EXCEPTION(Exception);
+    public:
+      typedef reactor::Exception Super;
+      Exception(Scheduler& scheduler, const std::string& message);
+      INFINIT_REACTOR_EXCEPTION(Exception);
     };
 
     class ConnectionClosed: public Exception
     {
-      public:
-        typedef Exception Super;
-        ConnectionClosed();
-        INFINIT_REACTOR_EXCEPTION(ConnectionClosed);
+    public:
+      typedef Exception Super;
+      ConnectionClosed(Scheduler& scheduler);
+      INFINIT_REACTOR_EXCEPTION(ConnectionClosed);
     };
 
     class TimeOut: public Exception
     {
-      public:
-        typedef Exception Super;
-        TimeOut();
-        INFINIT_REACTOR_EXCEPTION(TimeOut);
+    public:
+      typedef Exception Super;
+      TimeOut(Scheduler& scheduler);
+      INFINIT_REACTOR_EXCEPTION(TimeOut);
     };
   }
 }
