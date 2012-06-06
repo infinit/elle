@@ -48,6 +48,10 @@ You can generate documentation from the source code using doxygen:
 The output will be placed in doc/[type], e.g. doc/html if you
 generated HTML documentation (the default).
 
+Buildbot
+--------
+[![Build Status](https://secure.travis-ci.org/sirikata/json-spirit.png)](http://travis-ci.org/sirikata/json-spirit)
+
 References
 ----------
 
