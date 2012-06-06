@@ -215,7 +215,7 @@ namespace horizon
     }
 
     ///
-    /// XXX[to replace by the new signal mechanism
+    /// XXX[to replace by the new signal mechanism]
     ///
     elle::Status        FUker::Run()
     {
@@ -233,8 +233,6 @@ namespace horizon
     ///
     elle::Status        FUker::Initialize()
     {
-      // XXX[to do on Linux too i.e signal to start FUSE]
-
       // XXX[to replace by the new signal mechanism]
       switch (hole::Hole::state)
         {

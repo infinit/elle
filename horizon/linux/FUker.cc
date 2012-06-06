@@ -181,25 +181,29 @@ namespace horizon
       }
 
       // finally, initialize FUSE.
-      // ELLE_LOG_TRACE("start FUSE main")
-        {
-          if (::fuse_main(
-                sizeof (arguments) / sizeof (elle::Character*),
-                const_cast<char**>(arguments),
-                &operations,
-                NULL) != 0)
-            {
-              std::string error(::strerror(errno));
-              // ELLE_LOG_TRACE("FUSE error: %s", error);
-              log(error.c_str());
-            }
-        }
-      // ELLE_LOG_TRACE("exit FUSE main");
+      if (::fuse_main(
+            sizeof (arguments) / sizeof (elle::Character*),
+            const_cast<char**>(arguments),
+            &operations,
+            NULL) != 0)
+        log(::strerror(errno));
 
       // now that FUSE has stopped, make sure the program is exiting.
       elle::Program::Exit();
 
       return (NULL);
+    }
+
+    ///
+    /// XXX[to replace by the new signal mechanism]
+    ///
+    elle::Status        FUker::Run()
+    {
+      // create the FUSE-specific thread.
+      if (::pthread_create(&FUker::Thread, NULL, &FUker::Setup, NULL) != 0)
+        escape("unable to create the FUSE-specific thread");
+
+      return elle::StatusOk;
     }
 
     ///
@@ -209,9 +213,25 @@ namespace horizon
     ///
     elle::Status        FUker::Initialize()
     {
-      // create the FUSE-specific thread.
-      if (::pthread_create(&FUker::Thread, NULL, &FUker::Setup, NULL) != 0)
-        escape("unable to create the FUSE-specific thread");
+      // XXX[to replace by the new signal mechanism]
+      switch (hole::Hole::state)
+        {
+        case hole::Hole::StateOffline:
+          {
+            if (hole::Hole::ready.Subscribe(
+                  elle::Callback<>::Infer(&FUker::Run)) == elle::StatusError)
+              escape("unable to subscribe to the signal");
+
+            break;
+          }
+        case hole::Hole::StateOnline:
+          {
+            if (FUker::Run() == elle::StatusError)
+              escape("unable to run the FUker thread");
+
+            break;
+          }
+        }
 
       return elle::StatusOk;
     }
