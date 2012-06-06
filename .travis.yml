@@ -1,0 +1,8 @@
+before_script:
+  - sudo apt-get install cmake
+
+script:
+  - cd build
+  - cmake .
+  - make
+  - ./json_test
