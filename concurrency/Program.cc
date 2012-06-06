@@ -28,6 +28,10 @@
 
 #include <hole/Hole.hh>
 
+#include <elle/log.hh>
+
+ELLE_LOG_TRACE_COMPONENT("Infinit.Elle.Program");
+
 namespace elle
 {
   namespace concurrency
@@ -92,12 +96,16 @@ namespace elle
     void
     Program::Exit()
     {
+      ELLE_LOG_TRACE_SCOPE("Exit");
+
       _exit.signal();
     }
 
     void
     Program::Launch()
     {
+      ELLE_LOG_TRACE_SCOPE("Launch");
+
       elle::concurrency::scheduler().current()->wait(_exit);
     }
 
@@ -106,6 +114,8 @@ namespace elle
     ///
     Void                Program::Exception(int                  signal)
     {
+      ELLE_LOG_TRACE_SCOPE("Exception");
+
       // stop the program depending on the signal.
       switch (signal)
         {
