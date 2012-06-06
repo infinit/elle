@@ -1,7 +1,7 @@
 language: python
 
 before_script:
-  - sudo apt-get install cmake
+  - sudo apt-get install cmake libboost-all-dev
 
 script:
   - cd build
