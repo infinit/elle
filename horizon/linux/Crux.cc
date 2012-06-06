@@ -2288,7 +2288,11 @@ namespace horizon
       etoile::path::Slab                name;
       etoile::path::Way                 child(path);
       etoile::path::Way                 parent(child, name);
-      etoile::path::Chemin              chemin;
+      struct
+      {
+        etoile::path::Chemin            child;
+        etoile::path::Chemin            parent;
+      }                                 chemin;
       etoile::gear::Identifier          directory;
       etoile::gear::Identifier          identifier;
       etoile::miscellaneous::Abstract   abstract;
@@ -2302,12 +2306,14 @@ namespace horizon
                path);
 
       // resolve the path.
-      if (etoile::wall::Path::Resolve(child, chemin) == elle::StatusError)
+      if (etoile::wall::Path::Resolve(child,
+                                      chemin.child) == elle::StatusError)
         error("unable to resolve the path",
               -ENOENT);
 
       // load the object.
-      if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
+      if (etoile::wall::Object::Load(chemin.child,
+                                     identifier) == elle::StatusError)
         error("unable to load the object",
               -ENOENT);
 
@@ -2330,21 +2336,19 @@ namespace horizon
               -EACCES,
               identifier);
 
-      // discard the object, as no longer needed.
-      if (etoile::wall::Object::Discard(identifier) == elle::StatusError)
-        error("unable to discard the object",
-              -EPERM);
-
       // resolve the path.
-      if (etoile::wall::Path::Resolve(parent, chemin) == elle::StatusError)
+      if (etoile::wall::Path::Resolve(parent,
+                                      chemin.parent) == elle::StatusError)
         error("unable to resolve the path",
-              -ENOENT);
+              -ENOENT,
+              identifier);
 
       // load the directory.
-      if (etoile::wall::Directory::Load(chemin,
+      if (etoile::wall::Directory::Load(chemin.parent,
                                         directory) == elle::StatusError)
         error("unable to load the directory",
-              -ENOENT);
+              -ENOENT,
+              identifier);
 
       // retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(directory,
@@ -2352,7 +2356,7 @@ namespace horizon
                                        record) == elle::StatusError)
         error("unable to retrieve the access record",
               -EPERM,
-              directory);
+              identifier, directory);
 
       // check the record.
       if (!((record != NULL) &&
@@ -2361,27 +2365,13 @@ namespace horizon
         error("the subject does not have the right to remove an entry from "
               "this directory",
               -EACCES,
-              directory);
+              identifier, directory);
 
       // remove the object according to its type: file or link.
       switch (abstract.genre)
         {
         case nucleus::GenreFile:
           {
-            // resolve the path.
-            if (etoile::wall::Path::Resolve(child,
-                                            chemin) == elle::StatusError)
-              error("unable to resolve the path",
-                    -ENOENT,
-                    directory);
-
-            // load the object.
-            if (etoile::wall::File::Load(chemin,
-                                         identifier) == elle::StatusError)
-              error("unable to load the file",
-                    -ENOENT,
-                    directory);
-
             // destroy the file.
             if (etoile::wall::File::Destroy(identifier) == elle::StatusError)
               error("unable to destroy the file",
@@ -2392,20 +2382,6 @@ namespace horizon
           }
         case nucleus::GenreLink:
           {
-            // resolve the path.
-            if (etoile::wall::Path::Resolve(child,
-                                            chemin) == elle::StatusError)
-              error("unable to resolve the path",
-                    -ENOENT,
-                    directory);
-
-            // load the link
-            if (etoile::wall::Link::Load(chemin,
-                                         identifier) == elle::StatusError)
-              error("unable to load the link",
-                    -ENOENT,
-                    directory);
-
             // destroy the link.
             if (etoile::wall::Link::Destroy(identifier) == elle::StatusError)
               error("unable to destroy the link",
