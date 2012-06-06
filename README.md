@@ -12,11 +12,8 @@ To build and install the library independently of another project, use
 the normal cmake procedure:
 
     cd json-spirit/build
-    # Create a subdirectory for build output
-    mkdir out
-    cd out
     # Run CMake and check output for errors.
-    cmake .. [-DCMAKE_INSTALL_PREFIX=/path/to/install]
+    cmake . [-DCMAKE_INSTALL_PREFIX=/path/to/install]
     make
     # Run some tests
     ./json_test
