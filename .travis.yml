@@ -1,3 +1,5 @@
+language: python
+
 before_script:
   - sudo apt-get install cmake
 
