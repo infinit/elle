@@ -101,6 +101,13 @@ namespace horizon
       // FUSE does not support the -o large_read and -o big_writes
       // options.
       //
+      // The -o daemon_timeout=N option could be used to increase or
+      // decrase the duration after which the kernel considers the
+      // FUSE userland program has blocked after which the connection
+      // is killed and the mountpoint released. This is necessary since
+      // a blocked FUSE program could block an entire system through
+      // applications such as the Finder for instance.
+      //
       elle::String      ofsname("-ofsname=" +
                                 hole::Hole::Descriptor.name);
       elle::String      ovolname("-ovolname=" +
@@ -134,11 +141,6 @@ namespace horizon
           // the modification times.
           //
           "-oauto_cache",
-
-          //
-          // XXX
-          //
-          // XXX "-odaemon_timeout=12000",
 
           //
           // this options activates the MacOS X ACLs which are set through
