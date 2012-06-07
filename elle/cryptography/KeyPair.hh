@@ -106,3 +106,4 @@ namespace elle
 # include <elle/idiom/Close.hh>
 
 #endif
+#include <elle/cryptography/KeyPair.hxx>

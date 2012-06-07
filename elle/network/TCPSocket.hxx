@@ -13,7 +13,6 @@
 
 #include <elle/network/Packet.hh>
 #include <elle/network/Header.hh>
-#include <elle/network/HeaderSerializer.hxx>
 #include <elle/network/Data.hh>
 #include <elle/network/Parcel.hh>
 

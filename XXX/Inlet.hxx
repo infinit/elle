@@ -115,3 +115,24 @@ namespace nucleus
 }
 
 #endif
+#ifndef  XXX_INLETSERIALIZER_HXX
+# define XXX_INLETSERIALIZER_HXX
+
+# include <cassert>
+
+# include <XXX/Handle.hh>
+
+# include <XXX/Inlet.hh>
+
+ELLE_SERIALIZE_SIMPLE_T2(XXX::Inlet,
+                         archive,
+                         value,
+                         version)
+{
+  assert(version == 0);
+
+  archive & value.key;
+  archive & value.value;
+}
+
+#endif

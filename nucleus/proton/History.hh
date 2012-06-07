@@ -97,4 +97,6 @@ namespace nucleus
   }
 }
 
+# include <nucleus/proton/History.hxx>
+
 #endif

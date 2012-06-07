@@ -105,4 +105,6 @@ namespace etoile
   }
 }
 
+# include <etoile/gear/Object.hxx>
+
 #endif

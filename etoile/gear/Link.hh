@@ -90,4 +90,6 @@ namespace etoile
   }
 }
 
+# include <etoile/gear/Link.hxx>
+
 #endif

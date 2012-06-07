@@ -13,7 +13,7 @@
 //
 
 #include <elle/io/Fileable.hxx>
-#include <elle/utility/SettingsSerializer.hxx>
+#include <elle/utility/Settings.hh>
 
 #include <lune/Configuration.hh>
 

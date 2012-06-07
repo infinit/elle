@@ -73,3 +73,4 @@ namespace nucleus
 }
 
 #endif
+#include <nucleus/proton/Stamp.hxx>

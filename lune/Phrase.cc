@@ -1,7 +1,7 @@
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
-#include <lune/PhraseSerializer.hxx>
+#include <lune/Phrase.hh>
 #include <lune/Lune.hh>
 
 namespace lune

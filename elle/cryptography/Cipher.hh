@@ -64,3 +64,4 @@ namespace elle
 }
 
 #endif
+#include <elle/cryptography/Cipher.hxx>

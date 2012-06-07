@@ -81,3 +81,4 @@ namespace nucleus
 }
 
 #endif
+#include <nucleus/neutron/Attributes.hxx>

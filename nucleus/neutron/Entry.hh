@@ -82,3 +82,4 @@ namespace nucleus
 }
 
 #endif
+#include <nucleus/neutron/Entry.hxx>

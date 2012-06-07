@@ -3,7 +3,7 @@
 
 # include <cassert>
 
-# include <elle/serialize/PointerSerializer.hxx>
+# include <elle/serialize/Pointer.hh>
 # include <elle/cryptography/DigestSerializer.hxx>
 
 # include <hole/Label.hh>

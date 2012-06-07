@@ -2,6 +2,7 @@
 # define NUCLEUS_NEUTRON_ACCESS_HH
 
 # include <elle/types.hh>
+# include <elle/io/Fileable.hh>
 
 # include <nucleus/proton/ContentHashBlock.hh>
 
@@ -19,19 +20,16 @@ namespace nucleus
     /// This class represents an access control list.
     class Access
       : public proton::ContentHashBlock
+      , public elle::io::Fileable<Access>
     {
     public:
       typedef proton::ContentHashBlock SuperClass;
 
     public:
-      //
-      // constants
-      //
+      ELLE_IO_USING_FILEABLE_METHODS(Access);
+
       static const Access               Null;
 
-      //
-      // constructors & destructors
-      //
       Access();
 
       //

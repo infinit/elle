@@ -1,0 +1,28 @@
+#ifndef  LUNE_IDENTITYSERIALIZER_HXX
+# define LUNE_IDENTITYSERIALIZER_HXX
+
+# include <cassert>
+
+# include <elle/serialize/Pointer.hh>
+# include <elle/cryptography/Cipher.hh>
+# include <elle/cryptography/Signature.hh>
+# include <elle/cryptography/KeyPair.hh>
+
+# include <lune/Identity.hh>
+
+ELLE_SERIALIZE_SIMPLE(lune::Identity,
+                      archive,
+                      value,
+                      version)
+{
+  assert(version == 0);
+
+  archive & elle::serialize::pointer(value.cipher);
+  if (value.cipher != nullptr)
+    archive & value.pair;
+  archive & value._id;
+  archive & value.name;
+  archive & value.signature;
+}
+
+#endif

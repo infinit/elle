@@ -84,3 +84,4 @@ namespace hole
 }
 
 #endif
+#include <hole/implementations/slug/Cluster.hxx>

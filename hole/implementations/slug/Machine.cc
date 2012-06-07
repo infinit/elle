@@ -2,18 +2,18 @@
 #include <reactor/network/tcp-server.hh>
 
 #include <elle/format/ini.hxx>
-#include <elle/utility/BufferSerializer.hxx>
-#include <elle/network/HeaderSerializer.hxx>
-#include <elle/network/BundleSerializer.hxx>
-#include <elle/standalone/ReportSerializer.hxx>
+#include <elle/utility/Buffer.hh>
+#include <elle/network/Header.hh>
+#include <elle/network/Bundle.hh>
+#include <elle/standalone/Report.hh>
 
-#include <lune/PassportSerializer.hxx>
+#include <lune/Passport.hh>
 
-#include <nucleus/proton/AddressSerializer.hxx>
-#include <nucleus/proton/BlockSerializer.hxx>
-#include <nucleus/proton/VersionSerializer.hxx>
+#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Block.hh>
+#include <nucleus/proton/Version.hh>
 
-#include <hole/implementations/slug/ClusterSerializer.hxx>
+#include <hole/implementations/slug/Cluster.hh>
 
 #include <elle/network/Network.hh>
 #include <elle/standalone/Morgue.hh>

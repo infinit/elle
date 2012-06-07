@@ -5,7 +5,7 @@
 
 #include <elle/serialize/BinaryArchive.hxx>
 
-#include <elle/serialize/PointerSerializer.hxx>
+#include <elle/serialize/Pointer.hh>
 
 struct A
 {

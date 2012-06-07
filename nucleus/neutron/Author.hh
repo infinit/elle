@@ -7,6 +7,8 @@
 # include <nucleus/neutron/Role.hh>
 # include <nucleus/neutron/Index.hh>
 
+# include <elle/idiom/Open.hh>
+
 namespace nucleus
 {
   namespace neutron
@@ -77,5 +79,7 @@ namespace nucleus
 
   }
 }
+
+# include <nucleus/neutron/Author.hxx>
 
 #endif

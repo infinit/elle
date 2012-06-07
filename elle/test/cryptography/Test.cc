@@ -2,8 +2,8 @@
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/PublicKey.hh>
 
-#include <elle/standalone/RegionSerializer.hxx>
-#include <elle/utility/BufferSerializer.hxx>
+#include <elle/standalone/Region.hh>
+#include <elle/utility/Buffer.hh>
 
 #include "Test.hh"
 

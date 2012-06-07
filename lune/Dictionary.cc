@@ -2,8 +2,8 @@
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
-#include <lune/DictionarySerializer.hxx>
-#include <elle/cryptography/PublicKeySerializer.hxx>
+#include <lune/Dictionary.hh>
+#include <elle/cryptography/PublicKey.hh>
 
 #include <lune/Lune.hh>
 

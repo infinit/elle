@@ -101,3 +101,4 @@ namespace nucleus
 }
 
 #endif
+#include <nucleus/neutron/Subject.hxx>

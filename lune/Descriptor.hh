@@ -1,27 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [sat may  1 21:16:41 2010]
-//
-
 #ifndef LUNE_DESCRIPTOR_HH
-#define LUNE_DESCRIPTOR_HH
+# define LUNE_DESCRIPTOR_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <nucleus/Nucleus.hh>
-
-#include <hole/Model.hh>
-
-#include <lune/Authority.hh>
-
-#include <elle/idiom/Open.hh>
+# include <nucleus/Nucleus.hh>
+# include <hole/Model.hh>
+# include <lune/Authority.hh>
+# include <elle/serialize/fwd.hh>
+# include <elle/idiom/Open.hh>
 
 namespace lune
 {
@@ -108,6 +92,7 @@ namespace lune
   public:
     elle::String const& id() const { return this->_id; }
     void                id(std::string const& id) { this->_id = id; }
+    ELLE_SERIALIZE_FRIEND_FOR(Descriptor);
   };
 
 }
@@ -115,3 +100,4 @@ namespace lune
 #include <elle/idiom/Close.hh>
 
 #endif
+#include <lune/Descriptor.hxx>

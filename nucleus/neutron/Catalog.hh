@@ -112,3 +112,4 @@ namespace nucleus
 }
 
 #endif
+#include <nucleus/neutron/Catalog.hxx>

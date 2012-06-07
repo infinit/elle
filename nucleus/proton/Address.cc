@@ -1,5 +1,6 @@
 #include <elle/standalone/Log.hh>
 #include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Address.hh>
 
 namespace nucleus
 {
@@ -43,8 +44,8 @@ namespace nucleus
       // create the any address with default meaningless values.
       if (Address::Any.Create(
             Address::Any.family, Address::Any.component,
-            static_cast<elle::Natural8>(Address::Any.family),
-            static_cast<elle::Natural8>(Address::Any.component)) ==
+            Address::Any.family,
+            Address::Any.component) ==
           elle::Status::Error)
         escape("unable to create the any address");
 
@@ -200,18 +201,9 @@ namespace nucleus
           std::cout << alignment << elle::Dumpable::Shift << "[Component] "
                     << this->component << std::endl;
 
-          // display the address depending on its value.
-          if (*this == Address::Null)
-            {
-              std::cout << alignment << elle::Dumpable::Shift
-                        << "[Digest] " << elle::none << std::endl;
-            }
-          else
-            {
-              // dump the digest.
-              if (this->digest->Dump(margin + 2) == elle::Status::Error)
-                escape("unable to dump the digest");
-            }
+          // dump the digest.
+          if (this->digest->Dump(margin + 2) == elle::Status::Error)
+            escape("unable to dump the digest");
         }
 
       return elle::Status::Ok;

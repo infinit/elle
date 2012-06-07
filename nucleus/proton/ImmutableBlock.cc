@@ -2,11 +2,11 @@
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
-#include <elle/utility/BufferSerializer.hxx>
+#include <elle/utility/Buffer.hh>
 
 #include <elle/serialize/HexadecimalArchive.hh>
 
-#include <nucleus/proton/ImmutableBlockSerializer.hxx>
+#include <nucleus/proton/ImmutableBlock.hh>
 
 #include <lune/Lune.hh>
 #include <Infinit.hh>
@@ -104,7 +104,7 @@ namespace nucleus
                         elle::io::Piece("%ADDRESS%", unique)) == elle::Status::Error)
         escape("unable to complete the path");
 
-      return elle::io::Fileable<ImmutableBlock>::Load(path);
+      return Block::Load(path);
     }
 
     ///
@@ -133,7 +133,7 @@ namespace nucleus
                         elle::io::Piece("%ADDRESS%", unique)) == elle::Status::Error)
         escape("unable to complete the path");
 
-      return elle::io::Fileable<ImmutableBlock>::Store(path);
+      return Block::Store(path);
     }
 
     ///

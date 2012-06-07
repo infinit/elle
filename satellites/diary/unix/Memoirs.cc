@@ -17,7 +17,7 @@
 #include <satellites/diary/unix/Crux.hh>
 #include <satellites/diary/unix/Record.hh>
 #include <satellites/diary/unix/Replay.hh>
-#include <satellites/diary/unix/UpcallSerializer.hxx>
+#include <satellites/diary/unix/Upcall.hh>
 
 #if defined(INFINIT_LINUX)
 # include <horizon/linux/Linux.hh>

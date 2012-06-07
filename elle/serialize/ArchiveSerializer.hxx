@@ -155,9 +155,11 @@ namespace elle { namespace serialize {
 
 }} // !namespace elle::serialize
 
-# define _ELLE_SERIALIZE_LOG_ACTION(T, mode)                                    \
+# define _ELLE_SERIALIZE_LOG_ACTION(T, version, mode, value)                    \
   ELLE_LOG_TRACE_COMPONENT("Infinit.Serialize");                                \
-  ELLE_LOG_TRACE("%s " #T, mode == ArchiveMode::Input ? "Loading" : "Saving")   \
+  ELLE_LOG_TRACE("%s " #T " (version %u): %p",                                  \
+                 mode == ArchiveMode::Input ? "Loading" : "Saving",             \
+                 version, &value)                                               \
   /**/
 
 /// Define a simple serializer for the type T
@@ -179,26 +181,22 @@ namespace elle { namespace serialize {                                          
                                                                                 \
       public:                                                                   \
         template<typename Archive>                                              \
-          static inline void Serialize(Archive&, T&, unsigned int);             \
+          static inline void Serialize(Archive& ar, T& value, unsigned int v)   \
+          {                                                                     \
+            _ELLE_SERIALIZE_LOG_ACTION(T, v, Archive::mode, value)              \
+              { _Serialize(ar, value, v); }                                     \
+          }                                                                     \
         template<typename Archive, typename K>                                  \
           static inline void LoadConstruct(Archive& archive, K* ptr)            \
             { _LoadConstruct<K>::Method(archive, ptr); }                        \
       };                                                                        \
 }}                                                                              \
 template<typename Archive>                                                      \
-  void elle::serialize::ArchiveSerializer<T>::Serialize(                        \
-                                              Archive& archive,                 \
-                                              T& value,                         \
-                                              unsigned int version)             \
-{                                                                               \
-  _ELLE_SERIALIZE_LOG_ACTION(T, Archive::mode)                                  \
-    { _Serialize(archive, value, version); }                                    \
-}                                                                               \
-template<typename Archive>                                                      \
   void elle::serialize::ArchiveSerializer<T>::_Serialize(                       \
                                               Archive& archive,                 \
                                               T& value,                         \
                                               unsigned int version)             \
+  /**/
 
 
 // Defines an optional load construct method
@@ -216,6 +214,7 @@ elle::serialize::ArchiveSerializer<T>::_LoadConstruct<T>::Method(               
     Archive& archive,                                                           \
     T* ptr                                                                      \
 )                                                                               \
+  /**/
 
 
 /// Define a simple serializer for the type T<T1>
@@ -225,15 +224,23 @@ namespace elle { namespace serialize {                                          
       : public BaseArchiveSerializer<T<T1>>                                     \
       {                                                                         \
         template<typename Archive>                                              \
-          static void Serialize(Archive&, T<T1>&, unsigned int);                \
+          static void Serialize(Archive& ar, T<T1>& value, unsigned int v)      \
+          {                                                                     \
+            _ELLE_SERIALIZE_LOG_ACTION(T, v, Archive::mode, value)              \
+              { _Serialize(ar, value, version); }                               \
+          }                                                                     \
+      private:                                                                  \
+        template<typename Archive>                                              \
+          static void _Serialize(Archive&, T<T1>&, unsigned int);               \
       };                                                                        \
 }}                                                                              \
 template<typename T1>                                                           \
 template<typename Archive>                                                      \
-  void elle::serialize::ArchiveSerializer<T<T1>>::Serialize(                    \
+  void elle::serialize::ArchiveSerializer<T<T1>>::_Serialize(                   \
                                                   Archive& archive,             \
                                                   T<T1>& value,                 \
                                                   unsigned int version)         \
+  /**/
 
 /// Define a simple serializer for the type T<T1, T2>
 # define ELLE_SERIALIZE_SIMPLE_T2(T, archive, value, version)                   \
@@ -242,15 +249,23 @@ namespace elle { namespace serialize {                                          
       : public BaseArchiveSerializer<T<T1, T2>>                                 \
       {                                                                         \
         template<typename Archive>                                              \
-          static void Serialize(Archive&, T<T1, T2>&, unsigned int);            \
+          static void Serialize(Archive& ar, T<T1, T2>& value, unsigned int v)  \
+          {                                                                     \
+            _ELLE_SERIALIZE_LOG_ACTION(T, v, Archive::mode, value)              \
+              { _Serialize(ar, value, v); }                                     \
+          }                                                                     \
+      private:                                                                  \
+        template<typename Archive>                                              \
+          static void _Serialize(Archive&, T<T1, T2>&, unsigned int);           \
       };                                                                        \
 }}                                                                              \
 template<typename T1, typename T2>                                              \
 template<typename Archive>                                                      \
-  void elle::serialize::ArchiveSerializer<T<T1, T2>>::Serialize(                \
+  void elle::serialize::ArchiveSerializer<T<T1, T2>>::_Serialize(               \
                                                   Archive& archive,             \
                                                   T<T1, T2>& value,             \
                                                   unsigned int version)         \
+  /**/
 
 
 /// Declare a split serializer for the type T
@@ -271,7 +286,7 @@ namespace elle { namespace serialize {                                          
               Type                                                              \
             , Archive::mode                                                     \
           > Method;                                                             \
-          _ELLE_SERIALIZE_LOG_ACTION(T, Archive::mode)                          \
+          _ELLE_SERIALIZE_LOG_ACTION(T, version, Archive::mode, val)            \
             { Method::Serialize(ar, val, version); }                            \
         }                                                                       \
         template<typename Archive>                                              \
@@ -280,6 +295,7 @@ namespace elle { namespace serialize {                                          
           static void Load(Archive& ar, Type& val, unsigned int version);       \
     };                                                                          \
 }}                                                                              \
+  /**/
 
 
 /// Define the Save() method of the split serializer for the type T
@@ -289,6 +305,7 @@ template<typename Archive>                                                      
                                               Archive& archive,                 \
                                               Type const& value,                \
                                               unsigned int version)             \
+  /**/
 
 
 /// Define the Load() method of the split serializer for the type T
@@ -298,6 +315,7 @@ template<typename Archive>                                                      
                                               Archive& archive,                 \
                                               Type& value,                      \
                                               unsigned int version)             \
+  /**/
 
 
 /// Declare a split serializer for the type T<T1>
@@ -318,7 +336,7 @@ namespace elle { namespace serialize {                                          
               Type                                                              \
             , Archive::mode                                                     \
           > Method;                                                             \
-          _ELLE_SERIALIZE_LOG_ACTION(T, Archive::mode)                          \
+          _ELLE_SERIALIZE_LOG_ACTION(T, version, Archive::mode, val)            \
             { Method::Serialize(ar, val, version); }                            \
         }                                                                       \
         template<typename Archive>                                              \
@@ -327,6 +345,7 @@ namespace elle { namespace serialize {                                          
           static void Load(Archive& ar, Type& val, unsigned int version);       \
     };                                                                          \
 }}                                                                              \
+  /**/
 
 
 /// Define the Save() method of the split serializer for the type T
@@ -337,6 +356,7 @@ template<typename Archive>                                                      
                                               Archive& archive,                 \
                                               Type const& value,                \
                                               unsigned int version)             \
+  /**/
 
 
 /// Define the Load() method of the split serializer for the type T
@@ -347,6 +367,7 @@ template<typename Archive>                                                      
                                               Archive& archive,                 \
                                               Type& value,                      \
                                               unsigned int version)             \
+  /**/
 
 # include <elle/idiom/Close.hh>
 # include <elle/log.hh>

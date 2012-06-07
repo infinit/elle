@@ -78,3 +78,4 @@ namespace etoile
 }
 
 #endif
+#include <etoile/path/Chemin.hxx>

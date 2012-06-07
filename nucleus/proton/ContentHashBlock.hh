@@ -77,3 +77,4 @@ namespace nucleus
 }
 
 #endif
+#include <nucleus/proton/ContentHashBlock.hxx>

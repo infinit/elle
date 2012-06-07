@@ -2,7 +2,6 @@
 # define NUCLEUS_PROTON_IMMUTABLEBLOCK_HH
 
 #include <elle/types.hh>
-#include <elle/io/Fileable.hh>
 
 #include <nucleus/proton/Block.hh>
 #include <nucleus/proton/Address.hh>
@@ -22,7 +21,6 @@ namespace nucleus
     ///
     class ImmutableBlock
       : public Block
-      , public elle::io::Fileable<ImmutableBlock>
     {
     public:
       //
@@ -56,3 +54,4 @@ namespace nucleus
 }
 
 #endif
+#include <nucleus/proton/ImmutableBlock.hxx>

@@ -38,3 +38,4 @@ namespace elle
 }
 
 #endif
+#include <elle/cryptography/Clear.hxx>

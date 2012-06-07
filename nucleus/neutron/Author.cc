@@ -3,7 +3,7 @@
 #include <elle/standalone/Report.hh>
 
 #include <nucleus/neutron/Author.hh>
-
+#include <elle/idiom/Open.hh>
 namespace nucleus
 {
   namespace neutron
@@ -147,7 +147,7 @@ namespace nucleus
 
       // dump the role.
       std::cout << alignment << elle::Dumpable::Shift << "[Role] "
-                << this->role << std::endl;
+                << std::dec << this->role << std::endl;
 
       // depending on the role.
       switch (this->role)

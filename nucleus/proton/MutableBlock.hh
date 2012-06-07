@@ -1,8 +1,6 @@
 #ifndef  NUCLEUS_PROTON_MUTABLEBLOCK_HH
 # define NUCLEUS_PROTON_MUTABLEBLOCK_HH
 
-# include <elle/io/Fileable.hh>
-
 # include <nucleus/proton/Block.hh>
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/Network.hh>
@@ -44,7 +42,6 @@ namespace nucleus
     ///
     class MutableBlock
       : public Block
-      , public elle::io::Fileable<MutableBlock>
     {
     public:
       //
@@ -66,13 +63,7 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
-
-      // fileable
-      using             elle::io::Fileable<MutableBlock>::Load;
-      using             elle::io::Fileable<MutableBlock>::Store;
+      ELLE_IO_USE_FILEABLE_METHODS(MutableBlock);
 
       elle::Status      Load(const Network&,
                              const Address&,
@@ -95,5 +86,7 @@ namespace nucleus
 
   }
 }
+
+# include <nucleus/proton/MutableBlock.hxx>
 
 #endif

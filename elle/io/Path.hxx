@@ -1,22 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       infinit
-//
-// license       elle
-//
-// author        julien quintard   [mon apr 25 11:11:14 2011]
-//
-
 #ifndef ELLE_IO_PATH_HXX
-#define ELLE_IO_PATH_HXX
+# define ELLE_IO_PATH_HXX
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/standalone/Maid.hh>
+# include <elle/standalone/Report.hh>
 
-#include <elle/standalone/Maid.hh>
-#include <elle/standalone/Report.hh>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {

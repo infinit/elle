@@ -13,21 +13,21 @@
 //
 
 
-#include "elle/cryptography/KeyPairSerializer.hxx"
+#include "elle/cryptography/KeyPair.hh"
 #include "elle/io/Path.hh"
 #include <elle/types.hh>
 #include "elle/io/Unique.hh"
 
 #include "hole/Model.hh"
 
-#include <lune/IdentitySerializer.hxx>
-#include <lune/AuthoritySerializer.hxx>
-#include <lune/DescriptorSerializer.hxx>
+#include <lune/Identity.hh>
+#include <lune/Authority.hh>
+#include <lune/Descriptor.hh>
 
-#include <nucleus/proton/AddressSerializer.hxx>
-#include <nucleus/proton/BlockSerializer.hxx>
-#include <nucleus/neutron/ObjectSerializer.hxx>
-#include <nucleus/neutron/TraitSerializer.hxx>
+#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Block.hh>
+#include <nucleus/neutron/Object.hh>
+#include <nucleus/neutron/Trait.hh>
 
 
 // XXX When Qt is out, remove this

@@ -7,7 +7,7 @@
 //
 // author        julien quintard   [mon jun 20 14:12:54 2011]
 //
- 
+
 #ifndef ETOILE_AUTOMATON_AUTHOR_HH
 #define ETOILE_AUTOMATON_AUTHOR_HH
 

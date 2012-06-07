@@ -83,3 +83,4 @@ namespace hole
 }
 
 #endif
+#include <hole/implementations/cirkle/Cluster.hxx>

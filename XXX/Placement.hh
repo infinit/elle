@@ -76,4 +76,6 @@ namespace nucleus
   }
 }
 
+# include <XXX/Placement.hxx>
+
 #endif

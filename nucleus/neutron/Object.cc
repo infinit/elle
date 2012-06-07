@@ -1,14 +1,15 @@
-#include <elle/cryptography/DigestSerializer.hxx>
+#include <elle/cryptography/Digest.hh>
 #include <elle/serialize/TupleSerializer.hxx>
-#include <elle/utility/TimeSerializer.hxx>
-#include <nucleus/proton/VersionSerializer.hxx>
-#include <nucleus/proton/AddressSerializer.hxx>
-#include <nucleus/neutron/AttributesSerializer.hxx>
-#include <nucleus/neutron/TokenSerializer.hxx>
-#include <nucleus/neutron/TraitSerializer.hxx>
+#include <elle/utility/Time.hh>
+#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/Address.hh>
+#include <nucleus/neutron/Attributes.hh>
+#include <nucleus/neutron/Token.hh>
+#include <nucleus/neutron/Trait.hh>
 
 #include <elle/cryptography/PrivateKey.hh>
 
+#include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Object.hh>
 
 #include <nucleus/neutron/Component.hh>

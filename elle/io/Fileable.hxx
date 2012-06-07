@@ -5,6 +5,7 @@
 # include <fstream>
 
 # include <elle/serialize/BinaryArchive.hxx>
+# include <elle/log.hh>
 
 # include "File.hh"
 # include "Fileable.hh"
@@ -14,61 +15,69 @@
 
 namespace elle { namespace io {
 
-    template<typename T, template<elle::serialize::ArchiveMode> class DefaultArchive>
-    template<template<elle::serialize::ArchiveMode> class Archive>
-      Status Fileable<T, DefaultArchive>::Load(Path const& path)
+    template<typename T, template<elle::serialize::ArchiveMode> class Archive>
+      Status Fileable<T, Archive>::Load(Path const& path)
       {
-        std::ifstream in(path.str(), std::ios_base::in | std::ios_base::binary);
-        if (!in.good())
-          {
-            escape("Cannot open in file '%s'", path.str().c_str());
-            //throw std::runtime_error("Cannot read '"+  path.str().c_str() +"'");
-          }
+        ELLE_LOG_TRACE_COMPONENT("Infinit.IO");
+        ELLE_LOG_TRACE("Loading %p to from file %s",
+                       static_cast<T const*>(this), path.str())
+        {
+          std::ifstream in(path.str(), std::ios_base::in | std::ios_base::binary);
+          if (!in.good())
+            {
+              escape("Cannot open in file '%s'", path.str().c_str());
+              //throw std::runtime_error("Cannot read '"+  path.str().c_str() +"'");
+            }
 
-        try
-          {
-            Archive<elle::serialize::ArchiveMode::Input> archive(in);
-            archive >> static_cast<T&>(*this);
+          try
+            {
+              Archive<elle::serialize::ArchiveMode::Input> archive(in);
+              archive >> static_cast<T&>(*this);
 
-          }
-        catch (std::exception const& err)
-          {
-            return elle::Status::Error;
-            //throw std::runtime_error(
-            //    "Cannot load from '" + path.str() + "': " +
-            //    std::string(err.what())
-            //);
-          }
+            }
+          catch (std::exception const& err)
+            {
+              return elle::Status::Error;
+              //throw std::runtime_error(
+              //    "Cannot load from '" + path.str() + "': " +
+              //    std::string(err.what())
+              //);
+            }
+        }
       }
 
-    template<typename T, template<elle::serialize::ArchiveMode> class DefaultArchive>
-    template<template<elle::serialize::ArchiveMode> class Archive>
-      Status Fileable<T, DefaultArchive>::Store(Path const& path) const
+    template<typename T, template<elle::serialize::ArchiveMode> class Archive>
+      Status Fileable<T, Archive>::Store(Path const& path) const
       {
-        if (File::Dig(path) == elle::Status::Error)
-          escape("unable to dig the chain of directories");
+        ELLE_LOG_TRACE_COMPONENT("Infinit.IO");
+        ELLE_LOG_TRACE("Saving %p to file %s",
+                       static_cast<T const*>(this), path.str())
+        {
+          if (File::Dig(path) == elle::Status::Error)
+            escape("unable to dig the chain of directories");
 
-        std::ofstream out(path.str(), std::ios_base::out | std::ios_base::binary);
-        if (!out.good())
-          {
-            escape("Cannot open out file '%s'", path.str().c_str());
+          std::ofstream out(path.str(), std::ios_base::out | std::ios_base::binary);
+          if (!out.good())
+            {
+              escape("Cannot open out file '%s'", path.str().c_str());
 
-            //throw std::runtime_error("Cannot read '"+  path.str().c_str() +"'");
-          }
+              //throw std::runtime_error("Cannot read '"+  path.str().c_str() +"'");
+            }
 
-        try
-          {
-            typedef Archive<elle::serialize::ArchiveMode::Output> OutArchive;
-            OutArchive(out, static_cast<T const&>(*this));
-          }
-        catch (std::exception const& err)
-          {
-            return elle::Status::Error;
-            //throw std::runtime_error(
-            //    "Cannot load from '" + path.str() + "': " +
-            //    std::string(err.what())
-            //);
-          }
+          try
+            {
+              typedef Archive<elle::serialize::ArchiveMode::Output> OutArchive;
+              OutArchive(out, static_cast<T const&>(*this));
+            }
+          catch (std::exception const& err)
+            {
+              return elle::Status::Error;
+              //throw std::runtime_error(
+              //    "Cannot load from '" + path.str() + "': " +
+              //    std::string(err.what())
+              //);
+            }
+        }
       }
 
 ////

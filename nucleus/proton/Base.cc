@@ -3,7 +3,7 @@
 
 #include <nucleus/proton/Base.hh>
 #include <nucleus/proton/MutableBlock.hh>
-#include <nucleus/proton/MutableBlockSerializer.hxx>
+#include <nucleus/proton/MutableBlock.hh>
 
 #include <elle/idiom/Open.hh>
 

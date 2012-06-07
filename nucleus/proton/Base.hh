@@ -74,3 +74,4 @@ namespace nucleus
 }
 
 #endif
+#include <nucleus/proton/Base.hxx>

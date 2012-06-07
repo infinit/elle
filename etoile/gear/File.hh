@@ -91,4 +91,6 @@ namespace etoile
   }
 }
 
+# include <etoile/gear/File.hxx>
+
 #endif

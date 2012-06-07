@@ -1,5 +1,5 @@
 
-# include <nucleus/proton/ContentHashBlockSerializer.hxx>
+# include <nucleus/proton/ContentHashBlock.hh>
 # include <nucleus/proton/Family.hh>
 
 # include <lune/Lune.hh>

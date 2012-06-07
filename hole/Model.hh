@@ -97,3 +97,4 @@ namespace hole
 # include <elle/idiom/Close.hh>
 
 #endif
+#include <hole/Model.hxx>

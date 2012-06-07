@@ -1,4 +1,4 @@
-#include <elle/cryptography/PublicKeySerializer.hxx>
+#include <elle/cryptography/PublicKey.hh>
 
 #include <elle/Elle.hh>
 #include <elle/io/Console.hh>

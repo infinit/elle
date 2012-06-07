@@ -1,14 +1,16 @@
 
-#include <nucleus/proton/BlockSerializer.hxx>
+#include <nucleus/proton/Block.hh>
 
 #include <elle/cryptography/Random.hh>
-#include <elle/cryptography/PublicKeySerializer.hxx>
-#include <elle/utility/TimeSerializer.hxx>
-#include <nucleus/proton/NetworkSerializer.hxx>
+#include <elle/cryptography/PublicKey.hh>
+#include <elle/utility/Time.hh>
+#include <nucleus/proton/Network.hh>
 #include <nucleus/proton/ImprintBlock.hh>
 #include <nucleus/proton/Family.hh>
 
 #include <elle/idiom/Open.hh>
+
+ELLE_LOG_TRACE_COMPONENT("Nucleus.Proton");
 
 namespace nucleus
 {
@@ -53,23 +55,27 @@ namespace nucleus
     ///
     elle::Status        ImprintBlock::Create(elle::cryptography::PublicKey const& owner)
     {
-      // retrieve the current time.
-      if (this->stamp.Current() == elle::Status::Error)
-        escape("unable to retrieve the current time");
+      ELLE_LOG_TRACE("Creating an ImprintBlock %p", this)
+      {
+        // retrieve the current time.
+        if (this->stamp.Current() == elle::Status::Error)
+          escape("unable to retrieve the current time");
 
-      // generate a random number.
-      if (elle::cryptography::Random::Generate(this->salt) == elle::Status::Error)
-        escape("unable to generate the seed");
+        // generate a random number.
+        if (elle::cryptography::Random::Generate(this->salt) == elle::Status::Error)
+          escape("unable to generate the seed");
 
-      // set the owner public key.
-      this->owner.K = owner;
+        // set the owner public key.
+        assert(owner.key() != nullptr);
+        this->owner.K = owner;
 
-      // create a subject corresponding to the user. note that this
-      // subject will never be serialized hence is not really part of
-      // the object but is used to ease the process of access control.
-      if (this->owner.subject.Create(this->owner.K) == elle::Status::Error)
-        escape("unable to create the owner subject");
+        // create a subject corresponding to the user. note that this
+        // subject will never be serialized hence is not really part of
+        // the object but is used to ease the process of access control.
+        if (this->owner.subject.Create(this->owner.K) == elle::Status::Error)
+          escape("unable to create the owner subject");
 
+      }
       return elle::Status::Ok;
     }
 
@@ -79,14 +85,18 @@ namespace nucleus
     elle::Status        ImprintBlock::Bind(Address&             address)
       const
     {
-      // compute the address.
-      if (address.Create(this->family, this->component,
-                         this->network,
-                         static_cast<elle::Natural8>(this->family),
-                         static_cast<elle::Natural8>(this->component),
-                         this->stamp, this->salt, this->owner.K) ==
-          elle::Status::Error)
-        escape("unable to compute the imprint address");
+      ELLE_LOG_TRACE("Binding an ImprintBlock %p", this)
+      {
+        assert(this->owner.K.key() != nullptr);
+        // compute the address.
+        if (address.Create(this->family, this->component,
+                           this->network,
+                           this->family,
+                           this->component,
+                           this->stamp, this->salt, this->owner.K) ==
+            elle::Status::Error)
+          escape("unable to compute the imprint address");
+      }
 
       return elle::Status::Ok;
     }
@@ -98,24 +108,28 @@ namespace nucleus
       const
     {
       Address           self;
+      ELLE_LOG_TRACE("Validating an ImprintBlock address %p", this)
+      {
+        this->Dump();
+        assert(this->owner.K.key() != nullptr);
+        //
+        // make sure the address has not be tampered and correspond to the
+        // hash of the tuple (stamp, salt, owner public key).
+        //
 
-      //
-      // make sure the address has not be tampered and correspond to the
-      // hash of the tuple (stamp, salt, owner public key).
-      //
+        // compute the address.
+        if (self.Create(this->family, this->component,
+                        this->network,
+                        this->family,
+                        this->component,
+                        this->stamp, this->salt, this->owner.K) ==
+            elle::Status::Error)
+          escape("unable to compute the imprint address");
 
-      // compute the address.
-      if (self.Create(this->family, this->component,
-                      this->network,
-                      static_cast<elle::Natural8>(this->family),
-                      static_cast<elle::Natural8>(this->component),
-                      this->stamp, this->salt, this->owner.K) ==
-          elle::Status::Error)
-        escape("unable to compute the imprint address");
-
-      // verify with the recorded address.
-      if (address != self)
-        escape("the address does not correspond to the block's public key");
+        // verify with the recorded address.
+        if (address != self)
+          escape("the address does not correspond to the block's public key");
+      }
 
       return elle::Status::Ok;
     }

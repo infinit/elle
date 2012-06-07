@@ -35,8 +35,8 @@ namespace nucleus
     /// hash in order to prevent conflicts i.e several ImprintBlocks
     /// being created by the same user at the same time.
     ///
-    class ImprintBlock:
-      public MutableBlock
+    class ImprintBlock
+      : public MutableBlock
     {
     public:
       //
@@ -87,3 +87,4 @@ namespace nucleus
 }
 
 #endif
+#include <nucleus/proton/ImprintBlock.hxx>

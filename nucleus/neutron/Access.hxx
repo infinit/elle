@@ -59,3 +59,27 @@ namespace nucleus
 #include <elle/idiom/Close.hh>
 
 #endif
+#ifndef  NUCLEUS_NEUTRON_ACCESSSERIALIZER_HXX
+# define NUCLEUS_NEUTRON_ACCESSSERIALIZER_HXX
+
+# include <cassert>
+
+# include <elle/serialize/ArchiveSerializer.hxx>
+# include <nucleus/neutron/Range.hh>
+# include <nucleus/neutron/Record.hh>
+# include <nucleus/proton/ContentHashBlock.hh>
+
+# include <nucleus/neutron/Access.hh>
+
+ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Access,
+                      archive,
+                      value,
+                      version)
+{
+  assert(version == 0);
+
+  archive & static_cast<nucleus::proton::ContentHashBlock&>(value);
+  archive & value.range;
+}
+
+#endif

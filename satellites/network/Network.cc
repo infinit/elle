@@ -107,6 +107,9 @@ namespace satellite
       // decrypt the authority.
       if (identity.Decrypt(pass) == elle::Status::Error)
         escape("unable to decrypt the identity");
+
+      // XXX
+      identity.Dump();
     }
 
     //
@@ -117,19 +120,26 @@ namespace satellite
       if (network.Create(name) == elle::Status::Error)
         escape("unable to create the network object");
 
+      network.Dump();
+
       // create directory object, setting the user's as the administrator.
       if (directory.Create(nucleus::GenreDirectory,
                            identity.pair.K) == elle::Status::Error)
         escape("unable to create the object directory");
+
+      directory.Dump();
 
       // seal the directory.
       if (directory.Seal(identity.pair.k,
                          nucleus::Access::Null) == elle::Status::Error)
         escape("unable to seal the object");
 
+      directory.Dump();
+
       // compute the directory's address.
       if (directory.Bind(address) == elle::Status::Error)
         escape("unable to bind the object to an address");
+      address.Dump();
     }
 
     //
@@ -162,7 +172,7 @@ namespace satellite
     //
     {
       // store the block.
-      if (directory.Store(network,
+      if (directory.MutableBlock::Store(network,
                           address) == elle::Status::Error)
         escape("unable to store the block");
     }

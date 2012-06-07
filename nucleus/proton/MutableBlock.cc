@@ -1,8 +1,9 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include <elle/cryptography/DigestSerializer.hxx>
-#include <nucleus/proton/MutableBlockSerializer.hxx>
+#include <elle/cryptography/Digest.hh>
+#include <nucleus/proton/MutableBlock.hh>
+#include <nucleus/proton/History.hh>
 
 #include <elle/radix/Variables.hh>
 #include <elle/io/Fileable.hxx>
@@ -156,7 +157,7 @@ namespace nucleus
               elle::Status::Error)
             escape("unable to complete the path");
 
-          if (this->Load(path) == elle::Status::Error)
+          if (this->Block::Load(path) == elle::Status::Error)
             escape("unable to load block");
 
           //// read the file's content.
@@ -222,7 +223,7 @@ namespace nucleus
               elle::Status::Error)
             escape("unable to complete the path");
 
-          if (this->Load(path) == elle::Status::Error)
+          if (Block::Load(path) == elle::Status::Error)
             escape("unable to load '%s'", path.str().c_str());
         }
 
@@ -292,7 +293,7 @@ namespace nucleus
                        "current version");
             }
 
-          if (this->Store(file) == elle::Status::Error)
+          if (Block::Store(file) == elle::Status::Error)
             escape("Cannot store into %s", file.str().c_str());
         }
       else
@@ -325,7 +326,8 @@ namespace nucleus
               elle::Status::Error)
             escape("unable to complete the path");
 
-          this->Store(file);
+          if (Block::Store(file) != elle::Status::Ok)
+            escape("unable to store the block");
 
           // complete the link path.
           if (link.Complete(elle::io::Piece("%VERSION%", "@")) ==

@@ -6,7 +6,7 @@
 
 # include <elle/utility/Buffer.hh>
 # include <elle/serialize/BufferArchive.hh>
-# include <elle/cryptography/PlainSerializer.hxx>
+# include <elle/cryptography/Plain.hh>
 
 # include <elle/idiom/Open.hh>
 
@@ -65,5 +65,25 @@ namespace elle
 }
 
 # include <elle/idiom/Close.hh>
+
+#endif
+#ifndef  ELLE_CRYPTOGRAPHY_SECRETKEYSERIALIZER_HXX
+# define ELLE_CRYPTOGRAPHY_SECRETKEYSERIALIZER_HXX
+
+# include <cassert>
+
+# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/standalone/Region.hh>
+
+# include <elle/cryptography/SecretKey.hh>
+
+ELLE_SERIALIZE_SIMPLE(elle::cryptography::SecretKey,
+                      archive,
+                      value,
+                      version)
+{
+  assert(version == 0);
+  archive & value.region;
+}
 
 #endif

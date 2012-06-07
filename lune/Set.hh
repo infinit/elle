@@ -70,3 +70,4 @@ namespace lune
 }
 
 #endif
+#include <lune/Set.hxx>

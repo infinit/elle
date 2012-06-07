@@ -1,6 +1,6 @@
 
-#include <nucleus/proton/AddressSerializer.hxx>
-#include <lune/DescriptorSerializer.hxx>
+#include <nucleus/proton/Address.hh>
+#include <lune/Descriptor.hh>
 
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>

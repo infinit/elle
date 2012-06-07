@@ -4,20 +4,20 @@
 #include <elle/network/Procedure.hh>
 #include <elle/standalone/Morgue.hh>
 
-#include <elle/network/BundleSerializer.hxx>
-#include <elle/network/HeaderSerializer.hxx>
-#include <elle/standalone/ReportSerializer.hxx>
-#include <elle/utility/BufferSerializer.hxx>
+#include <elle/network/Bundle.hh>
+#include <elle/network/Header.hh>
+#include <elle/standalone/Report.hh>
+#include <elle/utility/Buffer.hh>
 
-#include <nucleus/neutron/TraitSerializer.hxx>
-#include <nucleus/neutron/RangeSerializer.hxx>
-#include <nucleus/neutron/RecordSerializer.hxx>
-#include <nucleus/neutron/EntrySerializer.hxx>
+#include <nucleus/neutron/Trait.hh>
+#include <nucleus/neutron/Range.hh>
+#include <nucleus/neutron/Record.hh>
+#include <nucleus/neutron/Entry.hh>
 
-#include <etoile/path/WaySerializer.hxx>
-#include <etoile/path/CheminSerializer.hxx>
-#include <etoile/gear/IdentifierSerializer.hxx>
-#include <etoile/miscellaneous/AbstractSerializer.hxx>
+#include <etoile/path/Way.hh>
+#include <etoile/path/Chemin.hh>
+#include <etoile/gear/Identifier.hh>
+#include <etoile/miscellaneous/Abstract.hh>
 
 #include <etoile/portal/Portal.hh>
 

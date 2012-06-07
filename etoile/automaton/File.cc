@@ -1,4 +1,4 @@
-#include <nucleus/neutron/DataSerializer.hxx>
+#include <nucleus/neutron/Data.hh>
 
 #include <etoile/automaton/File.hh>
 #include <etoile/automaton/Object.hh>

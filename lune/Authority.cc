@@ -1,12 +1,12 @@
-#include <elle/cryptography/PublicKeySerializer.hxx>
-#include <elle/cryptography/PrivateKeySerializer.hxx>
-#include <elle/cryptography/CipherSerializer.hxx>
+#include <elle/cryptography/PublicKey.hh>
+#include <elle/cryptography/PrivateKey.hh>
+#include <elle/cryptography/Cipher.hh>
 #include <elle/serialize/TupleSerializer.hxx>
 
-#include <lune/AuthoritySerializer.hxx>
+#include <lune/Authority.hh>
 
-#include <nucleus/proton/AddressSerializer.hxx>
-#include <nucleus/proton/AddressSerializer.hxx>
+#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Address.hh>
 
 #include <elle/io/File.hh>
 

@@ -1,6 +1,6 @@
 
-#include <elle/utility/BufferSerializer.hxx>
-#include <elle/network/HeaderSerializer.hxx>
+#include <elle/utility/Buffer.hh>
+#include <elle/network/Header.hh>
 
 #include <elle/network/UDPSocket.hh>
 #include <elle/network/Raw.hh>

@@ -2,7 +2,6 @@
 # define ELLE_NETWORK_PACKET_HH
 
 # include <elle/utility/Buffer.hh>
-# include <elle/utility/BufferSerializer.hxx>
 # include <elle/utility/BufferStream.hh>
 # include <elle/serialize/BufferArchive.hh>
 

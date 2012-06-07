@@ -1,11 +1,11 @@
 
 #include <elle/serialize/TupleSerializer.hxx>
-#include <hole/LabelSerializer.hxx>
+#include <hole/Label.hh>
 
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
-#include <lune/PassportSerializer.hxx>
+#include <lune/Passport.hh>
 #include <lune/Lune.hh>
 
 namespace lune

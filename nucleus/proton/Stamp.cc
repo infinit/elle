@@ -1,6 +1,6 @@
 
 #include <elle/serialize/TupleSerializer.hxx>
-#include <nucleus/proton/LocationSerializer.hxx>
+#include <nucleus/proton/Location.hh>
 
 #include <nucleus/proton/Stamp.hh>
 

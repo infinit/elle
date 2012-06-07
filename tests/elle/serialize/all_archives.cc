@@ -8,7 +8,7 @@
 #include <elle/serialize/JSONArchive.hxx>
 #include <elle/utility/Buffer.hh>
 
-#include <elle/utility/BufferSerializer.hxx>
+#include <elle/utility/Buffer.hh>
 
 using namespace elle::serialize;
 

@@ -4,6 +4,8 @@
 # include <elle/types.hh>
 # include <elle/radix/Object.hh>
 
+# include <elle/idiom/Open.hh>
+
 namespace etoile
 {
   namespace gear
@@ -67,5 +69,7 @@ namespace etoile
 
   }
 }
+
+# include <etoile/gear/Identifier.hxx>
 
 #endif

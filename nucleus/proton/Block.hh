@@ -1,6 +1,7 @@
 #ifndef NUCLEUS_PROTON_BLOCK_HH
 # define NUCLEUS_PROTON_BLOCK_HH
 
+# include <elle/concept/Fileable.hh>
 # include <elle/serialize/SerializableMixin.hh>
 
 # include <nucleus/proton/Address.hh>
@@ -31,8 +32,8 @@ namespace nucleus
     ///
     class Block
       : public elle::radix::Object
-      , public elle::io::Fileable<Block>
       , public elle::serialize::SerializableMixin<Block>
+      , public elle::io::Fileable<Block>
     {
     public:
       //
@@ -87,6 +88,6 @@ namespace nucleus
 }
 
 
-# include <nucleus/proton/BlockSerializer.hxx>
+# include <nucleus/proton/Block.hxx>
 
 #endif

@@ -1,5 +1,6 @@
 
 #include <elle/cryptography/KeyPair.hh>
+#include <elle/cryptography/KeyPair.hh>
 #include <elle/cryptography/Cipher.hh>
 #include <elle/cryptography/SecretKey.hh>
 

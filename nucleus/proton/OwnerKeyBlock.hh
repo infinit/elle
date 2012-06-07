@@ -1,30 +1,16 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri may  6 14:45:42 2011]
-//
+#ifndef  NUCLEUS_PROTON_OWNERKEYBLOCK_HH
+# define NUCLEUS_PROTON_OWNERKEYBLOCK_HH
 
-#ifndef NUCLEUS_PROTON_OWNERKEYBLOCK_HH
-#define NUCLEUS_PROTON_OWNERKEYBLOCK_HH
+# include <elle/types.hh>
+# include <elle/utility/Time.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/MutableBlock.hh>
 
-#include <elle/types.hh>
-#include <elle/utility/Time.hh>
+# include <nucleus/neutron/Component.hh>
+# include <nucleus/neutron/Subject.hh>
 
-#include <nucleus/proton/Address.hh>
-#include <nucleus/proton/MutableBlock.hh>
-
-#include <nucleus/neutron/Component.hh>
-#include <nucleus/neutron/Subject.hh>
-
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -44,8 +30,8 @@ namespace nucleus
     /// update them rather than keeping the private key associated with
     /// with every mutable block as for PKBs.
     ///
-    class OwnerKeyBlock:
-      public MutableBlock
+    class OwnerKeyBlock
+      : public MutableBlock
     {
     public:
       //
@@ -97,3 +83,4 @@ namespace nucleus
 }
 
 #endif
+#include <nucleus/proton/OwnerKeyBlock.hxx>

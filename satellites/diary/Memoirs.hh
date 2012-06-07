@@ -33,3 +33,4 @@ namespace satellite
 }
 
 #endif
+#include <satellites/diary/Memoirs.hxx>

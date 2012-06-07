@@ -99,3 +99,4 @@ namespace etoile
 }
 
 #endif
+#include <etoile/gear/Context.hxx>

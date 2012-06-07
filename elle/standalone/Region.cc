@@ -394,7 +394,7 @@ namespace elle
             std::cout << std::nouppercase
                       << std::hex
                       << std::setw(2)
-                      << this->contents[i * space + j];
+                      << (int)this->contents[i * space + j];
 
           std::cout << std::endl;
         }
@@ -407,7 +407,7 @@ namespace elle
             std::cout << std::nouppercase
                       << std::hex
                       << std::setw(2)
-                      << this->contents[i * space + j];
+                      << (int)this->contents[i * space + j];
 
           std::cout << std::endl;
         }

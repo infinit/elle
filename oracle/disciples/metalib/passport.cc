@@ -2,8 +2,8 @@
 #include <elle/io/Path.hh>
 #include <elle/types.hh>
 
-#include <lune/PassportSerializer.hxx>
-#include <lune/AuthoritySerializer.hxx>
+#include <lune/Passport.hh>
+#include <lune/Authority.hh>
 
 // XXX When Qt is out, remove this
 #ifdef slots
@@ -98,7 +98,9 @@ extern "C" PyObject* metalib_generate_passport(PyObject* self, PyObject* args)
     }
   catch(std::exception const& err)
     {
+#include <elle/idiom/Open.hh>
       show();
+#include <elle/idiom/Close.hh>
       PyErr_SetString(metalib_MetaError, err.what());
     }
 

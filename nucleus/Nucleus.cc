@@ -1,7 +1,7 @@
 
 #include <elle/serialize/BinaryArchive.hh>
 
-#include <nucleus/proton/BlockSerializer.hxx>
+#include <nucleus/proton/Block.hh>
 #include <nucleus/Nucleus.hh>
 
 #include <hole/Hole.hh>

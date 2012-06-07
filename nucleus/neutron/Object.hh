@@ -3,6 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/utility/Time.hh>
+# include <elle/io/Fileable.hh>
 
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/ImprintBlock.hh>
@@ -54,6 +55,7 @@ namespace nucleus
     class Object
       : public proton::ImprintBlock
       , public elle::serialize::Uniquable<Object>
+      , public elle::io::Fileable<Object>
     {
     public:
       //
@@ -148,3 +150,4 @@ namespace nucleus
 }
 
 #endif
+#include <nucleus/neutron/Object.hxx>

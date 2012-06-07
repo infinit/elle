@@ -1,5 +1,11 @@
 #include <boost/format.hpp>
 
+#include <lune/Descriptor.hh>
+#include <lune/Set.hh>
+#include <lune/Passport.hh>
+
+#include <nucleus/proton/Address.hh>
+
 #include <hole/Hole.hh>
 #include <Infinit.hh>
 

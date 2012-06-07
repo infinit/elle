@@ -8,11 +8,11 @@
 #include "InfinitNetwork.hh"
 #include "Manager.hh"
 
-#include <lune/IdentitySerializer.hxx>
-#include <lune/DescriptorSerializer.hxx>
-#include <nucleus/proton/AddressSerializer.hxx>
-#include <nucleus/neutron/ObjectSerializer.hxx>
-#include <nucleus/neutron/TraitSerializer.hxx>
+#include <lune/Identity.hh>
+#include <lune/Descriptor.hh>
+#include <nucleus/proton/Address.hh>
+#include <nucleus/neutron/Object.hh>
+#include <nucleus/neutron/Trait.hh>
 
 using namespace plasma::watchdog;
 
@@ -153,7 +153,7 @@ void InfinitNetwork::_PrepareDirectory()
 
   if (network.Create(this->_description.name)          == e ||
       directory.Restore(this->_description.root_block) == e ||
-      directory.Store(network, descriptor.root)        == e)
+      directory.MutableBlock::Store(network, descriptor.root)        == e)
     {
       show();
       throw std::runtime_error("Couldn't store the root block");

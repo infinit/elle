@@ -1,7 +1,8 @@
 
-#include <elle/utility/BufferSerializer.hxx>
-#include <nucleus/neutron/SubjectSerializer.hxx>
+#include <elle/utility/Buffer.hh>
+#include <nucleus/neutron/Subject.hh>
 
+#include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Access.hh>
 
 #include <nucleus/proton/Address.hh>

@@ -1,9 +1,9 @@
 #include <elle/log.hh>
 
-#include <elle/standalone/ReportSerializer.hxx>
-#include <elle/network/BundleSerializer.hxx>
-#include <elle/utility/BufferSerializer.hxx>
-#include <elle/network/HeaderSerializer.hxx>
+#include <elle/standalone/Report.hh>
+#include <elle/network/Bundle.hh>
+#include <elle/utility/Buffer.hh>
+#include <elle/network/Header.hh>
 
 #include <elle/concurrency/Program.hh>
 #include <elle/network/Locus.hh>
@@ -12,10 +12,10 @@
 #include <elle/utility/Time.hh>
 #include <elle/network/Network.hh>
 
-#include <lune/PassportSerializer.hxx>
-#include <nucleus/proton/AddressSerializer.hxx>
-#include <nucleus/proton/VersionSerializer.hxx>
-#include <nucleus/proton/BlockSerializer.hxx>
+#include <lune/Passport.hh>
+#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/Block.hh>
 
 #include <hole/implementations/remote/Client.hh>
 #include <hole/implementations/remote/Manifest.hh>

@@ -1,5 +1,5 @@
 
-#include <elle/cryptography/SecretKeySerializer.hxx>
+#include <elle/cryptography/SecretKey.hh>
 
 #include <elle/cryptography/Code.hh>
 #include <elle/cryptography/SecretKey.hh>

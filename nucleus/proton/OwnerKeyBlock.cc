@@ -1,6 +1,6 @@
-#include <elle/cryptography/PublicKeySerializer.hxx>
-#include <nucleus/proton/BlockSerializer.hxx>
-#include <nucleus/proton/NetworkSerializer.hxx>
+#include <elle/cryptography/PublicKey.hh>
+#include <nucleus/proton/Block.hh>
+#include <nucleus/proton/Network.hh>
 
 #include <elle/cryptography/KeyPair.hh>
 
@@ -80,8 +80,8 @@ namespace nucleus
       // compute the address.
       if (address.Create(this->family, this->component,
                          this->network,
-                         static_cast<elle::Natural8>(this->family),
-                         static_cast<elle::Natural8>(this->component),
+                         this->family,
+                         this->component,
                          this->K) == elle::Status::Error)
         escape("unable to compute the OKB's address");
 
@@ -104,8 +104,8 @@ namespace nucleus
       // compute the address.
       if (self.Create(this->family, this->component,
                       this->network,
-                      static_cast<elle::Natural8>(this->family),
-                      static_cast<elle::Natural8>(this->component),
+                      this->family,
+                      this->component,
                       this->K) == elle::Status::Error)
         escape("unable to compute the OKB's address");
 

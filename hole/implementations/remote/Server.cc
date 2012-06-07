@@ -3,12 +3,12 @@
 #include <reactor/network/tcp-server.hh>
 
 #include <elle/network/Network.hh>
-#include <elle/network/BundleSerializer.hxx>
-#include <elle/standalone/ReportSerializer.hxx>
-#include <elle/utility/BufferSerializer.hxx>
-#include <elle/network/HeaderSerializer.hxx>
+#include <elle/network/Bundle.hh>
+#include <elle/standalone/Report.hh>
+#include <elle/utility/Buffer.hh>
+#include <elle/network/Header.hh>
 #include <elle/standalone/Morgue.hh>
-#include <nucleus/proton/BlockSerializer.hxx>
+#include <nucleus/proton/Block.hh>
 
 #include <hole/Hole.hh>
 #include <hole/implementations/remote/Manifest.hh>

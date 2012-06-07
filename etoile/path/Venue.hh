@@ -94,3 +94,4 @@ namespace etoile
 }
 
 #endif
+#include <etoile/path/Venue.hxx>

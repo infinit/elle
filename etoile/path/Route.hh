@@ -105,3 +105,4 @@ namespace etoile
 }
 
 #endif
+#include <etoile/path/Route.hxx>

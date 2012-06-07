@@ -6,6 +6,7 @@
 
 # include <etoile/path/Length.hh>
 # include <etoile/path/Slice.hh>
+# include <elle/idiom/Open.hh>
 
 namespace etoile
 {
@@ -63,5 +64,7 @@ namespace etoile
 
   }
 }
+
+# include <etoile/path/Way.hxx>
 
 #endif

@@ -5,9 +5,9 @@
 #include <elle/serialize/HexadecimalArchive.hh>
 
 #include <elle/utility/Buffer.hh>
-#include <elle/utility/BufferSerializer.hxx>
+#include <elle/utility/Buffer.hh>
 
-#include <nucleus/proton/HistorySerializer.hxx>
+#include <nucleus/proton/History.hh>
 
 #include <lune/Lune.hh>
 

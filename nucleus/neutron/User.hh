@@ -66,3 +66,4 @@ namespace nucleus
 }
 
 #endif
+#include <nucleus/neutron/User.hxx>

@@ -61,3 +61,4 @@ namespace nucleus
 # include <elle/idiom/Close.hh>
 
 #endif
+#include <nucleus/proton/Network.hxx>

@@ -2,7 +2,7 @@
 #include <elle/standalone/Log.hh>
 
 #include <nucleus/proton/Block.hh>
-#include <nucleus/proton/BlockSerializer.hxx>
+#include <nucleus/proton/Block.hh>
 
 #include <elle/idiom/Open.hh>
 

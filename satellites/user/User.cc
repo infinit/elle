@@ -1,6 +1,6 @@
 
 #include <elle/Elle.hh>
-#include <elle/cryptography/PublicKeySerializer.hxx>
+#include <elle/cryptography/PublicKey.hh>
 #include <elle/io/Console.hh>
 #include <elle/io/Piece.hh>
 #include <elle/io/Directory.hh>
@@ -452,7 +452,7 @@ main(int argc, char** argv)
     {
       satellite::User(argc, argv);
     }
-  catch (std::runtime_error& e)
+  catch (std::runtime_error const& e)
     {
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
       show();

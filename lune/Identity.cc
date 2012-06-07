@@ -1,11 +1,11 @@
-#include <elle/cryptography/KeyPairSerializer.hxx>
-#include <elle/cryptography/CipherSerializer.hxx>
-#include <elle/cryptography/SignatureSerializer.hxx>
+#include <elle/cryptography/KeyPair.hh>
+#include <elle/cryptography/Cipher.hh>
+#include <elle/cryptography/Signature.hh>
 
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
-#include <lune/IdentitySerializer.hxx>
+#include <lune/Identity.hh>
 #include <lune/Lune.hh>
 
 namespace lune

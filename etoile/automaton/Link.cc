@@ -1,4 +1,4 @@
-#include <nucleus/neutron/ReferenceSerializer.hxx>
+#include <nucleus/neutron/Reference.hh>
 
 #include <etoile/automaton/Link.hh>
 #include <etoile/automaton/Object.hh>

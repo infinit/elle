@@ -1,1 +1,4 @@
--I. -std=c++0x -x c++ -I/usr/include/QtNetwork -I/usr/include/QtCore
+-I.
+-std=c++11
+-x c++
+-I/usr/include/QtNetwork -I/usr/include/QtCore

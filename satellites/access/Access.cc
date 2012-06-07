@@ -3,19 +3,19 @@
 #include <elle/Elle.hh>
 #include <elle/concurrency/Closure.hh>
 #include <elle/concurrency/Entrance.hh>
-#include <elle/network/HeaderSerializer.hxx>
+#include <elle/network/Header.hh>
 #include <elle/network/Inputs.hh>
 #include <elle/network/Outputs.hh>
 #include <elle/utility/Parser.hh>
-#include <elle/standalone/ReportSerializer.hxx>
+#include <elle/standalone/Report.hh>
 
-#include <etoile/gear/IdentifierSerializer.hxx>
-#include <etoile/path/WaySerializer.hxx>
-#include <etoile/path/CheminSerializer.hxx>
+#include <etoile/gear/Identifier.hh>
+#include <etoile/path/Way.hh>
+#include <etoile/path/Chemin.hh>
 
-#include <nucleus/neutron/RangeSerializer.hxx>
-#include <nucleus/neutron/RecordSerializer.hxx>
-#include <nucleus/neutron/SubjectSerializer.hxx>
+#include <nucleus/neutron/Range.hh>
+#include <nucleus/neutron/Record.hh>
+#include <nucleus/neutron/Subject.hh>
 
 #include <satellites/access/Access.hh>
 

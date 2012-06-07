@@ -6,7 +6,7 @@
 #include <elle/io/Fileable.hh>
 
 #include "Diary.hh"
-#include "MemoirsSerializer.hxx"
+#include "Memoirs.hh"
 #include <satellites/diary/Diary.hh>
 
 

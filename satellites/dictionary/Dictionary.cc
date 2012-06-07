@@ -1,8 +1,8 @@
 #include <elle/Elle.hh>
 #include <elle/utility/Parser.hh>
-#include <elle/cryptography/PublicKeySerializer.hxx>
+#include <elle/cryptography/PublicKey.hh>
 
-#include <nucleus/proton/AddressSerializer.hxx>
+#include <nucleus/proton/Address.hh>
 
 #include <satellites/dictionary/Dictionary.hh>
 

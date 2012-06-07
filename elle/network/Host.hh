@@ -92,3 +92,4 @@ namespace elle
 
 
 
+#include <elle/network/Host.hxx>

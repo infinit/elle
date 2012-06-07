@@ -76,3 +76,4 @@ namespace lune
 }
 
 #endif
+#include <lune/Dictionary.hxx>

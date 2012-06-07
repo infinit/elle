@@ -58,7 +58,7 @@ namespace elle
   }
 }
 
+# include <elle/serialize/Pointer.hxx>
 
 #endif /* ! POINTER_HH */
-
 

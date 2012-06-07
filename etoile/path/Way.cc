@@ -5,8 +5,10 @@
 #include <elle/standalone/Report.hh>
 #include <elle/system/System.hh>
 
-#include <etoile/path/Way.hh>
 #include <elle/utility/Unicode.hh>
+
+#include <etoile/path/Way.hh>
+#include <elle/idiom/Open.hh>
 
 namespace etoile
 {

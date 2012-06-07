@@ -1,26 +1,12 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [tue feb 17 19:45:45 2009]
-//
+#ifndef  NUCLEUS_PROTON_PUBLICKEYBLOCK_HH
+# define NUCLEUS_PROTON_PUBLICKEYBLOCK_HH
 
-#ifndef NUCLEUS_PROTON_PUBLICKEYBLOCK_HH
-#define NUCLEUS_PROTON_PUBLICKEYBLOCK_HH
+# include <elle/types.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/MutableBlock.hh>
 
-#include <elle/types.hh>
-
-#include <nucleus/proton/Address.hh>
-#include <nucleus/proton/MutableBlock.hh>
-
-#include <nucleus/neutron/Component.hh>
+# include <nucleus/neutron/Component.hh>
 
 namespace nucleus
 {
@@ -41,8 +27,8 @@ namespace nucleus
     /// modified without implying the creation of a new block as for
     /// ContentHashBlocks.
     ///
-    class PublicKeyBlock:
-      public MutableBlock
+    class PublicKeyBlock
+      : public MutableBlock
     {
     public:
       //
@@ -85,3 +71,4 @@ namespace nucleus
 }
 
 #endif
+#include <nucleus/proton/PublicKeyBlock.hxx>

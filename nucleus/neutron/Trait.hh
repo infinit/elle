@@ -88,3 +88,4 @@ namespace nucleus
 }
 
 #endif
+#include <nucleus/neutron/Trait.hxx>

@@ -7,8 +7,8 @@
 
 #include "IdentityUpdater.hh"
 
-#include <lune/IdentitySerializer.hxx>
-#include <lune/PassportSerializer.hxx>
+#include <lune/Identity.hh>
+#include <lune/Passport.hh>
 
 using namespace plasma::updater;
 

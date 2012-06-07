@@ -71,3 +71,4 @@ namespace lune
 # include <elle/idiom/Close.hh>
 
 #endif
+#include <lune/Phrase.hxx>

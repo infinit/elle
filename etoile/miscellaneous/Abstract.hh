@@ -99,3 +99,4 @@ namespace etoile
 }
 
 #endif
+#include <etoile/miscellaneous/Abstract.hxx>

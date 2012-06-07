@@ -82,3 +82,4 @@ namespace elle
 #include <elle/test/network/udp/Neighbour.hh>
 
 #endif
+#include <elle/test/network/udp/Table.hxx>

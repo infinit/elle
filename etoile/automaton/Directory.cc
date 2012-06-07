@@ -1,6 +1,6 @@
-#include <nucleus/neutron/CatalogSerializer.hxx>
-#include <nucleus/neutron/RangeSerializer.hxx>
-#include <nucleus/neutron/EntrySerializer.hxx>
+#include <nucleus/neutron/Catalog.hh>
+#include <nucleus/neutron/Range.hh>
+#include <nucleus/neutron/Entry.hh>
 
 #include <etoile/automaton/Directory.hh>
 #include <etoile/automaton/Object.hh>
