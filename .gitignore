@@ -13,4 +13,4 @@ config.hh
 config.mk
 dependencies/environment.sh
 releases/
-work
+work/

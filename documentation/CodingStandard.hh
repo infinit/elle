@@ -270,9 +270,13 @@ namespace package
                                   T& bla);
 
     private:
+      /*
+       * Note that private methods, as private attributes, must be prefixed
+       * by an underscore, as shown below.
+       */
       Real
-      inner_action(String const& left,
-                   Natural32 const right);
+      _inner_action(String const& left,
+                    Natural32 const right);
 
       /*-----------.
       | Attributes |

@@ -114,8 +114,8 @@ namespace package
     }
 
     Real
-    inner_action(String const& left,
-                 Natural32 const right)
+    _inner_action(String const& left,
+                  Natural32 const right)
     {
       /*
        * one must declare one local variable per line and never use
