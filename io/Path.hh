@@ -1,19 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon apr 25 10:59:05 2011]
-//
-
-#ifndef ELLE_IO_PATH_HH
-#define ELLE_IO_PATH_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#ifndef  ELLE_IO_PATH_HH
+# define ELLE_IO_PATH_HH
 
 #include <elle/types.hh>
 
