@@ -109,8 +109,8 @@ namespace comet
       }
     for (;;)
       {
-        /* When generating ridiculously small keys, we can get stuck                                                                                                                                        
-         * continually regenerating the same prime values. Check for                                                                                                                                        
+        /* When generating ridiculously small keys, we can get stuck
+         * continually regenerating the same prime values. Check for
          * this and bail if it happens 3 times. */
         unsigned int degenerate = 0;
                 do
