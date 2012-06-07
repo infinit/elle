@@ -125,7 +125,7 @@ namespace reactor
             if (error == boost::asio::error::not_connected)
               ; // It's ok to try to disconnect a non-connected socket.
             else
-              throw new Exception(error.message());
+              throw new Exception(scheduler(), error.message());
           }
         _socket->close();
         delete _socket;

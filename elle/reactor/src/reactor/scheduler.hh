@@ -6,6 +6,7 @@
 # include <boost/thread.hpp>
 
 # include <reactor/asio.hh>
+# include <reactor/duration.hh>
 # include <reactor/fwd.hh>
 # include <reactor/backend/thread.hh>
 

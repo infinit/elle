@@ -3,6 +3,8 @@
 #include <hole/Hole.hh>
 #include <Infinit.hh>
 
+using reactor::Exception;
+
 namespace hole
 {
 
@@ -58,7 +60,8 @@ namespace hole
 
     // disable the meta logging.
     if (elle::Meta::Disable() == elle::StatusError)
-      throw std::runtime_error("unable to disable the meta logging");
+      throw Exception(elle::concurrency::scheduler(),
+                      "unable to disable the meta logging");
 
     //
     // retrieve the descriptor.
@@ -66,15 +69,18 @@ namespace hole
     {
       // does the network exist.
       if (Hole::Descriptor.Exist(Infinit::Network) == elle::StatusFalse)
-        throw std::runtime_error("this network does not seem to exist");
+        throw Exception(elle::concurrency::scheduler(),
+                        "this network does not seem to exist");
 
       // load the descriptor.
       if (Hole::Descriptor.Load(Infinit::Network) == elle::StatusError)
-        throw std::runtime_error("unable to load the descriptor");
+        throw Exception(elle::concurrency::scheduler(),
+                        "unable to load the descriptor");
 
       // validate the descriptor.
       if (Hole::Descriptor.Validate(Infinit::Authority) == elle::StatusError)
-        throw std::runtime_error("unable to validate the descriptor");
+        throw Exception(elle::concurrency::scheduler(),
+                        "unable to validate the descriptor");
     }
 
     //
@@ -84,7 +90,8 @@ namespace hole
       {
         // load the set.
         if (Hole::Set.Load(Infinit::Network) == elle::StatusError)
-          throw std::runtime_error("unable to load the set");
+          throw Exception(elle::concurrency::scheduler(),
+                          "unable to load the set");
       }
 
     //
@@ -93,29 +100,34 @@ namespace hole
     {
       // does the network exist.
       if (Hole::Passport.Exist() == elle::StatusFalse)
-        throw std::runtime_error("the device passport does not seem to exist");
+        throw Exception(elle::concurrency::scheduler(),
+                        "the device passport does not seem to exist");
 
       // load the passport.
       if (Hole::Passport.Load() == elle::StatusError)
-        throw std::runtime_error("unable to load the passport");
+        throw Exception(elle::concurrency::scheduler(),
+                        "unable to load the passport");
 
       // validate the passport.
       if (Hole::Passport.Validate(Infinit::Authority) == elle::StatusError)
-        throw std::runtime_error("unable to validate the passport");
+        throw Exception(elle::concurrency::scheduler(),
+                        "unable to validate the passport");
     }
 
     // enable the meta logging.
     if (elle::Meta::Enable() == elle::StatusError)
-      throw std::runtime_error("unable to enable the meta logging");
+      throw Exception(elle::concurrency::scheduler(),
+                      "unable to enable the meta logging");
 
     // create the network instance.
     if (network.Create(Infinit::Network) == elle::StatusError)
-      throw std::runtime_error("unable to create the network instance");
+      throw Exception(elle::concurrency::scheduler(),
+                      "unable to create the network instance");
 
     // create the holeable depending on the model.
     switch (Hole::Descriptor.model.type)
       {
-      case Model::TypeLocal:
+        case Model::TypeLocal:
         {
           // allocate the instance.
           Hole::Implementation =
@@ -123,7 +135,7 @@ namespace hole
 
           break;
         }
-      case Model::TypeRemote:
+        case Model::TypeRemote:
         {
           // allocate the instance.
           Hole::Implementation =
@@ -131,7 +143,7 @@ namespace hole
 
           break;
         }
-      case Model::TypeSlug:
+        case Model::TypeSlug:
         {
           // allocate the instance.
           Hole::Implementation =
@@ -139,20 +151,21 @@ namespace hole
 
           break;
         }
-      case Model::TypeCirkle:
+        case Model::TypeCirkle:
         {
           /* XXX
           // allocate the instance.
           Hole::Implementation =
-            new implementations::cirkle::Implementation(network);
+          new implementations::cirkle::Implementation(network);
           */
 
           break;
         }
-      default:
+        default:
         {
           static boost::format fmt("unknown or not-yet-supported model '%u'");
-          throw std::runtime_error(str(fmt % Hole::Descriptor.model.type));
+          throw Exception(elle::concurrency::scheduler(),
+                          str(fmt % Hole::Descriptor.model.type));
         }
       }
 

@@ -53,7 +53,7 @@ namespace reactor
 
         {
           if (error)
-            _raise(new Exception(error.message()));
+            _raise(new Exception(scheduler(), error.message()));
           else
             _end_point = *it;
           _signal();
