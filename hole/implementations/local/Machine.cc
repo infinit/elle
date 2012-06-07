@@ -220,7 +220,7 @@ namespace hole
       ///
       elle::Status      Machine::Kill(const nucleus::Address&   address)
       {
-        nucleus::Block  block;
+        //nucleus::Block  block;
 
         // debug.
         if (Infinit::Configuration.hole.debug == true)

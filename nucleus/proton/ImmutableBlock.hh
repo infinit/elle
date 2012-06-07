@@ -1,14 +1,15 @@
 #ifndef NUCLEUS_PROTON_IMMUTABLEBLOCK_HH
 # define NUCLEUS_PROTON_IMMUTABLEBLOCK_HH
 
-#include <elle/types.hh>
+# include <elle/types.hh>
+# include <elle/concept/Fileable.hh>
 
-#include <nucleus/proton/Block.hh>
-#include <nucleus/proton/Address.hh>
-#include <nucleus/proton/Network.hh>
-#include <nucleus/proton/Family.hh>
+# include <nucleus/proton/Block.hh>
+# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/Network.hh>
+# include <nucleus/proton/Family.hh>
 
-#include <nucleus/neutron/Component.hh>
+# include <nucleus/neutron/Component.hh>
 
 namespace nucleus
 {
@@ -21,6 +22,7 @@ namespace nucleus
     ///
     class ImmutableBlock
       : public Block
+      , public elle::concept::Fileable<ImmutableBlock>
     {
     public:
       //
@@ -40,6 +42,7 @@ namespace nucleus
 #include <elle/idiom/Close.hh>
 
       // fileable
+      ELLE_CONCEPT_FILEABLE_METHODS(ImmutableBlock);
       elle::Status      Load(const Network&,
                              const Address&);
       elle::Status      Store(const Network&,

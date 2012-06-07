@@ -3,7 +3,7 @@
 
 # include <elle/cryptography.fwd.hh>
 # include <elle/cryptography/PublicKey.hh>
-# include <elle/io/Fileable.hh>
+# include <elle/concept/Fileable.hh>
 # include <elle/radix/Object.hh>
 
 # include <elle/idiom/Open.hh>
@@ -25,7 +25,7 @@ namespace lune
   ///
   class Authority:
     public elle::radix::Object,
-    public elle::io::Fileable<Authority>
+    public elle::concept::Fileable<Authority>
   {
   public:
     //
@@ -73,8 +73,8 @@ namespace lune
     //elle::Status        Extract(elle::Archive&);
 
     // fileable
-    using elle::io::Fileable<Authority>::Load;
-    using elle::io::Fileable<Authority>::Store;
+    using elle::concept::Fileable<Authority>::Load;
+    using elle::concept::Fileable<Authority>::Store;
 
     elle::Status        Load();
     elle::Status        Store() const;

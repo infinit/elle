@@ -5,7 +5,7 @@
 # include <elle/cryptography/KeyPair.hh>
 # include <elle/cryptography/Signature.hh>
 
-# include <elle/io/Fileable.hh>
+# include <elle/concept/Fileable.hh>
 # include <elle/radix/Object.hh>
 # include <elle/serialize/Uniquable.hh>
 
@@ -29,7 +29,7 @@ namespace lune
   ///
   class Identity
     : public elle::radix::Object
-    , public elle::io::Fileable<Identity>
+    , public elle::concept::Fileable<Identity>
     , public elle::serialize::Uniquable<Identity>
   {
   public:
@@ -80,7 +80,7 @@ namespace lune
     //elle::Status        Extract(elle::Archive&);
 
     // fileable
-    ELLE_IO_USING_FILEABLE_METHODS(Identity);
+    ELLE_CONCEPT_FILEABLE_METHODS(Identity);
     elle::Status        Load();
     elle::Status        Store() const;
     elle::Status        Erase() const;

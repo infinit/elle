@@ -2,7 +2,7 @@
 # define LUNE_SET_HH
 
 # include <elle/types.hh>
-# include <elle/io/Fileable.hh>
+# include <elle/concept/Fileable.hh>
 
 # include <elle/network/Locus.hh>
 
@@ -21,7 +21,7 @@ namespace lune
   ///
   class Set:
     public elle::radix::Object,
-    public elle::io::Fileable<Set>
+    public elle::concept::Fileable<Set>
   {
   public:
     //

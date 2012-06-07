@@ -263,7 +263,7 @@ namespace nucleus
                         elle::io::Piece("%ADDRESS%", unique)) == elle::Status::Error)
         escape("unable to complete the path");
 
-      return elle::io::Fileable<History>::Load(path);
+      return this->Load(path);
     }
 
     ///
@@ -287,7 +287,7 @@ namespace nucleus
                         elle::io::Piece("%ADDRESS%", unique)) == elle::Status::Error)
         escape("unable to complete the path");
 
-      return elle::io::Fileable<History>::Store(path);
+      return this->Store(path);
     }
 
     ///

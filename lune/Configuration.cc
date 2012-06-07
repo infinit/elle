@@ -1,18 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [sun jun 19 23:19:22 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/io/Fileable.hxx>
 #include <elle/utility/Settings.hh>
 
 #include <lune/Configuration.hh>

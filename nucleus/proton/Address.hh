@@ -2,7 +2,7 @@
 # define NUCLEUS_PROTON_ADDRESS_HH
 
 # include <elle/cryptography/Digest.hh>
-# include <elle/io/Fileable.hh>
+# include <elle/concept/Fileable.hh>
 # include <elle/serialize/Uniquable.hh>
 
 # include <nucleus/proton/Family.hh>
@@ -37,7 +37,7 @@ namespace nucleus
     ///
     class Address
       : public elle::radix::Object
-      , public elle::io::Fileable<Address>
+      , public elle::concept::Fileable<Address>
       , public elle::serialize::Uniquable<Address>
     {
     public:

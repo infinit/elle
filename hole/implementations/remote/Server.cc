@@ -422,8 +422,6 @@ namespace hole
       ///
       elle::Status      Server::Kill(const nucleus::Address&    address)
       {
-        nucleus::Block  block;
-
         ELLE_LOG_TRACE_SCOPE("Kill");
 
         // treat the request depending on the nature of the block which

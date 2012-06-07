@@ -3,7 +3,7 @@
 
 # include <elle/format/ini/File.hh>
 
-# include <elle/io/Fileable.hh>
+# include <elle/concept/Fileable.hh>
 
 # include <elle/serialize/IniArchive.hh>
 
@@ -18,7 +18,7 @@ namespace elle { namespace utility {
     ///
     class Settings
       : public elle::format::ini::File
-      , public elle::io::Fileable<Settings, elle::serialize::IniArchive>
+      , public elle::concept::Fileable<Settings, elle::serialize::IniArchive>
       , public elle::io::Dumpable
     {
     public:
