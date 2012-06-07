@@ -89,3 +89,4 @@ namespace elle
 }
 
 #endif
+#include <elle/utility/Time.hxx>

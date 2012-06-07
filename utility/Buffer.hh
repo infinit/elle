@@ -131,3 +131,4 @@ namespace elle
 #endif /* ! BUFFER_HH */
 
 
+#include <elle/utility/Buffer.hxx>

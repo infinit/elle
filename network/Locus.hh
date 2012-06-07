@@ -74,3 +74,4 @@ namespace elle
 }
 
 #endif
+#include <elle/network/Locus.hxx>

@@ -87,3 +87,4 @@ namespace elle
 #include <elle/test/network/udp/Node.hh>
 
 #endif
+#include <elle/test/network/udp/Neighbour.hxx>

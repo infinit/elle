@@ -4,7 +4,7 @@
 # include <cassert>
 
 # include <elle/serialize/ArchiveSerializer.hxx>
-# include <elle/network/HostSerializer.hxx>
+# include <elle/network/Host.hh>
 
 # include <elle/network/Locus.hh>
 

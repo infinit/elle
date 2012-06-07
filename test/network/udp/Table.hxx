@@ -4,7 +4,7 @@
 # include <cassert>
 
 # include <elle/serialize/ArchiveSerializer.hxx>
-# include <elle/test/network/udp/NeighbourSerializer.hxx>
+# include <elle/test/network/udp/Neighbour.hh>
 
 # include <elle/test/network/udp/Table.hh>
 

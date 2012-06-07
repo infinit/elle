@@ -1,7 +1,7 @@
 
-#include <elle/utility/BufferSerializer.hxx>
+#include <elle/utility/Buffer.hh>
 
-#include <elle/network/HeaderSerializer.hxx>
+#include <elle/network/Header.hh>
 #include <elle/network/LocalSocket.hh>
 #include <elle/network/Packet.hh>
 #include <elle/network/Inputs.hh>

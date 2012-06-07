@@ -6,6 +6,7 @@
 
 # include "Section.hh"
 
+# include <elle/idiom/Close.hh>
 namespace elle { namespace format { namespace ini {
 
     template<typename T>

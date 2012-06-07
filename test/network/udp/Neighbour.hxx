@@ -4,7 +4,7 @@
 # include <cassert>
 
 # include <elle/serialize/ArchiveSerializer.hxx>
-# include <elle/network/LocusSerializer.hxx>
+# include <elle/network/Locus.hh>
 
 # include <elle/test/network/udp/Neighbour.hh>
 

@@ -2,7 +2,7 @@
 # define ELLE_NETWORK_HEADERSERIALIZER_HXX
 
 # include <elle/serialize/ArchiveSerializer.hxx>
-# include <elle/concurrency/EventSerializer.hxx>
+# include <elle/concurrency/Event.hh>
 # include <elle/network/Header.hh>
 
 ELLE_SERIALIZE_SIMPLE(elle::network::Header,

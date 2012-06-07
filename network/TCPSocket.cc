@@ -1,7 +1,7 @@
 
-#include <elle/network/HeaderSerializer.hxx>
-#include <elle/utility/BufferSerializer.hxx>
-#include <elle/standalone/ReportSerializer.hxx>
+#include <elle/network/Header.hh>
+#include <elle/utility/Buffer.hh>
+#include <elle/standalone/Report.hh>
 
 #include <string>
 

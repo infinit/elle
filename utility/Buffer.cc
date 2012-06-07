@@ -142,7 +142,7 @@ elle::Status Buffer::Dump(const Natural32 margin) const
         std::cout << std::nouppercase
           << std::hex
           << std::setw(2)
-          << this->_contents[i * space + j];
+          << (int)this->_contents[i * space + j];
 
       std::cout << std::endl;
     }
@@ -155,7 +155,7 @@ elle::Status Buffer::Dump(const Natural32 margin) const
         std::cout << std::nouppercase
           << std::hex
           << std::setw(2)
-          << this->_contents[i * space + j];
+          << (int)this->_contents[i * space + j];
 
       std::cout << std::endl;
     }

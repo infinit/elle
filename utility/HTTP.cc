@@ -20,6 +20,7 @@
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Region.hh>
 
+#include <elle/idiom/Open.hh>
 namespace elle
 {
   using namespace standalone;

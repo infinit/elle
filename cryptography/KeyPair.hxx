@@ -4,8 +4,8 @@
 # include <cassert>
 
 # include <elle/serialize/ArchiveSerializer.hxx>
-# include <elle/cryptography/PublicKeySerializer.hxx>
-# include <elle/cryptography/PrivateKeySerializer.hxx>
+# include <elle/cryptography/PublicKey.hh>
+# include <elle/cryptography/PrivateKey.hh>
 
 # include <elle/cryptography/KeyPair.hh>
 

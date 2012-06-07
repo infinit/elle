@@ -69,3 +69,4 @@ namespace elle
 # include <elle/idiom/Close.hh>
 
 #endif
+#include <elle/cryptography/Seed.hxx>

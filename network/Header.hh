@@ -75,3 +75,4 @@ namespace elle
 }
 
 #endif
+#include <elle/network/Header.hxx>

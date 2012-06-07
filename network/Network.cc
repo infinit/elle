@@ -1,4 +1,4 @@
-#include <elle/standalone/ReportSerializer.hxx>
+#include <elle/standalone/Report.hh>
 #include <elle/network/Network.hh>
 #include <elle/concurrency/Event.hh>
 

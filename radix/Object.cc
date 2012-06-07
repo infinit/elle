@@ -3,6 +3,8 @@
 #include <elle/standalone/Log.hh>
 #include <elle/standalone/Report.hh>
 
+#include <elle/idiom/Open.hh>
+
 namespace elle
 {
   namespace radix

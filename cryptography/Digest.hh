@@ -67,3 +67,4 @@ namespace elle
 # include <elle/idiom/Close.hh>
 
 #endif
+#include <elle/cryptography/Digest.hxx>
