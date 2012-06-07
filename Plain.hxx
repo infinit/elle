@@ -1,7 +1,7 @@
 #ifndef  ELLE_CRYPTOGRAPHY_PLAINSERIALIZER_HXX
 # define ELLE_CRYPTOGRAPHY_PLAINSERIALIZER_HXX
 
-# include <elle/standalone/RegionSerializer.hxx>
+# include <elle/standalone/Region.hh>
 
 //
 //# include <elle/cryptography/Plain.hh>

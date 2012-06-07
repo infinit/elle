@@ -83,3 +83,4 @@ namespace elle
 }
 
 #endif
+#include <elle/cryptography/Code.hxx>

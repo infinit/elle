@@ -3,9 +3,9 @@
 #include <elle/cryptography/Digest.hh>
 #include <elle/cryptography/OneWay.hh>
 #include <elle/cryptography/SecretKey.hh>
-#include <elle/cryptography/SecretKeySerializer.hxx>
-#include <elle/cryptography/CodeSerializer.hxx>
-#include <elle/cryptography/CipherSerializer.hxx>
+#include <elle/cryptography/SecretKey.hh>
+#include <elle/cryptography/Code.hh>
+#include <elle/cryptography/Cipher.hh>
 
 #include <elle/serialize/BufferArchive.hh>
 
@@ -15,15 +15,6 @@
 
 using namespace elle;
 using namespace elle::cryptography;
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-///
-/// this defines a null public key.
-///
-const PublicKey             PublicKey::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -443,7 +434,7 @@ Status              PublicKey::Dump(const Natural32         margin) const
   String            alignment(margin, ' ');
 
   // display depending on the value.
-  if (*this == PublicKey::Null)
+  if (this->_key == nullptr)
     {
       std::cout << alignment << "[PublicKey] " << none << std::endl;
     }

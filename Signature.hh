@@ -81,4 +81,5 @@ namespace elle
   }
 }
 
+#include <elle/cryptography/Signature.hxx>
 #endif

@@ -7,7 +7,7 @@
 #include <elle/standalone/Log.hh>
 #include <elle/standalone/Report.hh>
 
-#include <elle/cryptography/SeedSerializer.hxx>
+#include <elle/cryptography/Seed.hh>
 
 namespace elle
 {

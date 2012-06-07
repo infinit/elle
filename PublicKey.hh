@@ -44,11 +44,6 @@ namespace elle
     {
     public:
       //
-      // constants
-      //
-      static const PublicKey            Null;
-
-      //
       // constructors & destructors
       //
       PublicKey();

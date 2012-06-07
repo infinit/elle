@@ -3,7 +3,7 @@
 
 # include <cassert>
 
-# include <elle/standalone/RegionSerializer.hxx>
+# include <elle/standalone/Region.hh>
 
 # include <elle/cryptography/Signature.hh>
 

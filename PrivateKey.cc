@@ -5,10 +5,10 @@
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/standalone/Log.hh>
 
-#include <elle/cryptography/SecretKeySerializer.hxx>
-#include <elle/cryptography/CodeSerializer.hxx>
-#include <elle/cryptography/CipherSerializer.hxx>
-#include <elle/standalone/RegionSerializer.hxx>
+#include <elle/cryptography/SecretKey.hh>
+#include <elle/cryptography/Code.hh>
+#include <elle/cryptography/Cipher.hh>
+#include <elle/standalone/Region.hh>
 
 #include <comet/Comet.hh>
 
