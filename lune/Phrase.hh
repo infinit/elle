@@ -2,7 +2,7 @@
 # define LUNE_PHRASE_HH
 
 # include <elle/radix/Object.hh>
-# include <elle/io/Fileable.hh>
+# include <elle/concept/Fileable.hh>
 
 # include <elle/idiom/Open.hh>
 
@@ -23,7 +23,7 @@ namespace lune
   ///
   class Phrase:
     public elle::radix::Object,
-    public elle::io::Fileable<Phrase>
+    public elle::concept::Fileable<Phrase>
   {
   public:
     //
@@ -53,7 +53,7 @@ namespace lune
     //elle::Status        Extract(elle::Archive&);
 
     // fileable
-    ELLE_IO_USING_FILEABLE_METHODS(Phrase);
+    ELLE_CONCEPT_FILEABLE_METHODS(Phrase);
     elle::Status        Load(const elle::String&);
     elle::Status        Store(const elle::String&) const;
     elle::Status        Erase(const elle::String&) const;

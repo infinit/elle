@@ -17,7 +17,7 @@ namespace lune
   ///
   class Passport
     : public elle::radix::Object
-    , public elle::io::Fileable<Passport>
+    , public elle::concept::Fileable<Passport>
     , public elle::serialize::Uniquable<Passport>
   {
   public:
@@ -50,7 +50,8 @@ namespace lune
     //elle::Status        Extract(elle::Archive&);
 
     // fileable
-    ELLE_IO_USING_FILEABLE_METHODS(Passport);
+    ELLE_CONCEPT_FILEABLE_METHODS(Passport);
+
     elle::Status        Load();
     elle::Status        Store() const;
     elle::Status        Erase() const;

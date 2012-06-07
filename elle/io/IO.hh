@@ -32,7 +32,6 @@ namespace elle
 #include <elle/io/Directory.hh>
 #include <elle/io/Dumpable.hh>
 #include <elle/io/File.hh>
-#include <elle/io/Fileable.hh>
 #include <elle/io/Format.hh>
 #include <elle/io/Link.hh>
 #include <elle/io/Manipulators.hh>

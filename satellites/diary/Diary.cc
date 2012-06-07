@@ -3,7 +3,7 @@
 #include <elle/Elle.hh>
 #include <elle/utility/Parser.hh>
 
-#include <elle/io/Fileable.hh>
+#include <elle/concept/Fileable.hh>
 
 #include "Diary.hh"
 #include "Memoirs.hh"

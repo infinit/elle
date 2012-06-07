@@ -42,6 +42,7 @@ namespace nucleus
     ///
     class MutableBlock
       : public Block
+      , public elle::concept::Fileable<MutableBlock>
     {
     public:
       //
@@ -60,10 +61,11 @@ namespace nucleus
       declare(MutableBlock);
 #include <elle/idiom/Close.hh>
 
+
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      ELLE_IO_USE_FILEABLE_METHODS(MutableBlock);
+      ELLE_CONCEPT_FILEABLE_METHODS(MutableBlock);
 
       elle::Status      Load(const Network&,
                              const Address&,

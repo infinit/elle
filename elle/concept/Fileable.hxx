@@ -1,21 +1,19 @@
-#ifndef ELLE_IO_FILEABLE_HXX
-# define ELLE_IO_FILEABLE_HXX
+#ifndef  ELLE_CONCEPT_FILEABLE_HXX
+# define ELLE_CONCEPT_FILEABLE_HXX
 
-# include <elle/types.hh>
 # include <fstream>
 
 # include <elle/serialize/BinaryArchive.hxx>
 # include <elle/log.hh>
 
-# include "File.hh"
+# include <elle/io/File.hh>
 # include "Fileable.hh"
-# include "Path.hh"
 
 # include <elle/idiom/Open.hh>
 
-namespace elle { namespace io {
+namespace elle { namespace concept {
 
-    template<typename T, template<elle::serialize::ArchiveMode> class Archive>
+    template<typename T, _ELLE_CONCEPT_FILEABLE_TPL_AR_DECL>
       Status Fileable<T, Archive>::Load(Path const& path)
       {
         ELLE_LOG_TRACE_COMPONENT("Infinit.IO");
@@ -46,7 +44,7 @@ namespace elle { namespace io {
         }
       }
 
-    template<typename T, template<elle::serialize::ArchiveMode> class Archive>
+    template<typename T, _ELLE_CONCEPT_FILEABLE_TPL_AR_DECL>
       Status Fileable<T, Archive>::Store(Path const& path) const
       {
         ELLE_LOG_TRACE_COMPONENT("Infinit.IO");
@@ -330,8 +328,8 @@ namespace elle { namespace io {
 //    };
 //
 
-}} // !namespace elle::io;
-
-# include <elle/idiom/Close.hh>
+  } // !concept
+} // !elle;
 
 #endif
+

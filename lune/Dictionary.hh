@@ -1,16 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [mon may 10 15:52:06 2010]
-//
-#ifndef LUNE_DICTIONARY_HH
+#ifndef  LUNE_DICTIONARY_HH
 # define LUNE_DICTIONARY_HH
 
-# include <elle/types.hh>
+# include <elle/concept/Fileable.hh>
 # include <nucleus/Nucleus.hh>
 
 # include <lune/Map.hh>
@@ -31,7 +22,7 @@ namespace lune
   ///
   class Dictionary
     : public elle::radix::Object
-    , public elle::io::Fileable<Dictionary>
+    , public elle::concept::Fileable<Dictionary>
   {
   public:
     //
@@ -54,8 +45,8 @@ namespace lune
     //elle::Status        Extract(elle::Archive&);
 
     // fileable
-    using elle::io::Fileable<Dictionary>::Load;
-    using elle::io::Fileable<Dictionary>::Store;
+    ELLE_CONCEPT_FILEABLE_METHODS(Dictionary);
+
     elle::Status        Load();
     elle::Status        Store() const;
     elle::Status        Erase() const;

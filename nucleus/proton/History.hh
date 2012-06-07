@@ -38,7 +38,7 @@ namespace nucleus
     ///
     class History:
       public elle::radix::Object,
-      public elle::io::Fileable<History>
+      public elle::concept::Fileable<History>
     {
     public:
       //
@@ -79,6 +79,9 @@ namespace nucleus
       //elle::Status      Extract(elle::Archive&);
 
       // fileable
+
+      ELLE_CONCEPT_FILEABLE_METHODS(History);
+
       elle::Status      Load(const Network&,
                              const Address&);
       elle::Status      Store(const Network&,

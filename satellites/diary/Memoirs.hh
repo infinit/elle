@@ -4,7 +4,7 @@
 # include <boost/noncopyable.hpp>
 
 # include <elle/types.hh>
-# include <elle/io/Fileable.hh>
+# include <elle/concept/Fileable.hh>
 # include <elle/io/Dumpable.hh>
 # include <elle/utility/Buffer.hh>
 
@@ -18,7 +18,7 @@ namespace satellite
   class Memoirs
     : public elle::radix::Object
     , public elle::io::Dumpable
-    , public elle::io::Fileable<Memoirs>
+    , public elle::concept::Fileable<Memoirs>
     , private boost::noncopyable
   {
   public:

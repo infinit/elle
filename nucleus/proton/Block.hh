@@ -33,7 +33,7 @@ namespace nucleus
     class Block
       : public elle::radix::Object
       , public elle::serialize::SerializableMixin<Block>
-      , public elle::io::Fileable<Block>
+      , public elle::concept::AbstractFileable<> // XXX let only Erase method public
     {
     public:
       //
@@ -71,6 +71,15 @@ namespace nucleus
       //elle::Status              Extract(elle::Archive&);
 
       // fileable
+      // ELLE_CONCEPT_FILEABLE_ABSTRACT_METHODS();
+      // XXX: remove the following with the previous line when
+      //      elle::network::Procedure is out (it breaks the contract).
+      // <XXX>
+      virtual elle::Status Load(elle::io::Path const&) { throw false; };
+      virtual elle::Status Store(elle::io::Path const&) const { throw false; };
+      // </XXX>
+
+
       virtual elle::Status      Erase(const Network&,
                                       const Address&) const;
 

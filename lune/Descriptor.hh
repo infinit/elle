@@ -22,7 +22,7 @@ namespace lune
   ///
   class Descriptor
     : public elle::radix::Object
-    , public elle::io::Fileable<Descriptor>
+    , public elle::concept::Fileable<Descriptor>
     , public elle::serialize::Uniquable<Descriptor>
   {
   public:
@@ -66,8 +66,8 @@ namespace lune
     //elle::Status        Extract(elle::Archive&);
 
     // fileable
-    using elle::io::Fileable<Descriptor>::Load;
-    using elle::io::Fileable<Descriptor>::Store;
+    ELLE_CONCEPT_FILEABLE_METHODS(Descriptor);
+
     elle::Status        Load(const elle::String&);
     elle::Status        Store(const elle::String&) const;
     elle::Status        Erase(const elle::String&) const;

@@ -1,35 +1,18 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [tue feb 17 12:33:12 2009]
-//
+#ifndef  NUCLEUS_PROTON_CONTENTHASHBLOCK_HH
+# define NUCLEUS_PROTON_CONTENTHASHBLOCK_HH
 
-#ifndef NUCLEUS_PROTON_CONTENTHASHBLOCK_HH
-#define NUCLEUS_PROTON_CONTENTHASHBLOCK_HH
+# include <elle/types.hh>
+# include <elle/concept/Fileable.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/ImmutableBlock.hh>
 
-#include <elle/types.hh>
-
-#include <nucleus/proton/Address.hh>
-#include <nucleus/proton/ImmutableBlock.hh>
-
-#include <nucleus/neutron/Component.hh>
+# include <nucleus/neutron/Component.hh>
 
 namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// a content hash block is a block whose address is determined by
@@ -40,8 +23,9 @@ namespace nucleus
     /// changes, the hash of those data as well, so does the address, hence
     /// the creation of a new block.
     ///
-    class ContentHashBlock:
-      public ImmutableBlock
+    class ContentHashBlock
+      : public ImmutableBlock
+      , public elle::concept::Fileable<ContentHashBlock>
     {
     public:
       //
@@ -68,6 +52,7 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
+      ELLE_CONCEPT_FILEABLE_METHODS(ContentHashBlock);
       //// archivable
       //elle::Status      Serialize(elle::Archive&) const;
       //elle::Status      Extract(elle::Archive&);
@@ -76,5 +61,6 @@ namespace nucleus
   }
 }
 
+# include <nucleus/proton/ContentHashBlock.hxx>
+
 #endif
-#include <nucleus/proton/ContentHashBlock.hxx>

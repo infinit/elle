@@ -3,7 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/utility/Time.hh>
-# include <elle/io/Fileable.hh>
+# include <elle/concept/Fileable.hh>
 
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/ImprintBlock.hh>
@@ -55,7 +55,7 @@ namespace nucleus
     class Object
       : public proton::ImprintBlock
       , public elle::serialize::Uniquable<Object>
-      , public elle::io::Fileable<Object>
+      , public elle::concept::Fileable<Object>
     {
     public:
       //
@@ -99,6 +99,8 @@ namespace nucleus
       // archivable
       //elle::Status      Serialize(elle::Archive&) const;
       //elle::Status      Extract(elle::Archive&);
+
+      ELLE_CONCEPT_FILEABLE_METHODS(Object);
 
       //
       // attributes
