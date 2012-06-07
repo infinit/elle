@@ -5,7 +5,7 @@
 
 # include <elle/radix/Object.hh>
 
-# include <elle/io/Fileable.hh>
+# include <elle/concept/Fileable.hh>
 
 # include <elle/cryptography/PublicKey.hh>
 # include <elle/cryptography/PrivateKey.hh>
@@ -27,7 +27,7 @@ namespace elle
     ///
     class KeyPair:
       public Object,
-      public Fileable<KeyPair>
+      public elle::concept::Fileable<KeyPair>
     {
     public:
       //
