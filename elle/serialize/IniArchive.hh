@@ -21,9 +21,8 @@ namespace elle { namespace serialize {
         OutputIniArchive(StreamType& stream);
         OutputIniArchive(StreamType& stream, elle::format::ini::File const& ini_file);
 
-      protected:
-        OutputIniArchive& operator <<(elle::format::ini::File const& ini_file);
       public:
+        OutputIniArchive& operator <<(elle::format::ini::File const& ini_file);
         OutputIniArchive& operator <<(elle::format::ini::Section const& section);
       };
 

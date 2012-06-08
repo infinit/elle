@@ -29,7 +29,8 @@ namespace lune
   ///
   class Identity
     : public elle::radix::Object
-    , public elle::concept::Fileable<Identity>
+    , public elle::concept::Serializable<Identity>
+    , public elle::concept::Fileable<>
     , public elle::serialize::Uniquable<Identity>
   {
   public:
@@ -80,7 +81,7 @@ namespace lune
     //elle::Status        Extract(elle::Archive&);
 
     // fileable
-    ELLE_CONCEPT_FILEABLE_METHODS(Identity);
+    ELLE_CONCEPT_FILEABLE_METHODS();
     elle::Status        Load();
     elle::Status        Store() const;
     elle::Status        Erase() const;

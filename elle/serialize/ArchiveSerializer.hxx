@@ -226,8 +226,8 @@ namespace elle { namespace serialize {                                          
         template<typename Archive>                                              \
           static void Serialize(Archive& ar, T<T1>& value, unsigned int v)      \
           {                                                                     \
-            _ELLE_SERIALIZE_LOG_ACTION(T, v, Archive::mode, value)              \
-              { _Serialize(ar, value, version); }                               \
+            _ELLE_SERIALIZE_LOG_ACTION(T<T1>, v, Archive::mode, value)          \
+              { _Serialize(ar, value, v); }                                     \
           }                                                                     \
       private:                                                                  \
         template<typename Archive>                                              \

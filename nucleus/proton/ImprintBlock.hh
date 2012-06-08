@@ -37,6 +37,7 @@ namespace nucleus
     ///
     class ImprintBlock
       : public MutableBlock
+      , public elle::concept::Serializable<ImprintBlock>
     {
     public:
       //
@@ -65,6 +66,9 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
+      // fileable
+      ELLE_CONCEPT_SERIALIZABLE_METHODS(ImprintBlock);
+
       // archivable
       //elle::Status      Serialize(elle::Archive&) const;
       //elle::Status      Extract(elle::Archive&);
@@ -86,5 +90,6 @@ namespace nucleus
   }
 }
 
+# include <nucleus/proton/ImprintBlock.hxx>
+
 #endif
-#include <nucleus/proton/ImprintBlock.hxx>

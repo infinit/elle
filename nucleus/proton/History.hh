@@ -1,44 +1,29 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [wed jul  6 09:12:10 2011]
-//
+#ifndef  NUCLEUS_PROTON_HISTORY_HH
+# define NUCLEUS_PROTON_HISTORY_HH
 
-#ifndef NUCLEUS_PROTON_HISTORY_HH
-#define NUCLEUS_PROTON_HISTORY_HH
+# include <elle/concept/Fileable.hh>
+# include <elle/concept/Serializable.hh>
+# include <nucleus/Nucleus.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <nucleus/proton/Version.hh>
 
-#include <nucleus/Nucleus.hh>
-
-#include <nucleus/proton/Version.hh>
-
-#include <elle/idiom/Close.hh>
-# include <vector>
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  include <vector>
+# include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
   namespace proton
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// this class contains all the version numbers associated with
     /// a given mutable block.
     ///
-    class History:
-      public elle::radix::Object,
-      public elle::concept::Fileable<History>
+    class History
+      : public elle::radix::Object
+      , public elle::concept::Serializable<History>
+      , public elle::concept::Fileable<>
     {
     public:
       //
@@ -74,13 +59,8 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
-
-      // fileable
-
-      ELLE_CONCEPT_FILEABLE_METHODS(History);
+      using elle::concept::Fileable<>::Load;
+      using elle::concept::Fileable<>::Store;
 
       elle::Status      Load(const Network&,
                              const Address&);

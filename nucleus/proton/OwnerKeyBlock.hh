@@ -32,6 +32,7 @@ namespace nucleus
     ///
     class OwnerKeyBlock
       : public MutableBlock
+      //, public elle::concept::Fileable<OwnerKeyBlock>
     {
     public:
       //
@@ -58,6 +59,8 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
+      //ELLE_CONCEPT_FILEABLE_METHODS(OwnerKeyBlock);
+
       // archivable
       //elle::Status      Serialize(elle::Archive&) const;
       //elle::Status      Extract(elle::Archive&);
@@ -82,5 +85,6 @@ namespace nucleus
   }
 }
 
+# include <nucleus/proton/OwnerKeyBlock.hxx>
+
 #endif
-#include <nucleus/proton/OwnerKeyBlock.hxx>

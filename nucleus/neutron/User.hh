@@ -1,38 +1,23 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [thu apr 29 19:34:10 2010]
-//
-
 #ifndef NUCLEUS_NEUTRON_USER_HH
-#define NUCLEUS_NEUTRON_USER_HH
+# define NUCLEUS_NEUTRON_USER_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/concept/Serializable.hh>
 
-#include <nucleus/proton/Address.hh>
-#include <nucleus/proton/PublicKeyBlock.hh>
+# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/PublicKeyBlock.hh>
 
 namespace nucleus
 {
   namespace neutron
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// this class represents a user block which is supposed to
     /// contain information on the associated user.
     ///
-    class User:
-      public proton::PublicKeyBlock
+    class User
+      : public proton::PublicKeyBlock
+      , public elle::concept::Serializable<User>
     {
     public:
       //
@@ -52,6 +37,8 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
+      ELLE_CONCEPT_SERIALIZABLE_METHODS(User);
+
       // archivable
       //elle::Status      Serialize(elle::Archive&) const;
       //elle::Status      Extract(elle::Archive&);
@@ -65,5 +52,6 @@ namespace nucleus
   }
 }
 
+# include <nucleus/neutron/User.hxx>
+
 #endif
-#include <nucleus/neutron/User.hxx>

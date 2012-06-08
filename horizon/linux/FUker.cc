@@ -197,7 +197,7 @@ namespace horizon
             {
               std::string error(::strerror(errno));
               // ELLE_LOG_TRACE("FUSE error: %s", error);
-              log(error.c_str());
+              log("%s", error.c_str());
             }
         }
       // ELLE_LOG_TRACE("exit FUSE main");

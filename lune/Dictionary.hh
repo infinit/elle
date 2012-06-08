@@ -22,7 +22,8 @@ namespace lune
   ///
   class Dictionary
     : public elle::radix::Object
-    , public elle::concept::Fileable<Dictionary>
+    , public elle::concept::Serializable<Dictionary>
+    , public elle::concept::Fileable<>
   {
   public:
     //
@@ -45,7 +46,7 @@ namespace lune
     //elle::Status        Extract(elle::Archive&);
 
     // fileable
-    ELLE_CONCEPT_FILEABLE_METHODS(Dictionary);
+    ELLE_CONCEPT_FILEABLE_METHODS();
 
     elle::Status        Load();
     elle::Status        Store() const;

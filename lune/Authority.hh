@@ -1,4 +1,4 @@
-#ifndef LUNE_AUTHORITY_HH
+#ifndef  LUNE_AUTHORITY_HH
 # define LUNE_AUTHORITY_HH
 
 # include <elle/cryptography.fwd.hh>
@@ -11,10 +11,6 @@
 namespace lune
 {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
   ///
   /// this class represents the authority.
   ///
@@ -23,9 +19,10 @@ namespace lune
   /// public key, the most common case, through which it is only used to
   /// verify signatures.
   ///
-  class Authority:
-    public elle::radix::Object,
-    public elle::concept::Fileable<Authority>
+  class Authority
+    : public elle::radix::Object
+    , public elle::concept::Serializable<Authority>
+    , public elle::concept::Fileable<>
   {
   public:
     //
@@ -71,10 +68,8 @@ namespace lune
     // archivable
     //elle::Status        Serialize(elle::Archive&) const;
     //elle::Status        Extract(elle::Archive&);
-
-    // fileable
-    using elle::concept::Fileable<Authority>::Load;
-    using elle::concept::Fileable<Authority>::Store;
+    using elle::concept::Fileable<>::Load;
+    using elle::concept::Fileable<>::Store;
 
     elle::Status        Load();
     elle::Status        Store() const;

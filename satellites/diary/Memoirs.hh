@@ -18,7 +18,8 @@ namespace satellite
   class Memoirs
     : public elle::radix::Object
     , public elle::io::Dumpable
-    , public elle::concept::Fileable<Memoirs>
+    , public elle::concept::Serializable<Memoirs>
+    , public elle::concept::Fileable<>
     , private boost::noncopyable
   {
   public:

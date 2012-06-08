@@ -29,6 +29,7 @@ namespace nucleus
     ///
     class PublicKeyBlock
       : public MutableBlock
+      //, public elle::concept::Fileable<PublicKeyBlock>
     {
     public:
       //
@@ -61,6 +62,8 @@ namespace nucleus
       //elle::Status      Serialize(elle::Archive&) const;
       //elle::Status      Extract(elle::Archive&);
 
+      //ELLE_CONCEPT_FILEABLE_METHODS(PublicKeyBlock);
+
       //
       // attributes
       //
@@ -70,5 +73,6 @@ namespace nucleus
   }
 }
 
+# include <nucleus/proton/PublicKeyBlock.hxx>
+
 #endif
-#include <nucleus/proton/PublicKeyBlock.hxx>

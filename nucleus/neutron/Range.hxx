@@ -395,16 +395,9 @@ namespace nucleus
   }
 }
 
-#endif
-#ifndef  NUCLEUS_NEUTRON_RANGESERIALIZER_HXX
-# define NUCLEUS_NEUTRON_RANGESERIALIZER_HXX
-
 # include <cassert>
 
 # include <elle/serialize/ArchiveSerializer.hxx>
-
-# include <nucleus/neutron/Range.hh>
-
 
 ELLE_SERIALIZE_SPLIT_T1(nucleus::neutron::Range);
 

@@ -56,10 +56,6 @@ namespace nucleus
 
 # include <elle/idiom/Open.hh>
 
-#endif
-#ifndef  NUCLEUS_PROTON_ADDRESSSERIALIZER_HXX
-# define NUCLEUS_PROTON_ADDRESSSERIALIZER_HXX
-
 # include <cassert>
 
 # include <elle/cryptography/Digest.hh>
@@ -102,7 +98,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::proton::Address,
   archive >> has_digest;
 
   if (!has_digest)
-    return;
+    return; // XXX reset family & component ?
 
   archive >> value.family >> value.component;
   value.digest = archive.template Construct<elle::cryptography::Digest>().release();

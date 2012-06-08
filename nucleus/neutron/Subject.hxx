@@ -1,22 +1,21 @@
-#ifndef  NUCLEUS_NEUTRON_SUBJECTSERIALIZER_HXX
-# define NUCLEUS_NEUTRON_SUBJECTSERIALIZER_HXX
+#ifndef  NUCLEUS_NEUTRON_SUBJECT_HXX
+# define NUCLEUS_NEUTRON_SUBJECT_HXX
 
 # include <cassert>
 
-# include <elle/serialize/ArchiveSerializer.hxx>
-
 # include <elle/cryptography/PublicKey.hh>
+# include <elle/serialize/ArchiveSerializer.hxx>
+# include <elle/serialize/Pointer.hh>
+# include <elle/print.hh>
 
 # include <nucleus/proton/Address.hh>
-
 # include <nucleus/neutron/Subject.hh>
 
-ELLE_SERIALIZE_SPLIT(nucleus::neutron::Subject);
 
-ELLE_SERIALIZE_SPLIT_SAVE(nucleus::neutron::Subject,
-                          archive,
-                          value,
-                          version)
+ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Subject,
+                      archive,
+                      value,
+                      version)
 {
   assert(version == 0);
   using namespace nucleus::neutron;
@@ -25,44 +24,13 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::neutron::Subject,
   switch (value.type)
   {
   case Subject::TypeUser:
-    assert(value.user != nullptr);
-    archive << *value.user;
+    archive & elle::serialize::alive_pointer(value.user);
     break;
   case Subject::TypeGroup:
-    assert(value.group != nullptr);
-    archive << *value.group;
+    archive & elle::serialize::alive_pointer(value.group);
     break;
   default:
-    throw std::runtime_error("Unknown group!");
-    break;
-  }
-}
-
-ELLE_SERIALIZE_SPLIT_LOAD(nucleus::neutron::Subject,
-                          archive,
-                          value,
-                          version)
-{
-  assert(version == 0);
-  using namespace nucleus::neutron;
-
-  delete value.user;
-  value.user = nullptr;
-
-  delete value.group;
-  value.group = nullptr;
-
-  archive >> value.type;
-  switch (value.type)
-  {
-  case Subject::TypeUser:
-    value.user = archive.template Construct<elle::cryptography::PublicKey>().release();
-    break;
-  case Subject::TypeGroup:
-    value.group = archive.template Construct<nucleus::proton::Address>().release();
-    break;
-  default:
-    throw std::runtime_error("Unknown group!");
+    throw std::runtime_error("Unknown subject type: " + elle::sprint((int) value.type));
     break;
   }
 }
