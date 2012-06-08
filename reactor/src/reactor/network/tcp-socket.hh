@@ -52,12 +52,6 @@ namespace reactor
     private:
       Mutex _write_mutex;
 
-    /*-----------.
-    | Properties |
-    `-----------*/
-    public:
-      EndPoint Peer() const;
-
     /*----------------.
     | Pretty printing |
     `----------------*/

@@ -217,11 +217,6 @@ namespace reactor
     | Properties |
     `-----------*/
 
-    TCPSocket::EndPoint
-    TCPSocket::Peer() const
-    {
-      return this->_socket->remote_endpoint();
-    }
 
     /*----------------.
     | Pretty Printing |
@@ -230,7 +225,7 @@ namespace reactor
     void
     TCPSocket::print(std::ostream& s) const
     {
-      s << "reactor::network::TCPSocket " << _socket->local_endpoint();
+      s << "reactor::network::TCPSocket(" << peer() << ")";
     }
   }
 }
