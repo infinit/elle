@@ -13,12 +13,11 @@
 
 namespace elle { namespace concept {
 
-    template<typename T, _ELLE_CONCEPT_FILEABLE_TPL_AR_DECL>
-      Status Fileable<T, Archive>::Load(Path const& path)
+    template<__ECS_ARCHIVE_TPL(Archive)>
+      Status Fileable<Archive>::Load(elle::io::Path const& path)
       {
-        ELLE_LOG_TRACE_COMPONENT("Infinit.IO");
-        ELLE_LOG_TRACE("Loading %p to from file %s",
-                       static_cast<T const*>(this), path.str())
+        ELLE_LOG_TRACE_COMPONENT("elle.concept");
+        ELLE_LOG_TRACE("Loading %p to from file %s", this, path.str())
         {
           std::ifstream in(path.str(), std::ios_base::in | std::ios_base::binary);
           if (!in.good())
@@ -30,11 +29,14 @@ namespace elle { namespace concept {
           try
             {
               Archive<elle::serialize::ArchiveMode::Input> archive(in);
-              archive >> static_cast<T&>(*this);
-
+              this->deserialize(archive);
             }
           catch (std::exception const& err)
             {
+              escape("%s", (
+                  "Cannot load from '" + path.str() + "': " +
+                  std::string(err.what())
+              ).c_str());
               return elle::Status::Error;
               //throw std::runtime_error(
               //    "Cannot load from '" + path.str() + "': " +
@@ -44,12 +46,11 @@ namespace elle { namespace concept {
         }
       }
 
-    template<typename T, _ELLE_CONCEPT_FILEABLE_TPL_AR_DECL>
-      Status Fileable<T, Archive>::Store(Path const& path) const
+    template<__ECS_ARCHIVE_TPL(Archive)>
+      Status Fileable<Archive>::Store(elle::io::Path const& path) const
       {
-        ELLE_LOG_TRACE_COMPONENT("Infinit.IO");
-        ELLE_LOG_TRACE("Saving %p to file %s",
-                       static_cast<T const*>(this), path.str())
+        ELLE_LOG_TRACE_COMPONENT("elle.concept");
+        ELLE_LOG_TRACE("Saving %p to file %s", this, path.str())
         {
           if (File::Dig(path) == elle::Status::Error)
             escape("unable to dig the chain of directories");
@@ -64,11 +65,15 @@ namespace elle { namespace concept {
 
           try
             {
-              typedef Archive<elle::serialize::ArchiveMode::Output> OutArchive;
-              OutArchive(out, static_cast<T const&>(*this));
+              Archive<elle::serialize::ArchiveMode::Output> archive(out);
+              this->serialize(archive);
             }
           catch (std::exception const& err)
             {
+              escape("%s", (
+                  "Cannot store to '" + path.str() + "': " +
+                  std::string(err.what())
+              ).c_str());
               return elle::Status::Error;
               //throw std::runtime_error(
               //    "Cannot load from '" + path.str() + "': " +
