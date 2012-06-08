@@ -42,8 +42,9 @@ namespace reactor
                                          const EndPoint& peer)
       : Super(sched)
       , _socket(0)
+      , _peer(peer)
     {
-      _connect(peer);
+      _connect(_peer);
     }
 
     template <typename AsioSocket>
@@ -51,6 +52,7 @@ namespace reactor
                                          AsioSocket* socket)
       : Super(sched)
       , _socket(socket)
+      , _peer(socket->remote_endpoint())
     {}
 
     template <typename AsioSocket>
@@ -166,6 +168,21 @@ namespace reactor
       Buffer buffer(data, strlen(data));
       return write(buffer);
     }
+
+    /*-----------.
+    | Properties |
+    `-----------*/
+
+    template <typename AsioSocket>
+    typename PlainSocket<AsioSocket>::EndPoint
+    PlainSocket<AsioSocket>::peer() const
+    {
+      return this->_peer;
+    }
+
+    /*------------------------.
+    | Explicit instantiations |
+    `------------------------*/
 
     template
     class PlainSocket<boost::asio::ip::tcp::socket>;

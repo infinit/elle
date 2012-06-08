@@ -97,17 +97,24 @@ namespace reactor
         void _connect(const EndPoint& peer);
         void _disconnect();
 
-      /*------------.
-      | Asio socket |
-      `------------*/
-      protected:
-        friend class TCPServer;
-        friend class TCPSocket;
-        friend class UDPServer;
-        friend class UDPSocket;
-        template <typename AsioSocket>
-        friend class SocketOperation;
-        AsioSocket* _socket;
+    /*-----------.
+    | Properties |
+    `-----------*/
+    public:
+      EndPoint peer() const;
+
+    /*------------.
+    | Asio socket |
+    `------------*/
+    protected:
+      friend class TCPServer;
+      friend class TCPSocket;
+      friend class UDPServer;
+      friend class UDPSocket;
+      template <typename AsioSocket>
+      friend class SocketOperation;
+      AsioSocket* _socket;
+      EndPoint _peer;
     };
   }
 }
