@@ -27,6 +27,13 @@ namespace reactor
     | Pretty printing |
     `----------------*/
 
+    template <typename AsioSocket>
+    void
+    PlainSocket<AsioSocket>::print(std::ostream& s) const
+    {
+      s << "reactor::network::Socket(" << this->peer() << ")";
+    }
+
     std::ostream& operator << (std::ostream& s, const Socket& socket)
     {
       socket.print(s);

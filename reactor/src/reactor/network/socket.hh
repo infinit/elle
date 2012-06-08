@@ -55,11 +55,11 @@ namespace reactor
       private:
         Scheduler& _sched;
 
-      /*----------------.
-      | Pretty printing |
-      `----------------*/
-      public:
-        virtual void print(std::ostream& s) const = 0;
+     /*----------------.
+     | Pretty printing |
+     `----------------*/
+    public:
+      virtual void print(std::ostream& s) const = 0;
     };
     std::ostream& operator << (std::ostream& s, const Socket& socket);
 
@@ -102,6 +102,12 @@ namespace reactor
     `-----------*/
     public:
       EndPoint peer() const;
+
+    /*----------------.
+    | Pretty printing |
+    `----------------*/
+    public:
+      virtual void print(std::ostream& s) const;
 
     /*------------.
     | Asio socket |
