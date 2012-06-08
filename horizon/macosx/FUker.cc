@@ -16,6 +16,7 @@
 # include <sys/mount.h>
 # include <reactor/scheduler.hh>
 # include <reactor/thread.hh>
+# include <fuse/fuse_lowlevel.h>
 #include <elle/idiom/Open.hh>
 
 #include <horizon/operations.hh>
@@ -24,6 +25,7 @@ namespace horizon
 {
   namespace macosx
   {
+    // XXX
     typedef struct ::timespec timespec2[2];
 
     ///
@@ -34,6 +36,12 @@ namespace horizon
     /// to fuse_main() never returns.
     ///
     ::pthread_t                 FUker::Thread;
+
+    ///
+    /// this attribute represents the main structure for manipulating a
+    /// FUSE-mounted point.
+    ///
+    struct ::fuse*              FUker::FUSE = nullptr;
 
     /// The callbacks below are triggered by FUSE whenever a kernel
     /// event occurs.
@@ -202,13 +210,43 @@ namespace horizon
         operations.flag_nullpath_ok = 1;
       }
 
-      // finally, initialize FUSE.
-      if (::fuse_main(
-            sizeof (arguments) / sizeof (elle::Character*),
-            const_cast<char**>(arguments),
-            &operations,
-            NULL) != 0)
-        log(::strerror(errno));
+      char* mountpoint;
+      int multithreaded;
+
+      if ((FUker::FUSE = ::fuse_setup(
+             sizeof (arguments) / sizeof (elle::Character*),
+             const_cast<char**>(arguments),
+             &operations,
+             sizeof (operations),
+             &mountpoint,
+             &multithreaded,
+             NULL)) == NULL)
+        goto _error;
+
+      if (multithreaded)
+        {
+          if (::fuse_loop_mt(FUker::FUSE) == -1)
+            goto _error;
+        }
+      else
+        {
+          if (::fuse_loop(FUker::FUSE) == -1)
+            goto _error;
+        }
+
+      ::fuse_teardown(FUker::FUSE, mountpoint);
+
+      // reset the FUSE structure pointer.
+      FUker::FUSE = nullptr;
+
+      // now that FUSE has stopped, make sure the program is exiting.
+      elle::Program::Exit();
+
+      return NULL;
+
+    _error:
+      // log the error.
+      log(::strerror(errno));
 
       // now that FUSE has stopped, make sure the program is exiting.
       elle::Program::Exit();
@@ -217,13 +255,21 @@ namespace horizon
     }
 
     ///
-    /// XXX[to replace by the new signal mechanism]
+    /// this method is triggered so as to launch the FUSE-specific thread.
     ///
     elle::Status        FUker::Run()
     {
       // create the FUSE-specific thread.
       if (::pthread_create(&FUker::Thread, NULL, &FUker::Setup, NULL) != 0)
         escape("unable to create the FUSE-specific thread");
+
+      // XXX[race conditions exist here:
+      //     1) the FUSE thread calls Program::Exit() before our event loop
+      //        is entered.
+      //     2) using the FUker::FUSE pointer to know if FUSE has been cleaned
+      //        is a bad idea since teardown() could have been called, still
+      //        the pointer would not be NULL. there does not seem to be much
+      //        to do since we do not control FUSE internal loop and logic.]
 
       return elle::StatusOk;
     }
@@ -263,49 +309,25 @@ namespace horizon
     ///
     elle::Status        FUker::Clean()
     {
-      // unmount the file system.
-      //
-      // this operation will normally make FUSE exit.
-      ::unmount(Infinit::Mountpoint.c_str(), MNT_FORCE);
+      if (FUker::FUSE != nullptr)
+        {
+          // exit FUSE.
+          ::fuse_exit(FUker::FUSE);
 
-      /* XXX[solution 1]
-      if (::geteuid() == 0)
-        ::fuse_mnt_umount("horizon",
-                          Infinit::Mountpoint.c_str(),
-                          Infinit::Mountpoint.c_str(),
-                          1);
-      */
+          // manually perform a file system call so as to wake up the FUSE
+          // worker which is currently blocked waiting for data on the FUSE
+          // socket. note that the call will not be treated as FUSE will
+          // realise it has exited first.
+          //
+          // this is quite an un-pretty hack, but nothing has has been found
+          // since the FUSE thread is blocked on an I/O.
+          struct ::statfs stfs;
+          ::statfs(Infinit::Mountpoint.c_str(), &stfs);
 
-      /* XXX[solution 2 from hello_ll.c]
-int main(int argc, char *argv[])
-{
-struct fuse_args args = FUSE_ARGS_INIT(argc, argv);
-        struct fuse_chan *ch;
-        char *mountpoint;
-        int err = -1;
-
-        if (fuse_parse_cmdline(&args, &mountpoint, NULL, NULL) != -1 &&
-            (ch = fuse_mount(mountpoint, &args)) != NULL) {
-                struct fuse_session *se;
-
-                se = fuse_lowlevel_new(&args, &hello_ll_oper,
-                                       sizeof(hello_ll_oper), NULL);
-                if (se != NULL) {
-                        if (fuse_set_signal_handlers(se) != -1) {
-                                fuse_session_add_chan(se, ch);
-                                err = fuse_session_loop(se);
-                                fuse_remove_signal_handlers(se);
-                                fuse_session_remove_chan(ch);
-                                }
-                        fuse_session_destroy(se);
-                }
-                fuse_unmount(mountpoint, ch);
+          // finally, wait for the FUSE-specific thread to exit.
+          if (::pthread_join(FUker::Thread, NULL) != 0)
+            log(::strerror(errno));
         }
-        fuse_opt_free_args(&args);
-
-        return err ? 1 : 0;
-}
-      */
 
       return elle::StatusOk;
     }

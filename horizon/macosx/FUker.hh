@@ -73,6 +73,7 @@ namespace horizon
       // static attributes
       //
       static ::pthread_t        Thread;
+      static ::fuse*            FUSE;
     };
   }
 }
