@@ -12,8 +12,9 @@
 # include <boost/preprocessor/seq/pop_front.hpp>
 # include <QCoreApplication>
 # include <pthread.h>
-# include <sys/param.h>
 # include <sys/mount.h>
+# include <sys/param.h>
+# include <sys/statfs.h>
 # include <reactor/scheduler.hh>
 # include <reactor/thread.hh>
 # include <fuse/fuse_lowlevel.h>
