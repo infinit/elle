@@ -40,8 +40,9 @@ namespace nucleus
     /// benefit in encrypting the data for fun.
     ///
     template <typename T>
-    class Contents:
-      public proton::ContentHashBlock
+    class Contents
+      : public proton::ContentHashBlock
+      , public elle::concept::Serializable<Contents<T>>
     {
     public:
       //
@@ -69,6 +70,9 @@ namespace nucleus
 
       // object
       declare(Contents<T>);
+
+      // fileable
+      ELLE_CONCEPT_SERIALIZABLE_METHODS(Contents<T>);
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;

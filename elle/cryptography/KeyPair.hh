@@ -25,9 +25,10 @@ namespace elle
     /// a public key is noted with a capital 'K' while a private key is
     /// noted with a lower-case 'k'.
     ///
-    class KeyPair:
-      public Object,
-      public elle::concept::Fileable<KeyPair>
+    class KeyPair
+      : public Object
+      , public elle::concept::Serializable<KeyPair>
+      , public elle::concept::Fileable<>
     {
     public:
       //

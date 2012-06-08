@@ -18,7 +18,8 @@ namespace elle { namespace utility {
     ///
     class Settings
       : public elle::format::ini::File
-      , public elle::concept::Fileable<Settings, elle::serialize::IniArchive>
+      , public elle::concept::Serializable<Settings, elle::serialize::IniArchive>
+      , public elle::concept::Fileable<elle::serialize::IniArchive>
       , public elle::io::Dumpable
     {
     public:

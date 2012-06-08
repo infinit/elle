@@ -19,9 +19,10 @@ namespace lune
   /// this class holds the set or subset of initial nodes required for
   /// a hole implementation to initiate connections.
   ///
-  class Set:
-    public elle::radix::Object,
-    public elle::concept::Fileable<Set>
+  class Set
+    : public elle::radix::Object
+    , public elle::concept::Serializable<Set>
+    , public elle::concept::Fileable<>
   {
   public:
     //
@@ -51,11 +52,8 @@ namespace lune
     // dumpable
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
-    // archivable
-    //elle::Status        Serialize(elle::Archive&) const;
-    //elle::Status        Extract(elle::Archive&);
-
     // fileable
+    ELLE_CONCEPT_FILEABLE_METHODS();
     elle::Status        Load(const elle::String&);
     elle::Status        Store(const elle::String&) const;
     elle::Status        Erase(const elle::String&) const;

@@ -2422,6 +2422,7 @@ namespace elle
           template<typename ElementType> static ElementType& Get(T& value)    \
           { return value.element ## n; }                                      \
         };                                                                    \
+      /**/
 
       // specializations for args 1 to 9
       __ELLE_RADIX_ARGUMENTS_EXTRACT_EL(1);
@@ -2462,7 +2463,14 @@ namespace elle
               // its type
               typedef typename TypeAt<sizeof...(T) - N, T...>::type ElementType;
 
-              ar & ElementAt<sizeof...(T) - N, Type>::template Get<ElementType>(value);
+              ELLE_LOG_TRACE_COMPONENT("Infinit.Serialize");
+              ELLE_LOG_TRACE("%s Argument #%u: %p",
+                             Archive::mode == elle::serialize::ArchiveMode::Input ? "Loading" : "Saving",
+                             sizeof...(T) - N,
+                             &value)
+              {
+                ar & ElementAt<sizeof...(T) - N, Type>::template Get<ElementType>(value);
+              }
 
               // recurse
               ArgumentsSerializer<N - 1, T...>::Serialize(ar, value);
@@ -2498,7 +2506,10 @@ namespace elle
           {
             assert(version == 0);
             typedef elle::radix::detail::ArgumentsSerializer<sizeof...(T), T...> Serializer;
-            Serializer::Serialize(ar, value);
+            _ELLE_SERIALIZE_LOG_ACTION(elle::radix::Arguments, version, Archive::mode, value)
+            {
+              Serializer::Serialize(ar, value);
+            }
           }
       };
 

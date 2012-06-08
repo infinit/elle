@@ -2,6 +2,7 @@
 # define NUCLEUS_NEUTRON_OBJECTSERIALIZER_HXX
 
 # include <cassert>
+# include <stdexcept>
 
 # include <elle/cryptography/Signature.hh>
 
@@ -17,6 +18,34 @@
 # include <nucleus/neutron/Token.hh>
 
 # include <nucleus/neutron/Object.hh>
+
+namespace nucleus
+{
+  namespace neutron
+  {
+    namespace detail
+    {
+
+      // XXX it would be better to serialize Record class
+      template<elle::serialize::ArchiveMode mode> struct SelectMethod
+      { static void update(nucleus::neutron::Object&) {} };
+
+      template<> struct SelectMethod<elle::serialize::ArchiveMode::Input>
+      {
+        static void update(nucleus::neutron::Object& value)
+        {
+          if (value.meta.owner.record.Update(
+                  value.owner.subject,
+                  value.meta.owner.permissions,
+                  value.meta.owner.token) == elle::Status::Error)
+              throw std::runtime_error("unable to create the owner access record");
+        }
+      };
+
+    }
+  }
+}
+
 
 ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Object,
                       archive,
@@ -43,6 +72,8 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Object,
   archive & value.data.stamp;
   archive & value.data.version;
   archive & value.data.signature;
+
+  nucleus::neutron::detail::SelectMethod<Archive::mode>::update(value); // XXX
 }
 
 #endif

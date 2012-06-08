@@ -213,13 +213,7 @@ namespace elle
   }
 }
 
-#endif
-#ifndef  ELLE_NETWORK_BUNDLE_SERIALIZE_HXX
-# define ELLE_NETWORK_BUNDLE_SERIALIZE_HXX
-
 # include <elle/radix/Arguments.hh>
-
-# include <elle/network/Bundle.hh>
 
 namespace elle
 {
@@ -247,8 +241,11 @@ namespace elle
         static void Serialize(Archive& ar, Type& value, unsigned int version)
         {
           assert(version == 0);
-          ar & value.tag;
-          ar & value.arguments;
+          _ELLE_SERIALIZE_LOG_ACTION(elle::network::Bundle::Inputs, version, Archive::mode, value)
+          {
+            ar & value.tag;
+            ar & value.arguments;
+          }
         }
     };
 
@@ -274,8 +271,11 @@ namespace elle
         static void Serialize(Archive& ar, Type& value, unsigned int version)
         {
           assert(version == 0);
-          ar & value.tag;
-          ar & value.arguments;
+          _ELLE_SERIALIZE_LOG_ACTION(elle::network::Bundle::Outputs, version, Archive::mode, value)
+          {
+            ar & value.tag;
+            ar & value.arguments;
+          }
         }
     };
   }

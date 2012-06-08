@@ -1,3 +1,5 @@
+#include <elle/print.hh>
+
 #include <nucleus/neutron/Catalog.hh>
 #include <nucleus/neutron/Range.hh>
 #include <nucleus/neutron/Entry.hh>
@@ -146,8 +148,11 @@ namespace etoile
       // check if the current user has the right the read the catalog.
       if ((context.rights.permissions & nucleus::PermissionRead) !=
           nucleus::PermissionRead)
-        escape("the user does not seem to have the permission to read "
-               "this directory");
+        escape("%s", (
+            "the user does not seem to have the permission to read "
+            "this directory (permissions=" +
+            elle::sprint(context.rights.permissions) + ")"
+        ).c_str());
 
       // open the contents.
       if (Contents::Open(context) == elle::Status::Error)

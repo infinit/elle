@@ -75,5 +75,6 @@ namespace nucleus
 
 std::ostream& operator <<(std::ostream& out, nucleus::proton::Version const& v);
 
+# include <nucleus/proton/Version.hxx>
+
 #endif
-#include <nucleus/proton/Version.hxx>

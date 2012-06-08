@@ -1,8 +1,7 @@
 #ifndef NUCLEUS_PROTON_BLOCK_HH
 # define NUCLEUS_PROTON_BLOCK_HH
 
-# include <elle/concept/Fileable.hh>
-# include <elle/serialize/SerializableMixin.hh>
+# include <elle/concept/Serializable.hh>
 
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/Network.hh>
@@ -32,8 +31,8 @@ namespace nucleus
     ///
     class Block
       : public elle::radix::Object
-      , public elle::serialize::SerializableMixin<Block>
-      , public elle::concept::AbstractFileable<> // XXX let only Erase method public
+      , public elle::concept::contract::Serializable<>
+      , public elle::concept::Fileable<>
     {
     public:
       //
@@ -63,22 +62,13 @@ namespace nucleus
       declare(Block);
 # include <elle/idiom/Close.hh>
 
+      // XXX breaks serializable contract. Remove when Block can be an
+      // abstract class.
+      virtual void serialize(OutputArchive&) const { throw false; }
+      virtual void deserialize(InputArchive&)  { throw false; }
+
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;
-
-      //// archivable
-      //elle::Status              Serialize(elle::Archive&) const;
-      //elle::Status              Extract(elle::Archive&);
-
-      // fileable
-      // ELLE_CONCEPT_FILEABLE_ABSTRACT_METHODS();
-      // XXX: remove the following with the previous line when
-      //      elle::network::Procedure is out (it breaks the contract).
-      // <XXX>
-      virtual elle::Status Load(elle::io::Path const&) { throw false; };
-      virtual elle::Status Store(elle::io::Path const&) const { throw false; };
-      // </XXX>
-
 
       virtual elle::Status      Erase(const Network&,
                                       const Address&) const;

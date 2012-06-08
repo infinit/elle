@@ -1,9 +1,22 @@
 
-./satellites/passport/8passport -c
-./satellites/user/8user -c -n johndoe
-./satellites/network/8network -c -n network -m local -a johndoe
+# usage: cd build/<platform> && . ../../documentation/tmp/HOWTO
+
+rm -rf ~/.config/infinit
+mkdir -p ~/.config/infinit/
+cp oracle/infinit.auth ~/.config/infinit
+cat ../../.config/infinit/infinit.conf | sed 's/true/1/' > ~/.config/infinit/infinit.conf
+
+echo 'hit enter whenever you want !'
+
+echo 'creating passport'
+./satellites/passport/8passport -c &> 8passport.log
+
+echo 'creating user'
+./satellites/user/8user -c -n johndoe &> 8user.log
 cd ~/.config/infinit
 cp users/johndoe/johndoe.idy infinit.idy
 cp users/johndoe/johndoe.dic infinit.dic
-cd -
-./8infinit -n network -m ~/mnt
+cd - > /dev/null
+
+echo 'creating network'
+./satellites/network/8network -c -n network -m local -a johndoe &> 8network.log

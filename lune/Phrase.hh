@@ -21,9 +21,10 @@ namespace lune
   /// the portal attribute represents the name of the local socket to
   /// connect to in order to issue requests to Infinit.
   ///
-  class Phrase:
-    public elle::radix::Object,
-    public elle::concept::Fileable<Phrase>
+  class Phrase
+    : public elle::radix::Object
+    , public elle::concept::Serializable<Phrase>
+    , public elle::concept::Fileable<>
   {
   public:
     //
@@ -53,7 +54,7 @@ namespace lune
     //elle::Status        Extract(elle::Archive&);
 
     // fileable
-    ELLE_CONCEPT_FILEABLE_METHODS(Phrase);
+    ELLE_CONCEPT_FILEABLE_METHODS();
     elle::Status        Load(const elle::String&);
     elle::Status        Store(const elle::String&) const;
     elle::Status        Erase(const elle::String&) const;

@@ -1,37 +1,19 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar 31 23:32:06 2010]
-//
+#ifndef  NUCLEUS_NEUTRON_ATTRIBUTES_HH
+# define NUCLEUS_NEUTRON_ATTRIBUTES_HH
 
-#ifndef NUCLEUS_NEUTRON_ATTRIBUTES_HH
-#define NUCLEUS_NEUTRON_ATTRIBUTES_HH
+# include <elle/types.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <nucleus/neutron/Trait.hh>
+# include <nucleus/neutron/Index.hh>
+# include <nucleus/neutron/Size.hh>
+# include <nucleus/neutron/Range.hh>
 
-#include <elle/types.hh>
-
-#include <nucleus/neutron/Trait.hh>
-#include <nucleus/neutron/Index.hh>
-#include <nucleus/neutron/Size.hh>
-#include <nucleus/neutron/Range.hh>
-
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
   namespace neutron
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class contains a list of (key, data) tuples that can be
@@ -80,5 +62,6 @@ namespace nucleus
   }
 }
 
+# include <nucleus/neutron/Attributes.hxx>
+
 #endif
-#include <nucleus/neutron/Attributes.hxx>

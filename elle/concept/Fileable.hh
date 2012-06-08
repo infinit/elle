@@ -41,44 +41,13 @@
 # include <string>
 # include <typeinfo>
 
+# include <elle/concept/Serializable.hh>
 # include <elle/io/Path.hh>
 # include <elle/serialize/BinaryArchive.fwd.hh>
 
-///
-/// - exposed macros ----------------------------------------------------------
-///
-
-// Desambiguate Fileable<T> methods
-# define ELLE_CONCEPT_FILEABLE_METHODS(cls)                                   \
-  ELLE_CONCEPT_FILEABLE_LOAD(cls)                                             \
-  ELLE_CONCEPT_FILEABLE_STORE(cls)                                            \
-  /**/
-
-// This version does not work in any case
-//  using elle::concept::Fileable<cls>::Load;                                   \
-//  using elle::concept::Fileable<cls>::Store                                   \
-//  /**/
-
-
-
-# define ELLE_CONCEPT_FILEABLE_STORE(cls)                                     \
-  virtual elle::Status Store(elle::io::Path const& path) const                \
-  {                                                                           \
-    return this->elle::concept::Fileable<cls>::Store(path);                   \
-  }                                                                           \
-  /**/
-
-# define ELLE_CONCEPT_FILEABLE_LOAD(cls)                                      \
-  virtual elle::Status Load(elle::io::Path const& path)                       \
-  {                                                                           \
-    return this->elle::concept::Fileable<cls>::Load(path);                    \
-  }                                                                           \
-  /**/
-
-// Force using methods from AbstractFileable class.
-# define ELLE_CONCEPT_FILEABLE_ABSTRACT_METHODS()                             \
-  using elle::concept::AbstractFileable<>::Load;                              \
-  using elle::concept::AbstractFileable<>::Store                              \
+# define ELLE_CONCEPT_FILEABLE_METHODS(...)                                   \
+  using elle::concept::Fileable<__VA_ARGS__>::Store;                          \
+  using elle::concept::Fileable<__VA_ARGS__>::Load                            \
   /**/
 
 namespace elle
@@ -86,61 +55,13 @@ namespace elle
   namespace concept
   {
 
-    ///
-    /// - macros helpers ------------------------------------------------------
-    ///
-
-# define _ELLE_CONCEPT_FILEABLE_TPL_AR_DECL                                   \
-  template<elle::serialize::ArchiveMode> class Archive                        \
-  /**/
-
-# define _ELLE_CONCEPT_FILEABLE_TPL_AR_DECL_DEFAULT                           \
-  _ELLE_CONCEPT_FILEABLE_TPL_AR_DECL = elle::serialize::BinaryArchive         \
-  /**/
-
-    ///
-    /// - internals -----------------------------------------------------------
-    ///
-    namespace detail
-    {
-
-      // common interface, not exposed
-      template<_ELLE_CONCEPT_FILEABLE_TPL_AR_DECL>
-      struct IFileable
-      {
-      public:
-        virtual elle::Status Load(elle::io::Path const& path) = 0;
-        virtual elle::Status Store(elle::io::Path const&) const = 0;
-        virtual ~IFileable() {}
-      };
-
-    } // !detail
-
-    ///
-    /// - concept implem ------------------------------------------------------
-    ///
-
-    /// Makes a type T `fileable` when it inherits Fileable<T>
-    template<typename T, _ELLE_CONCEPT_FILEABLE_TPL_AR_DECL_DEFAULT>
+    template<__ECS_DEFAULT_ARCHIVE_TPL(Archive)>
     struct Fileable
-      : virtual detail::IFileable<Archive>
+      : virtual contract::_Serializable<Archive>
     {
       Status Load(elle::io::Path const& path);
       Status Store(elle::io::Path const& path) const;
     };
-
-
-    ///
-    /// - concept contract ----------------------------------------------------
-    ///
-
-    ///
-    /// This interface enforces that the final type is also `fileable`.
-    ///
-    template<_ELLE_CONCEPT_FILEABLE_TPL_AR_DECL_DEFAULT>
-    struct AbstractFileable
-      : public virtual detail::IFileable<Archive>
-    {};
 
   } // !concept
 } // !elle

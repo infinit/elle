@@ -98,5 +98,6 @@ namespace etoile
   }
 }
 
+# include <etoile/gear/Context.hxx>
+
 #endif
-#include <etoile/gear/Context.hxx>

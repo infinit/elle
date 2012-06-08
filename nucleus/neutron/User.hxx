@@ -1,5 +1,5 @@
-#ifndef  NUCLEUS_NEUTRON_USERSERIALIZER_HXX
-# define NUCLEUS_NEUTRON_USERSERIALIZER_HXX
+#ifndef  NUCLEUS_NEUTRON_USER_HXX
+# define NUCLEUS_NEUTRON_USER_HXX
 
 # include <cassert>
 
@@ -13,6 +13,9 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::User,
                       version)
 {
   assert(version == 0);
+  typedef nucleus::proton::PublicKeyBlock Super;
+  archive & static_cast<Super&>(value);
+  archive & value.attributes;
 }
 
 #endif
