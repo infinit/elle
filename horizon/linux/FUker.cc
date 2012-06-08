@@ -10,7 +10,6 @@
 # include <boost/preprocessor/seq/for_each.hpp>
 # include <boost/preprocessor/seq/for_each_i.hpp>
 # include <boost/preprocessor/seq/pop_front.hpp>
-# include <QCoreApplication>
 # include <pthread.h>
 # include <sys/mount.h>
 # include <sys/param.h>
