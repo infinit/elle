@@ -63,10 +63,9 @@ namespace horizon
       //
       // static methods
       //
-      static void*              Setup(void*);
-      static elle::Status       Run();
-
       static elle::Status       Initialize();
+      static elle::Status       Run();
+      static void*              Setup(void*);
       static elle::Status       Clean();
 
       //

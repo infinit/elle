@@ -44,15 +44,16 @@ namespace horizon
       //
       // static methods
       //
-      static elle::Status       Clean();
       static elle::Status       Initialize();
       static elle::Status       Run();
       static void*              Setup(void*);
+      static elle::Status       Clean();
 
       //
       // static attributes
       //
       static ::pthread_t        Thread;
+      static ::fuse*            FUSE;
     };
   }
 }

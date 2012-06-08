@@ -16,6 +16,7 @@
 # include <sys/mount.h>
 # include <reactor/scheduler.hh>
 # include <reactor/thread.hh>
+# include <fuse/fuse_lowlevel.h>
 #include <elle/idiom/Open.hh>
 
 #include <elle/concurrency/Scheduler.hh>
@@ -32,6 +33,7 @@ namespace horizon
 {
   namespace linux
   {
+    // XXX
     typedef struct ::timespec timespec2[2];
 
     ///
@@ -42,6 +44,12 @@ namespace horizon
     /// to fuse_main() never returns.
     ///
     ::pthread_t                 FUker::Thread;
+
+    ///
+    /// this attribute represents the main structure for manipulating a
+    /// FUSE-mounted point.
+    ///
+    struct ::fuse*              FUker::FUSE = nullptr;
 
     /// The callbacks below are triggered by FUSE whenever a kernel
     /// event occurs.
@@ -110,6 +118,10 @@ namespace horizon
       const char*       arguments[] =
         {
           "horizon",
+
+          // XXX
+          "-s",
+          "-d",
 
           //
           // this option does not register FUSE as a daemon but
@@ -180,13 +192,43 @@ namespace horizon
         operations.flag_nullpath_ok = 1;
       }
 
-      // finally, initialize FUSE.
-      if (::fuse_main(
-            sizeof (arguments) / sizeof (elle::Character*),
-            const_cast<char**>(arguments),
-            &operations,
-            NULL) != 0)
-        log(::strerror(errno));
+      char* mountpoint;
+      int multithreaded;
+
+      if ((FUker::FUSE = ::fuse_setup(
+             sizeof (arguments) / sizeof (elle::Character*),
+             const_cast<char**>(arguments),
+             &operations,
+             sizeof (operations),
+             &mountpoint,
+             &multithreaded,
+             NULL)) == NULL)
+        goto _error;
+
+      if (multithreaded)
+        {
+          if (::fuse_loop_mt(FUker::FUSE) == -1)
+            goto _error;
+        }
+      else
+        {
+          if (::fuse_loop(FUker::FUSE) == -1)
+            goto _error;
+        }
+
+      ::fuse_teardown(FUker::FUSE, mountpoint);
+
+      // reset the FUSE structure pointer.
+      FUker::FUSE = nullptr;
+
+      // now that FUSE has stopped, make sure the program is exiting.
+      elle::Program::Exit();
+
+      return NULL;
+
+    _error:
+      // log the error.
+      log(::strerror(errno));
 
       // now that FUSE has stopped, make sure the program is exiting.
       elle::Program::Exit();
@@ -202,6 +244,14 @@ namespace horizon
       // create the FUSE-specific thread.
       if (::pthread_create(&FUker::Thread, NULL, &FUker::Setup, NULL) != 0)
         escape("unable to create the FUSE-specific thread");
+
+      // XXX[race conditions exist here:
+      //     1) the FUSE thread calls Program::Exit() before our event loop
+      //        is entered.
+      //     2) using the FUker::FUSE pointer to know if FUSE has been cleaned
+      //        is a bad idea since teardown() could have been called, still
+      //        the pointer would not be NULL. there does not seem to be much
+      //        to do since we do not control FUSE internal loop and logic.]
 
       return elle::StatusOk;
     }
@@ -241,10 +291,25 @@ namespace horizon
     ///
     elle::Status        FUker::Clean()
     {
-      // unmount the file system.
-      //
-      // this operation will normally make FUSE exit.
-      ::umount2(Infinit::Mountpoint.c_str(), MNT_FORCE);
+      if (FUker::FUSE != nullptr)
+        {
+          // exit FUSE.
+          ::fuse_exit(FUker::FUSE);
+
+          // manually perform a file system call so as to wake up the FUSE
+          // worker which is currently blocked waiting for data on the FUSE
+          // socket. note that the call will not be treated as FUSE will
+          // realise it has exited first.
+          //
+          // this is quite an un-pretty hack, but nothing has has been found
+          // since the FUSE thread is blocked on an I/O.
+          struct ::statfs stfs;
+          ::statfs(Infinit::Mountpoint.c_str(), &stfs);
+
+          // finally, wait for the FUSE-specific thread to exit.
+          if (::pthread_join(FUker::Thread, NULL) != 0)
+            log(::strerror(errno));
+        }
 
       return elle::StatusOk;
     }
