@@ -2,15 +2,12 @@ PROJECT(Elle CXX)
 
 IF(INFINIT_LINUX)
   SET(elle_PLATFORM
-    thirdparty/epth-linux.cc
     utility/Unicode-unix.cc)
 ELSEIF(INFINIT_MACOSX)
   SET(elle_PLATFORM
-    thirdparty/epth-macosx.cc
     utility/Unicode-unix.cc)
 ELSEIF(INFINIT_WINDOWS)
   SET(elle_PLATFORM
-    thirdparty/epth-windows.cc
     utility/Unicode-win32.cc)
 ENDIF()
 
