@@ -49,4 +49,9 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::utility::WeakBuffer,
   archive.SaveBinary(value.Contents(), value.Size());
 }
 
+ELLE_SERIALIZE_SPLIT_LOAD(elle::utility::WeakBuffer,,,)
+{
+  throw false;
+}
+
 #endif

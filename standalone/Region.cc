@@ -1,22 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon nov 12 23:26:42 2007]
-//
+# include <elle/standalone/Region.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/standalone/Maid.hh>
+# include <elle/standalone/Report.hh>
+# include <elle/standalone/Log.hh>
 
-#include <elle/standalone/Region.hh>
-
-#include <elle/standalone/Maid.hh>
-#include <elle/standalone/Report.hh>
-#include <elle/standalone/Log.hh>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -454,6 +442,7 @@ namespace elle
       if (this->size != element.size)
         return false;
 
+      // XXX null pointers ?!
       // check the content.
       if (::memcmp(this->contents, element.contents, element.size) == 0)
         return true;

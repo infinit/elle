@@ -46,9 +46,7 @@
 /// -----------------------------------
 ///
 
-// XXX
-# include <iostream>
-
+# include <cassert>
 # include <type_traits>
 
 # include "ArchivableClass.hh"

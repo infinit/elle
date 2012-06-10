@@ -5,7 +5,7 @@
 # include <memory>
 # include <string>
 
-# include "elle/serialize/JSONArchive.fwd.hh"
+# include "elle/serialize/fwd.hh"
 
 namespace elle { namespace format { namespace json {
 

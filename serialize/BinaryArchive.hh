@@ -65,6 +65,7 @@ namespace elle { namespace serialize {
       {
       private:
         typedef BaseBinaryArchive<mode, BinaryArchive<mode>>  BaseClass;
+      public:
         typedef typename BaseClass::StreamType                StreamType;
       public:
         BinaryArchive(StreamType& stream)

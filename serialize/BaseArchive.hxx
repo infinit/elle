@@ -6,6 +6,8 @@
 
 # include <boost/detail/endian.hpp>
 
+# include <elle/concept/Serializable.hh>
+
 # include "BaseArchive.hh"
 # include "ArchiveSerializer.hxx"
 
@@ -14,6 +16,9 @@ namespace elle
   namespace serialize
   {
 
+    //-------------------------------------------------------------------------
+
+    // Methods enabler.
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
     template<typename T, ArchiveMode _mode>
@@ -65,30 +70,66 @@ namespace elle
         > NamedValue;
       };
 
-    /// Generic save method. Uses an explicit specialization of ArchiveSerializer.
+    //-------------------------------------------------------------------------
+
+    /// Generic save method. Uses an explicit specialization of
+    /// ArchiveSerializer.
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
     template<typename T>
-    inline typename std::enable_if<std::is_enum<T>::value == false>::type
+    inline typename std::enable_if<
+            std::is_enum<T>::value == false
+      >::type
       BaseArchive<mode_, Archive, CT, STS>::Save(T const& val)
       {
+
         // XXX
 //# ifndef NDEBUG
-//        std::cout << "Saving type: " << std::string(typeid(T).name()) << std::endl;
+//        std::cout << "Saving type: " << std::string(typeid(T).name())
+//                  << std::endl;
 //        Access::Save(this->self(), std::string(typeid(T).name()));
 //# endif
 
         if (StoreClassVersion<T>::value == true)
-            Access::Save(this->self(), ClassVersionType(ArchivableClass<T>::version));
+            Access::Save(
+                this->self(),
+                ClassVersionType(ArchivableClass<T>::version)
+            );
 
         typedef ArchiveSerializer<typename std::remove_cv<T>::type> Serializer;
         // this const_cast is safe since the archive is in output mode
-        Serializer::Serialize(
+        ELLE_LOG_TRACE_COMPONENT("elle.serialize");
+        ELLE_LOG_TRACE(
+            "Saving %p with its concrete type %s",
+            this, ELLE_PRETTY_TYPE(T)
+        ) Serializer::Serialize(
             this->self(),
             const_cast<T&>(val),
             ArchivableClass<T>::version
         );
       }
+
+    //-------------------------------------------------------------------------
+
+    /// Save Serializable objects.
+    //template<ArchiveMode mode_, typename Archive, typename CT,
+    //         template<ArchiveMode, typename> class STS>
+    //template<typename T>
+    //inline typename std::enable_if<
+    //    elle::concept::IsSerializable<T, Archive>::value == true
+    //  >::type
+    //  BaseArchive<mode_, Archive, CT, STS>::Save(T const& val)
+    //  {
+    //    ELLE_LOG_TRACE_COMPONENT("elle.serialize");
+    //    ELLE_LOG_TRACE(
+    //        "Saving %p from its virtual type %s",
+    //        this, ELLE_PRETTY_OBJECT_TYPE(this)
+    //    ) static_cast<
+    //      typename elle::concept::SerializableFor<Archive>::Type const&
+    //    >(val).serialize(this->self());
+    //  }
+
+    //-------------------------------------------------------------------------
 
     /// Generic load method. Uses an explicit specialization of ArchiveSerializer.
     template<ArchiveMode mode_, typename Archive, typename CT,
@@ -113,8 +154,34 @@ namespace elle
           Access::Load(this->self(), classVersion);
 
         typedef ArchiveSerializer<typename std::remove_cv<T>::type> Serializer;
-        Serializer::Serialize(this->self(), val, classVersion.version);
+        ELLE_LOG_TRACE_COMPONENT("elle.serialize");
+        ELLE_LOG_TRACE(
+            "Loading %p with its concrete type %s",
+            this, ELLE_PRETTY_TYPE(T)
+        ) Serializer::Serialize(this->self(), val, classVersion.version);
       }
+
+    //-------------------------------------------------------------------------
+
+    ///// Load Serializable object.
+    //template<ArchiveMode mode_, typename Archive, typename CT,
+    //         template<ArchiveMode, typename> class STS>
+    //template<typename T>
+    //inline typename std::enable_if<
+    //    elle::concept::IsSerializable<T, Archive>::value == true
+    //  >::type
+    //  BaseArchive<mode_, Archive, CT, STS>::Load(T& val)
+    //  {
+    //    ELLE_LOG_TRACE_COMPONENT("elle.serialize");
+    //    ELLE_LOG_TRACE(
+    //        "Loading %p from its virtual type %s",
+    //        this, ELLE_PRETTY_OBJECT_TYPE(this)
+    //    ) static_cast<
+    //        typename elle::concept::SerializableFor<Archive>::Type&
+    //    >(val).deserialize(this->self());
+    //  }
+
+    //-------------------------------------------------------------------------
 
     /// Generic load construct. Uses an explicit specialization of ArchiveSerializer.
     template<ArchiveMode mode_, typename Archive, typename CT,
@@ -127,8 +194,14 @@ namespace elle
         //if (StoreClassVersion<T>::value == true)
         //  Access::Load(this->self(), classVersion);
         typedef ArchiveSerializer<typename std::remove_cv<T>::type> Serializer;
-        Serializer::LoadConstruct(this->self(), ptr);
+        ELLE_LOG_TRACE_COMPONENT("elle.serialize");
+        ELLE_LOG_TRACE(
+            "Load construct %p with its concrete type %s",
+            this, ELLE_PRETTY_TYPE(T)
+        ) Serializer::LoadConstruct(this->self(), ptr);
       }
+
+    //-------------------------------------------------------------------------
 
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
@@ -145,6 +218,8 @@ namespace elle
           Access::SaveBinary(this->self(), tab, sizeof(tab));
 # endif
         }
+
+    //-------------------------------------------------------------------------
 
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
@@ -163,6 +238,8 @@ namespace elle
 # endif
         }
 
+    //-------------------------------------------------------------------------
+
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Save(int32_t val)
@@ -180,6 +257,8 @@ namespace elle
           Access::SaveBinary(this->self(), &tab, sizeof(tab));
 # endif
         }
+
+    //-------------------------------------------------------------------------
 
       /// Load int32_t
     template<ArchiveMode mode_, typename Archive, typename CT,
@@ -200,6 +279,8 @@ namespace elle
             ;
 # endif
         }
+
+    //-------------------------------------------------------------------------
 
       /// Save int64_t
     template<ArchiveMode mode_, typename Archive, typename CT,
@@ -223,6 +304,8 @@ namespace elle
           Access::SaveBinary(this->self(), tab, sizeof(tab));
 # endif
         }
+
+    //-------------------------------------------------------------------------
 
       /// Load int64_t
     template<ArchiveMode mode_, typename Archive, typename CT,
@@ -248,6 +331,8 @@ namespace elle
 # endif
         }
 
+    //-------------------------------------------------------------------------
+
       /// Save float
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
@@ -256,6 +341,8 @@ namespace elle
           static_assert(sizeof(val) == 4, "float size is not standard");
           Access::SaveBinary(this->self(), &val, sizeof(val));
         }
+
+    //-------------------------------------------------------------------------
 
       /// Load float
     template<ArchiveMode mode_, typename Archive, typename CT,
@@ -266,6 +353,8 @@ namespace elle
           Access::LoadBinary(this->self(), &val, sizeof(val));
         }
 
+    //-------------------------------------------------------------------------
+
       /// Save double
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
@@ -274,6 +363,8 @@ namespace elle
           static_assert(sizeof(val) == 8, "double size is not standard");
           Access::SaveBinary(this->self(), &val, sizeof(val));
         }
+
+    //-------------------------------------------------------------------------
 
       /// Load double
     template<ArchiveMode mode_, typename Archive, typename CT,
@@ -284,6 +375,7 @@ namespace elle
           Access::LoadBinary(this->self(), &val, sizeof(val));
         }
 
+    //-------------------------------------------------------------------------
 
       /// Save std::string
     template<ArchiveMode mode_, typename Archive, typename CT,
@@ -298,6 +390,8 @@ namespace elle
           Access::Save(this->self(), static_cast<SizeType>(sz));
           Access::SaveBinary(this->self(), val.c_str(), sz);
         }
+
+    //-------------------------------------------------------------------------
 
       /// Load std::string
     template<ArchiveMode mode_, typename Archive, typename CT,
@@ -325,6 +419,8 @@ namespace elle
             }
         }
 
+    //-------------------------------------------------------------------------
+
       /// Save class version
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
@@ -332,6 +428,8 @@ namespace elle
       {
         Access::Save(this->self(), classVersion.version);
       }
+
+    //-------------------------------------------------------------------------
 
       /// Load class version
     template<ArchiveMode mode_, typename Archive, typename CT,
@@ -342,6 +440,8 @@ namespace elle
       }
 
 
+    //-------------------------------------------------------------------------
+
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
     template<typename T>
@@ -351,6 +451,8 @@ namespace elle
         assert(static_cast<unsigned int>(value) < 65536);
         Access::Save(this->self(), static_cast<uint16_t>(value));
       }
+
+    //-------------------------------------------------------------------------
 
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
@@ -363,6 +465,7 @@ namespace elle
         value = static_cast<T>(value_);
       }
 
+    //-------------------------------------------------------------------------
 
       /// This is the last method called by any serialization method
       /// You may want to override it to change the serialization format
@@ -372,6 +475,8 @@ namespace elle
         {
           this->stream().write(static_cast<char const*>(data), size);
         }
+
+    //-------------------------------------------------------------------------
 
       /// This is the last method called by any serialization method
       /// You may want to override it to change the serialization format
@@ -383,16 +488,22 @@ namespace elle
         }
 
 
+    //-------------------------------------------------------------------------
+
 
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Save(int8_t val)
         { Access::SaveBinary(this->self(), &val, sizeof(val)); }
 
+    //-------------------------------------------------------------------------
+
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Load(int8_t& val)
         { Access::LoadBinary(this->self(), &val, sizeof(val)); }
+
+    //-------------------------------------------------------------------------
 
 
     template<ArchiveMode mode_, typename Archive, typename CT,
@@ -400,30 +511,42 @@ namespace elle
       inline void BaseArchive<mode_, Archive, CT, STS>::Save(bool val)
         { Access::Save(this->self(), static_cast<int8_t>(val)); }
 
+    //-------------------------------------------------------------------------
+
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Save(char val)
         { Access::Save(this->self(), static_cast<int8_t>(val)); }
+
+    //-------------------------------------------------------------------------
 
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Save(uint8_t val)
         { Access::Save(this->self(), static_cast<int8_t>(val)); }
 
+    //-------------------------------------------------------------------------
+
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Save(uint16_t val)
         { Access::Save(this->self(), static_cast<int16_t>(val)); }
+
+    //-------------------------------------------------------------------------
 
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Save(uint32_t val)
         { Access::Save(this->self(), static_cast<int32_t>(val)); }
 
+    //-------------------------------------------------------------------------
+
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Save(uint64_t val)
         { Access::Save(this->self(), static_cast<int64_t>(val)); }
+
+    //-------------------------------------------------------------------------
 
 
     template<ArchiveMode mode_, typename Archive, typename CT,
@@ -435,30 +558,42 @@ namespace elle
           val = val_;
         }
 
+    //-------------------------------------------------------------------------
+
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Load(char& val)
         { Access::Load(this->self(), reinterpret_cast<int8_t&>(val)); }
+
+    //-------------------------------------------------------------------------
 
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Load(uint8_t& val)
         { Access::Load(this->self(), reinterpret_cast<int8_t&>(val)); }
 
+    //-------------------------------------------------------------------------
+
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Load(uint16_t& val)
         { Access::Load(this->self(), reinterpret_cast<int16_t&>(val)); }
+
+    //-------------------------------------------------------------------------
 
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Load(uint32_t& val)
         { Access::Load(this->self(), reinterpret_cast<int32_t&>(val)); }
 
+    //-------------------------------------------------------------------------
+
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
       inline void BaseArchive<mode_, Archive, CT, STS>::Load(uint64_t& val)
         { Access::Load(this->self(), reinterpret_cast<int64_t&>(val)); }
+
+    //-------------------------------------------------------------------------
 
 
     template<ArchiveMode mode_, typename Archive, typename CT,
@@ -518,6 +653,8 @@ namespace elle
           static inline void LoadNamed(Archive& ar, std::string const& name, T& value)
           { ar.LoadNamed(name, value); }
       };
+
+    //-------------------------------------------------------------------------
 
 }}
 

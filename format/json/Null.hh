@@ -12,6 +12,7 @@ namespace elle { namespace format { namespace json {
       std::unique_ptr<Object> Clone() const
         { return std::unique_ptr<Object>(new Null); }
     public:
+      using Object::operator ==;
       virtual bool operator ==(Object const& other) const
         { return other == *this; }
       virtual bool operator ==(Null const&) const
