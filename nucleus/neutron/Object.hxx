@@ -34,11 +34,17 @@ namespace nucleus
       {
         static void update(nucleus::neutron::Object& value)
         {
-          if (value.meta.owner.record.Update(
-                  value.owner.subject,
-                  value.meta.owner.permissions,
-                  value.meta.owner.token) == elle::Status::Error)
-              throw std::runtime_error("unable to create the owner access record");
+          ELLE_LOG_TRACE_COMPONENT("nucleus.neutron.Object");
+          ELLE_LOG_TRACE("Compute owner record")
+            {
+              if (value.meta.owner.record.Update(
+                      value.owner.subject,
+                      value.meta.owner.permissions,
+                      value.meta.owner.token) == elle::Status::Error)
+                  throw std::runtime_error("unable to create the owner access record");
+              elle::print("Got subject :");
+              value.owner.subject.Dump();
+            }
         }
       };
 

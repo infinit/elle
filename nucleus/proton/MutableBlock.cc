@@ -1,4 +1,6 @@
 
+#include <elle/log.hh>
+
 #include <boost/lexical_cast.hpp>
 
 #include <elle/cryptography/Digest.hh>
@@ -20,6 +22,8 @@ namespace nucleus
 {
   namespace proton
   {
+
+    ELLE_LOG_TRACE_COMPONENT("nucleus.proton.MutableBlock");
 
 //
 // ---------- constructs & destructors ----------------------------------------
@@ -279,16 +283,21 @@ namespace nucleus
             {
               MutableBlock      current;
 
-              // load the latest version.
-              if (current.Load(network,
-                               address,
-                               nucleus::Version::Last) == elle::Status::Error)
-                escape("unable to load the current block");
+              ELLE_LOG_TRACE(
+                  "The block %p already exists, fetch the last version",
+                  &block
+              ) {
+                  // load the latest version.
+                  if (current.Load(network,
+                                   address,
+                                   nucleus::Version::Last) == elle::Status::Error)
+                    escape("unable to load the current block");
 
-              // does the given block derive the current version.
-              if (!(this->version > current.version))
-                escape("the block to store does not seem to derive the "
-                       "current version");
+                  // does the given block derive the current version.
+                  if (!(this->version > current.version))
+                    escape("the block to store does not seem to derive the "
+                           "current version");
+                }
             }
 
           if (this->Store(file) == elle::Status::Error)
