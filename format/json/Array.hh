@@ -42,6 +42,8 @@ namespace elle { namespace format { namespace json {
       void Save(elle::serialize::OutputJSONArchive& ar) const;
 
     public:
+      using Object::operator ==;
+
       virtual bool operator ==(Object const& other) const
         { return other == *this; }
 

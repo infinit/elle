@@ -3,7 +3,9 @@
 
 # include <typeinfo>
 
-# include "Object.hh"
+# include "fwd.hh"
+# include "_detail.hh"
+
 # include "Float.hh"
 # include "String.hh"
 # include "Integer.hh"

@@ -1,6 +1,8 @@
 
 # include <ostream>
 
+# include <elle/format/json.hh>
+
 # include "JSONArchive.hh"
 
 using namespace elle::serialize;

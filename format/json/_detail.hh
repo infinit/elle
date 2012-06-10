@@ -1,6 +1,8 @@
 #ifndef ELLE_FORMAT_JSON_DETAIL_HH
 # define ELLE_FORMAT_JSON_DETAIL_HH
 
+# include <elle/format/json/Object.hh>
+
 namespace elle { namespace format { namespace json { namespace detail {
 
     template<bool Cond, typename Then, typename Else> struct StaticIf;
@@ -57,6 +59,8 @@ namespace elle { namespace format { namespace json { namespace detail {
           return *this;
         }
         operator CastType() const { return _value; }
+
+        using Object::operator ==;
 
         bool operator ==(FastConstType value) const
         {
@@ -144,6 +148,8 @@ namespace elle { namespace format { namespace json { namespace detail {
         };
 
 }}}} // !namespace elle::format::json::detail
+
+# include <elle/format/json/Object.hxx>
 
 #endif /* ! _DETAIL_HH */
 

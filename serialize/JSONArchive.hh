@@ -3,10 +3,10 @@
 
 # include <cassert>
 
-# include <elle/format/json.fwd.hh>
+# include <elle/format/json/fwd.hh>
 
 # include <elle/serialize/BaseArchive.hh>
-# include <elle/serialize/JSONArchive.fwd.hh> // Check if forward declarations match definitions
+# include <elle/serialize/fwd.hh> // Check if forward declarations match definitions
 
 namespace elle { namespace serialize {
 
