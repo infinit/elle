@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include <elle/Elle.hh>
+#include <elle/print.hh>
 #include <elle/cryptography/KeyPair.hh>
 #include <elle/utility/Buffer.hh>
 
@@ -30,22 +31,22 @@ int main()
 
   CHECK(blk.Bind(addr));
 
+  elle::print("INITIAL BLOCK:");
+  blk.Dump();
+
   elle::utility::Buffer buf;
+  buf.Writer() << blk;
 
     {
-      auto writer = buf.Writer();
-
-      writer << blk;
-    }
-
-    {
-      auto reader = buf.Reader();
-
       nucleus::neutron::Object blk_copy;
+      buf.Reader() >> blk_copy;
 
-      reader >> blk_copy;
+      elle::print("DESERIALIZED BLOCK:");
+      blk_copy.Dump();
 
       CHECK(blk_copy.Validate(addr, nucleus::neutron::Access::Null));
+      assert(blk.owner.subject == blk_copy.owner.subject);
+
     }
 
   std::cout << "tests done.\n";

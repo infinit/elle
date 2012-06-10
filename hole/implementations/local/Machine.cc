@@ -1,4 +1,4 @@
-
+#include <elle/log.hh>
 #include <elle/utility/Time.hh>
 
 #include <hole/implementations/local/Machine.hh>
@@ -13,6 +13,7 @@ namespace hole
     namespace local
     {
 
+      ELLE_LOG_TRACE_COMPONENT("hole.implementation.local.Machine");
 //
 // ---------- holeable --------------------------------------------------------
 //
@@ -60,39 +61,54 @@ namespace hole
             {
               const nucleus::Object*    object =
                 static_cast<const nucleus::Object*>(&block);
+              assert(dynamic_cast<const nucleus::Object*>(&block) != nullptr);
 
               // validate the object according to the presence of
               // a referenced access block.
               if (object->meta.access != nucleus::Address::Null)
                 {
                   nucleus::Access       access;
+                  ELLE_LOG_TRACE(
+                      "Put nucleus::Object MutableBlock %p"
+                      " with a referenced access block",
+                      this
+                  ) {
+                      // load the access block.
+                      if (Hole::Pull(object->meta.access,
+                                     nucleus::Version::Last,
+                                     access) == elle::Status::Error)
+                        escape("unable to load the access block");
 
-                  // load the access block.
-                  if (Hole::Pull(object->meta.access,
-                                 nucleus::Version::Last,
-                                 access) == elle::Status::Error)
-                    escape("unable to load the access block");
-
-                  // validate the object, providing the
-                  if (object->Validate(address, access) == elle::Status::Error)
-                    escape("unable to validate the object");
+                      // validate the object, providing the
+                      if (object->Validate(address, access) == elle::Status::Error)
+                        escape("unable to validate the object");
+                  }
                 }
               else
                 {
-                  // validate the object.
-                  if (object->Validate(
-                        address,
-                        nucleus::Access::Null) == elle::Status::Error)
-                    escape("unable to validate the object");
+                  ELLE_LOG_TRACE(
+                      "Put nucleus::Object MutableBlock %p"
+                      " with a Null access block",
+                      this
+                  ) {
+                      // validate the object.
+                      if (object->Validate(
+                            address,
+                            nucleus::Access::Null) == elle::Status::Error)
+                        escape("unable to validate the object");
+                  }
                 }
 
               break;
             }
           default:
             {
-              // validate the block through the common interface.
-              if (block.Validate(address) == elle::Status::Error)
-                escape("the block seems to be invalid");
+              ELLE_LOG_TRACE("Put common MutableBlock %p", &block)
+                {
+                  // validate the block through the common interface.
+                  if (block.Validate(address) == elle::Status::Error)
+                    escape("the block seems to be invalid");
+                }
 
               break;
             }
@@ -103,11 +119,15 @@ namespace hole
             }
           }
 
-        // store the block.
-        if (block.Store(Hole::Implementation->network,
-                        address) == elle::Status::Error)
-          escape("unable to store the block");
+        ELLE_LOG_TRACE("Store the block %p", &block)
+          {
+            // store the block.
+            if (block.Store(Hole::Implementation->network,
+                            address) == elle::Status::Error)
+              escape("unable to store the block");
+          }
 
+        ELLE_LOG_TRACE("Block %p successfully stored", &block);
         return elle::Status::Ok;
       }
 
