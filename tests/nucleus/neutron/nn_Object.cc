@@ -6,7 +6,7 @@
 
 #include <nucleus/Nucleus.hh>
 #include <nucleus/neutron/Access.hh>
-#include <nucleus/proton/ImprintBlock.hh>
+#include <nucleus/neutron/Object.hh>
 
 #define CHECK(call) if (call != elle::Status::Ok) { show(); assert(false); } else
 
@@ -20,18 +20,15 @@ int main()
 
   CHECK(kp.Generate());
 
-  nucleus::proton::ImprintBlock blk;
+  nucleus::neutron::Object blk;
 
-  CHECK(blk.Create(kp.K));
+  CHECK(blk.Create(nucleus::neutron::GenreDirectory, kp.K));
+
+  CHECK(blk.Seal(kp.k, nucleus::neutron::Access::Null));
 
   nucleus::proton::Address addr;
 
   CHECK(blk.Bind(addr));
-
-  assert(addr != nucleus::proton::Address::Null);
-  assert(addr != nucleus::proton::Address::Some);
-
-  CHECK(blk.Validate(addr));
 
   elle::utility::Buffer buf;
 
@@ -44,14 +41,15 @@ int main()
     {
       auto reader = buf.Reader();
 
-      nucleus::proton::ImprintBlock blk_copy;
+      nucleus::neutron::Object blk_copy;
 
       reader >> blk_copy;
 
-      CHECK(blk_copy.Validate(addr));
+      CHECK(blk_copy.Validate(addr, nucleus::neutron::Access::Null));
     }
 
   std::cout << "tests done.\n";
   return 0;
 }
+
 

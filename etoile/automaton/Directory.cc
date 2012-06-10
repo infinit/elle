@@ -150,6 +150,8 @@ namespace etoile
       elle::print("Got context");
       context.Dump();
 
+      agent::Agent::Subject.Dump();
+
       // check if the current user has the right the read the catalog.
       if ((context.rights.permissions & nucleus::PermissionRead) !=
           nucleus::PermissionRead)
