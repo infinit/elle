@@ -23,8 +23,7 @@ namespace lune
   ///
   class Phrase
     : public elle::radix::Object
-    , public elle::concept::Serializable<Phrase>
-    , public elle::concept::Fileable<>
+    , public elle::concept::MakeFileable<Phrase>
   {
   public:
     //

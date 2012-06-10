@@ -44,6 +44,7 @@ namespace elle
         , DefaultCharType
         , detail::BufferStreamSelect
       >                                       BaseClass;
+    public:
       typedef typename BaseClass::StreamType  StreamType;
 
     private:
@@ -53,6 +54,12 @@ namespace elle
       BufferArchive(StreamType& stream);
       BufferArchive(BufferArchive const& other);
       BufferArchive(typename StreamType::BufferType& buffer);
+      template<typename T>
+        BufferArchive(StreamType& stream, T& value)
+          : BaseClass(stream)
+          , _stream(stream)
+        { *this & value; }
+
 
     public:
       StreamType& Stream() { return _stream; }

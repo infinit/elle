@@ -21,8 +21,7 @@ namespace lune
   ///
   class Set
     : public elle::radix::Object
-    , public elle::concept::Serializable<Set>
-    , public elle::concept::Fileable<>
+    , public elle::concept::MakeFileable<Set>
   {
   public:
     //

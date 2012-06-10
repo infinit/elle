@@ -22,9 +22,8 @@ namespace lune
   ///
   class Descriptor
     : public elle::radix::Object
-    , public elle::concept::Serializable<Descriptor>
-    , public elle::concept::Fileable<>
-    , public elle::serialize::Uniquable<Descriptor>
+    , public elle::concept::MakeFileable<Descriptor>
+    , public elle::concept::MakeUniquable<Descriptor>
   {
   public:
     //

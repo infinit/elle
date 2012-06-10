@@ -220,7 +220,7 @@ namespace nucleus
               address.digest->region.contents,                                \
               address.digest->region.size                                     \
           );                                                                  \
-          buf.Save<elle::serialize::HexadecimalArchive>(unique);              \
+          buf.Save(unique);                                                   \
         }                                                                     \
       catch (std::exception const& err)                                       \
         {                                                                     \

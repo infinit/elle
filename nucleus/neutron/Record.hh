@@ -98,5 +98,6 @@ namespace nucleus
   }
 }
 
+# include <nucleus/neutron/Record.hxx>
+
 #endif
-#include <nucleus/neutron/Record.hxx>

@@ -17,9 +17,8 @@ namespace lune
   ///
   class Passport
     : public elle::radix::Object
-    , public elle::concept::Serializable<Passport>
-    , public elle::concept::Fileable<>
-    , public elle::serialize::Uniquable<Passport>
+    , public elle::concept::MakeFileable<Passport>
+    , public elle::concept::MakeUniquable<Passport>
   {
   public:
     //

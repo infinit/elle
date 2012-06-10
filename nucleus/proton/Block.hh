@@ -1,6 +1,7 @@
 #ifndef NUCLEUS_PROTON_BLOCK_HH
 # define NUCLEUS_PROTON_BLOCK_HH
 
+# include <elle/serialize/BufferArchive.hh>
 # include <elle/concept/Serializable.hh>
 
 # include <nucleus/proton/Address.hh>
@@ -9,6 +10,38 @@
 # include <nucleus/proton/State.hh>
 
 # include <nucleus/neutron/Component.hh>
+
+// XXX remove this when design allows Serializable contract to be enforced
+# define __NPB_OARCHIVE(...)                                                  \
+  elle::concept::contract::Serializable<__VA_ARGS__>::OutputArchive           \
+  /**/
+# define __NPB_IARCHIVE(...)                                                  \
+  elle::concept::contract::Serializable<__VA_ARGS__>::InputArchive            \
+  /**/
+# define __NPB_ISTREAM(...)                                                   \
+  __NPB_IARCHIVE(__VA_ARGS__)::StreamType                                     \
+  /**/
+# define __NPB_OSTREAM(...)                                                   \
+  __NPB_OARCHIVE(__VA_ARGS__)::StreamType                                     \
+  /**/
+
+# define __NPB_DUMP_METHODS(oa, ia, os, is)                                   \
+virtual void serialize(oa&) const { throw false; }                            \
+virtual void deserialize(ia&) { throw false; }                                \
+virtual void serialize(os&) const { throw false; }                            \
+virtual void deserialize(is&) { throw false; }                                \
+  /**/
+
+
+# define __NPB_BREAK_SERIALIZABLE_CONTRACT(...)                               \
+  __NPB_DUMP_METHODS(                                                         \
+      __NPB_OARCHIVE(__VA_ARGS__),                                            \
+      __NPB_IARCHIVE(__VA_ARGS__),                                            \
+      __NPB_OSTREAM(__VA_ARGS__),                                             \
+      __NPB_ISTREAM(__VA_ARGS__)                                              \
+  )                                                                           \
+  /**/
+
 
 
 namespace nucleus
@@ -32,6 +65,9 @@ namespace nucleus
     class Block
       : public elle::radix::Object
       , public elle::concept::contract::Serializable<>
+      , public elle::concept::contract::Serializable<
+            elle::serialize::BufferArchive
+        >
       , public elle::concept::Fileable<>
     {
     public:
@@ -64,8 +100,8 @@ namespace nucleus
 
       // XXX breaks serializable contract. Remove when Block can be an
       // abstract class.
-      virtual void serialize(OutputArchive&) const { throw false; }
-      virtual void deserialize(InputArchive&)  { throw false; }
+      __NPB_BREAK_SERIALIZABLE_CONTRACT();
+      __NPB_BREAK_SERIALIZABLE_CONTRACT(elle::serialize::BufferArchive);
 
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;

@@ -1,3 +1,5 @@
+#include <elle/log.hh>
+
 #include <etoile/automaton/Access.hh>
 #include <etoile/automaton/Rights.hh>
 
@@ -6,14 +8,13 @@
 #include <agent/Agent.hh>
 #include <hole/Hole.hh>
 
+
 namespace etoile
 {
   namespace automaton
   {
 
-//
-// ---------- methods ---------------------------------------------------------
-//
+    ELLE_LOG_TRACE_COMPONENT("etoile.automaton.Access");
 
     ///
     /// this method opens the access block by loading it if necessary i.e
@@ -197,6 +198,8 @@ namespace etoile
 
           // return the record.
           record = &context.rights.record;
+
+          ELLE_LOG_TRACE("Access lookup found record %p from context.rights", record);
         }
       else
         {
@@ -216,6 +219,8 @@ namespace etoile
 
               // return the record.
               record = &context.object.meta.owner.record;
+
+              ELLE_LOG_TRACE("Access lookup found record %p from context.object.meta.owner", record);
             }
           else
             {
@@ -228,10 +233,12 @@ namespace etoile
               if (Access::Open(context) == elle::Status::Error)
                 escape("unable to open the access block");
 
+
               // lookup the subject.
               if (context.access->Lookup(subject,
                                          record) == elle::Status::Error)
                 escape("unable to lookup in the access object");
+              ELLE_LOG_TRACE("Access lookup found record %p from context.access", record);
             }
         }
 

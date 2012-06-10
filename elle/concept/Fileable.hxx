@@ -7,8 +7,6 @@
 # include <elle/log.hh>
 
 # include <elle/io/File.hh>
-# include "Fileable.hh"
-
 # include <elle/idiom/Open.hh>
 
 namespace elle { namespace concept {
@@ -28,8 +26,7 @@ namespace elle { namespace concept {
 
           try
             {
-              Archive<elle::serialize::ArchiveMode::Input> archive(in);
-              this->deserialize(archive);
+              this->deserialize(in);
             }
           catch (std::exception const& err)
             {
@@ -52,7 +49,7 @@ namespace elle { namespace concept {
         ELLE_LOG_TRACE_COMPONENT("elle.concept");
         ELLE_LOG_TRACE("Saving %p to file %s", this, path.str())
         {
-          if (File::Dig(path) == elle::Status::Error)
+          if (elle::io::File::Dig(path) == elle::Status::Error)
             escape("unable to dig the chain of directories");
 
           std::ofstream out(path.str(), std::ios_base::out | std::ios_base::binary);
@@ -65,8 +62,7 @@ namespace elle { namespace concept {
 
           try
             {
-              Archive<elle::serialize::ArchiveMode::Output> archive(out);
-              this->serialize(archive);
+              this->serialize(out);
             }
           catch (std::exception const& err)
             {

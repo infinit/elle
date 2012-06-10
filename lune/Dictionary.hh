@@ -22,8 +22,7 @@ namespace lune
   ///
   class Dictionary
     : public elle::radix::Object
-    , public elle::concept::Serializable<Dictionary>
-    , public elle::concept::Fileable<>
+    , public elle::concept::MakeFileable<Dictionary>
   {
   public:
     //

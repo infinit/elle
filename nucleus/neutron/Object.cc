@@ -493,13 +493,13 @@ namespace nucleus
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
                 << elle::Dumpable::Shift << "[Permissions] " << std::dec
-                << this->meta.owner.permissions << std::endl;
+                << (int)this->meta.owner.permissions << std::endl;
 
       if (this->meta.owner.token.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the meta owner's token");
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
-                << "[Genre] " << std::dec << this->meta.genre << std::endl;
+                << "[Genre] " << std::dec << (int)this->meta.genre << std::endl;
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
                 << "[Stamp] " << std::endl;

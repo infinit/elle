@@ -100,5 +100,6 @@ namespace nucleus
   }
 }
 
+# include <nucleus/neutron/Subject.hxx>
+
 #endif
-#include <nucleus/neutron/Subject.hxx>

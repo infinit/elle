@@ -6,7 +6,6 @@
 #include <nucleus/proton/History.hh>
 
 #include <elle/radix/Variables.hh>
-#include <elle/serialize/Uniquable.hxx>
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 

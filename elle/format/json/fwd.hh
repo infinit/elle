@@ -1,9 +1,7 @@
-#ifndef ELLE_FORMAT_JSON_FWD_HH
+#ifndef  ELLE_FORMAT_JSON_FWD_HH
 # define ELLE_FORMAT_JSON_FWD_HH
 
 # include <string>
-
-# include "json/Object.hh"
 
 namespace elle { namespace format { namespace json {
 
@@ -18,6 +16,7 @@ namespace elle { namespace format { namespace json {
     typedef detail::BasicObject<double>   Float;
     typedef detail::BasicObject<std::string>   String;
 
+    class Object;
     class Array;
     class Dictionary;
     class Null;
