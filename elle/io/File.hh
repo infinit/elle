@@ -1,14 +1,14 @@
 #ifndef ELLE_IO_FILE_HH
 # define ELLE_IO_FILE_HH
 
-# include <elle/standalone/Region.hh>
+# include <elle/types.hh>
 
-# include <elle/io/Path.hh>
+# include <elle/io/fwd.hh>
+# include <elle/standalone/fwd.hh>
 
 namespace elle
 {
   using namespace standalone;
-  using namespace radix;
 
   namespace io
   {

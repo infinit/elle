@@ -47,6 +47,8 @@ namespace elle { namespace serialize { namespace detail {
           mode == BaseClass::mode, "in/out mismatch in archive selector"      \
       );                                                                      \
     public:                                                                   \
+      typedef typename BaseClass::StreamType StreamType;                      \
+    public:                                                                   \
       class_name(typename BaseClass::StreamType& stream) : BaseClass(stream)  \
         {}                                                                    \
       template<typename T>                                                    \

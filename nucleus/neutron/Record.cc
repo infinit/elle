@@ -159,7 +159,7 @@ namespace nucleus
       // dump the permissions.
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Permissions] " << std::dec
-                << this->permissions << std::endl;
+                << (int)this->permissions << std::endl;
 
       // dump the token.
       if (this->token.Dump(margin + 2) == elle::Status::Error)

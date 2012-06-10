@@ -110,7 +110,6 @@ namespace nucleus
       Address           self;
       ELLE_LOG_TRACE("Validating an ImprintBlock address %p", this)
       {
-        this->Dump();
         assert(this->owner.K.key() != nullptr);
         //
         // make sure the address has not be tampered and correspond to the

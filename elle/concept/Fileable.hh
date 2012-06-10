@@ -63,6 +63,12 @@ namespace elle
       Status Store(elle::io::Path const& path) const;
     };
 
+    template<typename T, __ECS_DEFAULT_ARCHIVE_TPL(Archive)>
+    struct MakeFileable
+      : Serializable<T, Archive>
+      , Fileable<Archive>
+    {};
+
   } // !concept
 } // !elle
 

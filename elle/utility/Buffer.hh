@@ -3,11 +3,9 @@
 
 # include <memory>
 
-# include <elle/types.hh>
-
+# include <elle/concept/Fileable.hh>
+# include <elle/concept/Uniquable.hh>
 # include <elle/io/Dumpable.hh>
-# include <elle/serialize/Uniquable.hxx>
-
 # include <elle/serialize/fwd.hh>
 
 
@@ -32,7 +30,7 @@ namespace elle
     /// @see WeakBuffer for a buffer that doesn't own the data
     class Buffer
       : public elle::io::Dumpable
-      , public elle::serialize::Uniquable<Buffer>
+      , public elle::concept::MakeUniquable<Buffer>
     {
       friend class elle::serialize::ArchiveSerializer<Buffer>;
     public:
@@ -92,7 +90,7 @@ namespace elle
 
 
     class WeakBuffer
-      : public elle::serialize::Uniquable<WeakBuffer>
+      : public elle::concept::MakeUniquable<WeakBuffer>
     {
     private:
       elle::Byte const*   _contents;
@@ -128,7 +126,6 @@ namespace elle
   }
 }
 
+# include <elle/utility/Buffer.hxx>
+
 #endif /* ! BUFFER_HH */
-
-
-#include <elle/utility/Buffer.hxx>

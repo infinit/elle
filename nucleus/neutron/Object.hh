@@ -54,8 +54,11 @@ namespace nucleus
     ///
     class Object
       : public proton::ImprintBlock
-      , public elle::serialize::Uniquable<Object>
       , public elle::concept::Serializable<Object>
+      , public elle::concept::Serializable<
+            Object, elle::serialize::BufferArchive
+        >
+      , public elle::concept::MakeUniquable<Object>
     {
     public:
       //
@@ -101,6 +104,7 @@ namespace nucleus
       //elle::Status      Extract(elle::Archive&);
 
       ELLE_CONCEPT_SERIALIZABLE_METHODS(Object);
+      ELLE_CONCEPT_SERIALIZABLE_METHODS(Object, elle::serialize::BufferArchive);
 
       //
       // attributes

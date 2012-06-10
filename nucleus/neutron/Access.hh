@@ -21,6 +21,10 @@ namespace nucleus
     class Access
       : public proton::ContentHashBlock
       , public elle::concept::Serializable<Access>
+      , public elle::concept::Serializable<
+            Access
+          , elle::serialize::BufferArchive
+        >
     {
     public:
       typedef proton::ContentHashBlock SuperClass;
@@ -67,6 +71,7 @@ namespace nucleus
 
       // fileable
       ELLE_CONCEPT_SERIALIZABLE_METHODS(Access);
+      ELLE_CONCEPT_SERIALIZABLE_METHODS(Access, elle::serialize::BufferArchive);
 
       // archivable
       //elle::Status      Serialize(elle::Archive&) const;

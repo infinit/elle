@@ -7,7 +7,7 @@
 
 # include <elle/concept/Fileable.hh>
 # include <elle/radix/Object.hh>
-# include <elle/serialize/Uniquable.hh>
+# include <elle/concept/Uniquable.hh>
 
 # include <elle/idiom/Open.hh>
 
@@ -29,9 +29,8 @@ namespace lune
   ///
   class Identity
     : public elle::radix::Object
-    , public elle::concept::Serializable<Identity>
-    , public elle::concept::Fileable<>
-    , public elle::serialize::Uniquable<Identity>
+    , public elle::concept::MakeFileable<Identity>
+    , public elle::concept::MakeUniquable<Identity>
   {
   public:
     static const elle::String           Extension;

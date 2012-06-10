@@ -202,7 +202,7 @@ namespace etoile
         // dump the owner permissions.
         std::cout << alignment << elle::Dumpable::Shift
                   << elle::Dumpable::Shift
-                  << "[Owner] " << this->permissions.owner << std::endl;
+                  << "[Owner] " << (int)this->permissions.owner << std::endl;
       }
 
       //

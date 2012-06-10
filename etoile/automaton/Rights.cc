@@ -1,16 +1,4 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [mon jun 20 14:04:21 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/log.hh>
 
 #include <etoile/automaton/Rights.hh>
 #include <etoile/automaton/Access.hh>
@@ -22,9 +10,7 @@ namespace etoile
   namespace automaton
   {
 
-//
-// ---------- methods ---------------------------------------------------------
-//
+    ELLE_LOG_TRACE_COMPONENT("etoile.automaton.Rights");
 
     ///
     /// this method determines the rights the current user has over the
@@ -36,9 +22,11 @@ namespace etoile
     elle::Status        Rights::Determine(
                           gear::Object&                         context)
     {
-      // if the rights have already been determined, return.
       if (context.rights.role != nucleus::RoleUnknown)
-        return elle::Status::Ok;
+        {
+          ELLE_LOG_TRACE("Rights have already been determined !")
+          return elle::Status::Ok;
+        }
 
       // determine the rights according to the subject.
       if (agent::Agent::Subject == context.object.owner.subject)
@@ -64,8 +52,9 @@ namespace etoile
                 escape("unable to extract the secret key from the token");
             }
 
-          // set the record for ease purpose.
+          // set the record for ease purpose. XXX I see what you did there
           context.rights.record = context.object.meta.owner.record;
+          ELLE_LOG_TRACE("Rights have been determined according to the subject record.");
         }
       else
         {
@@ -111,6 +100,7 @@ namespace etoile
 
               // finally, set the record for ease purpose.
               context.rights.record = *record;
+              ELLE_LOG_TRACE("Rights have been determined from its own context (referenced in the access block).");
             }
           else
             {
@@ -125,6 +115,7 @@ namespace etoile
 
               // set the permissions.
               context.rights.permissions = nucleus::PermissionNone;
+              ELLE_LOG_TRACE("Rights default to Vassal role and permissions");
             }
         }
 

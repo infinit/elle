@@ -4,8 +4,21 @@
 # include <cstdint>
 # include <iosfwd>
 # include <string>
+# include <typeinfo>
 
 # include <openssl/bn.h>
+
+// XXX demangle + types check for the following macros
+
+/// Returns a nice string for the given type
+# define ELLE_PRETTY_TYPE(T)                                                  \
+  std::string(typeid(T).name())                                               \
+  /**/
+
+/// Returns a nice string of the type of the given object
+# define ELLE_PRETTY_OBJECT_TYPE(object)                                      \
+  std::string(typeid(object).name())                                          \
+  /**/
 
 namespace elle {
 

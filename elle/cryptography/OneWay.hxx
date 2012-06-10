@@ -1,6 +1,7 @@
 #ifndef ELLE_CRYPTOGRAPHY_ONEWAY_HXX
 # define ELLE_CRYPTOGRAPHY_ONEWAY_HXX
 
+# include <elle/log.hh>
 # include <elle/utility/Buffer.hh>
 # include <elle/utility/BufferStream.hh>
 

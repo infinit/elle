@@ -113,7 +113,7 @@ namespace etoile
       // dump the permissions.
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
                 << "[Permissions] "
-                << this->rights.permissions
+                << (int)this->rights.permissions
                 << std::endl;
 
       // dump the key.

@@ -11,9 +11,11 @@
 # include <boost/noncopyable.hpp>
 # include <boost/call_traits.hpp>
 
+
 # include "fwd.hh"
 # include "ArchiveMode.hh"
 # include "ArchivableClass.hh"
+# include "Serializable.hh"
 
 namespace elle { namespace serialize {
 
@@ -230,7 +232,7 @@ namespace elle { namespace serialize {
           return this->self();
         }
 
-      /// output_ar << ref
+      /// output_ar << const_ref
       template<typename T> inline typename _EnableFor<T, ArchiveMode::Output>::Ref::
         type operator <<(T const& val)
         {
@@ -373,8 +375,15 @@ namespace elle { namespace serialize {
         inline typename std::enable_if<std::is_enum<T>::value == true>::type
         Save(T value);
       template<typename T>
-        inline typename std::enable_if<std::is_enum<T>::value == false>::type
+        inline typename std::enable_if<
+              std::is_enum<T>::value == false
+        >::type
         Save(T const& value);
+      //template<typename T>
+      //  inline typename std::enable_if<
+      //    elle::concept::IsSerializable<T, Archive>::value == true
+      //  >::type
+      //  Save(T const& value);
       inline void SaveBinary(void const* data, std::streamsize size);
 
       inline void Load(bool& val);
@@ -398,8 +407,13 @@ namespace elle { namespace serialize {
         inline typename std::enable_if<
               std::is_enum<T>::value == false
           &&  IsNamedValue<T>::value == false
-        >::type
-        Load(T& val);
+        >::type Load(T& val);
+
+      //template<typename T>
+      //  inline typename std::enable_if<
+      //    elle::concept::IsSerializable<T, Archive>::value == true
+      //  >::type
+      //  Load(T& val);
       template<typename T>
         inline void LoadConstruct(T* ptr);
       inline void LoadBinary(void* data, std::streamsize size);

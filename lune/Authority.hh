@@ -21,8 +21,7 @@ namespace lune
   ///
   class Authority
     : public elle::radix::Object
-    , public elle::concept::Serializable<Authority>
-    , public elle::concept::Fileable<>
+    , public elle::concept::MakeFileable<Authority>
   {
   public:
     //

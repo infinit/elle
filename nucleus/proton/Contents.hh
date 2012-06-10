@@ -43,6 +43,9 @@ namespace nucleus
     class Contents
       : public proton::ContentHashBlock
       , public elle::concept::Serializable<Contents<T>>
+      , public elle::concept::Serializable<
+            Contents<T>, elle::serialize::BufferArchive
+        >
     {
     public:
       //
@@ -73,6 +76,7 @@ namespace nucleus
 
       // fileable
       ELLE_CONCEPT_SERIALIZABLE_METHODS(Contents<T>);
+      ELLE_CONCEPT_SERIALIZABLE_METHODS(Contents<T>, elle::serialize::BufferArchive);
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
