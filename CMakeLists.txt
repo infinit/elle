@@ -181,7 +181,6 @@ target_link_libraries(8infinit
   infinit
   ${Boost_LIBRARIES}
   ${CMAKE_THREAD_LIBS_INIT}
-  boost_thread # XXX why ?
   elle etoile nucleus lune agent hole horizon
 )
 
