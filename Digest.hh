@@ -4,7 +4,7 @@
 # include <elle/types.hh>
 
 # include <elle/standalone/Region.hh>
-# include <elle/serialize/Uniquable.hh>
+# include <elle/concept/Uniquable.hh>
 # include <elle/radix/Object.hh>
 # include <elle/idiom/Open.hh>
 
@@ -26,7 +26,7 @@ namespace elle
     ///
     class Digest
       : public Object
-      , public elle::serialize::Uniquable<Digest>
+      , public elle::concept::MakeUniquable<Digest>
     {
     public:
       //
