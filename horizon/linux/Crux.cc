@@ -984,10 +984,9 @@ namespace horizon
           //
 
           if (Crib::Retrieve(elle::String(path), handle) == elle::Status::Error)
-            {
-              log("unable to retrieve the handle from the crib");
-              return static_cast<int>(elle::Status::Error);
-            }
+            error("unable to retrieve the handle from the crib",
+                  -EBADF,
+                  identifier);
 
           handle->permissions = permissions;
         }
@@ -1666,10 +1665,8 @@ namespace horizon
       // add the created and opened file in the crib.
       if (Crib::Add(elle::String(path),
                     reinterpret_cast<Handle*>(info->fh)) == elle::Status::Error)
-            {
-              log("unable to add the created file to the crib");
-              return static_cast<int>(elle::Status::Error);
-            }
+        error("unable to add the created file to the crib",
+              -EBADF);
 
       // debug.
       if (Infinit::Configuration.horizon.debug == true)
@@ -1967,10 +1964,9 @@ namespace horizon
           {
             // remove the created and opened file in the crib.
             if (Crib::Remove(elle::String(path)) == elle::Status::Error)
-              {
-                log("unable to remove the created file to the crib");
-                return static_cast<int>(elle::Status::Error);
-              }
+              error("unable to remove the created file from the crib",
+                    -EBADF,
+                    handle->identifier);
 
             //
             // the permissions settings have been delayed in order to support

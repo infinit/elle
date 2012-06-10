@@ -6,6 +6,8 @@
 
 # include <nucleus/proton/Version.hh>
 
+# include <elle/idiom/Open.hh>
+
 namespace nucleus
 {
   namespace proton

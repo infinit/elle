@@ -12,6 +12,8 @@
 # include <nucleus/neutron/Subject.hh>
 # include <nucleus/neutron/Record.hh>
 
+# include <elle/idiom/Open.hh>
+
 namespace nucleus
 {
   namespace neutron

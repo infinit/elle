@@ -1,3 +1,4 @@
+#include <elle/concurrency/Program.hh>
 
 #include <horizon/macosx/FUSE.hh>
 
