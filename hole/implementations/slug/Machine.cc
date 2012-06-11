@@ -961,10 +961,8 @@ namespace hole
                   {
                   case nucleus::FamilyContentHashBlock:
                     {
-                      nucleus::ImmutableBlock   ib;
-
                       // erase the immutable block.
-                      if (ib.Erase(Hole::Implementation->network,
+                      if (nucleus::ImmutableBlock::Erase(Hole::Implementation->network,
                                    address) == elle::Status::Error)
                         escape("unable to erase the block");
 
@@ -974,10 +972,8 @@ namespace hole
                   case nucleus::FamilyOwnerKeyBlock:
                   case nucleus::FamilyImprintBlock:
                     {
-                      nucleus::MutableBlock     mb;
-
                       // retrieve the mutable block.
-                      if (mb.Erase(Hole::Implementation->network,
+                      if (nucleus::MutableBlock::Erase(Hole::Implementation->network,
                                    address) == elle::Status::Error)
                         escape("unable to erase the block");
 
@@ -1327,6 +1323,7 @@ namespace hole
             {
               nucleus::ImmutableBlock const& ib =
                   static_cast<nucleus::ImmutableBlock const&>(block);
+              assert(dynamic_cast<nucleus::ImmutableBlock const*>(&block));
               ELLE_LOG_TRACE("pushing immutable block");
 
               //
@@ -1352,6 +1349,7 @@ namespace hole
             {
               nucleus::MutableBlock const& mb =
                   static_cast<nucleus::MutableBlock const&>(block);
+              assert(dynamic_cast<nucleus::MutableBlock const*>(&block));
 
               ELLE_LOG_TRACE("pushing mutable block");
 
@@ -1652,10 +1650,8 @@ namespace hole
             {
             case nucleus::FamilyContentHashBlock:
               {
-                nucleus::ImmutableBlock ib;
-
                 // erase the immutable block.
-                if (ib.Erase(Hole::Implementation->network,
+                if (nucleus::ImmutableBlock::Erase(Hole::Implementation->network,
                              address) == elle::Status::Error)
                   escape("unable to erase the block");
 
@@ -1665,10 +1661,8 @@ namespace hole
             case nucleus::FamilyOwnerKeyBlock:
             case nucleus::FamilyImprintBlock:
               {
-                nucleus::MutableBlock   mb;
-
                 // retrieve the mutable block.
-                if (mb.Erase(Hole::Implementation->network,
+                if (nucleus::MutableBlock::Erase(Hole::Implementation->network,
                              address) == elle::Status::Error)
                   escape("unable to erase the block");
 

@@ -4,7 +4,6 @@
 rm -rf ~/.config/infinit
 mkdir -p ~/.config/infinit/
 cp oracle/infinit.auth ~/.config/infinit
-cat ../../.config/infinit/infinit.conf | sed 's/true/1/' > ~/.config/infinit/infinit.conf
 
 echo 'hit enter whenever you want !'
 
@@ -20,3 +19,5 @@ cd - > /dev/null
 
 echo 'creating network'
 ./satellites/network/8network -c -n network -m local -a johndoe &> 8network.log
+cp ~/infinit.conf ~/.config/infinit/infinit.conf
+

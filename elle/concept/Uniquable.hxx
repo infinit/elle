@@ -18,7 +18,7 @@ namespace elle
   namespace concept
   {
 
-    template<__ECU_ARCHIVE_TPL(Archive)>
+    template <__ECU_ARCHIVE_TPL(Archive)>
       Status Uniquable<Archive>::Save(elle::io::Unique& out) const
       {
         std::ostringstream ss;
@@ -28,7 +28,13 @@ namespace elle
             ELLE_LOG_TRACE(
                 "Save %p of type %s to a Unique string",
                 this, ELLE_PRETTY_OBJECT_TYPE(this)
-            ) { this->serialize(ss); }
+            )
+              {
+                typedef contract::_Serializable<Archive> interface_t;
+                assert(dynamic_cast<interface_t const*>(this) != nullptr);
+                static_cast<interface_t const*>(this)->serialize(ss);
+              }
+
           }
         catch (std::exception const& err)
           {
@@ -39,8 +45,9 @@ namespace elle
         return Status::Ok;
       }
 
-      template<__ECU_ARCHIVE_TPL(Archive)>
-      Status Uniquable<Archive>::Restore(elle::io::Unique const& in)
+    template <__ECU_ARCHIVE_TPL(Archive)>
+      Status
+      Uniquable<Archive>::Restore(elle::io::Unique const& in)
       {
         std::istringstream ss(in);
         try
@@ -49,7 +56,12 @@ namespace elle
             ELLE_LOG_TRACE(
                 "Load %p of type %s from a Unique string",
                 this, ELLE_PRETTY_OBJECT_TYPE(this)
-            ) { this->deserialize(ss); }
+            )
+              {
+                typedef contract::_Serializable<Archive> interface_t;
+                assert(dynamic_cast<interface_t*>(this) != nullptr);
+                static_cast<interface_t*>(this)->deserialize(ss);
+              }
           }
         catch (std::exception const& err)
           {

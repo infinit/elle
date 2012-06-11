@@ -74,13 +74,10 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::standalone::Region,
   uint64_t size;
   archive >> size;
 
-  elle::utility::Buffer buffer(size);
-  archive.LoadBinary(buffer.MutableContents(), size);
-
-  auto ptr = buffer.Release().first;
-  if (value.Acquire(ptr.get(), size) == elle::Status::Error)
-    throw std::runtime_error("Cannot acquire the pointer!");
-  ptr.release();
+  if (value.Prepare(size) != elle::Status::Ok)
+    throw std::runtime_error("Cannot prepare the region");
+  archive.LoadBinary(value.contents, size);
+  value.size = size;
 }
 
 #endif

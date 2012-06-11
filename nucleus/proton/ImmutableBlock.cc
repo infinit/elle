@@ -1,3 +1,4 @@
+#include <elle/log.hh>
 
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
@@ -16,9 +17,7 @@ namespace nucleus
   namespace proton
   {
 
-//
-// ---------- constructs & destructors ----------------------------------------
-//
+    ELLE_LOG_TRACE_COMPONENT("nucleus.proton.ImmutableBlock");
 
     ///
     /// default constructor.
@@ -50,34 +49,6 @@ namespace nucleus
 // ---------- fileable --------------------------------------------------------
 //
 
-# define STRINGIFY_ADDRESS(address, unique)                                   \
-    do {                                                                      \
-      try                                                                     \
-        {                                                                     \
-          elle::utility::WeakBuffer buf(                                      \
-              address.digest->region.contents,                                \
-              address.digest->region.size                                     \
-          );                                                                  \
-          buf.Save(unique);                                                   \
-        }                                                                     \
-      catch (std::exception const& err)                                       \
-        {                                                                     \
-          escape("%s", err.what());                                           \
-        }                                                                     \
-    } while (false)                                                           \
-
-    namespace
-      {
-
-        elle::Status StringifyAddress(Address const& address,
-                                      elle::String unique)
-        {
-          STRINGIFY_ADDRESS(address, unique);
-          return elle::Status::Ok;
-        }
-
-      }
-
     ///
     /// this method loads the block.
     ///
@@ -87,7 +58,10 @@ namespace nucleus
       elle::Path        path;
       elle::String      unique;
 
-      STRINGIFY_ADDRESS(address, unique);
+      if (address.digest->Save(unique) == elle::Status::Error)
+        escape("unable to convert the address in its hexadecimal form");
+
+      ELLE_LOG_TRACE("Load immutable block from address %s", unique);
 
       // debug.
       if (Infinit::Configuration.nucleus.debug == true)
@@ -104,7 +78,7 @@ namespace nucleus
                         elle::io::Piece("%ADDRESS%", unique)) == elle::Status::Error)
         escape("unable to complete the path");
 
-      return Block::Load(path);
+      return this->Load(path);
     }
 
     ///
@@ -116,7 +90,13 @@ namespace nucleus
       elle::Path        path;
       elle::String      unique;
 
-      STRINGIFY_ADDRESS(address, unique);
+      printf("BIET MAEK\n");
+      address.Dump();
+
+      if (address.digest->Save(unique) == elle::Status::Error)
+        escape("unable to convert the address in its hexadecimal form");
+
+      ELLE_LOG_TRACE("Store immutable block from address %s", unique);
 
       // debug.
       if (Infinit::Configuration.nucleus.debug == true)
@@ -133,19 +113,22 @@ namespace nucleus
                         elle::io::Piece("%ADDRESS%", unique)) == elle::Status::Error)
         escape("unable to complete the path");
 
-      return Block::Store(path);
+      return this->Store(path);
     }
 
     ///
     /// this method erases a block.
     ///
     elle::Status        ImmutableBlock::Erase(const Network&    network,
-                                              const Address&    address) const
+                                              const Address&    address)
     {
       elle::Path        path;
       elle::String      unique;
 
-      STRINGIFY_ADDRESS(address, unique);
+      if (address.digest->Save(unique) == elle::Status::Error)
+        escape("unable to convert the address in its hexadecimal form");
+
+      ELLE_LOG_TRACE("Erase immutable block from address %s", unique);
 
       // debug.
       if (Infinit::Configuration.nucleus.debug == true)
@@ -182,9 +165,13 @@ namespace nucleus
       elle::Path        path;
       elle::String      unique;
 
-      // first, turn the block's address into a hexadecimal string.
-      if (StringifyAddress(address, unique) == elle::Status::Error)
-        flee("unable to convert the address in its hexadecimal form");
+      printf("BIET MAEK\n");
+      address.Dump();
+
+      if (address.digest->Save(unique) == elle::Status::Error)
+        escape("unable to convert the address in its hexadecimal form");
+
+      ELLE_LOG_TRACE("Check existence immutable block from address %s", unique);
 
       // debug.
       if (Infinit::Configuration.nucleus.debug == true)
