@@ -142,18 +142,5 @@ namespace nucleus
     //  return elle::Status::Ok;
     //}
 
-//
-// ---------- fileable --------------------------------------------------------
-//
-
-    ///
-    /// this method erases the block file.
-    ///
-    elle::Status        Block::Erase(const Network&,
-                                     const Address&) const
-    {
-      escape("this method should never have been called");
-    }
-
   }
 }

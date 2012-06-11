@@ -75,12 +75,11 @@ namespace nucleus
                              const Version&);
       elle::Status      Store(const Network&,
                               const Address&) const;
-      elle::Status      Erase(const Network&,
-                              const Address&) const;
       elle::Status      Exist(const Network&,
                               const Address&,
                               const Version&) const;
 
+      static elle::Status Erase(Network const&, Address const&);
       //
       // attributes
       //

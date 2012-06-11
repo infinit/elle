@@ -106,9 +106,6 @@ namespace nucleus
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;
 
-      virtual elle::Status      Erase(const Network&,
-                                      const Address&) const;
-
       //
       // attributes
       //
