@@ -5,6 +5,7 @@
 
 # include <elle/standalone/Region.hh>
 # include <elle/concept/Uniquable.hh>
+# include <elle/serialize/HexadecimalArchive.hh>
 # include <elle/radix/Object.hh>
 # include <elle/idiom/Open.hh>
 
@@ -17,16 +18,15 @@ namespace elle
   namespace cryptography
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// this class represents an asymmetrically encrypted text.
     ///
     class Digest
       : public Object
-      , public elle::concept::MakeUniquable<Digest>
+      , public elle::concept::MakeUniquable<
+            Digest,
+            elle::serialize::HexadecimalArchive
+        >
     {
     public:
       //
