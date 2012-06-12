@@ -40,14 +40,11 @@ namespace nucleus
       const
     {
       // compute the address.
-      if (address.Create(this->family, this->component,
-                         elle::serialize::serializable(*this)) ==
-            /* == */ elle::Status::Error)
+      if (address.Create(
+            this->family, this->component,
+            elle::serialize::serializable(*this)) == elle::Status::Error)
         escape("unable to compute the CHB's address");
 
-
-      printf("AVALE\n");
-      address.Dump();
       return elle::Status::Ok;
     }
 

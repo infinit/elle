@@ -238,10 +238,6 @@ Status PrivateKey::Decrypt(elle::cryptography::Code const&    in,
   {
     size_t          size;
 
-    //std::cout << "Decrypt secret key from:\n";
-    //key.Dump();
-    //std::cout << "-----------------------------------Decrypt secret key\n";
-
     // compute the size of the decrypted portion to come.
     if (::EVP_PKEY_decrypt(
           this->_contexts.decrypt,
@@ -404,9 +400,6 @@ Status PrivateKey::Encrypt(elle::utility::WeakBuffer const& in,
 
     // set the key size.
     key.region.size = size;
-    //std::cout << "Encrypted secret key:\n";
-    //key.Dump();
-    //std::cout << "######################################\n";
   }
 
   // (iv)

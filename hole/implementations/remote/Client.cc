@@ -95,13 +95,14 @@ namespace hole
         //
         // authenticate to the server.
         //
-        {
-          // send the passport.
-          if (this->socket->Send(
-                elle::network::Inputs<TagChallenge>(Hole::Passport)) ==
-              elle::Status::Error)
-            escape("unable to send the challenge");
-        }
+        ELLE_LOG_TRACE("Authenticate to the server")
+          {
+            // send the passport.
+            if (this->socket->Send(
+                  elle::network::Inputs<TagChallenge>(Hole::Passport)) ==
+                elle::Status::Error)
+              escape("unable to send the challenge");
+          }
 
         return elle::Status::Ok;
       }

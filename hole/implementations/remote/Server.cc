@@ -70,41 +70,41 @@ namespace hole
         // register the messages.
         //
         {
-         // // register the challenge message.
-         // if (elle::network::Network::Register(
-         //       elle::network::Procedure<TagChallenge,
-         //                       elle::TagNone,
-         //                       TagException>(
-         //         elle::concurrency::Callback<>::Infer(
-         //           &Server::Challenge, this))) == elle::Status::Error)
-         //   escape("unable to register the callback");
+          // register the challenge message.
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagChallenge,
+                                         elle::TagNone,
+                                         elle::TagError>(
+                  elle::concurrency::Callback<>::Infer(
+                    &Server::Challenge, this))) == elle::Status::Error)
+            escape("unable to register the callback");
 
           // register the push message.
           if (elle::network::Network::Register(
                 elle::network::Procedure<TagPush,
-                                elle::TagNone,
-                                elle::TagError>(
+                                         elle::TagNone,
+                                         elle::TagError>(
                   elle::Callback<>::Infer(
                     &Server::Push, this))) == elle::Status::Error)
             escape("unable to register the callback");
 
           // register the pull message.
-          //if (elle::network::Network::Register(
-          //      elle::network::Procedure<TagPull,
-          //                      elle::TagNone,
-          //                      TagException>(
-          //        elle::concurrency::Callback<>::Infer(
-          //          &Server::Pull, this))) == elle::Status::Error)
-          //  escape("unable to register the callback");
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagPull,
+                                         elle::TagNone,
+                                         elle::TagError>(
+                  elle::concurrency::Callback<>::Infer(
+                    &Server::Pull, this))) == elle::Status::Error)
+            escape("unable to register the callback");
 
           // register the wipe message.
-          ///if (elle::network::Network::Register(
-          ///      elle::network::Procedure<TagWipe,
-          ///                      elle::TagNone,
-          ///                      TagException>(
-          ///        elle::concurrency::Callback<>::Infer(
-          ///          &Server::Wipe, this))) == elle::Status::Error)
-          ///  escape("unable to register the callback");
+          if (elle::network::Network::Register(
+                elle::network::Procedure<TagWipe,
+                                         elle::TagNone,
+                                         elle::TagError>(
+                  elle::concurrency::Callback<>::Infer(
+                    &Server::Wipe, this))) == elle::Status::Error)
+            escape("unable to register the callback");
         }
 
         _acceptor = new reactor::Thread(elle::concurrency::scheduler(),

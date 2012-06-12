@@ -90,9 +90,6 @@ namespace nucleus
       elle::Path        path;
       elle::String      unique;
 
-      printf("BIET MAEK\n");
-      address.Dump();
-
       if (address.digest->Save(unique) == elle::Status::Error)
         escape("unable to convert the address in its hexadecimal form");
 
@@ -164,9 +161,6 @@ namespace nucleus
     {
       elle::Path        path;
       elle::String      unique;
-
-      printf("BIET MAEK\n");
-      address.Dump();
 
       if (address.digest->Save(unique) == elle::Status::Error)
         escape("unable to convert the address in its hexadecimal form");
