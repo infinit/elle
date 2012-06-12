@@ -42,8 +42,6 @@ namespace nucleus
                       value.meta.owner.permissions,
                       value.meta.owner.token) == elle::Status::Error)
                   throw std::runtime_error("unable to create the owner access record");
-              elle::print("Got subject :");
-              value.owner.subject.Dump();
             }
         }
       };

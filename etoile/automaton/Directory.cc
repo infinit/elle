@@ -145,13 +145,6 @@ namespace etoile
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
-
-      // XXX
-      elle::print("Got context");
-      context.Dump();
-
-      agent::Agent::Subject.Dump();
-
       // check if the current user has the right the read the catalog.
       if ((context.rights.permissions & nucleus::PermissionRead) !=
           nucleus::PermissionRead)
@@ -193,10 +186,6 @@ namespace etoile
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
-
-      // XXX
-      elle::print("Got gear::Directory context:");
-      context.Dump();
 
       // check if the current user has the right the read the catalog.
       if ((context.rights.permissions & nucleus::PermissionRead) !=

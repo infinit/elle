@@ -51,6 +51,7 @@ namespace elle
 // ---------- methods ---------------------------------------------------------
 //
 
+    // XXX
     namespace {
       struct ProcedureSkeletonExtractor
       {
@@ -79,6 +80,7 @@ namespace elle
         }
       };
     }
+
     ///
     /// this method is called by the network manager whenever a message
     /// of tag I is received.
@@ -92,7 +94,6 @@ namespace elle
     {
       elle::serialize::InputBufferArchive archive(*parcel.data);
       ProcedureSkeletonExtractor extractor(archive);
-
 
       Callback<
           Status,
@@ -154,6 +155,7 @@ namespace elle
         escape("unable to convert the host name");
       ctx.host = host;
       elle::network::current_context(ctx);
+
       status = arguments.Call(this->routine);
 
       // call the epilog.

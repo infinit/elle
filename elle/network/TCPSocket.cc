@@ -251,9 +251,15 @@ namespace elle
                       assert(it->second);
                       ELLE_LOG_TRACE("%s: call procedure.", *this);
                       if (it->second(this, l, *parcel) == Status::Error)
-                        // FIXME
-                        // escape("an error occured while processing the event");
-                        continue;
+                        {
+                          // FIXME
+                          // escape("an error occured while processing the event");
+
+                          // XXX
+                          printf("ERROR\n");
+                          show();
+                          continue;
+                        }
                     }
                 }
             }
