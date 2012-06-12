@@ -1,6 +1,8 @@
 #ifndef ELLE_NETWORK_PROCEDURE_HXX
 # define ELLE_NETWORK_PROCEDURE_HXX
 
+# include <elle/log.hh>
+
 # include <elle/network/Bundle.hh>
 # include <elle/network/Inputs.hh>
 # include <elle/network/Session.hh>
@@ -56,11 +58,11 @@ namespace elle
       struct ProcedureSkeletonExtractor
       {
       private:
-        elle::serialize::InputBufferArchive& archive;
+        elle::serialize::InputBufferArchive& _archive;
 
       public:
         ProcedureSkeletonExtractor(elle::serialize::InputBufferArchive& archive)
-          : archive(archive)
+          : _archive(archive)
         {}
 
         elle::Status Load()
@@ -73,10 +75,15 @@ namespace elle
         //{
         //  //static_assert(false, "NON1");
         //}
-        template<typename ...T>
-        elle::Status Load(T&... value)
+        template<typename T1, typename ...T>
+        elle::Status Load(T1& v1, T&... values)
         {
-          //static_assert(false, "NON1");
+          ELLE_LOG_TRACE_COMPONENT("elle.network.Procedure");
+          ELLE_LOG_TRACE("Skeleton extract %p", &v1)
+            {
+              _archive >> v1;
+              return this->Load(values...);
+            }
         }
       };
     }

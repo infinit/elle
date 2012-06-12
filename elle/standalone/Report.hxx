@@ -47,13 +47,7 @@ namespace elle
   }
 }
 
-#endif
-#ifndef  ELLE_STANDALONE_REPORTSERIALIZER_HXX
-# define ELLE_STANDALONE_REPORTSERIALIZER_HXX
-
 # include <elle/serialize/ArchiveSerializer.hxx>
-
-# include <elle/standalone/Report.hh>
 
 ELLE_SERIALIZE_SIMPLE(elle::standalone::Report::Entry,
                       archive,
