@@ -2,6 +2,7 @@
 #define ELLE_NETWORK_TCPSOCKET_HXX
 
 #include <elle/idiom/Close.hh>
+# include <elle/print.hh>
 # include <reactor/scheduler.hh>
 # include <reactor/thread.hh>
 #include <elle/idiom/Open.hh>
@@ -45,7 +46,7 @@ namespace elle
 
       try
         {
-          data.Writer() << inputs;
+          data.Writer() << inputs; // XXX First data wrapper
         }
       catch (std::exception const& err)
         {
@@ -60,7 +61,7 @@ namespace elle
 
       try
         {
-          packet.Writer() << header << data;
+          packet.Writer() << header << data; // XXX Second wrapper
         }
       catch (std::exception const& err)
         {
@@ -122,7 +123,14 @@ namespace elle
 
       try
         {
-          parcel->data->Writer() << outputs;
+          ELLE_LOG_TRACE("%s: reading data parcel of size %u",
+                         *this, parcel->data->Size());
+          // XXX Because the data is wrapped two times !
+          Data  data;
+          parcel->data->Reader() >> data;
+          elle::print("parcel data size: ", parcel->data->Size());
+          elle::print("data size: ", data.Size());
+          data.Reader() >> outputs;
         }
       catch (std::exception const& err)
         {

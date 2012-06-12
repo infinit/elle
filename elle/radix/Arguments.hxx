@@ -2506,12 +2506,18 @@ namespace elle
           {
             assert(version == 0);
             typedef elle::radix::detail::ArgumentsSerializer<sizeof...(T), T...> Serializer;
-            _ELLE_SERIALIZE_LOG_ACTION(elle::radix::Arguments, version, Archive::mode, value)
+            _ELLE_SERIALIZE_LOG_ACTION(elle::radix::Arguments<Parameters<T...>>, version, Archive::mode, value)
             {
               Serializer::Serialize(ar, value);
             }
           }
       };
+
+    template<typename... T>
+    struct StoreClassVersion< elle::radix::Arguments< Parameters<T...> >>
+    {
+      static bool const value = false;
+    };
 
   }
 }

@@ -15,6 +15,7 @@
 # include "fwd.hh"
 # include "ArchiveMode.hh"
 # include "ArchivableClass.hh"
+# include "StoreClassVersion.hh"
 # include "Serializable.hh"
 
 namespace elle { namespace serialize {
@@ -87,22 +88,6 @@ namespace elle { namespace serialize {
       { version = other.version; return *this; }
     };
 
-    ///
-    /// Each specialized type gets its version stored along with the object
-    /// itself. To change this behavior, you just have to define a specialization
-    /// for each type that doesn't need to store its version.
-    ///
-    template<typename T> struct StoreClassVersion
-      { static bool const value = true; };
-
-    template<typename T> struct StoreClassVersion<T&>
-      { static bool const value = StoreClassVersion<T>::value; };
-    template<typename T> struct StoreClassVersion<T const>
-      { static bool const value = StoreClassVersion<T>::value; };
-    template<typename T> struct StoreClassVersion<T volatile>
-      { static bool const value = StoreClassVersion<T>::value; };
-    template<typename T> struct StoreClassVersion<T*>
-      { static_assert(std::is_same<T,T>::value, "Should not happen !"); };
 
     /// Default stream type selector. Select the right stream type depending on
     /// the archive mode.
