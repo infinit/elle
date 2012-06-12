@@ -137,6 +137,7 @@ namespace elle
 
           // extract the header.
           reader >> *(parcel->header);
+          parcel->header->Dump();
 
           // XXX[Check if the size is plausible]
 
@@ -147,7 +148,15 @@ namespace elle
               return 0;
             }
 
-          reader >> *(parcel->data);
+
+          ELLE_LOG_TRACE("%s: reading parcel data at offset %u", *this, reader.Stream().Offset())
+            {
+              reader >> *(parcel->data);
+              ELLE_LOG_TRACE("%s: new offset is %u, and buf size is %u",
+                             *this, reader.Stream().Offset(), parcel->data->Size());
+            }
+
+          parcel->data->Dump();
 
           unsigned int eaten = reader.Stream().Offset();
           ::memmove(_buffer, _buffer + eaten, _buffer_size - eaten);

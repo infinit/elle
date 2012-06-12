@@ -241,13 +241,31 @@ namespace elle
         static void Serialize(Archive& ar, Type& value, unsigned int version)
         {
           assert(version == 0);
-          _ELLE_SERIALIZE_LOG_ACTION(elle::network::Bundle::Inputs, version, Archive::mode, value)
+          _ELLE_SERIALIZE_LOG_ACTION(
+            _(elle::network::Bundle::Inputs<G, elle::radix::Parameters<T...>>),
+            version, Archive::mode, value
+          )
           {
-            ar & value.tag;
             ar & value.arguments;
           }
         }
     };
+
+
+    template<
+        elle::network::Tag const G
+      , typename... T
+    >
+    struct StoreClassVersion<
+        elle::network::Bundle::Inputs<
+            G
+          , elle::radix::Parameters<T...>
+        >
+    >
+    {
+      static bool const value = false;
+    };
+
 
 
     template<
@@ -271,13 +289,30 @@ namespace elle
         static void Serialize(Archive& ar, Type& value, unsigned int version)
         {
           assert(version == 0);
-          _ELLE_SERIALIZE_LOG_ACTION(elle::network::Bundle::Outputs, version, Archive::mode, value)
-          {
-            ar & value.tag;
-            ar & value.arguments;
-          }
+          _ELLE_SERIALIZE_LOG_ACTION(
+            _(elle::network::Bundle::Outputs<G, elle::radix::Parameters<T...>>),
+            version, Archive::mode, value
+          )
+            {
+              ar & value.arguments;
+            }
         }
     };
+
+    template<
+        elle::network::Tag const G
+      , typename... T
+    >
+    struct StoreClassVersion<
+        elle::network::Bundle::Outputs<
+            G
+          , elle::radix::Parameters<T...>
+        >
+    >
+    {
+      static bool const value = false;
+    };
+
   }
 }
 
