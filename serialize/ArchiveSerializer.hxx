@@ -51,10 +51,9 @@
 
 # include "ArchivableClass.hh"
 # include "ArchiveMode.hh"
+# include "StoreClassVersion.hh"
 
 namespace elle { namespace serialize {
-
-    template<typename T> struct StoreClassVersion;
 
     ///
     /// The BaseArchiveSerializer define common standard function involved in
@@ -153,11 +152,12 @@ namespace elle { namespace serialize {
 
 }} // !namespace elle::serialize
 
-# define _ELLE_SERIALIZE_LOG_ACTION(T, version, mode, value)                    \
+# define _ELLE_SERIALIZE_LOG_ACTION(T, version, mode, _value)                   \
   ELLE_LOG_TRACE_COMPONENT("Infinit.Serialize");                                \
-  ELLE_LOG_TRACE("%s " #T " (version %u): %p",                                  \
+  ELLE_LOG_TRACE("%s " #T " (version %s: %u): %p",                              \
                  mode == ArchiveMode::Input ? "Loading" : "Saving",             \
-                 version, &value)                                               \
+                 elle::serialize::StoreClassVersion<T>::value ? "yes" : "no",   \
+                 version, &_value)                                              \
   /**/
 
 /// Define a simple serializer for the type T
@@ -334,7 +334,7 @@ namespace elle { namespace serialize {                                          
               Type                                                              \
             , Archive::mode                                                     \
           > Method;                                                             \
-          _ELLE_SERIALIZE_LOG_ACTION(T, version, Archive::mode, val)            \
+          _ELLE_SERIALIZE_LOG_ACTION(T<T1>, version, Archive::mode, val)        \
             { Method::Serialize(ar, val, version); }                            \
         }                                                                       \
         template<typename Archive>                                              \
