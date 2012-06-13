@@ -57,38 +57,37 @@ namespace elle
       Status Fileable<Archive>::Store(elle::io::Path const& path) const
       {
         ELLE_LOG_TRACE_COMPONENT("elle.concept");
-        ELLE_LOG_TRACE("Saving %p to file %s", this, path.str())
-        {
-          if (elle::io::File::Dig(path) == elle::Status::Error)
-            escape("unable to dig the chain of directories");
+        ELLE_LOG_TRACE_SCOPE("Saving %p to file %s", this, path.str());
 
-          std::ofstream out(path.str(), std::ios_base::out | std::ios_base::binary);
-          if (!out.good())
-            {
-              escape("Cannot open out file '%s'", path.str().c_str());
+        if (elle::io::File::Dig(path) == elle::Status::Error)
+          escape("unable to dig the chain of directories");
 
-              //throw std::runtime_error("Cannot read '"+  path.str().c_str() +"'");
-            }
+        std::ofstream out(path.str(), std::ios_base::out | std::ios_base::binary);
+        if (!out.good())
+          {
+            escape("Cannot open out file '%s'", path.str().c_str());
 
-          try
-            {
-              typedef contract::_Serializable<Archive> interface_t;
-              assert(dynamic_cast<interface_t const*>(this) != nullptr);
-              static_cast<interface_t const*>(this)->serialize(out);
-            }
-          catch (std::exception const& err)
-            {
-              escape("%s", (
-                  "Cannot store to '" + path.str() + "': " +
-                  std::string(err.what())
-              ).c_str());
-              return elle::Status::Error;
-              //throw std::runtime_error(
-              //    "Cannot load from '" + path.str() + "': " +
-              //    std::string(err.what())
-              //);
-            }
-        }
+            //throw std::runtime_error("Cannot read '"+  path.str().c_str() +"'");
+          }
+
+        try
+          {
+            typedef contract::_Serializable<Archive> interface_t;
+            assert(dynamic_cast<interface_t const*>(this) != nullptr);
+            static_cast<interface_t const*>(this)->serialize(out);
+          }
+        catch (std::exception const& err)
+          {
+            escape("%s", (
+                "Cannot store to '" + path.str() + "': " +
+                std::string(err.what())
+            ).c_str());
+            return elle::Status::Error;
+            //throw std::runtime_error(
+            //    "Cannot load from '" + path.str() + "': " +
+            //    std::string(err.what())
+            //);
+          }
       }
 
 ////

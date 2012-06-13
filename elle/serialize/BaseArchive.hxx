@@ -98,11 +98,7 @@ namespace elle
 
         typedef ArchiveSerializer<typename std::remove_cv<T>::type> Serializer;
         // this const_cast is safe since the archive is in output mode
-        ELLE_LOG_TRACE_COMPONENT("elle.serialize");
-        ELLE_LOG_TRACE(
-            "Saving %p with its concrete type %s",
-            this, ELLE_PRETTY_TYPE(T)
-        ) Serializer::Serialize(
+        Serializer::Serialize(
             this->self(),
             const_cast<T&>(val),
             ArchivableClass<T>::version
@@ -154,11 +150,7 @@ namespace elle
           Access::Load(this->self(), classVersion);
 
         typedef ArchiveSerializer<typename std::remove_cv<T>::type> Serializer;
-        ELLE_LOG_TRACE_COMPONENT("elle.serialize");
-        ELLE_LOG_TRACE(
-            "Loading %p with its concrete type %s",
-            this, ELLE_PRETTY_TYPE(T)
-        ) Serializer::Serialize(this->self(), val, classVersion.version);
+        Serializer::Serialize(this->self(), val, classVersion.version);
       }
 
     //-------------------------------------------------------------------------

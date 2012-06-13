@@ -49,11 +49,16 @@
 # include <cassert>
 # include <type_traits>
 
+# include <elle/print.hh>
+
 # include "ArchivableClass.hh"
 # include "ArchiveMode.hh"
 # include "StoreClassVersion.hh"
 
-namespace elle { namespace serialize {
+namespace elle
+{
+  namespace serialize
+  {
 
     ///
     /// The BaseArchiveSerializer define common standard function involved in
@@ -150,14 +155,17 @@ namespace elle { namespace serialize {
           }
         };
 
-}} // !namespace elle::serialize
+  }
+} // !namespace elle::serialize
 
 # define _ELLE_SERIALIZE_LOG_ACTION(T, version, mode, _value)                   \
-  ELLE_LOG_TRACE_COMPONENT("Infinit.Serialize");                                \
-  ELLE_LOG_TRACE("%s " #T " (version %s: %u): %p",                              \
+  ELLE_LOG_TRACE_COMPONENT("elle.serialize");                                   \
+  ELLE_LOG_TRACE("%s " #T " (%s): %p",                                          \
                  mode == ArchiveMode::Input ? "Loading" : "Saving",             \
-                 elle::serialize::StoreClassVersion<T>::value ? "yes" : "no",   \
-                 version, &_value)                                              \
+                 (elle::serialize::StoreClassVersion<T>::value                  \
+                    ? elle::sprint("version", version)                          \
+                    : "no version"),                                            \
+                 &_value)                                                       \
   /**/
 
 /// Define a simple serializer for the type T
