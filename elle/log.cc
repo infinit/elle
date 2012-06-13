@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/format.hpp>
 
 #include <elle/concurrency/Scheduler.hh>
@@ -195,9 +196,15 @@ namespace elle
           std::string(pad / 2 + pad % 2, ' ')
         );
 
-        boost::format fmt("[%s] [%2s]");
+        boost::posix_time::ptime time;
+        static const bool universal = getenv("ELLE_LOG_TIME_UNIVERSAL");
+        if (universal)
+          time = boost::posix_time::second_clock::universal_time();
+        else
+          time = boost::posix_time::second_clock::local_time();
+        boost::format fmt("%s: [%s] [%2s]");
         reactor::Thread* t = elle::concurrency::scheduler().current();
-        default_logger.trace(str(fmt % s % thread_id(t)), align, msg);
+        default_logger.trace(str(fmt % time % s % thread_id(t)), align, msg);
       }
 
       void
