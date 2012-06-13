@@ -115,11 +115,7 @@ namespace elle
             {
               boost::algorithm::trim(el);
               if (el.size())
-                {
                   this->_patterns->push_back(el);
-                  elle::print("\t-", "'"+el+"'");
-                }
-
             }
           return *this->_patterns;
         }
