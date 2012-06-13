@@ -54,7 +54,6 @@ namespace elle
     public:
       Parcel* Read();
     private:
-      void ReadData();
       unsigned char*    _buffer;
       int               _buffer_size;
       int               _buffer_capacity;
@@ -81,6 +80,7 @@ namespace elle
     private:
       void Dispatch();
       reactor::network::Socket* _socket;
+      reactor::Mutex _socket_write_lock;
       reactor::Thread* _dispatcher;
     };
 
