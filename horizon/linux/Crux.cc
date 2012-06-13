@@ -1,16 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       horizon
-//
-// license       infinit
-//
-// author        julien quintard   [wed jun  1 09:30:57 2011]
-//
+#include <elle/log.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <horizon/linux/Crux.hh>
 #include <horizon/linux/Linux.hh>
@@ -21,20 +10,15 @@
 #include <agent/Agent.hh>
 #include <etoile/Etoile.hh>
 
+ELLE_LOG_TRACE_COMPONENT("Infinit.Horizon")
+
 namespace horizon
 {
   namespace linux
   {
-
-//
-// ---------- macro-functions -------------------------------------------------
-//
-
-    ///
-    /// this macro-function makes it easier to return an error from an
+    /// This macro-function makes it easier to return an error from an
     /// upcall, taking care to log the error but also to release the
     /// remaining identifiers.
-    ///
 #define error(_text_, _errno_, _identifiers_...)                        \
   do                                                                    \
     {                                                                   \
@@ -45,24 +29,12 @@ namespace horizon
       return ((_errno_));                                               \
     } while (false)
 
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// this constant defines the number of directory entries to fetch from
-    /// etoile when performing a Readdir().
-    ///
+    /// The number of directory entries to fetch from etoile when
+    /// performing a Readdir().
     const nucleus::Size                 Crux::Range = 128;
 
-//
-// ---------- callbacks -------------------------------------------------------
-//
-
-    ///
-    /// this method returns general-purpose information on the file system
-    /// object identified by _path_.
-    ///
+    /// General-purpose information on the file system object
+    /// identified by _path_.
     int                 Crux::Getattr(const char*               path,
                                       struct ::stat*            stat)
     {
@@ -72,44 +44,43 @@ namespace horizon
       struct ::fuse_file_info   info;
       int                       result;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, %p)\n",
                __FUNCTION__,
                path, stat);
 
-      // resolve the path.
+      // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         {
-          // purge the error messages since it may be normal not to be able
-          // to resolve the given way.
+          // Purge the error messages since it may be normal not to be
+          // able to resolve the given way.
           purge();
 
           return (-ENOENT);
         }
 
-      // load the object.
+      // Load the object.
       if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the object",
               -ENOENT);
 
-      // create a local handle.
+      // Create a local handle.
       Handle                    handle(Handle::OperationGetattr,
                                        identifier);
 
-      // set the handle in the fuse_file_info structure.
-      //
-      // be careful, the address is local but it is alright since it is
-      // used in Fgetattr() only.
+      // Set the handle in the fuse_file_info structure.  Be careful,
+      // the address is local but it is alright since it is used in
+      // Fgetattr() only.
       info.fh = reinterpret_cast<uint64_t>(&handle);
 
-      // call the Fgetattr() method.
+      // Call Fgetattr().
       if ((result = Crux::Fgetattr(path, stat, &info)) < 0)
         error("unable to get information on the given file descriptor",
               result,
               identifier);
 
-      // discard the object.
+      // Discard the object.
       if (etoile::wall::Object::Discard(identifier) == elle::Status::Error)
         error("unable to discard the object",
               -EPERM);
@@ -123,10 +94,8 @@ namespace horizon
       return (0);
     }
 
-    ///
-    /// this method returns general-purpose information on the file system
-    /// object identified by _path_.
-    ///
+    /// General-purpose information on the file system object
+    /// identified by _path_.
     int                 Crux::Fgetattr(const char*              path,
                                        struct ::stat*           stat,
                                        struct ::fuse_file_info* info)
@@ -135,79 +104,73 @@ namespace horizon
       etoile::miscellaneous::Abstract   abstract;
       elle::String*                     name;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, %p)\n",
                __FUNCTION__,
                path, stat);
 
-      // clear the stat structure.
+      // Clear the stat structure.
       ::memset(stat, 0x0, sizeof (struct ::stat));
 
-      // retrieve the handle.
+      // Retrieve the handle.
       handle = reinterpret_cast<Handle*>(info->fh);
 
-      // retrieve information on the object.
+      // Retrieve information on the object.
       if (etoile::wall::Object::Information(handle->identifier,
                                             abstract) == elle::Status::Error)
         error("unable to retrieve information on the object",
               -EPERM);
 
-      // set the uid by first looking into the users map. if no local user is
-      // found, the 'somebody' user is used instead, indicating that the
-      // file belongs to someone, with the given permissions, but cannot
-      // be mapped to a local user name.
+      // Set the uid by first looking into the users map. if no local
+      // user is found, the 'somebody' user is used instead,
+      // indicating that the file belongs to someone, with the given
+      // permissions, but cannot be mapped to a local user name.
       if (Linux::Dictionary.users.Lookup(abstract.keys.owner,
                                         name) == elle::Status::True)
         {
-          //
-          // in this case, the object's owner is known locally.
-          //
+          // In this case, the object's owner is known locally.
           struct ::passwd*      passwd;
 
-          // retrieve the passwd structure associated with this name.
+          // Retrieve the passwd structure associated with this name.
           if ((passwd = ::getpwnam(name->c_str())) != NULL)
             {
-              // set the uid to the local user's.
+              // Set the uid to the local user's.
               stat->st_uid = passwd->pw_uid;
             }
           else
             {
-              // if an error occured, set the user to 'somebody'.
+              // If an error occured, set the user to 'somebody'.
               stat->st_uid = Linux::Somebody::UID;
             }
         }
       else
         {
-          //
-          // otherwise, this user is unknown locally, so indicate the
+          // Otherwise, this user is unknown locally, so indicate the
           // system that this object belongs to the 'somebody' user.
-          //
-
           stat->st_uid = Linux::Somebody::UID;
         }
 
-      // since Infinit does not have the concept of current group, the
+      // Since Infinit does not have the concept of current group, the
       // group of this object is set to 'somebody'.
       stat->st_gid = Linux::Somebody::GID;
 
-      // set the size.
+      // Set the size.
       stat->st_size = static_cast<off_t>(abstract.size);
 
-      // set the disk usage by assuming the smallest disk unit is
-      // 512 bytes.
-      //
-      // note however the the optimised size of I/Os is set to 4096.
+      // Set the disk usage by assuming the smallest disk unit is 512
+      // bytes.  Note however the the optimised size of I/Os is set to
+      // 4096.
       stat->st_blksize = 4096;
       stat->st_blocks =
         (stat->st_size / 512) +
         (stat->st_size % 512) > 0 ? 1 : 0;
 
-      // set the number of hard links to 1 since no hard link exist
+      // Set the number of hard links to 1 since no hard link exist
       // but the original object.
       stat->st_nlink = 1;
 
-      // convert the times into time_t structures.
+      // Convert the times into time_t structures.
       stat->st_atime = time(NULL);
 
       if (abstract.stamps.creation.Get(stat->st_ctime) ==
@@ -220,22 +183,22 @@ namespace horizon
         error("unable to convert the time stamps",
               -EPERM);
 
-      // set the mode and permissions.
+      // Set the mode and permissions.
       switch (abstract.genre)
         {
         case nucleus::GenreDirectory:
           {
-            // set the object as being a directory.
+            // Set the object as being a directory.
             stat->st_mode = S_IFDIR;
 
-            // if the user has the read permission, allow her to access
-            // and read the directory.
+            // If the user has the read permission, allow her to
+            // access and read the directory.
             if ((abstract.permissions.owner & nucleus::PermissionRead) ==
                 nucleus::PermissionRead)
               stat->st_mode |= S_IRUSR | S_IXUSR;
 
-            // if the user has the write permission, allow her to modify
-            // the directory content.
+            // If the user has the write permission, allow her to
+            // modify the directory content.
             if ((abstract.permissions.owner & nucleus::PermissionWrite) ==
                 nucleus::PermissionWrite)
               stat->st_mode |= S_IWUSR;
@@ -248,30 +211,30 @@ namespace horizon
 
             stat->st_mode = S_IFREG;
 
-            // if the user has the read permission, allow her to read
+            // If the user has the read permission, allow her to read
             // the file.
             if ((abstract.permissions.owner & nucleus::PermissionRead) ==
                 nucleus::PermissionRead)
               stat->st_mode |= S_IRUSR;
 
-            // if the user has the write permission, allow her to modify
-            // the file content.
+            // If the user has the write permission, allow her to
+            // modify the file content.
             if ((abstract.permissions.owner & nucleus::PermissionWrite) ==
                 nucleus::PermissionWrite)
               stat->st_mode |= S_IWUSR;
 
-            // retrieve the attribute.
+            // Retrieve the attribute.
             if (etoile::wall::Attributes::Get(handle->identifier,
                                               "perm::exec",
                                               trait) == elle::Status::Error)
               error("unable to retrieve an attribute",
                     -EPERM);
 
-            // check the trait.
+            // Check the trait.
             if ((trait != NULL) &&
                 (trait->value == "true"))
               {
-                // active the exec bit.
+                // Active the exec bit.
                 stat->st_mode |= S_IXUSR;
               }
 
@@ -281,14 +244,14 @@ namespace horizon
           {
             stat->st_mode = S_IFLNK;
 
-            // if the user has the read permission, allow her to read and
-            // search the linked object.
+            // If the user has the read permission, allow her to read
+            // and search the linked object.
             if ((abstract.permissions.owner & nucleus::PermissionRead) ==
                 nucleus::PermissionRead)
               stat->st_mode |= S_IRUSR | S_IXUSR;
 
-            // if the user has the write permission, allow her to modify
-            // the link.
+            // If the user has the write permission, allow her to
+            // modify the link.
             if ((abstract.permissions.owner & nucleus::PermissionWrite) ==
                 nucleus::PermissionWrite)
               stat->st_mode |= S_IWUSR;
@@ -302,7 +265,7 @@ namespace horizon
           }
         }
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, %p)\n",
                __FUNCTION__,
@@ -311,23 +274,20 @@ namespace horizon
       return (0);
     }
 
-    ///
-    /// this method changes the access and modification time of the object.
-    ///
+    /// This method changes the access and modification time of the
+    /// object.
     int                 Crux::Utimens(const char*               path,
                                       const struct ::timespec[2])
     {
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, ...)\n",
                __FUNCTION__,
                path);
 
-      //
-      // XXX not supported: do something about it
-      //
+      // Xxx not supported: do something about it
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, ...)\n",
                __FUNCTION__,
@@ -336,9 +296,7 @@ namespace horizon
       return (0);
     }
 
-    ///
-    /// this method opens the directory _path_.
-    ///
+    /// This method opens the directory _path_.
     int                 Crux::Opendir(const char*               path,
                                       struct ::fuse_file_info*  info)
     {
@@ -346,30 +304,30 @@ namespace horizon
       etoile::path::Way         way(path);
       etoile::path::Chemin      chemin;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, %p)\n",
                __FUNCTION__,
                path, info);
 
-      // resolve the path.
+      // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
-      // load the directory.
+      // Load the directory.
       if (etoile::wall::Directory::Load(chemin,
                                         identifier) == elle::Status::Error)
         error("unable to load the directory",
               -ENOENT);
 
-      // duplicate the identifier and save it in the info structure's file
-      // handle.
+      // Duplicate the identifier and save it in the info structure's
+      // file handle.
       info->fh =
         reinterpret_cast<uint64_t>(new Handle(Handle::OperationOpendir,
                                               identifier));
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, %p)\n",
                __FUNCTION__,
@@ -378,9 +336,7 @@ namespace horizon
       return (0);
     }
 
-    ///
-    /// this method reads the directory entries.
-    ///
+    /// This method reads the directory entries.
     int                 Crux::Readdir(const char*               path,
                                       void*                     buffer,
                                       ::fuse_fill_dir_t         filler,
@@ -391,25 +347,25 @@ namespace horizon
       off_t             next;
       nucleus::Record*  record;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, %p, %p, %qu, %p)\n",
                __FUNCTION__,
                path, buffer, filler,
                static_cast<elle::Natural64>(offset), info);
 
-      // set the handle pointer to the file handle that has been filled by
-      // Opendir().
+      // Set the handle pointer to the file handle that has been
+      // filled by Opendir().
       handle = reinterpret_cast<Handle*>(info->fh);
 
-      // retrieve the subject's permissions on the object.
+      // Retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(handle->identifier,
                                        agent::Agent::Subject,
                                        record) == elle::Status::Error)
         error("unable to retrieve the access record",
               -EPERM);
 
-      // check the record.
+      // Check the record.
       if (!((record != NULL) &&
             ((record->permissions & nucleus::PermissionRead) ==
              nucleus::PermissionRead)))
@@ -417,20 +373,20 @@ namespace horizon
               "directory entries",
               -EACCES);
 
-      // fill the . and .. entries.
+      // Fill the . and .. entries.
       if (offset == 0)
         filler(buffer, ".", NULL, 1);
       if (offset <= 1)
         filler(buffer, "..", NULL, 2);
 
-      // compute the offset of the next entry.
+      // Compute the offset of the next entry.
       if (offset < 2)
         next = 3;
       else
         next = offset + 1;
 
-      // adjust the offset since Etoile starts with zero while in POSIX
-      // terms, zero and one are used for '.' and '..'.
+      // Adjust the offset since Etoile starts with zero while in
+      // POSIX terms, zero and one are used for '.' and '..'.
       if (offset > 2)
         offset -= 2;
 
@@ -439,7 +395,7 @@ namespace horizon
           nucleus::Range<nucleus::Entry>                range;
           nucleus::Range<nucleus::Entry>::Scoutor       scoutor;
 
-          // read the directory entries.
+          // Read the directory entries.
           if (etoile::wall::Directory::Consult(
                 handle->identifier,
                 static_cast<nucleus::Index>(offset),
@@ -448,17 +404,17 @@ namespace horizon
             error("unable to retrieve some directory entries",
                   -EPERM);
 
-          // add the entries by using the filler() function.
+          // Add the entries by using the filler() function.
           for (scoutor = range.container.begin();
                scoutor != range.container.end();
                scoutor++)
             {
               nucleus::Entry*   entry = *scoutor;
 
-              // fill the buffer with filler().
+              // Fill the buffer with filler().
               if (filler(buffer, entry->name.c_str(), NULL, next) == 1)
                 {
-                  // debug.
+                  // Debug.
                   if (Infinit::Configuration.horizon.debug == true)
                     printf("[horizon] /Crux::%s(%s, %p, %p, %qu, %p)\n",
                            __FUNCTION__,
@@ -468,10 +424,10 @@ namespace horizon
                   return (0);
                 }
 
-              // compute the offset of the next entry.
+              // Compute the offset of the next entry.
               next++;
 
-              // increment the offset as well.
+              // Increment the offset as well.
               offset++;
             }
 
@@ -479,7 +435,7 @@ namespace horizon
             break;
         }
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, %p, %p, %qu, %p)\n",
                __FUNCTION__,
@@ -489,32 +445,31 @@ namespace horizon
       return (0);
     }
 
-    ///
-    /// this method closes the directory _path_.
-    ///
+    /// This method closes the directory _path_.
     int                 Crux::Releasedir(const char*            path,
                                          struct ::fuse_file_info* info)
     {
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, %p)\n",
                __FUNCTION__,
                path, info);
 
-      // set the handle pointer to the file handle that has been filled by
-      // Opendir().
+      // Set the handle pointer to the file handle that has been
+      // filled by Opendir().
       std::unique_ptr<Handle> handle(reinterpret_cast<Handle*>(info->fh));
 
-      // discard the object.
+      // Discard the object.
       if (etoile::wall::Directory::Discard(
             handle->identifier) == elle::Status::Error)
         error("unable to discard the directory",
               -EPERM);
 
-      // reset the file handle, just to make sure it is not used anymore.
+      // Reset the file handle, just to make sure it is not used
+      // anymore.
       info->fh = 0;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, %p)\n",
                __FUNCTION__,
@@ -523,9 +478,7 @@ namespace horizon
       return (0);
     }
 
-    ///
-    /// this method creates a directory.
-    ///
+    /// This method creates a directory.
     int                 Crux::Mkdir(const char*                 path,
                                     mode_t                      mode)
     {
@@ -537,24 +490,24 @@ namespace horizon
       etoile::gear::Identifier  subdirectory;
       nucleus::Record*          record;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, 0%o)\n",
                __FUNCTION__,
                path, mode);
 
-      // resolve the path.
+      // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
-      // load the directory.
+      // Load the directory.
       if (etoile::wall::Directory::Load(chemin,
                                         directory) == elle::Status::Error)
         error("unable to load the directory",
               -ENOENT);
 
-      // retrieve the subject's permissions on the object.
+      // Retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(directory,
                                        agent::Agent::Subject,
                                        record) == elle::Status::Error)
@@ -562,7 +515,7 @@ namespace horizon
               -EPERM,
               directory);
 
-      // check the record.
+      // Check the record.
       if (!((record != NULL) &&
             ((record->permissions & nucleus::PermissionWrite) ==
              nucleus::PermissionWrite)))
@@ -571,20 +524,20 @@ namespace horizon
               -EACCES,
               directory);
 
-      // create the subdirectory.
+      // Create the subdirectory.
       if (etoile::wall::Directory::Create(subdirectory) == elle::Status::Error)
         error("unable to create the directory",
               -EPERM,
               directory);
 
-      // compute the permissions.
+      // Compute the permissions.
       if (mode & S_IRUSR)
         permissions |= nucleus::PermissionRead;
 
       if (mode & S_IWUSR)
         permissions |= nucleus::PermissionWrite;
 
-      // set the owner permissions.
+      // Set the owner permissions.
       if (etoile::wall::Access::Grant(subdirectory,
                                       agent::Agent::Subject,
                                       permissions) == elle::Status::Error)
@@ -592,7 +545,7 @@ namespace horizon
               -EPERM,
               subdirectory, directory);
 
-      // add the subdirectory.
+      // Add the subdirectory.
       if (etoile::wall::Directory::Add(directory,
                                        name,
                                        subdirectory) == elle::Status::Error)
@@ -600,18 +553,18 @@ namespace horizon
               -EPERM,
               subdirectory, directory);
 
-      // store the subdirectory.
+      // Store the subdirectory.
       if (etoile::wall::Directory::Store(subdirectory) == elle::Status::Error)
         error("unable to store the directory",
               -EPERM,
               directory);
 
-      // store the directory.
+      // Store the directory.
       if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
         error("unable to store the directory",
               -EPERM);
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, 0%o)\n",
                __FUNCTION__,
@@ -620,9 +573,7 @@ namespace horizon
       return (0);
     }
 
-    ///
-    /// this method removes a directory.
-    ///
+    /// This method removes a directory.
     int                 Crux::Rmdir(const char*                 path)
     {
       etoile::path::Slab                name;
@@ -635,24 +586,24 @@ namespace horizon
       nucleus::Record*                  record;
       nucleus::Subject                  subject;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s)\n",
                __FUNCTION__,
                path);
 
-      // resolve the path.
+      // Resolve the path.
       if (etoile::wall::Path::Resolve(parent, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
-      // load the directory.
+      // Load the directory.
       if (etoile::wall::Directory::Load(chemin,
                                         directory) == elle::Status::Error)
         error("unable to load the directory",
               -ENOENT);
 
-      // retrieve the subject's permissions on the object.
+      // Retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(directory,
                                        agent::Agent::Subject,
                                        record) == elle::Status::Error)
@@ -660,7 +611,7 @@ namespace horizon
               -EPERM,
               directory);
 
-      // check the record.
+      // Check the record.
       if (!((record != NULL) &&
             ((record->permissions & nucleus::PermissionWrite) ==
              nucleus::PermissionWrite)))
@@ -669,58 +620,58 @@ namespace horizon
               -EACCES,
               directory);
 
-      // resolve the path.
+      // Resolve the path.
       if (etoile::wall::Path::Resolve(child, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT,
               directory);
 
-      // load the subdirectory.
+      // Load the subdirectory.
       if (etoile::wall::Directory::Load(chemin,
                                         subdirectory) == elle::Status::Error)
         error("unable to load the directory",
               -ENOENT,
               directory);
 
-      // retrieve information on the object.
+      // Retrieve information on the object.
       if (etoile::wall::Object::Information(subdirectory,
                                             abstract) == elle::Status::Error)
         error("unable to retrieve information on the object",
               -EPERM,
               subdirectory, directory);
 
-      // create a temporary subject based on the object owner's key.
+      // Create a temporary subject based on the object owner's key.
       if (subject.Create(abstract.keys.owner) == elle::Status::Error)
         error("unable to create a temporary subject",
               -EPERM,
               subdirectory, directory);
 
-      // check that the subject is the owner of the object.
+      // Check that the subject is the owner of the object.
       if (agent::Agent::Subject != subject)
         error("the subject does not have the right to destroy "
               "this directory",
               -EACCES,
               subdirectory, directory);
 
-      // remove the entry.
+      // Remove the entry.
       if (etoile::wall::Directory::Remove(directory,
                                           name) == elle::Status::Error)
         error("unable to remove a directory entry",
               -EPERM,
               subdirectory, directory);
 
-      // store the directory.
+      // Store the directory.
       if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
         error("unable to store the directory",
               -EPERM,
               subdirectory);
 
-      // destroy the subdirectory.
+      // Destroy the subdirectory.
       if (etoile::wall::Directory::Destroy(subdirectory) == elle::Status::Error)
         error("unable to destroy the directory",
               -EPERM);
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s)\n",
                __FUNCTION__,
@@ -729,10 +680,8 @@ namespace horizon
       return (0);
     }
 
-    ///
-    /// this method checks if the current user has the permission to access
-    /// the object _path_ for the operations _mask_.
-    ///
+    /// This method checks if the current user has the permission to
+    /// access the object _path_ for the operations _mask_.
     int                 Crux::Access(const char*                path,
                                      int                        mask)
     {
@@ -742,30 +691,30 @@ namespace horizon
       etoile::path::Chemin              chemin;
       nucleus::Record*                  record;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, 0%o)\n",
                __FUNCTION__,
                path, mask);
 
-      // resolve the path.
+      // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
-      // load the object.
+      // Load the object.
       if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the object",
               -ENOENT);
 
-      // retrieve information on the object.
+      // Retrieve information on the object.
       if (etoile::wall::Object::Information(identifier,
                                             abstract) == elle::Status::Error)
         error("unable to retrieve information on the object",
               -EPERM,
               identifier);
 
-      // retrieve the user's permissions on the object.
+      // Retrieve the user's permissions on the object.
       if (etoile::wall::Access::Lookup(identifier,
                                        agent::Agent::Subject,
                                        record) == elle::Status::Error)
@@ -773,19 +722,19 @@ namespace horizon
               -EPERM,
               identifier);
 
-      // check the record.
+      // Check the record.
       if (record == NULL)
         goto _access;
 
-      // check if the permissions match the mask for execution.
+      // Check if the permissions match the mask for execution.
       if (mask & X_OK)
         {
           switch (abstract.genre)
             {
             case nucleus::GenreDirectory:
               {
-                // check if the user has the read permission meaning the
-                // exec bit
+                // Check if the user has the read permission meaning
+                // the exec bit
                 if ((record->permissions & nucleus::PermissionRead) !=
                     nucleus::PermissionRead)
                   goto _access;
@@ -796,7 +745,7 @@ namespace horizon
               {
                 nucleus::Trait* trait;
 
-                // get the perm::exec attribute
+                // Get the perm::exec attribute
                 if (etoile::wall::Attributes::Get(identifier,
                                                   "perm::exec",
                                                   trait) == elle::Status::Error)
@@ -804,7 +753,7 @@ namespace horizon
                         -EPERM,
                         identifier);
 
-                // check the trait.
+                // Check the trait.
                 if (!((trait != NULL) &&
                       (trait->value == "true")))
                   goto _access;
@@ -815,7 +764,7 @@ namespace horizon
               {
                 nucleus::Trait* trait;
 
-                // get the perm::exec attribute
+                // Get the perm::exec attribute
                 if (etoile::wall::Attributes::Get(identifier,
                                                   "perm::exec",
                                                   trait) == elle::Status::Error)
@@ -823,7 +772,7 @@ namespace horizon
                         -EPERM,
                         identifier);
 
-                // check the trait.
+                // Check the trait.
                 if (!((trait != NULL) &&
                       (trait->value == "true")))
                   goto _access;
@@ -833,7 +782,7 @@ namespace horizon
             }
         }
 
-      // check if the permissions match the mask for reading.
+      // Check if the permissions match the mask for reading.
       if (mask & R_OK)
         {
           if ((record->permissions & nucleus::PermissionRead) !=
@@ -841,7 +790,7 @@ namespace horizon
             goto _access;
         }
 
-      // check if the permissions match the mask for writing.
+      // Check if the permissions match the mask for writing.
       if (mask & W_OK)
         {
           if ((record->permissions & nucleus::PermissionWrite) !=
@@ -849,12 +798,12 @@ namespace horizon
             goto _access;
         }
 
-      // discard the object.
+      // Discard the object.
       if (etoile::wall::Object::Discard(identifier) == elle::Status::Error)
         error("unable to discard the object",
               -EPERM);
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, 0%o)\n",
                __FUNCTION__,
@@ -863,26 +812,19 @@ namespace horizon
       return (0);
 
     _access:
-      //
-      // at this point, the access has been refused.
-      //
-      // therefore, the identifier must be discarded while EACCES must
-      // be returned.
-      //
+      // At this point, the access has been refused.  Therefore, the
+      // identifier must be discarded while EACCES must be returned.
 
-      // discard the identifier.
+      // Discard the identifier.
       etoile::wall::Object::Discard(identifier);
 
-      // purge the errors.
+      // Purge the errors.
       purge();
 
-      // return EACCES.
       return (-EACCES);
     }
 
-    ///
-    /// this method modifies the permissions on the object.
-    ///
+    /// This method modifies the permissions on the object.
     int                 Crux::Chmod(const char*                 path,
                                     mode_t                      mode)
     {
@@ -893,92 +835,87 @@ namespace horizon
       etoile::miscellaneous::Abstract   abstract;
       nucleus::Subject                  subject;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, 0%o)\n",
                __FUNCTION__,
                path, mode);
 
+      // Note that this method ignores both the group and other
+      // permissions.
       //
-      // note that this method ignores both the group and other permissions.
+      // In order not to ignore them, the system would have to
+      // create/update the group entries in the object's access
+      // list. although this is completely feasible, it has been
+      // decided not to do so because it would incur too much cost.
       //
-      // in order not to ignore them, the system would have to create/update
-      // the group entries in the object's access list. although this is
-      // completely feasible, it has been decided not to do so because it
-      // would incur too much cost.
+      // Indeed, on most Linux systems, the umask is set to 022 or is
+      // somewhat equivalent, granting permissions, by default, to the
+      // default group and the others.
       //
-      // indeed, on most Linux systems, the umask is set to 022 or is somewhat
-      // equivalent, granting permissions, by default, to the default group
-      // and the others.
-      //
-      // although this is, from our point of view, a very bad idea, it would
-      // be catastrophic to create such access records in Infinit, especially
-      // because Infinit has been designed and optimised for objects
-      // accessed by their sole owners.
-      //
+      // Although this is, from our point of view, a very bad idea, it
+      // would be catastrophic to create such access records in
+      // Infinit, especially because Infinit has been designed and
+      // optimised for objects accessed by their sole owners.
 
-      // compute the permissions.
+      // Compute the permissions.
       if (mode & S_IRUSR)
         permissions |= nucleus::PermissionRead;
 
       if (mode & S_IWUSR)
         permissions |= nucleus::PermissionWrite;
 
-      // resolve the path.
+      // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
-      // load the object.
+      // Load the object.
       if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the object",
               -ENOENT);
 
-      // retrieve information on the object.
+      // Retrieve information on the object.
       if (etoile::wall::Object::Information(identifier,
                                             abstract) == elle::Status::Error)
         error("unable to retrieve information on the object",
               -EPERM,
               identifier);
 
-      // create a temporary subject based on the object owner's key.
+      // Create a temporary subject based on the object owner's key.
       if (subject.Create(abstract.keys.owner) == elle::Status::Error)
         error("unable to create a temporary subject",
               -EPERM,
               identifier);
 
-      // check that the subject is the owner of the object.
+      // Check that the subject is the owner of the object.
       if (agent::Agent::Subject != subject)
         error("the subject does not have the right to modify the "
               "access permissions on this object",
               -EACCES,
               identifier);
 
-      // the permission modification must be performed according to the
-      // object state.
+      // The permission modification must be performed according to
+      // the object state.
       //
-      // indeed, if the object has just been created, the permissions assigned
-      // at creation will actually be granted when closed.
+      // Indeed, if the object has just been created, the permissions
+      // assigned at creation will actually be granted when closed.
       //
-      // therefore, should a chmod() be requested between a create() and
-      // a close(), the change of permissions should be delayed as it is
-      // the case for any file being created.
+      // Therefore, should a chmod() be requested between a create()
+      // and a close(), the change of permissions should be delayed as
+      // it is the case for any file being created.
       //
-      // the following therefore checks if the path corresponds to a file
-      // in creation. if so, the permissions are recorded for future
-      // application.
-      //
+      // The following therefore checks if the path corresponds to a
+      // file in creation. if so, the permissions are recorded for
+      // future application.
       if (Crib::Exist(elle::String(path)) == elle::Status::True)
         {
           Handle*       handle;
 
-          //
-          // retrieve the handle, representing the created file, from
-          // the crib.
-          //
-          // then update the future permissions in the handle so that,
-          // when the file gets closed, these permissions get applied.
-          //
+          // Retrieve the handle, representing the created file, from
+          // the crib.  Then update the future permissions in the
+          // handle so that, when the file gets closed, these
+          // permissions get applied.
 
           if (Crib::Retrieve(elle::String(path), handle) == elle::Status::Error)
             error("unable to retrieve the handle from the crib",
@@ -989,11 +926,9 @@ namespace horizon
         }
       else
         {
-          // update the accesses.
-          //
-          // note that the method assumes that the caller is the object's
-          // owner! if not, an error will occur anyway, so why bother
-          // checking.
+          // Update the accesses.  Note that the method assumes that
+          // the caller is the object's owner! if not, an error will
+          // occur anyway, so why bother checking.
           if (etoile::wall::Access::Grant(identifier,
                                           agent::Agent::Subject,
                                           permissions) == elle::Status::Error)
@@ -1002,16 +937,16 @@ namespace horizon
                   identifier);
         }
 
-      // if the execution bit is to be set...
+      // If the execution bit is to be set...
       if (mode & S_IXUSR)
         {
-          // set the perm::exec attribute if necessary i.e depending on the
-          // file genre.
+          // Set the perm::exec attribute if necessary i.e depending
+          // on the file genre.
           switch (abstract.genre)
             {
             case nucleus::GenreFile:
               {
-                // set the perm::exec attribute
+                // Set the perm::exec attribute
                 if (etoile::wall::Attributes::Set(identifier,
                                                   "perm::exec",
                                                   "true") == elle::Status::Error)
@@ -1024,19 +959,19 @@ namespace horizon
             case nucleus::GenreDirectory:
             case nucleus::GenreLink:
               {
-                // nothing to do for the other genres.
+                // Nothing to do for the other genres.
 
                 break;
               }
             }
         }
 
-      // store the object.
+      // Store the object.
       if (etoile::wall::Object::Store(identifier) == elle::Status::Error)
         error("unable to store the object",
               -EPERM);
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, 0%o)\n",
                __FUNCTION__,
@@ -1045,22 +980,20 @@ namespace horizon
       return (0);
     }
 
-    ///
-    /// this method modifies the owner of a given object.
-    ///
+    /// This method modifies the owner of a given object.
     int                 Crux::Chown(const char*                 path,
                                     uid_t                       uid,
                                     gid_t                       gid)
     {
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, %u, %u)\n",
                __FUNCTION__,
                path, uid, gid);
 
-      // XXX to implement.
+      // Xxx to implement.
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, %u, %u)\n",
                __FUNCTION__,
@@ -1070,11 +1003,9 @@ namespace horizon
     }
 
 #if defined(HAVE_SETXATTR)
+    /// This method sets an extended attribute value.
     ///
-    /// this method sets an extended attribute value.
-    ///
-    /// note that the flags are ignored!
-    ///
+    /// Note that the flags are ignored!
     int                 Crux::Setxattr(const char*              path,
                                        const char*              name,
                                        const char*              value,
@@ -1087,43 +1018,43 @@ namespace horizon
       etoile::miscellaneous::Abstract   abstract;
       nucleus::Subject                  subject;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, %s, %p, %u, 0x%x)\n",
                __FUNCTION__,
                path, name, value, size, flags);
 
-      // resolve the path.
+      // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
-      // load the object.
+      // Load the object.
       if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the object",
               -ENOENT);
 
-      // retrieve information on the object.
+      // Retrieve information on the object.
       if (etoile::wall::Object::Information(identifier,
                                             abstract) == elle::Status::Error)
         error("unable to retrieve information on the object",
               -EPERM,
               identifier);
 
-      // create a temporary subject based on the object owner's key.
+      // Create a temporary subject based on the object owner's key.
       if (subject.Create(abstract.keys.owner) == elle::Status::Error)
         error("unable to create a temporary subject",
               -EPERM,
               identifier);
 
-      // check that the subject is the owner of the object.
+      // Check that the subject is the owner of the object.
       if (agent::Agent::Subject != subject)
         error("the subject does not have the right to modify the attributes "
               "associated with this object",
               -EACCES,
               identifier);
 
-      // set the attribute.
+      // Set the attribute.
       if (etoile::wall::Attributes::Set(identifier,
                                         elle::String(name),
                                         elle::String(value, size)) ==
@@ -1132,12 +1063,12 @@ namespace horizon
               -EPERM,
               identifier);
 
-      // store the object.
+      // Store the object.
       if (etoile::wall::Object::Store(identifier) == elle::Status::Error)
         error("unable to store the object",
               -EPERM);
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, %s, %p, %u, 0x%x)\n",
                __FUNCTION__,
@@ -1146,9 +1077,8 @@ namespace horizon
       return (0);
     }
 
-    ///
-    /// this method returns the attribute associated with the given object.
-    ///
+    /// This method returns the attribute associated with the given
+    /// object.
     int                 Crux::Getxattr(const char*              path,
                                        const char*              name,
                                        char*                    value,
@@ -1159,23 +1089,23 @@ namespace horizon
       etoile::path::Chemin      chemin;
       nucleus::Trait*           trait;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, %s, %p, %u)\n",
                __FUNCTION__,
                path, name, value, size);
 
-      // resolve the path.
+      // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
-      // load the object.
+      // Load the object.
       if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the object",
               -ENOENT);
 
-      // get the attribute.
+      // Get the attribute.
       if (etoile::wall::Attributes::Get(identifier,
                                         elle::String(name),
                                         trait) == elle::Status::Error)
@@ -1183,40 +1113,39 @@ namespace horizon
               -EPERM,
               identifier);
 
-      // discard the object.
+      // Discard the object.
       if (etoile::wall::Object::Discard(identifier) == elle::Status::Error)
         error("unable to discard the object",
               -EPERM);
 
-      // test if a trait has been found.
+      // Test if a trait has been found.
       if (trait == NULL)
         return (-ENOATTR);
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, %s, %p, %u)\n",
                __FUNCTION__,
                path, name, value, size);
 
-      // if the size is null, it means that this call must be considered
-      // as a request for the size required to store the value.
+      // If the size is null, it means that this call must be
+      // considered as a request for the size required to store the
+      // value.
       if (size == 0)
         {
           return (trait->value.length());
         }
       else
         {
-          // otherwise, copy the trait value in the value buffer.
+          // Otherwise, copy the trait value in the value buffer.
           ::memcpy(value, trait->value.data(), trait->value.length());
 
-          // return the length of the value.
+          // Return the length of the value.
           return (trait->value.length());
         }
     }
 
-    ///
-    /// this method returns the list of attribute names.
-    ///
+    /// This method returns the list of attribute names.
     int                 Crux::Listxattr(const char*             path,
                                         char*                   list,
                                         size_t                  size)
@@ -1228,42 +1157,42 @@ namespace horizon
       nucleus::Range<nucleus::Trait>::Scoutor   scoutor;
       size_t                                    offset;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, %p, %u)\n",
                __FUNCTION__,
                path, list, size);
 
-      // resolve the path.
+      // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
-      // load the object.
+      // Load the object.
       if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the object",
               -ENOENT);
 
-      // fetch the attributes.
+      // Fetch the attributes.
       if (etoile::wall::Attributes::Fetch(identifier,
                                           range) == elle::Status::Error)
         error("unable to fetch the attributes",
               -EPERM,
               identifier);
 
-      // discard the object.
+      // Discard the object.
       if (etoile::wall::Object::Discard(identifier) == elle::Status::Error)
         error("unable to discard the object",
               -EPERM);
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, %p, %u)\n",
                __FUNCTION__,
                path, list, size);
 
-      // if the size is zero, this call must return the size required to
-      // store the list.
+      // If the size is zero, this call must return the size required
+      // to store the list.
       if (size == 0)
         {
           for (scoutor = range.container.begin();
@@ -1272,7 +1201,7 @@ namespace horizon
             {
               nucleus::Trait*   trait = *scoutor;
 
-              // compute the size.
+              // Compute the size.
               size = size + trait->name.length() + 1;
             }
 
@@ -1280,18 +1209,19 @@ namespace horizon
         }
       else
         {
-          // otherwise, go through the attributes and concatenate their names.
+          // Otherwise, go through the attributes and concatenate
+          // their names.
           for (scoutor = range.container.begin(), offset = 0;
                scoutor != range.container.end();
                scoutor++)
             {
               nucleus::Trait*   trait = *scoutor;
 
-              // concatenate the name.
+              // Concatenate the name.
               ::strcpy(list + offset,
                        trait->name.c_str());
 
-              // adjust the offset.
+              // Adjust the offset.
               offset = offset + trait->name.length() + 1;
             }
 
@@ -1299,9 +1229,7 @@ namespace horizon
         }
     }
 
-    ///
-    /// this method removes an attribute.
-    ///
+    /// This method removes an attribute.
     int                 Crux::Removexattr(const char*           path,
                                           const char*           name)
     {
@@ -1311,43 +1239,43 @@ namespace horizon
       etoile::miscellaneous::Abstract   abstract;
       nucleus::Subject                  subject;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, %s)\n",
                __FUNCTION__,
                path, name);
 
-      // resolve the path.
+      // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
-      // load the object.
+      // Load the object.
       if (etoile::wall::Object::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the object",
               -ENOENT);
 
-      // retrieve information on the object.
+      // Retrieve information on the object.
       if (etoile::wall::Object::Information(identifier,
                                             abstract) == elle::Status::Error)
         error("unable to retrieve information on the object",
               -EPERM,
               identifier);
 
-      // create a temporary subject based on the object owner's key.
+      // Create a temporary subject based on the object owner's key.
       if (subject.Create(abstract.keys.owner) == elle::Status::Error)
         error("unable to create a temporary subject",
               -EPERM,
               identifier);
 
-      // check that the subject is the owner of the object.
+      // Check that the subject is the owner of the object.
       if (agent::Agent::Subject != subject)
         error("the subject does not have the right to modify the attributes "
               "associated with this object",
               -EACCES,
               identifier);
 
-      // omit the attribute.
+      // Omit the attribute.
       if (etoile::wall::Attributes::Omit(identifier,
                                          elle::String(name)) ==
           elle::Status::Error)
@@ -1355,12 +1283,12 @@ namespace horizon
               -EPERM,
               identifier);
 
-      // store the object.
+      // Store the object.
       if (etoile::wall::Object::Store(identifier) == elle::Status::Error)
         error("unable to store the object",
               -EPERM);
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, %s)\n",
                __FUNCTION__,
@@ -1370,9 +1298,7 @@ namespace horizon
     }
 #endif
 
-    ///
-    /// this method creates a symbolic link.
-    ///
+    /// This method creates a symbolic link.
     int                 Crux::Symlink(const char*               target,
                                       const char*               source)
     {
@@ -1384,24 +1310,24 @@ namespace horizon
       etoile::path::Chemin      chemin;
       nucleus::Record*          record;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, %s)\n",
                __FUNCTION__,
                target, source);
 
-      // resolve the path.
+      // Resolve the path.
       if (etoile::wall::Path::Resolve(from, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
-      // load the directory.
+      // Load the directory.
       if (etoile::wall::Directory::Load(chemin,
                                         directory) == elle::Status::Error)
         error("unable to load the directory",
               -ENOENT);
 
-      // retrieve the subject's permissions on the object.
+      // Retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(directory,
                                        agent::Agent::Subject,
                                        record) == elle::Status::Error)
@@ -1409,7 +1335,7 @@ namespace horizon
               -EPERM,
               directory);
 
-      // check the record.
+      // Check the record.
       if (!((record != NULL) &&
             ((record->permissions & nucleus::PermissionWrite) ==
              nucleus::PermissionWrite)))
@@ -1418,19 +1344,19 @@ namespace horizon
               -EACCES,
               directory);
 
-      // create a link
+      // Create a link
       if (etoile::wall::Link::Create(link) == elle::Status::Error)
         error("unable to create a link",
               -EPERM,
               directory);
 
-      // bind the link.
+      // Bind the link.
       if (etoile::wall::Link::Bind(link, to) == elle::Status::Error)
         error("unable to bind the link",
               -EPERM,
               link, directory);
 
-      // add an entry for the link.
+      // Add an entry for the link.
       if (etoile::wall::Directory::Add(directory,
                                        name,
                                        link) == elle::Status::Error)
@@ -1438,18 +1364,18 @@ namespace horizon
               -EPERM,
               link, directory);
 
-      // store the link.
+      // Store the link.
       if (etoile::wall::Link::Store(link) == elle::Status::Error)
         error("unable to store the link",
               -EPERM,
               directory);
 
-      // store the modified directory.
+      // Store the modified directory.
       if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
         error("unable to store the directory",
               -EPERM);
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, %s)\n",
                __FUNCTION__,
@@ -1458,9 +1384,8 @@ namespace horizon
       return (0);
     }
 
-    ///
-    /// this method returns the target path pointed by the symbolic link.
-    ///
+    /// This method returns the target path pointed by the symbolic
+    /// link.
     int                 Crux::Readlink(const char*              path,
                                        char*                    buffer,
                                        size_t                   size)
@@ -1471,23 +1396,23 @@ namespace horizon
       etoile::path::Way         target;
       nucleus::Record*          record;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, %p, %qu)\n",
                __FUNCTION__,
                path, buffer, static_cast<elle::Natural64>(size));
 
-      // resolve the path.
+      // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
-      // load the link.
+      // Load the link.
       if (etoile::wall::Link::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the link",
               -ENOENT);
 
-      // retrieve the subject's permissions on the object.
+      // Retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(identifier,
                                        agent::Agent::Subject,
                                        record) == elle::Status::Error)
@@ -1495,7 +1420,7 @@ namespace horizon
               -EPERM,
               identifier);
 
-      // check the record.
+      // Check the record.
       if (!((record != NULL) &&
             ((record->permissions & nucleus::PermissionRead) ==
              nucleus::PermissionRead)))
@@ -1503,25 +1428,26 @@ namespace horizon
               -EACCES,
               identifier);
 
-      // resolve the link.
+      // Resolve the link.
       if (etoile::wall::Link::Resolve(identifier, target) == elle::Status::Error)
         error("unable to resolve the link",
               -EPERM,
               identifier);
 
-      // discard the link.
+      // Discard the link.
       if (etoile::wall::Link::Discard(identifier) == elle::Status::Error)
         error("unable to discard the link",
               -EPERM);
 
-      // copy as much as possible of the target into the output buffer.
+      // Copy as much as possible of the target into the output
+      // buffer.
       ::strncpy(buffer,
                 target.path.c_str(),
                 (target.path.length() + 1) < size ?
                 target.path.length() + 1 :
                 size);
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, %p, %qu)\n",
                __FUNCTION__,
@@ -1530,9 +1456,7 @@ namespace horizon
       return (0);
     }
 
-    ///
-    /// this method creates a new file and opens it.
-    ///
+    /// This method creates a new file and opens it.
     int                 Crux::Create(const char*                path,
                                      mode_t                     mode,
                                      struct ::fuse_file_info*   info)
@@ -1545,24 +1469,24 @@ namespace horizon
       etoile::gear::Identifier  file;
       nucleus::Record*          record;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, 0%o, %p)\n",
                __FUNCTION__,
                path, mode, info);
 
-      // resolve the path.
+      // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
-      // load the directory.
+      // Load the directory.
       if (etoile::wall::Directory::Load(chemin,
                                         directory) == elle::Status::Error)
         error("unable to load the directory",
               -ENOENT);
 
-      // retrieve the subject's permissions on the object.
+      // Retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(directory,
                                        agent::Agent::Subject,
                                        record) == elle::Status::Error)
@@ -1570,7 +1494,7 @@ namespace horizon
               -EPERM,
               directory);
 
-      // check the record.
+      // Check the record.
       if (!((record != NULL) &&
             ((record->permissions & nucleus::PermissionWrite) ==
              nucleus::PermissionWrite)))
@@ -1579,16 +1503,16 @@ namespace horizon
               -EACCES,
               directory);
 
-      // create the file.
+      // Create the file.
       if (etoile::wall::File::Create(file) == elle::Status::Error)
         error("unable to create a file",
               -EPERM,
               directory);
 
-      // set default permissions: read and write.
+      // Set default permissions: read and write.
       permissions = nucleus::PermissionRead | nucleus::PermissionWrite;
 
-      // set the owner permissions.
+      // Set the owner permissions.
       if (etoile::wall::Access::Grant(file,
                                       agent::Agent::Subject,
                                       permissions) == elle::Status::Error)
@@ -1596,10 +1520,10 @@ namespace horizon
               -EPERM,
               file, directory);
 
-      // if the file has the exec bit, add the perm::exec attribute.
+      // If the file has the exec bit, add the perm::exec attribute.
       if (mode & S_IXUSR)
         {
-          // set the perm::exec attribute
+          // Set the perm::exec attribute
           if (etoile::wall::Attributes::Set(file,
                                             "perm::exec",
                                             "true") == elle::Status::Error)
@@ -1608,7 +1532,7 @@ namespace horizon
                   file, directory);
         }
 
-      // add the file to the directory.
+      // Add the file to the directory.
       if (etoile::wall::Directory::Add(directory,
                                        name,
                                        file) == elle::Status::Error)
@@ -1616,35 +1540,37 @@ namespace horizon
               -EPERM,
               file, directory);
 
-      // store the file, ensuring the file system consistency.
+      // Store the file, ensuring the file system consistency.
       //
-      // indeed, if the file is kept opened and the directory is stored
-      // someone could see an incorrect entry. although errors will occur
-      // extremely rarely and such errors do not cause harm, especially
-      // considering the Infinit consistency guaranties, we still prefer
-      // to do things right, at least for now.
+      // Indeed, if the file is kept opened and the directory is
+      // stored someone could see an incorrect entry. although errors
+      // will occur extremely rarely and such errors do not cause
+      // harm, especially considering the Infinit consistency
+      // guaranties, we still prefer to do things right, at least for
+      // now.
       if (etoile::wall::File::Store(file) == elle::Status::Error)
         error("unable to store the file",
               -EPERM,
               directory);
 
-      // store the directory.
+      // Store the directory.
       if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
         error("unable to store the directory",
               -EPERM);
 
-      // resolve the path.
+      // Resolve the path.
       if (etoile::wall::Path::Resolve(etoile::path::Way(path),
                                       chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
-      // finally, the file is reopened.
+      // Finally, the file is reopened.
       if (etoile::wall::File::Load(chemin, file) == elle::Status::Error)
         error("unable to load the file",
               -ENOENT);
 
-      // compute the future permissions as the current ones are temporary.
+      // Compute the future permissions as the current ones are
+      // temporary.
       permissions = nucleus::PermissionNone;
 
       if (mode & S_IRUSR)
@@ -1653,19 +1579,19 @@ namespace horizon
       if (mode & S_IWUSR)
         permissions |= nucleus::PermissionWrite;
 
-      // store the identifier in the file handle.
+      // Store the identifier in the file handle.
       info->fh =
         reinterpret_cast<uint64_t>(new Handle(Handle::OperationCreate,
                                               file,
                                               permissions));
 
-      // add the created and opened file in the crib.
+      // Add the created and opened file in the crib.
       if (Crib::Add(elle::String(path),
                     reinterpret_cast<Handle*>(info->fh)) == elle::Status::Error)
         error("unable to add the created file to the crib",
               -EBADF);
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, 0%o, %p)\n",
                __FUNCTION__,
@@ -1674,9 +1600,7 @@ namespace horizon
       return (0);
     }
 
-    ///
-    /// this method opens a file.
-    ///
+    /// This method opens a file.
     int                 Crux::Open(const char*                  path,
                                    struct ::fuse_file_info*     info)
     {
@@ -1684,28 +1608,28 @@ namespace horizon
       etoile::path::Chemin      chemin;
       etoile::gear::Identifier  identifier;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, %p)\n",
                __FUNCTION__,
                path, info);
 
-      // resolve the path.
+      // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
-      // load the file.
+      // Load the file.
       if (etoile::wall::File::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the file",
               -ENOENT);
 
-      // store the identifier in the file handle.
+      // Store the identifier in the file handle.
       info->fh =
         reinterpret_cast<uint64_t>(new Handle(Handle::OperationOpen,
                                               identifier));
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, %p)\n",
                __FUNCTION__,
@@ -1714,9 +1638,7 @@ namespace horizon
       return (0);
     }
 
-    ///
-    /// this method writes data to a file.
-    ///
+    /// This method writes data to a file.
     int                 Crux::Write(const char*                 path,
                                     const char*                 buffer,
                                     size_t                      size,
@@ -1727,44 +1649,44 @@ namespace horizon
       elle::standalone::Region      region;
       nucleus::Record*  record;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, %p, %qu, %qu, %p)\n",
                __FUNCTION__,
                path, buffer, static_cast<elle::Natural64>(size),
                static_cast<elle::Natural64>(offset), info);
 
-      // retrieve the handle;
+      // Retrieve the handle;
       handle = reinterpret_cast<Handle*>(info->fh);
 
-      // retrieve the subject's permissions on the object.
+      // Retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(handle->identifier,
                                        agent::Agent::Subject,
                                        record) == elle::Status::Error)
         error("unable to retrieve the access record",
               -EPERM);
 
-      // check the record.
+      // Check the record.
       if (!((record != NULL) &&
             ((record->permissions & nucleus::PermissionWrite) ==
              nucleus::PermissionWrite)))
         error("the subject does not have the right to update this file",
               -EACCES);
 
-      // wrap the buffer.
+      // Wrap the buffer.
       if (region.Wrap(reinterpret_cast<const elle::Byte*>(buffer),
                       size) == elle::Status::Error)
         error("unable to wrap the buffer",
               -EPERM);
 
-      // write the file.
+      // Write the file.
       if (etoile::wall::File::Write(handle->identifier,
                                     static_cast<nucleus::Offset>(offset),
                                     region) == elle::Status::Error)
         error("unable to write the file",
               -EPERM);
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, %p, %qu, %qu, %p)\n",
                __FUNCTION__,
@@ -1774,9 +1696,7 @@ namespace horizon
       return (size);
     }
 
-    ///
-    /// this method reads data from a file.
-    ///
+    /// This method reads data from a file.
     int                 Crux::Read(const char*                  path,
                                    char*                        buffer,
                                    size_t                       size,
@@ -1787,31 +1707,31 @@ namespace horizon
       elle::standalone::Region      region;
       nucleus::Record*  record;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, %p, %qu, %qu, %p)\n",
                __FUNCTION__,
                path, buffer, static_cast<elle::Natural64>(size),
                static_cast<elle::Natural64>(offset), info);
 
-      // retrieve the handle.
+      // Retrieve the handle.
       handle = reinterpret_cast<Handle*>(info->fh);
 
-      // retrieve the subject's permissions on the object.
+      // Retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(handle->identifier,
                                        agent::Agent::Subject,
                                        record) == elle::Status::Error)
         error("unable to retrieve the access record",
               -EPERM);
 
-      // check the record.
+      // Check the record.
       if (!((record != NULL) &&
             ((record->permissions & nucleus::PermissionRead) ==
              nucleus::PermissionRead)))
         error("the subject does not have the right to read this file",
               -EACCES);
 
-      // read the file.
+      // Read the file.
       if (etoile::wall::File::Read(handle->identifier,
                                    static_cast<nucleus::Offset>(offset),
                                    static_cast<nucleus::Size>(size),
@@ -1819,10 +1739,10 @@ namespace horizon
         error("unable to read the file",
               -EPERM);
 
-      // copy the data to the output buffer.
+      // Copy the data to the output buffer.
       ::memcpy(buffer, region.contents, region.size);
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, %p, %qu, %qu, %p)\n",
                __FUNCTION__,
@@ -1832,9 +1752,7 @@ namespace horizon
       return (region.size);
     }
 
-    ///
-    /// this method modifies the size of a file.
-    ///
+    /// This method modifies the size of a file.
     int                 Crux::Truncate(const char*              path,
                                        off_t                    size)
     {
@@ -1844,41 +1762,41 @@ namespace horizon
       struct ::fuse_file_info   info;
       int                       result;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, %qu)\n",
                __FUNCTION__,
                path, static_cast<elle::Natural64>(size));
 
-      // resolve the path.
+      // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
-      // load the file.
+      // Load the file.
       if (etoile::wall::File::Load(chemin, identifier) == elle::Status::Error)
         error("unable to load the file",
               -ENOENT);
 
-      // create a local handle.
+      // Create a local handle.
       Handle                    handle(Handle::OperationTruncate,
                                        identifier);
 
-      // set the handle in the fuse_file_info structure.
+      // Set the handle in the fuse_file_info structure.
       info.fh = reinterpret_cast<uint64_t>(&handle);
 
-      // call the Ftruncate() method.
+      // Call the Ftruncate() method.
       if ((result = Crux::Ftruncate(path, size, &info)) < 0)
         error("unable to truncate the given file descriptpr",
               result,
               identifier);
 
-      // store the file.
+      // Store the file.
       if (etoile::wall::File::Store(identifier) == elle::Status::Error)
         error("unable to store the file",
               -EPERM);
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, %qu)\n",
                __FUNCTION__,
@@ -1887,9 +1805,7 @@ namespace horizon
       return (result);
     }
 
-    ///
-    /// this method modifies the size of an opened file.
-    ///
+    /// This method modifies the size of an opened file.
     int                 Crux::Ftruncate(const char*             path,
                                         off_t                   size,
                                         struct ::fuse_file_info* info)
@@ -1897,23 +1813,23 @@ namespace horizon
       Handle*           handle;
       nucleus::Record*  record;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, %qu, %p)\n",
                __FUNCTION__,
                path, static_cast<elle::Natural64>(size), info);
 
-      // retrieve the handle.
+      // Retrieve the handle.
       handle = reinterpret_cast<Handle*>(info->fh);
 
-      // retrieve the subject's permissions on the object.
+      // Retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(handle->identifier,
                                        agent::Agent::Subject,
                                        record) == elle::Status::Error)
         error("unable to retrieve the access record",
               -EPERM);
 
-      // check the record.
+      // Check the record.
       if (!((record != NULL) &&
             ((record->permissions & nucleus::PermissionWrite) ==
              nucleus::PermissionWrite)))
@@ -1921,13 +1837,13 @@ namespace horizon
               "this file",
               -EACCES);
 
-      // adjust the file's size.
+      // Adjust the file's size.
       if (etoile::wall::File::Adjust(handle->identifier,
                                      size) == elle::Status::Error)
         error("unable to adjust the size of the file",
               -EPERM);
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, %qu, %p)\n",
                __FUNCTION__,
@@ -1936,46 +1852,44 @@ namespace horizon
       return (0);
     }
 
-    ///
-    /// this method closes a file.
-    ///
+    /// This method closes a file.
     int                 Crux::Release(const char*               path,
                                       struct ::fuse_file_info*  info)
     {
       etoile::path::Way way(path);
       Handle*           handle;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, %p)\n",
                __FUNCTION__,
                path, info);
 
-      // retrieve the handle.
+      // Retrieve the handle.
       handle = reinterpret_cast<Handle*>(info->fh);
 
-      // perform final actions depending on the initial operation.
+      // Perform final actions depending on the initial operation.
       switch (handle->operation)
         {
         case Handle::OperationCreate:
           {
-            // remove the created and opened file in the crib.
+            // Remove the created and opened file in the crib.
             if (Crib::Remove(elle::String(path)) == elle::Status::Error)
               error("unable to remove the created file from the crib",
                     -EBADF,
                     handle->identifier);
 
+            // The permissions settings have been delayed in order to
+            // support a read-only file being copied in which case a
+            // file is created with read-only permissions before being
+            // written.
             //
-            // the permissions settings have been delayed in order to support
-            // a read-only file being copied in which case a file is created
-            // with read-only permissions before being written.
-            //
-            // such a normal behaviour would result in runtime permission
-            // errors. therefore, the permissions are set once the created
-            // file is released in order to overcome this issue.
-            //
+            // Such a normal behaviour would result in runtime
+            // permission errors. therefore, the permissions are set
+            // once the created file is released in order to overcome
+            // this issue.
 
-            // set the owner permissions.
+            // Set the owner permissions.
             if (etoile::wall::Access::Grant(
                   handle->identifier,
                   agent::Agent::Subject,
@@ -1988,26 +1902,24 @@ namespace horizon
           }
         default:
           {
-            //
-            // nothing special to do.
-            //
+            // Nothing special to do.
 
             break;
           }
         }
 
-      // store the file.
+      // Store the file.
       if (etoile::wall::File::Store(handle->identifier) == elle::Status::Error)
         error("unable to store the file",
               -EPERM);
 
-      // delete the handle.
+      // Delete the handle.
       delete handle;
 
-      // reset the file handle.
+      // Reset the file handle.
       info->fh = 0;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, %p)\n",
                __FUNCTION__,
@@ -2016,9 +1928,7 @@ namespace horizon
       return (0);
     }
 
-    ///
-    /// this method renames a file.
-    ///
+    /// This method renames a file.
     int                 Crux::Rename(const char*                source,
                                      const char*                target)
     {
@@ -2028,36 +1938,34 @@ namespace horizon
       etoile::path::Way         to(etoile::path::Way(target), t);
       etoile::gear::Identifier  object;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s, %s)\n",
                __FUNCTION__,
                source, target);
 
-      // if the source and target directories are identical.
+      // If the source and target directories are identical.
       if (from == to)
         {
-          //
-          // in this case, the object to move can simply be renamed since
-          // the source and target directory are identical.
-          //
+          // In this case, the object to move can simply be renamed
+          // since the source and target directory are identical.
           etoile::path::Chemin          chemin;
           etoile::gear::Identifier      directory;
           nucleus::Entry*               entry;
           nucleus::Record*              record;
 
-          // resolve the path.
+          // Resolve the path.
           if (etoile::wall::Path::Resolve(from, chemin) == elle::Status::Error)
             error("unable to resolve the path",
                   -ENOENT);
 
-          // load the directory.
+          // Load the directory.
           if (etoile::wall::Directory::Load(chemin,
                                             directory) == elle::Status::Error)
             error("unable to load the directory",
                   -ENOENT);
 
-          // retrieve the subject's permissions on the object.
+          // Retrieve the subject's permissions on the object.
           if (etoile::wall::Access::Lookup(directory,
                                            agent::Agent::Subject,
                                            record) == elle::Status::Error)
@@ -2065,7 +1973,7 @@ namespace horizon
                   -EPERM,
                   directory);
 
-          // check the record.
+          // Check the record.
           if (!((record != NULL) &&
                 ((record->permissions & nucleus::PermissionWrite) ==
                  nucleus::PermissionWrite)))
@@ -2074,7 +1982,7 @@ namespace horizon
                   -EACCES,
                   directory);
 
-          // lookup for the target name.
+          // Lookup for the target name.
           if (etoile::wall::Directory::Lookup(directory,
                                               t,
                                               entry) == elle::Status::Error)
@@ -2082,19 +1990,16 @@ namespace horizon
                   -EPERM,
                   directory);
 
-          // check if an entry actually exist for the target name meaning
-          // that an object is about to get overwritten.
+          // Check if an entry actually exist for the target name
+          // meaning that an object is about to get overwritten.
           if (entry != NULL)
             {
-              //
-              // in this case, the target object must be destroyed.
-              //
+              // In this case, the target object must be destroyed.
               int               result;
 
-              // unlink the object, assuming it is either a file or a link.
-              //
-              // note that the Crux's method is called in order not to have
-              // to deal with the target's genre.
+              // Unlink the object, assuming it is either a file or a
+              // link.  Note that the Crux's method is called in order
+              // not to have to deal with the target's genre.
               if ((result = Crux::Unlink(target)) < 0)
                 error("unable to unlink the target object which is "
                       "about to get overwritte",
@@ -2102,7 +2007,7 @@ namespace horizon
                       directory);
             }
 
-          // rename the entry from _f_ to _t_.
+          // Rename the entry from _f_ to _t_.
           if (etoile::wall::Directory::Rename(directory,
                                               f,
                                               t) == elle::Status::Error)
@@ -2110,20 +2015,18 @@ namespace horizon
                   -EPERM,
                   directory);
 
-          // store the directory.
+          // Store the directory.
           if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
             error("unable to store the directory",
                   -EPERM);
         }
       else
         {
+          // Otherwise, the object must be moved from _from_ to _to_.
           //
-          // otherwise, the object must be moved from _from_ to _to_.
-          //
-          // the process goes as follows: the object is loaded, an entry in
-          // the _to_ directory is added while the entry in the _from_
-          // directory is removed.
-          //
+          // The process goes as follows: the object is loaded, an
+          // entry in the _to_ directory is added while the entry in
+          // the _from_ directory is removed.
           etoile::path::Way             way(source);
           etoile::path::Chemin          chemin;
           struct
@@ -2135,12 +2038,12 @@ namespace horizon
           nucleus::Entry*               entry;
           nucleus::Record*              record;
 
-          // resolve the path.
+          // Resolve the path.
           if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
             error("unable to resolve the path",
                   -ENOENT);
 
-          // load the object even though we don't know its genre as we
+          // Load the object even though we don't know its genre as we
           // do not need to know to perform this operation.
           if (etoile::wall::Object::Load(
                 chemin,
@@ -2148,13 +2051,13 @@ namespace horizon
             error("unable to load the object",
                   -ENOENT);
 
-          // resolve the path.
+          // Resolve the path.
           if (etoile::wall::Path::Resolve(to, chemin) == elle::Status::Error)
             error("unable to resolve the path",
                   -ENOENT,
                   identifier.object);
 
-          // load the _to_ directory.
+          // Load the _to_ directory.
           if (etoile::wall::Directory::Load(
                 chemin,
                 identifier.to) == elle::Status::Error)
@@ -2162,7 +2065,7 @@ namespace horizon
                   -ENOENT,
                   identifier.object);
 
-          // retrieve the subject's permissions on the object.
+          // Retrieve the subject's permissions on the object.
           if (etoile::wall::Access::Lookup(identifier.to,
                                            agent::Agent::Subject,
                                            record) == elle::Status::Error)
@@ -2170,7 +2073,7 @@ namespace horizon
                   -EPERM,
                   identifier.object, identifier.to);
 
-          // check the record.
+          // Check the record.
           if (!((record != NULL) &&
                 ((record->permissions & nucleus::PermissionWrite) ==
                  nucleus::PermissionWrite)))
@@ -2179,13 +2082,13 @@ namespace horizon
                   -EACCES,
                   identifier.object, identifier.to);
 
-          // resolve the path.
+          // Resolve the path.
           if (etoile::wall::Path::Resolve(from, chemin) == elle::Status::Error)
             error("unable to resolve the path",
                   -ENOENT,
                   identifier.object, identifier.to);
 
-          // load the _from_ directory.
+          // Load the _from_ directory.
           if (etoile::wall::Directory::Load(
                 chemin,
                 identifier.from) == elle::Status::Error)
@@ -2193,7 +2096,7 @@ namespace horizon
                   -ENOENT,
                   identifier.object, identifier.to);
 
-          // retrieve the subject's permissions on the object.
+          // Retrieve the subject's permissions on the object.
           if (etoile::wall::Access::Lookup(identifier.from,
                                            agent::Agent::Subject,
                                            record) == elle::Status::Error)
@@ -2201,7 +2104,7 @@ namespace horizon
                   -EPERM,
                   identifier.object, identifier.to, identifier.from);
 
-          // check the record.
+          // Check the record.
           if (!((record != NULL) &&
                 ((record->permissions & nucleus::PermissionWrite) ==
                  nucleus::PermissionWrite)))
@@ -2210,7 +2113,7 @@ namespace horizon
                   -EACCES,
                   identifier.object, identifier.to, identifier.from);
 
-          // lookup for the target name.
+          // Lookup for the target name.
           if (etoile::wall::Directory::Lookup(identifier.to,
                                               t,
                                               entry) == elle::Status::Error)
@@ -2218,19 +2121,16 @@ namespace horizon
                   -EPERM,
                   identifier.object, identifier.to, identifier.from);
 
-          // check if an entry actually exist for the target name meaning
-          // that an object is about to get overwritten.
+          // Check if an entry actually exist for the target name
+          // meaning that an object is about to get overwritten.
           if (entry != NULL)
             {
-              //
-              // in this case, the target object must be destroyed.
-              //
+              // In this case, the target object must be destroyed.
               int               result;
 
-              // unlink the object, assuming it is either a file or a link.
-              //
-              // note that the Crux's method is called in order not to have
-              // to deal with the target's genre.
+              // Unlink the object, assuming it is either a file or a
+              // link.  Note that the Crux's method is called in order
+              // not to have to deal with the target's genre.
               if ((result = Crux::Unlink(target)) < 0)
                 error("unable to unlink the target object which is "
                       "about to get overwritte",
@@ -2238,7 +2138,7 @@ namespace horizon
                       identifier.object, identifier.to, identifier.from);
             }
 
-          // add an entry.
+          // Add an entry.
           if (etoile::wall::Directory::Add(
                 identifier.to,
                 t,
@@ -2247,7 +2147,7 @@ namespace horizon
                   -EPERM,
                   identifier.object, identifier.to, identifier.from);
 
-          // remove the entry.
+          // Remove the entry.
           if (etoile::wall::Directory::Remove(
                 identifier.from,
                 f) == elle::Status::Error)
@@ -2255,28 +2155,28 @@ namespace horizon
                   -EPERM,
                   identifier.object, identifier.to, identifier.from);
 
-          // store the _to_ directory.
+          // Store the _to_ directory.
           if (etoile::wall::Directory::Store(
                 identifier.to) == elle::Status::Error)
             error("unable to store the directory",
                   -EPERM,
                   identifier.object, identifier.from);
 
-          // store the _from_ directory.
+          // Store the _from_ directory.
           if (etoile::wall::Directory::Store(
                 identifier.from) == elle::Status::Error)
             error("unable to store the directory",
                   -EPERM,
                   identifier.object);
 
-          // store the object.
+          // Store the object.
           if (etoile::wall::Object::Store(
                 identifier.object) == elle::Status::Error)
             error("unable to store the object",
                   -EPERM);
         }
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s, %s)\n",
                __FUNCTION__,
@@ -2285,9 +2185,7 @@ namespace horizon
       return (0);
     }
 
-    ///
-    /// this method removes an existing file.
-    ///
+    /// This method removes an existing file.
     int                 Crux::Unlink(const char*                path)
     {
       etoile::path::Slab                name;
@@ -2304,58 +2202,58 @@ namespace horizon
       nucleus::Record*                  record;
       nucleus::Subject                  subject;
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] Crux::%s(%s)\n",
                __FUNCTION__,
                path);
 
-      // resolve the path.
+      // Resolve the path.
       if (etoile::wall::Path::Resolve(child,
                                       chemin.child) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT);
 
-      // load the object.
+      // Load the object.
       if (etoile::wall::Object::Load(chemin.child,
                                      identifier) == elle::Status::Error)
         error("unable to load the object",
               -ENOENT);
 
-      // retrieve information on the object.
+      // Retrieve information on the object.
       if (etoile::wall::Object::Information(identifier,
                                             abstract) == elle::Status::Error)
         error("unable to retrieve information on the object",
               -EPERM,
               identifier);
 
-      // create a temporary subject based on the object owner's key.
+      // Create a temporary subject based on the object owner's key.
       if (subject.Create(abstract.keys.owner) == elle::Status::Error)
         error("unable to create a temporary subject",
               -EPERM,
               identifier);
 
-      // check that the subject is the owner of the object.
+      // Check that the subject is the owner of the object.
       if (agent::Agent::Subject != subject)
         error("the subject does not have the right to destroy this object",
               -EACCES,
               identifier);
 
-      // resolve the path.
+      // Resolve the path.
       if (etoile::wall::Path::Resolve(parent,
                                       chemin.parent) == elle::Status::Error)
         error("unable to resolve the path",
               -ENOENT,
               identifier);
 
-      // load the directory.
+      // Load the directory.
       if (etoile::wall::Directory::Load(chemin.parent,
                                         directory) == elle::Status::Error)
         error("unable to load the directory",
               -ENOENT,
               identifier);
 
-      // retrieve the subject's permissions on the object.
+      // Retrieve the subject's permissions on the object.
       if (etoile::wall::Access::Lookup(directory,
                                        agent::Agent::Subject,
                                        record) == elle::Status::Error)
@@ -2363,7 +2261,7 @@ namespace horizon
               -EPERM,
               identifier, directory);
 
-      // check the record.
+      // Check the record.
       if (!((record != NULL) &&
             ((record->permissions & nucleus::PermissionWrite) ==
              nucleus::PermissionWrite)))
@@ -2372,12 +2270,12 @@ namespace horizon
               -EACCES,
               identifier, directory);
 
-      // remove the object according to its type: file or link.
+      // Remove the object according to its type: file or link.
       switch (abstract.genre)
         {
         case nucleus::GenreFile:
           {
-            // destroy the file.
+            // Destroy the file.
             if (etoile::wall::File::Destroy(identifier) == elle::Status::Error)
               error("unable to destroy the file",
                     -EPERM,
@@ -2387,7 +2285,7 @@ namespace horizon
           }
         case nucleus::GenreLink:
           {
-            // destroy the link.
+            // Destroy the link.
             if (etoile::wall::Link::Destroy(identifier) == elle::Status::Error)
               error("unable to destroy the link",
                     -EPERM,
@@ -2402,19 +2300,19 @@ namespace horizon
           }
         };
 
-      // remove the entry.
+      // Remove the entry.
       if (etoile::wall::Directory::Remove(directory,
                                           name) == elle::Status::Error)
         error("unable to remove a directory entry",
               -EPERM,
               directory);
 
-      // store the directory.
+      // Store the directory.
       if (etoile::wall::Directory::Store(directory) == elle::Status::Error)
         error("unable to store the directory",
               -EPERM);
 
-      // debug.
+      // Debug.
       if (Infinit::Configuration.horizon.debug == true)
         printf("[horizon] /Crux::%s(%s)\n",
                __FUNCTION__,
