@@ -4,7 +4,10 @@
 # include <reactor/network/tcp-server.hh>
 
 # include <elle/types.hh>
+
 # include <nucleus/Nucleus.hh>
+# include <nucleus/Derivable.hh>
+
 # include <lune/Lune.hh>
 
 # include <hole/implementations/remote/Customer.hh>
@@ -73,7 +76,7 @@ namespace hole
         elle::Status            Sweep(Customer*);
 
         elle::Status            Push(const nucleus::Address&,
-                                     const nucleus::Block&);
+                                     nucleus::Derivable const&);
         elle::Status            Pull(const nucleus::Address&,
                                      const nucleus::Version&);
         elle::Status            Wipe(const nucleus::Address&);

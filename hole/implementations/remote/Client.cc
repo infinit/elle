@@ -13,6 +13,8 @@
 #include <elle/network/Network.hh>
 
 #include <lune/Passport.hh>
+
+#include <nucleus/Derivable.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Version.hh>
 #include <nucleus/proton/Block.hh>
@@ -113,8 +115,7 @@ namespace hole
       elle::Status      Client::Put(const nucleus::Address&     address,
                                     const nucleus::ImmutableBlock& block)
       {
-        //nucleus::Derivable<nucleus::Block>      derivable(address.component,
-        //                                                  block);
+        nucleus::InputDerivable derivable(address.component, block);
 
         ELLE_LOG_TRACE_SCOPE("Put[Immutable]");
 
@@ -124,7 +125,7 @@ namespace hole
 
         // transfer to the remote.
         if (this->socket->Call(
-              elle::network::Inputs<TagPush>(address, block),
+              elle::network::Inputs<TagPush>(address, derivable),
               elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to transfer the request");
 
@@ -137,8 +138,7 @@ namespace hole
       elle::Status      Client::Put(const nucleus::Address&     address,
                                     const nucleus::MutableBlock& block)
       {
-        //nucleus::Derivable<nucleus::Block>      derivable(address.component,
-        //                                                  block);
+        nucleus::InputDerivable derivable(address.component, block);
 
         ELLE_LOG_TRACE_SCOPE("Put[Mutable]");
 
@@ -148,7 +148,7 @@ namespace hole
 
         // transfer to the remote.
         if (this->socket->Call(
-              elle::network::Inputs<TagPush>(address, block),
+              elle::network::Inputs<TagPush>(address, derivable),
               elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
           escape("unable to transfer the request");
 
@@ -161,7 +161,7 @@ namespace hole
       elle::Status      Client::Get(const nucleus::Address&     address,
                                     nucleus::ImmutableBlock&    block)
       {
-        //nucleus::Derivable<nucleus::Block>      derivable(block);
+        nucleus::OutputDerivable derivable(block);
 
         ELLE_LOG_TRACE_SCOPE("Get[Immutable]");
 
@@ -173,7 +173,7 @@ namespace hole
         if (this->socket->Call(
               elle::network::Inputs<TagPull>(address,
                                     nucleus::Version::Any),
-              elle::network::Outputs<TagBlock>(block)) == elle::Status::Error)
+              elle::network::Outputs<TagBlock>(derivable)) == elle::Status::Error)
           escape("unable to transfer the request");
 
         return elle::Status::Ok;
@@ -186,7 +186,7 @@ namespace hole
                                     const nucleus::Version&     version,
                                     nucleus::MutableBlock&      block)
       {
-        //nucleus::Derivable<nucleus::Block>      derivable(block);
+        nucleus::OutputDerivable      derivable(block);
 
         ELLE_LOG_TRACE_SCOPE("Get[Mutable]");
 
@@ -197,7 +197,7 @@ namespace hole
         // transfer to the remote.
         if (this->socket->Call(
               elle::network::Inputs<TagPull>(address, version),
-              elle::network::Outputs<TagBlock>(block)) == elle::Status::Error)
+              elle::network::Outputs<TagBlock>(derivable)) == elle::Status::Error)
           escape("unable to transfer the request");
 
         return elle::Status::Ok;

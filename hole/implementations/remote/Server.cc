@@ -522,11 +522,15 @@ namespace hole
       /// this method stores the given block.
       ///
       elle::Status      Server::Push(nucleus::Address const&    address,
-                                     nucleus::Block const&      block)
+                                     nucleus::Derivable const&  derivable)
       {
         Customer*       customer;
 
         ELLE_LOG_TRACE_SCOPE("Push");
+
+        assert(derivable.kind == nucleus::Derivable::Kind::input);
+        auto const& block =
+          static_cast<nucleus::InputDerivable const&>(derivable).block();
 
         // retrieve the customer.
         if (this->Retrieve(elle::network::current_context().socket,
@@ -648,11 +652,11 @@ namespace hole
             }
           }
 
-        //nucleus::Derivable<nucleus::Block> derivable(address.component, *block);
+        nucleus::InputDerivable derivable(address.component, *block);
 
         // return the block.
         if (customer->socket->Reply(
-              elle::network::Inputs<TagBlock>(*block)) == elle::Status::Error)
+              elle::network::Inputs<TagBlock>(derivable)) == elle::Status::Error)
           escape("unable to return the block");
 
         return elle::Status::Ok;
