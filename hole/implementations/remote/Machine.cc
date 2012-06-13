@@ -105,11 +105,11 @@ namespace hole
                   ELLE_LOG_TRACE("successfully started as a client")
                   return;
                 }
+              ELLE_LOG_TRACE("error while starting as a client");
 #include <elle/idiom/Close.hh>
               // XXX
               elle::concurrency::scheduler().current()->yield();
 #include <elle/idiom/Open.hh>
-              ELLE_LOG_TRACE("error while starting as a client");
             }
           catch (reactor::network::Exception& e)
             {
