@@ -144,23 +144,24 @@ namespace elle
   __ECS_IARCHIVE(__VA_ARGS__)::StreamType                                     \
   /**/
 
+# define __ECS_LOG_ACTION(action, ptr)                                        \
+    ELLE_LOG_TRACE_COMPONENT("elle.concept");                                 \
+    ELLE_LOG_TRACE_SCOPE((#action " %p using type %s"),                       \
+                         ptr, ELLE_PRETTY_OBJECT_TYPE(ptr))                   \
+
 // dump a virtual serialize method into a serializable class
 # define __ECS_SERIALIZE(cls, ...)                                            \
  virtual void serialize(__ECS_OARCHIVE(cls, ##__VA_ARGS__)& ar) const         \
   {                                                                           \
-    ELLE_LOG_TRACE_COMPONENT("elle.concept");                                 \
     typedef elle::concept::Serializable<cls, ##__VA_ARGS__> Implem;           \
-    ELLE_LOG_TRACE(                                                           \
-        "Serialize %p using %s implem", this, ELLE_PRETTY_OBJECT_TYPE(this)   \
-    ) { return this->Implem::serialize(ar); }                                 \
+    __ECS_LOG_ACTION(serialize, this);                                        \
+    return this->Implem::serialize(ar);                                       \
   }                                                                           \
  virtual void serialize(__ECS_OSTREAM(cls, ##__VA_ARGS__)& out) const         \
   {                                                                           \
-    ELLE_LOG_TRACE_COMPONENT("elle.concept");                                 \
     typedef elle::concept::Serializable<cls, ##__VA_ARGS__> Implem;           \
-    ELLE_LOG_TRACE(                                                           \
-        "Serialize %p using %s implem", this, ELLE_PRETTY_OBJECT_TYPE(this)   \
-    ) { return this->Implem::serialize(out); }                                \
+    __ECS_LOG_ACTION(serialize, this);                                        \
+    return this->Implem::serialize(out);                                      \
   }                                                                           \
   /**/
 
@@ -168,19 +169,15 @@ namespace elle
 # define __ECS_DESERIALIZE(cls, ...)                                          \
   virtual void deserialize(__ECS_IARCHIVE(cls, ##__VA_ARGS__)& ar)            \
   {                                                                           \
-    ELLE_LOG_TRACE_COMPONENT("elle.concept");                                 \
     typedef elle::concept::Serializable<cls, ##__VA_ARGS__> Implem;           \
-    ELLE_LOG_TRACE(                                                           \
-        "Deserialize %p using %s implem", this, ELLE_PRETTY_OBJECT_TYPE(this) \
-    ) { return this->Implem::deserialize(ar); }                               \
+    __ECS_LOG_ACTION(deserialize, this);                                      \
+    return this->Implem::deserialize(ar);                                     \
   }                                                                           \
   virtual void deserialize(__ECS_ISTREAM(cls, ##__VA_ARGS__)& in)             \
   {                                                                           \
-    ELLE_LOG_TRACE_COMPONENT("elle.concept");                                 \
     typedef elle::concept::Serializable<cls, ##__VA_ARGS__> Implem;           \
-    ELLE_LOG_TRACE(                                                           \
-        "Deserialize %p using %s implem", this, ELLE_PRETTY_OBJECT_TYPE(this) \
-    ) { return this->Implem::deserialize(in); }                               \
+    __ECS_LOG_ACTION(deserialize, this);                                      \
+    return this->Implem::deserialize(in);                                     \
   }                                                                           \
   /**/
 
