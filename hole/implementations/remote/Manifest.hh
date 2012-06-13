@@ -3,6 +3,7 @@
 
 # include <elle/types.hh>
 # include <nucleus/Nucleus.hh>
+# include <nucleus/Derivable.hh>
 # include <lune/Lune.hh>
 
 # include <etoile/Manifest.hh>
@@ -83,12 +84,12 @@ message(hole::implementations::remote::TagAuthenticated,
         parameters());
 
 message(hole::implementations::remote::TagPush,
-        parameters(nucleus::Address&, nucleus::Block&));
+        parameters(nucleus::Address&, nucleus::Derivable&));
 message(hole::implementations::remote::TagPull,
         parameters(nucleus::Address&,
                    nucleus::Version&));
 message(hole::implementations::remote::TagBlock,
-        parameters(nucleus::Block&));
+        parameters(nucleus::Derivable&));
 message(hole::implementations::remote::TagWipe,
         parameters(nucleus::Address&));
 

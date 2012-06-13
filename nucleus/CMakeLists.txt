@@ -4,6 +4,7 @@ add_definitions(-fPIC)
 
 ADD_LIBRARY(nucleus
   Nucleus.cc
+  Derivable.cc
 
   proton/Action.cc
   proton/Address.cc
