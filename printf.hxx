@@ -99,13 +99,22 @@ namespace elle
 
     // XXX virer les const& et utiliser les bon traits
     template<typename... T>
-      std::string
-      format(char const* fmt, T const&... values)
+    std::string
+    format(char const* fmt, T const&... values)
+    {
+      try
         {
           boost::format boost_fmt{fmt};
           format_feed(boost_fmt, values...);
           return boost_fmt.str();
         }
+      catch (std::exception const& e)
+        {
+          // FIXME
+          std::cerr << e.what() << ": " << fmt << std::endl;
+          std::abort();
+        }
+    }
   }
 
 
