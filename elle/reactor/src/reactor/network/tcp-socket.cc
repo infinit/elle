@@ -97,7 +97,7 @@ namespace reactor
               return;
             }
           if (error)
-            ELLE_LOG_TRACE("%s: read error: %s", *this, error);
+            ELLE_LOG_TRACE("%s: read error: %s", *this, error.message());
           else
             ELLE_LOG_TRACE("%s: read completed: %s bytes", *this, read);
           _read = read;
