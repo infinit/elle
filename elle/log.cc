@@ -5,6 +5,7 @@
 #include <cstdlib> // getenv
 #include <string>
 #include <map>
+#include <unordered_map>
 #include <vector>
 
 #include <boost/algorithm/string.hpp>
@@ -157,6 +158,26 @@ namespace elle
           this->_send(msg);
       }
 
+      static int thread_id(reactor::Thread* t)
+      {
+        if (!t)
+          return 0;
+
+        static int i = 1;
+        typedef std::unordered_map<reactor::Thread*, int> Ids;
+        static Ids ids;
+
+        auto elt = ids.find(t);
+        if (elt == ids.end())
+          {
+            ids[t] = i;
+            return i++;
+          }
+        else
+          return ids[t];
+      }
+
+
       void
       TraceContext::_send(std::string const& msg)
       {
@@ -169,12 +190,14 @@ namespace elle
         assert(size <= Components::instance().max_string_size());
         unsigned int pad = Components::instance().max_string_size() - size;
         std::string s = (
-          "[" + std::string(pad / 2, ' ') +
+          std::string(pad / 2, ' ') +
           this->_component.name +
-          std::string(pad / 2 + pad % 2, ' ') +
-          "]"
+          std::string(pad / 2 + pad % 2, ' ')
         );
-        default_logger.trace(s, align, msg);
+
+        boost::format fmt("[%s] [%2s]");
+        reactor::Thread* t = elle::concurrency::scheduler().current();
+        default_logger.trace(str(fmt % s % thread_id(t)), align, msg);
       }
 
       void
