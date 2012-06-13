@@ -15,6 +15,9 @@ set_property (SOURCE reactor/src/reactor/backend/coro_io/libcoroutine/asm.S PROP
 
 ADD_LIBRARY(elle
 
+  Buffer.cc
+  IOStream.cc
+
   standalone/Log.cc
   standalone/Maid.cc
   standalone/Morgue.cc
