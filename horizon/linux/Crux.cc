@@ -10,7 +10,7 @@
 #include <agent/Agent.hh>
 #include <etoile/Etoile.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Infinit.Horizon")
+ELLE_LOG_TRACE_COMPONENT("Infinit.Horizon.Crux");
 
 namespace horizon
 {
@@ -44,11 +44,7 @@ namespace horizon
       struct ::fuse_file_info   info;
       int                       result;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, %p)\n",
-               __FUNCTION__,
-               path, stat);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, stat);
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -85,12 +81,6 @@ namespace horizon
         error("unable to discard the object",
               -EPERM);
 
-      // debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, %p)\n",
-               __FUNCTION__,
-               path, stat);
-
       return (0);
     }
 
@@ -104,11 +94,7 @@ namespace horizon
       etoile::miscellaneous::Abstract   abstract;
       elle::String*                     name;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, %p)\n",
-               __FUNCTION__,
-               path, stat);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, stat);
 
       // Clear the stat structure.
       ::memset(stat, 0x0, sizeof (struct ::stat));
@@ -265,12 +251,6 @@ namespace horizon
           }
         }
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, %p)\n",
-               __FUNCTION__,
-               path, stat);
-
       return (0);
     }
 
@@ -279,19 +259,9 @@ namespace horizon
     int                 Crux::Utimens(const char*               path,
                                       const struct ::timespec[2])
     {
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, ...)\n",
-               __FUNCTION__,
-               path);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, ...)", __FUNCTION__, path);
 
       // Xxx not supported: do something about it
-
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, ...)\n",
-               __FUNCTION__,
-               path);
 
       return (0);
     }
@@ -304,11 +274,7 @@ namespace horizon
       etoile::path::Way         way(path);
       etoile::path::Chemin      chemin;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, %p)\n",
-               __FUNCTION__,
-               path, info);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, info);
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -327,12 +293,6 @@ namespace horizon
         reinterpret_cast<uint64_t>(new Handle(Handle::OperationOpendir,
                                               identifier));
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, %p)\n",
-               __FUNCTION__,
-               path, info);
-
       return (0);
     }
 
@@ -347,12 +307,8 @@ namespace horizon
       off_t             next;
       nucleus::Record*  record;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, %p, %p, %qu, %p)\n",
-               __FUNCTION__,
-               path, buffer, filler,
-               static_cast<elle::Natural64>(offset), info);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %p, %p, %d, %p)",
+                     __FUNCTION__, path, buffer, filler, static_cast<elle::Natural64>(offset), info);
 
       // Set the handle pointer to the file handle that has been
       // filled by Opendir().
@@ -413,16 +369,7 @@ namespace horizon
 
               // Fill the buffer with filler().
               if (filler(buffer, entry->name.c_str(), NULL, next) == 1)
-                {
-                  // Debug.
-                  if (Infinit::Configuration.horizon.debug == true)
-                    printf("[horizon] /Crux::%s(%s, %p, %p, %qu, %p)\n",
-                           __FUNCTION__,
-                           path, buffer, filler,
-                           static_cast<elle::Natural64>(offset), info);
-
-                  return (0);
-                }
+                return (0);
 
               // Compute the offset of the next entry.
               next++;
@@ -435,13 +382,6 @@ namespace horizon
             break;
         }
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, %p, %p, %qu, %p)\n",
-               __FUNCTION__,
-               path, buffer, filler,
-               static_cast<elle::Natural64>(offset), info);
-
       return (0);
     }
 
@@ -449,11 +389,7 @@ namespace horizon
     int                 Crux::Releasedir(const char*            path,
                                          struct ::fuse_file_info* info)
     {
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, %p)\n",
-               __FUNCTION__,
-               path, info);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, info);
 
       // Set the handle pointer to the file handle that has been
       // filled by Opendir().
@@ -468,12 +404,6 @@ namespace horizon
       // Reset the file handle, just to make sure it is not used
       // anymore.
       info->fh = 0;
-
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, %p)\n",
-               __FUNCTION__,
-               path, info);
 
       return (0);
     }
@@ -490,11 +420,7 @@ namespace horizon
       etoile::gear::Identifier  subdirectory;
       nucleus::Record*          record;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, 0%o)\n",
-               __FUNCTION__,
-               path, mode);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mode);
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -564,12 +490,6 @@ namespace horizon
         error("unable to store the directory",
               -EPERM);
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, 0%o)\n",
-               __FUNCTION__,
-               path, mode);
-
       return (0);
     }
 
@@ -586,11 +506,7 @@ namespace horizon
       nucleus::Record*                  record;
       nucleus::Subject                  subject;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s)\n",
-               __FUNCTION__,
-               path);
+      ELLE_LOG_TRACE_SCOPE("%s(%s)", __FUNCTION__, path);
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(parent, chemin) == elle::Status::Error)
@@ -671,12 +587,6 @@ namespace horizon
         error("unable to destroy the directory",
               -EPERM);
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s)\n",
-               __FUNCTION__,
-               path);
-
       return (0);
     }
 
@@ -691,11 +601,7 @@ namespace horizon
       etoile::path::Chemin              chemin;
       nucleus::Record*                  record;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, 0%o)\n",
-               __FUNCTION__,
-               path, mask);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mask);
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -803,12 +709,6 @@ namespace horizon
         error("unable to discard the object",
               -EPERM);
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, 0%o)\n",
-               __FUNCTION__,
-               path, mask);
-
       return (0);
 
     _access:
@@ -835,11 +735,7 @@ namespace horizon
       etoile::miscellaneous::Abstract   abstract;
       nucleus::Subject                  subject;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, 0%o)\n",
-               __FUNCTION__,
-               path, mode);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mode);
 
       // Note that this method ignores both the group and other
       // permissions.
@@ -971,12 +867,6 @@ namespace horizon
         error("unable to store the object",
               -EPERM);
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, 0%o)\n",
-               __FUNCTION__,
-               path, mode);
-
       return (0);
     }
 
@@ -985,19 +875,9 @@ namespace horizon
                                     uid_t                       uid,
                                     gid_t                       gid)
     {
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, %u, %u)\n",
-               __FUNCTION__,
-               path, uid, gid);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %d, %d)", __FUNCTION__, path, uid, gid);
 
       // Xxx to implement.
-
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, %u, %u)\n",
-               __FUNCTION__,
-               path, uid, gid);
 
       return (0);
     }
@@ -1018,11 +898,7 @@ namespace horizon
       etoile::miscellaneous::Abstract   abstract;
       nucleus::Subject                  subject;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, %s, %p, %u, 0x%x)\n",
-               __FUNCTION__,
-               path, name, value, size, flags);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %s, %p, %d, 0x%x)", __FUNCTION__, path, name, value, size, flags);
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -1068,12 +944,6 @@ namespace horizon
         error("unable to store the object",
               -EPERM);
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, %s, %p, %u, 0x%x)\n",
-               __FUNCTION__,
-               path, name, value, size, flags);
-
       return (0);
     }
 
@@ -1089,11 +959,7 @@ namespace horizon
       etoile::path::Chemin      chemin;
       nucleus::Trait*           trait;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, %s, %p, %u)\n",
-               __FUNCTION__,
-               path, name, value, size);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %s, %p, %d)", __FUNCTION__, path, name, value, size);
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -1121,12 +987,6 @@ namespace horizon
       // Test if a trait has been found.
       if (trait == NULL)
         return (-ENOATTR);
-
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, %s, %p, %u)\n",
-               __FUNCTION__,
-               path, name, value, size);
 
       // If the size is null, it means that this call must be
       // considered as a request for the size required to store the
@@ -1157,11 +1017,7 @@ namespace horizon
       nucleus::Range<nucleus::Trait>::Scoutor   scoutor;
       size_t                                    offset;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, %p, %u)\n",
-               __FUNCTION__,
-               path, list, size);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %p, %d)", __FUNCTION__, path, list, size);
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -1184,12 +1040,6 @@ namespace horizon
       if (etoile::wall::Object::Discard(identifier) == elle::Status::Error)
         error("unable to discard the object",
               -EPERM);
-
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, %p, %u)\n",
-               __FUNCTION__,
-               path, list, size);
 
       // If the size is zero, this call must return the size required
       // to store the list.
@@ -1239,11 +1089,7 @@ namespace horizon
       etoile::miscellaneous::Abstract   abstract;
       nucleus::Subject                  subject;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, %s)\n",
-               __FUNCTION__,
-               path, name);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, path, name);
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -1288,12 +1134,6 @@ namespace horizon
         error("unable to store the object",
               -EPERM);
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, %s)\n",
-               __FUNCTION__,
-               path, name);
-
       return (0);
     }
 #endif
@@ -1310,11 +1150,7 @@ namespace horizon
       etoile::path::Chemin      chemin;
       nucleus::Record*          record;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, %s)\n",
-               __FUNCTION__,
-               target, source);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, target, source);
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(from, chemin) == elle::Status::Error)
@@ -1375,12 +1211,6 @@ namespace horizon
         error("unable to store the directory",
               -EPERM);
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, %s)\n",
-               __FUNCTION__,
-               target, source);
-
       return (0);
     }
 
@@ -1396,11 +1226,7 @@ namespace horizon
       etoile::path::Way         target;
       nucleus::Record*          record;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, %p, %qu)\n",
-               __FUNCTION__,
-               path, buffer, static_cast<elle::Natural64>(size));
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %p, %d)", __FUNCTION__, path, buffer, static_cast<elle::Natural64>(size));
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -1447,12 +1273,6 @@ namespace horizon
                 target.path.length() + 1 :
                 size);
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, %p, %qu)\n",
-               __FUNCTION__,
-               path, buffer, static_cast<elle::Natural64>(size));
-
       return (0);
     }
 
@@ -1469,11 +1289,7 @@ namespace horizon
       etoile::gear::Identifier  file;
       nucleus::Record*          record;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, 0%o, %p)\n",
-               __FUNCTION__,
-               path, mode, info);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, 0%o, %p)", __FUNCTION__, path, mode, info);
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -1591,12 +1407,6 @@ namespace horizon
         error("unable to add the created file to the crib",
               -EBADF);
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, 0%o, %p)\n",
-               __FUNCTION__,
-               path, mode, info);
-
       return (0);
     }
 
@@ -1608,11 +1418,7 @@ namespace horizon
       etoile::path::Chemin      chemin;
       etoile::gear::Identifier  identifier;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, %p)\n",
-               __FUNCTION__,
-               path, info);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, info);
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -1629,12 +1435,6 @@ namespace horizon
         reinterpret_cast<uint64_t>(new Handle(Handle::OperationOpen,
                                               identifier));
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, %p)\n",
-               __FUNCTION__,
-               path, info);
-
       return (0);
     }
 
@@ -1649,12 +1449,8 @@ namespace horizon
       elle::standalone::Region      region;
       nucleus::Record*  record;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, %p, %qu, %qu, %p)\n",
-               __FUNCTION__,
-               path, buffer, static_cast<elle::Natural64>(size),
-               static_cast<elle::Natural64>(offset), info);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %p, %d, %d, %p)",
+                     __FUNCTION__, path, buffer, static_cast<elle::Natural64>(size), static_cast<elle::Natural64>(offset), info);
 
       // Retrieve the handle;
       handle = reinterpret_cast<Handle*>(info->fh);
@@ -1686,13 +1482,6 @@ namespace horizon
         error("unable to write the file",
               -EPERM);
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, %p, %qu, %qu, %p)\n",
-               __FUNCTION__,
-               path, buffer, static_cast<elle::Natural64>(size),
-               static_cast<elle::Natural64>(offset), info);
-
       return (size);
     }
 
@@ -1707,12 +1496,8 @@ namespace horizon
       elle::standalone::Region      region;
       nucleus::Record*  record;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, %p, %qu, %qu, %p)\n",
-               __FUNCTION__,
-               path, buffer, static_cast<elle::Natural64>(size),
-               static_cast<elle::Natural64>(offset), info);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %p, %d, %d, %p)",
+                     __FUNCTION__, path, buffer, static_cast<elle::Natural64>(size), static_cast<elle::Natural64>(offset), info);
 
       // Retrieve the handle.
       handle = reinterpret_cast<Handle*>(info->fh);
@@ -1742,13 +1527,6 @@ namespace horizon
       // Copy the data to the output buffer.
       ::memcpy(buffer, region.contents, region.size);
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, %p, %qu, %qu, %p)\n",
-               __FUNCTION__,
-               path, buffer, static_cast<elle::Natural64>(size),
-               static_cast<elle::Natural64>(offset), info);
-
       return (region.size);
     }
 
@@ -1762,11 +1540,7 @@ namespace horizon
       struct ::fuse_file_info   info;
       int                       result;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, %qu)\n",
-               __FUNCTION__,
-               path, static_cast<elle::Natural64>(size));
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %d)", __FUNCTION__, path, static_cast<elle::Natural64>(size));
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -1796,12 +1570,6 @@ namespace horizon
         error("unable to store the file",
               -EPERM);
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, %qu)\n",
-               __FUNCTION__,
-               path, static_cast<elle::Natural64>(size));
-
       return (result);
     }
 
@@ -1813,11 +1581,7 @@ namespace horizon
       Handle*           handle;
       nucleus::Record*  record;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, %qu, %p)\n",
-               __FUNCTION__,
-               path, static_cast<elle::Natural64>(size), info);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %d, %p)", __FUNCTION__, path, static_cast<elle::Natural64>(size), info);
 
       // Retrieve the handle.
       handle = reinterpret_cast<Handle*>(info->fh);
@@ -1843,12 +1607,6 @@ namespace horizon
         error("unable to adjust the size of the file",
               -EPERM);
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, %qu, %p)\n",
-               __FUNCTION__,
-               path, static_cast<elle::Natural64>(size), info);
-
       return (0);
     }
 
@@ -1859,11 +1617,7 @@ namespace horizon
       etoile::path::Way way(path);
       Handle*           handle;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, %p)\n",
-               __FUNCTION__,
-               path, info);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %p)", __FUNCTION__, path, info);
 
       // Retrieve the handle.
       handle = reinterpret_cast<Handle*>(info->fh);
@@ -1919,12 +1673,6 @@ namespace horizon
       // Reset the file handle.
       info->fh = 0;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, %p)\n",
-               __FUNCTION__,
-               path, info);
-
       return (0);
     }
 
@@ -1938,11 +1686,7 @@ namespace horizon
       etoile::path::Way         to(etoile::path::Way(target), t);
       etoile::gear::Identifier  object;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s, %s)\n",
-               __FUNCTION__,
-               source, target);
+      ELLE_LOG_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, source, target);
 
       // If the source and target directories are identical.
       if (from == to)
@@ -2176,12 +1920,6 @@ namespace horizon
                   -EPERM);
         }
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s, %s)\n",
-               __FUNCTION__,
-               source, target);
-
       return (0);
     }
 
@@ -2202,11 +1940,7 @@ namespace horizon
       nucleus::Record*                  record;
       nucleus::Subject                  subject;
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] Crux::%s(%s)\n",
-               __FUNCTION__,
-               path);
+      ELLE_LOG_TRACE_SCOPE("%s(%s)", __FUNCTION__, path);
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(child,
@@ -2312,14 +2046,7 @@ namespace horizon
         error("unable to store the directory",
               -EPERM);
 
-      // Debug.
-      if (Infinit::Configuration.horizon.debug == true)
-        printf("[horizon] /Crux::%s(%s)\n",
-               __FUNCTION__,
-               path);
-
       return (0);
     }
-
   }
 }
