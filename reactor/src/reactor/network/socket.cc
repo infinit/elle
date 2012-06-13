@@ -16,12 +16,41 @@ namespace reactor
 {
   namespace network
   {
+    namespace
+    {
+      class StreamBuffer: public elle::PlainStreamBuffer
+      {
+      public:
+        typedef elle::PlainStreamBuffer Super;
+        typedef Super::Size Size;
+        StreamBuffer(Socket* socket)
+        : _socket(socket)
+        {}
+
+      protected:
+        virtual Size read(char* buffer, Size size)
+        {
+          return _socket->read_some(network::Buffer(buffer, size));
+        }
+
+        virtual void write(char* buffer, Size size)
+        {
+          _socket->write(network::Buffer(buffer, size));
+        }
+
+
+      private:
+        Socket* _socket;
+      };
+    }
+
     /*-------------.
     | Construction |
     `-------------*/
 
     Socket::Socket(Scheduler& sched)
-      : _sched(sched)
+      : elle::IOStream(new StreamBuffer(this))
+      , _sched(sched)
     {}
 
     Socket::~Socket()
@@ -162,7 +191,7 @@ namespace reactor
     `-----*/
 
     void
-    Socket::read(Buffer, DurationOpt)
+    Socket::read(network::Buffer, DurationOpt)
     {
       std::abort();
       // XXX[unused arguments for now, do something with it]
@@ -177,7 +206,7 @@ namespace reactor
     void
     Socket::write(const char* data)
     {
-      Buffer buffer(data, strlen(data));
+      network::Buffer buffer(data, strlen(data));
       return write(buffer);
     }
 
