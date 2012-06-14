@@ -14,7 +14,7 @@ ELLE_SERIALIZE_SIMPLE(elle::concurrency::Event,
   archive & value._identifier;
 
   // XXX
-  if (Archive::mode == ArchiveMode::Output)
+  if (Archive::mode == ArchiveMode::Input)
     value.XXX_OLD_Extract();
 }
 

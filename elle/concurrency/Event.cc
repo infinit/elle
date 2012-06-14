@@ -135,7 +135,8 @@ namespace elle
     {
       String            alignment(margin, ' ');
 
-      std::cout << alignment << "[Event] " << this->_identifier << std::endl;
+      std::cout << alignment << "[Event] " << this->_identifier
+                << " XXX(" << this->waited << ")" << std::endl;
 
       return Status::Ok;
     }
