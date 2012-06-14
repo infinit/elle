@@ -528,9 +528,8 @@ namespace hole
 
         ELLE_LOG_TRACE_SCOPE("Push");
 
-        assert(derivable.kind == nucleus::Derivable::Kind::input);
         auto const& block =
-          static_cast<nucleus::InputDerivable const&>(derivable).block();
+          static_cast<nucleus::Derivable const&>(derivable).block();
 
         // retrieve the customer.
         if (this->Retrieve(elle::network::current_context().socket,
@@ -652,7 +651,7 @@ namespace hole
             }
           }
 
-        nucleus::InputDerivable derivable(address.component, *block);
+        nucleus::Derivable derivable(address.component, *block);
 
         // return the block.
         if (customer->socket->Reply(
