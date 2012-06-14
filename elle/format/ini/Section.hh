@@ -28,7 +28,7 @@ namespace elle { namespace format { namespace ini {
       elle::String const* Contains(elle::String const& key) const;
       template<typename T> T Get(elle::String const& key) const;
       template<typename T> T Get(elle::String const& key, T const& default_value) const;
-      template<typename T> T Set(elle::String const& key, T const& value);
+      template<typename T> void Set(elle::String const& key, T const& value);
       elle::String const& operator [](elle::String const& key) const;
       elle::String& operator [](elle::String const& key);
 

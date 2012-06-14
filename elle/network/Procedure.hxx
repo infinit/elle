@@ -87,6 +87,8 @@ namespace elle
                 err.what());
               return elle::Status::Error;
             }
+          assert(false && "unreachable");
+          return (elle::Status::Ok);
         }
       };
     }

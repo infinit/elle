@@ -148,7 +148,7 @@ namespace reactor
     `-----*/
 
     void
-    Socket::read(Buffer buffer, DurationOpt opt)
+    Socket::read(Buffer, DurationOpt)
     {
       std::abort();
       // XXX[unused arguments for now, do something with it]
