@@ -51,6 +51,7 @@ namespace elle
               //);
             }
         }
+        return elle::Status::Ok;
       }
 
     template<__ECS_ARCHIVE_TPL(Archive)>
@@ -88,6 +89,7 @@ namespace elle
             //    std::string(err.what())
             //);
           }
+        return elle::Status::Ok;
       }
 
 ////

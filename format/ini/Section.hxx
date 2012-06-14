@@ -42,12 +42,12 @@ namespace elle { namespace format { namespace ini {
       }
 
     template<typename T>
-      T Section::Set(elle::String const& key, T const& value)
-      {
-        std::stringstream ss;
-        ss << value;
-        _pairs[key] = ss.str();
-      }
+    void Section::Set(elle::String const& key, T const& value)
+    {
+      std::stringstream ss;
+      ss << value;
+      _pairs[key] = ss.str();
+    }
 
 }}}
 

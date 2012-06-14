@@ -52,7 +52,7 @@ namespace elle
       //   with boost 1.49 in c++0x).
       template<typename T>
       static void feed_it(boost::format& fmt, T const& value, int,
-          Helper<sizeof( static_cast<boost::format&>(*((boost::format* const)0)) % static_cast<T const&>(*((T const* const)0)) )>* ptr = 0)
+          Helper<sizeof( static_cast<boost::format&>(*((boost::format* const)0)) % static_cast<T const&>(*((T const* const)0)) )>* = 0)
       {
         fmt % value;
       }
