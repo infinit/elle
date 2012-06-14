@@ -137,7 +137,6 @@ namespace elle
 
           // extract the header.
           reader >> *(parcel->header);
-          parcel->header->Dump();
 
           // XXX[Check if the size is plausible]
 
@@ -155,8 +154,6 @@ namespace elle
               ELLE_LOG_TRACE("%s: new offset is %u, and buf size is %u",
                              *this, reader.Stream().Offset(), parcel->data->Size());
             }
-
-          parcel->data->Dump();
 
           unsigned int eaten = reader.Stream().Offset();
           ::memmove(_buffer, _buffer + eaten, _buffer_size - eaten);
@@ -273,12 +270,14 @@ namespace elle
                 }
             }
         }
-      catch (const reactor::network::ConnectionClosed&)
+      catch (const reactor::network::ConnectionClosed& err)
         {
+          ELLE_LOG_TRACE("%s: connection closed: %s", *this, err.what());
           // Nothing.
         }
-      catch (const std::runtime_error&)
+      catch (const std::runtime_error& err)
         {
+          ELLE_LOG_TRACE("%s: runtime error: %s", *this, err.what());
           // Any error with the peer. Consider him alienated and
           // disconnect from him.
         }
