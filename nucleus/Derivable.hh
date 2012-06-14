@@ -7,46 +7,61 @@
 namespace nucleus
 {
 
-  struct Derivable
-  {
-    enum class Kind { none, input, output };
-    Kind const kind;
-    Derivable(Kind kind) : kind(kind) {}
-    Derivable() : kind(Kind::none) {}
-  };
-
   ///
   /// this class provides a nucleus-specific derivable class i.e a
   /// class for generating nucleus objects based on a component.
   ///
-  class InputDerivable
-    : public Derivable
+  class Derivable
   {
+  public:
+    enum class Kind { none, input, output };
+    Kind const kind;
+
   private:
     nucleus::neutron::Component   _component;
-    nucleus::proton::Block const& _block;
+    nucleus::proton::Block*       _block;
+    bool                          _dynamic_construct;
+
   public:
-    InputDerivable(nucleus::neutron::Component component,
-                   nucleus::proton::Block const& block);
+    Derivable(nucleus::neutron::Component component,
+              nucleus::proton::Block const& block,
+              Kind kind = Kind::input)
+      : kind(kind)
+      , _component(component)
+      , _block(const_cast<nucleus::proton::Block*>(&block))
+      , _dynamic_construct(false)
+    {}
 
-    nucleus::proton::Block const& block() const { return this->_block; }
+    Derivable()
+      : kind(Kind::output)
+      , _component(nucleus::neutron::ComponentUnknown)
+      , _block(nullptr)
+      , _dynamic_construct(true)
+    {}
 
-    ELLE_SERIALIZE_FRIEND_FOR(InputDerivable);
-  };
+    ~Derivable()
+    {
+      if (this->_dynamic_construct)
+        delete this->_block;
+    }
 
-  class OutputDerivable
-    : public Derivable
-  {
-  private:
-    nucleus::neutron::Component _component;
-    nucleus::proton::Block*     _block;
-    bool                        _dynamic_construct;
-  public:
-    OutputDerivable(nucleus::neutron::Component component,
-                    nucleus::proton::Block& block);
-    OutputDerivable(nucleus::proton::Block& block);
+    std::unique_ptr<nucleus::proton::Block> release()
+    {
+      assert(this->kind == Kind::output);
+      assert(this->_dynamic_construct);
+      auto tmp = this->_block;
+      this->_block = nullptr;
+      return std::unique_ptr<nucleus::proton::Block>(tmp);
+    }
 
-    ELLE_SERIALIZE_FRIEND_FOR(OutputDerivable);
+    nucleus::proton::Block const& block() const
+    {
+      if (this->_block == nullptr)
+        throw std::runtime_error("No block in this derivable !");
+      return *this->_block;
+    }
+
+    ELLE_SERIALIZE_FRIEND_FOR(Derivable);
   };
 
 }
