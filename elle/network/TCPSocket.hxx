@@ -125,12 +125,7 @@ namespace elle
         {
           ELLE_LOG_TRACE("%s: reading data parcel of size %u",
                          *this, parcel->data->Size());
-          // XXX Because the data is wrapped two times !
-          Data  data;
-          parcel->data->Reader() >> data;
-          elle::print("parcel data size: ", parcel->data->Size());
-          elle::print("data size: ", data.Size());
-          data.Reader() >> outputs;
+          parcel->data->Reader() >> outputs;
         }
       catch (std::exception const& err)
         {
