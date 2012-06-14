@@ -62,6 +62,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::standalone::Region,
                           value,
                           version)
 {
+  assert(version == 0);
   archive << static_cast<uint64_t>(value.size);
   archive.SaveBinary(value.contents, value.size);
 }
@@ -72,8 +73,8 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::standalone::Region,
                           version)
 {
   uint64_t size;
+  assert(version == 0);
   archive >> size;
-
   if (value.Prepare(size) != elle::Status::Ok)
     throw std::runtime_error("Cannot prepare the region");
   archive.LoadBinary(value.contents, size);

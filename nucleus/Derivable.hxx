@@ -26,8 +26,7 @@ namespace elle
 ELLE_SERIALIZE_SPLIT(nucleus::InputDerivable);
 ELLE_SERIALIZE_SPLIT(nucleus::OutputDerivable);
 
-
-ELLE_SERIALIZE_SPLIT_LOAD(nucleus::InputDerivable, archive, value, version)
+ELLE_SERIALIZE_SPLIT_LOAD(nucleus::InputDerivable,,,)
 {
   throw std::runtime_error("Cannot load an input derivable");
 }
@@ -53,7 +52,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(nucleus::OutputDerivable, archive, value, version)
     }
 }
 
-ELLE_SERIALIZE_SPLIT_SAVE(nucleus::OutputDerivable, archive, value, version)
+ELLE_SERIALIZE_SPLIT_SAVE(nucleus::OutputDerivable,,,)
 {
   throw std::runtime_error("Cannot save an output derivable");
 }
@@ -67,6 +66,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(nucleus::InputDerivable, archive, value, version)
 
 ELLE_SERIALIZE_SIMPLE(nucleus::Derivable, archive, value, version)
 {
+  assert(version == 0);
   if (value.kind == nucleus::Derivable::Kind::input)
     {
       archive & static_cast<nucleus::InputDerivable&>(value);

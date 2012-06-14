@@ -11,6 +11,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::MutableBlock,
                       value,
                       version)
 {
+  assert(version == 0);
   archive & static_cast<nucleus::proton::Block&>(value);
   archive & value.version;
 }
