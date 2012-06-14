@@ -115,7 +115,8 @@ namespace hole
       elle::Status      Client::Put(const nucleus::Address&     address,
                                     const nucleus::ImmutableBlock& block)
       {
-        nucleus::InputDerivable derivable(address.component, block);
+        nucleus::Derivable derivable(
+            address.component, block, nucleus::Derivable::Kind::output);
 
         ELLE_LOG_TRACE_SCOPE("Put[Immutable]");
 
@@ -138,7 +139,7 @@ namespace hole
       elle::Status      Client::Put(const nucleus::Address&     address,
                                     const nucleus::MutableBlock& block)
       {
-        nucleus::InputDerivable derivable(address.component, block);
+        nucleus::Derivable derivable(address.component, block);
 
         ELLE_LOG_TRACE_SCOPE("Put[Mutable]");
 
@@ -161,7 +162,8 @@ namespace hole
       elle::Status      Client::Get(const nucleus::Address&     address,
                                     nucleus::ImmutableBlock&    block)
       {
-        nucleus::OutputDerivable derivable(block);
+        nucleus::Derivable derivable(
+            address.component, block, nucleus::Derivable::Kind::output);
 
         ELLE_LOG_TRACE_SCOPE("Get[Immutable]");
 
@@ -186,7 +188,8 @@ namespace hole
                                     const nucleus::Version&     version,
                                     nucleus::MutableBlock&      block)
       {
-        nucleus::OutputDerivable      derivable(block);
+        nucleus::Derivable derivable(
+            address.component, block, nucleus::Derivable::Kind::output);
 
         ELLE_LOG_TRACE_SCOPE("Get[Mutable]");
 

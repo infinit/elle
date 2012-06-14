@@ -86,6 +86,7 @@ namespace elle
   fprint(std::ostream&      out,
          T const&...        values)
   {
+    out << std::dec;
     elle::detail::PrintFlags flags;
     return ::elle::detail::fprint(out, flags, true, values...);
   }
