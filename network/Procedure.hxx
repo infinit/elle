@@ -84,6 +84,8 @@ namespace elle
               _archive >> v1;
               return this->Load(values...);
             }
+          assert(false && "unreachable");
+          return (elle::Status::Ok);
         }
       };
     }

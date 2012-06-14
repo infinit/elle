@@ -101,8 +101,8 @@ namespace elle { namespace serialize {
 
     public:
       _DictStream(InputJSONArchive& in, json::Dictionary const& dict)
-        : _in(in)
-        , _dict(dict)
+        : _dict(dict)
+        , _in(in)
       {}
 
       template<typename T> _DictStream& operator >>(NamedValue<T> const& pair)

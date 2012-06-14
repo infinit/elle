@@ -104,6 +104,8 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::cryptography::PublicKey,
                           value,
                           version)
 {
+  assert(version == 0);
+
   // Deleter for dupped large
   struct LargeDeleter
     {
@@ -161,6 +163,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::cryptography::PublicKey,
                           value,
                           version)
 {
+  assert(version == 0);
   assert(value.key() != nullptr);
 
   archive << *(value.key()->pkey.rsa->n)

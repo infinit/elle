@@ -70,7 +70,6 @@ namespace elle { namespace serialize {
     void LoadBinary(void* data, size_t size)
     {
       char* ptr = static_cast<char*>(data);
-      size_t i = 0;
       for (size_t i = 0; i < size; ++i)
         {
           char hex[2];
