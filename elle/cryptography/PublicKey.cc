@@ -255,6 +255,7 @@ Status  PublicKey::Encrypt(elle::utility::WeakBuffer const& buffer,
         );
       }
 
+    // XXX this copy is not needed
     // duplicate the archive's content.
     if (code.region.Duplicate(result_buf.Contents(),
                               result_buf.Size()) == Status::Error)

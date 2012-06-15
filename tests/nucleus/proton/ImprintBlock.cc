@@ -16,42 +16,49 @@ int main()
   CHECK(elle::Elle::Initialize());
   CHECK(nucleus::Nucleus::Initialize());
 
-  elle::cryptography::KeyPair kp;
-
-  CHECK(kp.Generate());
-
-  nucleus::proton::ImprintBlock blk;
-
-  CHECK(blk.Create(kp.K));
-
-  nucleus::proton::Address addr;
-
-  CHECK(blk.Bind(addr));
-
-  assert(addr != nucleus::proton::Address::Null);
-  assert(addr != nucleus::proton::Address::Some);
-
-  CHECK(blk.Validate(addr));
-
-  elle::utility::Buffer buf;
-
     {
-      auto writer = buf.Writer();
 
-      writer << blk;
-    }
+      elle::cryptography::KeyPair kp;
 
-    {
-      auto reader = buf.Reader();
+      CHECK(kp.Generate());
 
-      nucleus::proton::ImprintBlock blk_copy;
+      nucleus::proton::ImprintBlock blk;
 
-      reader >> blk_copy;
+      CHECK(blk.Create(kp.K));
 
-      CHECK(blk_copy.Validate(addr));
+      nucleus::proton::Address addr;
+
+      CHECK(blk.Bind(addr));
+
+      assert(addr != nucleus::proton::Address::Null);
+      assert(addr != nucleus::proton::Address::Some);
+
+      CHECK(blk.Validate(addr));
+
+      elle::utility::Buffer buf;
+
+        {
+          auto writer = buf.Writer();
+
+          writer << blk;
+        }
+
+        {
+          auto reader = buf.Reader();
+
+          nucleus::proton::ImprintBlock blk_copy;
+
+          reader >> blk_copy;
+
+          CHECK(blk_copy.Validate(addr));
+        }
     }
 
   std::cout << "tests done.\n";
+
+  CHECK(nucleus::Nucleus::Clean());
+  CHECK(elle::Elle::Clean());
+
   return 0;
 }
 

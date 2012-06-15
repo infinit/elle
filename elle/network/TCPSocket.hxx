@@ -113,10 +113,12 @@ namespace elle
 
               // report the remote error.
               transpose(report);
+              delete parcel;
             }
           else
             escape("fiber was awaken by a packet with the wrong tag");
 
+          delete parcel;
           // in any case, return an error from the Receive() method.
           escape("received a packet with an unexpected tag '%u'", tag);
         }
@@ -126,9 +128,11 @@ namespace elle
           ELLE_LOG_TRACE("%s: reading data parcel of size %u",
                          *this, parcel->data->Size());
           parcel->data->Reader() >> outputs;
+          delete parcel;
         }
       catch (std::exception const& err)
         {
+          delete parcel;
           escape(err.what());
         }
 

@@ -264,8 +264,10 @@ namespace elle
                           // XXX
                           printf("ERROR\n");
                           show();
+                          delete parcel;
                           continue;
                         }
+                      delete parcel;
                     }
                 }
             }

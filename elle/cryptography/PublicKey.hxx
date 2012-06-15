@@ -86,10 +86,6 @@ namespace elle
   }
 }
 
-#endif
-#ifndef  ELLE_CRYPTOGRAPHY_PUBLIC_KEY_SERIALIZER_HXX
-# define ELLE_CRYPTOGRAPHY_PUBLIC_KEY_SERIALIZER_HXX
-
 # include <elle/serialize/ArchiveSerializer.hxx>
 
 # include <elle/cryptography/LargeSerializer.hxx>
@@ -118,25 +114,15 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::cryptography::PublicKey,
     };
   typedef std::unique_ptr<Large, LargeDeleter> LargePtr;
 
-  // Temp values on the stack.
-  Large n_;
-  Large e_;
 
-  BN_init(&n_);
-  BN_init(&e_);
-
-  archive >> n_;
-  archive >> e_;
-
-  // Dup for the RSA assignement in PublicKey::Create(Large*, Large*)
-  LargePtr n(::BN_dup(&n_));
-  LargePtr e(::BN_dup(&e_));
-
-  ::BN_free(&n_);
-  ::BN_free(&e_);
+  LargePtr n(::BN_new());
+  LargePtr e(::BN_new());
 
   if (!n || !e)
     throw std::bad_alloc();
+
+  archive >> *n.get();
+  archive >> *e.get();
 
   // XXX
   value.~PublicKey();
@@ -144,8 +130,8 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::cryptography::PublicKey,
 
   assert(value.key() == nullptr);
 
-  if (value.Create(::BN_dup(n.get()),
-                   ::BN_dup(e.get())) == Status::Error)
+  if (value.Create(n.get(),
+                   e.get()) == Status::Error)
     {
       throw std::runtime_error(
           "unable to create the public key from the archive"

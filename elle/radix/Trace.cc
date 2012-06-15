@@ -216,7 +216,7 @@ namespace elle
       Path              path;
 
       // create the location.
-      ::sprintf(Trace::Location, "/data/tmp/XXXXXX");
+      ::sprintf(Trace::Location, "/tmp/XXXXXX");
 
       // generate a temporary location.
       ::mkdtemp(Trace::Location);

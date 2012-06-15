@@ -74,11 +74,11 @@ namespace elle
       /// and forward to standard Load() method.
       ///
       template<typename Archive>
-      static inline void LoadConstruct(Archive& archive, T* ptr)
+      static inline void LoadConstruct(Archive& archive, T*& ptr)
       {
-        assert(ptr != nullptr);
+        assert(ptr == nullptr);
         static_assert(!std::is_pointer<T>::value, "You cannot construct pointers...");
-        new (ptr) T;
+        ptr = new T;
         archive >> *ptr;
       }
 
@@ -179,7 +179,7 @@ namespace elle { namespace serialize {                                          
         template<typename K> struct _LoadConstruct                              \
         {                                                                       \
           template<typename Archive>                                            \
-            static inline void Method(Archive& ar, K* ptr)                      \
+            static inline void Method(Archive& ar, K*& ptr)                     \
               { BaseArchiveSerializer<K>::LoadConstruct(ar, ptr); }             \
         };                                                                      \
         template<typename Archive>                                              \
@@ -193,7 +193,7 @@ namespace elle { namespace serialize {                                          
               { _Serialize(ar, value, v); }                                     \
           }                                                                     \
         template<typename Archive, typename K>                                  \
-          static inline void LoadConstruct(Archive& archive, K* ptr)            \
+          static inline void LoadConstruct(Archive& archive, K*& ptr)           \
             { _LoadConstruct<K>::Method(archive, ptr); }                        \
       };                                                                        \
 }}                                                                              \
@@ -211,14 +211,14 @@ template<typename Archive>                                                      
         template<> struct ArchiveSerializer<T>::_LoadConstruct<T>               \
           {                                                                     \
             template<typename Archive> static inline void                       \
-              Method(Archive& ar, T* ptr);                                      \
+              Method(Archive& ar, T*& ptr);                                     \
           };                                                                    \
   }}                                                                            \
 template<typename Archive>                                                      \
 void                                                                            \
 elle::serialize::ArchiveSerializer<T>::_LoadConstruct<T>::Method(               \
     Archive& archive,                                                           \
-    T* ptr                                                                      \
+    T*& ptr                                                                     \
 )                                                                               \
   /**/
 
