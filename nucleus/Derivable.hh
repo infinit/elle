@@ -1,6 +1,8 @@
 #ifndef  NUCLEUS_DERIVABLE_HH
 # define NUCLEUS_DERIVABLE_HH
 
+# include <boost/noncopyable.hpp>
+
 # include <nucleus/neutron/Component.hh>
 # include <nucleus/proton/Block.hh>
 
@@ -11,11 +13,14 @@ namespace nucleus
   /// this class provides a nucleus-specific derivable class i.e a
   /// class for generating nucleus objects based on a component.
   ///
+  // XXX This class is temporary.
+  // Note: Derivable is not derivable
   class Derivable
+    : private boost::noncopyable
   {
   public:
     enum class Kind { none, input, output };
-    Kind const kind;
+    Kind const kind; // XXX ignored most of the time
 
   private:
     nucleus::neutron::Component   _component;
@@ -42,7 +47,10 @@ namespace nucleus
     ~Derivable()
     {
       if (this->_dynamic_construct)
-        delete this->_block;
+        {
+          delete this->_block;
+          this->_block = nullptr;
+        }
     }
 
     std::unique_ptr<nucleus::proton::Block> release()
