@@ -61,7 +61,7 @@ namespace elle
 
         typedef typename std::enable_if<
             !std::is_pointer<T>::value && mode == _mode,
-            std::unique_ptr<T, ConstructDeleter<T>>
+            std::unique_ptr<T>
         > ConstructPtr;
 
         typedef typename std::enable_if<
@@ -179,9 +179,9 @@ namespace elle
     template<ArchiveMode mode_, typename Archive, typename CT,
              template<ArchiveMode, typename> class STS>
     template<typename T>
-      inline void BaseArchive<mode_, Archive, CT, STS>::LoadConstruct(T* ptr)
+      inline void BaseArchive<mode_, Archive, CT, STS>::LoadConstruct(T*& ptr)
       {
-        assert(ptr != nullptr);
+        assert(ptr == nullptr);
         //ClassVersionType classVersion(0);
         //if (StoreClassVersion<T>::value == true)
         //  Access::Load(this->self(), classVersion);
@@ -634,7 +634,7 @@ namespace elle
           { ar.Save(val); }
         template<typename T> static inline void Load(Archive& ar, T& val)
           { ar.Load(val); }
-        template<typename T> static inline void LoadConstruct(Archive& ar, T* ptr)
+        template<typename T> static inline void LoadConstruct(Archive& ar, T*& ptr)
           { ar.LoadConstruct(ptr); }
         template<typename T>
           static inline void SaveNamed(Archive& ar,

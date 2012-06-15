@@ -172,14 +172,15 @@ namespace elle { namespace serialize {
       class Access;
 
       /// unique_ptr returned by the Construct method use this deleter
-      template<typename T> struct ConstructDeleter
-      {
-        void operator()(T *ptr) const
-        {
-          ptr->~T();
-          ::free(ptr);
-        }
-      };
+      // XXX
+      //template<typename T> struct ConstructDeleter
+      //{
+      //  void operator()(T *ptr) const
+      //  {
+      //    ptr->~T();
+      //    ::free(ptr);
+      //  }
+      //};
 
     private:
       StreamType& _stream;
@@ -315,20 +316,32 @@ namespace elle { namespace serialize {
       template<typename T> inline typename _EnableFor<T, ArchiveMode::Input>::ConstructPtr::
         type Construct()
         {
-          T* ptr = static_cast<T*>(::operator new(sizeof(T)));
-          if (ptr == nullptr)
-            throw std::bad_alloc();
+          T* ptr = nullptr;
           try
             {
               Access::LoadConstruct(this->self(), ptr);
             }
-          catch (std::exception const&)
+          catch (std::exception const& err)
             {
-              //::free(ptr);
               delete ptr;
               throw;
             }
-          return std::unique_ptr<T, ConstructDeleter<T>>(ptr);
+          assert(ptr != nullptr);
+
+          //T* ptr = static_cast<T*>(::operator new(sizeof(T)));
+          //if (ptr == nullptr)
+          //  throw std::bad_alloc();
+          //try
+          //  {
+          //    Access::LoadConstruct(this->self(), ptr);
+          //  }
+          //catch (std::exception const&)
+          //  {
+          //    //::free(ptr);
+          //    delete ptr;
+          //    throw;
+          //  }
+          return std::unique_ptr<T>(ptr);
         }
 
     protected:
@@ -400,7 +413,7 @@ namespace elle { namespace serialize {
       //  >::type
       //  Load(T& val);
       template<typename T>
-        inline void LoadConstruct(T* ptr);
+        inline void LoadConstruct(T*& ptr);
       inline void LoadBinary(void* data, std::streamsize size);
 
       // This allows you to write raw c string into an archive
