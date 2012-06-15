@@ -50,8 +50,8 @@ Buffer::Buffer(Buffer&& other)
   , _size(other._size)
   , _buffer_size(other._buffer_size)
 {
-#ifdef DEBUG
   other._contents = nullptr;
+#ifdef DEBUG
   other._size = 0;
   other._buffer_size = 0;
 #endif
