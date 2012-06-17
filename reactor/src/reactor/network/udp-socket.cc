@@ -102,9 +102,9 @@ namespace reactor
             return;
           _read = read;
           if (error == boost::asio::error::eof)
-            this->_raise(new ConnectionClosed());
+            this->_raise(new ConnectionClosed(scheduler()));
           else if (error)
-            this->_raise(new Exception(error.message()));
+            this->_raise(new Exception(scheduler(), error.message()));
           this->_signal();
         }
 
@@ -124,7 +124,7 @@ namespace reactor
                               << buffer.size() << " bytes.");
       UDPRead read(scheduler(), this, buffer);
       if (!read.run(timeout))
-        throw TimeOut();
+        throw TimeOut(scheduler());
       return read.read();
     }
 
@@ -161,9 +161,9 @@ namespace reactor
         {
           _written = written;
           if (error == boost::asio::error::eof)
-            this->_raise(new ConnectionClosed());
+            this->_raise(new ConnectionClosed(scheduler()));
           else if (error)
-            this->_raise(new Exception(error.message()));
+            this->_raise(new Exception(scheduler(), error.message()));
           this->_signal();
         }
 

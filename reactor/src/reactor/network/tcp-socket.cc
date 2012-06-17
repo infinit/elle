@@ -1,5 +1,7 @@
 #include <boost/lexical_cast.hpp>
 
+#include <elle/log.hh>
+
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/resolve.hh>
@@ -7,6 +9,8 @@
 #include <reactor/network/tcp-socket.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
+
+ELLE_LOG_TRACE_COMPONENT("Reactor.TCPSocket");
 
 namespace reactor
 {
@@ -88,12 +92,19 @@ namespace reactor
                      std::size_t read)
         {
           if (error == boost::system::errc::operation_canceled)
-            return;
+            {
+              ELLE_LOG_TRACE("read canceled");
+              return;
+            }
+          if (error)
+            ELLE_LOG_TRACE("%s: read error: %s", *this, error);
+          else
+            ELLE_LOG_TRACE("%s: read completed: %s bytes", *this, read);
           _read = read;
           if (error == boost::asio::error::eof)
-            this->_raise(new ConnectionClosed());
+            this->_raise(new ConnectionClosed(scheduler()));
           else if (error)
-            this->_raise(new Exception(error.message()));
+            this->_raise(new Exception(scheduler(), error.message()));
           this->_signal();
         }
 
@@ -105,17 +116,37 @@ namespace reactor
     void
     TCPSocket::read(Buffer buf, DurationOpt timeout)
     {
-      Read read(scheduler(), this, buf, false);
-      if (!read.run(timeout))
-        throw TimeOut();
+      _read(buf, timeout, false);
     }
 
     Size
     TCPSocket::read_some(Buffer buf, DurationOpt timeout)
     {
-      Read read(scheduler(), this, buf, true);
-      if (!read.run(timeout))
-        throw TimeOut();
+      return _read(buf, timeout, true);
+    }
+
+    Size
+    TCPSocket::_read(Buffer buf, DurationOpt timeout, bool some)
+    {
+      ELLE_LOG_TRACE_SCOPE("%s: read %s%s bytes (%s)",
+                           *this, some ? "up to " : "", buf.size(), timeout);
+      Read read(scheduler(), this, buf, some);
+      bool finished;
+      try
+        {
+          finished  = read.run(timeout);
+        }
+      catch (...)
+        {
+          ELLE_LOG_TRACE("%s: read threw", *this);
+          throw;
+        }
+      if (!finished)
+        {
+          ELLE_LOG_TRACE("%s: read timed out", *this);
+          throw TimeOut(scheduler());
+        }
+      ELLE_LOG_TRACE("%s: read completed: %s bytes", *this, read.read());
       return read.read();
     }
 
@@ -153,9 +184,9 @@ namespace reactor
         {
           _written = written;
           if (error == boost::asio::error::eof)
-            this->_raise(new ConnectionClosed());
+            this->_raise(new ConnectionClosed(scheduler()));
           else if (error)
-            this->_raise(new Exception(error.message()));
+            this->_raise(new Exception(scheduler(), error.message()));
           this->_signal();
         }
 
@@ -184,11 +215,6 @@ namespace reactor
     | Properties |
     `-----------*/
 
-    TCPSocket::EndPoint
-    TCPSocket::Peer() const
-    {
-      return this->_socket->remote_endpoint();
-    }
 
     /*----------------.
     | Pretty Printing |
@@ -197,7 +223,7 @@ namespace reactor
     void
     TCPSocket::print(std::ostream& s) const
     {
-      s << "TCP Socket " << _socket->local_endpoint();
+      s << "reactor::network::TCPSocket(" << peer() << ")";
     }
   }
 }

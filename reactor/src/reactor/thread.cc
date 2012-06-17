@@ -1,21 +1,20 @@
 #include <boost/foreach.hpp>
 
+#include <elle/log.hh>
+
 #include <reactor/debug.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/signal.hh>
 #include <reactor/sleep.hh>
 #include <reactor/thread.hh>
 
-// XXX
-#include <elle/backtrace.hh>
+ELLE_LOG_TRACE_COMPONENT("Reactor.Thread");
 
 namespace reactor
 {
   /*-------------.
   | Construction |
   `-------------*/
-
-  static void action_wrapper(Thread::Action action);
 
   Thread::Thread(Scheduler&             scheduler,
                  std::string const&     name,
@@ -25,18 +24,13 @@ namespace reactor
     , _state(state::running)
     , _injection()
     , _exception(0)
+    , _backtrace_root()
     , _waited()
     , _timeout(false)
-    , _thread(scheduler._manager, name, boost::bind(action_wrapper,
-                                                    action))
+    , _thread(scheduler._manager, name, boost::bind(&Thread::_action_wrapper,
+                                                    this, action))
     , _scheduler(scheduler)
   {
-    // XXX
-    if (!action)
-      {
-        elle::Backtrace bt;
-        std::cerr << bt << std::endl;
-      }
     assert(action);
     _scheduler._thread_register(*this);
   }
@@ -96,10 +90,12 @@ namespace reactor
   `----*/
 
 
-  static void action_wrapper(Thread::Action action)
+  void
+  Thread::_action_wrapper(const Thread::Action& action)
   {
     try
       {
+        _backtrace_root = Backtrace::current();
         assert(action);
         action();
       }
@@ -121,19 +117,24 @@ namespace reactor
   void
   Thread::yield()
   {
-    _thread.yield();
-    if (_injection)
-    {
-      Injection i(_injection);
-      _injection = Injection();
-      i();
-    }
-    if (_exception)
-    {
-      Exception* e = _exception;
-      _exception = 0;
-      e->raise_and_delete();
-    }
+    ELLE_LOG_TRACE("%s: yield", *this)
+      {
+        _thread.yield();
+        ELLE_LOG_TRACE("%s: back from yield", *this);
+        if (_injection)
+          {
+            Injection i(_injection);
+            _injection = Injection();
+            i();
+          }
+        if (_exception)
+          {
+            Exception* e = _exception;
+            _exception = 0;
+            ELLE_LOG_TRACE("%s: re-raise exception", *this);
+            e->raise_and_delete();
+          }
+      }
   }
 
   /*-----------.
@@ -186,7 +187,7 @@ namespace reactor
       }
     if (freeze)
     {
-      INFINIT_REACTOR_DEBUG(*this << ": freeze");
+      ELLE_LOG_TRACE("%s: freeze", *this);
       if (timeout)
       {
         boost::asio::deadline_timer _timer(_scheduler.io_service(),
@@ -244,14 +245,14 @@ namespace reactor
   {
     if (e == boost::system::errc::operation_canceled)
       return;
-    INFINIT_REACTOR_DEBUG(*this << ": timed out");
+    ELLE_LOG_TRACE("%s: timed out", *this);
     _wait_abort();
   }
 
   void
   Thread::_wait_abort()
   {
-    INFINIT_REACTOR_DEBUG(*this << ": abort wait");
+    ELLE_LOG_TRACE("%s: abort wait", *this);
     assert(state() == state::frozen);
     BOOST_FOREACH (Waitable* waitable, _waited)
       waitable->_unwait(this);
@@ -272,15 +273,33 @@ namespace reactor
   void
   Thread::_wake(Waitable*       waitable)
   {
-    INFINIT_REACTOR_DEBUG(*this << ": wake one");
-    if (waitable->_exception && !_exception)
-      _exception = waitable->_exception;
-    _waited.erase(waitable);
-    if (_waited.empty())
-    {
-      _scheduler._unfreeze(*this);
-      _state = Thread::state::running;
-    }
+    ELLE_LOG_TRACE("%s: wait ended for %s", *this, *waitable)
+      {
+        if (waitable->_exception && !_exception)
+          {
+            ELLE_LOG_TRACE("%s: forward exception", *this);
+            _exception = waitable->_exception;
+          }
+        _waited.erase(waitable);
+        if (_waited.empty())
+          {
+            ELLE_LOG_TRACE("%s: nothing to wait on, waking up", *this);
+            _scheduler._unfreeze(*this);
+            _state = Thread::state::running;
+          }
+        else
+          ELLE_LOG_TRACE("%s: still waiting for %s other elements", *this, _waited.size());
+      }
+  }
+
+  /*--------.
+  | Backend |
+  `--------*/
+
+  Scheduler&
+  Thread::scheduler()
+  {
+    return _scheduler;
   }
 
   /*----------------.

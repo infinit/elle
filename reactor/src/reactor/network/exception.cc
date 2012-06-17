@@ -4,16 +4,16 @@ namespace reactor
 {
   namespace network
   {
-    Exception::Exception(const std::string& message)
-      : Super(message)
+    Exception::Exception(Scheduler& scheduler, const std::string& message)
+      : Super(scheduler, message)
     {}
 
-    ConnectionClosed::ConnectionClosed()
-      : Super("connection closed")
+    ConnectionClosed::ConnectionClosed(Scheduler& scheduler)
+      : Super(scheduler, "connection closed")
     {}
 
-    TimeOut::TimeOut()
-      : Super("network operation timed out")
+    TimeOut::TimeOut(Scheduler& scheduler)
+      : Super(scheduler, "network operation timed out")
     {}
   }
 }

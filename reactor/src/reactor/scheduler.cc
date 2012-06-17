@@ -1,6 +1,10 @@
+#include <elle/log.hh>
+
 #include <reactor/debug.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
+
+ELLE_LOG_TRACE_COMPONENT("Reactor.Scheduler");
 
 namespace reactor
 {
@@ -31,7 +35,7 @@ namespace reactor
     delete _io_service_work;
     _io_service_work = 0;
     _io_service.run();
-    INFINIT_REACTOR_DEBUG("Scheduler: done");
+    ELLE_LOG_TRACE("Scheduler: done");
     assert(_frozen.empty());
   }
 
@@ -45,14 +49,13 @@ namespace reactor
       _starting.clear();
     }
     Threads running(_running);
-    INFINIT_REACTOR_DEBUG("Scheduler: new round with "
-                          << running.size() << " jobs");
+    ELLE_LOG_TRACE("Scheduler: new round with %s jobs", running.size());
     BOOST_FOREACH (Thread* t, running)
     {
-      INFINIT_REACTOR_DEBUG("Scheduler: schedule " << *t);
+      ELLE_LOG_TRACE("Scheduler: schedule %s", *t);
       _step(t);
     }
-    INFINIT_REACTOR_DEBUG("Scheduler: run asio callbacks");
+    ELLE_LOG_TRACE("Scheduler: run asio callbacks");
     _io_service.reset();
     _io_service.poll();
     if (_running.empty() && _starting.empty())
@@ -62,7 +65,7 @@ namespace reactor
         else
           while (_running.empty() && _starting.empty())
             {
-              INFINIT_REACTOR_DEBUG("Scheduler: nothing to do, "
+              ELLE_LOG_TRACE("Scheduler: nothing to do, "
                                     "polling asio in a blocking fashion");
               _io_service.reset();
               boost::system::error_code err;
@@ -106,7 +109,7 @@ namespace reactor
     _current = previous;
     if (thread->state() == Thread::state::done)
       {
-        INFINIT_REACTOR_DEBUG("Scheduler: cleanup " << *thread);
+        ELLE_LOG_TRACE("Scheduler: cleanup %s", *thread);
         _running.erase(thread);
         if (thread->_dispose)
           delete thread;
@@ -175,9 +178,10 @@ namespace reactor
   void
   Scheduler::_terminate(Thread* thread)
   {
-    INFINIT_REACTOR_DEBUG(*this << ": terminate");
+    ELLE_LOG_TRACE_COMPONENT("Reactor.Thread");
+    ELLE_LOG_TRACE("%s: terminate", *thread);
     if (current() == thread)
-      throw Terminate();
+      throw Terminate(*this);
     // If the underlying coroutine was never run, nothing to do.
     if (_starting.erase(thread))
       {
@@ -187,10 +191,10 @@ namespace reactor
     switch (thread->state())
       {
         case Thread::state::running:
-          thread->raise(new Terminate());
+          thread->raise(new Terminate(*this));
           break;
         case Thread::state::frozen:
-          thread->raise(new Terminate());
+          thread->raise(new Terminate(*this));
           thread->_wait_abort();
           break;
         case Thread::state::done:

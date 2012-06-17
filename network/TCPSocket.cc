@@ -246,12 +246,12 @@ namespace elle
                       // FIXME
                       auto socket =
                         reinterpret_cast<reactor::network::TCPSocket*>(_socket);
-                      if (h.Create(socket->Peer().address().to_string()) ==
+                      if (h.Create(socket->peer().address().to_string()) ==
                           Status::Error)
                         continue;
                       if (l.Create(
                             h,
-                            static_cast<Natural16>(socket->Peer().port())) ==
+                            static_cast<Natural16>(socket->peer().port())) ==
                           Status::Error)
                         continue;
                       assert(it->second);

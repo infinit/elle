@@ -14,8 +14,6 @@ ENDIF()
 set_property (SOURCE reactor/src/reactor/backend/coro_io/libcoroutine/asm.S PROPERTY LANGUAGE C)
 
 ADD_LIBRARY(elle
-# XXX
-backtrace.cc
 
   standalone/Log.cc
   standalone/Maid.cc
@@ -112,7 +110,9 @@ backtrace.cc
   reactor/src/reactor/backend/coro_io/libcoroutine/coroutine.cc
   reactor/src/reactor/backend/coro_io/thread.cc
   reactor/src/reactor/backend/pthread/pthread.cc
+  reactor/src/reactor/backtrace.cc
   reactor/src/reactor/debug.cc
+  reactor/src/reactor/duration.cc
   reactor/src/reactor/exception.cc
   reactor/src/reactor/lockable.cc
   reactor/src/reactor/mutex.cc

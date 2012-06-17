@@ -2,7 +2,7 @@
 # define INFINIT_REACTOR_NETWORK_SOCKET_HH
 
 # include <reactor/asio.hh>
-
+# include <reactor/duration.hh>
 # include <reactor/fwd.hh>
 # include <reactor/network/fwd.hh>
 
@@ -55,11 +55,11 @@ namespace reactor
       private:
         Scheduler& _sched;
 
-      /*----------------.
-      | Pretty printing |
-      `----------------*/
-      public:
-        virtual void print(std::ostream& s) const = 0;
+     /*----------------.
+     | Pretty printing |
+     `----------------*/
+    public:
+      virtual void print(std::ostream& s) const = 0;
     };
     std::ostream& operator << (std::ostream& s, const Socket& socket);
 
@@ -97,17 +97,30 @@ namespace reactor
         void _connect(const EndPoint& peer);
         void _disconnect();
 
-      /*------------.
-      | Asio socket |
-      `------------*/
-      protected:
-        friend class TCPServer;
-        friend class TCPSocket;
-        friend class UDPServer;
-        friend class UDPSocket;
-        template <typename AsioSocket>
-        friend class SocketOperation;
-        AsioSocket* _socket;
+    /*-----------.
+    | Properties |
+    `-----------*/
+    public:
+      EndPoint peer() const;
+
+    /*----------------.
+    | Pretty printing |
+    `----------------*/
+    public:
+      virtual void print(std::ostream& s) const;
+
+    /*------------.
+    | Asio socket |
+    `------------*/
+    protected:
+      friend class TCPServer;
+      friend class TCPSocket;
+      friend class UDPServer;
+      friend class UDPSocket;
+      template <typename AsioSocket>
+      friend class SocketOperation;
+      AsioSocket* _socket;
+      EndPoint _peer;
     };
   }
 }
