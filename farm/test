@@ -56,7 +56,7 @@ def run(cmd, stdin = b'', cwd = None, env=None):
 def unit_tests():
     run(['make', 'test'], cwd=BUILD)
 
-unit_tests()
+#unit_tests()
 
 #############################################################################
 
@@ -257,7 +257,7 @@ class MountPoint:
 
 class NetworkPool:
 
-    def __init__(self, network, size, start_port=0):
+    def __init__(self, network, size, start_port=8122):
         self._network = network
         self._size = size
         self.mount_points = []
@@ -353,7 +353,7 @@ def test_all(mount_points, test_timeout=10):
 
 if __name__ == '__main__':
     with Network('user1', 'network1') as network:
-        with NetworkPool(network, 3, start_port=12346) as pool:
+        with NetworkPool(network, 3, start_port=8171) as pool:
             time.sleep(5)
             print("Network pool ready:")
             for m in pool.mount_points:
