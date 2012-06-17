@@ -38,6 +38,10 @@ namespace reactor
                         DurationOpt timeout = DurationOpt());
       virtual Size read_some(Buffer buffer,
                              DurationOpt timeout = DurationOpt());
+    private:
+      virtual Size _read(Buffer buffer,
+                         DurationOpt timeout,
+                         bool some);
 
     /*------.
     | Write |
@@ -47,12 +51,6 @@ namespace reactor
       using Socket::write;
     private:
       Mutex _write_mutex;
-
-    /*-----------.
-    | Properties |
-    `-----------*/
-    public:
-      EndPoint Peer() const;
 
     /*----------------.
     | Pretty printing |

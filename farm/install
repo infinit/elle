@@ -119,6 +119,7 @@ def to_add(lib):
             "libobjc",
             "Foundation",
             "libfuse.so.",
+            "libfuse4x",
         ],
 
         'contains': [
@@ -139,7 +140,6 @@ def to_add(lib):
             "libqjson",
             "libncurses",
             "libreadline",
-            "libfuse4x",
         ],
         'contains': [
             "libpth.",
@@ -159,7 +159,7 @@ def to_add(lib):
 
 DIR_INSTALL_CLIENT_BIN = os.path.join(DIR_INSTALL_CLIENT, "bin")
 DIR_INSTALL_CLIENT_LIB = os.path.join(DIR_INSTALL_CLIENT, "lib")
-DIR_INSTALL_CLIENT_TEMP = os.path.join(DIR_INSTALL_CLIENT, "temp")
+DIR_INSTALL_CLIENT_TEMP = os.path.join(DIR_INSTALL_CLIENT, "temp-app")
 os.makedirs(DIR_INSTALL_CLIENT_BIN)
 os.makedirs(DIR_INSTALL_CLIENT_LIB)
 os.makedirs(DIR_INSTALL_CLIENT_TEMP)
@@ -199,15 +199,15 @@ if os.path.exists(infinit_app):
     print("copy qt_menu.nib dependancy")
     shutil.copytree("/Library/Frameworks/QtGui.framework/Versions/4/Resources/qt_menu.nib", os.path.join(DIR_INSTALL_CLIENT_LIB, "qt_menu.nib"))
     shutil.copytree("/Library/Extensions/fuse4x.kext", os.path.join(DIR_INSTALL_CLIENT_LIB, "fuse4x.kext"))
-    dst = os.path.join(DIR_INSTALL_CLIENT_TEMP, os.path.basename(infinit_app))
+    dst_app = os.path.join(DIR_INSTALL_CLIENT_TEMP, os.path.basename(infinit_app))
 
-    print("copy infinit_app to %s" % dst)
-    shutil.copytree(infinit_app, dst)
+    print("copy infinit_app to %s" % dst_app)
+    shutil.copytree(infinit_app, dst_app)
 
     print("copy 8updater and dependancies")
-    os.makedirs(os.path.join(dst, "Contents/Resources/bin"))
-    shutil.copy(os.path.join(DIR_INSTALL_CLIENT_BIN, os.path.basename("8updater")), os.path.join(dst, "Contents/Resources/bin"))
-    shutil.copytree(DIR_INSTALL_CLIENT_LIB, os.path.join(dst, "Contents/Resources/lib"))
+    os.makedirs(os.path.join(dst_app, "Contents/Resources/bin"))
+    shutil.copy(os.path.join(DIR_INSTALL_CLIENT_BIN, os.path.basename("8updater")), os.path.join(dst_app, "Contents/Resources/bin"))
+    shutil.copytree(DIR_INSTALL_CLIENT_LIB, os.path.join(dst_app, "Contents/Resources/lib"))
 
 
 print("Prepare the manifest")
@@ -216,12 +216,6 @@ cmd(os.path.join(DIR_SOURCE,'farm/make_manifest'), DIR_INSTALL_CLIENT, major, mi
 DIR_INSTALL_SERVER = os.path.join(DIR_INSTALL, "server")
 shutil.rmtree(DIR_INSTALL_SERVER, True)
 os.makedirs(DIR_INSTALL_SERVER)
-
-# list ()
-# {
-#     cd "$DIR_BUILD/oracle/disciples/"
-#     find "$@"
-# }
 
 server_scripts = [
     "metalib/__init__.py",
@@ -249,20 +243,3 @@ if os.path.isdir(os.path.join(DIR_BUILD, "oracle")): # oracle is built
             if not os.path.isdir(os.path.dirname(dst)):
                 os.makedirs(os.path.dirname(dst))
             shutil.copy(src, dst)
-
-# for f in                                                \
-#     metalib/__init__.py                                 \
-#     metalib/metalib.so                                  \
-#     $(list pythia -name '*.py')                         \
-#     $(list meta -name '*.py')                           \
-#     $(list creosus -name '*.py' -or -name '*.html')     \
-#     $(list troll -name '*.py')                          \
-#     meta-server                                         \
-#     meta-tests                                          \
-#     creosus-server                                      \
-#     production-meta-server.sh                           \
-#     production-creosus-server.sh
-# do
-#     mkdir -p "$DIR_INSTALL_SERVER/$(dirname "$f")"
-#     cp -r "$DIR_BUILD/oracle/disciples/$f" "$DIR_INSTALL_SERVER/$f"
-# done

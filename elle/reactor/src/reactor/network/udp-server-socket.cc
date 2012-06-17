@@ -54,7 +54,7 @@ namespace reactor
       {
         INFINIT_REACTOR_DEBUG(*this << ": wait for data from server.");
         if (!scheduler().current()->wait(_read_ready, timeout))
-          throw TimeOut();
+          throw TimeOut(scheduler());
       }
       assert(_read_buffer_size > 0);
       Size size = std::min(buffer.size(), _read_buffer_size);
@@ -99,9 +99,9 @@ namespace reactor
         {
           _written = written;
           if (error == boost::asio::error::eof)
-            this->_raise(new ConnectionClosed());
+            this->_raise(new ConnectionClosed(scheduler()));
           else if (error)
-            this->_raise(new Exception(error.message()));
+            this->_raise(new Exception(scheduler(), error.message()));
           this->_signal();
         }
 

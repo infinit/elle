@@ -15,6 +15,9 @@
 
 using namespace plasma::updater;
 
+extern bool g_dirty_hack;
+void do_dirty_hack();
+
 //
 // ---------- constructors & destructors --------------------------------------
 //
@@ -66,7 +69,7 @@ void Application::_StartUpdate()
 
   this->_StopWatchdog();
 
-  if (QFile(_infinitHome.filePath(".dev_no_update")).exists())
+  if (g_dirty_hack || QFile(_infinitHome.filePath(".dev_no_update")).exists())
     {
       std::cerr << "Skipping update !\n";
       this->_OnReleaseUpdated(true);
@@ -188,6 +191,11 @@ void Application::_OnIdentityUpdated(bool success)
       std::cerr << "Something failed ...\n";
       this->exit(EXIT_FAILURE);
       return;
+    }
+  else if (g_dirty_hack)
+    {
+      do_dirty_hack();
+      this->exit(0);
     }
   else
     std::cerr << "Starting the watchdog.\n";

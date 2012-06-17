@@ -8,6 +8,7 @@
 # include <boost/system/error_code.hpp>
 
 # include <reactor/backend/thread.hh>
+# include <reactor/duration.hh>
 # include <reactor/exception.hh>
 # include <reactor/fwd.hh>
 # include <reactor/waitable.hh>
@@ -82,16 +83,19 @@ namespace reactor
     private:
       void _step();
 
-    /*-----------.
-    | Injections |
-    `-----------*/
-    public:
-      typedef boost::function<void ()> Injection;
-      void inject(const Injection& injection);
-      void raise(Exception* e);
-    private:
-      boost::function<void ()> _injection;
-      Exception* _exception;
+  /*-----------.
+  | Exceptions |
+  `-----------*/
+  public:
+    typedef boost::function<void ()> Injection;
+    void inject(const Injection& injection);
+    void raise(Exception* e);
+  private:
+    void _action_wrapper(const Thread::Action& action);
+    boost::function<void ()> _injection;
+    Exception* _exception;
+    Backtrace _backtrace_root;
+    friend class Exception;
 
     /*----------------.
     | Synchronization |
@@ -135,20 +139,23 @@ namespace reactor
     /*--------.
     | Backend |
     `--------*/
-    private:
-      friend class Scheduler;
-      backend::Thread _thread;
-      Scheduler& _scheduler;
+  protected:
+    Scheduler& scheduler();
+  private:
+    friend class Scheduler;
+    backend::Thread _thread;
+    Scheduler& _scheduler;
   };
 
   template <typename R>
   class VThread: public Thread
   {
-    /*---------.
-    | Typedefs |
-    `---------*/
-    public:
-      typedef boost::function<R ()> Action;
+  /*---------.
+  | Typedefs |
+  `---------*/
+  public:
+    typedef VThread<R> Self;
+    typedef boost::function<R ()> Action;
 
     /*-------------.
     | Construction |

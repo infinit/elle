@@ -3,9 +3,6 @@
 
 # include <vector>
 
-# include <boost/date_time/posix_time/posix_time_types.hpp>
-# include <boost/optional.hpp>
-
 # ifdef BUILDING_REACTOR_DLL
 #  define REACTOR_API __declspec(dllexport)
 # else
@@ -24,8 +21,6 @@ namespace reactor
   class VThread;
   class Waitable;
 
-  typedef boost::posix_time::time_duration Duration;
-  typedef boost::optional<Duration> DurationOpt;
   typedef std::vector<Signal*> Signals;
   typedef std::vector<Waitable*> Waitables;
 }

@@ -12,6 +12,8 @@
 #include <etoile/automaton/Object.hh>
 #include <etoile/automaton/Rights.hh>
 
+#include <etoile/depot/Depot.hh>
+
 #include <etoile/journal/Journal.hh>
 
 #include <etoile/miscellaneous/Abstract.hh>
@@ -48,6 +50,66 @@ namespace etoile
         escape("unable to acquire the scope");
 
       gear::Guard               guard(scope);
+
+      // If the scope is new i.e there is no attached context, the system
+      // needs to know what is the genre of the object, e.g directory, in
+      // order allocate an appropriate context.
+      if (scope->context == nullptr)
+        {
+          // In this case, the object is manually loaded in order to determine
+          // the genre.
+          nucleus::proton::Location location;
+          nucleus::neutron::Object object;
+
+          if (chemin.Locate(location) == elle::Status::Error)
+            escape("unable to locate the object");
+
+          if (depot::Depot::Pull(location.address,
+                                 location.version,
+                                 object) == elle::Status::Error)
+            escape("unable to retrieve the object block");
+
+          // Depending on the object's genre, a context is allocated
+          // for the scope.
+          switch (object.meta.genre)
+            {
+            case nucleus::neutron::GenreFile:
+              {
+                gear::File* context;
+
+                if (scope->Use(context) == elle::Status::Error)
+                  escape("unable to create the context");
+
+                break;
+              }
+            case nucleus::neutron::GenreDirectory:
+              {
+                gear::Directory* context;
+
+                if (scope->Use(context) == elle::Status::Error)
+                  escape("unable to create the context");
+
+                break;
+              }
+            case nucleus::neutron::GenreLink:
+              {
+                gear::Link* context;
+
+                if (scope->Use(context) == elle::Status::Error)
+                  escape("unable to create the context");
+
+                break;
+              }
+            default:
+              {
+                escape("unable to allocate the proper context");
+              }
+            }
+
+          // At this point, the context represents the real object so
+          // that, assuming it is a directory, both Object::* and
+          // Directory::* methods could be used.
+        }
 
       // declare a critical section.
       reactor::Lock lock(&elle::concurrency::scheduler(), scope->mutex.write());

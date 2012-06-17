@@ -1,7 +1,6 @@
 #ifndef OPERATIONS_HH
 # define OPERATIONS_HH
 
-
 #if defined(HAVE_SETXATTR)
 # if defined(INFINIT_MACOSX)
 #  define INFINIT_FUSE_COMMANDS_XATTR                                   \

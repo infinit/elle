@@ -1,12 +1,16 @@
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 
+#include <elle/log.hh>
+
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/socket.hh>
 #include <reactor/network/socket-operation.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
+
+ELLE_LOG_TRACE_COMPONENT("Reactor.Socket");
 
 namespace reactor
 {
@@ -27,6 +31,13 @@ namespace reactor
     | Pretty printing |
     `----------------*/
 
+    template <typename AsioSocket>
+    void
+    PlainSocket<AsioSocket>::print(std::ostream& s) const
+    {
+      s << "reactor::network::Socket(" << this->peer() << ")";
+    }
+
     std::ostream& operator << (std::ostream& s, const Socket& socket)
     {
       socket.print(s);
@@ -42,8 +53,9 @@ namespace reactor
                                          const EndPoint& peer)
       : Super(sched)
       , _socket(0)
+      , _peer(peer)
     {
-      _connect(peer);
+      _connect(_peer);
     }
 
     template <typename AsioSocket>
@@ -51,6 +63,7 @@ namespace reactor
                                          AsioSocket* socket)
       : Super(sched)
       , _socket(socket)
+      , _peer(socket->remote_endpoint())
     {}
 
     template <typename AsioSocket>
@@ -98,6 +111,7 @@ namespace reactor
     void
     PlainSocket<AsioSocket>::_connect(const EndPoint& endpoint)
     {
+      ELLE_LOG_TRACE("%s: connecting to %s", *this, endpoint);
       _socket = new AsioSocket(this->scheduler().io_service());
       Connection<AsioSocket> connection(this->scheduler(), this, endpoint);
       try
@@ -125,7 +139,7 @@ namespace reactor
             if (error == boost::asio::error::not_connected)
               ; // It's ok to try to disconnect a non-connected socket.
             else
-              throw new Exception(error.message());
+              throw new Exception(scheduler(), error.message());
           }
         _socket->close();
         delete _socket;
@@ -166,6 +180,21 @@ namespace reactor
       Buffer buffer(data, strlen(data));
       return write(buffer);
     }
+
+    /*-----------.
+    | Properties |
+    `-----------*/
+
+    template <typename AsioSocket>
+    typename PlainSocket<AsioSocket>::EndPoint
+    PlainSocket<AsioSocket>::peer() const
+    {
+      return this->_peer;
+    }
+
+    /*------------------------.
+    | Explicit instantiations |
+    `------------------------*/
 
     template
     class PlainSocket<boost::asio::ip::tcp::socket>;
