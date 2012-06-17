@@ -46,7 +46,7 @@ namespace elle
     ///
     /// this value can obviously be changed to true to activate debugging.
     ///
-    const Boolean               Meta::Debug::Status = true;
+    const Boolean               Meta::Debug::Status = false;
 
     ///
     /// this value states if the debugging has been started or not.

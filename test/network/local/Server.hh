@@ -1,32 +1,21 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [fri nov 27 22:03:15 2009]
-//
-
 #ifndef ELLE_TEST_NETWORK_LOCAL_SERVER_HH
-#define ELLE_TEST_NETWORK_LOCAL_SERVER_HH
+# define ELLE_TEST_NETWORK_LOCAL_SERVER_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/network/fwd.hh>
 
-#include <elle/types.hh>
+# include <elle/test/network/local/Manifest.hh>
 
-#include <elle/test/network/local/Manifest.hh>
-
-#include <elle/idiom/Close.hh>
-# include <list>
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  include <list>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
   namespace test
   {
+    // XXX
+    using namespace elle::network;
 
 //
 // ---------- classes ---------------------------------------------------------
