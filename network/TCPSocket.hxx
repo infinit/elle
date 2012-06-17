@@ -113,10 +113,13 @@ namespace elle
 
               // report the remote error.
               transpose(report);
-              delete parcel;
             }
           else
-            escape("fiber was awaken by a packet with the wrong tag");
+            {
+              delete parcel;
+              parcel = nullptr;
+              escape("fiber was awaken by a packet with the wrong tag");
+            }
 
           delete parcel;
           // in any case, return an error from the Receive() method.
