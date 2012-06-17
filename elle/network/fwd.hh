@@ -5,8 +5,11 @@ namespace elle
 {
   namespace network
   {
-    class TCPSocket;
+
+    class LocalSocket;
     class Locus;
+    class TCPSocket;
+
   }
 }
 

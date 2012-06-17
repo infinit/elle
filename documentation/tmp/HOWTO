@@ -18,7 +18,7 @@ cp users/johndoe/johndoe.dic infinit.dic
 cd - > /dev/null
 
 echo 'creating network'
-./satellites/network/8network -c -n network -m remote -a johndoe &> 8network.log
+./satellites/network/8network -c -n network -m slug -a johndoe &> 8network.log
 cp ~/infinit.conf ~/.config/infinit/infinit.conf
 echo '127.0.0.1:12345' > ~/.config/infinit/networks/network/network.set
 
