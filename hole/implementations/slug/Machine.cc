@@ -249,6 +249,8 @@ namespace hole
               {
                 Neighbourhood::Scoutor  scoutor;
 
+                nucleus::Derivable derivable(address.component, block);
+
                 // for every scoutor.
                 for (scoutor = this->neighbourhood.container.begin();
                      scoutor != this->neighbourhood.container.end();
@@ -258,7 +260,7 @@ namespace hole
 
                     // send the block to the host.
                     host->socket->Send(
-                      elle::network::Inputs<TagPush>(address, block));
+                      elle::network::Inputs<TagPush>(address, derivable));
                     // XXX do not check the success!
 
                     // ignore the error messages and continue with the
@@ -373,6 +375,7 @@ namespace hole
               //
               {
                 Neighbourhood::Scoutor  scoutor;
+                nucleus::Derivable derivable(address.component, block);
 
                 // for every scoutor.
                 for (scoutor = this->neighbourhood.container.begin();
@@ -383,7 +386,7 @@ namespace hole
 
                     // send the block to the host.
                     host->socket->Send(
-                      elle::network::Inputs<TagPush>(address, block));
+                      elle::network::Inputs<TagPush>(address, derivable));
                     // XXX do not check the success!
 
                     // ignore the error messages and continue with the
@@ -452,30 +455,23 @@ namespace hole
                        scoutor != this->neighbourhood.container.end();
                        scoutor++)
                     {
-                      Host*                     host = scoutor->second;
-                      nucleus::ImmutableBlock*  b;
-
-                      // clone the block by relying on the factory.
-                      if (nucleus::Nucleus::Factory.Build(
-                            block.component,
-                            b) == elle::Status::Error)
-                        escape("unable to clone the block");
-
-                      auto ptr = std::unique_ptr<nucleus::ImmutableBlock>(b);
-                      //nucleus::Derivable<nucleus::Block>        derivable(*b);
+                      nucleus::Derivable derivable;
 
                       // request the host.
+                      Host*                     host = scoutor->second;
                       if (host->socket->Call(
                             elle::network::Inputs<TagPull>(address,
                                                   nucleus::Version::Any),
-                            elle::network::Outputs<TagBlock>(block)) ==
+                            elle::network::Outputs<TagBlock>(derivable)) ==
                           elle::Status::Ok)
                         {
+                          auto const& b =
+                            static_cast<nucleus::proton::ImmutableBlock const&>(derivable.block());
                           // validate the block.
-                          if (b->Validate(address) == elle::Status::Ok)
+                          if (b.Validate(address) == elle::Status::Ok)
                             {
                               // finally, store it locally.
-                              if (b->Store(Hole::Implementation->network,
+                              if (b.Store(Hole::Implementation->network,
                                            address) == elle::Status::Ok)
                                 break;
                             }
@@ -483,6 +479,7 @@ namespace hole
 
                       // ignore the error messages and continue with the
                       // next neighbour.
+                      // XXX no log at all in case of error ?
                       purge();
                     }
 
@@ -551,23 +548,19 @@ namespace hole
                        scoutor++)
                     {
                       Host*                     host = scoutor->second;
-                      nucleus::MutableBlock*    b;
 
-                      // duplicate the block in its original form.
-                      if (nucleus::Nucleus::Factory.Build(
-                            block.component,
-                            b) == elle::Status::Error)
-                        escape("unable to clone the block");
-
-                      auto ptr = std::unique_ptr<nucleus::MutableBlock>(b);
-                      //nucleus::Derivable<nucleus::Block>        derivable(*b);
+                      nucleus::Derivable        derivable;
 
                       // request the host.
                       if (host->socket->Call(
                             elle::network::Inputs<TagPull>(address, version),
-                            elle::network::Outputs<TagBlock>(*b)) ==
+                            elle::network::Outputs<TagBlock>(derivable)) ==
                           elle::Status::Ok)
                         {
+                          auto const& mb =
+                            static_cast<nucleus::proton::MutableBlock const&>(
+                                derivable.block());
+
                           // validate the block, depending on its component.
                           //
                           // indeed, the Object component requires as
@@ -576,26 +569,26 @@ namespace hole
                             {
                             case nucleus::ComponentObject:
                               {
-                                const nucleus::Object*  object =
-                                  static_cast<const nucleus::Object*>(b);
+                                nucleus::Object const&  object =
+                                  static_cast<nucleus::Object const&>(mb);
 
                                 // validate the object according to the
                                 // presence of a referenced access block.
-                                if (object->meta.access !=
+                                if (object.meta.access !=
                                     nucleus::Address::Null)
                                   {
                                     nucleus::Access     access;
 
                                     // load the access block.
                                     if (Hole::Pull(
-                                          object->meta.access,
+                                          object.meta.access,
                                           nucleus::Version::Last,
                                           access) == elle::Status::Error)
                                       escape("unable to load the access "
                                              "block");
 
                                     // validate the object, providing the
-                                    if (object->Validate(
+                                    if (object.Validate(
                                           address,
                                           access) == elle::Status::Error)
                                       escape("unable to validate the object");
@@ -603,7 +596,7 @@ namespace hole
                                 else
                                   {
                                     // validate the object.
-                                    if (object->Validate(
+                                    if (object.Validate(
                                           address,
                                           nucleus::Access::Null) ==
                                         elle::Status::Error)
@@ -616,7 +609,7 @@ namespace hole
                               {
                                 // validate the block through the common
                                 // interface.
-                                if (b->Validate(address) == elle::Status::Error)
+                                if (mb.Validate(address) == elle::Status::Error)
                                   escape("the block seems to be invalid");
 
                                 break;
@@ -630,8 +623,7 @@ namespace hole
 
                           // finally, since the block has been retrieved,
                           // store it locally.
-                          b->Store(Hole::Implementation->network,
-                                   address);
+                          mb.Store(Hole::Implementation->network, address);
                           // XXX do not check the result as the block to
                           // XXX store may not be the latest.
                         }
@@ -737,23 +729,17 @@ namespace hole
                            scoutor++)
                         {
                           Host*                     host = scoutor->second;
-                          nucleus::MutableBlock*    b;
-
-                          // duplicate the block in its original form.
-                          if (nucleus::Nucleus::Factory.Build(
-                                block.component,
-                                b) == elle::Status::Error)
-                            escape("unable to clone the block");
-
-                          auto ptr = std::unique_ptr<nucleus::MutableBlock>(b);
-                          //nucleus::Derivable<nucleus::Block>    derivable(*b);
+                          nucleus::Derivable        derivable;
 
                           // request the host.
                           if (host->socket->Call(
                                 elle::network::Inputs<TagPull>(address, version),
-                                elle::network::Outputs<TagBlock>(*b)) ==
+                                elle::network::Outputs<TagBlock>(derivable)) ==
                               elle::Status::Ok)
                             {
+                              auto const& mb=
+                                static_cast<nucleus::MutableBlock const&>(
+                                    derivable.block());
                               // validate the block, depending on its
                               // component.
                               //
@@ -763,26 +749,26 @@ namespace hole
                                 {
                                 case nucleus::ComponentObject:
                                   {
-                                    const nucleus::Object*  object =
-                                      static_cast<const nucleus::Object*>(b);
+                                    nucleus::Object const&  object =
+                                      static_cast<nucleus::Object const&>(derivable.block());
 
                                     // validate the object according to the
                                     // presence of a referenced access block.
-                                    if (object->meta.access !=
+                                    if (object.meta.access !=
                                         nucleus::Address::Null)
                                       {
                                         nucleus::Access     access;
 
                                         // load the access block.
                                         if (Hole::Pull(
-                                              object->meta.access,
+                                              object.meta.access,
                                               nucleus::Version::Last,
                                               access) == elle::Status::Error)
                                           escape("unable to load the access "
                                                  "block");
 
                                         // validate the object, providing the
-                                        if (object->Validate(
+                                        if (object.Validate(
                                               address,
                                               access) == elle::Status::Error)
                                           escape("unable to validate the "
@@ -791,7 +777,7 @@ namespace hole
                                     else
                                       {
                                         // validate the object.
-                                        if (object->Validate(
+                                        if (object.Validate(
                                               address,
                                               nucleus::Access::Null) ==
                                             elle::Status::Error)
@@ -805,7 +791,7 @@ namespace hole
                                   {
                                     // validate the block through the common
                                     // interface.
-                                    if (b->Validate(address) ==
+                                    if (derivable.block().Validate(address) ==
                                         elle::Status::Error)
                                       escape("the block seems to be invalid");
 
@@ -820,8 +806,7 @@ namespace hole
 
                               // finally, since the block has been retrieved,
                               // store it locally.
-                              b->Store(Hole::Implementation->network,
-                                       address);
+                              mb.Store(Hole::Implementation->network, address);
                               // XXX do not check the result as the block to
                               // XXX store may not be the latest i.e when
                               // XXX history is not active.
@@ -1299,11 +1284,13 @@ namespace hole
       /// this method stores the given block.
       ///
       elle::Status      Machine::Push(const nucleus::Address&   address,
-                                      const nucleus::Block&     block)
+                                      const nucleus::Derivable& derivable)
       {
         Host*           host;
 
         ELLE_LOG_TRACE("Push");
+        auto const& block =
+          static_cast<nucleus::Derivable const&>(derivable).block();
 
         // retrieve the host from the guestlist.
         if (this->guestlist.Retrieve(
@@ -1610,12 +1597,11 @@ namespace hole
             }
           }
 
-        //nucleus::Derivable<nucleus::Block>      derivable(address.component,
-        //                                                  *block);
+        nucleus::Derivable derivable(address.component, *block);
 
         // return the block.
         if (host->socket->Reply(
-              elle::network::Inputs<TagBlock>(*block)) == elle::Status::Error)
+              elle::network::Inputs<TagBlock>(derivable)) == elle::Status::Error)
           escape("unable to return the block");
 
         return elle::Status::Ok;
