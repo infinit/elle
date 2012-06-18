@@ -11,17 +11,15 @@ echo 'creating passport'
 ./satellites/passport/8passport -c &> 8passport.log
 
 echo 'creating user'
-./satellites/user/8user -c -n johndoe &> 8user.log
+./satellites/user/8user -c -n fistouille &> 8user.log
 cd ~/.config/infinit
-cp users/johndoe/johndoe.idy infinit.idy
-cp users/johndoe/johndoe.dic infinit.dic
+cp users/fistouille/fistouille.idy infinit.idy
+cp users/fistouille/fistouille.dic infinit.dic
 cd - > /dev/null
 
-echo 'creating network'
-./satellites/network/8network -c -n network1 -m slug -a johndoe &> 8network.log
-echo '127.0.0.1:12345 127.0.0.1:12346' > ~/.config/infinit/networks/network1/network2.set
-
-./satellites/network/8network -c -n network2 -m slug -a johndoe &> 8network.log
-echo '127.0.0.1:12345 127.0.0.1:12346' > ~/.config/infinit/networks/network2/network2.set
+./satellites/network/8network -c -n local -m local -a fistouille &> 8network.log
+./satellites/network/8network -c -n demo -m slug -a fistouille &> 8network.log
+./satellites/network/8network -c -n slug -m slug -a fistouille &> 8network.log
+./satellites/network/8network -c -n remote -m remote -a fistouille &> 8network.log
 
 cp ~/infinit.conf ~/.config/infinit/infinit.conf
