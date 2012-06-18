@@ -20,6 +20,8 @@
 
 #include <lune/Lune.hh>
 
+#include <nucleus/Derivable.hh>
+
 #include <hole/implementations/slug/Cluster.hh>
 #include <hole/implementations/slug/Bank.hh>
 #include <hole/implementations/remote/Manifest.hh>
@@ -113,12 +115,12 @@ message(hole::implementations::slug::TagBank,
 
 message(hole::implementations::slug::TagPush,
         parameters(nucleus::Address&,
-                   nucleus::Block&));
+                   nucleus::Derivable&));
 message(hole::implementations::slug::TagPull,
         parameters(nucleus::Address&,
                    nucleus::Version&));
 message(hole::implementations::slug::TagBlock,
-        parameters(nucleus::Block&));
+        parameters(nucleus::Derivable&));
 message(hole::implementations::slug::TagWipe,
         parameters(nucleus::Address&));
 

@@ -4,6 +4,7 @@
 # include <elle/types.hh>
 # include <reactor/network/tcp-server.hh>
 # include <nucleus/Nucleus.hh>
+# include <nucleus/Derivable.hh>
 # include <lune/Lune.hh>
 
 # include <hole/implementations/slug/Guestlist.hh>
@@ -82,7 +83,7 @@ namespace hole
         elle::Status            Synchronised();
 
         elle::Status            Push(const nucleus::Address&,
-                                     const nucleus::Block&);
+                                     const nucleus::Derivable&);
         elle::Status            Pull(const nucleus::Address&,
                                      const nucleus::Version&);
         elle::Status            Wipe(const nucleus::Address&);
