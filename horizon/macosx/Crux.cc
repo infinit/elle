@@ -272,7 +272,7 @@ namespace horizon
           }
         case nucleus::GenreFile:
           {
-            nucleus::Trait*     trait;
+            nucleus::neutron::Trait* trait;
 
             stat->st_mode = S_IFREG;
 

@@ -272,7 +272,7 @@ namespace horizon
       //        the pointer would not be NULL. there does not seem to be much
       //        to do since we do not control FUSE internal loop and logic.]
 
-      return elle::StatusOk;
+      return elle::Status::Ok;
     }
 
     ///
