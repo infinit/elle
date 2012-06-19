@@ -218,12 +218,10 @@ Status PrivateKey::Decrypt(elle::cryptography::Code const&    in,
   // (i)
   try
     {
-      std::cout << "<<<Load code encrypted secret key / data\n";
       elle::utility::WeakBuffer(
           in.region.contents,
           in.region.size
       ).Reader() >> key >> data;
-      std::cout << ">>>Load\n";
     }
   catch (std::runtime_error const& err)
     {
@@ -247,7 +245,6 @@ Status PrivateKey::Decrypt(elle::cryptography::Code const&    in,
           key.region.size) <= 0)
     escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
-    std::cout << "Got size: " << size << std::endl;
     elle::utility::Buffer buf(size);
 
     // perform the decrypt operation.
@@ -361,7 +358,6 @@ Status PrivateKey::Encrypt(elle::utility::WeakBuffer const& in,
     size_t                  size;
     elle::utility::Buffer   buf;
 
-    std::cout << "Encrypt secret key\n";
     try
       {
         buf.Writer() << secret;
@@ -408,9 +404,7 @@ Status PrivateKey::Encrypt(elle::utility::WeakBuffer const& in,
 
     try
       {
-        std::cout << "<<<SAVE encrypted secret key / data\n";
         buf.Writer() << key << data;
-        std::cout << ">>>SAVE " << buf.Size() << "\n";
       }
     catch (std::exception const& err)
       {
