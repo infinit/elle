@@ -29,7 +29,6 @@ namespace elle
         try
           {
             buf.Writer() << in;
-            std::cout << "to encrypt size: " << buf.Size() << std::endl;
           }
         catch (std::exception const& err)
           {
