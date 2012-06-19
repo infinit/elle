@@ -142,7 +142,7 @@ namespace elle
             }
           catch (std::exception const& err)
             {
-              etc::log::warn("Couldn't parse header:", err.what());
+              elle::log::warn("Couldn't parse header:", err.what());
               return nullptr;
             }
 
