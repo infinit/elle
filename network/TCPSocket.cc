@@ -125,7 +125,7 @@ namespace elle
           if (!this->_buffer_size)
             {
               ELLE_LOG_TRACE("%s: no data, bail out.", *this);
-              return 0;
+              return nullptr;
             }
           ELLE_LOG_TRACE("%s: %s bytes available.", *this, _buffer_size);
 
@@ -135,15 +135,23 @@ namespace elle
           // allocate the parcel.
           auto parcel = std::unique_ptr<Parcel>(new Parcel);
 
-          // extract the header.
-          reader >> *(parcel->header);
+          try
+            {
+              // extract the header.
+              reader >> *(parcel->header);
+            }
+          catch (std::exception const& err)
+            {
+              etc::log::warn("Couldn't parse header:", err.what());
+              return nullptr;
+            }
 
           // XXX[Check if the size is plausible]
 
           // Check if there is enough data available.
           if (reader.Stream().BytesLeft() < parcel->header->size)
             {
-              elle::log::warn(*this, "XXX: Ignore header ?!");
+              ELLE_LOG_TRACE("%s: not enough data for body, bail out.", *this);
               return 0;
             }
 
