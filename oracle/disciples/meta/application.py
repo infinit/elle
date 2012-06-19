@@ -15,25 +15,19 @@ class Application(object):
     """
 
     _urls = (
-        '/', 'Root',
-        '/account', 'Account',
-        #'/user/(.+)', 'User',
-        '/login', 'Login',
-        '/logout', 'Logout',
-        '/register', 'Register',
-        '/device/(.+)', 'Device',
-        '/devices', 'Device',
-        '/network/(.+)/(.+)', 'Network',
-        '/network/(.+)', 'Network',
-        '/networks', 'Network',
+        '/',                    'Root',
+        '/me',                  'User',
+        '/user/(.+)',           'User',
+        '/device/(.+)',         'Device',
+        '/devices',             'Device',
+        '/network/(.+)/(.+)',   'Network',
+        '/network/(.+)',        'Network',
+        '/networks',            'Network',
     )
 
     _views = {
         'Root': pages.Root,
-        'Login': pages.Login,
-        'Logout': pages.Logout,
-        'Register': pages.Register,
-        'Account': pages.Account,
+        'User': pages.User,
         'Device': pages.Device,
         'Network': pages.Network,
     }

@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 
 import json
-import pymongo.objectid
 import traceback
 import web
 
@@ -94,7 +93,7 @@ class Network(Page):
             return self.success(res)
         else:
             network = database.networks.find_one({
-                '_id': pymongo.objectid.ObjectId(id),
+                '_id': database.ObjectId(id),
                 'owner': self.user['_id'],
             })
             network.pop('owner')
@@ -234,7 +233,7 @@ class Network(Page):
         if user_id == str(self.user['_id']):
             return False
         return database.users.find_one({
-            '_id': pymongo.objectid.ObjectId(user_id),
+            '_id': database.ObjectId(user_id),
         }) is not None
 
     def DELETE(self, id):
@@ -250,7 +249,7 @@ class Network(Page):
             })
         database.users.save(self.user)
         database.networks.find_and_modify({
-            '_id': pymongo.objectid.ObjectId(id),
+            '_id': database.ObjectId(id),
             'owner': self.user['_id'], #not required
         }, remove=True)
         return  self.success({

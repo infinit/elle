@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
 
-import pymongo.objectid
 import json
 
 import metalib
@@ -21,16 +20,20 @@ class Device(Page):
             -> {
                 '_id': "id",
                 'name': "pretty name",
-                'ip': 'address',
-                'port': 1912 # this is a number
+                'addresses': [
+                    {'ip': 'ip address 1', 'port': 1912},
+                    ...
+                ],
                 'passport': "passport string",
             }
 
     Create a new device
         POST /device {
             'name': 'pretty name', # required
-            'ip': 'address', # required
-            'port': port, # required
+            'addresses': [
+                {'ip': 'ip address 1', 'port': 1912},
+                ...
+            ],
         }
             -> {
                 'success': True,
@@ -42,8 +45,10 @@ class Device(Page):
         POST /device {
             '_id': "id",
             'name': 'pretty name', # optional
-            'ip': 'address', # optional
-            'port': port, #optional
+            'addresses': [ # optional
+                {'ip': 'ip address 1', 'port': 1912},
+                ...
+            ],
         }
             -> {
                 'success': True,
@@ -64,7 +69,7 @@ class Device(Page):
             return self.success({'devices': self.user.get('devices', [])})
         else:
             device = database.devices.find_one({
-                '_id': pymongo.objectid.ObjectId(id),
+                '_id': database.ObjectId(id),
                 'owner': self.user['_id'],
             })
             device.pop('owner')
@@ -81,21 +86,38 @@ class Device(Page):
 
         return func(device)
 
+    def _parse_addresses(self, addresses):
+        parsed_addresses = []
+        for i, addr in enumerate(addresses):
+            ip = addr.get('ip', '').strip()
+            if not ip:
+                raise Exception(
+                    "address %d: You have to provide a valid IP" % i
+                )
+            port = int(addr.get('port', 0))
+            if not port:
+                raise Exception(
+                    "address %d: You have to provide a valid port" % i
+                )
+            parsed_addresses.append({'ip': ip, 'port': port})
+        return parsed_addresses
+
     def _create(self, device):
         name = device.get('name', '').strip()
         if not name:
             return self.error("You have to provide a valid device name")
-        ip = device.get('ip', '').strip()
-        if not ip:
-            return self.error("You have to provide a valid device ip address")
-        port = int(device.get('port', 0))
-        if not port:
-            return self.error("You have to provide a valid port")
+        addresses = device.get('addresses', [])
+        if not addresses:
+            return self.error("You have to provide at least on address")
+
+        try:
+            parsed_addresses = self._parse_addresses(addresses)
+        except Exception, err:
+            return self.error(str(err))
 
         device = {
             'name': name,
-            'ip': ip,
-            'port': port,
+            'addresses': parsed_addresses,
             'owner': self.user['_id'],
         }
 
@@ -123,20 +145,20 @@ class Device(Page):
         if not id in self.user['devices']:
             raise web.Forbidden("This network does not belong to you")
         to_save = database.devices.find_one({
-            '_id': pymongo.objectid.ObjectId(id)
+            '_id': database.ObjectId(id)
         })
         if 'name' in device:
             name = device['name'].strip()
             if not name:
                 return self.error("You have to provide a valid device name")
             to_save['name'] = name
-        if 'ip' in device:
-            ip = device['ip'].strip()
-            if not ip:
-                return self.error("You have to provide a valid device ip address")
-            to_save['ip'] = ip
-        if 'port' in device:
-            to_save['port'] = int(device['port'])
+        if 'addresses' in device:
+            addresses = device['addresses']
+            try:
+                addresses = self._parse_addresses(device['addresses'])
+            except Exception, err:
+                return self.error(str(err))
+            to_save['addresses'] = addresses
         id = database.devices.save(to_save)
         return self.success({
             'updated_device_id': str(id),
@@ -156,7 +178,7 @@ class Device(Page):
             })
         database.users.save(self.user)
         database.devices.find_and_modify({
-            '_id': pymongo.objectid.ObjectId(id),
+            '_id': database.ObjectId(id),
             'owner': self.user['_id'], #not required
         }, remove=True)
         return self.success({

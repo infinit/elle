@@ -17,25 +17,30 @@ if __name__ == '__main__':
     email = 'testkaka@infinit.io'
     password = 'pifpif'
 
-    res = client.post('/login', {'email': email, 'password': password})
+    res = client.post('/user/login', {'email': email, 'password': password})
     if not res['success']:
-        res = pythia.Admin().post('/register', {'fullname': 'Mister Test', 'email': email, 'password': password})
+        res = pythia.Admin().post('/user/register', {'fullname': 'Mister Test', 'email': email, 'password': password})
         if not res['success']:
             raise Exception("Cannot register: " + res['error'])
-        res = client.post('/login', {'email': email, 'password': password})
+        res = client.post('/user/login', {'email': email, 'password': password})
         if not res['success']:
             print res
             raise Exception("Cannot login!")
     session['token'] = res['token']
     print "Got token:", res['token']
 
-    account = client.get('/account')
+    account = client.get('/me')
     print "account:", account
     assert account['success'] is True
 
     # Testing devices
     if not client.get('/devices')['devices']:
-        res = client.post('/devices', {'name': "New device", "ip_address": "[::1]"})
+        res = client.post('/devices', {
+            'name': "New device",
+            'addresses': [
+                {"ip": "127.0.0.1", 'port':1234},
+            ],
+        })
         print res
         assert res['success'] is True
         print "added device", res['created_device_id']
@@ -79,7 +84,11 @@ if __name__ == '__main__':
     assert network['name'] == "THIS IS A NEW `network` NAME"
     print "updated network", network
 
-    res = client.post('/register', {'fullname': 'Mister Test friend', 'email': "friend@test.net", 'password': password})
+    res = client.post('/user/register', {
+        'fullname': 'Mister Test friend',
+        'email': "friend@test.net",
+        'password': password
+    })
 
-    assert client.get('/logout')['success'] is True
+    assert client.get('/user/logout')['success'] is True
 

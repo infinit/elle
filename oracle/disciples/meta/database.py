@@ -1,7 +1,10 @@
 # -*- encoding: utf-8 -*-
 
 import pymongo
-import pymongo.objectid
+try:
+    from pymongo.objectid import ObjectId
+except ImportError:
+    from bson.objectid import ObjectId
 
 """
 Define database collections and their constraints
@@ -23,11 +26,9 @@ users.ensure_index(
     kwags={'unique': True}
 )
 
-def ObjectId(_id): return pymongo.objectid.ObjectId(_id)
-
 # functions
 def byId(collection, _id):
     """
     Get an object from collection `collection' with its id `_id'
     """
-    return collection.find_one({'_id': pymongo.objectid.ObjectId(_id)})
+    return collection.find_one({'_id': ObjectId(_id)})

@@ -5,7 +5,11 @@ SessionStore implementation for mongoDB
 """
 
 from datetime import datetime
-from pymongo.binary import Binary
+try:
+    from pymongo.binary import Binary
+except:
+    from bson.binary import Binary
+
 from re import _pattern_type
 from time import time
 from web.session import Store
