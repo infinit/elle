@@ -25,8 +25,8 @@ BUILD = os.environ.get(
 )
 
 os.environ['INFINIT_RANDOM_SOURCE'] = '/dev/urandom'
-os.environ['ELLE_LOG_COMPONENTS'] = '*'
-MONITOR_SLEEP=1
+os.environ['ELLE_LOG_COMPONENTS'] = ''
+MONITOR_SLEEP=10
 
 def monitor(p, cmd):
   while p.poll() == None:
@@ -297,20 +297,26 @@ class NetworkPool:
         self.mount_points = []
 
 
+import hashlib
 
 def simple_file(mount_points, fname, size=4096):
     print("simple file of", size, "bytes")
     first = mount_points[0]
     others = mount_points[1:]
     assert all(m.alive for m in mount_points)
+    md5 = hashlib.md5()
     with open(first.file_path(fname), 'wb') as f:
         with open('/dev/urandom', 'rb') as src:
             print("Read from random source")
-            buf = src.read(size) # XXX
-            print("Read from random source: DONE")
-        print("Write", fname, "on node 1")
-        f.write(buf)
-        print("Write", fname, "on node 1: DONE")
+            i = 0
+            while i < size:
+                if size - i > 4096:
+                    buf = src.read(4096)
+                else:
+                    buf = src.read(size - i)
+                f.write(buf)
+                md5.update(buf)
+                i += 4096 # we dont care
 
     assert all(m.alive for m in mount_points)
     tries = 0
@@ -326,14 +332,27 @@ def simple_file(mount_points, fname, size=4096):
     for m in mount_points:
         f_size = os.path.getsize(m.file_path(fname))
         print(fname, "size =", f_size)
-        assert f_size == size
+        if f_size != size:
+            raise Exception(
+                "Found size (%d) differs from written size (%d)" % (
+                    f_size, size
+            ))
         with open(m.file_path(fname), 'rb') as f:
-            assert f.read(size) == buf
+            other_md5 = hashlib.md5()
+            while True:
+                data = f.read(4096)
+                if not data: break
+                other_md5.update(data)
+            if md5.hexdigest() != other_md5.hexdigest():
+                raise Exception("Found md5 (%s) differs from the original (%s)" % (
+                    other_md5.hexdigest(), md5.hexdigest()
+                ))
 
 
 
-def test_all(mount_points, test_timeout=10):
-    for size in [4096, 4096 * 1024, 4096 * 1024 * 1024]:
+
+def test_all(mount_points, test_timeout=100):
+    for size in [4096, 4096 * 1024]:
         fname = 'test-file-%d' % size
         for f in [simple_file]:
             try:
