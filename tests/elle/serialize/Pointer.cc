@@ -34,7 +34,7 @@ ELLE_SERIALIZE_LOAD_CONSTRUCT(A, archive, ptr)
   std::string biet;
   archive >> version >> i >> j >> biet;
   assert(version.version == 0);
-  new (ptr) A(i, j, biet);
+  ptr = new A(i, j, biet);
 }
 
 int main()
