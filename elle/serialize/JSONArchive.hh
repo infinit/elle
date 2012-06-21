@@ -142,6 +142,8 @@ public:
 
 }} // !namespace elle::serialize
 
+# include "JSONArchive.hxx"
+
 #endif /* ! JSONARCHIVE_HH */
 
 

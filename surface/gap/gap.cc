@@ -5,14 +5,15 @@
 #include "gap.h"
 #include "State.hh"
 
-extern "C" {
+extern "C"
+{
 
 #define __TO_C(st)    reinterpret_cast<gap_state_t*>(st)
 #define __TO_CPP(st)  reinterpret_cast<surface::gap::State*>(st)
 
     gap_state_t* gap_new()
     {
-      return __TO_C(new (std::nothrow) surface::gap::State());
+      return __TO_C(new surface::gap::State());
     }
 
     void gap_free(gap_state_t* state)
@@ -50,4 +51,23 @@ extern "C" {
       return nullptr;
     };
 
+// automate cpp wrapping
+# define __WRAP_CPP(_state_, _func_, ...)                                     \
+    assert(_state_ != nullptr);                                               \
+    try                                                                       \
+      { __TO_CPP(_state_)->_func_(__VA_ARGS__); }                             \
+    catch (std::exception const& err)                                         \
+    {                                                                         \
+        elle::log::error(#_func_ " error:", err.what());                      \
+        return -1;                                                            \
+    }                                                                         \
+    return 0                                                                  \
+  /**/
+
+    int gap_login(gap_state_t* state,
+                  char const* email,
+                  char const* password)
+    {
+      __WRAP_CPP(state, login, email, password);
+    }
 } // ! extern "C"

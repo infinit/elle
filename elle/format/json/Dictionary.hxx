@@ -99,7 +99,21 @@ namespace elle { namespace format { namespace json {
             inline bool operator !=(T const& val) const
               { return !(*this == val); }
 
-          operator Object const&()
+          operator bool() const
+            {
+              return *this == true;
+            }
+
+          template<typename T>
+            inline void Load(T& val) const
+            {
+              if (_value == nullptr)
+                throw Dictionary::KeyError(_key);
+              return _value->Load(val);
+            }
+
+
+          operator Object const&() const
             {
               if (_value == nullptr)
                 throw Dictionary::KeyError(_key);

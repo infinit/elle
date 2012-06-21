@@ -1,6 +1,8 @@
 #ifndef  SURFACE_GAP_GAP_H
 # define SURFACE_GAP_GAP_H
 
+# include "api.h"
+
 # ifdef __cplusplus
 extern "C" {
 # endif
@@ -15,6 +17,9 @@ extern "C" {
 
     char const* gap_path_to_network(gap_state_t* state, char const* path);
 
+    int gap_login(gap_state_t* state,
+                  char const* email,
+                  char const* password);
 
 # ifdef __cplusplus
 } // ! extern "C"

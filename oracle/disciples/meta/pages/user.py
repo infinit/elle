@@ -54,14 +54,14 @@ class User(Page):
             return self._me()
         elif action == 'logout':
             return self._logout()
-        raise Exception("Unknown action!")
+        raise Exception("Unknown action: %s" % str(action))
 
     def POST(self, action):
         if action == 'register':
             return self._register()
         elif action == 'login':
             return self._login()
-        raise Exception("Unknown action!")
+        raise Exception("Unknown action: %s" % str(action))
 
     def _logout(self):
         if not self.user:

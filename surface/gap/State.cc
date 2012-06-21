@@ -14,6 +14,7 @@
 
 #include <plasma/common/resources.hh>
 
+#include "API.hh"
 #include "State.hh"
 
 namespace surface
@@ -21,15 +22,29 @@ namespace surface
   namespace gap
   {
 
+    namespace
+    {
+      std::string getenv(char const* var)
+      {
+        char const* res = ::getenv(var);
+        if (res == nullptr)
+          return "";
+        return res;
+      }
+    }
+
+    namespace json = elle::format::json;
+
     struct Network
     {
       std::string name;
     };
 
     State::State()
-      : _infinit_home(::getenv("INFINIT_HOME"))
+      : _infinit_home(getenv("INFINIT_HOME"))
       , _networks()
       , _networks_dirty(true)
+      , _api(new API)
     {
       if (this->_infinit_home.empty())
         {
@@ -98,6 +113,30 @@ namespace surface
         throw std::runtime_error("Couldn't connect to the watchdog");
     }
 
+    // XXX no hash occurs
+    std::string State::_hash_password(std::string const& email,
+                                      std::string const& password)
+    {
+      return password;
+    }
+
+    void State::login(std::string const& email, std::string const& password)
+    {
+      json::Dictionary rec;
+      rec["email"] = email;
+      rec["password"] = this->_hash_password(email, password);
+      auto res = this->_api->post("/user/login", rec);
+      std::cerr << "GOT:" << res->repr() << std::endl;
+      auto& dict = dynamic_cast<json::Dictionary&>(*res);
+      if (!dict["success"])
+        {
+          std::string str_error;
+          dict["error"].Load(str_error);
+          throw std::runtime_error(
+            "Login error:" + str_error
+          );
+        }
+    }
   }
 }
 
