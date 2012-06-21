@@ -1,8 +1,6 @@
 #ifndef  SURFACE_GAP_GAP_H
 # define SURFACE_GAP_GAP_H
 
-# include "api.h"
-
 # ifdef __cplusplus
 extern "C" {
 # endif
