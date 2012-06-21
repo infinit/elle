@@ -4,6 +4,8 @@
 #include <stdexcept>
 #include <string>
 
+#include <elle/log.hh>
+
 #include "Array.hh"
 #include "Bool.hh"
 #include "Dictionary.hh"
@@ -12,6 +14,8 @@
 #include "Integer.hh"
 #include "Parser.hh"
 #include "String.hh"
+
+ELLE_LOG_TRACE_COMPONENT("elle.format.json.Parser");
 
 using namespace elle::format::json;
 
@@ -31,6 +35,7 @@ std::string Parser<T>::Error::_getString(StreamType& in)
 template<typename T>
 typename Parser<T>::ObjectPtr Parser<T>::Parse(StreamType& input)
 {
+  ELLE_LOG_TRACE_SCOPE("Parsing json from stream");
   ObjectPtr res;
   if (!_ReadJSONValue(input, res))
     throw std::runtime_error("Couldn't read any JSON value");
