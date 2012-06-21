@@ -40,6 +40,7 @@ Application::~Application()
 
 int Application::Exec()
 {
+#ifndef PLASMA_UPDATER_NO_GUI
   if (!this->_infinitHome.exists())
     {
       this->_licenseDialog.show();
@@ -53,6 +54,7 @@ int Application::Exec()
       );
     }
   else
+#endif
     {
       std::cerr << "Infinit home already exists !\n";
       this->_StartUpdate();
@@ -92,6 +94,9 @@ void Application::_CancelUpdate()
 
 void Application::_OnReleaseUpdated(bool success)
 {
+#ifdef PLASMA_UPDATER_NO_GUI
+  this->exit(success ? 0 : 1);
+#endif
   if (!success)
     {
       std::cerr << "Release was not updated correctly\n";

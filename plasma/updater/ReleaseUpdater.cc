@@ -60,8 +60,9 @@ void ReleaseUpdater::Start()
 {
   std::cout << "Checking out " << INFINIT_RELEASE_URI << std::endl;
   assert(_infinitHome.exists());
-
+#ifndef PLASMA_UPDATER_NO_GUI
   this->_updateDialog.show();
+#endif
 
   auto reply = this->_networkManager.get(
       QNetworkRequest(QUrl(INFINIT_RELEASE_URI))

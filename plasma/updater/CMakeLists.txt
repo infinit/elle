@@ -29,3 +29,13 @@ target_link_libraries(
 	${INFINIT_QJSON_SHARED_LIBRARIES}
   ${Boost_LIBRARIES}
 )
+
+add_definitions(-DPLASMA_UPDATER_NO_GUI)
+add_executable(8updater-nogui ${updater_srcs} ${updater_moc_srcs} ${updater_ui_hdrs})
+target_link_libraries(
+  8updater-nogui
+	metaclient elle lune infinit
+	${QT_LIBRARIES}
+	${INFINIT_QJSON_SHARED_LIBRARIES}
+  ${Boost_LIBRARIES}
+)
