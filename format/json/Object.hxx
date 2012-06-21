@@ -93,7 +93,7 @@ namespace elle { namespace format { namespace json {
         {
           typedef typename detail::SelectJSONType<T>::type SelfType;
           if (auto self = dynamic_cast<SelfType const*>(this))
-            return *self == other;
+            return *self == SelfType(other);
           return false;
         }
 

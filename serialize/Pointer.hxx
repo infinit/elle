@@ -60,7 +60,7 @@ namespace elle { namespace serialize {
       template<typename Archive>
         static inline void LoadConstruct(Archive&, Pointer<T1>*, unsigned int)
         {
-          static_assert(Archive::mode, "You Cannot a pointer container !");
+          static_assert(Archive::mode, "You cannot construct a pointer container !");
         }
     };
 
@@ -100,7 +100,7 @@ namespace elle { namespace serialize {
       template<typename Archive>
         static inline void LoadConstruct(Archive&, AlivePointer<T1>*, unsigned int)
         {
-          static_assert(Archive::mode, "You Cannot a pointer container !");
+          static_assert(Archive::mode, "You cannot construct a pointer container !");
         }
     };
 
