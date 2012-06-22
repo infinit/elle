@@ -103,7 +103,7 @@ namespace elle
           this->_patterns = new std::vector<std::string>();
 
           std::vector<std::string> res;
-          static char const* components_str = getenv("ELLE_LOG_COMPONENTS");
+          static char const* components_str = ::getenv("ELLE_LOG_COMPONENTS");
           if (components_str == nullptr)
               return *this->_patterns;
 
@@ -149,7 +149,7 @@ namespace elle
                           char const* function,
                           const std::string& msg)
       {
-        static bool const location = getenv("ELLE_LOG_LOCATIONS");
+        static bool const location = ::getenv("ELLE_LOG_LOCATIONS") != nullptr;
         if (location)
           {
             static boost::format fmt("%s:%s: %s (%s)");
@@ -197,7 +197,7 @@ namespace elle
         );
 
         boost::posix_time::ptime time;
-        static const bool universal = getenv("ELLE_LOG_TIME_UNIVERSAL");
+        static const bool universal = ::getenv("ELLE_LOG_TIME_UNIVERSAL") != nullptr;
         if (universal)
           time = boost::posix_time::second_clock::universal_time();
         else
