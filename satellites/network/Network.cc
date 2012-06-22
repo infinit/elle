@@ -360,7 +360,7 @@ namespace satellite
     operation = Network::OperationUnknown;
 
     // allocate a new parser.
-    Infinit::Parser = new elle::Parser(argc, argv);
+    Infinit::Parser = new elle::utility::Parser(argc, argv);
 
     // specify a program description.
     if (Infinit::Parser->Description(Infinit::Copyright) == elle::Status::Error)
@@ -372,7 +372,7 @@ namespace satellite
           'h',
           "help",
           "display the help",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -381,7 +381,7 @@ namespace satellite
           'c',
           "create",
           "create a new network",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -390,7 +390,7 @@ namespace satellite
           'd',
           "destroy",
           "destroy an existing network",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -399,7 +399,7 @@ namespace satellite
           'x',
           "information",
           "display information regarding a network",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -408,7 +408,7 @@ namespace satellite
           'i',
           "identifier",
           "specify the network identifier",
-          elle::Parser::KindOptional) == elle::Status::Error)
+          elle::utility::Parser::KindOptional) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -417,7 +417,7 @@ namespace satellite
           'n',
           "name",
           "specify the network name",
-          elle::Parser::KindRequired) == elle::Status::Error)
+          elle::utility::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -426,7 +426,7 @@ namespace satellite
           'm',
           "model",
           "specify the network model: Local, Remote, Kool etc.",
-          elle::Parser::KindRequired) == elle::Status::Error)
+          elle::utility::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -435,7 +435,7 @@ namespace satellite
           'a',
           "administrator",
           "specify the network administrator",
-          elle::Parser::KindRequired) == elle::Status::Error)
+          elle::utility::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
     // parse.

@@ -380,7 +380,7 @@ namespace satellite
     operation = Dictionary::OperationUnknown;
 
     // allocate a new parser.
-    Infinit::Parser = new elle::Parser(argc, argv);
+    Infinit::Parser = new elle::utility::Parser(argc, argv);
 
     // specify a program description.
     if (Infinit::Parser->Description(Infinit::Copyright) == elle::Status::Error)
@@ -392,7 +392,7 @@ namespace satellite
           'h',
           "help",
           "display the help",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -401,7 +401,7 @@ namespace satellite
           'a',
           "add",
           "add a dictionary record",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -410,7 +410,7 @@ namespace satellite
           'r',
           "remove",
           "remove a dictionary record",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -419,7 +419,7 @@ namespace satellite
           's',
           "show",
           "show all the dictionary records",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -428,7 +428,7 @@ namespace satellite
           'd',
           "dump",
           "dump a specific dictionary record",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -437,7 +437,7 @@ namespace satellite
           'u',
           "user",
           "indicate the type of the record to be a user",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -446,7 +446,7 @@ namespace satellite
           'g',
           "group",
           "indicate the type of the record to be a group",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -455,7 +455,7 @@ namespace satellite
           'n',
           "name",
           "specify the local UNIX/Windows/etc. name of the user/group entry",
-          elle::Parser::KindRequired) == elle::Status::Error)
+          elle::utility::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -464,7 +464,7 @@ namespace satellite
           'i',
           "identifier",
           "specify the user/group Infinit base64 identifier",
-          elle::Parser::KindRequired) == elle::Status::Error)
+          elle::utility::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
     // parse.

@@ -1,4 +1,3 @@
-
 #include <elle/network/Header.hh>
 #include <elle/utility/Buffer.hh>
 #include <elle/standalone/Report.hh>
@@ -14,8 +13,8 @@
 #include <elle/network/Network.hh>
 
 #include <elle/idiom/Close.hh>
-#include <elle/printf.hh>
 #include <elle/log.hh>
+#include <elle/print.hh>
 #include <elle/idiom/Open.hh>
 
 ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
@@ -91,89 +90,31 @@ namespace elle
         }
     }
 
-    void
-    TCPSocket::ReadData()
-    {
-      ELLE_LOG_TRACE("%s: read data.", *this)
-        {
-          // Grow the buffer if needed.
-          if (_buffer_size == _buffer_capacity)
-            {
-              ELLE_LOG_TRACE("%s: buffer is full (%s bytes), growing.",
-                             *this, _buffer_size);
-              _buffer_capacity += BUFSIZ;
-              _buffer = reinterpret_cast<unsigned char*>(realloc(_buffer, _buffer_capacity));
-            }
-
-          // Read data.
-          {
-            ELLE_LOG_TRACE("%s: reading data ...", *this);
-            reactor::network::Buffer buffer(_buffer + _buffer_size,
-                                            _buffer_capacity - _buffer_size);
-            reactor::network::Size size = this->_socket->read_some(buffer);
-            _buffer_size += size;
-            ELLE_LOG_TRACE("%s: ... %s bytes read.", *this, size);
-          }
-        }
-    }
-
     Parcel*
     TCPSocket::Read()
     {
-      ELLE_LOG_TRACE("%s: read parcel.", *this)
-        {
-          if (!this->_buffer_size)
-            {
-              ELLE_LOG_TRACE("%s: no data, bail out.", *this);
-              return nullptr;
-            }
-          ELLE_LOG_TRACE("%s: %s bytes available.", *this, _buffer_size);
+      ELLE_LOG_TRACE_SCOPE("%s: read parcel.", *this);
 
-          elle::utility::WeakBuffer packet(this->_buffer, this->_buffer_size);
-          auto reader = packet.Reader();
+      infinit::protocol::PacketStream ps(*_socket);
+      infinit::protocol::Packet packet(ps.read());
+      unsigned char* copy = (unsigned char*)malloc(packet._data_size);
+      memcpy(copy, packet._data, packet._data_size);
+      // Region frame(copy, packet._data_size);
+      elle::utility::WeakBuffer buffer(copy, packet._data_size);
+      auto reader = buffer.Reader();
 
-          // allocate the parcel.
-          auto parcel = std::unique_ptr<Parcel>(new Parcel);
+      // Allocate the parcel.
+      Parcel* parcel = new Parcel;
 
-          try
-            {
-              // extract the header.
-              reader >> *(parcel->header);
-            }
-          catch (std::exception const& err)
-            {
-              elle::log::warn("Couldn't parse header:", err.what());
-              return nullptr;
-            }
+      // Extract the header.
+      ELLE_LOG_TRACE("%s: read tag and event.", *this)
+        reader >> parcel->header->tag >> parcel->header->event;
 
-          // XXX[Check if the size is plausible]
+      // Extract the data.
+      ELLE_LOG_TRACE("%s: read data.", *this)
+        reader >> *parcel->data;
 
-          // Check if there is enough data available.
-          if (reader.Stream().BytesLeft() < parcel->header->size)
-            {
-              ELLE_LOG_TRACE("%s: not enough data for body, bail out.", *this);
-              return 0;
-            }
-
-
-          ELLE_LOG_TRACE("%s: reading parcel data at offset %u", *this, reader.Stream().Offset())
-            {
-              reader >> *(parcel->data);
-              ELLE_LOG_TRACE("%s: new offset is %u, and buf size is %u",
-                             *this, reader.Stream().Offset(), parcel->data->Size());
-            }
-
-          unsigned int eaten = reader.Stream().Offset();
-          ::memmove(_buffer, _buffer + eaten, _buffer_size - eaten);
-          _buffer_size -= eaten;
-
-          ELLE_LOG_TRACE("%s: return a parcel (%s bytes eaten).",
-                         *this, eaten);
-
-          return parcel.release();
-        }
-      assert(false && "never reached");
-      throw false;
+      return parcel;
     }
 
 //
@@ -190,94 +131,75 @@ namespace elle
         {
           while (true)
             {
-              ELLE_LOG_TRACE("%s: handle packets.", *this)
+              Parcel* parcel = this->Read();
+              ELLE_LOG_TRACE_SCOPE("%s: got a parcel with tag %s, event %s.",
+                                   *this, parcel->header->tag, parcel->header->event.Identifier());
+              // Try waking up a slot.
+              if (parcel->header->event.waited)
                 {
-                  this->ReadData();
-                  while (Parcel* parcel = this->Read())
+                  ELLE_LOG_TRACE("%s: wake up event %s.",
+                                 *this,
+                                 parcel->header->event.Identifier());
+                  parcel->header->event.Parcel(parcel);
+                  parcel->header->event.Signal().release();
+                  continue;
+                }
+
+              // Otherwise dispatch it.
+              Tag tag = parcel->header->tag;
+              ELLE_LOG_TRACE("%s: received RPC with tag %s.", *this, tag);
+              auto it = Network::Procedures.find(tag);
+
+              if (it == Network::Procedures.end())
+                {
+                  // Display error messages
+                  if (tag == TagError)
                     {
-                      ELLE_LOG_TRACE("%s: got a parcel with tag %s.",
-                                     *this, parcel->header->tag);
-                      // Try waking up a slot.
-                      if (parcel->header->event.waited)
-                        {
-                          ELLE_LOG_TRACE("%s: wake up event %s.",
-                                         *this,
-                                         parcel->header->event.Identifier());
-                          parcel->header->event.Parcel(parcel);
-                          parcel->header->event.Signal().release();
-                          continue;
-                        }
-
-                      // Otherwise dispatch it.
-                      Tag tag = parcel->header->tag;
-                      ELLE_LOG_TRACE("%s: received RPC with tag %s.", *this, tag);
-                      auto it = Network::Procedures.find(tag);
-
-                      if (it == Network::Procedures.end())
-                        {
-                          // Display error messages
-                          if (tag == TagError)
-                            {
-                              ELLE_LOG_TRACE("%s: RPC is an error.", *this);
-                              Report  report;
-                              try
-                                {
-                                  parcel->data->Reader() >> report;
-                                }
-                              catch (std::exception const& err)
-                                {
-                                  elle::log::warn("Cannot build the report:", err.what());
-                                  continue;
-                                }
-
-                              // report the remote error.
-                              transpose(report);
-                              // log the error.
-                              log("an error message has been received "
-                                  "with no registered procedure");
-                              ELLE_LOG_TRACE("%s: an error message has been "
-                                             "received with no registered "
-                                             "procedure", *this)
-                              continue;
-                            }
-                          else
-                            {
-                              ELLE_LOG_TRACE("%s: fatal: unrecognized RPC.", *this);
-                              throw std::runtime_error(
-                                  elle::sprintf("unrecognized RPC tag: %s.", tag)
-                              );
-                            }
-                        }
-
-                      Locus l;
-                      Host h;
-                      // FIXME
-                      auto socket =
-                        reinterpret_cast<reactor::network::TCPSocket*>(_socket);
-                      if (h.Create(socket->peer().address().to_string()) ==
-                          Status::Error)
+                      ELLE_LOG_TRACE("%s: RPC is an error.", *this);
+                      Report  report;
+                      // FIXME: restore error messages extraction
+                      // extract the error message.
+                      // if (report.Extract(*parcel->data) == Status::Error)
+                      //   // FIXME
+                      //   //escape("unable to extract the error message");
+                      //   continue;
+                      // // report the remote error.
+                      // transpose(report);
+                      // // log the error.
+                      // log("an error message has been received "
+                      //     "with no registered procedure");
+                      // ELLE_LOG_TRACE("%s: an error message has been "
+                      //                "received with no registered "
+                      //                "procedure", *this)
                         continue;
-                      if (l.Create(
-                            h,
-                            static_cast<Natural16>(socket->peer().port())) ==
-                          Status::Error)
-                        continue;
-                      assert(it->second);
-                      ELLE_LOG_TRACE("%s: call procedure.", *this);
-                      if (it->second(this, l, *parcel) == Status::Error)
-                        {
-                          // FIXME
-                          // escape("an error occured while processing the event");
-
-                          // XXX
-                          printf("ERROR\n");
-                          show();
-                          delete parcel;
-                          continue;
-                        }
-                      delete parcel;
+                    }
+                  else
+                    {
+                      ELLE_LOG_TRACE("%s: fatal: unrecognized RPC.", *this);
+                      throw std::runtime_error
+                        (elle::sprintf("unrecognized RPC tag: %s.", tag));
                     }
                 }
+
+              Locus l;
+              Host h;
+              // FIXME
+              auto socket =
+                reinterpret_cast<reactor::network::TCPSocket*>(_socket);
+              if (h.Create(socket->peer().address().to_string()) ==
+                  Status::Error)
+                continue;
+              if (l.Create(
+                    h,
+                    static_cast<Natural16>(socket->peer().port())) ==
+                  Status::Error)
+                continue;
+              assert(it->second);
+              ELLE_LOG_TRACE("%s: call procedure.", *this);
+              if (it->second(this, l, *parcel) == Status::Error)
+                // FIXME
+                // escape("an error occured while processing the event");
+                continue;
             }
         }
       catch (const reactor::network::ConnectionClosed& err)
@@ -285,11 +207,11 @@ namespace elle
           ELLE_LOG_TRACE("%s: connection closed: %s", *this, err.what());
           // Nothing.
         }
-      catch (const std::runtime_error& err)
+      catch (const std::runtime_error& e)
         {
-          ELLE_LOG_TRACE("%s: runtime error: %s", *this, err.what());
           // Any error with the peer. Consider him alienated and
           // disconnect from him.
+          ELLE_LOG_TRACE("%s: fatal protocol error: %s", *this, e.what());
         }
     }
 

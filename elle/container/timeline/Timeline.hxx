@@ -66,7 +66,7 @@ namespace elle
       /// this method insert an object in the timeline container.
       ///
       template <typename T>
-      Status Timeline<T>::Insert(const Time& timestamp, T const& object)
+      Status Timeline<T>::Insert(const utility::Time& timestamp, T const& object)
       {
         Bucket<T>* bucket = 0;
 
@@ -105,7 +105,7 @@ namespace elle
       /// this method deletes an object from the timeline.
       ///
       template <typename T>
-      Status            Timeline<T>::Delete(const Time& timestamp,
+      Status            Timeline<T>::Delete(const utility::Time& timestamp,
                                             T const& object)
       {
         Bucket<T>*                      bucket;

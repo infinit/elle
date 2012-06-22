@@ -1048,7 +1048,7 @@ namespace etoile
       //
       // this is especially required since Load()ing may block the current
       // fiber.
-      reactor::Lock lock(&elle::concurrency::scheduler(), mutex.write());
+      reactor::Lock lock(elle::concurrency::scheduler(), mutex.write());
       {
         elle::concurrency::Callback<
           elle::Status,
@@ -1113,7 +1113,7 @@ namespace etoile
       if (Infinit::Configuration.etoile.debug == true)
         printf("[etoile] gear::Scope::Disclose()\n");
 
-      reactor::Lock lock(&elle::concurrency::scheduler(), mutex.write());
+      reactor::Lock lock(elle::concurrency::scheduler(), mutex.write());
       {
         Scope*          scope = nullptr;
         T*              context = nullptr;

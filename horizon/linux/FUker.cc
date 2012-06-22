@@ -81,7 +81,7 @@ namespace horizon
                                  BOOST_PP_SEQ_POP_FRONT(Args)))         \
     {                                                                   \
       return elle::concurrency::scheduler().mt_run<int>                 \
-        (#Name,                                                         \
+        (BOOST_PP_STRINGIZE(Name),                                      \
          boost::bind(FUSE::Operations.Name                              \
                      BOOST_PP_SEQ_FOR_EACH_I(INFINIT_FUSE_EFFECTIVE,    \
                                              _, Args)));                \

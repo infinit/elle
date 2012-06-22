@@ -167,8 +167,8 @@ namespace etoile
     {
       Riffle*                   riffle;
       path::Route::Scoutor      scoutor;
-      elle::Duration            lifespan(
-        elle::Duration::UnitSeconds,
+      elle::utility::Duration            lifespan(
+        elle::utility::Duration::UnitSeconds,
         Infinit::Configuration.etoile.shrub.lifespan);
       elle::utility::Time                current;
       elle::utility::Time                threshold;
@@ -448,8 +448,8 @@ namespace etoile
     ///
     elle::Status        Shrub::Sweeper()
     {
-      elle::Duration    lifespan(elle::Duration::UnitSeconds,
-                                 Infinit::Configuration.etoile.shrub.lifespan);
+      elle::utility::Duration    lifespan(elle::utility::Duration::UnitSeconds,
+                                          Infinit::Configuration.etoile.shrub.lifespan);
       elle::utility::Time        current;
       elle::utility::Time        threshold;
 

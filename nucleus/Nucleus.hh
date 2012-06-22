@@ -18,11 +18,6 @@
 #include <elle/types.hh>
 #include <elle/utility/Factory.hh>
 
-namespace elle
-{
-  using namespace utility;
-}
-
 ///
 /// this namespace contains the whole logic related to the Infinit
 /// file system.
@@ -49,7 +44,7 @@ namespace nucleus
     //
     // static attributes
     //
-    static elle::Factory        Factory;
+    static elle::utility::Factory        Factory;
   };
 
 }

@@ -150,6 +150,7 @@ endif(INFINIT_MACOSX)
 add_subdirectory(comet)
 add_subdirectory(elle)
 add_subdirectory(nucleus)
+add_subdirectory(protocol)
 add_subdirectory(etoile)
 add_subdirectory(agent)
 add_subdirectory(lune)
@@ -181,7 +182,7 @@ target_link_libraries(8infinit
   infinit
   ${Boost_LIBRARIES}
   ${CMAKE_THREAD_LIBS_INIT}
-  elle etoile nucleus lune agent hole horizon nucleus
+  elle etoile nucleus lune agent hole horizon nucleus protocol
 )
 
 # XXX

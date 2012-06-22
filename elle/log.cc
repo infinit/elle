@@ -5,9 +5,11 @@
 #include <cstdlib> // getenv
 #include <string>
 #include <map>
+#include <unordered_map>
 #include <vector>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/format.hpp>
 
 #include <elle/concurrency/Scheduler.hh>
@@ -101,7 +103,7 @@ namespace elle
           this->_patterns = new std::vector<std::string>();
 
           std::vector<std::string> res;
-          static char const* components_str = getenv("ELLE_LOG_COMPONENTS");
+          static char const* components_str = ::getenv("ELLE_LOG_COMPONENTS");
           if (components_str == nullptr)
               return *this->_patterns;
 
@@ -147,7 +149,7 @@ namespace elle
                           char const* function,
                           const std::string& msg)
       {
-        static bool const location = getenv("ELLE_LOG_LOCATIONS");
+        static bool const location = ::getenv("ELLE_LOG_LOCATIONS") != nullptr;
         if (location)
           {
             static boost::format fmt("%s:%s: %s (%s)");
@@ -156,6 +158,26 @@ namespace elle
         else
           this->_send(msg);
       }
+
+      static int thread_id(reactor::Thread* t)
+      {
+        if (!t)
+          return 0;
+
+        static int i = 1;
+        typedef std::unordered_map<reactor::Thread*, int> Ids;
+        static Ids ids;
+
+        auto elt = ids.find(t);
+        if (elt == ids.end())
+          {
+            ids[t] = i;
+            return i++;
+          }
+        else
+          return ids[t];
+      }
+
 
       void
       TraceContext::_send(std::string const& msg)
@@ -169,12 +191,20 @@ namespace elle
         assert(size <= Components::instance().max_string_size());
         unsigned int pad = Components::instance().max_string_size() - size;
         std::string s = (
-          "[" + std::string(pad / 2, ' ') +
+          std::string(pad / 2, ' ') +
           this->_component.name +
-          std::string(pad / 2 + pad % 2, ' ') +
-          "]"
+          std::string(pad / 2 + pad % 2, ' ')
         );
-        default_logger.trace(s, align, msg);
+
+        boost::posix_time::ptime time;
+        static const bool universal = ::getenv("ELLE_LOG_TIME_UNIVERSAL") != nullptr;
+        if (universal)
+          time = boost::posix_time::second_clock::universal_time();
+        else
+          time = boost::posix_time::second_clock::local_time();
+        boost::format fmt("%s: [%s] [%2s]");
+        reactor::Thread* t = elle::concurrency::scheduler().current();
+        default_logger.trace(str(fmt % time % s % thread_id(t)), align, msg);
       }
 
       void

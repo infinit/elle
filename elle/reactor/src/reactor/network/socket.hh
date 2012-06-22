@@ -1,6 +1,8 @@
 #ifndef INFINIT_REACTOR_NETWORK_SOCKET_HH
 # define INFINIT_REACTOR_NETWORK_SOCKET_HH
 
+# include <elle/IOStream.hh>
+
 # include <reactor/asio.hh>
 # include <reactor/duration.hh>
 # include <reactor/fwd.hh>
@@ -13,7 +15,7 @@ namespace reactor
     template <typename AsioSocket>
     class SocketOperation;
 
-    class Socket
+    class Socket: public elle::IOStream
     {
       /*---------.
       | Typedefs |

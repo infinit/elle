@@ -37,7 +37,7 @@ add_library(hole
   Model.cc
 )
 
-target_link_libraries(hole elle)
+target_link_libraries(hole elle protocol)
 
 add_executable(8hole _hole.cc)
 target_link_libraries(8hole infinit nucleus lune hole ${Boost_LIBRARIES})

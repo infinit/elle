@@ -24,6 +24,8 @@
 #include <elle/log.hh>
 #include <elle/idiom/Open.hh>
 
+#include <protocol/PacketStream.hh>
+
 namespace elle
 {
   namespace network
@@ -40,36 +42,24 @@ namespace elle
     Status              TCPSocket::Send(const I                 inputs,
                                         const Event&            event)
     {
-      Packet            packet;
-      Data              data;
-      Header            header;
+      ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
+      ELLE_LOG_TRACE_SCOPE("%s: send packet %s with event %s",
+                           *this, inputs.tag, event.Identifier());
 
-      try
-        {
-          data.Writer() << inputs; // XXX First data wrapper
-        }
-      catch (std::exception const& err)
-        {
-          escape(err.what());
-        }
+      Data body;
+      body.Writer() << inputs;
 
-      // create the header now that we know that final archive's size.
-      if (header.Create(event,
-                        inputs.tag,
-                        data.Size()) == Status::Error)
-        escape("unable to create the header");
+      Data whole;
+      whole.Writer() << inputs.tag << event << body;
 
-      try
-        {
-          packet.Writer() << header << data; // XXX Second wrapper
-        }
-      catch (std::exception const& err)
-        {
-          escape(err.what());
-        }
-
-      // write the socket.
-      this->Write(packet);
+      {
+        reactor::Lock lock(elle::concurrency::scheduler(), _socket_write_lock);
+        unsigned char* copy = (unsigned char*)malloc(whole.Size());
+        memcpy(copy, whole.Contents(), whole.Size());
+        infinit::protocol::Packet packet(copy, whole.Size());
+        infinit::protocol::PacketStream ps(*_socket);
+        ps.write(packet);
+      }
 
       return Status::Ok;
     }
@@ -160,14 +150,15 @@ namespace elle
 
       // send the inputs.
       ELLE_LOG_TRACE("%s: call tag %s on event %s and await tag %s",
-                     *this, inputs.tag, event.Identifier(), outputs.tag);
-      if (this->Send(inputs, event) == Status::Error)
-        escape("unable to send the inputs");
+                     *this, inputs.tag, event.Identifier(), outputs.tag)
+        {
+          if (this->Send(inputs, event) == Status::Error)
+            escape("unable to send the inputs");
 
-      // wait for the reply.
-      if (this->Receive(event, outputs) == Status::Error)
-        escape("unable to receive the outputs");
-
+          // wait for the reply.
+          if (this->Receive(event, outputs) == Status::Error)
+            escape("unable to receive the outputs");
+        }
       event.Cleanup();
       return Status::Ok;
     }
