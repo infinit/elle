@@ -409,9 +409,6 @@ namespace horizon
         error("unable to retrieve the access record",
               -EPERM);
 
-      // XXX
-      record->Dump();
-
       // check the record.
       if (!((record != NULL) &&
             ((record->permissions & nucleus::PermissionRead) ==
