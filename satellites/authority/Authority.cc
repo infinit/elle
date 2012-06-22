@@ -173,7 +173,7 @@ namespace satellite
       escape("unable to initialize Etoile");
 
     // allocate a new parser.
-    Infinit::Parser = new elle::Parser(argc, argv);
+    Infinit::Parser = new elle::utility::Parser(argc, argv);
 
     // specify a program description.
     if (Infinit::Parser->Description(Infinit::Copyright) == elle::Status::Error)
@@ -185,7 +185,7 @@ namespace satellite
           'h',
           "help",
           "display the help",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -194,7 +194,7 @@ namespace satellite
           'c',
           "create",
           "create the authority",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -203,7 +203,7 @@ namespace satellite
           'd',
           "destroy",
           "destroy the existing authority",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -212,7 +212,7 @@ namespace satellite
           'x',
           "information",
           "display information regarding the authority",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // parse.

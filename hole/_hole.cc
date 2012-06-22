@@ -46,7 +46,7 @@ namespace hole
                       "unable to set up the program");
 
     // allocate a new parser.
-    Infinit::Parser = new elle::Parser(argc, argv);
+    Infinit::Parser = new elle::utility::Parser(argc, argv);
 
     // specify a program description.
     if (Infinit::Parser->Description(Infinit::Version +
@@ -63,7 +63,7 @@ namespace hole
           'h',
           "help",
           "display the help",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       throw Exception(elle::concurrency::scheduler(),
                       "unable to register the option");
 
@@ -73,7 +73,7 @@ namespace hole
           'n',
           "network",
           "specifies the name of the network",
-          elle::Parser::KindRequired) == elle::Status::Error)
+          elle::utility::Parser::KindRequired) == elle::Status::Error)
       throw Exception(elle::concurrency::scheduler(),
                       "unable to register the option");
 

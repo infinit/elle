@@ -39,7 +39,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
         'h',
         "help",
         "display the help",
-        elle::Parser::KindNone) == elle::Status::Error)
+        elle::utility::Parser::KindNone) == elle::Status::Error)
     throw Exception(elle::concurrency::scheduler(),
                     "unable to register the option");
 
@@ -49,7 +49,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
         'n',
         "network",
         "specifies the name of the network",
-        elle::Parser::KindRequired) == elle::Status::Error)
+        elle::utility::Parser::KindRequired) == elle::Status::Error)
     throw Exception(elle::concurrency::scheduler(),
                     "unable to register the option");
 
@@ -59,7 +59,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
         'm',
         "mountpoint",
         "specifies the mount point",
-        elle::Parser::KindRequired) == elle::Status::Error)
+        elle::utility::Parser::KindRequired) == elle::Status::Error)
     throw Exception(elle::concurrency::scheduler(),
                     "unable to register the option");
 

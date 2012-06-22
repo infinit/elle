@@ -17,7 +17,7 @@ namespace nucleus
   /// the nucleus factory which enables one to generate nucleus instances
   /// based on its component identifier.
   ///
-  elle::Factory                 Nucleus::Factory;
+  elle::utility::Factory                 Nucleus::Factory;
 
 //
 // ---------- methods ---------------------------------------------------------

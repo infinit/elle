@@ -205,7 +205,7 @@ namespace lune
     std::cout << alignment << "[Configuration]" << std::endl;
 
     // dump the parent settings.
-    if (elle::Settings::Dump(margin + 2) == elle::Status::Error)
+    if (elle::utility::Settings::Dump(margin + 2) == elle::Status::Error)
       escape("unable to dump the settings");
 
     return elle::Status::Ok;
@@ -227,7 +227,7 @@ namespace lune
       escape("unable to create the path");
 
     // call the setting's method.
-    if (elle::Settings::Load(path) == elle::Status::Error)
+    if (elle::utility::Settings::Load(path) == elle::Status::Error)
       escape("unable to load the settings");
 
     return elle::Status::Ok;
@@ -245,7 +245,7 @@ namespace lune
       escape("unable to create the path");
 
     // call the setting's method.
-    if (elle::Settings::Store(path) == elle::Status::Error)
+    if (elle::utility::Settings::Store(path) == elle::Status::Error)
       escape("unable to store the settings");
 
     return elle::Status::Ok;

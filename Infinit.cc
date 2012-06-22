@@ -53,7 +53,7 @@ lune::Configuration             Infinit::Configuration;
 ///
 /// this variable contains the program's parser.
 ///
-elle::Parser*                   Infinit::Parser;
+elle::utility::Parser*                   Infinit::Parser;
 
 ///
 /// this variable holds the user name.

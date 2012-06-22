@@ -159,7 +159,7 @@ namespace satellite
     operation = Setup::OperationUnknown;
 
     // allocate a new parser.
-    Infinit::Parser = new elle::Parser(argc, argv);
+    Infinit::Parser = new elle::utility::Parser(argc, argv);
 
     // specify a program description.
     if (Infinit::Parser->Description(Infinit::Copyright) == elle::Status::Error)
@@ -171,7 +171,7 @@ namespace satellite
           'h',
           "help",
           "display the help",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -180,7 +180,7 @@ namespace satellite
           'i',
           "initialize",
           "initialize the user's infinit environment",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -189,7 +189,7 @@ namespace satellite
           'c',
           "clean",
           "clean the user's infinit environment",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // parse.
