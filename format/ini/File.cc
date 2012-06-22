@@ -1,6 +1,7 @@
-
 #include <cassert>
 #include <stdexcept>
+
+#include <reactor/exception.hh>
 
 #include "File.hh"
 

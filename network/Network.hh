@@ -33,7 +33,6 @@ namespace elle
 {
 
   using namespace radix;
-  using namespace utility;
 
   ///
   /// this namespace contains everything related to network communications.

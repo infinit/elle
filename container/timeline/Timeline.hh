@@ -14,9 +14,7 @@
 
 namespace elle
 {
-
   using namespace radix;
-  using namespace utility;
 
   namespace container
   {
@@ -46,8 +44,8 @@ namespace elle
         //
         // types
         //
-        typedef std::pair<const Time, Bucket<T>*>       Value;
-        typedef std::map<const Time, Bucket<T>*>        Container;
+        typedef std::pair<const utility::Time, Bucket<T>*>       Value;
+        typedef std::map<const utility::Time, Bucket<T>*>        Container;
         typedef typename Container::iterator            Iterator;
         typedef typename Container::const_iterator      Scoutor;
 
@@ -60,8 +58,8 @@ namespace elle
         //
         // methods
         //
-        Status          Insert(Time const&, T const&);
-        Status          Delete(Time const&, T const&);
+        Status          Insert(utility::Time const&, T const&);
+        Status          Delete(utility::Time const&, T const&);
 
         Status          Clear();
 

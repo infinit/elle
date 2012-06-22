@@ -4,9 +4,14 @@
 # include <sstream>
 # include <stdexcept>
 
+# include <reactor/exception.hh>
+
+# include <elle/concurrency/Scheduler.hh>
+
 # include "Section.hh"
 
 # include <elle/idiom/Close.hh>
+
 namespace elle { namespace format { namespace ini {
 
     template<typename T>
@@ -35,7 +40,8 @@ namespace elle { namespace format { namespace ini {
             std::stringstream ss(it->second);
             ss >> value;
             if (ss.fail())
-              throw std::runtime_error("Could not convert '" + it->second + "'");
+              throw reactor::Exception(elle::concurrency::scheduler(),
+                                       "Could not convert '" + it->second + "'");
             return value;
           }
         return default_value;

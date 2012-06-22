@@ -26,7 +26,6 @@ namespace elle
 {
   using namespace core;
   using namespace radix;
-  using namespace utility;
 
   namespace package
   {
