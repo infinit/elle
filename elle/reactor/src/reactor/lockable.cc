@@ -3,10 +3,10 @@
 
 namespace reactor
 {
-  Lock::Lock(Scheduler* sched, Lockable& lockable)
+  Lock::Lock(Scheduler& sched, Lockable& lockable)
     : _lockable(lockable)
   {
-    sched->current()->wait(_lockable);
+    sched.current()->wait(_lockable);
   }
 
   Lock::~Lock()
