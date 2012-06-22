@@ -15,7 +15,7 @@ namespace reactor
   class Lock
   {
     public:
-      Lock(Scheduler* sched, Lockable& lockable);
+      Lock(Scheduler& sched, Lockable& lockable);
       ~Lock();
 
     private:
