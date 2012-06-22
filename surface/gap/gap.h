@@ -8,8 +8,10 @@ extern "C" {
     struct gap_state;
     typedef struct gap_state gap_state_t;
 
-    gap_state_t* gap_new();
+    gap_state_t* gap_new(char const* updater_path);
     void gap_free(gap_state_t* state);
+
+    int gap_update_infinit_home(gap_state_t* state);
 
     int gap_refresh_networks(gap_state_t* state);
 

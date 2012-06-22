@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cstdlib>
 
 #include <elle/log.hh>
 
@@ -11,9 +12,10 @@ extern "C"
 #define __TO_C(st)    reinterpret_cast<gap_state_t*>(st)
 #define __TO_CPP(st)  reinterpret_cast<surface::gap::State*>(st)
 
-    gap_state_t* gap_new()
+    gap_state_t* gap_new(char const* updater_path)
     {
-      return __TO_C(new surface::gap::State());
+      assert(updater_path != nullptr);
+      return __TO_C(new (std::nothrow) surface::gap::State(updater_path));
     }
 
     void gap_free(gap_state_t* state)
@@ -51,6 +53,7 @@ extern "C"
       return nullptr;
     };
 
+
 // automate cpp wrapping
 # define __WRAP_CPP(_state_, _func_, ...)                                     \
     assert(_state_ != nullptr);                                               \
@@ -77,6 +80,11 @@ extern "C"
                      char const* password)
     {
       __WRAP_CPP(state, register_, fullname, email, password);
+    }
+
+    int gap_update_infinit_home(gap_state_t* state)
+    {
+      __WRAP_CPP(state, update_infinit_home);
     }
 
 } // ! extern "C"

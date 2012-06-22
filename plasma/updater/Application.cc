@@ -23,7 +23,11 @@ void do_dirty_hack();
 //
 
 Application::Application(int& ac, char** av)
+#ifndef PLASMA_UPDATER_NO_GUI
   : QApplication(ac, av, true)
+#else
+  : QApplication(ac, av, false)
+#endif
   , _releaseUpdater(*this)
   , _identityUpdater(*this)
   , _licenseDialog()
