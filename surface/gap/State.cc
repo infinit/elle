@@ -12,6 +12,8 @@
 #include <QByteArray>
 #include <QLocalSocket>
 
+#include <elle/log.hh>
+
 #include <plasma/common/resources.hh>
 
 #include "API.hh"
@@ -122,11 +124,10 @@ namespace surface
 
     void State::login(std::string const& email, std::string const& password)
     {
-      json::Dictionary rec;
-      rec["email"] = email;
-      rec["password"] = this->_hash_password(email, password);
-      auto res = this->_api->post("/user/login", rec);
-      std::cerr << "GOT:" << res->repr() << std::endl;
+      json::Dictionary req;
+      req["email"] = email;
+      req["password"] = this->_hash_password(email, password);
+      auto res = this->_api->post("/user/login", req);
       auto& dict = dynamic_cast<json::Dictionary&>(*res);
       if (!dict["success"])
         {
@@ -137,6 +138,22 @@ namespace surface
           );
         }
     }
+
+    void State::register_(std::string const& fullname,
+                          std::string const& email,
+                          std::string const& password)
+    {
+      json::Dictionary req;
+      req["fullname"] = fullname;
+      req["email"] = email;
+      req["password"] = password;
+      req["admin_token"] = "fdjskfdakl;asdklwqioefwiopfdsjkl;daskl;askl;fsd";
+
+      auto res = this->_api->post("/user/register", req);
+      auto& dict = dynamic_cast<json::Dictionary&>(*res);
+      elle::log::debug("Got register response:", res->repr());
+    }
+
   }
 }
 

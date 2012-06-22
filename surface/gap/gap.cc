@@ -70,4 +70,13 @@ extern "C"
     {
       __WRAP_CPP(state, login, email, password);
     }
+
+    int gap_register(gap_state_t* state,
+                     char const* fullname,
+                     char const* email,
+                     char const* password)
+    {
+      __WRAP_CPP(state, register_, fullname, email, password);
+    }
+
 } // ! extern "C"

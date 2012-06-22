@@ -6,6 +6,7 @@ from meta.page import Page
 from meta import conf, database
 import metalib
 import pythia
+import json
 
 class User(Page):
     """

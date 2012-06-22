@@ -25,6 +25,9 @@ namespace surface
       void refresh_networks();
       std::string const& path_to_network(std::string const& path);
       void login(std::string const& email, std::string const& password);
+      void register_(std::string const& fullname,
+                     std::string const& email,
+                     std::string const& password);
     private:
       std::string _watchdog_id() const;
       void _send_watchdog_cmd(std::string const& cmd);

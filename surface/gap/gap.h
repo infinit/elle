@@ -19,6 +19,11 @@ extern "C" {
                   char const* email,
                   char const* password);
 
+    int gap_register(gap_state_t* state,
+                     char const* fullname,
+                     char const* email,
+                     char const* password);
+
 # ifdef __cplusplus
 } // ! extern "C"
 # endif
