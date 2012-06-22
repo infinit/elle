@@ -46,25 +46,6 @@ namespace elle
       ELLE_LOG_TRACE_SCOPE("%s: send packet %s with event %s",
                            *this, inputs.tag, event.Identifier());
 
-      // Data body;
-      // {
-      //   if (body.Create() == Status::Error)
-      //     escape("unable to create the body");
-
-      //   // serialize the inputs.
-      //   if (body.Serialize(inputs) == Status::Error)
-      //     escape("unable to serialize the inputs");
-      // }
-
-      // Archive whole;
-      // {
-      //   if (whole.Create() == Status::Error)
-      //     escape("unable to create the whole");
-
-      //   if (whole.Serialize(inputs.tag, event, body) == Status::Error)
-      //       escape("unable to serialize the whole");
-      // }
-
       Data body;
       body.Writer() << inputs;
 
