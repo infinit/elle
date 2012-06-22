@@ -8,21 +8,21 @@ int main()
 {
   elle::utility::Buffer buffer;
 
-  buffer.Writer() << size_t{12}
+  buffer.Writer() << int32_t{12}
                   << uint64_t{42}
                   << std::string{"GIGADEPTH IS BIGGER"}
                   ;
 
 
-  size_t size_t_val;
+  int32_t int32_t_val;
   uint64_t uint64_t_val;
   std::string string_val;
-  buffer.Reader() >> size_t_val
+  buffer.Reader() >> int32_t_val
                   >> uint64_t_val
                   >> string_val
                   ;
 
-  assert(size_t_val == 12);
+  assert(int32_t_val == 12);
   assert(uint64_t_val == 42);
   assert(string_val == "GIGADEPTH IS BIGGER");
 
