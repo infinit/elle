@@ -53,13 +53,12 @@ namespace elle
       whole.Writer() << inputs.tag << event << body;
 
       {
-        elle::concurrency::scheduler().current()->wait(_socket_write_lock);
+        reactor::Lock lock(elle::concurrency::scheduler(), _socket_write_lock);
         unsigned char* copy = (unsigned char*)malloc(whole.Size());
         memcpy(copy, whole.Contents(), whole.Size());
         infinit::protocol::Packet packet(copy, whole.Size());
         infinit::protocol::PacketStream ps(*_socket);
         ps.write(packet);
-        _socket_write_lock.release();
       }
 
       return Status::Ok;
