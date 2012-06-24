@@ -33,15 +33,15 @@ namespace elle { namespace format { namespace json {
       typedef elle::serialize::OutputJSONArchive OutputJSONArchive;
       typedef elle::serialize::InputJSONArchive  InputJSONArchive;
 
-      // The json archive can save object
+      // The json archive can save objects.
       friend class elle::serialize::OutputJSONArchive;
       friend class elle::serialize::InputJSONArchive;
 
-      // Array and Dictionary class may save children objects
+      // Array and Dictionary class may save children objects.
       friend class Dictionary;
       friend class Array;
 
-      /// Used to build a JSON type form a type
+      /// Used to build a JSON type from a type.
       struct Factory;
 
     public:
@@ -62,6 +62,10 @@ namespace elle { namespace format { namespace json {
       /// @see Object::TryLoad() for an exception safe version
       template<typename T> void Load(T& out) const;
 
+      /// Convert an object to the type T and return by value.
+      /// @throws std::bad_cast
+      template<typename T> T as() const;
+
       /// Same as Load(), but instead of throwing an exception,
       /// it returns false when conversion cannot be done.
       template<typename T> bool TryLoad(T& out) const;
@@ -74,7 +78,7 @@ namespace elle { namespace format { namespace json {
 
 
     public:
-      /// double dispatch
+      /// operator ==
       virtual bool operator ==(Object const& other) const = 0;
       virtual bool operator ==(Array const&) const      { return false; }
       virtual bool operator ==(Bool const&) const       { return false; }
@@ -83,11 +87,11 @@ namespace elle { namespace format { namespace json {
       virtual bool operator ==(Integer const&) const    { return false; }
       virtual bool operator ==(Null const&) const       { return false; }
       virtual bool operator ==(String const&) const     { return false; }
-      template<typename T> typename std::enable_if<
-            !std::is_base_of<T, Object>::value
-          , bool
-      >::type operator ==(T const& other) const;
+      template<typename T>
+      typename std::enable_if<!std::is_base_of<T, Object>::value, bool>::type
+      operator ==(T const& other) const;
 
+      /// operator !=
       bool operator !=(Object const& other) const       { return !(*this == other); }
       bool operator !=(Array const& other) const        { return !(*this == other); }
       bool operator !=(Bool const& other) const         { return !(*this == other); }
@@ -99,6 +103,11 @@ namespace elle { namespace format { namespace json {
       template<typename T>
         bool operator !=(T const& other) const          { return !(*this == other); }
 
+      /// Usable as a constant dictionary
+      virtual Object const& operator [](std::string const& key) const;
+
+      /// Usable as a constant array
+      virtual Object const& operator [](size_t index) const;
     };
 
 }}}
