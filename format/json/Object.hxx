@@ -74,6 +74,14 @@ namespace elle { namespace format { namespace json {
         out = dynamic_cast<SelfType const&>(*this);
       }
 
+    template<typename T>
+    T Object::as() const
+    {
+      T val;
+      this->Load(val);
+      return val;
+    }
+
     template<typename T> bool Object::TryLoad(T& out) const
       {
         typedef typename detail::SelectJSONType<T>::type SelfType;
