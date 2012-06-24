@@ -3,40 +3,47 @@
 
 #include <QDir>
 
-#include "plasma/common/resources.hh"
+#include <elle/log.hh>
+
+#include <lune/Descriptor.hh>
+#include <lune/Identity.hh>
+#include <lune/Passport.hh>
+#include <lune/Set.hh>
+
+#include <nucleus/neutron/Access.hh>
+#include <nucleus/neutron/Genre.hh>
+#include <nucleus/neutron/Object.hh>
+#include <nucleus/neutron/Trait.hh>
+#include <nucleus/proton/Address.hh>
+
+#include <elle/idiom/Close.hh>
+
+#include <plasma/common/resources.hh>
 
 #include "InfinitNetwork.hh"
 #include "Manager.hh"
 
-#include <lune/Identity.hh>
-#include <lune/Descriptor.hh>
-#include <nucleus/proton/Address.hh>
-#include <nucleus/neutron/Object.hh>
-#include <nucleus/neutron/Trait.hh>
+#define LOG(...)                                                              \
+  elle::log::debug("InfinitNetwork::", __FUNCTION__,                          \
+                   "(id=", this->_description._id, "):", __VA_ARGS__)         \
+  /**/
 
 using namespace plasma::watchdog;
 
-//
-// ---------- contructors & descructors ---------------------------------------
-//
-
 InfinitNetwork::InfinitNetwork(Manager& manager,
-                               meta::NetworkResponse const& response) :
-  QObject(),
-  _description(response),
-  _manager(manager),
-  _process(),
-  _infinitHome(),
-  _home()
+                               meta::NetworkResponse const& response)
+  : QObject()
+  , _description(response)
+  , _manager(manager)
+  , _process()
+  , _infinitHome(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY))
+  , _home(
+      QDir(this->_infinitHome.filePath(
+          QString("networks/") + this->_description.name.c_str()
+      ))
+    )
 {
-  std::cout << "Creating new network: " << this->_description.name
-            << " (" << this->_description._id << ").\n";
-
-  this->_infinitHome = QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY);
-  this->_home = QDir(this->_infinitHome.filePath(
-      QString("networks/") + this->_description.name.c_str()
-  ));
-  //if (!this->_process.start(homeDirectory.filePath()))
+  LOG("Creating new network.");
   this->_Update();
 }
 
@@ -46,45 +53,30 @@ InfinitNetwork::~InfinitNetwork()
   this->_process.waitForFinished();
 }
 
-//
-// ---------- methods  --------------------------------------------------------
-//
-
 void InfinitNetwork::Update(meta::NetworkResponse const& response)
 {
+  LOG("Updating network:", response._id);
   this->_description = response;
-  std::cout << "Updating network: " << response._id << "\n";
   this->_Update();
 }
 
-
-/// XXX should be in a library
-
-#include "lune/Descriptor.hh"
-#include "lune/Identity.hh"
-#include "lune/Passport.hh"
-#include "lune/Set.hh"
-#include "nucleus/neutron/Object.hh"
-#include "nucleus/neutron/Genre.hh"
-#include "nucleus/neutron/Access.hh"
-#include "nucleus/proton/Address.hh"
-
-#define LOG() std::cerr << "{WTG} " << "InfinitNetwork::" << __FUNCTION__ << "(id=" \
-                        << this->_description._id << "): "
-
 void InfinitNetwork::_Update()
 {
-  LOG() << "Starting infinit network update\n";
+  LOG("Starting network update.");
   if (!this->_home.exists() && !this->_home.mkpath("."))
       throw std::runtime_error("Cannot create network home");
-  QString descriptionFilename = this->_description.name.c_str() + QString(".dsc");
+
+  QString descriptionFilename =
+    this->_description.name.c_str() + QString(".dsc");
+
   if (!this->_home.exists(descriptionFilename))
     {
       if (!this->_description.descriptor.size())
         return this->_CreateNetworkRootBlock();
       else
         {
-          std::cerr << "Already has a nice descriptor : " << this->_description.descriptor << "\n";
+          LOG("Already has a nice descriptor:",
+              this->_description.descriptor);
           this->_PrepareDirectory();
         }
     }
@@ -95,7 +87,8 @@ void InfinitNetwork::_Update()
 /// Called when the network does not have any descriptor
 void InfinitNetwork::_CreateNetworkRootBlock()
 {
-  LOG() << "Creating the network descriptor\n";
+  LOG("Creating the network descriptor.");
+
   lune::Identity                identity;
   nucleus::neutron::Object      directory;
   nucleus::proton::Address      address;
@@ -109,7 +102,7 @@ void InfinitNetwork::_CreateNetworkRootBlock()
       directory.Seal(identity.pair.k, access)                 == e ||
       directory.Bind(address)                                 == e)
     {
-      throw std::runtime_error("Couldn't create the root block");
+      throw std::runtime_error("Couldn't create the root block.");
     }
 
   elle::Unique              rootBlock;
@@ -133,7 +126,7 @@ void InfinitNetwork::_CreateNetworkRootBlock()
 /// Prepare the network directory, store root block and network descriptor
 void InfinitNetwork::_PrepareDirectory()
 {
-  LOG() << "Dumping root block\n";
+  LOG("Dumping root block.");
 
   assert(this->_description.root_block.size());
   assert(this->_description.descriptor.size());
@@ -144,8 +137,10 @@ void InfinitNetwork::_PrepareDirectory()
   if (descriptor.Restore(this->_description.descriptor) == e ||
       descriptor.Store(this->_description.name)         == e)
     {
+#include <elle/idiom/Open.hh>
       show();
-      throw std::runtime_error("Couldn't save the descriptor");
+#include <elle/idiom/Close.hh>
+      throw std::runtime_error("Couldn't save the descriptor.");
     }
 
   nucleus::proton::Network network;
@@ -153,13 +148,15 @@ void InfinitNetwork::_PrepareDirectory()
 
   if (network.Create(this->_description.name)          == e ||
       directory.Restore(this->_description.root_block) == e ||
-      directory.MutableBlock::Store(network, descriptor.root)        == e)
+      directory.MutableBlock::Store(network, descriptor.root) == e)
     {
+#include <elle/idiom/Open.hh>
       show();
-      throw std::runtime_error("Couldn't store the root block");
+#include <elle/idiom/Close.hh>
+      throw std::runtime_error("Couldn't store the root block.");
     }
 
-  LOG() << "Root block stored\n";
+  LOG("Root block stored.");
 
   this->_RegisterDevice();
 }
@@ -168,26 +165,27 @@ void InfinitNetwork::_PrepareDirectory()
 /// Append the local device to the network
 void InfinitNetwork::_RegisterDevice()
 {
-  LOG() << "~~ Check if the device is registered for this network\n";
+  LOG("Check if the device is registered for this network.");
   lune::Passport passport;
 
   if (passport.Load() == elle::Status::Error)
     {
+#include <elle/idiom/Open.hh>
       show();
+#include <elle/idiom/Close.hh>
       throw std::runtime_error("Couldn't load the passport file :'(");
     }
 
-  LOG() << "search device for the passport id: " << passport.id << "!\n";
+  LOG("search device for the passport id:", passport.id);
   auto it = std::find(
       this->_description.devices.begin(),
       this->_description.devices.end(),
       passport.id
   );
 
-  LOG() << "Done\n";
   if (it == this->_description.devices.end())
     {
-      LOG() << "Registering device for this network\n";
+      LOG("Registering device for this network.");
 
       this->_description.devices.push_back(passport.id);
       this->_manager.meta().UpdateNetwork(
@@ -203,7 +201,7 @@ void InfinitNetwork::_RegisterDevice()
     }
   else
     {
-      LOG() << "Get network nodes\n";
+      LOG("Get network nodes.");
       this->_manager.meta().GetNetworkNodes(
           this->_description._id,
           boost::bind(&InfinitNetwork::_OnNetworkNodes, this, _1),
@@ -214,7 +212,7 @@ void InfinitNetwork::_RegisterDevice()
 
 void InfinitNetwork::_OnDeviceRegistered(meta::UpdateNetworkResponse const& response)
 {
-  LOG() << "Device successfully registered\n";
+  LOG("Device successfully registered.");
   assert(response.updated_network_id == this->_description._id);
   this->_manager.meta().GetNetworkNodes(
       this->_description._id,
@@ -226,20 +224,21 @@ void InfinitNetwork::_OnDeviceRegistered(meta::UpdateNetworkResponse const& resp
 /// Update the network nodes set when everything is good
 void InfinitNetwork::_OnNetworkNodes(meta::NetworkNodesResponse const& response)
 {
-  LOG() << "Got network nodes :\n";
+  LOG("Got network nodes:");
   lune::Set locusSet;
   auto it =  response.nodes.begin(),
        end = response.nodes.end();
   for (; it != end; ++it)
   {
-    LOG() << "\t\t * " << *it << "\n";
+    LOG("\t * ", *it);
     elle::network::Locus locus;
 
     if (locus.Create(*it) == elle::Status::Error)
-      throw std::runtime_error("Cannot create locus from string '" + *it + "'");
+      throw std::runtime_error("Cannot create locus from string '" + *it + "'.");
     if (locusSet.Add(locus) == elle::Status::Error)
       {
-        LOG() << "Cannot add locus '" << *it << "' to the set (ignored)\n";
+        LOG("Cannot add locus '", elle::iomanip::nosep, *it,
+            "' to the set (ignored).");
       }
   }
 
@@ -250,7 +249,7 @@ void InfinitNetwork::_OnNetworkNodes(meta::NetworkNodesResponse const& response)
 }
 void InfinitNetwork::_OnGotDescriptor(meta::UpdateNetworkResponse const& response)
 {
-  LOG() << "Got network descriptor\n";
+  LOG("Got network descriptor.");
   // XXX updated is none here, correct meta
   if (response.updated_network_id != this->_description._id)
     {
@@ -260,9 +259,8 @@ void InfinitNetwork::_OnGotDescriptor(meta::UpdateNetworkResponse const& respons
           this->_description._id + "'"
       );
     }
-  std::cout << "Got descriptor for " << this->_description.name
-            <<  " (" << this->_description._id << ") :"
-            << response.descriptor << std::endl;
+  LOG("Got descriptor for", this->_description.name,
+      "(", this->_description._id, ") :", response.descriptor);
 
   this->_description.root_block = response.root_block;
   this->_description.descriptor = response.descriptor;
@@ -272,13 +270,14 @@ void InfinitNetwork::_OnGotDescriptor(meta::UpdateNetworkResponse const& respons
 
 void InfinitNetwork::_OnAnyError(meta::MetaClient::Error error, std::string const& err)
 {
-  LOG() << "Got error while creating the network '" << this->_description.name
-        << ": " << err << " (" <<(int)error<<").\n";
+  LOG("Got error while creating the network '",
+      elle::iomanip::nosep, this->_description.name,
+      ": ", err, " (", (int)error, ").");
 }
 
 void InfinitNetwork::_StartProcess()
 {
-  LOG() << "Starting process\n";
+  LOG("Starting infinit process");
   QDir mnt(
       this->_infinitHome.filePath(
           QString::fromStdString(
@@ -296,23 +295,24 @@ void InfinitNetwork::_StartProcess()
 
   if (home_mnt.exists() || home_mnt.mkpath("."))
     {
-      LOG() << "Created " << home_mnt.path().toStdString() << std::endl;
+      LOG("Created mount point", home_mnt.path().toStdString());
       auto link_path = home_mnt.filePath(this->_description.name.c_str());
 #ifdef INFINIT_WINDOWS
       link_path += ".lnk";
 #endif
       if (!QFile(mnt.path()).link(link_path))
-        LOG() << "Warning: Cannot create linked mount points\n";
+        elle::log::warn("Cannot create links to mount points.");
     }
   else
-    LOG() << "Warning: Cannot create linked mount points directory\n";
+    elle::log::warn("Cannot create mount point directory.");
 
   QStringList arguments;
   arguments << "-n" << this->_description.name.c_str()
             << "-m" << mnt.path();
 
-  LOG() << " -n " << this->_description.name.c_str()
-            << " -m " << mnt.path().toStdString();
+  LOG("exec: bin/8infinit",
+      "-n", this->_description.name.c_str(),
+      "-m", mnt.path().toStdString());
 
   this->connect(
       &this->_process, SIGNAL(started()),
@@ -344,17 +344,17 @@ void InfinitNetwork::_StartProcess()
 
 void InfinitNetwork::_OnProcessStarted()
 {
-  LOG() << "Process successfully started!\n";
+  LOG("Process successfully started.");
 }
 
 void InfinitNetwork::_OnProcessError(QProcess::ProcessError)
 {
-  LOG() << "Process has an error\n";
+  LOG("Process has an error.");
 }
 
 void InfinitNetwork::_OnProcessFinished(int exit_code, QProcess::ExitStatus)
 {
-  LOG() << "Process finished with exit code " << exit_code << "\n";
+  LOG("Process finished with exit code ", exit_code);
   if (true || exit_code) // XXX
     {
       auto stdout = this->_process.readAllStandardOutput();

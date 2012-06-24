@@ -1,18 +1,6 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       plasma/watchdog
-//
-// license       infinit
-//
-// author        Raphaël Londeix   [Thu 01 Mar 2012 12:55:56 PM CET]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <iostream>
+
+#include <elle/log.hh>
 
 #include "Client.hh"
 #include "ClientActions.hh"
@@ -55,10 +43,6 @@ using namespace plasma::watchdog;
         }                                                                     \
   } while(false)                                                              \
 
-//
-// ---------- contructors & descructors ---------------------------------------
-//
-
 ClientActions::ClientActions(Manager& manager) :
   _manager(manager)
 {
@@ -67,33 +51,25 @@ ClientActions::ClientActions(Manager& manager) :
 }
 
 ClientActions::~ClientActions()
-{
-  std::cerr << "ClientActions::~ClientActions()\n";
-}
-
-//
-// ---------- methods  --------------------------------------------------------
-//
-
+{}
 
 void ClientActions::_OnRun(Connection& conn,
                            Client& client,
                            QVariantMap const& args)
 {
-  std::cerr << "ClientActions::_OnRun()\n";
+  elle::log::debug("Starting watchdog monitoring.");
   CHECK_ID(args);
   QString token = args["token"].toString();
   QString identity = args["identity"].toString();
   if (token.size() > 0 && identity.size() > 0)
     {
-      std::cerr << "Running watchdog !\n";
       this->_manager.token(token);
       this->_manager.identity(identity);
       this->_manager.networkManager().UpdateNetworks();
       UNREGISTER("run");
     }
   else
-    std::cerr << "Warning: token not provided to run watchdog\n";
+    elle::log::warn("The token was not provided (cannot start monitoring).");
 }
 
 void ClientActions::_OnStop(Connection& conn,

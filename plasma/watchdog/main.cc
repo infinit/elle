@@ -6,6 +6,8 @@
 #include <boost/filesystem.hpp>
 
 #include <elle/Elle.hh>
+#include <elle/log.hh>
+
 #include "Application.hh"
 #include "WatchdogInterface.hh"
 
@@ -19,7 +21,7 @@ int     main(int ac, char* av[])
 {
   plasma::watchdog::Application app(ac, av);
 
-  std::cout << "Starting the watchdog !\n";
+  elle::log::debug("Starting the watchdog !");
 
   try
     {
@@ -29,11 +31,11 @@ int     main(int ac, char* av[])
     }
   catch (std::exception const& err)
     {
-      std::cout << "An exception occured: " << err.what() << std::endl;
+      elle::log::fatal("An exception occured:", err.what());
     }
   catch (...)
     {
-      std::cout << "Uncatched exception\n";
+      elle::log::fatal("Uncaught exception");
     }
   return EXIT_FAILURE;
 }
@@ -107,7 +109,6 @@ static void _init_daemon(std::string const& infinit_home)
             if (res > 0)
               exit(0); /* parent exits */
           }
-        std::cerr << "OK, double fork worked\n";
 
         //for (i=getdtablesize();i>=0;--i)
         //  close(i); /* close all descriptors */
@@ -116,7 +117,8 @@ static void _init_daemon(std::string const& infinit_home)
         umask(027); /* set newly created file permissions */
 
         ::chdir("/");
-        auto lock_file = fs::path(infinit_home).append("lock.wtg", fs::path::codecvt()).string();
+        auto lock_file = fs::path(infinit_home)
+          .append("lock.wtg", fs::path::codecvt()).string();
 
         lfp = ::open(lock_file.c_str(), O_RDWR | O_CREAT, 0640);
         if (lfp < 0)
@@ -130,7 +132,7 @@ static void _init_daemon(std::string const& infinit_home)
         write(lfp, str, strlen(str)); /* record pid to lockfile */
       }
     else
-      std::cerr << "Already a deamon!\n";
+      elle::log::warn("Already a deamon!");
 
 #define SIG_CONNECT(sig)                                                      \
       {                                                                       \

@@ -1,36 +1,19 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       plasma/watchdog
-//
-// license       infinit
-//
-// author        Raphael Londeix   [Wed 01 Feb 2012 07:06:01 PM CET]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <cstdlib>
 #include <cassert>
 #include <ctime>
-#include <iostream>
 
 #include <QDir>
 #include <QFile>
 #include <QLocalSocket>
 
-#include "plasma/common/resources.hh"
+#include <elle/log.hh>
+
+#include <plasma/common/resources.hh>
 
 #include "LocalServer.hh"
 #include "Application.hh"
 
 using namespace plasma::watchdog;
-
-//
-// ---------- contructors & descructors ---------------------------------------
-//
 
 Application::Application(int ac, char* av[]) :
   QCoreApplication(ac, av)
@@ -43,11 +26,6 @@ Application::~Application()
   //delete this->_server;
   //this->_server = nullptr;
 }
-
-//
-// ---------- methods  --------------------------------------------------------
-//
-
 
 namespace
 {
@@ -82,16 +60,14 @@ int Application::Exec()
 
   // Generate new watchdog id
   std::string watchdogId = randString(ASCII, 42);
-  std::cout << "{WTG} New watchdog id: " << watchdogId << std::endl;
+  elle::log::debug("New watchdog id:", watchdogId);
 
   // Saving watchdog id
   {
     QFile f(homeDirectory.filePath("infinit.wtg"));
     if (!f.open(QIODevice::WriteOnly | QIODevice::Truncate))
       {
-        std::cerr << "{WTG} Cannot open file '"
-                  << f.fileName().toStdString()
-                  << "'\n";
+        elle::log::fatal("Cannot open file:", f.fileName().toStdString());
         return EXIT_FAILURE;
       }
     f.write(watchdogId.c_str());

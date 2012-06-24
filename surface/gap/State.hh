@@ -30,11 +30,13 @@ namespace surface
       void register_(std::string const& fullname,
                      std::string const& email,
                      std::string const& password);
+
     private:
       std::string _watchdog_id() const;
       void _send_watchdog_cmd(std::string const& cmd);
       void _reload_networks();
-      std::string _hash_password(std::string const& email, std::string const& password);
+      std::string _hash_password(std::string const& email,
+                                 std::string const& password);
     };
 
   }
