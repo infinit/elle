@@ -99,11 +99,6 @@ namespace elle { namespace format { namespace json {
             inline bool operator !=(T const& val) const
               { return !(*this == val); }
 
-          operator bool() const
-            {
-              return *this == true;
-            }
-
           template<typename T>
             inline void Load(T& val) const
             {
