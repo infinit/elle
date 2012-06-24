@@ -1,21 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       plasma/watchdog
-//
-// license       infinit
-//
-// author        Raphaël Londeix [Thu 01 Mar 2012 11:16:34 AM CET]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <cassert>
 #include <functional>
 #include <iostream>
 #include <stdexcept>
+
+#include <elle/log.hh>
 
 #include "Client.hh"
 #include "ClientActions.hh"
@@ -25,22 +13,17 @@
 
 using namespace plasma::watchdog;
 
-//
-// ---------- contructors & descructors ---------------------------------------
-//
-
 Manager::Manager(QCoreApplication& app) :
   _app(app),
   _clients(new ClientMap()),
   _commands(new CommandMap()),
   _actions(new ClientActions(*this)),
-  _networkManager(new NetworkManager(*this)),
+  _network_manager(new NetworkManager(*this)),
   _meta(app)
 {}
 
 Manager::~Manager()
 {
-  std::cerr << "Manager::~Manager()\n";
   delete this->_clients;
   this->_clients = nullptr;
   delete this->_commands;
@@ -49,26 +32,18 @@ Manager::~Manager()
   this->_actions = nullptr;
 }
 
-//
-// --------- properties -------------------------------------------------------
-//
-
 void Manager::token(QByteArray const& token)
 {
   this->_meta.token(token);
 }
 
-//
-// ---------- methods  --------------------------------------------------------
-//
-
-Client& Manager::RegisterConnection(ConnectionPtr& conn)
+Client& Manager::register_connection(ConnectionPtr& conn)
 {
   assert(conn != nullptr);
   auto it = this->_clients->find(conn);
   if (it != this->_clients->end())
     {
-      std::cerr << "Warning: The connection is already registered.\n";
+      elle::log::warn("The connection", conn.get(), "is already registered.");
       return *(it->second);
     }
   auto res = this->_clients->insert(
@@ -79,16 +54,16 @@ Client& Manager::RegisterConnection(ConnectionPtr& conn)
   return *(res.first->second);
 }
 
-void Manager::UnregisterConnection(ConnectionPtr& conn)
+void Manager::unregister_connection(ConnectionPtr& conn)
 {
   auto it = this->_clients->find(conn);
   if (it == this->_clients->end())
-      std::cerr << "Warning: The connection is not registered.\n";
+      elle::log::warn("The connection", conn.get(), "is not registered.");
   else
     this->_clients->erase(it);
 }
 
-void Manager::RegisterCommand(std::string const& id, Command cmd)
+void Manager::register_command(std::string const& id, Command cmd)
 {
   if (this->_commands->find(id) != this->_commands->end())
     throw std::runtime_error(
@@ -101,7 +76,7 @@ void Manager::RegisterCommand(std::string const& id, Command cmd)
     throw std::runtime_error("Could not register a new command");
 }
 
-void Manager::UnregisterCommand(std::string const& id)
+void Manager::unregister_command(std::string const& id)
 {
   auto it = this->_commands->find(id);
   if (it == this->_commands->end())
@@ -111,43 +86,48 @@ void Manager::UnregisterCommand(std::string const& id)
   this->_commands->erase(it);
 }
 
-void Manager::UnregisterAllCommands()
+void Manager::unregister_all_commands()
 {
   this->_commands->clear();
 }
 
 
-void Manager::ExecuteCommand(ConnectionPtr& conn, QVariantMap const& cmd)
+void Manager::execute_command(ConnectionPtr& conn, QVariantMap const& cmd)
 {
   if (cmd["_id"].toString() != this->_actions->watchdogId())
     {
-      std::cerr << "Warning: Invalid given watchdog id: "
-                << cmd["_id"].toString().toStdString() << "\n";
+      elle::log::warn("Invalid given watchdog id:",
+                      cmd["_id"].toString().toStdString());
       return;
     }
+
   auto it = this->_commands->find(cmd["command"].toString().toStdString());
   if (it == this->_commands->end())
     {
-      std::cerr << "Warning: command not found: "
-                << cmd["command"].toString().toStdString() << ".\n";
+      elle::log::warn("command not found:",
+                      cmd["command"].toString().toStdString());
       return;
     }
 
   (it->second)(*conn, *(*this->_clients)[conn], cmd);
 }
 
-void Manager::Stop()
+void Manager::stop()
 {
   std::cerr << "STOPPING\n";
 
   // XXX couldn't get rid of a double free corruption
-  this->_networkManager->Stop();
+  this->_network_manager->stop();
   //this->_app.quit();
   ::exit(EXIT_SUCCESS);
 }
 
-void Manager::Start(std::string const& watchdogId)
+void Manager::start(std::string const& watchdogId)
 {
   this->_actions->watchdogId(watchdogId.c_str());
 }
 
+void Manager::refresh_networks()
+{
+  this->_network_manager->update_networks();
+}

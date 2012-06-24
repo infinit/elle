@@ -10,52 +10,53 @@
 
 using namespace plasma::watchdog;
 
-
-//
-// ---------- helper macros ---------------------------------------------------
-//
-
-///
-/// Register a command to the manager.
-///
-#define REGISTER(name, method)                                                \
+// Register a command to the manager.
+#define REGISTER(name)                                                        \
   do {                                                                        \
     using namespace std::placeholders;                                        \
-    this->_manager.RegisterCommand(                                           \
-        name,                                                                 \
-        std::bind(&ClientActions::method, this, _1, _2, _3)                   \
+    this->_manager.register_command(                                          \
+        #name,                                                                \
+        std::bind(&ClientActions::_on_##name, this, _1, _2, _3)               \
     );                                                                        \
   } while(false)                                                              \
+  /**/
 
 #define UNREGISTER(name)                                                      \
-  this->_manager.UnregisterCommand(name)                                      \
+  this->_manager.unregister_command(#name)                                    \
+  /**/
 
-///
-/// Security check (the watchdog id is valid)
-///
+// Security check (the watchdog id is valid)
 #define CHECK_ID(args)                                                        \
   do {                                                                        \
       if (args["_id"].toString() != this->_watchdogId)                        \
         {                                                                     \
-          std::cerr << "Warning: Invalid watchdog id: "                       \
-                    << args["_id"].toString().toStdString() << "\n";          \
+          elle::log::warn("Invalid watchdog id:",                             \
+                          args["_id"].toString().toStdString());              \
           return;                                                             \
         }                                                                     \
   } while(false)                                                              \
+  /**/
+
+// Register all commands except "run" and "stop"
+# define REGISTER_ALL()                                                       \
+  do {                                                                        \
+      REGISTER(refresh_networks);                                             \
+  } while (false)                                                             \
+  /**/
 
 ClientActions::ClientActions(Manager& manager) :
   _manager(manager)
 {
-  REGISTER("run", _OnRun);
-  REGISTER("stop", _OnStop);
+  REGISTER(run);
+  REGISTER(stop);
 }
 
 ClientActions::~ClientActions()
 {}
 
-void ClientActions::_OnRun(Connection& conn,
-                           Client& client,
-                           QVariantMap const& args)
+void ClientActions::_on_run(Connection& conn,
+                            Client& client,
+                            QVariantMap const& args)
 {
   elle::log::debug("Starting watchdog monitoring.");
   CHECK_ID(args);
@@ -65,16 +66,28 @@ void ClientActions::_OnRun(Connection& conn,
     {
       this->_manager.token(token);
       this->_manager.identity(identity);
-      this->_manager.networkManager().UpdateNetworks();
-      UNREGISTER("run");
+      this->_manager.refresh_networks();
+      UNREGISTER(run);
+      REGISTER_ALL();
     }
   else
     elle::log::warn("The token was not provided (cannot start monitoring).");
 }
 
-void ClientActions::_OnStop(Connection& conn,
-                           Client& client,
-                           QVariantMap const& args)
+void ClientActions::_on_stop(Connection& conn,
+                            Client& client,
+                            QVariantMap const& args)
 {
-  this->_manager.Stop();
+  CHECK_ID(args);
+  this->_manager.unregister_all_commands();
+  this->_manager.stop();
+}
+
+
+void ClientActions::_on_refresh_networks(Connection& conn,
+                                         Client& client,
+                                         QVariantMap const& args)
+{
+  CHECK_ID(args);
+  this->_manager.refresh_networks();
 }

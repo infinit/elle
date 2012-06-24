@@ -1,4 +1,3 @@
-
 #include <cstdio>
 #include <fstream>
 #include <iostream>
@@ -9,9 +8,6 @@
 #include <elle/log.hh>
 
 #include "Application.hh"
-#include "WatchdogInterface.hh"
-
-
 
 static void _initAll();
 
@@ -26,7 +22,7 @@ int     main(int ac, char* av[])
   try
     {
       _initAll();
-      auto res = app.Exec();
+      auto res = app.exec();
       return res;
     }
   catch (std::exception const& err)

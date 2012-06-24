@@ -39,6 +39,7 @@ namespace
   {
     assert(in.size() > 0);
     assert(len > 0);
+    (void) dummy;
 
     std::string res;
     res.resize(len);
@@ -54,7 +55,7 @@ namespace
 
 } // !ns anonymous
 
-int Application::Exec()
+int Application::exec()
 {
   QDir homeDirectory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
 
@@ -79,7 +80,7 @@ int Application::Exec()
   }
 
 
-  this->_server->Start(watchdogId);
+  this->_server->start(watchdogId);
   return this->exec();
 }
 

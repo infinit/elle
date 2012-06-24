@@ -1,19 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       plasma/watchdog
-//
-// license       infinit
-//
-// author        Raphaël Londeix [Thu 01 Mar 2012 11:07:00 AM CET]
-//
-
-#ifndef PLASMA_WATCHDOG_MANAGER_HH
+#ifndef  PLASMA_WATCHDOG_MANAGER_HH
 # define PLASMA_WATCHDOG_MANAGER_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 # include <unordered_map>
 # include <memory>
@@ -34,10 +20,6 @@ namespace plasma
     class Client;
     class ClientActions;
     class NetworkManager;
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// The manager dispatch received command and stores clients with
@@ -61,12 +43,11 @@ namespace plasma
       ClientMap*          _clients;
       CommandMap*         _commands;
       ClientActions*      _actions;
-      NetworkManager*     _networkManager;
+      NetworkManager*     _network_manager;
       MetaClient          _meta;
       std::string         _identity;
 
     public:
-
       /// ctor & dtor
       Manager(QCoreApplication& app);
       ~Manager();
@@ -74,36 +55,34 @@ namespace plasma
       /// properties
       void token(QByteArray const& token);
       void token(QString const& token)        { this->token(token.toAscii()); }
-
       MetaClient& meta()                                { return this->_meta; }
-
-      NetworkManager& networkManager()       { return *this->_networkManager; }
-
+      NetworkManager& network_manager()     { return *this->_network_manager; }
       std::string const& identity() const           { return this->_identity; }
       void identity(std::string const& id)            { this->_identity = id; }
       void identity(QString const& id)  { this->_identity = id.toStdString(); }
 
       /// Called from the LocalServer to add a new connection
-      Client& RegisterConnection(ConnectionPtr& conn);
-      void UnregisterConnection(ConnectionPtr& conn);
+      Client& register_connection(ConnectionPtr& conn);
+      void unregister_connection(ConnectionPtr& conn);
 
       ///
       /// Used by ClientActions to register callbacks. Any class may
       /// use it, but only one hook per command is allowed.
       ///
-      void RegisterCommand(std::string const& id, Command cmd);
-      void UnregisterCommand(std::string const& id);
-      void UnregisterAllCommands();
+      void register_command(std::string const& id, Command cmd);
+      void unregister_command(std::string const& id);
+      void unregister_all_commands();
 
       /// Dispatch a command from a connection
-      void ExecuteCommand(ConnectionPtr& conn, QVariantMap const& cmd);
+      void execute_command(ConnectionPtr& conn, QVariantMap const& cmd);
 
       ///
       /// The manager is started from the class Application, but can
       /// be stopped anywhere.
       ///
-      void Start(std::string const& watchdogId);
-      void Stop();
+      void start(std::string const& watchdogId);
+      void stop();
+      void refresh_networks();
     };
 
   }

@@ -1,19 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       plasma/watchdog
-//
-// license       infinit
-//
-// author        Raphael Londeix   [Sun 04 Mar 2012 09:08:04 AM CET]
-//
-
-#ifndef INFINITNETWORK_HH
-# define INFINITNETWORK_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#ifndef  PLASMA_WATCHDOG_INFINITNETWORK_HH
+# define PLASMA_WATCHDOG_INFINITNETWORK_HH
 
 # include <string>
 
@@ -27,13 +13,11 @@ namespace plasma
   namespace watchdog
   {
 
-      class Manager;
-      namespace meta = ::plasma::metaclient;
-//
-// ---------- classes ---------------------------------------------------------
-//
+    class Manager;
+    namespace meta = ::plasma::metaclient;
 
-    class InfinitNetwork : QObject
+    class InfinitNetwork
+      : QObject
     {
       Q_OBJECT
 
@@ -47,34 +31,28 @@ namespace plasma
     public:
       InfinitNetwork(Manager& manager, meta::NetworkResponse const& response);
       ~InfinitNetwork();
-      void Update(meta::NetworkResponse const& response);
+      void update(meta::NetworkResponse const& response);
 
     private:
-      void _PrepareDirectory();
-      void _Update();
-      void _CreateNetworkRootBlock();
-      void _OnGotDescriptor(meta::UpdateNetworkResponse const& response);
-      void _OnAnyError(meta::MetaClient::Error error,
-                       std::string const& reason);
-      void _RegisterDevice();
-      void _OnDeviceRegistered(meta::UpdateNetworkResponse const& response);
-      void _OnNetworkNodes(meta::NetworkNodesResponse const& response);
-      void _StartProcess();
+      void _prepare_directory();
+      void _update();
+      void _create_network_root_block();
+      void _on_got_descriptor(meta::UpdateNetworkResponse const& response);
+      void _on_any_error(meta::MetaClient::Error error,
+                         std::string const& reason);
+      void _register_device();
+      void _on_device_registered(meta::UpdateNetworkResponse const& response);
+      void _on_network_nodes(meta::NetworkNodesResponse const& response);
+      void _start_process();
 
     private Q_SLOTS:
-      void _OnProcessStarted();
-      void _OnProcessError(QProcess::ProcessError error);
-      void _OnProcessFinished(int exit_code, QProcess::ExitStatus exit_status);
+      void _on_process_started();
+      void _on_process_error(QProcess::ProcessError error);
+      void _on_process_finished(int exit_code,
+                                QProcess::ExitStatus exit_status);
     };
 
   }
 }
 
-
-//
-// ---------- templates -------------------------------------------------------
-//
-
 #endif /* ! INFINITNETWORK_HH */
-
-

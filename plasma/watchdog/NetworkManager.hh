@@ -1,19 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       plasma/watchdog
-//
-// license       infinit
-//
-// author        Raphaël Londeix   [Sun 04 Mar 2012 08:56:11 AM CET]
-//
-
-#ifndef PLASMA_WATCHDOG_NETWORKMANAGER_HH
+#ifndef  PLASMA_WATCHDOG_NETWORKMANAGER_HH
 # define PLASMA_WATCHDOG_NETWORKMANAGER_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 # include <list>
 # include <map>
@@ -29,11 +15,9 @@ namespace plasma
 
     class InfinitNetwork;
     class Manager;
-//
-// ---------- classes ---------------------------------------------------------
-//
 
-      namespace meta = ::plasma::metaclient;
+    namespace meta = ::plasma::metaclient;
+
     ///
     /// This class keep the list of infinit networks instance.
     /// @see InfinitNetwork.hh
@@ -51,22 +35,15 @@ namespace plasma
     public:
       NetworkManager(Manager& manager);
 
-      void UpdateNetworks();
-      void Stop();
+      void update_networks();
+      void stop();
 
     private:
-      void _OnNetworksUpdate(meta::NetworksResponse const& response);
-      void _OnNetworkUpdate(meta::NetworkResponse const& response);
+      void _on_networks_update(meta::NetworksResponse const& response);
+      void _on_network_update(meta::NetworkResponse const& response);
     };
 
   }
 }
 
-
-//
-// ---------- templates -------------------------------------------------------
-//
-
 #endif /* ! NETWORKMANAGER_HH */
-
-

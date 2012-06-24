@@ -1,23 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       plasma/watchdog
-//
-// license       infinit
-//
-// author        Raphael Londeix   [Wed 29 Feb 2012 12:49:18 PM CET]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <stdexcept>
 #include <iostream>
 
 #include <QJson/Parser>
 
-#include "plasma/common/resources.hh"
+#include <elle/log.hh>
+
+#include <plasma/common/resources.hh>
 
 #include "Connection.hh"
 #include "LocalServer.hh"
@@ -25,33 +13,21 @@
 
 using namespace plasma::watchdog;
 
-//
-// ---------- contructors & descructors ---------------------------------------
-//
-
 LocalServer::LocalServer(QCoreApplication& app) :
   QLocalServer(),
   _state(State::Stopped),
   _manager(new Manager(app))
-{
-}
+{}
 
 LocalServer::~LocalServer()
-{
-  std::cerr << "LocalServer::~LocalServer()\n";
-}
+{}
 
-//
-// ---------- methods  --------------------------------------------------------
-//
-
-
-void LocalServer::Start(std::string const& watchdogId)
+void LocalServer::start(std::string const& watchdogId)
 {
   if (this->_state == State::Running)
     return;
 
-  this->_manager->Start(watchdogId);
+  this->_manager->start(watchdogId);
 
   // Trying to create a listening socket
   if (!this->listen(WATCHDOG_SERVER_NAME))
@@ -73,53 +49,53 @@ void LocalServer::Start(std::string const& watchdogId)
 
   this->connect(
       this, SIGNAL(newConnection()),
-      this, SLOT(_OnNewConnection())
+      this, SLOT(_on_new_connection())
   );
 }
 
-void LocalServer::_OnNewConnection()
+void LocalServer::_on_new_connection()
 {
-  QLocalSocket* newSocket = nullptr;
+  QLocalSocket* new_socket = nullptr;
 
-  while ((newSocket = this->nextPendingConnection()) != nullptr)
+  while ((new_socket = this->nextPendingConnection()) != nullptr)
   {
-    std::cout << "{WTG} New socket: " << newSocket << std::endl;
+    elle::log::debug("New socket:", new_socket);
     ConnectionPtr conn{
       new Connection{
-        std::unique_ptr<QLocalSocket>{newSocket}
+        std::unique_ptr<QLocalSocket>{new_socket}
       }
     };
-    std::cout << "{WTG} New connection: " << conn.get() << std::endl;
-    this->_HandleNewConnection(conn);
+    elle::log::debug("New connection:", conn.get());
+    this->_handle_new_connection(conn);
   }
 }
 
-void LocalServer::_HandleNewConnection(ConnectionPtr& conn)
+void LocalServer::_handle_new_connection(ConnectionPtr& conn)
 {
   using namespace std::placeholders;
-  conn->Connect(
-      std::bind(&LocalServer::_OnClientCommand, this, conn, _1),
-      std::bind(&LocalServer::_OnClientError, this, conn, _1)
+  conn->connect(
+      std::bind(&LocalServer::_on_client_command, this, conn, _1),
+      std::bind(&LocalServer::_on_client_error, this, conn, _1)
   );
   // at last, saving it
-  this->_manager->RegisterConnection(conn);
+  this->_manager->register_connection(conn);
 }
 
-void LocalServer::_OnClientError(ConnectionPtr conn, std::string const& error)
+void LocalServer::_on_client_error(ConnectionPtr conn, std::string const& error)
 {
-  std::cerr << "{WTG} Client has an error:" + error + "\n";
-  this->_manager->UnregisterConnection(conn);
+  elle::log::error("Client has an error:", error);
+  this->_manager->unregister_connection(conn);
 }
 
-void LocalServer::_OnClientCommand(ConnectionPtr conn, QByteArray const& data)
+void LocalServer::_on_client_command(ConnectionPtr conn, QByteArray const& data)
 {
   QJson::Parser parser;
   bool result;
   QVariantMap cmd = parser.parse(data, &result).toMap();
   if (!result)
-    std::cerr << "{WTG} Warning: Got invalid command: " << QString(data).toStdString();
+    elle::log::warn("Got invalid command:", QString(data).toStdString());
   else if (!cmd.contains("_id"))
-    std::cerr << "{WTG} Warning: The command has to contain an _id.\n";
+    elle::log::warn("The command has to contain an _id.");
   else
-    this->_manager->ExecuteCommand(conn, cmd);
+    this->_manager->execute_command(conn, cmd);
 }

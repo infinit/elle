@@ -3,7 +3,6 @@
 
 # include <QCoreApplication>
 
-
 namespace plasma
 {
   namespace watchdog
@@ -26,12 +25,10 @@ namespace plasma
       ~Application();
 
       /// Start main loop
-      int Exec();
+      int exec();
     };
 
   }
 }
 
 #endif /* ! APPLICATION_HH */
-
-

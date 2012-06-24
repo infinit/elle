@@ -44,7 +44,7 @@ InfinitNetwork::InfinitNetwork(Manager& manager,
     )
 {
   LOG("Creating new network.");
-  this->_Update();
+  this->_update();
 }
 
 InfinitNetwork::~InfinitNetwork()
@@ -53,14 +53,14 @@ InfinitNetwork::~InfinitNetwork()
   this->_process.waitForFinished();
 }
 
-void InfinitNetwork::Update(meta::NetworkResponse const& response)
+void InfinitNetwork::update(meta::NetworkResponse const& response)
 {
   LOG("Updating network:", response._id);
   this->_description = response;
-  this->_Update();
+  this->_update();
 }
 
-void InfinitNetwork::_Update()
+void InfinitNetwork::_update()
 {
   LOG("Starting network update.");
   if (!this->_home.exists() && !this->_home.mkpath("."))
@@ -72,20 +72,20 @@ void InfinitNetwork::_Update()
   if (!this->_home.exists(descriptionFilename))
     {
       if (!this->_description.descriptor.size())
-        return this->_CreateNetworkRootBlock();
+        return this->_create_network_root_block();
       else
         {
           LOG("Already has a nice descriptor:",
               this->_description.descriptor);
-          this->_PrepareDirectory();
+          this->_prepare_directory();
         }
     }
   else
-    this->_RegisterDevice();
+    this->_register_device();
 }
 
 /// Called when the network does not have any descriptor
-void InfinitNetwork::_CreateNetworkRootBlock()
+void InfinitNetwork::_create_network_root_block()
 {
   LOG("Creating the network descriptor.");
 
@@ -118,13 +118,13 @@ void InfinitNetwork::_CreateNetworkRootBlock()
       nullptr,
       &rootBlock,
       &rootAddress,
-      boost::bind(&InfinitNetwork::_OnGotDescriptor, this, _1),
-      boost::bind(&InfinitNetwork::_OnAnyError, this, _1, _2)
+      boost::bind(&InfinitNetwork::_on_got_descriptor, this, _1),
+      boost::bind(&InfinitNetwork::_on_any_error, this, _1, _2)
   );
 }
 
 /// Prepare the network directory, store root block and network descriptor
-void InfinitNetwork::_PrepareDirectory()
+void InfinitNetwork::_prepare_directory()
 {
   LOG("Dumping root block.");
 
@@ -158,12 +158,12 @@ void InfinitNetwork::_PrepareDirectory()
 
   LOG("Root block stored.");
 
-  this->_RegisterDevice();
+  this->_register_device();
 }
 
 
 /// Append the local device to the network
-void InfinitNetwork::_RegisterDevice()
+void InfinitNetwork::_register_device()
 {
   LOG("Check if the device is registered for this network.");
   lune::Passport passport;
@@ -195,8 +195,8 @@ void InfinitNetwork::_RegisterDevice()
           &this->_description.devices,
           nullptr,
           nullptr,
-          boost::bind(&InfinitNetwork::_OnDeviceRegistered, this, _1),
-          boost::bind(&InfinitNetwork::_OnAnyError, this, _1, _2)
+          boost::bind(&InfinitNetwork::_on_device_registered, this, _1),
+          boost::bind(&InfinitNetwork::_on_any_error, this, _1, _2)
       );
     }
   else
@@ -204,25 +204,25 @@ void InfinitNetwork::_RegisterDevice()
       LOG("Get network nodes.");
       this->_manager.meta().GetNetworkNodes(
           this->_description._id,
-          boost::bind(&InfinitNetwork::_OnNetworkNodes, this, _1),
-          boost::bind(&InfinitNetwork::_OnAnyError, this, _1, _2)
+          boost::bind(&InfinitNetwork::_on_network_nodes, this, _1),
+          boost::bind(&InfinitNetwork::_on_any_error, this, _1, _2)
       );
     }
 }
 
-void InfinitNetwork::_OnDeviceRegistered(meta::UpdateNetworkResponse const& response)
+void InfinitNetwork::_on_device_registered(meta::UpdateNetworkResponse const& response)
 {
   LOG("Device successfully registered.");
   assert(response.updated_network_id == this->_description._id);
   this->_manager.meta().GetNetworkNodes(
       this->_description._id,
-      boost::bind(&InfinitNetwork::_OnNetworkNodes, this, _1),
-      boost::bind(&InfinitNetwork::_OnAnyError, this, _1, _2)
+      boost::bind(&InfinitNetwork::_on_network_nodes, this, _1),
+      boost::bind(&InfinitNetwork::_on_any_error, this, _1, _2)
   );
 }
 
 /// Update the network nodes set when everything is good
-void InfinitNetwork::_OnNetworkNodes(meta::NetworkNodesResponse const& response)
+void InfinitNetwork::_on_network_nodes(meta::NetworkNodesResponse const& response)
 {
   LOG("Got network nodes:");
   lune::Set locusSet;
@@ -244,10 +244,10 @@ void InfinitNetwork::_OnNetworkNodes(meta::NetworkNodesResponse const& response)
 
   if (locusSet.Store(this->_description.name) == elle::Status::Error)
     throw std::runtime_error("Cannot store the locus set");
-  this->_StartProcess();
+  this->_start_process();
 
 }
-void InfinitNetwork::_OnGotDescriptor(meta::UpdateNetworkResponse const& response)
+void InfinitNetwork::_on_got_descriptor(meta::UpdateNetworkResponse const& response)
 {
   LOG("Got network descriptor.");
   // XXX updated is none here, correct meta
@@ -265,17 +265,17 @@ void InfinitNetwork::_OnGotDescriptor(meta::UpdateNetworkResponse const& respons
   this->_description.root_block = response.root_block;
   this->_description.descriptor = response.descriptor;
 
-  this->_PrepareDirectory();
+  this->_prepare_directory();
 }
 
-void InfinitNetwork::_OnAnyError(meta::MetaClient::Error error, std::string const& err)
+void InfinitNetwork::_on_any_error(meta::MetaClient::Error error, std::string const& err)
 {
   LOG("Got error while creating the network '",
       elle::iomanip::nosep, this->_description.name,
       ": ", err, " (", (int)error, ").");
 }
 
-void InfinitNetwork::_StartProcess()
+void InfinitNetwork::_start_process()
 {
   LOG("Starting infinit process");
   QDir mnt(
@@ -316,17 +316,17 @@ void InfinitNetwork::_StartProcess()
 
   this->connect(
       &this->_process, SIGNAL(started()),
-      this, SLOT(_OnProcessStarted())
+      this, SLOT(_on_process_started())
   );
 
   this->connect(
       &this->_process, SIGNAL(error(QProcess::ProcessError)),
-      this, SLOT(_OnProcessError(QProcess::ProcessError))
+      this, SLOT(_on_process_error(QProcess::ProcessError))
   );
 
   this->connect(
       &this->_process, SIGNAL(finished(int, QProcess::ExitStatus)),
-      this, SLOT(_OnProcessFinished(int, QProcess::ExitStatus))
+      this, SLOT(_on_process_finished(int, QProcess::ExitStatus))
   );
 
   this->_process.start(
@@ -342,17 +342,17 @@ void InfinitNetwork::_StartProcess()
 // ---------- slots ------------------------------------------------------------
 //
 
-void InfinitNetwork::_OnProcessStarted()
+void InfinitNetwork::_on_process_started()
 {
   LOG("Process successfully started.");
 }
 
-void InfinitNetwork::_OnProcessError(QProcess::ProcessError)
+void InfinitNetwork::_on_process_error(QProcess::ProcessError)
 {
   LOG("Process has an error.");
 }
 
-void InfinitNetwork::_OnProcessFinished(int exit_code, QProcess::ExitStatus)
+void InfinitNetwork::_on_process_finished(int exit_code, QProcess::ExitStatus)
 {
   LOG("Process finished with exit code ", exit_code);
   if (true || exit_code) // XXX

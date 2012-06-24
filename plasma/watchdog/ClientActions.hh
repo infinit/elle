@@ -1,19 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       plasma/watchdog
-//
-// license       infinit
-//
-// author        Raphaël Londeix   [Thu 01 Mar 2012 12:53:50 PM CET]
-//
-
-#ifndef PLASMA_WATCHDOG_CLIENTACTIONS_HH
+#ifndef  PLASMA_WATCHDOG_CLIENTACTIONS_HH
 # define PLASMA_WATCHDOG_CLIENTACTIONS_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 # include <QVariantList>
 
@@ -25,10 +11,6 @@ namespace plasma
     class Client;
     class Connection;
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// Store all local client commands. This class acts as a god interface
     /// between components.
@@ -38,9 +20,9 @@ namespace plasma
     /// the key "_id" which is watchdog id. Any other key/value pair is allowed
     /// and may represent the command arguments.
     ///
-    /// The is also a JSon dictionary that contains a "success" key, and
-    /// when its value (a boolean) is false, then the response also contains
-    /// the "error" key, which is a usefull descriptive string ;)
+    /// The response is also a JSon dictionary that contains a "success" key,
+    /// and when its value (a boolean) is false, then the response also
+    /// contains the "error" key, which is a usefull descriptive string ;)
     ///
     /// Commands are described below with their own callback.
     ///
@@ -71,7 +53,7 @@ namespace plasma
       ///
       ///   R: no response
       ///
-      void _OnRun(Connection& conn, Client& client, QVariantMap const& args);
+      void _on_run(Connection& conn, Client& client, QVariantMap const& args);
 
 
       ///
@@ -83,7 +65,21 @@ namespace plasma
       ///
       ///   R: no response
       ///
-      void _OnStop(Connection& conn, Client& client, QVariantMap const& args);
+      void _on_stop(Connection& conn, Client& client, QVariantMap const& args);
+
+      ///
+      /// Refresh all networks (calls meta).
+      ///   Q: {
+      ///       "command": "refresh_networks",
+      ///       "_id": "watchdog id",
+      ///   }
+      ///
+      ///   R: no response
+      ///
+      void _on_refresh_networks(Connection& conn,
+                                Client& client,
+                                QVariantMap const& args);
+
     };
 
   }
