@@ -135,15 +135,8 @@ namespace surface
       req["email"] = email;
       req["password"] = this->_hash_password(email, password);
       auto res = this->_api->post("/user/login", req);
-      auto& dict = dynamic_cast<json::Dictionary&>(*res);
-      if (!dict["success"])
-        {
-          std::string str_error;
-          dict["error"].Load(str_error);
-          throw std::runtime_error(
-            "Login error:" + str_error
-          );
-        }
+      if ((*res)["success"] == false)
+        throw std::runtime_error((*res)["error"].as<std::string>());
     }
 
     void State::register_(std::string const& fullname,
