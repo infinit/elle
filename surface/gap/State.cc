@@ -46,7 +46,7 @@ namespace surface
       : _infinit_home(getenv("INFINIT_HOME"))
       , _networks()
       , _networks_dirty(true)
-      , _api(new API)
+      , _api(new meta::MetaClient)
       , _updater_path(updater_path)
     {
       if (this->_infinit_home.empty())
@@ -131,27 +131,30 @@ namespace surface
 
     void State::login(std::string const& email, std::string const& password)
     {
-      json::Dictionary req;
-      req["email"] = email;
-      req["password"] = this->_hash_password(email, password);
-      auto res = this->_api->post("/user/login", req);
-      if ((*res)["success"] == false)
-        throw std::runtime_error((*res)["error"].as<std::string>());
+      auto res = this->_api->Login(email, password);
+      //json::Dictionary req;
+      //req["email"] = email;
+      //req["password"] = this->_hash_password(email, password);
+      //auto res = this->_api->post("/user/login", req);
+      //if ((*res)["success"] == false)
+      //  throw std::runtime_error((*res)["error"].as<std::string>());
     }
 
     void State::register_(std::string const& fullname,
                           std::string const& email,
                           std::string const& password)
     {
-      json::Dictionary req;
-      req["fullname"] = fullname;
-      req["email"] = email;
-      req["password"] = password;
-      req["admin_token"] = "fdjskfdakl;asdklwqioefwiopfdsjkl;daskl;askl;fsd";
+      //auto res = this->_api->Register(email, password);
 
-      auto res = this->_api->post("/user/register", req);
-      auto& dict = dynamic_cast<json::Dictionary&>(*res);
-      elle::log::debug("Got register response:", res->repr());
+      //json::Dictionary req;
+      //req["fullname"] = fullname;
+      //req["email"] = email;
+      //req["password"] = password;
+      //req["admin_token"] = "fdjskfdakl;asdklwqioefwiopfdsjkl;daskl;askl;fsd";
+
+      //auto res = this->_api->post("/user/register", req);
+      //auto& dict = dynamic_cast<json::Dictionary&>(*res);
+      //elle::log::debug("Got register response:", res->repr());
     }
 
   }

@@ -3,6 +3,9 @@
 
 # include <string>
 # include <map>
+
+# include <plasma/metaclient/MetaClient.hh>
+
 namespace surface
 {
   namespace gap
@@ -11,13 +14,15 @@ namespace surface
     struct Network;
     class API;
 
+    namespace meta = ::plasma::metaclient;
+
     class State
     {
     private:
       std::string                     _infinit_home;
       std::map<std::string, Network*> _networks;
       bool                            _networks_dirty;
-      API*                            _api;
+      meta::MetaClient*               _api;
       std::string                     _updater_path;
 
     public:
