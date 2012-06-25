@@ -1,8 +1,11 @@
 #ifndef  SURFACE_GAP_STATE_HH
 # define SURFACE_GAP_STATE_HH
 
+# include <plasma/metaclient/MetaClient.hh>
+
 # include <string>
 # include <map>
+
 namespace surface
 {
   namespace gap
