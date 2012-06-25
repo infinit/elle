@@ -12,7 +12,6 @@ namespace surface
   {
 
     struct Network;
-    class API;
 
     namespace meta = ::plasma::metaclient;
 
@@ -35,6 +34,7 @@ namespace surface
       void register_(std::string const& fullname,
                      std::string const& email,
                      std::string const& password);
+      void create_device(std::string const& name);
 
     private:
       std::string _watchdog_id() const;

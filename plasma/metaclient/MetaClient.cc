@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       plasma/metaclient
-//
-// license       infinit
-//
-// author        Raphaël Londeix   [Tue 14 Feb 2012 04:17:19 PM CET]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <cassert>
 #include <sstream>
 #include <iostream>
@@ -20,7 +6,9 @@
 #include <QJson/Parser>
 #include <QJson/Serializer>
 
-#include "plasma/common/resources.hh"
+#include <elle/log.hh>
+
+#include <plasma/common/resources.hh>
 
 #include "MetaClient.hh"
 
@@ -265,8 +253,8 @@ namespace {
 // ---------- contructors & descructors ---------------------------------------
 //
 
-MetaClient::MetaClient(QCoreApplication& app) :
-  _network(&app)
+MetaClient::MetaClient(QCoreApplication& app)
+  : _network(&app)
 {
   this->connect(
       &this->_network, SIGNAL(finished(QNetworkReply*)),
@@ -274,8 +262,17 @@ MetaClient::MetaClient(QCoreApplication& app) :
   );
 }
 
-MetaClient::MetaClient(QApplication& app) :
-  _network(&app)
+MetaClient::MetaClient(QApplication& app)
+  : _network(&app)
+{
+  this->connect(
+      &this->_network, SIGNAL(finished(QNetworkReply*)),
+      this, SLOT(_OnRequestFinished(QNetworkReply*))
+  );
+}
+
+MetaClient::MetaClient()
+  : _network()
 {
   this->connect(
       &this->_network, SIGNAL(finished(QNetworkReply*)),
@@ -466,12 +463,22 @@ void MetaClient::_OnRequestFinished(QNetworkReply* reply)
   if (it != this->_handlers.end())
     {
       RequestHandler* handler = it->second;
-      assert(handler != nullptr && "Corrupter map");
-      this->_handlers.erase(it); // WARNING do not use it from here
-      if (reply->error() == QNetworkReply::NoError)
-        handler->OnReply(reply->readAll());
-      else
-        handler->OnNetworkError(reply->error());
+      assert(handler != nullptr && "Corrupted map");
+      this->_handlers.erase(it); // WARNING do not use 'it' from here
+      try
+        {
+          if (reply->error() == QNetworkReply::NoError)
+            handler->OnReply(reply->readAll());
+          else
+            handler->OnNetworkError(reply->error());
+        }
+      catch (std::exception const& err)
+        {
+          delete handler;
+          reply->deleteLater();
+          Q_EMIT finished();
+          elle::log::error("Caught handler exception:", err.what());
+        }
       delete handler;
     }
   else
@@ -479,4 +486,5 @@ void MetaClient::_OnRequestFinished(QNetworkReply* reply)
       std::cerr << "Cannot find any registered handler for this reply\n";
     }
   reply->deleteLater();
+  Q_EMIT finished();
 }

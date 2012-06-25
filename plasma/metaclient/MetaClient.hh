@@ -1,25 +1,18 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       plasma/metaclient
-//
-// license       infinit
-//
-// author        Raphaël Londeix   [Tue 14 Feb 2012 04:15:18 PM CET]
-//
-
 #ifndef PLASMA_METCLIENT_METACLIENT_HH
 # define PLASMA_METCLIENT_METACLIENT_HH
 
 # include <functional>
 # include <list>
 # include <map>
+# include <stdexcept> // XXX
 
 # include <QCoreApplication>
 # include <QApplication>
 # include <QNetworkAccessManager>
 # include <QNetworkReply>
 # include <QVariantMap>
+
+# include <elle/print.hh>
 
 namespace plasma
 {
@@ -131,6 +124,7 @@ namespace plasma
       /// ctor & dtor
       MetaClient(QCoreApplication& app);
       MetaClient(QApplication& app);
+      MetaClient();
       ~MetaClient();
 
       /// Each method represent an API call
@@ -138,6 +132,40 @@ namespace plasma
                  std::string const& password,
                  LoginCallback callback,
                  Errback errback = nullptr);
+
+      LoginResponse Login(std::string const& email,
+                          std::string const& password)
+      {
+        struct {
+            LoginResponse response;
+            void operator ()(LoginResponse const& response)
+            { this->response = response; }
+        } callback;
+
+        struct {
+            bool called;
+            Error error;
+            std::string string;
+            void operator ()(Error error, std::string const string)
+            {
+              this->called = true;
+              this->error = error;
+              this->string = string;
+            }
+        } errback;
+
+        QEventLoop loop;
+        this->Login(email, password, callback, errback);
+        QObject::connect(this, SIGNAL(finished()), &loop, SLOT(quit()));
+        loop.exec();
+
+        if (errback.called)
+          throw std::runtime_error(
+            elle::sprint("Got error", (int) errback.error,":", errback.string)
+          );
+
+        return callback.response;
+      }
 
       void CreateDevice(std::string const& name,
                         std::string const& endpoint,
@@ -186,6 +214,8 @@ namespace plasma
     private Q_SLOTS:
       void _OnRequestFinished(QNetworkReply* reply);
 
+    Q_SIGNALS:
+      void finished();
     };
 
   } // !metaclient
