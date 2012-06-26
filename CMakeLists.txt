@@ -147,6 +147,14 @@ if(INFINIT_MACOSX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 endif(INFINIT_MACOSX)
 
+# Workaround to remove '-rdynamic' flag
+# fix scheduled for 2.8.1
+# http://www.itk.org/Bug/view.php?id=9985
+# http://www.itk.org/Bug/view.php?id=5833
+set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
+set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
+
+
 add_subdirectory(comet)
 add_subdirectory(elle)
 add_subdirectory(nucleus)
