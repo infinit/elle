@@ -12,7 +12,10 @@
 # include <QNetworkReply>
 # include <QVariantMap>
 
+# include <elle/log.hh>
 # include <elle/print.hh>
+
+# include <plasma/common/resources.hh>
 
 namespace plasma
 {
@@ -26,7 +29,6 @@ namespace plasma
       std::string error;
     };
 
-    /// Login response
     struct LoginResponse : Response
     {
       std::string  token;
@@ -34,6 +36,9 @@ namespace plasma
       std::string  email;
       std::string  identity;
     };
+
+    struct RegisterResponse : Response
+    {};
 
     struct NetworksResponse : Response
     {
@@ -88,6 +93,7 @@ namespace plasma
     public:
       enum class Error
       {
+        no_error = 0,
         ConnectionFailure,
         InvalidContent,
         ServerError,
@@ -96,6 +102,7 @@ namespace plasma
 
       /// Callbacks for API calls
       typedef std::function<void(LoginResponse const&)> LoginCallback;
+      typedef std::function<void(RegisterResponse const&)> RegisterCallback;
       typedef std::function<void(NetworksResponse const&)> NetworksCallback;
       typedef std::function<void(NetworkResponse const&)> NetworkCallback;
       typedef std::function<void(CreateDeviceResponse const&)> CreateDeviceCallback;
@@ -110,21 +117,23 @@ namespace plasma
       typedef std::map<QNetworkReply*, RequestHandler*> HandlerMap;
 
     private:
-      /// Network loop
+      QCoreApplication*     _app;
+      // Network loop
       QNetworkAccessManager _network;
-
-      /// Connection token
+      // Connection token
       QByteArray            _token;
-
-      /// Current requests handlers
+      // Current requests handlers
       HandlerMap            _handlers;
+      // server url
+      std::string           _server;
+
 
     public:
 
       /// ctor & dtor
-      MetaClient(QCoreApplication& app);
-      MetaClient(QApplication& app);
-      MetaClient();
+      MetaClient(QCoreApplication& app, std::string const& server = INFINIT_META_URL);
+      MetaClient(QApplication& app, std::string const& server = INFINIT_META_URL);
+      MetaClient(std::string const& server = INFINIT_META_URL);
       ~MetaClient();
 
       /// Each method represent an API call
@@ -133,39 +142,12 @@ namespace plasma
                  LoginCallback callback,
                  Errback errback = nullptr);
 
-      LoginResponse Login(std::string const& email,
-                          std::string const& password)
-      {
-        struct {
-            LoginResponse response;
-            void operator ()(LoginResponse const& response)
-            { this->response = response; }
-        } callback;
+      void Register(std::string const& email,
+                    std::string const& fullname,
+                    std::string const& password,
+                    RegisterCallback callback,
+                    Errback errback = nullptr);
 
-        struct {
-            bool called;
-            Error error;
-            std::string string;
-            void operator ()(Error error, std::string const string)
-            {
-              this->called = true;
-              this->error = error;
-              this->string = string;
-            }
-        } errback;
-
-        QEventLoop loop;
-        this->Login(email, password, callback, errback);
-        QObject::connect(this, SIGNAL(finished()), &loop, SLOT(quit()));
-        loop.exec();
-
-        if (errback.called)
-          throw std::runtime_error(
-            elle::sprint("Got error", (int) errback.error,":", errback.string)
-          );
-
-        return callback.response;
-      }
 
       void CreateDevice(std::string const& name,
                         std::string const& endpoint,
@@ -180,12 +162,12 @@ namespace plasma
                         UpdateDeviceCallback callback,
                         Errback errback = nullptr);
 
-      void GetNetworks(NetworksCallback callback,
+      void Networks(NetworksCallback callback,
                        Errback errback = nullptr);
 
-      void GetNetwork(std::string const& id,
-                      NetworkCallback callback,
-                      Errback errback = nullptr);
+      void Network(std::string const& id,
+                   NetworkCallback callback,
+                   Errback errback = nullptr);
 
       void UpdateNetwork(std::string const& id,
                          std::string const* name,
@@ -196,13 +178,59 @@ namespace plasma
                          UpdateNetworkCallback callback,
                          Errback errback = nullptr);
 
-      void GetNetworkNodes(std::string const& id,
-                           NetworkNodesCallback cb,
-                           Errback errback = nullptr);
+      void NetworkNodes(std::string const& id,
+                        NetworkNodesCallback cb,
+                        Errback errback = nullptr);
 
       /// properties
       QByteArray const& token() const { return this->_token; }
       void token(QByteArray const& token) { this->_token = token; }
+
+#define __SYNC_CALL(call)                                                     \
+      template<typename... Args>                                              \
+      call##Response sync_##call(Args... args)                                \
+      {                                                                       \
+        call##Response response;                                              \
+        struct {                                                              \
+            call##Response& response;                                         \
+            void operator ()(call##Response const& response)                  \
+            { this->response = response; }                                    \
+        } callback{response};                                                 \
+                                                                              \
+        std::string error;                                                    \
+                                                                              \
+        struct {                                                              \
+            std::string& string;                                              \
+            void operator ()(Error error, std::string const string)           \
+            {                                                                 \
+              assert(string.size() > 0);                                      \
+              this->string = elle::sprint(string, "code =", (int) error);     \
+            }                                                                 \
+        } errback{error};                                                     \
+                                                                              \
+        this->call(args..., callback, errback);                               \
+        QObject::connect(this, SIGNAL(finished()), _app, SLOT(quit()));       \
+        _app->exec();                                                         \
+                                                                              \
+        if (error.size())                                                     \
+          {                                                                   \
+            throw std::runtime_error(                                         \
+              elle::sprint("Got callback error:", error)                      \
+            );                                                                \
+          }                                                                   \
+                                                                              \
+        return response;                                                      \
+      }                                                                       \
+  /**/
+      __SYNC_CALL(Login);
+      __SYNC_CALL(Register);
+      __SYNC_CALL(CreateDevice);
+      __SYNC_CALL(UpdateDevice);
+      __SYNC_CALL(Networks);
+      __SYNC_CALL(Network);
+      __SYNC_CALL(UpdateNetwork);
+      __SYNC_CALL(NetworkNodes);
+#undef __SYNC_CALL
 
     private:
       void _Post(std::string const& url,

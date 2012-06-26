@@ -3,6 +3,7 @@
 #include <iostream>
 #include <stdexcept>
 
+#include <QSslConfiguration>
 #include <QJson/Parser>
 #include <QJson/Serializer>
 
@@ -180,7 +181,7 @@ namespace {
             response.success = map["success"].toBool();                     \
             if (!response.success)                                          \
               {                                                             \
-                response.error = _GetString(map, "error");                  \
+                response.error = _GetString(map, "error", "(no error)");    \
                 return ;                                                    \
               }                                                             \
           }                                                                 \
@@ -201,6 +202,9 @@ namespace {
       response.email    =        _GetNonEmptyString(map, "email");
       response.identity =     _GetNonEmptyString(map, "identity");
     }
+
+    FILLER(RegisterResponse)
+    {}
 
     FILLER(NetworksResponse)
     {
@@ -253,8 +257,12 @@ namespace {
 // ---------- contructors & descructors ---------------------------------------
 //
 
-MetaClient::MetaClient(QCoreApplication& app)
-  : _network(&app)
+MetaClient::MetaClient(QCoreApplication& app, std::string const& server)
+  : _app(nullptr)
+  , _network(&app)
+  , _token()
+  , _handlers()
+  , _server(server)
 {
   this->connect(
       &this->_network, SIGNAL(finished(QNetworkReply*)),
@@ -262,18 +270,37 @@ MetaClient::MetaClient(QCoreApplication& app)
   );
 }
 
-MetaClient::MetaClient(QApplication& app)
-  : _network(&app)
+MetaClient::MetaClient(QApplication& app, std::string const& server)
+  : _app(nullptr)
+  , _network(&app)
+  , _token()
+  , _handlers()
+  , _server(server)
 {
+  QSslConfiguration sslconf(QSslConfiguration::defaultConfiguration());
+  QSslConfiguration::setDefaultConfiguration(sslconf);
   this->connect(
       &this->_network, SIGNAL(finished(QNetworkReply*)),
       this, SLOT(_OnRequestFinished(QNetworkReply*))
   );
 }
 
-MetaClient::MetaClient()
-  : _network()
+namespace {
+    int dummy_argc = 0;
+    char** dummy_argv = nullptr;
+}
+
+MetaClient::MetaClient(std::string const& server)
+  : _app(QCoreApplication::instance())
+  , _network(_app)
+  , _token()
+  , _handlers()
+  , _server(server)
 {
+  if (_app == nullptr)
+    {
+      _app = new QCoreApplication(dummy_argc, dummy_argv);
+    }
   this->connect(
       &this->_network, SIGNAL(finished(QNetworkReply*)),
       this, SLOT(_OnRequestFinished(QNetworkReply*))
@@ -286,6 +313,7 @@ MetaClient::~MetaClient()
     std::cerr << "WARNING: Client closed while there are "
               << this->_handlers.size()
               << " request pending.\n";
+  // XXX _app is not deleted
 }
 
 //
@@ -300,18 +328,32 @@ void MetaClient::Login(std::string const& email,
   QVariantMap req;
   req.insert("email", email.c_str());
   req.insert("password", password.c_str());
-  this->_Post("/login", req, new LoginResponseHandler(callback, errback));
+  this->_Post("/user/login", req, new LoginResponseHandler(callback, errback));
 }
 
-void MetaClient::GetNetworks(NetworksCallback callback,
-                             Errback errback)
+void MetaClient::Register(std::string const& email,
+                          std::string const& fullname,
+                          std::string const& password,
+                          RegisterCallback callback,
+                          Errback errback)
+{
+  QVariantMap req;
+  req.insert("email", email.c_str());
+  req.insert("fullname", fullname.c_str());
+  req.insert("password", password.c_str());
+  this->_Post("/user/register", req,
+              new RegisterResponseHandler(callback, errback));
+}
+
+void MetaClient::Networks(NetworksCallback callback,
+                          Errback errback)
 {
   this->_Get("/networks", new NetworksResponseHandler(callback, errback));
 }
 
-void MetaClient::GetNetwork(std::string const& id,
-                           NetworkCallback callback,
-                           Errback errback)
+void MetaClient::Network(std::string const& id,
+                         NetworkCallback callback,
+                         Errback errback)
 {
   this->_Get("/network/" + id, new NetworkResponseHandler(callback, errback));
 }
@@ -398,9 +440,9 @@ void MetaClient::UpdateNetwork(std::string const& id,
 }
 
 
-void MetaClient::GetNetworkNodes(std::string const& id,
-                                 NetworkNodesCallback callback,
-                                 Errback errback)
+void MetaClient::NetworkNodes(std::string const& id,
+                              NetworkNodesCallback callback,
+                              Errback errback)
 {
   this->_Get(
       "/network/" + id + "/nodes",
@@ -417,7 +459,7 @@ void MetaClient::_Post(std::string const& url,
                        QVariantMap const& data,
                        RequestHandler* handler)
 {
-  QString uri((INFINIT_META_URL + url).c_str());
+  QString uri((this->_server + url).c_str());
 
   QByteArray json = QJson::Serializer().serialize(data);
   QNetworkRequest request{QUrl{uri}};
@@ -439,7 +481,7 @@ void MetaClient::_Post(std::string const& url,
 
 void MetaClient::_Get(std::string const& url, RequestHandler* handler)
 {
-  QString uri((INFINIT_META_URL + url).c_str());
+  QString uri((this->_server + url).c_str());
   QNetworkRequest request{QUrl{uri}};
   if (this->_token.size() > 0)
     request.setRawHeader("Authorization", this->_token);
@@ -458,6 +500,7 @@ void MetaClient::_Get(std::string const& url, RequestHandler* handler)
 
 void MetaClient::_OnRequestFinished(QNetworkReply* reply)
 {
+  elle::log::debug("Request finished");
   assert(reply != nullptr);
   auto it = this->_handlers.find(reply);
   if (it != this->_handlers.end())

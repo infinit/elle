@@ -2,6 +2,11 @@
 #include <cstdlib>
 
 #include <elle/log.hh>
+#include <elle/Elle.hh>
+#include <lune/Lune.hh>
+#include <nucleus/Nucleus.hh>
+
+#include <elle/idiom/Close.hh>
 
 #include "gap.h"
 #include "State.hh"
@@ -28,6 +33,13 @@ extern "C"
     gap_state_t* gap_new(char const* updater_path)
     {
       assert(updater_path != nullptr);
+      if (elle::Elle::Initialize() == elle::Status::Error ||
+          lune::Lune::Initialize() == elle::Status::Error ||
+          nucleus::Nucleus::Initialize() == elle::Status::Error)
+        {
+          elle::log::error("Cannot initialize root components");
+          return nullptr;
+        }
       return __TO_C(new (std::nothrow) surface::gap::State(updater_path));
     }
 
@@ -75,6 +87,11 @@ extern "C"
     int gap_update_infinit_home(gap_state_t* state)
     {
       __WRAP_CPP(state, update_infinit_home);
+    }
+
+    int gap_meta_alive(gap_state_t* state)
+    {
+      return 1;
     }
 
 } // ! extern "C"

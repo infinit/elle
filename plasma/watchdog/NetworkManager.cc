@@ -22,7 +22,7 @@ void NetworkManager::stop()
 void NetworkManager::update_networks()
 {
   using namespace std::placeholders;
-  this->_manager.meta().GetNetworks(
+  this->_manager.meta().Networks(
       std::bind(&NetworkManager::_on_networks_update, this, _1)
   );
 }
@@ -38,7 +38,7 @@ void NetworkManager::_on_networks_update(meta::NetworksResponse const& response)
         {
           visited.insert(*it);
           using namespace std::placeholders;
-          this->_manager.meta().GetNetwork(
+          this->_manager.meta().Network(
               *it,
               std::bind(&NetworkManager::_on_network_update, this, _1)
           );

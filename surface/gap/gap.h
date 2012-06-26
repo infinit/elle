@@ -44,6 +44,9 @@ extern "C" {
                      char const* email,
                      char const* password);
 
+    /// Returns 1 if meta is alive, 0 if not, -1 in case of error
+    int gap_meta_alive(gap_state_t* state);
+
 # ifdef __cplusplus
 } // ! extern "C"
 # endif
