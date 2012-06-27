@@ -47,12 +47,11 @@ namespace surface
       std::string name;
     };
 
-    State::State(std::string const& updater_path)
+    State::State()
       : _infinit_home(getenv("INFINIT_HOME"))
       , _networks()
       , _networks_dirty(true)
       , _api(new meta::MetaClient("http://127.0.0.1:12345"))
-      , _updater_path(updater_path)
     {
       if (this->_infinit_home.empty())
         {
@@ -70,12 +69,6 @@ namespace surface
       this->_networks.clear();
       delete this->_api;
       this->_api = nullptr;
-    }
-
-    void State::update_infinit_home()
-    {
-      if (::system(this->_updater_path.c_str()) != 0)
-        throw std::runtime_error("Couldn't launch the process");
     }
 
     void State::refresh_networks()

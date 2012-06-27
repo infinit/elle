@@ -285,11 +285,6 @@ MetaClient::MetaClient(QApplication& app, std::string const& server)
   );
 }
 
-namespace {
-    int dummy_argc = 0;
-    char** dummy_argv = nullptr;
-}
-
 MetaClient::MetaClient(std::string const& server)
   : _app(QCoreApplication::instance())
   , _network(_app)
@@ -299,6 +294,8 @@ MetaClient::MetaClient(std::string const& server)
 {
   if (_app == nullptr)
     {
+      static int dummy_argc = 0;
+      static char* dummy_argv[] = {};
       _app = new QCoreApplication(dummy_argc, dummy_argv);
     }
   this->connect(

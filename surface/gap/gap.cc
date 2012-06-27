@@ -14,7 +14,7 @@
 extern "C"
 {
 
-#define __TO_C(st)    reinterpret_cast<gap_state_t*>(st)
+#define __TO_C(st)    reinterpret_cast<gap_State*>(st)
 #define __TO_CPP(st)  reinterpret_cast<surface::gap::State*>(st)
 // automate cpp wrapping
 # define __WRAP_CPP(_state_, _func_, ...)                                     \
@@ -24,38 +24,55 @@ extern "C"
     catch (std::exception const& err)                                         \
     {                                                                         \
         elle::log::error(#_func_ " error:", err.what());                      \
-        return -1;                                                            \
+        return gap_error;                                                     \
     }                                                                         \
-    return 0                                                                  \
+    return gap_ok                                                             \
   /**/
 
 
-    gap_state_t* gap_new(char const* updater_path)
+    gap_State* gap_new()
     {
-      assert(updater_path != nullptr);
-      if (elle::Elle::Initialize() == elle::Status::Error ||
-          lune::Lune::Initialize() == elle::Status::Error ||
-          nucleus::Nucleus::Initialize() == elle::Status::Error)
+      static bool initialized = false;
+      if (!initialized)
         {
-          elle::log::error("Cannot initialize root components");
+          initialized = true;
+          if (elle::Elle::Initialize() == elle::Status::Error ||
+              lune::Lune::Initialize() == elle::Status::Error ||
+              nucleus::Nucleus::Initialize() == elle::Status::Error)
+            {
+#include <elle/idiom/Open.hh>
+              show();
+#include <elle/idiom/Close.hh>
+              elle::log::error("Cannot initialize root components");
+              return nullptr;
+            }
+        }
+
+      try
+        {
+          return __TO_C(new surface::gap::State());
+        }
+      catch (std::exception const& err)
+        {
+          elle::log::error("Cannot initialize gap state:", err.what());
           return nullptr;
         }
-      return __TO_C(new (std::nothrow) surface::gap::State(updater_path));
     }
 
-    void gap_free(gap_state_t* state)
+    void gap_free(gap_State* state)
     {
       delete __TO_CPP(state);
     }
 
-    int gap_refresh_networks(gap_state_t* state)
+    gap_Status gap_refresh_networks(gap_State* state)
     {
       __WRAP_CPP(state, refresh_networks);
     }
 
-    char const* gap_path_to_network(gap_state_t* state, char const* path)
+    char const* gap_path_to_network(gap_State* state, char const* path)
     {
       assert(state != nullptr);
+      assert(path != nullptr);
       try
         {
           std::string const& network = __TO_CPP(state)->path_to_network(path);
@@ -69,29 +86,36 @@ extern "C"
     };
 
 
-    int gap_login(gap_state_t* state,
-                  char const* email,
-                  char const* password)
+    gap_Status gap_login(gap_State* state,
+                         char const* email,
+                         char const* password)
     {
+      assert(email != nullptr);
+      assert(password != nullptr);
       __WRAP_CPP(state, login, email, password);
     }
 
-    int gap_register(gap_state_t* state,
-                     char const* fullname,
-                     char const* email,
-                     char const* password)
+    gap_Status gap_register(gap_State* state,
+                            char const* fullname,
+                            char const* email,
+                            char const* password)
     {
+      assert(fullname != nullptr);
+      assert(email != nullptr);
+      assert(password != nullptr);
       __WRAP_CPP(state, register_, fullname, email, password);
     }
 
-    int gap_update_infinit_home(gap_state_t* state)
+    gap_Status gap_meta_alive(gap_State* state)
     {
-      __WRAP_CPP(state, update_infinit_home);
+      return gap_ok;
     }
 
-    int gap_meta_alive(gap_state_t* state)
+    gap_Status gap_create_device(gap_State* state,
+                                 char const* name)
     {
-      return 1;
+      assert(name != nullptr);
+      __WRAP_CPP(state, create_device, name);
     }
 
 } // ! extern "C"
