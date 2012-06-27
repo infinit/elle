@@ -49,12 +49,13 @@ namespace elle
           Data whole;
           whole.Writer() << inputs.tag << event << body;
 
-          reactor::Lock lock(concurrency::scheduler(), _socket_write_lock);
+          infinit::protocol::Packet packet;
+          packet.write((char*)whole.Contents(), whole.Size());
+          packet.flush();
+
+          infinit::protocol::PacketStream ps(*_socket);
           {
-            unsigned char* copy = (unsigned char*)malloc(whole.Size());
-            memcpy(copy, whole.Contents(), whole.Size());
-            infinit::protocol::Packet packet(copy, whole.Size());
-            infinit::protocol::PacketStream ps(*_socket);
+            reactor::Lock lock(elle::concurrency::scheduler(), _socket_write_lock);
             ps.write(packet);
           }
         }

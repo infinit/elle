@@ -94,10 +94,10 @@ namespace elle
 
       infinit::protocol::PacketStream ps(*_socket);
       infinit::protocol::Packet packet(ps.read());
-      unsigned char* copy = (unsigned char*)malloc(packet._data_size);
-      memcpy(copy, packet._data, packet._data_size);
+      unsigned char* copy = (unsigned char*)malloc(packet.size());
+      packet.read((char*)copy, packet.size());
 
-      elle::utility::WeakBuffer buffer(copy, packet._data_size);
+      elle::utility::Buffer buffer(copy, packet.size());
       auto reader = buffer.Reader();
 
       // Allocate the parcel.
