@@ -96,7 +96,7 @@ namespace elle
       infinit::protocol::Packet packet(ps.read());
       unsigned char* copy = (unsigned char*)malloc(packet._data_size);
       memcpy(copy, packet._data, packet._data_size);
-      // Region frame(copy, packet._data_size);
+
       elle::utility::WeakBuffer buffer(copy, packet._data_size);
       auto reader = buffer.Reader();
 

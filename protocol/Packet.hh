@@ -3,36 +3,40 @@
 
 # include <memory>
 
+# include <elle/IOStream.hh>
+# include <elle/Size.hh>
+
 namespace infinit
 {
   namespace protocol
   {
-    class Packet
+    class Packet: public elle::IOStream
     {
     /*-------------.
     | Construction |
     `-------------*/
     public:
-      typedef unsigned char Byte;
+      typedef char Byte;
       typedef unsigned int Size;
-      Packet(Byte* data, Size data_size);
+      Packet();
       Packet(Packet&& source);
       ~Packet();
 
     /*-----------.
-    | Interfaces |
+    | Properties |
     `-----------*/
     public:
-      std::unique_ptr<std::istream> stream() const;
+      elle::Size size() const;
 
     /*--------.
     | Details |
     `--------*/
     private:
+      class StreamBuffer;
+      friend class StreamBuffer;
       Packet(Size data_size);
       Packet(const Packet&);
       friend class PacketStream;
-    public: // FIXME
       Byte* _data;
       unsigned int _data_size;
     };
