@@ -46,20 +46,27 @@ namespace elle
       ELLE_LOG_TRACE_SCOPE("%s: send packet %s with event %s",
                            *this, inputs.tag, event.Identifier());
 
-      Data body;
-      body.Writer() << inputs;
+      try
+        {
+          Data body;
+          body.Writer() << inputs;
 
-      Data whole;
-      whole.Writer() << inputs.tag << event << body;
+          Data whole;
+          whole.Writer() << inputs.tag << event << body;
 
-      {
-        reactor::Lock lock(elle::concurrency::scheduler(), _socket_write_lock);
-        unsigned char* copy = (unsigned char*)malloc(whole.Size());
-        memcpy(copy, whole.Contents(), whole.Size());
-        infinit::protocol::Packet packet(copy, whole.Size());
-        infinit::protocol::PacketStream ps(*_socket);
-        ps.write(packet);
-      }
+          reactor::Lock lock(elle::concurrency::scheduler(), _socket_write_lock);
+          {
+            unsigned char* copy = (unsigned char*)malloc(whole.Size());
+            memcpy(copy, whole.Contents(), whole.Size());
+            infinit::protocol::Packet packet(copy, whole.Size());
+            infinit::protocol::PacketStream ps(*_socket);
+            ps.write(packet);
+          }
+        }
+      catch (std::exception const& e)
+        {
+          escape("%s", e.what());
+        }
 
       return Status::Ok;
     }
