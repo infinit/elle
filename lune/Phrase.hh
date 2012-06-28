@@ -3,6 +3,7 @@
 
 # include <elle/radix/Object.hh>
 # include <elle/concept/Fileable.hh>
+# include <elle/network/Port.hh>
 
 # include <elle/idiom/Open.hh>
 
@@ -34,7 +35,7 @@ namespace lune
     //
     // methods
     //
-    elle::Status        Create(const elle::String&,
+    elle::Status        Create(const elle::network::Port,
                                const elle::String&);
 
     //
@@ -62,8 +63,8 @@ namespace lune
     //
     // attributes
     //
-    elle::String        pass;
-    elle::String        portal;
+    elle::network::Port port;
+    elle::String pass;
   };
 
 }

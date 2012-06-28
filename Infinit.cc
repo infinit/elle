@@ -37,8 +37,8 @@ const elle::String              Infinit::Version("Infinit-alpha");
 const elle::String              Infinit::Copyright(
                                   Infinit::Version +
                                   " " +
-                                  "Copyright (c) 2007, ..., 2012 "
-                                  "Julien Quintard, All rights reserved.");
+                                  "Copyright (c) 2012 "
+                                  "infinit.io All rights reserved.");
 
 ///
 /// this variable contains the authority.

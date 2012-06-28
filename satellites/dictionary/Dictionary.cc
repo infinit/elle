@@ -25,7 +25,8 @@ namespace satellite
   ///
   /// this method adds an entry.
   ///
-  elle::Status          Dictionary::Add(const Dictionary::Type& type,
+  elle::Status          Dictionary::Add(elle::String const& user,
+                                        const Dictionary::Type& type,
                                         const elle::String&     name,
                                         const elle::Unique&     identifier)
   {
@@ -38,7 +39,7 @@ namespace satellite
       lune::Identity    identity;
 
       // does the user identity exist.
-      if (identity.Exist() == elle::Status::False)
+      if (identity.Exist(user) == elle::Status::False)
         escape("this user does not seem to exist");
     }
 
@@ -47,10 +48,10 @@ namespace satellite
     //
     {
       // load the dictionary if it exists.
-      if (dictionary.Exist() == elle::Status::True)
+      if (dictionary.Exist(user) == elle::Status::True)
         {
           // load the dictionary.
-          if (dictionary.Load() == elle::Status::Error)
+          if (dictionary.Load(user) == elle::Status::Error)
             escape("unable to load the dictionary");
         }
     }
@@ -98,7 +99,7 @@ namespace satellite
     //
     {
       // store the dictionary file.
-      if (dictionary.Store() == elle::Status::Error)
+      if (dictionary.Store(user) == elle::Status::Error)
         escape("unable to store the dictionary");
     }
 
@@ -108,7 +109,8 @@ namespace satellite
   ///
   /// this method removes an entry.
   ///
-  elle::Status          Dictionary::Remove(const Dictionary::Type& type,
+  elle::Status          Dictionary::Remove(elle::String const& user,
+                                           const Dictionary::Type& type,
                                            const elle::String&  name)
   {
     lune::Dictionary    dictionary;
@@ -120,7 +122,7 @@ namespace satellite
       lune::Identity    identity;
 
       // does the user identity exist.
-      if (identity.Exist() == elle::Status::False)
+      if (identity.Exist(user) == elle::Status::False)
         escape("this user does not seem to exist");
     }
 
@@ -129,10 +131,10 @@ namespace satellite
     //
     {
       // load the dictionary if it exists.
-      if (dictionary.Exist() == elle::Status::True)
+      if (dictionary.Exist(user) == elle::Status::True)
         {
           // load the dictionary file.
-          if (dictionary.Load() == elle::Status::Error)
+          if (dictionary.Load(user) == elle::Status::Error)
             escape("unable to load the dictionary");
         }
     }
@@ -168,7 +170,7 @@ namespace satellite
     //
     {
       // store the dictionary file.
-      if (dictionary.Store() == elle::Status::Error)
+      if (dictionary.Store(user) == elle::Status::Error)
         escape("unable to store the dictionary");
     }
 
@@ -178,7 +180,8 @@ namespace satellite
   ///
   /// this method shows all the entries.
   ///
-  elle::Status          Dictionary::Show(const Dictionary::Type& type)
+  elle::Status          Dictionary::Show(elle::String const& user,
+                                         const Dictionary::Type& type)
   {
     lune::Dictionary    dictionary;
 
@@ -189,7 +192,7 @@ namespace satellite
       lune::Identity    identity;
 
       // does the user identity exist.
-      if (identity.Exist() == elle::Status::False)
+      if (identity.Exist(user) == elle::Status::False)
         escape("this user does not seem to exist");
     }
 
@@ -198,10 +201,10 @@ namespace satellite
     //
     {
       // load the dictionary if it exists.
-      if (dictionary.Exist() == elle::Status::True)
+      if (dictionary.Exist(user) == elle::Status::True)
         {
           // load the dictionary file.
-          if (dictionary.Load() == elle::Status::Error)
+          if (dictionary.Load(user) == elle::Status::Error)
             escape("unable to load the dictionary");
         }
     }
@@ -258,7 +261,8 @@ namespace satellite
   ///
   /// this method dump an entry.
   ///
-  elle::Status          Dictionary::Dump(const Dictionary::Type& type,
+  elle::Status          Dictionary::Dump(elle::String const& user,
+                                         const Dictionary::Type& type,
                                          const elle::String&    name)
   {
     lune::Dictionary    dictionary;
@@ -270,7 +274,7 @@ namespace satellite
       lune::Identity    identity;
 
       // does the user identity exist.
-      if (identity.Exist() == elle::Status::False)
+      if (identity.Exist(user) == elle::Status::False)
         escape("this user does not seem to exist");
     }
 
@@ -279,10 +283,10 @@ namespace satellite
     //
     {
       // load the dictionary if it exists.
-      if (dictionary.Exist() == elle::Status::True)
+      if (dictionary.Exist(user) == elle::Status::True)
         {
           // load the dictionary file.
-          if (dictionary.Load() == elle::Status::Error)
+          if (dictionary.Load(user) == elle::Status::Error)
             escape("unable to load the dictionary");
         }
     }
@@ -436,16 +440,16 @@ namespace satellite
           "User",
           'u',
           "user",
-          "indicate the type of the record to be a user",
+          "indicate the name of the user",
           elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
-          "Group",
-          'g',
-          "group",
-          "indicate the type of the record to be a group",
+          "Type",
+          't',
+          "type",
+          "indicate the type of the record: user or group",
           elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
@@ -494,16 +498,6 @@ namespace satellite
                "mutually exclusive");
       }
 
-    // check the mutually exclusive options.
-    if ((Infinit::Parser->Test("User") == elle::Status::True) &&
-        (Infinit::Parser->Test("Group") == elle::Status::True))
-      {
-        // display the usage.
-        Infinit::Parser->Usage();
-
-        escape("the user and group types cannot be activated together");
-      }
-
     // test the option.
     if (Infinit::Parser->Test("Add") == elle::Status::True)
       operation = Dictionary::OperationAdd;
@@ -525,21 +519,31 @@ namespace satellite
       {
       case Dictionary::OperationAdd:
         {
+          elle::String user;
+          elle::String t;
           Dictionary::Type      type;
           elle::String          name;
           elle::Unique          identifier;
 
+          // retrieve the user.
+          if (Infinit::Parser->Value("User", user) == elle::Status::Error)
+            escape("unable to retrieve the user name");
+
+          // retrieve the type.
+          if (Infinit::Parser->Value("Type", t) == elle::Status::Error)
+            escape("unable to retrieve the type value");
+
+          if (t == "user")
+            type = Dictionary::TypeUser;
+          else if (t == "group")
+            type = Dictionary::TypeGroup;
+          else
+            escape("unknown type '%s'",
+                   t.c_str());
+
           // retrieve the name.
           if (Infinit::Parser->Value("Name", name) == elle::Status::Error)
             escape("unable to retrieve the name value");
-
-          // retrieve the type.
-          if (Infinit::Parser->Test("User") == elle::Status::True)
-            type = Dictionary::TypeUser;
-          else if (Infinit::Parser->Test("Group") == elle::Status::True)
-            type = Dictionary::TypeGroup;
-          else
-            escape("please specify the type of the entity: user or group");
 
           // retrieve the identifier.
           if (Infinit::Parser->Value("Identifier",
@@ -547,7 +551,8 @@ namespace satellite
             escape("unable to retrieve the identifier value");
 
           // add a record.
-          if (Dictionary::Add(type,
+          if (Dictionary::Add(user,
+                              type,
                               name,
                               identifier) == elle::Status::Error)
             escape("unable to add a mapping");
@@ -560,23 +565,34 @@ namespace satellite
         }
       case Dictionary::OperationRemove:
         {
+          elle::String user;
+          elle::String t;
           Dictionary::Type      type;
           elle::String          name;
+
+          // retrieve the user.
+          if (Infinit::Parser->Value("User", user) == elle::Status::Error)
+            escape("unable to retrieve the user name");
+
+          // retrieve the type.
+          if (Infinit::Parser->Value("Type", t) == elle::Status::Error)
+            escape("unable to retrieve the type value");
+
+          if (t == "user")
+            type = Dictionary::TypeUser;
+          else if (t == "group")
+            type = Dictionary::TypeGroup;
+          else
+            escape("unknown type '%s'",
+                   t.c_str());
 
           // retrieve the name.
           if (Infinit::Parser->Value("Name", name) == elle::Status::Error)
             escape("unable to retrieve the name value");
 
-          // retrieve the type.
-          if (Infinit::Parser->Test("User") == elle::Status::True)
-            type = Dictionary::TypeUser;
-          else if (Infinit::Parser->Test("Group") == elle::Status::True)
-            type = Dictionary::TypeGroup;
-          else
-            escape("please specify the type of the entity: user or group");
-
           // remove a record.
-          if (Dictionary::Remove(type,
+          if (Dictionary::Remove(user,
+                                 type,
                                  name) == elle::Status::Error)
             escape("unable to remove the mapping");
 
@@ -588,23 +604,34 @@ namespace satellite
         }
       case Dictionary::OperationDump:
         {
+          elle::String user;
+          elle::String t;
           Dictionary::Type      type;
           elle::String          name;
+
+          // retrieve the user.
+          if (Infinit::Parser->Value("User", user) == elle::Status::Error)
+            escape("unable to retrieve the user name");
+
+          // retrieve the type.
+          if (Infinit::Parser->Value("Type", t) == elle::Status::Error)
+            escape("unable to retrieve the type value");
+
+          if (t == "user")
+            type = Dictionary::TypeUser;
+          else if (t == "group")
+            type = Dictionary::TypeGroup;
+          else
+            escape("unknown type '%s'",
+                   t.c_str());
 
           // retrieve the name.
           if (Infinit::Parser->Value("Name", name) == elle::Status::Error)
             escape("unable to retrieve the name value");
 
-          // retrieve the type.
-          if (Infinit::Parser->Test("User") == elle::Status::True)
-            type = Dictionary::TypeUser;
-          else if (Infinit::Parser->Test("Group") == elle::Status::True)
-            type = Dictionary::TypeGroup;
-          else
-            escape("please specify the type of the entity: user or group");
-
           // dump the record.
-          if (Dictionary::Dump(type,
+          if (Dictionary::Dump(user,
+                               type,
                                name) == elle::Status::Error)
             escape("unable to dump the mapping");
 
@@ -612,18 +639,28 @@ namespace satellite
         }
       case Dictionary::OperationShow:
         {
+          elle::String user;
+          elle::String t;
           Dictionary::Type      type;
 
+          // retrieve the user.
+          if (Infinit::Parser->Value("User", user) == elle::Status::Error)
+            escape("unable to retrieve the user name");
+
           // retrieve the type.
-          if (Infinit::Parser->Test("User") == elle::Status::True)
+          if (Infinit::Parser->Value("Type", t) == elle::Status::Error)
+            escape("unable to retrieve the type value");
+
+          if (t == "user")
             type = Dictionary::TypeUser;
-          else if (Infinit::Parser->Test("Group") == elle::Status::True)
+          else if (t == "group")
             type = Dictionary::TypeGroup;
           else
-            escape("please specify the type of the entity: user or group");
+            escape("unknown type '%s'",
+                   t.c_str());
 
           // show the records.
-          if (Dictionary::Show(type) == elle::Status::Error)
+          if (Dictionary::Show(user, type) == elle::Status::Error)
             escape("unable to show the mappings");
 
           break;

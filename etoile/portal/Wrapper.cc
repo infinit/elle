@@ -1,16 +1,4 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [wed nov  2 09:14:37 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
+#include <elle/log.hh>
 
 #include <etoile/portal/Wrapper.hh>
 
@@ -19,6 +7,8 @@
 #include <etoile/wall/Directory.hh>
 
 #include <Infinit.hh>
+
+ELLE_LOG_TRACE_COMPONENT("etoile.portal.Wrapper");
 
 namespace etoile
 {
@@ -40,9 +30,7 @@ namespace etoile
     {
       nucleus::Record*  r;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] portal::Wrapper:Access::Lookup()\n");
+      ELLE_LOG_TRACE("Access::Lookup()");
 
       // forward the call to wall.
       if (wall::Access::Lookup(identifier,
@@ -71,9 +59,7 @@ namespace etoile
     {
       nucleus::Range<nucleus::Record>   r;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] portal::Wrapper:Access::Consult()\n");
+      ELLE_LOG_TRACE("Access::Consult()");
 
       // forward the call to wall.
       if (wall::Access::Consult(identifier,
@@ -103,9 +89,7 @@ namespace etoile
     {
       nucleus::Trait*   t;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] portal::Wrapper:Attributes::Get()\n");
+      ELLE_LOG_TRACE("Attributes::Get()");
 
       // forward the call to wall.
       if (wall::Attributes::Get(identifier,
@@ -132,9 +116,7 @@ namespace etoile
     {
       nucleus::Range<nucleus::Trait>    r;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] portal::Wrapper:Attributes::Fetch()\n");
+      ELLE_LOG_TRACE("Attributes::Fetch()");
 
       // forward the call to wall.
       if (wall::Attributes::Fetch(identifier,
@@ -162,9 +144,7 @@ namespace etoile
     {
       nucleus::Entry*   e;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] portal::Wrapper:Directory::Lookup()\n");
+      ELLE_LOG_TRACE("Directory::Lookup()");
 
       // forward the call to wall.
       if (wall::Directory::Lookup(identifier,
@@ -193,9 +173,7 @@ namespace etoile
     {
       nucleus::Range<nucleus::Entry>    r;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] portal::Wrapper:Directory::Consult()\n");
+      ELLE_LOG_TRACE("Directory::Consult()");
 
       // forward the call to wall.
       if (wall::Directory::Consult(identifier,

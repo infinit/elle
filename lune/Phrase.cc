@@ -23,14 +23,11 @@ namespace lune
   ///
   /// this method creates a phrase.
   ///
-  elle::Status          Phrase::Create(const elle::String&      pass,
-                                       const elle::String&      portal)
+  elle::Status          Phrase::Create(const elle::network::Port port,
+                                       const elle::String& pass)
   {
-    // assign the pass.
+    this->port = port;
     this->pass = pass;
-
-    // assigne the portal line.
-    this->portal = portal;
 
     return elle::Status::Ok;
   }
@@ -49,8 +46,8 @@ namespace lune
       return true;
 
     // compare the attributes.
-    if ((this->pass != element.pass) ||
-        (this->portal != element.portal))
+    if ((this->port != element.port) ||
+        (this->pass != element.pass))
       return false;
 
     return true;
@@ -75,9 +72,9 @@ namespace lune
     std::cout << alignment << "[Phrase]" << std::endl;
 
     std::cout << alignment << elle::Dumpable::Shift
-              << "[Pass] " << this->pass << std::endl;
+              << "[Port] " << std::dec << this->port << std::endl;
     std::cout << alignment << elle::Dumpable::Shift
-              << "[Portal] " << this->portal << std::endl;
+              << "[Pass] " << this->pass << std::endl;
 
     return elle::Status::Ok;
   }

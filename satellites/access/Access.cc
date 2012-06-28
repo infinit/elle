@@ -2,7 +2,6 @@
 
 #include <elle/Elle.hh>
 #include <elle/concurrency/Closure.hh>
-#include <elle/concurrency/Entrance.hh>
 #include <elle/network/Header.hh>
 #include <elle/network/Inputs.hh>
 #include <elle/network/Outputs.hh>
@@ -19,8 +18,6 @@
 
 #include <satellites/access/Access.hh>
 
-#include <agent/Agent.hh>
-
 namespace satellite
 {
 
@@ -36,45 +33,7 @@ namespace satellite
   ///
   /// the socket used for communicating with Etoile.
   ///
-  elle::network::LocalSocket                     Access::Socket;
-
-//
-// ---------- static callbacks ------------------------------------------------
-//
-
-  ///
-  /// this callback is triggered whenver the socket gets disconnected.
-  ///
-  elle::Status          Access::Disconnected()
-  {
-    // report the problem.
-    report("the socket has been unexpectedly disconnected");
-
-    // expose the report.
-    expose();
-
-    // exit.
-    elle::concurrency::Program::Exit();
-
-    return elle::Status::Ok;
-  }
-
-  ///
-  /// this callback is triggered whenever an error occurs on the socket.
-  ///
-  elle::Status          Access::Error(elle::String       error)
-  {
-    // report the given error.
-    report("%s", error.c_str());
-
-    // expose the report.
-    expose();
-
-    // exit.
-    elle::concurrency::Program::Exit();
-
-    return elle::Status::Ok;
-  }
+  elle::network::TCPSocket* Access::socket = nullptr;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -88,49 +47,24 @@ namespace satellite
   {
     lune::Phrase        phrase;
 
-    //
     // load the phrase.
-    //
-    {
-      // load the phrase.
-      if (phrase.Load(Infinit::Network) == elle::Status::Error)
-        escape("unable to load the phrase");
-    }
+    if (phrase.Load(Infinit::Network) == elle::Status::Error)
+      escape("unable to load the phrase");
 
-    //
     // connect to the server.
-    //
-    {
-      // subscribe to the signal.
-      if (Access::Socket.signal.disconnected.Subscribe(
-            elle::concurrency::Callback<>::Infer(
-              &Access::Disconnected)) == elle::Status::Error)
-        escape("unable to subscribe to the signal");
+    reactor::network::TCPSocket* socket =
+      new reactor::network::TCPSocket(elle::concurrency::scheduler(),
+                                      elle::String("127.0.0.1"),
+                                      phrase.port);
 
-      // // subscribe to the signal.
-      // if (Access::Socket.signal.error.Subscribe(
-      //       elle::Callback<>::Infer(
-      //         &Access::Error)) == elle::Status::Error)
-      //   escape("unable to subscribe to the signal");
+    Access::socket = new elle::network::TCPSocket(socket);
 
-      // connect the socket.
-      if (Access::Socket.Connect(
-            phrase.portal,
-            elle::network::Socket::ModeSynchronous) == elle::Status::Error)
-        escape("unable to connect to the lane");
-    }
-
-    //
-    // authenticate to the server.
-    //
-    {
-      // send the user's network-specific phrase.
-      if (Access::Socket.Call(
-            elle::network::Inputs<etoile::portal::TagAuthenticate>(phrase.pass),
-            elle::network::Outputs<etoile::portal::TagAuthenticated>()) ==
-          elle::Status::Error)
-        escape("unable to authenticate to Etoile");
-    }
+    // authenticate.
+    if (Access::socket->Call(
+          elle::network::Inputs<etoile::portal::TagAuthenticate>(phrase.pass),
+          elle::network::Outputs<etoile::portal::TagAuthenticated>()) ==
+        elle::Status::Error)
+      escape("unable to authenticate to Etoile");
 
     return elle::Status::Ok;
   }
@@ -151,28 +85,31 @@ namespace satellite
       goto _error;
 
     // resolve the path.
-    if (Access::Socket.Call(
+    if (Access::socket->Call(
           elle::network::Inputs<etoile::portal::TagPathResolve>(way),
           elle::network::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
         elle::Status::Error)
       goto _error;
 
     // load the object.
-    if (Access::Socket.Call(
+    if (Access::socket->Call(
           elle::network::Inputs<etoile::portal::TagObjectLoad>(chemin),
           elle::network::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
         elle::Status::Error)
       goto _error;
 
     // lookup the access record.
-    if (Access::Socket.Call(
+    if (Access::socket->Call(
           elle::network::Inputs<etoile::portal::TagAccessLookup>(identifier, subject),
           elle::network::Outputs<etoile::portal::TagAccessRecord>(record)) ==
         elle::Status::Error)
       goto _error;
 
+    printf("HERE\n");
+    record.Dump();
+
     // discard the object.
-    if (Access::Socket.Call(
+    if (Access::socket->Call(
           elle::network::Inputs<etoile::portal::TagObjectDiscard>(identifier),
           elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
       goto _error;
@@ -182,7 +119,7 @@ namespace satellite
 
   _error:
     // release the object.
-    Access::Socket.Send(
+    Access::socket->Send(
       elle::network::Inputs<etoile::portal::TagObjectDiscard>(
         identifier));
 
@@ -209,21 +146,21 @@ namespace satellite
       goto _error;
 
     // resolve the path.
-    if (Access::Socket.Call(
+    if (Access::socket->Call(
           elle::network::Inputs<etoile::portal::TagPathResolve>(way),
           elle::network::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
         elle::Status::Error)
       goto _error;
 
     // load the object.
-    if (Access::Socket.Call(
+    if (Access::socket->Call(
           elle::network::Inputs<etoile::portal::TagObjectLoad>(chemin),
           elle::network::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
         elle::Status::Error)
       goto _error;
 
     // consult the object access.
-    if (Access::Socket.Call(
+    if (Access::socket->Call(
           elle::network::Inputs<etoile::portal::TagAccessConsult>(
             identifier,
             std::numeric_limits<nucleus::Index>::min(),
@@ -233,7 +170,7 @@ namespace satellite
       goto _error;
 
     // discard the object.
-    if (Access::Socket.Call(
+    if (Access::socket->Call(
           elle::network::Inputs<etoile::portal::TagObjectDiscard>(identifier),
           elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
       goto _error;
@@ -243,15 +180,12 @@ namespace satellite
 
   _error:
     // release the object.
-    Access::Socket.Send(
+    Access::socket->Send(
       elle::network::Inputs<etoile::portal::TagObjectDiscard>(
         identifier));
 
     // expose the potential errors.
     expose();
-
-    // exit the program.
-    elle::concurrency::Program::Exit();
 
     return elle::Status::Ok;
   }
@@ -272,34 +206,22 @@ namespace satellite
     if (Access::Connect() == elle::Status::Error)
       goto _error;
 
-    // locate the path i.e is the way located in the Infinit file system.
-    if (Access::Socket.Call(
-          elle::network::Inputs<etoile::portal::TagPathLocate>(way),
-          elle::network::Outputs<etoile::portal::TagPathWay>(path)) ==
-        elle::Status::Error)
-      goto _error;
-
-    // XXX
-    printf("HERE\n");
-    path.Dump();
-    exit(0);
-
     // resolve the path.
-    if (Access::Socket.Call(
+    if (Access::socket->Call(
           elle::network::Inputs<etoile::portal::TagPathResolve>(path),
           elle::network::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
         elle::Status::Error)
       goto _error;
 
     // load the object.
-    if (Access::Socket.Call(
+    if (Access::socket->Call(
           elle::network::Inputs<etoile::portal::TagObjectLoad>(chemin),
           elle::network::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
         elle::Status::Error)
       goto _error;
 
     // lookup the access record.
-    if (Access::Socket.Call(
+    if (Access::socket->Call(
           elle::network::Inputs<etoile::portal::TagAccessGrant>(identifier,
                                                        subject,
                                                        permissions),
@@ -307,14 +229,14 @@ namespace satellite
       goto _error;
 
     // store the object.
-    if (Access::Socket.Call(
+    if (Access::socket->Call(
           elle::network::Inputs<etoile::portal::TagObjectStore>(identifier),
           elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
       goto _error;
 
   _error:
     // release the object.
-    Access::Socket.Send(
+    Access::socket->Send(
       elle::network::Inputs<etoile::portal::TagObjectDiscard>(
         identifier));
 
@@ -342,34 +264,34 @@ namespace satellite
       goto _error;
 
     // resolve the path.
-    if (Access::Socket.Call(
+    if (Access::socket->Call(
           elle::network::Inputs<etoile::portal::TagPathResolve>(way),
           elle::network::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
         elle::Status::Error)
       goto _error;
 
     // load the object.
-    if (Access::Socket.Call(
+    if (Access::socket->Call(
           elle::network::Inputs<etoile::portal::TagObjectLoad>(chemin),
           elle::network::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
         elle::Status::Error)
       goto _error;
 
     // revoke the access for the given subject.
-    if (Access::Socket.Call(
+    if (Access::socket->Call(
           elle::network::Inputs<etoile::portal::TagAccessRevoke>(identifier, subject),
           elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
       goto _error;
 
     // store the object.
-    if (Access::Socket.Call(
+    if (Access::socket->Call(
           elle::network::Inputs<etoile::portal::TagObjectStore>(identifier),
           elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
       goto _error;
 
   _error:
     // release the object.
-    Access::Socket.Send(
+    Access::socket->Send(
       elle::network::Inputs<etoile::portal::TagObjectDiscard>(
         identifier));
 
@@ -420,7 +342,7 @@ namespace satellite
     operation = Access::OperationUnknown;
 
     // allocate a new parser.
-    Infinit::Parser = new elle::Parser(argc, argv);
+    Infinit::Parser = new elle::utility::Parser(argc, argv);
 
     // specify a program description.
     if (Infinit::Parser->Description(Infinit::Copyright) == elle::Status::Error)
@@ -432,7 +354,7 @@ namespace satellite
           'h',
           "help",
           "display the help",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the option.
@@ -441,7 +363,7 @@ namespace satellite
           'u',
           "user",
           "specifies the name of the user",
-          elle::Parser::KindRequired) == elle::Status::Error)
+          elle::utility::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the option.
@@ -450,7 +372,7 @@ namespace satellite
           'n',
           "network",
           "specifies the name of the network",
-          elle::Parser::KindRequired) == elle::Status::Error)
+          elle::utility::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -459,7 +381,7 @@ namespace satellite
           'l',
           "lookup",
           "look up a specific access record",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -468,7 +390,7 @@ namespace satellite
           'c',
           "consult",
           "consult the access records",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -477,7 +399,7 @@ namespace satellite
           'g',
           "grant",
           "grant access to a user/group",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -486,7 +408,7 @@ namespace satellite
           'r',
           "revoke",
           "revoke an access for a user/group",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -495,7 +417,7 @@ namespace satellite
           't',
           "type",
           "indicate the type of the entity: user or group",
-          elle::Parser::KindRequired) == elle::Status::Error)
+          elle::utility::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -505,7 +427,7 @@ namespace satellite
           "path",
           "indicate the local absolute path to the target object "
           "i.e file, directory or link",
-          elle::Parser::KindRequired) == elle::Status::Error)
+          elle::utility::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -514,7 +436,7 @@ namespace satellite
           'i',
           "identifier",
           "specify the user/group base64 identifier",
-          elle::Parser::KindRequired) == elle::Status::Error)
+          elle::utility::Parser::KindRequired) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -523,7 +445,7 @@ namespace satellite
           'R',
           "read",
           "indicate that the read permission must be granted",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // register the options.
@@ -532,7 +454,7 @@ namespace satellite
           'W',
           "write",
           "indicate that the write permission must be granted",
-          elle::Parser::KindNone) == elle::Status::Error)
+          elle::utility::Parser::KindNone) == elle::Status::Error)
       escape("unable to register the option");
 
     // parse.
@@ -568,12 +490,6 @@ namespace satellite
 
         escape("unable to retrieve the network name");
       }
-
-    hole::Hole::Initialize();
-
-    // initialize the Agent library.
-    if (agent::Agent::Initialize() == elle::Status::Error)
-      escape("unable to initialize Agent");
 
     // check the mutually exclusive options.
     if ((Infinit::Parser->Test("Lookup") == elle::Status::True) &&
@@ -640,8 +556,12 @@ namespace satellite
 
                 // retrieve the identifier which is supposed to
                 // represent a user identity i.e a public key.
-                if (Infinit::Parser->Value("Identifier", res) == elle::Status::Error ||
-                    K.Restore(res) == elle::Status::Error)
+                if (Infinit::Parser->Value(
+                      "Identifier",
+                      res) == elle::Status::Error)
+                  escape("unable to retrieve the identifier");
+
+                if (K.Restore(res) == elle::Status::Error)
                   escape("unable to retrieve the user's public key "
                          "through the identifier");
 
@@ -666,12 +586,9 @@ namespace satellite
 
           // declare additional local variables.
           etoile::path::Way             way(path);
-          new reactor::Thread(elle::concurrency::scheduler(), "Lookup",
-                              boost::bind(&Access::Lookup, way, subject),
-                              true);
 
-          // launch the program.
-          elle::Program::Launch();
+          if (Access::Lookup(way, subject) == elle::Status::Error)
+            escape("unable to lookup");
 
           break;
         }
@@ -686,12 +603,9 @@ namespace satellite
 
           // declare additional local variables.
           etoile::path::Way             way(path);
-          new reactor::Thread(elle::concurrency::scheduler(), "Consult",
-                              boost::bind(&Access::Consult, way),
-                              true);
 
-          // launch the program.
-          elle::Program::Launch();
+          if (Access::Consult(way) == elle::Status::Error)
+            escape("unable to consult");
 
           break;
         }
@@ -729,9 +643,12 @@ namespace satellite
 
                 // retrieve the identifier which is supposed to
                 // represent a user identity i.e a public key.
-                if (Infinit::Parser->Value("Identifier",
-                                           res) == elle::Status::Error ||
-                    K.Restore(res) == elle::Status::Error)
+                if (Infinit::Parser->Value(
+                      "Identifier",
+                      res) == elle::Status::Error)
+                  escape("unable to retrieve the identifier");
+
+                if (K.Restore(res) == elle::Status::Error)
                   escape("unable to retrieve the user's public key "
                          "through the identifier");
 
@@ -768,12 +685,9 @@ namespace satellite
 
           // declare additional local variables.
           etoile::path::Way             way(path);
-          new reactor::Thread
-            (elle::concurrency::scheduler(), "Grant",
-             boost::bind(&Access::Grant, way, subject, permissions), true);
 
-          // launch the program.
-          elle::Program::Launch();
+          if (Access::Grant(way, subject, permissions) == elle::Status::Error)
+            escape("unable to grant");
 
           break;
         }
@@ -810,9 +724,12 @@ namespace satellite
 
                 // retrieve the identifier which is supposed to
                 // represent a user identity i.e a public key.
-                if (Infinit::Parser->Value("Identifier",
-                                           res) == elle::Status::Error ||
-                    K.Restore(res) == elle::Status::Error)
+                if (Infinit::Parser->Value(
+                      "Identifier",
+                      res) == elle::Status::Error)
+                  escape("unable to retrieve the identifier");
+
+                if (K.Restore(res) == elle::Status::Error)
                   escape("unable to retrieve the user's public key "
                          "through the identifier");
 
@@ -838,9 +755,9 @@ namespace satellite
 
           // declare additional local variables.
           etoile::path::Way             way(path);
-          new reactor::Thread
-            (elle::concurrency::scheduler(), "Revoke",
-             boost::bind(&Access::Revoke, way, subject), true);
+
+          if (Access::Revoke(way, subject) == elle::Status::Error)
+            escape("unable to revoke");
 
           break;
         }
@@ -857,14 +774,6 @@ namespace satellite
     // delete the parser.
     delete Infinit::Parser;
     Infinit::Parser = nullptr;
-
-    // clean Hole.
-    if (hole::Hole::Clean() == elle::Status::Error)
-      escape("unable to clean Hole");
-
-    // clean the Agent library.
-    if (agent::Agent::Clean() == elle::Status::Error)
-      escape("unable to clean Agent");
 
     // clean Infinit.
     if (Infinit::Clean() == elle::Status::Error)
@@ -891,28 +800,41 @@ namespace satellite
 // ---------- main ------------------------------------------------------------
 //
 
+elle::Status
+_main(elle::Natural32 argc, elle::Character* argv[])
+{
+  try
+    {
+      if (satellite::Main(argc, argv) == elle::Status::Error)
+        throw reactor::Exception(elle::concurrency::scheduler(),
+                                 "XXX");
+    }
+  catch (std::exception const& e)
+    {
+      // XXX
+      show();
+
+      std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
+      if (reactor::Exception const* re =
+          dynamic_cast<reactor::Exception const*>(&e))
+        std::cerr << re->backtrace() << std::endl;
+
+      elle::concurrency::scheduler().terminate();
+      return elle::Status::Error;
+    }
+  elle::concurrency::scheduler().terminate();
+  return elle::Status::Ok;
+}
+
 ///
 /// this is the program entry point.
 ///
 int                     main(int                                argc,
                              char**                             argv)
 {
-  try
-    {
-      if (satellite::Main(argc, argv) == elle::Status::Error)
-        {
-          show();
-
-          return (1);
-        }
-    }
-  catch (std::exception& e)
-    {
-      std::cout << "The program has been terminated following "
-                << "a fatal error (" << e.what() << ")." << std::endl;
-
-      return (1);
-    }
-
-  return (0);
+  reactor::Scheduler& sched = elle::concurrency::scheduler();
+  reactor::VThread<elle::Status> main(sched, "main",
+                                      boost::bind(&_main, argc, argv));
+  sched.run();
+  return main.result() == elle::Status::Ok ? 0 : 1;
 }

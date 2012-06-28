@@ -40,9 +40,6 @@ namespace etoile
       //
       static elle::Status       Resolve(const path::Way&,
                                         path::Chemin&);
-
-      static elle::Status       Locate(const path::Way&,
-                                       path::Way&);
     };
 
   }

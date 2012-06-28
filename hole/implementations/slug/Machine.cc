@@ -206,9 +206,6 @@ namespace hole
       elle::Status      Machine::Put(const nucleus::Address&    address,
                                      const nucleus::ImmutableBlock& block)
       {
-        //nucleus::Derivable<nucleus::Block>      derivable(address.component,
-        //                                                  block);
-
         ELLE_LOG_TRACE("Put[Immutable]");
 
         // depending on the machine's state.
@@ -259,9 +256,18 @@ namespace hole
                     Host*               host = scoutor->second;
 
                     // send the block to the host.
-                    host->socket->Send(
-                      elle::network::Inputs<TagPush>(address, derivable));
-                    // XXX do not check the success!
+                    if (host->socket->Send(
+                          elle::network::Inputs<TagPush>(address, derivable)) ==
+                        elle::Status::Error)
+                      {
+                        // XXX
+                        ELLE_LOG_TRACE("unable to to push the immutable block");
+                        address.Dump();
+                        block.Dump();
+                        host->locus.Dump();
+                        show();
+                        assert(false);
+                      }
 
                     // ignore the error messages and continue with the
                     // next neighbour.
@@ -288,9 +294,6 @@ namespace hole
       elle::Status      Machine::Put(const nucleus::Address&    address,
                                      const nucleus::MutableBlock& block)
       {
-        //nucleus::Derivable<nucleus::Block>      derivable(address.component,
-        //                                                  block);
-
         ELLE_LOG_TRACE("Put[Mutable]");
 
         // depending on the machine's state.
@@ -385,9 +388,18 @@ namespace hole
                     Host*               host = scoutor->second;
 
                     // send the block to the host.
-                    host->socket->Send(
-                      elle::network::Inputs<TagPush>(address, derivable));
-                    // XXX do not check the success!
+                    if (host->socket->Send(
+                          elle::network::Inputs<TagPush>(address, derivable)) ==
+                        elle::Status::Error)
+                      {
+                        // XXX
+                        ELLE_LOG_TRACE("unable to to push the mutable block");
+                        address.Dump();
+                        block.Dump();
+                        host->locus.Dump();
+                        show();
+                        assert(false);
+                      }
 
                     // ignore the error messages and continue with the
                     // next neighbour.
@@ -475,6 +487,25 @@ namespace hole
                                            address) == elle::Status::Ok)
                                 break;
                             }
+                          else
+                            {
+                              // XXX
+                              ELLE_LOG_TRACE("unable to validate the immutable block");
+                              address.Dump();
+                              b.Dump();
+                              host->locus.Dump();
+                              show();
+                              assert(false);
+                            }
+                        }
+                      else
+                        {
+                          // XXX
+                          ELLE_LOG_TRACE("unable to pull the immutable block");
+                          address.Dump();
+                          host->locus.Dump();
+                          show();
+                          assert(false);
                         }
 
                       // ignore the error messages and continue with the
@@ -626,6 +657,15 @@ namespace hole
                           mb.Store(Hole::Implementation->network, address);
                           // XXX do not check the result as the block to
                           // XXX store may not be the latest.
+                        }
+                      else
+                        {
+                          // XXX
+                          ELLE_LOG_TRACE("unable to pull the latest mutable block");
+                          address.Dump();
+                          host->locus.Dump();
+                          show();
+                          assert(false);
                         }
 
                       // ignore the error messages and continue with the
@@ -815,6 +855,16 @@ namespace hole
                               // version has been retrieved.
                               break;
                             }
+                          else
+                            {
+                              // XXX
+                              ELLE_LOG_TRACE("unable to pull the versioned mutable block");
+                              address.Dump();
+                              version.Dump();
+                              host->locus.Dump();
+                              show();
+                              assert(false);
+                            }
 
                           // ignore the error messages and continue with the
                           // next neighbour.
@@ -947,8 +997,9 @@ namespace hole
                   case nucleus::FamilyContentHashBlock:
                     {
                       // erase the immutable block.
-                      if (nucleus::ImmutableBlock::Erase(Hole::Implementation->network,
-                                   address) == elle::Status::Error)
+                      if (nucleus::ImmutableBlock::Erase(
+                            Hole::Implementation->network,
+                            address) == elle::Status::Error)
                         escape("unable to erase the block");
 
                       break;
@@ -958,8 +1009,9 @@ namespace hole
                   case nucleus::FamilyImprintBlock:
                     {
                       // retrieve the mutable block.
-                      if (nucleus::MutableBlock::Erase(Hole::Implementation->network,
-                                   address) == elle::Status::Error)
+                      if (nucleus::MutableBlock::Erase(
+                            Hole::Implementation->network,
+                            address) == elle::Status::Error)
                         escape("unable to erase the block");
 
                       break;
@@ -986,8 +1038,16 @@ namespace hole
 
                     // send the request to the host.
                     // XXX do not check the success!
-                    host->socket->Send(
-                      elle::network::Inputs<TagWipe>(address));
+                    if (host->socket->Send(
+                          elle::network::Inputs<TagWipe>(address)) ==
+                        elle::Status::Error)
+                      {
+                        // XXX
+                        ELLE_LOG_TRACE("unable to wipe the block");
+                        address.Dump();
+                        show();
+                        assert(false);
+                      }
 
                     // ignore the error messages and continue with the
                     // next neighbour.

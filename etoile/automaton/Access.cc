@@ -238,6 +238,7 @@ namespace etoile
               if (context.access->Lookup(subject,
                                          record) == elle::Status::Error)
                 escape("unable to lookup in the access object");
+
               ELLE_LOG_TRACE("Access lookup found record %p from context.access", record);
             }
         }

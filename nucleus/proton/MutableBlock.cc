@@ -249,6 +249,7 @@ namespace nucleus
         escape("unable to convert the address in its hexadecimal form");
 
       ELLE_LOG_TRACE("Store mutable block from address %s", unique);
+
       // debug.
       if (Infinit::Configuration.nucleus.debug == true)
         printf("[nucleus] proton::MutableBlock::Store(%s)\n",
@@ -280,29 +281,37 @@ namespace nucleus
             escape("unable to complete the path");
 
           // does the block already exist.
-          // XXX This block checks the version, need to put this test back !
-          //if (block.Exist(network,
-          //                address,
-          //                nucleus::Version::Last) == elle::Status::True)
-          //  {
-          //    MutableBlock      current;
+          if (block.Exist(network,
+                          address,
+                          nucleus::Version::Last) == elle::Status::True)
+            {
+              nucleus::MutableBlock*      current;
 
-          //    ELLE_LOG_TRACE(
-          //        "The block %p already exists, fetch the last version",
-          //        &block
-          //    ) {
-          //        // load the latest version.
-          //        if (current.Load(network,
-          //                         address,
-          //                         nucleus::Version::Last) == elle::Status::Error)
-          //          escape("unable to load the current block");
+              // build a block according to the component.
+              if (nucleus::Nucleus::Factory.Build(
+                    address.component,
+                    current) == elle::Status::Error)
+                escape("unable to build the block");
 
-          //        // does the given block derive the current version.
-          //        if (!(this->version > current.version))
-          //          escape("the block to store does not seem to derive the "
-          //                 "current version");
-          //      }
-          //  }
+              std::unique_ptr<nucleus::MutableBlock> guard(current);
+
+              ELLE_LOG_TRACE("the mutable block seems to exist "
+                             "locally, make sure it derives the "
+                             "current version")
+                {
+                  // load the latest version.
+                  if (current->Load(
+                        network,
+                        address,
+                        nucleus::Version::Last) == elle::Status::Error)
+                    escape("unable to load the current version");
+
+                  // does the given block derive the current version.
+                  if (!(this->version > current->version))
+                    escape("the block to store does not seem to derive the "
+                           "current version");
+                }
+            }
 
           if (this->Store(file) == elle::Status::Error)
             escape("Cannot store into %s", file.str().c_str());

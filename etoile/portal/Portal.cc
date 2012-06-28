@@ -1,8 +1,12 @@
+#include <elle/log.hh>
 
 #include <elle/cryptography/Random.hh>
 #include <elle/network/Network.hh>
 #include <elle/network/Procedure.hh>
 #include <elle/standalone/Morgue.hh>
+
+# include <reactor/thread.hh>
+# include <reactor/network/tcp-server.hh>
 
 #include <elle/network/Bundle.hh>
 #include <elle/network/Header.hh>
@@ -27,6 +31,8 @@
 
 #include <Infinit.hh>
 
+ELLE_LOG_TRACE_COMPONENT("etoile.portal.Portal");
+
 namespace etoile
 {
   namespace portal
@@ -37,14 +43,18 @@ namespace etoile
 //
 
     ///
-    /// the line on which the portal listens for incoming connections.
+    /// the port on which the portal listens for incoming connections.
     ///
-    elle::String                Portal::Line;
+    elle::network::Port Portal::port = 12348; // XXX[to randomize]
 
     ///
     /// the container holding the connected applications.
     ///
-    Portal::Container           Portal::Applications;
+    Portal::Container Portal::applications;
+
+    // XXX
+    reactor::network::TCPServer* Portal::server = nullptr;
+    reactor::Thread* Portal::acceptor = nullptr;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -55,10 +65,7 @@ namespace etoile
     ///
     elle::Status        Portal::Initialize()
     {
-      // build an arbitrary line for applications to connect to
-      // the portal and issue requests.
-      if (elle::cryptography::Random::Generate(Portal::Line, 16) == elle::Status::Error)
-        escape("unable to generate a random portal line");
+      ELLE_LOG_TRACE("register the messages");
 
       // register the messages.
       {
@@ -87,16 +94,6 @@ namespace etoile
             elle::Status::Error)
           escape("unable to register the callback");
 
-        // register the message.
-        if (elle::network::Network::Register(
-              elle::network::Procedure<TagPathLocate,
-                              TagPathWay>(
-                elle::concurrency::Callback<>::Infer(&wall::Path::Locate),
-                elle::concurrency::Callback<>::Infer(&Portal::Prolog),
-                elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
-            elle::Status::Error)
-          escape("unable to register the callback");
-
         //
         // object
         //
@@ -119,7 +116,7 @@ namespace etoile
                 elle::concurrency::Callback<>::Infer(&Portal::Prolog),
                 elle::concurrency::Callback<>::Infer(&Portal::Epilog))) ==
               elle::Status::Error)
-          escape("unable to register the callback");
+         escape("unable to register the callback");
 
         // register the message.
         if (elle::network::Network::Register(
@@ -502,6 +499,51 @@ namespace etoile
           escape("unable to register the callback");
       }
 
+      try
+        {
+          ELLE_LOG_TRACE("set up the server and allocator");
+
+          // allocate the server and acceptor for handling incoming connections.
+          Portal::server =
+            new reactor::network::TCPServer(elle::concurrency::scheduler());
+          Portal::acceptor =
+            new reactor::Thread(elle::concurrency::scheduler(),
+                                "Portal Server accept",
+                                boost::bind(&Portal::accept));
+
+          ELLE_LOG_TRACE("listen");
+
+          // finally, listen for incoming connections.
+          Portal::server->listen(Portal::port);
+        }
+      catch (std::runtime_error& e)
+        {
+          escape("unable to set up the portal server: %s",
+                 e.what());
+        }
+
+      //
+      // generate a phrase randomly which will be used by applications to
+      // connect to Etoile and trigger specific actions.
+      //
+      // generate a random string, create a phrase with it along with
+      // the socket used by portal so that applications have everything
+      // to connect to and authenticate to portal.
+      if (!Infinit::Network.empty())
+        {
+          elle::String pass;
+
+          if (elle::cryptography::Random::Generate(pass) == elle::Status::Error)
+            escape("unable to generate a random string");
+
+          if (Etoile::Phrase.Create(Portal::port,
+                                    pass) == elle::Status::Error)
+            escape("unable to create the phrase");
+
+          if (Etoile::Phrase.Store(Infinit::Network) == elle::Status::Error)
+            escape("unable to store the phrase");
+        }
+
       return elle::Status::Ok;
     }
 
@@ -510,7 +552,34 @@ namespace etoile
     ///
     elle::Status        Portal::Clean()
     {
-      // nothing to do.
+      Portal::Scoutor scoutor;
+
+      // delete the phrase.
+      if (!Infinit::Network.empty())
+        {
+          if (Etoile::Phrase.Erase(Infinit::Network) == elle::Status::Error)
+            escape("unable to erase the phrase");
+        }
+
+      // delete the acceptor.
+      Portal::acceptor->terminate_now();
+      delete Portal::acceptor;
+      Portal::acceptor = nullptr;
+
+      // delete the applications.
+      for (scoutor = Portal::applications.begin();
+           scoutor != Portal::applications.end();
+           scoutor++)
+        {
+          Application* application = scoutor->second;
+          delete application;
+        }
+
+      Portal::applications.clear();
+
+      // delete the server.
+      delete Portal::server;
+      Portal::server = nullptr;
 
       return elle::Status::Ok;
     }
@@ -524,13 +593,13 @@ namespace etoile
       std::pair<Portal::Iterator, elle::Boolean>        result;
 
       // check if this application has already been registered.
-      if (Portal::Applications.find(application->socket) !=
-          Portal::Applications.end())
+      if (Portal::applications.find(application->socket) !=
+          Portal::applications.end())
         escape("this application seems to have already been registered");
 
       // insert the application in the container.
       result =
-        Portal::Applications.insert(
+        Portal::applications.insert(
           Portal::Value(application->socket, application));
 
       // check if the insertion was successful.
@@ -550,7 +619,7 @@ namespace etoile
 
       // locate the entry.
       if ((iterator =
-           Portal::Applications.find(socket)) == Portal::Applications.end())
+           Portal::applications.find(socket)) == Portal::applications.end())
         escape("unable to locate the given socket");
 
       // return the application.
@@ -568,11 +637,11 @@ namespace etoile
 
       // locate the entry.
       if ((iterator =
-           Portal::Applications.find(socket)) == Portal::Applications.end())
+           Portal::applications.find(socket)) == Portal::applications.end())
         escape("unable to locate the given socket");
 
       // erase the entry.
-      Portal::Applications.erase(iterator);
+      Portal::applications.erase(iterator);
 
       return elle::Status::Ok;
     }
@@ -589,15 +658,15 @@ namespace etoile
 
       // dump the line.
       std::cout << alignment << elle::Dumpable::Shift
-                << "[Line] " << Portal::Line << std::endl;
+                << "[Port] " << Portal::port << std::endl;
 
       // dump the applications.
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Applications]" << std::endl;
 
       // go through the applications.
-      for (scoutor = Portal::Applications.begin();
-           scoutor != Portal::Applications.end();
+      for (scoutor = Portal::applications.begin();
+           scoutor != Portal::applications.end();
            scoutor++)
         {
           Application*  application = scoutor->second;
@@ -614,32 +683,29 @@ namespace etoile
 // ---------- callbacks -------------------------------------------------------
 //
 
-    ///
-    /// this callback is triggered whenever a connection is made to etoile
-    /// through the wall.
-    ///
-    elle::Status        Portal::Connection(elle::network::TCPSocket*   socket)
-    {
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        std::cout << "[etoile] portal::Portal::Connection()"
-                  << std::endl;
+      void
+      Portal::accept()
+      {
+        while (true)
+          {
+            reactor::network::TCPSocket* socket = Portal::server->accept();
 
-      // allocate a new guest application.
-      auto application = std::unique_ptr<Application>(new Application);
+            ELLE_LOG_TRACE("new connection accepted");
 
-      // create the application.
-      if (application->Create(socket) == elle::Status::Error)
-        escape("unable to create the application");
+            // allocate a new guest application.
+            auto application = std::unique_ptr<Application>(new Application);
 
-      // record the application.
-      if (Portal::Add(application.get()) == elle::Status::Error)
-        escape("unable to add the new application");
-      else
-        application.release();
+            // create the application.
+            if (application->Create(new elle::network::TCPSocket(socket)) == elle::Status::Error)
+              std::abort();
 
-      return elle::Status::Ok;
-    }
+            // record the application.
+            if (Portal::Add(application.get()) == elle::Status::Error)
+              std::abort();
+
+            application.release();
+          }
+      }
 
     ///
     /// this callback is triggered whenever the portal receives an
@@ -651,16 +717,12 @@ namespace etoile
     ///
     elle::Status        Portal::Authenticate(const elle::String&        pass)
     {
-      elle::network::Session*  session = elle::network::Session::session.Get();
       Application*      application;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        std::cout << "[etoile] portal::Portal::Authenticate()"
-                  << std::endl;
+      ELLE_LOG_TRACE("Authenticate()");
 
       // retrieve the application associated with the current socket.
-      if (Portal::Retrieve(dynamic_cast<elle::network::TCPSocket*>(session->socket),
+      if (Portal::Retrieve(elle::network::current_context().socket,
                            application) == elle::Status::Error)
         escape("unable to retrieve the application");
 
@@ -688,11 +750,10 @@ namespace etoile
     ///
     elle::Status        Portal::Prolog()
     {
-      elle::network::Session*  session = elle::network::Session::session.Get();
       Application*      application;
 
       // retrieve the application associated with the current socket.
-      if (Portal::Retrieve(dynamic_cast<elle::network::TCPSocket*>(session->socket),
+      if (Portal::Retrieve(elle::network::current_context().socket,
                            application) == elle::Status::Error)
         escape("unable to retrieve the application");
 
@@ -720,10 +781,9 @@ namespace etoile
     elle::Status        Portal::Epilog()
     {
       Application*      application;
-      elle::network::Session*  session = elle::network::Session::session.Get();
 
       // retrieve the application associated with the current socket.
-      if (Portal::Retrieve(dynamic_cast<elle::network::TCPSocket*>(session->socket),
+      if (Portal::Retrieve(elle::network::current_context().socket,
                            application) == elle::Status::Error)
         escape("unable to retrieve the application");
 

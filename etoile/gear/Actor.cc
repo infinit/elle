@@ -47,7 +47,6 @@ namespace etoile
     {
       Actor::Scoutor    scoutor;
 
-
       // go through the container.
       for (scoutor = Actor::Actors.begin();
            scoutor != Actor::Actors.end();

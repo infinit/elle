@@ -1,3 +1,5 @@
+#include <elle/log.hh>
+
 #include <elle/concurrency/Scheduler.hh>
 
 #include <etoile/wall/Object.hh>
@@ -20,6 +22,8 @@
 
 #include <Infinit.hh>
 
+ELLE_LOG_TRACE_COMPONENT("etoile.wall.Object");
+
 namespace etoile
 {
   namespace wall
@@ -41,9 +45,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::Object::Load()\n");
+      ELLE_LOG_TRACE("Load()");
 
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::Status::Error)
@@ -102,6 +104,10 @@ namespace etoile
               }
             default:
               {
+                // XXX
+                printf("[XXX] UNABLE TO ALLOCATE THE PROPER CONTEXT\n");
+                object.Dump();
+
                 escape("unable to allocate the proper context");
               }
             }
@@ -149,9 +155,7 @@ namespace etoile
     elle::Status        Object::Lock(
                           const gear::Identifier&)
     {
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::Object::Lock()\n");
+      ELLE_LOG_TRACE("Lock()");
 
       // XXX to implement.
 
@@ -164,9 +168,7 @@ namespace etoile
     elle::Status        Object::Release(
                           const gear::Identifier&)
     {
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::Object::Release()\n");
+      ELLE_LOG_TRACE("Release()");
 
       // XXX to implement.
 
@@ -185,9 +187,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::Object::Information()\n");
+      ELLE_LOG_TRACE("Information()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -223,9 +223,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::Object::Discard()\n");
+      ELLE_LOG_TRACE("Discard()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -316,9 +314,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::Object::Store()\n");
+      ELLE_LOG_TRACE("Store()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -412,9 +408,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::Object::Destroy()\n");
+      ELLE_LOG_TRACE("Destroy()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -505,9 +499,7 @@ namespace etoile
     elle::Status        Object::Purge(
                           const gear::Identifier&)
     {
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::Object::Purge()\n");
+      ELLE_LOG_TRACE("Purge()");
 
       // XXX to implement.
 
