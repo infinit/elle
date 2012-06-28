@@ -25,8 +25,18 @@ namespace elle
     template<typename T> struct StoreClassVersion<T*>
       { static_assert(std::is_same<T,T>::value, "Should not happen !"); };
 
+
   }
 }
+
+/// Do not serialize any version for the given type.
+#define ELLE_SERIALIZE_NO_VERSION(Type)                                       \
+  namespace elle { namespace serialize {                                      \
+      template<> struct StoreClassVersion<Type> {                             \
+          static bool const value = false;                                    \
+      };                                                                      \
+  }}                                                                          \
+  /**/
 
 #endif
 
