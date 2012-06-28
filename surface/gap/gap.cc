@@ -17,16 +17,20 @@ extern "C"
 #define __TO_C(st)    reinterpret_cast<gap_State*>(st)
 #define __TO_CPP(st)  reinterpret_cast<surface::gap::State*>(st)
 // automate cpp wrapping
-# define __WRAP_CPP(_state_, _func_, ...)                                     \
+# define __WRAP_CPP_RET(_state_, _func_, ...)                                 \
     assert(_state_ != nullptr);                                               \
+    gap_Status ret;                                                           \
     try                                                                       \
-      { __TO_CPP(_state_)->_func_(__VA_ARGS__); }                             \
+      { __TO_CPP(_state_)->_func_(__VA_ARGS__); ret = gap_ok; }               \
     catch (std::exception const& err)                                         \
     {                                                                         \
         elle::log::error(#_func_ " error:", err.what());                      \
-        return gap_error;                                                     \
+        ret = gap_error;                                                      \
     }                                                                         \
-    return gap_ok                                                             \
+  /**/
+# define __WRAP_CPP(...)                                                      \
+    __WRAP_CPP_RET(__VA_ARGS__);                                              \
+    return ret                                                                \
   /**/
 
 
@@ -98,12 +102,16 @@ extern "C"
     gap_Status gap_register(gap_State* state,
                             char const* fullname,
                             char const* email,
-                            char const* password)
+                            char const* password,
+                            char const* device_name)
     {
       assert(fullname != nullptr);
       assert(email != nullptr);
       assert(password != nullptr);
-      __WRAP_CPP(state, register_, fullname, email, password);
+      __WRAP_CPP_RET(state, register_, fullname, email, password);
+      if (ret == gap_ok && device_name != nullptr)
+        return gap_set_device_name(state, device_name);
+      return ret;
     }
 
     gap_Status gap_meta_alive(gap_State* state)
@@ -111,8 +119,8 @@ extern "C"
       return gap_ok;
     }
 
-    gap_Status gap_create_device(gap_State* state,
-                                 char const* name)
+    gap_Status gap_set_device_name(gap_State* state,
+                                   char const* name)
     {
       assert(name != nullptr);
       __WRAP_CPP(state, create_device, name);

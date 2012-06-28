@@ -39,14 +39,17 @@ extern "C" {
                          char const* email,
                          char const* password);
 
-    /// Register to meta.
+    /// Register to meta. If the device name is not NULL, it will also create
+    /// the local device with specified name.
     gap_Status gap_register(gap_State* state,
                             char const* fullname,
                             char const* email,
-                            char const* password);
+                            char const* password,
+                            char const* device_name);
 
-    gap_Status gap_create_device(gap_State* state,
-                                 char const* name);
+    /// Update the local device name.
+    gap_Status gap_set_device_name(gap_State* state,
+                                   char const* name);
 
 # ifdef __cplusplus
 } // ! extern "C"
