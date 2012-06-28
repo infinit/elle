@@ -141,7 +141,7 @@ namespace elle
           Report::Entry*        entry = *scoutor;
 
           // create the message by prepending a two-character margin.
-          entry->message = entry->message;
+          entry->message = "[transposed] " + entry->message;
 
           // store the entry.
           this->Record(entry->location,
