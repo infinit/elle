@@ -1,3 +1,4 @@
+#include <cassert>
 
 #include <elle/print.hh>
 
@@ -5,9 +6,14 @@
 
 int main()
 {
+  gap_State* state = gap_new();
+  assert(state != nullptr);
+  if (gap_register(state, "my name", "monemail@caramail.com", "BIET", nullptr) != 0)
+    {
+      if (gap_login(state, "monemail@caramail.com", "BIET") != 0)
+        assert(false && "Should be able to log in");
+    }
   elle::print("tests done.");
-  gap_state_t* state = gap_new("pif");
-  gap_login(state, "toto", "titi");
-  gap_register(state, "my name", "monemail@caramail.com", "BIET");
+  return 0;
 }
 

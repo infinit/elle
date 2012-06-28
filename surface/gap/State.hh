@@ -1,10 +1,10 @@
 #ifndef  SURFACE_GAP_STATE_HH
 # define SURFACE_GAP_STATE_HH
 
-# include <plasma/metaclient/MetaClient.hh>
-
 # include <string>
 # include <map>
+
+# include <plasma/metaclient/MetaClient.hh>
 
 namespace surface
 {
@@ -12,7 +12,8 @@ namespace surface
   {
 
     struct Network;
-    class API;
+
+    namespace meta = ::plasma::metaclient;
 
     class State
     {
@@ -20,19 +21,18 @@ namespace surface
       std::string                     _infinit_home;
       std::map<std::string, Network*> _networks;
       bool                            _networks_dirty;
-      API*                            _api;
-      std::string                     _updater_path;
+      meta::MetaClient*               _api;
 
     public:
-      State(std::string const& updater_path);
+      State();
       ~State();
-      void update_infinit_home();
       void refresh_networks();
       std::string const& path_to_network(std::string const& path);
       void login(std::string const& email, std::string const& password);
       void register_(std::string const& fullname,
                      std::string const& email,
                      std::string const& password);
+      void create_device(std::string const& name);
 
     private:
       std::string _watchdog_id() const;

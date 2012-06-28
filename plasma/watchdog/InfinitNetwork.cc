@@ -202,7 +202,7 @@ void InfinitNetwork::_register_device()
   else
     {
       LOG("Get network nodes.");
-      this->_manager.meta().GetNetworkNodes(
+      this->_manager.meta().NetworkNodes(
           this->_description._id,
           boost::bind(&InfinitNetwork::_on_network_nodes, this, _1),
           boost::bind(&InfinitNetwork::_on_any_error, this, _1, _2)
@@ -214,7 +214,7 @@ void InfinitNetwork::_on_device_registered(meta::UpdateNetworkResponse const& re
 {
   LOG("Device successfully registered.");
   assert(response.updated_network_id == this->_description._id);
-  this->_manager.meta().GetNetworkNodes(
+  this->_manager.meta().NetworkNodes(
       this->_description._id,
       boost::bind(&InfinitNetwork::_on_network_nodes, this, _1),
       boost::bind(&InfinitNetwork::_on_any_error, this, _1, _2)

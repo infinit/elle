@@ -13,6 +13,11 @@
 #include <QLocalSocket>
 
 #include <elle/log.hh>
+#include <elle/network/Host.hh>
+
+#include <lune/Identity.hh>
+
+#include <elle/idiom/Close.hh>
 
 #include <plasma/common/resources.hh>
 
@@ -42,12 +47,11 @@ namespace surface
       std::string name;
     };
 
-    State::State(std::string const& updater_path)
+    State::State()
       : _infinit_home(getenv("INFINIT_HOME"))
       , _networks()
       , _networks_dirty(true)
-      , _api(new API)
-      , _updater_path(updater_path)
+      , _api(new meta::MetaClient("http://127.0.0.1:12345"))
     {
       if (this->_infinit_home.empty())
         {
@@ -63,12 +67,8 @@ namespace surface
       for (auto& it: this->_networks)
         delete (it).second;
       this->_networks.clear();
-    }
-
-    void State::update_infinit_home()
-    {
-      if (::system(this->_updater_path.c_str()) != 0)
-        throw std::runtime_error("Couldn't launch the process");
+      delete this->_api;
+      this->_api = nullptr;
     }
 
     void State::refresh_networks()
@@ -131,27 +131,64 @@ namespace surface
 
     void State::login(std::string const& email, std::string const& password)
     {
-      json::Dictionary req;
-      req["email"] = email;
-      req["password"] = this->_hash_password(email, password);
-      auto res = this->_api->post("/user/login", req);
-      if ((*res)["success"] == false)
-        throw std::runtime_error((*res)["error"].as<std::string>());
+      auto res = this->_api->sync_Login(email, password);
+
+      if (!res.success)
+        throw std::runtime_error(res.error);
+
+      elle::log::debug("Logged in as", email, "token =", res.token);
+      this->_api->token(res.token.c_str());
+
+      /// Decrypt the identity
+      std::string identity_clear;
+        {
+          lune::Identity      identity;
+
+          if (identity.Restore(res.identity)    == elle::Status::Error ||
+              identity.Decrypt(password)        == elle::Status::Error ||
+              identity.Clear()                  == elle::Status::Error ||
+              identity.Save(identity_clear)     == elle::Status::Error
+             )
+              throw("Couldn't decrypt the identity file !");
+        }
     }
 
     void State::register_(std::string const& fullname,
                           std::string const& email,
                           std::string const& password)
     {
-      json::Dictionary req;
-      req["fullname"] = fullname;
-      req["email"] = email;
-      req["password"] = password;
-      req["admin_token"] = "fdjskfdakl;asdklwqioefwiopfdsjkl;daskl;askl;fsd";
+      auto res = this->_api->sync_Register(email, fullname, password);
+      if (!res.success)
+          throw std::runtime_error(res.error);
+      elle::log::debug("Registered new user", fullname, email);
+      this->login(email, password);
+    }
 
-      auto res = this->_api->post("/user/register", req);
-      auto& dict = dynamic_cast<json::Dictionary&>(*res);
-      elle::log::debug("Got register response:", res->repr());
+    namespace detail
+    {
+        std::string get_local_address()
+        {
+          elle::network::Host::Container hosts;
+
+          if (elle::network::Host::Hosts(hosts) == elle::Status::Error)
+            throw std::runtime_error("Couldn't retreive host list");
+
+          if (!hosts.size())
+            throw std::runtime_error("No usable host found !");
+
+          std::string host;
+          hosts[0].Convert(host);
+          return host;
+        }
+    }
+
+    void State::create_device(std::string const& name)
+    {
+      std::string local_address = detail::get_local_address();
+      elle::log::debug("Registering new device", name, "for host:", local_address);
+
+      // XXX should be done in infinit instance
+      auto res = this->_api->sync_CreateDevice(name, local_address, 1912);
     }
 
   }

@@ -110,9 +110,6 @@ class User(Page):
 
         user = self.data
 
-        if user.get('admin_token') != pythia.constants.ADMIN_TOKEN:
-            return self.error("You are not allowed to do that")
-
         errors = []
         for k, v in self._validators.items():
             if not k in user:
@@ -130,6 +127,7 @@ class User(Page):
             return json.dumps({
                 'success': False,
                 'errors': errors,
+                'error': ', '.join(errors),
             })
 
         user["_id"] = str(database.users.save({}))

@@ -1,4 +1,7 @@
 
-file(GLOB gap_srcs *.cc)
+file(GLOB gap_srcs
+  gap.cc
+  State.cc
+)
 
-add_library(gap ${gap_srcs})
+add_library(gap SHARED ${gap_srcs})
