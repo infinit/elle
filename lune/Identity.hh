@@ -81,11 +81,6 @@ namespace lune
 
     // fileable
     ELLE_CONCEPT_FILEABLE_METHODS();
-    elle::Status        Load();
-    elle::Status        Store() const;
-    elle::Status        Erase() const;
-    elle::Status        Exist() const;
-
     elle::Status        Load(const elle::String&);
     elle::Status        Store(const elle::String&) const;
     elle::Status        Erase(const elle::String&) const;

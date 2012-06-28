@@ -35,10 +35,6 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Subject,
       }
     default:
       {
-        // XXX
-        printf("THROW SUBJECT\n");
-
-        throw std::runtime_error("Unknown subject type: " + elle::sprint((int) value.type));
         break;
       }
     }

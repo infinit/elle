@@ -43,6 +43,16 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
 
   // register the option.
   if (Infinit::Parser->Register(
+        "User",
+        'u',
+        "user",
+        "specifies the name of the user",
+        elle::utility::Parser::KindRequired) == elle::Status::Error)
+    throw reactor::Exception(elle::concurrency::scheduler(),
+                    "unable to register the option");
+
+  // register the option.
+  if (Infinit::Parser->Register(
         "Network",
         'n',
         "network",
@@ -77,38 +87,15 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
     }
 
   // retrieve the user name.
-#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
-  {
-    struct ::passwd*    pw;
+  if (Infinit::Parser->Value("User",
+                             Infinit::User) == elle::Status::Error)
+    {
+      // display the usage.
+      Infinit::Parser->Usage();
 
-    // retrieve the current password
-    if ((pw = ::getpwuid(geteuid())) == NULL)
       throw reactor::Exception(elle::concurrency::scheduler(),
-                      "unable to retrieve the current user's password structure");
-
-    // assign the username.
-    Infinit::User.assign(pw->pw_name);
-    // XXX[this will take the current user and therefore displays:
-    //     `enter your passphrase ...`]
-  }
-#elif defined(INFINIT_WINDOWS)
-  {
-    char                username[1024];
-    DWORD               length = sizeof (username);
-
-    // retrieve the username.
-    if (!::GetUserName(username, &length))
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                      "unable to retrieve the username");
-
-    // assign the username.
-    Infinit::User.assign(username, length);
-    // XXX[this will take the current user and therefore displays:
-    //     `enter your passphrase ...`]
-  }
-#else
-# error "unsupported platform"
-#endif
+                      "unable to retrieve the user name");
+    }
 
   // retrieve the network name.
   if (Infinit::Parser->Value("Network",

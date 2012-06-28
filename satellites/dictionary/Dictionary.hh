@@ -57,14 +57,18 @@ namespace satellite
     //
     // static methods
     //
-    static elle::Status         Add(const Type&,
+    static elle::Status         Add(elle::String const&,
+                                    const Type&,
                                     const elle::String&,
                                     const elle::Unique&);
-    static elle::Status         Remove(const Type&,
+    static elle::Status         Remove(elle::String const&,
+                                       const Type&,
                                        const elle::String&);
-    static elle::Status         Dump(const Type&,
+    static elle::Status         Dump(elle::String const&,
+                                     const Type&,
                                      const elle::String&);
-    static elle::Status         Show(const Type&);
+    static elle::Status         Show(elle::String const&,
+                                     const Type&);
   };
 
 }
