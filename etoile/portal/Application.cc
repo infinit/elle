@@ -58,12 +58,6 @@ namespace etoile
       // set the state.
       this->state = Application::StateConnected;
 
-      // // subscribe to the signal.
-      // if (this->socket->signal.error.Subscribe(
-      //       elle::Callback<>::Infer(&Application::Error,
-      //                               this)) == elle::Status::Error)
-      //   escape("unable to subscribe to the signal");
-
       elle::concurrency::scheduler().CallLater
         (boost::bind(&Application::Abort, this),
          "Application abort", Application::Timeout);
@@ -76,52 +70,6 @@ namespace etoile
 //
 
     ///
-    /// this callback is triggered whenever the application is considered
-    /// disconnected.
-    ///
-    elle::Status        Application::Disconnected()
-    {
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        std::cout << "[etoile] portal::Application::Disconnected()"
-                  << std::endl;
-
-      // set the application's state as disconnected.
-      this->state = Application::StateDisconnected;
-
-      // check if the application is currently processing.
-      if (this->processing == Application::ProcessingOff)
-        {
-          // remove the application from the portal.
-          if (Portal::Remove(this->socket) == elle::Status::Error)
-            escape("unable to remove the application from the portal");
-
-          // bury the application.
-          bury(this);
-        }
-
-      return elle::Status::Ok;
-    }
-
-    ///
-    /// this callback is triggered whenever an error occurs on the
-    /// application's socket.
-    ///
-    elle::Status        Application::Error(elle::String)
-    {
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        std::cout << "[etoile] portal::Application::Error()"
-                  << std::endl;
-
-      // disconnect the socket, though that may be unecessary i.e do not
-      // check the return status.
-      this->socket->Disconnect();
-
-      return elle::Status::Ok;
-    }
-
-    ///
     /// this callback is triggered once the authentication timer times out.
     ///
     /// if the application has not been authenticated, it is destroyed.
@@ -131,8 +79,7 @@ namespace etoile
       // Check if the application has been authenticated.
       if (this->state == Application::StateAuthenticated)
         return elle::Status::Ok;
-      if (Infinit::Configuration.etoile.debug == true)
-        std::cout << "[etoile] portal::Application::Abort()" << std::endl;
+
       return elle::Status::Ok;
     }
 

@@ -48,13 +48,6 @@ namespace satellite
       };
 
     //
-    // static callbacks
-    //
-    static elle::Status         Disconnected();
-    // XXX: const string&
-    static elle::Status         Error(elle::String);
-
-    //
     // static methods
     //
     static elle::Status         Connect();
@@ -71,7 +64,7 @@ namespace satellite
     //
     // static attributes
     //
-    static elle::network::LocalSocket    Socket;
+    static elle::network::TCPSocket* socket;
   };
 
 }

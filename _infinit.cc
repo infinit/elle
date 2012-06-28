@@ -10,19 +10,17 @@
 #include <hole/Hole.hh>
 #include <horizon/Horizon.hh>
 
-using reactor::Exception;
-
 void
 Infinit(elle::Natural32 argc, elle::Character* argv[])
 {
   // initialize the Elle library.
   if (elle::Elle::Initialize() == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to initialize Elle");
 
   // set up the program.
   if (elle::Program::Setup() == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to set up the program");
 
   // allocate a new parser.
@@ -30,7 +28,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
 
   // specify a program description.
   if (Infinit::Parser->Description(Infinit::Copyright) == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to set the description");
 
   // register the options.
@@ -40,7 +38,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
         "help",
         "display the help",
         elle::utility::Parser::KindNone) == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to register the option");
 
   // register the option.
@@ -50,7 +48,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
         "network",
         "specifies the name of the network",
         elle::utility::Parser::KindRequired) == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to register the option");
 
   // register the option.
@@ -60,12 +58,12 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
         "mountpoint",
         "specifies the mount point",
         elle::utility::Parser::KindRequired) == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to register the option");
 
   // parse.
   if (Infinit::Parser->Parse() == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to parse the command line");
 
   // test the option.
@@ -85,7 +83,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
 
     // retrieve the current password
     if ((pw = ::getpwuid(geteuid())) == NULL)
-      throw Exception(elle::concurrency::scheduler(),
+      throw reactor::Exception(elle::concurrency::scheduler(),
                       "unable to retrieve the current user's password structure");
 
     // assign the username.
@@ -100,7 +98,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
 
     // retrieve the username.
     if (!::GetUserName(username, &length))
-      throw Exception(elle::concurrency::scheduler(),
+      throw reactor::Exception(elle::concurrency::scheduler(),
                       "unable to retrieve the username");
 
     // assign the username.
@@ -119,7 +117,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
       // display the usage.
       Infinit::Parser->Usage();
 
-      throw Exception(elle::concurrency::scheduler(),
+      throw reactor::Exception(elle::concurrency::scheduler(),
                       "unable to retrieve the network name");
     }
 
@@ -130,40 +128,40 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
       // display the usage.
       Infinit::Parser->Usage();
 
-      throw Exception(elle::concurrency::scheduler(),
+      throw reactor::Exception(elle::concurrency::scheduler(),
                       "unable to retrieve the mount point");
     }
 
   // initialize the nucleus library.
   if (nucleus::Nucleus::Initialize() == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to initialize Nucleus");
 
   // initialize the Lune library.
   if (lune::Lune::Initialize() == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to initialize Lune");
 
   // initialize Infinit.
   if (Infinit::Initialize() == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to initialize Infinit");
 
   hole::Hole::Initialize();
 
   // initialize the Agent library.
   if (agent::Agent::Initialize() == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to initialize Agent");
 
   // initialize the Etoile library.
   if (etoile::Etoile::Initialize() == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to initialize Etoile");
 
   // initialize the horizon.
   if (horizon::Horizon::Initialize() == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to initialize the horizon");
 
   // launch the program.
@@ -175,42 +173,42 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
 
   // clean the horizon.
   if (horizon::Horizon::Clean() == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to clean the horizon");
 
   // clean the Etoile library.
   if (etoile::Etoile::Clean() == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to clean Etoile");
 
   // clean the Agent library.
   if (agent::Agent::Clean() == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to clean Agent");
 
   // clean Hole.
   if (hole::Hole::Clean() == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to clean Hole");
 
   // clean Infinit.
   if (Infinit::Clean() == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to clean Infinit");
 
   // clean Lune
   if (lune::Lune::Clean() == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to clean Lune");
 
   // clean the nucleus library.
   if (nucleus::Nucleus::Clean() == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to clean Nucleus");
 
   // clean Elle.
   if (elle::Elle::Clean() == elle::Status::Error)
-    throw Exception(elle::concurrency::scheduler(),
+    throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to clean Elle");
 }
 
@@ -227,7 +225,8 @@ Main(elle::Natural32 argc, elle::Character* argv[])
       show();
 
       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
-      if (Exception const* re = dynamic_cast<Exception const*>(&e))
+      if (reactor::Exception const* re =
+          dynamic_cast<reactor::Exception const*>(&e))
         std::cerr << re->backtrace() << std::endl;
 
       elle::concurrency::scheduler().terminate();

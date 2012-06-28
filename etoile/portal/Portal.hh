@@ -4,6 +4,9 @@
 # include <elle/types.hh>
 # include <lune/Lune.hh>
 
+# include <reactor/fwd.hh>
+# include <reactor/network/fwd.hh>
+
 # include <etoile/portal/Application.hh>
 
 # include <elle/idiom/Close.hh>
@@ -54,6 +57,8 @@ namespace etoile
 
       static elle::Status       Show(const elle::Natural32 = 0);
 
+      static void accept();
+
       //
       // static callbacks
       //
@@ -65,8 +70,10 @@ namespace etoile
       //
       // static attributes
       //
-      static elle::String       Line;
-      static Container          Applications;
+      static elle::network::Port port;
+      static Container applications;
+      static reactor::network::TCPServer* server;
+      static reactor::Thread* acceptor;
     };
 
   }

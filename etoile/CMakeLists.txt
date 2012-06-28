@@ -37,9 +37,9 @@ ADD_LIBRARY(etoile
   wall/Object.cc
   wall/Path.cc
 
-#  portal/Application.cc
-#  portal/Portal.cc
-#  portal/Wrapper.cc
+  portal/Application.cc
+  portal/Portal.cc
+  portal/Wrapper.cc
 
   miscellaneous/Abstract.cc
 

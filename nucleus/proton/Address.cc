@@ -112,6 +112,25 @@ namespace nucleus
     }
 
 //
+// ---------- methosd ---------------------------------------------------------
+//
+
+/* XXX[use the Hexadecimal methods for converting the Digest into a string]
+    elle::String
+    Address::unique() const
+    {
+      assert(this->digest != nullptr);
+
+      // note that a unique element i.e the digest has already been computed
+      // when the address was created.
+      //
+      // therefore, this method simply returns a string representation of
+      // the digest.
+      return (*this->digest);
+    }
+*/
+
+//
 // ---------- object ----------------------------------------------------------
 //
 

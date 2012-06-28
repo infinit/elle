@@ -18,21 +18,30 @@ ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Subject,
                       version)
 {
   assert(version == 0);
-  using namespace nucleus::neutron;
 
   archive & value.type;
+
   switch (value.type)
-  {
-  case Subject::TypeUser:
-    archive & elle::serialize::alive_pointer(value.user);
-    break;
-  case Subject::TypeGroup:
-    archive & elle::serialize::alive_pointer(value.group);
-    break;
-  default:
-    throw std::runtime_error("Unknown subject type: " + elle::sprint((int) value.type));
-    break;
-  }
+    {
+    case nucleus::neutron::Subject::TypeUser:
+      {
+        archive & elle::serialize::alive_pointer(value.user);
+        break;
+      }
+    case nucleus::neutron::Subject::TypeGroup:
+      {
+        archive & elle::serialize::alive_pointer(value.group);
+        break;
+      }
+    default:
+      {
+        // XXX
+        printf("THROW SUBJECT\n");
+
+        throw std::runtime_error("Unknown subject type: " + elle::sprint((int) value.type));
+        break;
+      }
+    }
 }
 
 #endif

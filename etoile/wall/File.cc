@@ -1,3 +1,5 @@
+#include <elle/log.hh>
+
 #include <elle/concurrency/Scheduler.hh>
 #include <etoile/wall/File.hh>
 
@@ -14,6 +16,8 @@
 #include <etoile/journal/Journal.hh>
 
 #include <Infinit.hh>
+
+ELLE_LOG_TRACE_COMPONENT("etoile.wall.File");
 
 namespace etoile
 {
@@ -36,9 +40,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::File::Create()\n");
+      ELLE_LOG_TRACE("Create()");
 
       // acquire the scope.
       if (gear::Scope::Supply(scope) == elle::Status::Error)
@@ -85,9 +87,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::File::Load()\n");
+      ELLE_LOG_TRACE("Load()");
 
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::Status::Error)
@@ -133,9 +133,7 @@ namespace etoile
     elle::Status        File::Lock(
                           const gear::Identifier&)
     {
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::File::Lock()\n");
+      ELLE_LOG_TRACE("Lock()");
 
       // XXX to implement.
 
@@ -148,9 +146,7 @@ namespace etoile
     elle::Status        File::Release(
                           const gear::Identifier&)
     {
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::File::Release()\n");
+      ELLE_LOG_TRACE("Release()");
 
       // XXX to implement.
 
@@ -169,9 +165,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::File::Write()\n");
+      ELLE_LOG_TRACE("Write()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -213,9 +207,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::File::Read()\n");
+      ELLE_LOG_TRACE("Read()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -253,9 +245,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::File::Adjust()\n");
+      ELLE_LOG_TRACE("Adjust()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -294,9 +284,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::File::Discard()\n");
+      ELLE_LOG_TRACE("Discard()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -387,9 +375,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::File::Store()\n");
+      ELLE_LOG_TRACE("Store()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -479,9 +465,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::File*       context;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::File::Destroy()\n");
+      ELLE_LOG_TRACE("Destroy()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -568,9 +552,7 @@ namespace etoile
     elle::Status        File::Purge(
                           const gear::Identifier&)
     {
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::File::Purge()\n");
+      ELLE_LOG_TRACE("Purge()");
 
       // XXX to implement.
 

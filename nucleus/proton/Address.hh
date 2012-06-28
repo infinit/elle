@@ -72,6 +72,10 @@ namespace nucleus
                                        const T&,
                                        const TT&...);
 
+      /// this method returns a unique representation of the address.
+      elle::String
+      unique() const;
+
       //
       // interfaces
       //

@@ -14,8 +14,8 @@ ELLE_SERIALIZE_SIMPLE(lune::Phrase,
 {
   assert(version == 0);
 
+  archive & value.port;
   archive & value.pass;
-  archive & value.portal;
 }
 
 #endif

@@ -1,3 +1,5 @@
+#include <elle/log.hh>
+
 #include <elle/concurrency/Scheduler.hh>
 
 #include <etoile/wall/Access.hh>
@@ -9,6 +11,8 @@
 #include <etoile/automaton/Access.hh>
 
 #include <Infinit.hh>
+
+ELLE_LOG_TRACE_COMPONENT("etoile.wall.Access");
 
 namespace etoile
 {
@@ -36,9 +40,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::Access::Lookup()\n");
+      ELLE_LOG_TRACE("Lookup()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -81,9 +83,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::Access::Consult()\n");
+      ELLE_LOG_TRACE("Consult()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -122,9 +122,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::Access::Grant()\n");
+      ELLE_LOG_TRACE("Grant()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
@@ -165,9 +163,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Object*     context;
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-        printf("[etoile] wall::Access::Revoke()\n");
+      ELLE_LOG_TRACE("Revoke()");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
