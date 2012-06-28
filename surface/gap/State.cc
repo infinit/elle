@@ -165,7 +165,7 @@ namespace surface
 
           // user.dic
           lune::Dictionary dictionary;
-          if (dictionary.Store() == elle::Status::Error)
+          if (dictionary.Store(email) == elle::Status::Error)
             throw std::runtime_error("Cannot store the dictionary.");
         }
     }

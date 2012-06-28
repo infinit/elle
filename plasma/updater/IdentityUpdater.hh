@@ -70,7 +70,8 @@ namespace plasma
       void _UpdatePassport();
       std::string _DecryptIdentity(std::string const& password,
                                    std::string const& identity);
-      void _StoreIdentity(std::string const& identityString);
+      void _StoreIdentity(std::string const& email,
+                          std::string const& identityString);
       void _CreateDevice();
       void _UpdateDevice();
 
