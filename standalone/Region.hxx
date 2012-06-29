@@ -47,9 +47,9 @@ namespace elle
   }
 }
 
-#endif
-#ifndef  ELLE_SERIALIZE_REGION_SERIALIZER_HXX
-# define ELLE_SERIALIZE_REGION_SERIALIZER_HXX
+//
+// ---------- serialize -------------------------------------------------------
+//
 
 # include <elle/utility/Buffer.hh>
 

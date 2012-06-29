@@ -1,5 +1,5 @@
-#ifndef  ELLE_NETWORK_HEADERSERIALIZER_HXX
-# define ELLE_NETWORK_HEADERSERIALIZER_HXX
+#ifndef  ELLE_NETWORK_HEADER_HXX
+# define ELLE_NETWORK_HEADER_HXX
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 # include <elle/concurrency/Event.hh>

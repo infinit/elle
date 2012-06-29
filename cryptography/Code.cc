@@ -1,4 +1,3 @@
-
 #include <elle/cryptography/Code.hh>
 
 #include <elle/standalone/Maid.hh>
@@ -7,8 +6,6 @@
 
 namespace elle
 {
-  using namespace standalone;
-
   namespace cryptography
   {
 
@@ -39,7 +36,7 @@ namespace elle
     ///
     /// this method creates a code based on the given region.
     ///
-    Status              Code::Create(const Region&      region)
+    Status              Code::Create(const standalone::Region& region)
     {
       // set the region.
       this->region = region;
@@ -95,34 +92,6 @@ namespace elle
 
       return Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes a code object.
-    ///
-    //Status              Code::Serialize(Archive&                archive) const
-    //{
-    //  // serialize the region.
-    //  if (archive.Serialize(this->region) == Status::Error)
-    //    escape("unable to serialize the region");
-
-    //  return Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts a code object.
-    /////
-    //Status              Code::Extract(Archive&          archive)
-    //{
-    //  // extract the content.
-    //  if (archive.Extract(this->region) == Status::Error)
-    //    escape("unable to extract the region");
-
-    //  return Status::Ok;
-    //}
 
   }
 }

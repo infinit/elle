@@ -11,22 +11,14 @@
 
 namespace elle
 {
-
-  using namespace standalone;
-  using namespace radix;
-
   namespace cryptography
   {
-
-//
-// ---------- types -----------------------------------------------------------
-//
 
     ///
     /// this class represents a symmetrically ciphered text.
     ///
     class Cipher:
-      public Object
+      public radix::Object
     {
     public:
       //
@@ -50,14 +42,10 @@ namespace elle
       // dumpable
       Status            Dump(const Natural32 = 0) const;
 
-      //// archivable
-      //Status            Serialize(Archive&) const;
-      //Status            Extract(Archive&);
-
       //
       // attributes
       //
-      Region            region;
+      standalone::Region region;
     };
 
   }

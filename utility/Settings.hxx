@@ -322,10 +322,6 @@
 //  }
 //}
 
-#endif
-#ifndef ELLE_UTILITY_SETTINGSSERIALIZER_HXX
-# define ELLE_UTILITY_SETTINGSSERIALIZER_HXX
-
 # include <elle/format/ini.hxx>
 
 # include "Settings.hh"

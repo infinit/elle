@@ -63,13 +63,13 @@ namespace elle
   }
 }
 
+//
+// ---------- serialize -------------------------------------------------------
+//
+
 # include <elle/idiom/Close.hh>
-
-#endif
-#ifndef  ELLE_CRYPTOGRAPHY_SECRETKEYSERIALIZER_HXX
-# define ELLE_CRYPTOGRAPHY_SECRETKEYSERIALIZER_HXX
-
-# include <cassert>
+#  include <cassert>
+# include <elle/idiom/Open.hh>
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 # include <elle/standalone/Region.hh>
