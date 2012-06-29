@@ -3,6 +3,7 @@
 
 # include <cassert>
 # include <vector>
+# include <list>
 
 # include "Object.hh"
 
@@ -56,10 +57,11 @@ namespace elle { namespace format { namespace json {
               return false;
           return true;
         }
+
+      template<typename T>
+      operator std::list<T>() const;
     };
 
 }}} // !namespace elle::format::json
 
 #endif /* ! ARRAY_HH */
-
-
