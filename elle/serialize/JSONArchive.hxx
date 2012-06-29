@@ -18,7 +18,7 @@ namespace elle { namespace serialize {
     {
     public:
       static ArchiveMode const mode = ArchiveMode::Output;
-      typedef uint32_t ListSizeType;
+      typedef uint32_t SequenceSizeType;
     private:
       OutputJSONArchive&  _archive;
       bool                _isFirst;
@@ -93,7 +93,7 @@ namespace elle { namespace serialize {
     {
     public:
       static ArchiveMode const mode = ArchiveMode::Output;
-      typedef uint32_t ListSizeType;
+      typedef uint32_t SequenceSizeType;
 
     private:
       json::Dictionary const& _dict;
