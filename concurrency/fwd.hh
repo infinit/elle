@@ -6,7 +6,23 @@ namespace elle
   namespace concurrency
   {
 
-    class Timer;
+    template <typename... T>
+    class Callback;
+    template <typename... T>
+    class Closure;
+    class Environment;
+    class Event;
+    class Frame;
+    template <typename... T>
+    class Function;
+    template <typename... T>
+    class Method;
+    class Resource;
+    class Routine;
+    template <typename... T>
+    class Section;
+    template <typename... T>
+    class Signal;
 
   }
 }

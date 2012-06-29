@@ -26,40 +26,8 @@ namespace elle
   {
 
 //
-// ---------- globals ---------------------------------------------------------
-//
-
-    ///
-    /// this variable represents the program.
-    ///
-    Program*                    program = NULL;
-
-//
 // ---------- static methods --------------------------------------------------
 //
-
-    ///
-    /// this method initializes the program.
-    ///
-    Status              Program::Initialize()
-    {
-      // allocate a new program.
-      program = new Program;
-
-      return Status::Ok;
-    }
-
-    ///
-    /// this method cleans the program.
-    ///
-    Status              Program::Clean()
-    {
-      // delete the program.
-      if (program != NULL)
-        delete program;
-
-      return Status::Ok;
-    }
 
     ///
     /// this method sets up the program for startup.
@@ -127,20 +95,8 @@ namespace elle
     }
 
 //
-// ---------- constructors & destructors --------------------------------------
+// ---------- signals ---------------------------------------------------------
 //
-
-    ///
-    /// default constructor.
-    ///
-    Program::Program()
-    {}
-
-    ///
-    /// destructor.
-    ///
-    Program::~Program()
-    {}
 
     reactor::Signal Program::_exit;
   }

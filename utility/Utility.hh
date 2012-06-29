@@ -25,22 +25,4 @@ namespace elle
   }
 }
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/utility/Base64.hh>
-#include <elle/utility/Duration.hh>
-#include <elle/utility/Factory.hh>
-#include <elle/utility/Hexadecimal.hh>
-#include <elle/utility/HTTP.hh>
-#include <elle/utility/JSON.hh>
-#include <elle/utility/Parser.hh>
-#include <elle/utility/Product.hh>
-#include <elle/utility/REST.hh>
-#include <elle/utility/Settings.hh>
-#include <elle/utility/Time.hh>
-#include <elle/utility/Unicode.hh>
-#include <elle/utility/URI.hh>
-
 #endif

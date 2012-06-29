@@ -1,9 +1,18 @@
-
 # include <ostream>
 
-# include <elle/format/json.hh>
+# include <elle/format/json/Object.hh>
+# include <elle/format/json/Bool.hh>
+# include <elle/format/json/Integer.hh>
+# include <elle/format/json/Float.hh>
+# include <elle/format/json/String.hh>
+# include <elle/format/json/Array.hh>
+# include <elle/format/json/Dictionary.hh>
+# include <elle/format/json/Null.hh>
+# include <elle/format/json/Dictionary.hxx>
+# include <elle/format/json/Array.hxx>
+# include <elle/format/json/Parser.hh>
 
-# include "JSONArchive.hh"
+# include <elle/serialize/JSONArchive.hh>
 
 using namespace elle::serialize;
 
