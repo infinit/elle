@@ -1046,8 +1046,8 @@ namespace nucleus
 }
 
 #endif
-#ifndef  XXX_SEAMSERIALIZER_HXX
-# define XXX_SEAMSERIALIZER_HXX
+#ifndef  XXX_SEAM_HXX
+# define XXX_SEAM_HXX
 
 # include <cassert>
 

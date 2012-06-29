@@ -852,8 +852,8 @@ namespace nucleus
 }
 
 #endif
-#ifndef  XXX_QUILLSERIALIZER_HXX
-# define XXX_QUILLSERIALIZER_HXX
+#ifndef  XXX_QUILL_HXX
+# define XXX_QUILL_HXX
 
 # include <cassert>
 

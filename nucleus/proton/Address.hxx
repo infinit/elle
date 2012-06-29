@@ -54,9 +54,9 @@ namespace nucleus
   }
 }
 
+# include <elle/idiom/Close.hh>
+#  include <cassert>
 # include <elle/idiom/Open.hh>
-
-# include <cassert>
 
 # include <elle/cryptography/Digest.hh>
 

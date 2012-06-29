@@ -2385,8 +2385,8 @@ namespace elle
 }
 
 #endif
-#ifndef  ELLE_RADIX_ARGUMENTS_SERIALIZER_HXX
-# define ELLE_RADIX_ARGUMENTS_SERIALIZER_HXX
+#ifndef  ELLE_RADIX_ARGUMENTS__HXX
+# define ELLE_RADIX_ARGUMENTS__HXX
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 

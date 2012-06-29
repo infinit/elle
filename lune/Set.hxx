@@ -1,5 +1,5 @@
-#ifndef  LUNE_SETSERIALIZER_HXX
-# define LUNE_SETSERIALIZER_HXX
+#ifndef  LUNE_SET_HXX
+# define LUNE_SET_HXX
 
 # include <cassert>
 

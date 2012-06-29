@@ -1,5 +1,5 @@
-#ifndef  NUCLEUS_PROTON_NETWORKSERIALIZER_HXX
-# define NUCLEUS_PROTON_NETWORKSERIALIZER_HXX
+#ifndef  NUCLEUS_PROTON_NETWORK_HXX
+# define NUCLEUS_PROTON_NETWORK_HXX
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 

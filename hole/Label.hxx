@@ -38,13 +38,13 @@ namespace hole
 
 }
 
+//
+// ---------- serialize -------------------------------------------------------
+//
+
 # include <elle/idiom/Close.hh>
-
-#endif
-#ifndef  HOLE_LABELSERIALIZER_HXX
-# define HOLE_LABELSERIALIZER_HXX
-
-# include <cassert>
+#  include <cassert>
+# include <elle/idiom/Open.hh>
 
 # include <elle/serialize/Pointer.hh>
 # include <elle/cryptography/Digest.hh>

@@ -1,5 +1,5 @@
-#ifndef  ETOILE_GEAR_LINKSERIALIZER_HXX
-# define ETOILE_GEAR_LINKSERIALIZER_HXX
+#ifndef  ETOILE_GEAR_LINK_HXX
+# define ETOILE_GEAR_LINK_HXX
 
 # include <cassert>
 

@@ -1,7 +1,7 @@
 #ifndef  LUNE_AUTHORITY_HH
 # define LUNE_AUTHORITY_HH
 
-# include <elle/cryptography.fwd.hh>
+# include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/PublicKey.hh>
 # include <elle/concept/Fileable.hh>
 # include <elle/radix/Object.hh>

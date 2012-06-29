@@ -1,5 +1,5 @@
-#ifndef  ETOILE_GEAR_FILESERIALIZER_HXX
-# define ETOILE_GEAR_FILESERIALIZER_HXX
+#ifndef  ETOILE_GEAR_FILE_HXX
+# define ETOILE_GEAR_FILE_HXX
 
 # include <cassert>
 

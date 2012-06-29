@@ -1,5 +1,5 @@
-#ifndef  HOLE_MODELSERIALIZER_HXX
-# define HOLE_MODELSERIALIZER_HXX
+#ifndef  HOLE_MODEL_HXX
+# define HOLE_MODEL_HXX
 
 # include <cassert>
 

@@ -1,5 +1,5 @@
-#ifndef  ETOILE_PATH_WAYSERIALIZER_HXX
-# define ETOILE_PATH_WAYSERIALIZER_HXX
+#ifndef  ETOILE_PATH_WAY_HXX
+# define ETOILE_PATH_WAY_HXX
 
 # include <cassert>
 

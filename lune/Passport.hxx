@@ -1,5 +1,5 @@
-#ifndef  LUNE_PASSPORTSERIALIZER_HXX
-# define LUNE_PASSPORTSERIALIZER_HXX
+#ifndef  LUNE_PASSPORT_HXX
+# define LUNE_PASSPORT_HXX
 
 # include <cassert>
 

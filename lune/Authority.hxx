@@ -1,5 +1,5 @@
-#ifndef  LUNE_AUTHORITYSERIALIZER_HXX
-# define LUNE_AUTHORITYSERIALIZER_HXX
+#ifndef  LUNE_AUTHORITY_HXX
+# define LUNE_AUTHORITY_HXX
 
 # include <cassert>
 # include <iostream>

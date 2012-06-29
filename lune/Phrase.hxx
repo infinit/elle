@@ -1,5 +1,5 @@
-#ifndef  LUNE_PHRASESERIALIZER_HXX
-# define LUNE_PHRASESERIALIZER_HXX
+#ifndef  LUNE_PHRASE_HXX
+# define LUNE_PHRASE_HXX
 
 # include <cassert>
 

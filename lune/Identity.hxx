@@ -1,5 +1,5 @@
-#ifndef  LUNE_IDENTITYSERIALIZER_HXX
-# define LUNE_IDENTITYSERIALIZER_HXX
+#ifndef  LUNE_IDENTITY_HXX
+# define LUNE_IDENTITY_HXX
 
 # include <cassert>
 

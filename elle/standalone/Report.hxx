@@ -47,6 +47,10 @@ namespace elle
   }
 }
 
+//
+// ---------- serialize -------------------------------------------------------
+//
+
 # include <elle/serialize/ArchiveSerializer.hxx>
 
 ELLE_SERIALIZE_SIMPLE(elle::standalone::Report::Entry,
@@ -79,7 +83,6 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::standalone::Report,
     }
 }
 
-
 ELLE_SERIALIZE_SPLIT_LOAD(elle::standalone::Report,
                           archive,
                           value,
@@ -98,6 +101,4 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::standalone::Report,
     }
 }
 
-
 #endif
-

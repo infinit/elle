@@ -292,8 +292,8 @@ namespace nucleus
 }
 
 #endif
-#ifndef  XXX_NODULESERIALIZER_HXX
-# define XXX_NODULESERIALIZER_HXX
+#ifndef  XXX_NODULE_HXX
+# define XXX_NODULE_HXX
 
 # include <cassert>
 

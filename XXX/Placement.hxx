@@ -1,5 +1,5 @@
-#ifndef  XXX_PLACEMENTSERIALIZER_HXX
-# define XXX_PLACEMENTSERIALIZER_HXX
+#ifndef  XXX_PLACEMENT_HXX
+# define XXX_PLACEMENT_HXX
 
 # include <cassert>
 

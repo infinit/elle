@@ -1,5 +1,5 @@
-#ifndef  NUCLEUS_PROTON_MUTABLE_BLOCK_SERIALIZER_HXX
-# define NUCLEUS_PROTON_MUTABLE_BLOCK_SERIALIZER_HXX
+#ifndef  NUCLEUS_PROTON_MUTABLE_BLOCK__HXX
+# define NUCLEUS_PROTON_MUTABLE_BLOCK__HXX
 
 # include <nucleus/proton/Block.hh>
 # include <nucleus/proton/Version.hh>

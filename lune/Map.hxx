@@ -217,77 +217,11 @@ namespace lune
     return elle::Status::Ok;
   }
 
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-  ///
-  /// this method serializes a map.
-  ///
-  //template <typename T>
-  //elle::Status          Map<T>::Serialize(elle::Archive&        archive) const
-  //{
-  //  Map<T>::Scoutor     scoutor;
-
-  //  // serialize the number of entries.
-  //  if (archive.Serialize(
-  //        static_cast<elle::Natural32>(
-  //          this->container.size())) == elle::Status::Error)
-  //    escape("unable to serialize the number of entries");
-
-  //  // go through the entries.
-  //  for (scoutor = this->container.begin();
-  //       scoutor != this->container.end();
-  //       scoutor++)
-  //    {
-  //      Map<T>::Entry*  entry = *scoutor;
-
-  //      // serialize the entry.
-  //      if (archive.Serialize(entry->name,
-  //                            entry->value) == elle::Status::Error)
-  //        escape("unable to serialize the entry");
-  //    }
-
-  //  return elle::Status::Ok;
-  //}
-
-  /////
-  ///// this method extracts a map.
-  /////
-  //template <typename T>
-  //elle::Status          Map<T>::Extract(elle::Archive&          archive)
-  //{
-  //  elle::Natural32             size;
-  //  elle::Natural32             i;
-
-  //  // extract the number of entries.
-  //  if (archive.Extract(size) == elle::Status::Error)
-  //    escape("unable to extract the number of entries");
-
-  //  // until all the entries have been extract.
-  //  for (i = 0; i < size; i++)
-  //    {
-  //      Map<T>::Entry*  entry;
-
-  //      // allocate a new entry.
-  //      entry = new Map<T>::Entry;
-
-  //      // extract the entry.
-  //      if (archive.Extract(entry->name, entry->value) == elle::Status::Error)
-  //        escape("unable to extract the entry");
-
-  //      // add a new entry.
-  //      this->container.push_back(entry);
-  //    }
-
-  //  return elle::Status::Ok;
-  //}
-
 }
 
-#endif
-#ifndef  LUNE_MAPSERIALIZER_HXX
-# define LUNE_MAPSERIALIZER_HXX
+//
+// ---------- serialize -------------------------------------------------------
+//
 
 # include <cassert>
 
@@ -316,7 +250,6 @@ ELLE_SERIALIZE_SPLIT_T1_SAVE(lune::Map,
       archive << entry->name << entry->value;
     }
 }
-
 
 ELLE_SERIALIZE_SPLIT_T1_LOAD(lune::Map,
                              archive,

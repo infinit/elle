@@ -1,5 +1,5 @@
-#ifndef  XXX_HANDLESERIALIZER_HXX
-# define XXX_HANDLESERIALIZER_HXX
+#ifndef  XXX_HANDLE_HXX
+# define XXX_HANDLE_HXX
 
 # include <cassert>
 

@@ -88,9 +88,9 @@ namespace satellite
   }
 }
 
-#endif
-#ifndef  SATELLITES_DIARY_UNIX_UPCALLSERIALIZER_HXX
-# define SATELLITES_DIARY_UNIX_UPCALLSERIALIZER_HXX
+//
+// ---------- serialize -------------------------------------------------------
+//
 
 # include <cassert>
 

@@ -115,8 +115,8 @@ namespace nucleus
 }
 
 #endif
-#ifndef  XXX_INLETSERIALIZER_HXX
-# define XXX_INLETSERIALIZER_HXX
+#ifndef  XXX_INLET_HXX
+# define XXX_INLET_HXX
 
 # include <cassert>
 

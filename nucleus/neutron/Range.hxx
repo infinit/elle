@@ -324,76 +324,12 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the range object.
-    ///
-    //template <typename T>
-    //elle::Status        Range<T>::Serialize(elle::Archive&      archive) const
-    //{
-    //  Range<T>::Scoutor scoutor;
-    //  Size              size;
-
-    //  // retrieve the number of items.
-    //  size = this->container.size();
-
-    //  // serialize the number of items.
-    //  if (archive.Serialize(size) == elle::Status::Error)
-    //    escape("unable to serialize the number of items");
-
-    //  // serialize every item.
-    //  for (scoutor = this->container.begin();
-    //       scoutor != this->container.end();
-    //       scoutor++)
-    //    {
-    //      T*            item = *scoutor;
-
-    //      // serialize the item.
-    //      if (archive.Serialize(*item) == elle::Status::Error)
-    //        escape("unable to serialize the item");
-    //    }
-
-    //  return elle::Status::Ok;
-    //}
-
-    ///
-    /// this method extracts the range object.
-    ///
-    //template <typename T>
-    //elle::Status        Range<T>::Extract(elle::Archive&        archive)
-    //{
-    //  Size              size;
-    //  Index             i;
-
-    //  // extract the number of items.
-    //  if (archive.Extract(size) == elle::Status::Error)
-    //    escape("unable to extract the number of items");
-
-    //  // extract every item.
-    //  for (i = 0; i < size; i++)
-    //    {
-    //      // allocate a new item.
-    //      auto item = new T;
-
-    //      // extract the item.
-    //      if (archive.Extract(*item) == elle::Status::Error)
-    //        {
-    //          delete item;
-    //          escape("unable to extract the item");
-    //        }
-
-    //      // add the item to the container.
-    //      this->container.push_back(item);
-    //    }
-
-    //  return elle::Status::Ok;
-    //}
-
   }
 }
+
+//
+// ---------- serialize -------------------------------------------------------
+//
 
 # include <cassert>
 
@@ -432,6 +368,5 @@ ELLE_SERIALIZE_SPLIT_T1_SAVE(nucleus::neutron::Range,
   for (; it != end; ++it)
     archive << *(*it);
 }
-
 
 #endif
