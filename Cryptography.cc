@@ -1,18 +1,10 @@
 //
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [tue oct 30 12:16:42 2007]
-//
-
-//
 // ---------- includes --------------------------------------------------------
 //
 
 #include <elle/cryptography/Cryptography.hh>
+#include <elle/cryptography/Random.hh>
+#include <elle/cryptography/KeyPair.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>

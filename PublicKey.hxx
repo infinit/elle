@@ -86,6 +86,10 @@ namespace elle
   }
 }
 
+//
+// ---------- serialize -------------------------------------------------------
+//
+
 # include <elle/serialize/ArchiveSerializer.hxx>
 
 # include <elle/cryptography/LargeSerializer.hxx>

@@ -90,9 +90,9 @@ namespace elle
   }
 }
 
-#endif
-#ifndef  ELLE_CRYPTOGRAPHY_PRIVATEKEYSERIALIZER_HXX
-# define ELLE_CRYPTOGRAPHY_PRIVATEKEYSERIALIZER_HXX
+//
+// ---------- serialize -------------------------------------------------------
+//
 
 # include <cassert>
 # include <stdexcept>
