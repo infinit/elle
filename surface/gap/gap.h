@@ -10,6 +10,9 @@ extern "C" {
     {
       gap_ok = 0,
       gap_error = -1,
+      gap_network_error = -2,
+      gap_internal_error = -3,
+      gap_api_error = -4,
     };
 
     /// gap_State is an opaque structure used in every calls.

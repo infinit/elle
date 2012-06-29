@@ -17,6 +17,7 @@
 
 #include <lune/Dictionary.hh>
 #include <lune/Identity.hh>
+#include <lune/Passport.hh>
 
 #include <elle/idiom/Close.hh>
 
@@ -29,7 +30,18 @@ namespace surface
 {
   namespace gap
   {
+
     namespace fs = boost::filesystem;
+    namespace json = elle::format::json;
+
+    // - Exception ------------------------------------------------------------
+
+    Exception::Exception(gap_Status code, std::string const& msg)
+      : std::runtime_error(msg)
+      , code(code)
+    {}
+
+    // - Utilities ------------------------------------------------------------
 
     namespace
     {
@@ -42,12 +54,14 @@ namespace surface
       }
     }
 
-    namespace json = elle::format::json;
+    // - Network --------------------------------------------------------------
 
     struct Network
     {
       std::string name;
     };
+
+    // - State ----------------------------------------------------------------
 
     State::State()
       : _infinit_home(getenv("INFINIT_HOME"))
@@ -123,7 +137,7 @@ namespace surface
               throw std::runtime_error("Couldn't send the command '" + cmd + "'");
         }
       else
-        throw std::runtime_error("Couldn't connect to the watchdog");
+        throw Exception(gap_internal_error, "Couldn't connect to the watchdog");
     }
 
     // XXX no hash occurs
@@ -138,7 +152,7 @@ namespace surface
       auto res = this->_api->login(email, password);
 
       if (!res.success)
-        throw std::runtime_error(res.error);
+        throw Exception(gap_api_error, res.error);
 
       elle::log::debug("Logged in as", email, "token =", res.token);
 
@@ -153,7 +167,8 @@ namespace surface
               identity.Clear()                  == elle::Status::Error ||
               identity.Save(identity_clear)     == elle::Status::Error
              )
-            throw("Couldn't decrypt the identity file !");
+            throw Exception(gap_internal_error,
+                            "Couldn't decrypt the identity file !");
         }
 
       // Store the identity
@@ -161,12 +176,14 @@ namespace surface
           // user.idy
           if (identity.Restore(identity_clear)  == elle::Status::Error ||
               identity.Store(email)             == elle::Status::Error)
-            throw std::runtime_error("Cannot save the identity file.");
+            throw Exception(gap_internal_error,
+                            "Cannot save the identity file.");
 
           // user.dic
           lune::Dictionary dictionary;
           if (dictionary.Store(email) == elle::Status::Error)
-            throw std::runtime_error("Cannot store the dictionary.");
+            throw Exception(gap_internal_error,
+                            "Cannot store the dictionary.");
         }
     }
 
@@ -174,9 +191,11 @@ namespace surface
                           std::string const& email,
                           std::string const& password)
     {
-      auto res = this->_api->register_(email, fullname, password);
-      if (!res.success)
-          throw std::runtime_error(res.error);
+        {
+          auto res = this->_api->register_(email, fullname, password);
+          if (!res.success)
+              throw Exception(gap_api_error, res.error);
+        }
       elle::log::debug("Registered new user", fullname, email);
       this->login(email, password);
     }
@@ -188,10 +207,10 @@ namespace surface
           elle::network::Host::Container hosts;
 
           if (elle::network::Host::Hosts(hosts) == elle::Status::Error)
-            throw std::runtime_error("Couldn't retreive host list");
+            throw Exception(gap_network_error, "Couldn't retrieve host list");
 
           if (!hosts.size())
-            throw std::runtime_error("No usable host found !");
+            throw Exception(gap_network_error, "No usable host found !");
 
           std::string host;
           hosts[0].Convert(host);
@@ -206,14 +225,40 @@ namespace surface
 
       fs::path passport_path(_infinit_home);
       passport_path /=  "infinit.ppt";
+
+      std::string passport_string;
+
       if (!fs::exists(passport_path))
         {
-          //auto res = this->_api->sync_CreateDevice(name, local_address, port);
+          auto res = this->_api->create_device(name, local_address, port);
+          if (!res.success)
+            throw Exception(gap_api_error, res.error);
+          passport_string = res.passport;
         }
       else
         {
+          lune::Passport passport;
 
+          if (passport.Load() == elle::Status::Error)
+            throw Exception(gap_internal_error, "Cannot load the passport");
+
+          auto res = this->_api->update_device(
+              passport.id,
+              &name,
+              &local_address,
+              port);
+
+          if (!res.success)
+            throw Exception(gap_api_error, res.error);
+          passport_string = res.passport;
         }
+
+      lune::Passport passport;
+      if (passport.Restore(passport_string) == elle::Status::Error)
+        throw Exception(gap_internal_error, "Cannot load the passport");
+      if (passport.Store() == elle::Status::Error)
+        throw Exception(gap_internal_error, "Cannot save the passport");
+
     }
 
   }

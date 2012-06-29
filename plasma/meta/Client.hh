@@ -91,10 +91,10 @@ namespace plasma
       : public std::runtime_error
     {
     public:
-      Error const error_code;
+      Error const code;
 
     public:
-      Exception(Error error_code, std::string const& message);
+      Exception(Error code, std::string const& message);
     };
 
     /// Callbacks for API calls.
@@ -126,6 +126,15 @@ namespace plasma
       RegisterResponse register_(std::string const& email,
                                  std::string const& fullname,
                                  std::string const& password);
+
+      CreateDeviceResponse create_device(std::string const& name,
+                                         std::string const& local_address,
+                                         short port);
+
+      UpdateDeviceResponse update_device(std::string const& _id,
+                                         std::string const* name,
+                                         std::string const* local_address,
+                                         short port);
     private:
       template<typename T>
       T _post(std::string const& url, json::Object const& req);
