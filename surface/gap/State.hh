@@ -4,7 +4,7 @@
 # include <string>
 # include <map>
 
-# include <plasma/metaclient/MetaClient.hh>
+# include <plasma/meta/Client.hh>
 
 namespace surface
 {
@@ -13,15 +13,13 @@ namespace surface
 
     struct Network;
 
-    namespace meta = ::plasma::metaclient;
-
     class State
     {
     private:
       std::string                     _infinit_home;
       std::map<std::string, Network*> _networks;
       bool                            _networks_dirty;
-      meta::MetaClient*               _api;
+      plasma::meta::Client*           _api;
 
     public:
       State();
@@ -32,7 +30,7 @@ namespace surface
       void register_(std::string const& fullname,
                      std::string const& email,
                      std::string const& password);
-      void create_device(std::string const& name);
+      void update_device(std::string const& name, short port = 12345);
 
     private:
       std::string _watchdog_id() const;

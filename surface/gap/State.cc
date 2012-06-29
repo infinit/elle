@@ -15,6 +15,7 @@
 #include <elle/log.hh>
 #include <elle/network/Host.hh>
 
+#include <lune/Dictionary.hh>
 #include <lune/Identity.hh>
 
 #include <elle/idiom/Close.hh>
@@ -28,6 +29,7 @@ namespace surface
 {
   namespace gap
   {
+    namespace fs = boost::filesystem;
 
     namespace
     {
@@ -51,11 +53,13 @@ namespace surface
       : _infinit_home(getenv("INFINIT_HOME"))
       , _networks()
       , _networks_dirty(true)
-      , _api(new meta::MetaClient("http://127.0.0.1:12345"))
+      , _api(new plasma::meta::Client("127.0.0.1", 12345))
     {
       if (this->_infinit_home.empty())
         {
           struct passwd *pw = ::getpwuid(::getuid());
+          if (pw == nullptr || pw->pw_dir == nullptr)
+            throw std::runtime_error("Cannot get current user");
           boost::filesystem::path homedir(pw->pw_dir);
           homedir /= ".config/infinit";
           this->_infinit_home = homedir.string();
@@ -131,25 +135,38 @@ namespace surface
 
     void State::login(std::string const& email, std::string const& password)
     {
-      auto res = this->_api->sync_Login(email, password);
+      auto res = this->_api->login(email, password);
 
       if (!res.success)
         throw std::runtime_error(res.error);
 
       elle::log::debug("Logged in as", email, "token =", res.token);
-      this->_api->token(res.token.c_str());
 
-      /// Decrypt the identity
       std::string identity_clear;
-        {
-          lune::Identity      identity;
 
+      lune::Identity      identity;
+
+      // Decrypt the identity
+        {
           if (identity.Restore(res.identity)    == elle::Status::Error ||
               identity.Decrypt(password)        == elle::Status::Error ||
               identity.Clear()                  == elle::Status::Error ||
               identity.Save(identity_clear)     == elle::Status::Error
              )
-              throw("Couldn't decrypt the identity file !");
+            throw("Couldn't decrypt the identity file !");
+        }
+
+      // Store the identity
+        {
+          // user.idy
+          if (identity.Restore(identity_clear)  == elle::Status::Error ||
+              identity.Store(email)             == elle::Status::Error)
+            throw std::runtime_error("Cannot save the identity file.");
+
+          // user.dic
+          lune::Dictionary dictionary;
+          if (dictionary.Store(email) == elle::Status::Error)
+            throw std::runtime_error("Cannot store the dictionary.");
         }
     }
 
@@ -157,7 +174,7 @@ namespace surface
                           std::string const& email,
                           std::string const& password)
     {
-      auto res = this->_api->sync_Register(email, fullname, password);
+      auto res = this->_api->register_(email, fullname, password);
       if (!res.success)
           throw std::runtime_error(res.error);
       elle::log::debug("Registered new user", fullname, email);
@@ -182,13 +199,21 @@ namespace surface
         }
     }
 
-    void State::create_device(std::string const& name)
+    void State::update_device(std::string const& name, short port)
     {
       std::string local_address = detail::get_local_address();
       elle::log::debug("Registering new device", name, "for host:", local_address);
 
-      // XXX should be done in infinit instance
-      auto res = this->_api->sync_CreateDevice(name, local_address, 1912);
+      fs::path passport_path(_infinit_home);
+      passport_path /=  "infinit.ppt";
+      if (!fs::exists(passport_path))
+        {
+          //auto res = this->_api->sync_CreateDevice(name, local_address, port);
+        }
+      else
+        {
+
+        }
     }
 
   }

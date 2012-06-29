@@ -123,7 +123,7 @@ extern "C"
                                    char const* name)
     {
       assert(name != nullptr);
-      __WRAP_CPP(state, create_device, name);
+      __WRAP_CPP(state, update_device, name);
     }
 
 } // ! extern "C"

@@ -80,7 +80,7 @@ void IdentityUpdater::_OnLogin(std::string const& password,
 
   // Create the file infinit.idy
   if (!homeDirectory.exists("infinit.idy"))
-      this->_StoreIdentity(response.identity);
+      this->_StoreIdentity(response.email, response.identity);
 
   // Create the file infinit.dic
     {
@@ -194,12 +194,13 @@ std::string IdentityUpdater::_DecryptIdentity(std::string const& password,
   return id;
 }
 
-void IdentityUpdater::_StoreIdentity(std::string const& identityString)
+void IdentityUpdater::_StoreIdentity(std::string const& email,
+                                     std::string const& identityString)
 {
   lune::Identity        identity;
 
   if (identity.Restore(identityString)  == elle::Status::Error ||
-      identity.Store()                  == elle::Status::Error)
+      identity.Store(email)             == elle::Status::Error)
     {
       show();
       throw std::runtime_error("Cannot save the identity file.\n");
