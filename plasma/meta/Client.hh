@@ -135,9 +135,18 @@ namespace plasma
                                          std::string const* name,
                                          std::string const* local_address,
                                          short port);
+      NetworksResponse networks();
+
     private:
       template<typename T>
+      T _get(std::string const& url);
+      template<typename T>
       T _post(std::string const& url, json::Object const& req);
+
+      void _request(std::string const& url,
+                    std::string const& method,
+                    std::string const& body,
+                    std::stringstream& response);
     };
 
   }
