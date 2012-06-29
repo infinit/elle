@@ -30,7 +30,7 @@ namespace etoile
       path::Route       route;
       path::Venue       venue;
 
-      ELLE_LOG_TRACE("Resolve()");
+      ELLE_LOG_TRACE("Resolve(%s)", way.path.c_str());
 
       // create a route from the way.
       if (route.Create(way) == elle::Status::Error)

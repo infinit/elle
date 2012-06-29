@@ -52,6 +52,9 @@ namespace satellite
     //
     static elle::Status         Connect();
 
+    static elle::Status
+    Display(nucleus::neutron::Record const&);
+
     static elle::Status         Lookup(const etoile::path::Way&,
                                        const nucleus::Subject&);
     static elle::Status         Consult(const etoile::path::Way&);

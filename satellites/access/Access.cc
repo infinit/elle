@@ -18,6 +18,8 @@
 
 #include <satellites/access/Access.hh>
 
+#include <boost/foreach.hpp>
+
 namespace satellite
 {
 
@@ -38,6 +40,52 @@ namespace satellite
 //
 // ---------- static methods --------------------------------------------------
 //
+
+  elle::Status
+  Access::Display(nucleus::neutron::Record const& record)
+  {
+    switch (record.subject.type)
+      {
+      case nucleus::neutron::Subject::TypeUser:
+        {
+          elle::io::Unique unique;
+
+          // convert the public key into a human-kind-of-readable string.
+          if (record.subject.user->Save(unique) == elle::Status::Error)
+            escape("unable to save the public key's unique");
+
+          std::cout << "User"
+                    << " "
+                    << unique
+                    << " "
+                    << std::dec << static_cast<elle::Natural32>(record.permissions) << std::endl;
+
+          break;
+        }
+      case nucleus::neutron::Subject::TypeGroup:
+        {
+          elle::io::Unique unique;
+
+          // convert the group's address into a human-kind-of-readable string.
+          if (record.subject.group->Save(unique) == elle::Status::Error)
+            escape("unable to save the address' unique");
+
+          std::cout << "Group"
+                    << " "
+                    << unique
+                    << " "
+                    << std::dec << static_cast<elle::Natural32>(record.permissions) << std::endl;
+
+          break;
+        }
+      default:
+        {
+          break;
+        }
+      }
+
+    return (elle::Status::Ok);
+  }
 
   ///
   /// this method connects and authenticates to Etoile by sending the user's
@@ -105,17 +153,17 @@ namespace satellite
         elle::Status::Error)
       goto _error;
 
-    printf("HERE\n");
-    record.Dump();
-
     // discard the object.
     if (Access::socket->Call(
           elle::network::Inputs<etoile::portal::TagObjectDiscard>(identifier),
           elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
       goto _error;
 
-    // dump the record.
-    record.Dump();
+    // display the record.
+    if (Access::Display(record) == elle::Status::Error)
+      goto _error;
+
+    return elle::Status::Ok;
 
   _error:
     // release the object.
@@ -176,7 +224,14 @@ namespace satellite
       goto _error;
 
     // dump the range.
-    range.Dump();
+    BOOST_FOREACH(auto record, range.container)
+      {
+        // display the record.
+        if (Access::Display(*record) == elle::Status::Error)
+          goto _error;
+      }
+
+    return elle::Status::Ok;
 
   _error:
     // release the object.
@@ -200,7 +255,6 @@ namespace satellite
   {
     etoile::path::Chemin        chemin;
     etoile::gear::Identifier    identifier;
-    etoile::path::Way           path;
 
     // connect to Etoile.
     if (Access::Connect() == elle::Status::Error)
@@ -208,7 +262,7 @@ namespace satellite
 
     // resolve the path.
     if (Access::socket->Call(
-          elle::network::Inputs<etoile::portal::TagPathResolve>(path),
+          elle::network::Inputs<etoile::portal::TagPathResolve>(way),
           elle::network::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
         elle::Status::Error)
       goto _error;
@@ -233,6 +287,8 @@ namespace satellite
           elle::network::Inputs<etoile::portal::TagObjectStore>(identifier),
           elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
       goto _error;
+
+    return elle::Status::Ok;
 
   _error:
     // release the object.
@@ -288,6 +344,8 @@ namespace satellite
           elle::network::Inputs<etoile::portal::TagObjectStore>(identifier),
           elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
       goto _error;
+
+    return elle::Status::Ok;
 
   _error:
     // release the object.
