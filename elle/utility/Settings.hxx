@@ -322,9 +322,9 @@
 //  }
 //}
 
-# include <elle/format/ini.hxx>
-
-# include "Settings.hh"
+//
+// ---------- serialize -------------------------------------------------------
+//
 
 // The class `Settings' derives from `elle::format::ini::File`, so implicit
 // conversion happens when it comes to serialize. It's not necessary to

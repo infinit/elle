@@ -44,7 +44,6 @@ ADD_LIBRARY(elle
 
   types.cc
 
-  concurrency/Concurrency.cc
   concurrency/Environment.cc
   concurrency/Event.cc
   concurrency/Frame.cc
@@ -165,4 +164,3 @@ ELSEIF(INFINIT_WINDOWS)
 ENDIF()
 
 ADD_SUBDIRECTORY(test)
-ADD_SUBDIRECTORY(benchmark)

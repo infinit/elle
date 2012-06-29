@@ -99,25 +99,4 @@ namespace elle
 
 #include <elle/network/Network.hxx>
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/network/Data.hh>
-#include <elle/network/Header.hh>
-#include <elle/network/Host.hh>
-#include <elle/network/Inputs.hh>
-#include <elle/network/Locus.hh>
-#include <elle/network/Message.hh>
-#include <elle/network/Outputs.hh>
-#include <elle/network/Packet.hh>
-#include <elle/network/Parcel.hh>
-#include <elle/network/Port.hh>
-#include <elle/network/Procedure.hh>
-#include <elle/network/Range.hh>
-#include <elle/network/Raw.hh>
-#include <elle/network/Session.hh>
-#include <elle/network/Tag.hh>
-#include <elle/network/TCPSocket.hh>
-
 #endif

@@ -5,7 +5,10 @@ namespace elle
 {
   namespace standalone
   {
+
     class Region;
+    class Report;
+
   }
 }
 

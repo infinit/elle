@@ -6,14 +6,17 @@ namespace elle
   namespace cryptography
   {
 
+    class Cipher;
+    class Code;
+    class Digest;
+    class KeyPair;
+    class PrivateKey;
     class PublicKey;
     class SecretKey;
-    class PrivateKey;
-    class Cipher;
-    class KeyPair;
-    class Digest;
-    class Code;
+    class Seed;
+    class Signature;
+
   }
 }
 
-#endif /* ! FWD_HH */
+#endif

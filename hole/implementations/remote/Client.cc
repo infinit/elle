@@ -11,6 +11,8 @@
 #include <elle/network/TCPSocket.hh>
 #include <elle/utility/Time.hh>
 #include <elle/network/Network.hh>
+#include <elle/network/Inputs.hh>
+#include <elle/network/Outputs.hh>
 
 #include <lune/Passport.hh>
 
