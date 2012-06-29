@@ -1,6 +1,5 @@
 #include <boost/asio.hpp>
 
-#include <elle/format/json.hh>
 #include <elle/print.hh>
 #include <elle/serialize/JSONArchive.hh>
 #include <elle/serialize/ListSerializer.hxx>

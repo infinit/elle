@@ -35,6 +35,6 @@ namespace elle
     static Status       Clean();
   };
 
-} // !namespace elle
+}
 
 #endif

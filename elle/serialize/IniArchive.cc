@@ -1,9 +1,10 @@
-
 #include <iostream>
 
 #include <boost/algorithm/string.hpp>
 
-#include <elle/format/ini.hh>
+# include <elle/format/ini/Section.hh>
+# include <elle/format/ini/File.hh>
+# include <elle/format/ini/Section.hxx>
 
 #include "IniArchive.hh"
 

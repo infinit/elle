@@ -6,6 +6,9 @@ namespace elle
   namespace utility
   {
 
+    class Buffer;
+    class InputBufferStream;
+    class OutputBufferStream;
     class Duration;
     class Factory;
     class HTTP;
@@ -13,13 +16,9 @@ namespace elle
     class REST;
     class Settings;
     class Time;
-    class Unicode;
     class URI;
+    class Unicode;
 
-    class Buffer;
-    class WeakBuffer;
-    class InputBufferStream;
-    class OutputBufferStream;
   }
 }
 

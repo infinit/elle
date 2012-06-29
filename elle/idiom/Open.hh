@@ -368,13 +368,13 @@
     namespace network                                                   \
     {                                                                   \
       template <>                                                       \
-      class Message< _tag_ >:                                           \
+      struct Message< _tag_ >:                                          \
         public Entity                                                   \
       {                                                                 \
       public:                                                           \
         static const Tag                        G = _tag_;              \
                                                                         \
-        typedef Parameters<_parameters_ >      P;                       \
+        typedef Parameters<_parameters_ >       P;                      \
                                                                         \
         struct                                  B                       \
         {                                                               \

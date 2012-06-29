@@ -4,7 +4,7 @@
 # include <memory>
 # include <string>
 
-# include <elle/format/json.hh>
+# include <elle/format/json/Object.hh>
 
 namespace surface
 {

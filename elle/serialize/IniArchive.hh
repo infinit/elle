@@ -1,7 +1,7 @@
 #ifndef ELLE_SERIALIZE_INIARCHIVE_HH
 # define ELLE_SERIALIZE_INIARCHIVE_HH
 
-# include <elle/format/ini.fwd.hh>
+# include <elle/format/ini/fwd.hh>
 
 # include "detail/MergeArchive.hh"
 

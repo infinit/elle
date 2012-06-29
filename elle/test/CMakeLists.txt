@@ -1,3 +1,2 @@
-ADD_SUBDIRECTORY(package)
 ADD_SUBDIRECTORY(cryptography)
 ADD_SUBDIRECTORY(network)
