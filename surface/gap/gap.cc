@@ -16,12 +16,8 @@ extern "C"
 
 #define __TO_C(st)    reinterpret_cast<gap_State*>(st)
 #define __TO_CPP(st)  reinterpret_cast<surface::gap::State*>(st)
-// automate cpp wrapping
-# define __WRAP_CPP_RET(_state_, _func_, ...)                                 \
-    assert(_state_ != nullptr);                                               \
-    gap_Status ret;                                                           \
-    try                                                                       \
-      { __TO_CPP(_state_)->_func_(__VA_ARGS__); ret = gap_ok; }               \
+
+# define CATCH_ALL(_func_)                                                    \
     catch (plasma::meta::Exception const& err)                                \
     {                                                                         \
         elle::log::error(#_func_ " error:", err.what());                      \
@@ -35,7 +31,16 @@ extern "C"
         elle::log::error(#_func_ " error:", err.what());                      \
         ret = gap_error;                                                      \
     }                                                                         \
+
+// automate cpp wrapping
+# define __WRAP_CPP_RET(_state_, _func_, ...)                                 \
+    assert(_state_ != nullptr);                                               \
+    gap_Status ret;                                                           \
+    try                                                                       \
+      { __TO_CPP(_state_)->_func_(__VA_ARGS__); ret = gap_ok; }               \
+    CATCH_ALL(_func_)                                                         \
   /**/
+
 # define __WRAP_CPP(...)                                                      \
     __WRAP_CPP_RET(__VA_ARGS__);                                              \
     return ret                                                                \
@@ -132,6 +137,30 @@ extern "C"
     {
       assert(name != nullptr);
       __WRAP_CPP(state, update_device, name);
+    }
+
+    /// Retrieve all user networks.
+    char** gap_networks(gap_State* state)
+    {
+      assert(state != nullptr);
+      gap_Status ret = gap_ok;
+      try
+        {
+          __TO_CPP(state)->networks();
+        }
+      CATCH_ALL(networks);
+
+
+      if (ret != gap_ok)
+        return nullptr;
+      char** networks = nullptr;
+
+      return networks;
+    }
+
+    void gap_networks_free(char** networks)
+    {
+      ::free(networks);
     }
 
 } // ! extern "C"
