@@ -22,6 +22,14 @@ extern "C"
     gap_Status ret;                                                           \
     try                                                                       \
       { __TO_CPP(_state_)->_func_(__VA_ARGS__); ret = gap_ok; }               \
+    catch (plasma::meta::Exception const& err)                                \
+    {                                                                         \
+        elle::log::error(#_func_ " error:", err.what());                      \
+        if (err.code == plasma::meta::Error::network_error)                   \
+          ret = gap_network_error;                                            \
+        else                                                                  \
+          ret = gap_error;                                                    \
+    }                                                                         \
     catch (std::exception const& err)                                         \
     {                                                                         \
         elle::log::error(#_func_ " error:", err.what());                      \

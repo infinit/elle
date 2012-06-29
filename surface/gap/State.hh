@@ -6,12 +6,24 @@
 
 # include <plasma/meta/Client.hh>
 
+# include "gap.h"
+
 namespace surface
 {
   namespace gap
   {
 
     struct Network;
+
+    class Exception
+      : public std::runtime_error
+    {
+    public:
+      gap_Status const code;
+
+    public:
+      Exception(gap_Status code, std::string const& msg);
+    };
 
     class State
     {
