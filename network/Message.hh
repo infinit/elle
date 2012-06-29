@@ -40,8 +40,7 @@ namespace elle
     /// that is why messages are split into two different logical parts.
     ///
     template <const Tag G>
-    class Message:
-      public Entity
+    struct Message
     {
       // nothing
     };

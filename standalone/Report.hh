@@ -22,20 +22,6 @@
 namespace elle
 {
 
-  namespace concurrency
-  {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    ///
-    /// the Fiber class must be forward declared to prevent conflicts.
-    ///
-    class Fiber;
-  }
-
-
   using namespace radix;
   using namespace io;
   using namespace concurrency;
