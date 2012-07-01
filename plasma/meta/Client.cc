@@ -2,6 +2,7 @@
 
 #include <elle/print.hh>
 #include <elle/serialize/JSONArchive.hh>
+#include <elle/serialize/ListSerializer.hxx>
 
 #include "Client.hh"
 
@@ -63,6 +64,11 @@ SERIALIZE_RESPONSE(plasma::meta::UpdateDeviceResponse, ar, res)
 {
   ar & named("updated_device_id", res.updated_device_id);
   ar & named("passport", res.passport);
+}
+
+SERIALIZE_RESPONSE(plasma::meta::NetworksResponse, ar, res)
+{
+  ar & named("networks", res.networks);
 }
 
 namespace plasma
@@ -163,6 +169,11 @@ namespace plasma
 
     }
 
+    NetworksResponse Client::networks()
+    {
+      return this->_get<NetworksResponse>("/networks");
+    }
+
     // - Generic http POST and GET --------------------------------------------
 
     // XXX Should be rewritten in a cleaner way (using our tools).
@@ -170,98 +181,119 @@ namespace plasma
     template<typename T>
     T Client::_post(std::string const& url, json::Object const& req)
     {
+      std::stringstream res;
+
+      // http request
+      try
+        { this->_request(url, "POST", req.repr(), res); }
+      catch (std::exception const& err)
+        { throw Exception(Error::network_error, err.what()); }
+
+      T ret;
+
+      // deserialize response
+      try
+        { elle::serialize::InputJSONArchive(res, ret); }
+      catch (std::exception const& err)
+        { throw Exception(Error::invalid_content, err.what()); }
+
+      return ret;
+    }
+
+    template<typename T>
+    T Client::_get(std::string const& url)
+    {
+      std::stringstream res;
+
+      // http request
+      try
+        { this->_request(url, "GET", "", res); }
+      catch (std::exception const& err)
+        { throw Exception(Error::network_error, err.what()); }
+
+      T ret;
+
+      // deserialize response
+      try
+        { elle::serialize::InputJSONArchive(res, ret); }
+      catch (std::exception const& err)
+        { throw Exception(Error::invalid_content, err.what()); }
+
+      return ret;
+    }
+
+    void Client::_request(std::string const& url,
+                          std::string const& method,
+                          std::string const& body,
+                          std::stringstream& response_)
+    {
       std::string uri = _impl->server + url;
 
       namespace ip = boost::asio::ip;
 
-      std::stringstream res;
+      ip::tcp::socket socket(_impl->io_service);
 
-      try
+      ip::tcp::resolver resolver(_impl->io_service);
+      ip::tcp::resolver::query query(_impl->server, elle::sprint(_impl->port));
+      ip::tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
+      boost::asio::connect(socket, endpoint_iterator);
+
+      {
+        boost::asio::streambuf request;
+        std::ostream request_stream(&request);
+        request_stream << method << url << " HTTP/1.0" CRLF
+                       << "Host: " << _impl->server << CRLF
+                       << "Accept: */*" CRLF
+                       << "Content-Length: " << elle::sprint(body.size()) << CRLF
+                       << "Connection: close" CRLF CRLF
+                       << body;
+
+        // Send the request.
+        boost::asio::write(socket, request);
+      }
+
+      // Read the response status line. The response streambuf will automatically
+      // grow to accommodate the entire line. The growth may be limited by passing
+      // a maximum size to the streambuf constructor.
+      boost::asio::streambuf response;
+      boost::asio::read_until(socket, response, "\r\n");
+
+      // Check that response is OK.
+      std::istream response_stream(&response);
+      std::string http_version;
+      response_stream >> http_version;
+      unsigned int status_code;
+      response_stream >> status_code;
+      std::string status_message;
+      std::getline(response_stream, status_message);
+      if (!response_stream || http_version.substr(0, 5) != "HTTP/")
+        throw std::runtime_error("Invalid response");
+      if (status_code != 200)
+        throw std::runtime_error(
+            elle::sprint("Response returned with status code ", status_code));
+
+      // Read the response headers, which are terminated by a blank line.
+      boost::asio::read_until(socket, response, "\r\n\r\n");
+
+      // Process the response headers.
+      std::string header;
+      while (std::getline(response_stream, header) && header != "\r")
+        std::cout << "*** " << header << "\n";
+      std::cout << "===\n";
+
+      // Write whatever content we already have to output.
+      if (response.size() > 0)
+          response_ << &response;
+
+      // Read until EOF, writing data to output as we go.
+      boost::system::error_code error;
+      while (boost::asio::read(socket,
+                               response,
+                               boost::asio::transfer_at_least(1), error))
         {
-          ip::tcp::socket socket(_impl->io_service);
-
-          ip::tcp::resolver resolver(_impl->io_service);
-          ip::tcp::resolver::query query(_impl->server, elle::sprint(_impl->port));
-          ip::tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-          boost::asio::connect(socket, endpoint_iterator);
-
-          {
-            boost::asio::streambuf request;
-            std::ostream request_stream(&request);
-            std::string body = req.repr();
-            request_stream << "POST " << url << " HTTP/1.0" CRLF
-                           << "Host: " << _impl->server << CRLF
-                           << "Accept: */*" CRLF
-                           << "Content-Length: " << elle::sprint(body.size()) << CRLF
-                           << "Connection: close" CRLF CRLF
-                           << body;
-
-            // Send the request.
-            boost::asio::write(socket, request);
-          }
-
-          // Read the response status line. The response streambuf will automatically
-          // grow to accommodate the entire line. The growth may be limited by passing
-          // a maximum size to the streambuf constructor.
-          boost::asio::streambuf response;
-          boost::asio::read_until(socket, response, "\r\n");
-
-          // Check that response is OK.
-          std::istream response_stream(&response);
-          std::string http_version;
-          response_stream >> http_version;
-          unsigned int status_code;
-          response_stream >> status_code;
-          std::string status_message;
-          std::getline(response_stream, status_message);
-          if (!response_stream || http_version.substr(0, 5) != "HTTP/")
-            throw std::runtime_error("Invalid response");
-          if (status_code != 200)
-            throw std::runtime_error(
-                elle::sprint("Response returned with status code ", status_code));
-
-          // Read the response headers, which are terminated by a blank line.
-          boost::asio::read_until(socket, response, "\r\n\r\n");
-
-          // Process the response headers.
-          std::string header;
-          while (std::getline(response_stream, header) && header != "\r")
-            std::cout << "*** " << header << "\n";
-          std::cout << "===\n";
-
-          // Write whatever content we already have to output.
-          if (response.size() > 0)
-            {
-              res << &response;
-            }
-
-          // Read until EOF, writing data to output as we go.
-          boost::system::error_code error;
-          while (boost::asio::read(socket,
-                response,
-                boost::asio::transfer_at_least(1), error))
-            {
-              res << &response;
-              if (error && error != boost::asio::error::eof)
-                throw boost::system::system_error(error);
-            }
-        }
-      catch (std::exception const& err)
-        {
-          throw Exception(Error::network_error, err.what());
-        }
-
-      // deserialize from JSON stream
-      try
-        {
-          std::cerr << res.str() << std::endl;
-          T ret;
-          elle::serialize::InputJSONArchive(res, ret);
-          return ret;
-        }
-      catch (std::exception const& err)
-        {
-          throw Exception(Error::invalid_content, err.what());
+          response_ << &response;
+          if (error && error != boost::asio::error::eof)
+            throw boost::system::system_error(error);
         }
     }
 

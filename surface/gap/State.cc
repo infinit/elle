@@ -258,9 +258,16 @@ namespace surface
         throw Exception(gap_internal_error, "Cannot load the passport");
       if (passport.Store() == elle::Status::Error)
         throw Exception(gap_internal_error, "Cannot save the passport");
-
     }
 
+    std::map<std::string, Network*> const& State::networks() const
+    {
+      if (this->_networks_dirty)
+        {
+          auto res = this->_api->networks();
+        }
+      return this->_networks;
+    }
   }
 }
 

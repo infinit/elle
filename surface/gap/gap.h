@@ -54,6 +54,13 @@ extern "C" {
     gap_Status gap_set_device_name(gap_State* state,
                                    char const* name);
 
+    /// Retrieve all user networks ids. Returned value is null in case of
+    /// error, or is a null-terminated array of null-terminated strings.
+    char** gap_networks(gap_State* state);
+
+    /// Release the pointer returned by gap_networks,
+    void gap_networks_free(char** networks);
+
 # ifdef __cplusplus
 } // ! extern "C"
 # endif
