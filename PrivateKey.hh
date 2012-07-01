@@ -1,32 +1,13 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [tue oct 30 10:02:18 2007]
-//
-
 #ifndef ELLE_CRYPTOGRAPHY_PRIVATEKEY_HH
-#define ELLE_CRYPTOGRAPHY_PRIVATEKEY_HH
+# define ELLE_CRYPTOGRAPHY_PRIVATEKEY_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/radix/Object.hh>
+# include <elle/cryptography/fwd.hh>
+# include <elle/cryptography/Plain.hh>
 
-#include <elle/cryptography/Plain.hh>
-#include <elle/cryptography/Code.hh>
-#include <elle/cryptography/Signature.hh>
-#include <elle/cryptography/Clear.hh>
-#include <elle/cryptography/Seed.hh>
-#include <elle/utility/Buffer.hh>
-
-// XXX remove openssl include from headers
 #include <elle/idiom/Close.hh>
 # include <openssl/rsa.h>
 # include <openssl/engine.h>
@@ -41,19 +22,6 @@ namespace elle
 
   namespace cryptography
   {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    ///
-    /// the Seed must be forward declared to prevent conflicts.
-    ///
-    class Seed;
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a private key based on the RSA cryptosystem.
@@ -101,12 +69,10 @@ namespace elle
       /// with the private key and (iii) decipher the data with the
       /// symmetric key.
       ///
-      // Decrypt methods
       Status
-        Decrypt(Code const& in, elle::utility::Buffer& out) const;
+      Decrypt(Code const& in, elle::utility::Buffer& out) const;
       template<typename T> Status
-        Decrypt(Code const& in, T& out) const;
-
+      Decrypt(Code const& in, T& out) const;
 
     public:
       ///
@@ -125,21 +91,19 @@ namespace elle
       /// secret key with the symmetrically-encrypted data.
       ///
       Status
-        Encrypt(elle::utility::WeakBuffer const& in,  Code& out) const;
+      Encrypt(elle::utility::WeakBuffer const& in,  Code& out) const;
       template<typename T> Status
-        Encrypt(T const& in, Code& out) const;
-
-    public:
-      // Sign methods
-      Status
-        Sign(elle::utility::WeakBuffer const& in, Signature& out) const;
-      template<typename T> Status
-        Sign(T const& in, Signature& out) const;
-
+      Encrypt(T const& in, Code& out) const;
 
     public:
       Status
-        Derive(const Seed& seed, PublicKey& key) const;
+      Sign(elle::utility::WeakBuffer const& in, Signature& out) const;
+      template<typename T> Status
+      Sign(T const& in, Signature& out) const;
+
+    public:
+      Status
+      Derive(const Seed& seed, PublicKey& key) const;
 
       //
       // interfaces
@@ -151,10 +115,6 @@ namespace elle
 
       // dumpable
       Status            Dump(const Natural32 = 0) const;
-
-      // archivable
-      //Status            Serialize(Archive&) const;
-      //Status            Extract(Archive&);
 
       //
       // attributes
@@ -170,15 +130,10 @@ namespace elle
 
     public:
       ::EVP_PKEY const* key() const { return this->_key; }
-
     };
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/cryptography/PrivateKey.hxx>
 

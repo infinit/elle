@@ -1,7 +1,5 @@
-
 #ifndef ELLE_CRYPTOGRAPHY_PUBLICKEY_HH
 #define ELLE_CRYPTOGRAPHY_PUBLICKEY_HH
-
 
 #include <elle/types.hh>
 
@@ -77,9 +75,10 @@ namespace elle
       /// encrypted.
       ///
       Status
-        Encrypt(elle::utility::WeakBuffer const& buffer, Code& out) const;
-      template <typename T> Status
-        Encrypt(T const& in, Code& out) const;
+      Encrypt(elle::utility::WeakBuffer const& buffer, Code& out) const;
+      template <typename T>
+      Status
+      Encrypt(T const& in, Code& out) const;
 
     public:
       ///
@@ -98,9 +97,10 @@ namespace elle
       /// and (iii) decipher the data with the symmetric key.
       ///
       Status
-        Decrypt(Code const& in, elle::utility::Buffer& out) const;
-      template <typename T> Status
-        Decrypt(Code const& in, T& out) const;
+      Decrypt(Code const& in, elle::utility::Buffer& out) const;
+      template <typename T>
+      Status
+      Decrypt(Code const& in, T& out) const;
 
     public:
       ///
@@ -110,17 +110,15 @@ namespace elle
       /// note that, as for the Sign() method, this method computes the plain's
       /// digest before forwarding to the other Verify() method.
       ///
-      //Status
-      //  Verify(Signature const& signature,
-      //         Code const& code) const;
-      //Status
-      //  Verify(Signature const& signature,
-      //         Plain const& plain) const;
+      // XXX[should take Signature, Code]
       Status
-        Verify(Signature const& signature,
-               elle::utility::WeakBuffer const& plain) const;
-      template <typename T> Status
-        Verify(Signature const& signature, T const& any) const;
+      Verify(Signature const& signature,
+             elle::utility::WeakBuffer const& plain) const;
+      // XXX[should take Signature, Plain]
+      template <typename T>
+      Status
+      Verify(Signature const& signature,
+             T const& any) const;
 
       //
       // interfaces
@@ -132,11 +130,6 @@ namespace elle
 
       // dumpable
       Status            Dump(const Natural32 = 0) const;
-
-      // archivable
-      // XXX
-      //Status            Serialize(Archive&) const;
-      //Status            Extract(Archive&);
 
       //
       // attributes
@@ -156,18 +149,10 @@ namespace elle
       // properties
       //
       ::EVP_PKEY const* key() const { return this->_key; }
-
-
-      // verify
-
     };
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/cryptography/PublicKey.hxx>
 

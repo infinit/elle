@@ -3,7 +3,7 @@
 
 # include <elle/types.hh>
 
-# include <elle/standalone/Region.hh>
+# include <elle/standalone/fwd.hh>
 
 namespace elle
 {

@@ -1,13 +1,10 @@
 #include <elle/cryptography/Signature.hh>
 
-#include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Log.hh>
 
 namespace elle
 {
-  using namespace standalone;
-
   namespace cryptography
   {
 
@@ -83,34 +80,6 @@ namespace elle
 
       return Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes a signature object.
-    ///
-    //Status              Signature::Serialize(Archive&           archive) const
-    //{
-    //  // serialize the region.
-    //  if (archive.Serialize(this->region) == Status::Error)
-    //    escape("unable to serialize the region");
-
-    //  return Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts a signature object.
-    /////
-    //Status              Signature::Extract(Archive&             archive)
-    //{
-    //  // extract the content.
-    //  if (archive.Extract(this->region) == Status::Error)
-    //    escape("unable to extract the region");
-
-    //  return Status::Ok;
-    //}
 
   }
 }

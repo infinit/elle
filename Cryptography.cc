@@ -6,7 +6,6 @@
 #include <elle/cryptography/Random.hh>
 #include <elle/cryptography/KeyPair.hh>
 
-#include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
 #include <elle/idiom/Close.hh>

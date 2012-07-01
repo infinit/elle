@@ -7,9 +7,9 @@
 
 # include <elle/concept/Fileable.hh>
 
+# include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/PublicKey.hh>
 # include <elle/cryptography/PrivateKey.hh>
-# include <elle/cryptography/Seed.hh>
 
 # include <elle/idiom/Open.hh>
 
@@ -77,10 +77,6 @@ namespace elle
       // dumpable
       Status            Dump(const Natural32 = 0) const;
 
-      // archivable
-      //Status            Serialize(Archive&) const;
-      //Status            Extract(Archive&);
-
       // fileable
       Status            Load(const Path&,
                              const String&);
@@ -104,7 +100,6 @@ namespace elle
   }
 }
 
-# include <elle/idiom/Close.hh>
+#include <elle/cryptography/KeyPair.hxx>
 
 #endif
-#include <elle/cryptography/KeyPair.hxx>
