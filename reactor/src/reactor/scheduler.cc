@@ -4,6 +4,8 @@
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
+#include <boost/foreach.hpp>
+
 ELLE_LOG_TRACE_COMPONENT("Reactor.Scheduler");
 
 namespace reactor
@@ -221,7 +223,7 @@ namespace reactor
   DumpSet(Scheduler::Threads const&     threads,
           std::ostream&                 s)
   {
-    foreach (Thread const* t, threads)
+    BOOST_FOREACH (Thread const* t, threads)
     {
       s << "    ";
       t->Dump(s);

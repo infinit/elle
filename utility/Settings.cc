@@ -1,7 +1,6 @@
 
 #include <elle/utility/Settings.hh>
 
-#include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Region.hh>
 

@@ -14,7 +14,6 @@
 
 #include <elle/standalone/Log.hh>
 #include <elle/standalone/Region.hh>
-#include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
 #include <elle/idiom/Close.hh>

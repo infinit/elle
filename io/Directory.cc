@@ -3,7 +3,6 @@
 #include <elle/io/File.hh>
 #include <elle/io/Link.hh>
 
-#include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
 #include <elle/system/Platform.hh>

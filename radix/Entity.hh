@@ -19,13 +19,10 @@
 
 #include <elle/io/Dumpable.hh>
 
-#include <elle/concurrency/Resource.hh>
-
 namespace elle
 {
   using namespace radix;
   using namespace io;
-  using namespace concurrency;
 
   namespace radix
   {
@@ -41,15 +38,8 @@ namespace elle
     /// an entity is an instance that cannot be assigned, serialized
     /// hence stored on external media.
     ///
-    /// however, an entity, like for objects, can be dumped.
-    ///
-    /// note that an entity, as for objects, implicitly acts as a
-    /// concurrency control resource.
-    ///
     class Entity:
-      public Meta,
-      public Resource
-      //public virtual Dumpable
+      public Meta
     {
     public:
       //

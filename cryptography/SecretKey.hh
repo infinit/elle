@@ -5,13 +5,8 @@
 
 # include <elle/radix/Object.hh>
 
-# include <elle/cryptography/Plain.hh>
-# include <elle/cryptography/Cipher.hh>
-# include <elle/cryptography/Clear.hh>
+# include <elle/cryptography/fwd.hh>
 
-# include <elle/utility/Buffer.hh>
-
-// XXX use pimpl pattern and hide openssl headers
 # include <elle/idiom/Close.hh>
 #  include <openssl/evp.h>
 #  include <openssl/err.h>
@@ -93,10 +88,6 @@ namespace elle
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/cryptography/SecretKey.hxx>
 

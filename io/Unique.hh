@@ -1,26 +1,14 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon may  3 00:19:35 2010]
-//
-
 #ifndef ELLE_IO_UNIQUE_HH
-#define ELLE_IO_UNIQUE_HH
+# define ELLE_IO_UNIQUE_HH
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/types.hh>
+# include <elle/types.hh>
 
 namespace elle
 {
-
-
   namespace io
   {
 

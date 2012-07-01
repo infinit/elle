@@ -1,22 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu aug 11 16:15:28 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/system/Platform.hh>
 
 #include <elle/cryptography/Random.hh>
 
-#include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Region.hh>
 
@@ -45,22 +30,6 @@ namespace elle
 // ---------- static methods --------------------------------------------------
 //
 
-#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
-    /** The path to read random data from.
-     *
-     * Enable for instance tests to override the random data source,
-     * so as to use /dev/urandom and avoid /dev/random enthropy
-     * starvation.
-     */
-    static const char*  random_source()
-    {
-      if (char* env = getenv("INFINIT_RANDOM_SOURCE"))
-        return env;
-      else
-        return "/dev/random";
-    }
-#endif
-
     ///
     /// this method initializes the random system.
     ///
@@ -73,7 +42,16 @@ namespace elle
         int             fd = -1;
 
         // get some random data.
-        static const char* source = random_source();
+        static const char* source;
+
+        /// The path to read random data from.
+        ///
+        /// Enable for instance tests to override the random data source,
+        /// so as to use /dev/urandom and avoid /dev/random enthropy
+        /// starvation.
+        if ((source = getenv("INFINIT_RANDOM_SOURCE")) == NULL)
+          source = "/dev/random";
+
         if ((fd = ::open(source, O_RDONLY)) == -1)
           escape("%s", ::strerror(errno));
 

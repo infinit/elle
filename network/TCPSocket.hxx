@@ -9,7 +9,6 @@
 
 #include <elle/concurrency/Event.hh>
 #include <elle/concurrency/Program.hh>
-#include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
 #include <elle/network/Packet.hh>

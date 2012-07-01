@@ -17,6 +17,8 @@
 #include <elle/print.hh>
 #include <elle/idiom/Open.hh>
 
+#include <protocol/PacketStream.hh>
+
 ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
 
 namespace elle

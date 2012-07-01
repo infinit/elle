@@ -3,14 +3,11 @@
 
 # include <elle/idiom/Close.hh>
 #  include <list>
-# include <elle/idiom/Open.hh>
-
-# include <elle/idiom/Close.hh>
 #  include <reactor/signal.hh>
 #  include <reactor/thread.hh>
 # include <elle/idiom/Open.hh>
-#include <elle/types.hh>
 
+#include <elle/types.hh>
 
 # include <elle/types.hh>
 
@@ -19,9 +16,6 @@
 
 namespace elle
 {
-
-  using namespace concurrency;
-
   namespace standalone
   {
 

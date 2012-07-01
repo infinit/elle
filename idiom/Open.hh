@@ -96,12 +96,14 @@
   _template_                                                            \
   _type_&       _type_::operator=(const _type_&         object)         \
   {                                                                     \
-    /*enter();*/                                                            \
-                                                                        \
     if (this == &object)                                                \
       return (*this);                                                   \
-    if (this->Recycle(&object) == elle::Status::Error)             \
-      yield(*this, "unable to recycle the object");                     \
+    if (this->Recycle(&object) == elle::Status::Error)                  \
+      {                                                                 \
+        log("unable to recycle the object");                            \
+                                                                        \
+        return (*this);                                                 \
+      }                                                                 \
                                                                         \
     return (*this);                                                     \
   }                                                                     \
@@ -239,23 +241,6 @@
                                                                         \
       return (elle::Status::False);                                \
     } while (false)                                                     \
-
-///
-/// this macro-function logs an error and returns.
-///
-/// note that the return object is specifed, hence this function
-/// perfectly fits when an error occurs in operators for instance.
-///
-/// note that no parentheses are put around _return_ in case it
-/// would be empty.
-///
-#define yield(_return_, _format_, ...)                                  \
-  do                                                                    \
-    {                                                                   \
-      log(_format_, ##__VA_ARGS__);                                     \
-                                                                        \
-      return _return_;                                                  \
-    } while (false)
 
 ///
 /// this macro-function adds an failure, displays the stack and
@@ -419,4 +404,3 @@
       };                                                                \
     }                                                                   \
   }
-

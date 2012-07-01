@@ -1,34 +1,18 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed feb 24 08:36:00 2010]
-//
-
 #ifndef ELLE_RADIX_VARIABLES_HXX
-#define ELLE_RADIX_VARIABLES_HXX
+# define ELLE_RADIX_VARIABLES_HXX
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/standalone/Report.hh>
 
-#include <elle/standalone/Maid.hh>
-#include <elle/standalone/Report.hh>
+# include <elle/radix/Entity.hh>
+# include <elle/radix/Parameters.hh>
+# include <elle/radix/Allege.hh>
 
-#include <elle/radix/Entity.hh>
-#include <elle/radix/Parameters.hh>
-#include <elle/radix/Allege.hh>
-
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
   using namespace standalone;
   using namespace radix;
-  using namespace concurrency;
 
   namespace radix
   {

@@ -1,4 +1,3 @@
-
 #include <cassert>
 
 #include <elle/log/Logger.hh>

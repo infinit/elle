@@ -10,7 +10,6 @@
 # include <elle/radix/Arguments.hh>
 # include <elle/radix/Variables.hh>
 # include <elle/serialize/BufferArchive.hh>
-# include <elle/standalone/Maid.hh>
 # include <elle/standalone/Report.hh>
 
 namespace elle

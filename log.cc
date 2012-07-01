@@ -1,4 +1,3 @@
-
 #include <fnmatch.h>
 
 #include <cassert>

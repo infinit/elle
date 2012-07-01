@@ -1,11 +1,11 @@
 #ifndef  ELLE_LOG_LOGGER_HH
 # define ELLE_LOG_LOGGER_HH
 
-# include <iosfwd>
-# include <memory>
-# include <string>
-
-# include <boost/noncopyable.hpp>
+# include <elle/idiom/Close.hh>
+#  include <iosfwd>
+#  include <memory>
+#  include <string>
+#  include <boost/noncopyable.hpp>
 
 namespace elle
 {
@@ -70,5 +70,3 @@ namespace elle
 # include <elle/log/Logger.hxx>
 
 #endif /* ! LOGGER_HH */
-
-

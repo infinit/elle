@@ -1,10 +1,10 @@
 #ifndef  ELLE_PRINT_HXX
 # define ELLE_PRINT_HXX
 
-# include <iostream>
-# include <sstream>
-
-# include <elle/print.hh>
+# include <elle/idiom/Close.hh>
+#  include <iostream>
+#  include <sstream>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
