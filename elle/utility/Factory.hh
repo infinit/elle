@@ -1,42 +1,21 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu jan 28 18:47:33 2010]
-//
-
 #ifndef ELLE_UTILITY_FACTORY_HH
-#define ELLE_UTILITY_FACTORY_HH
+# define ELLE_UTILITY_FACTORY_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
+# include <elle/radix/Object.hh>
+# include <elle/radix/Entity.hh>
 
-#include <elle/radix/Object.hh>
-#include <elle/radix/Entity.hh>
+# include <elle/utility/Product.hh>
 
-#include <elle/utility/Product.hh>
-
-#include <elle/idiom/Close.hh>
-# include <map>
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  include <map>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
-
-  using namespace radix;
-
   namespace utility
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// a factory provides a way for generating instance of given classes
@@ -49,7 +28,7 @@ namespace elle
     /// functionoids capable of generating types.
     ///
     class Factory:
-      public Object
+      public radix::Object
     {
     public:
       //
@@ -60,7 +39,7 @@ namespace elle
       /// this class is the base class for factory functionoids.
       ///
       class Functionoid:
-        public Entity
+        public radix::Entity
       {
       public:
         //
@@ -81,7 +60,7 @@ namespace elle
         /// since template methods cannot be virtual, the argument is assumed
         /// to be a derived entity.
         ///
-        virtual Status  Allocate(Meta*&) const = 0;
+        virtual Status  Allocate(radix::Meta*&) const = 0;
       };
 
       ///
@@ -101,7 +80,7 @@ namespace elle
         //
         // methods
         //
-        Status          Allocate(Meta*&) const;
+        Status          Allocate(radix::Meta*&) const;
 
         //
         // attributes
@@ -147,10 +126,6 @@ namespace elle
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/utility/Factory.hxx>
 

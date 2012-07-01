@@ -12,21 +12,14 @@
 
 namespace elle
 {
-
-  using namespace radix;
-
   namespace network
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a network locus i.e a host and port.
     ///
     class Locus:
-      public Object
+      public radix::Object
     {
     public:
       //
@@ -56,10 +49,6 @@ namespace elle
       Boolean           operator<(const Locus&) const;
       Boolean           operator>(const Locus&) const;
 
-      // archivable
-      //Status            Serialize(Archive&) const;
-      //Status            Extract(Archive&);
-
       // dumpable
       Status            Dump(const Natural32 = 0) const;
 
@@ -73,5 +62,6 @@ namespace elle
   }
 }
 
-#endif
 #include <elle/network/Locus.hxx>
+
+#endif

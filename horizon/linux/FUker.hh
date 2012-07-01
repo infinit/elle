@@ -12,16 +12,13 @@
 #  if defined(HAVE_SETXATTR)
 #   include <attr/xattr.h>
 #  endif
+# include <pthread.h>
 # include <elle/idiom/Open.hh>
 
 namespace horizon
 {
   namespace linux
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class abstracts the notion of FUSE-Broker i.e FUker.
@@ -37,8 +34,7 @@ namespace horizon
     /// thread to resume and terminate by returning to the kernel the
     /// result of the operation.
     ///
-    class FUker:
-      public elle::radix::Entity
+    class FUker
     {
     public:
       //

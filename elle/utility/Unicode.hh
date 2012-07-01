@@ -1,13 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [fri jan 13 19:25:56 2012]
-//
-
 namespace elle
 {
   namespace utility

@@ -1,24 +1,12 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu feb  4 22:18:05 2010]
-//
-
 #ifndef ELLE_CONCURRENCY_FUNCTION_HXX
-#define ELLE_CONCURRENCY_FNUCTION_HXX
+# define ELLE_CONCURRENCY_FNUCTION_HXX
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
+# include <elle/standalone/Report.hh>
+# include <elle/standalone/Log.hh>
 
-#include <elle/standalone/Report.hh>
-#include <elle/standalone/Log.hh>
+# include <elle/io/Dumpable.hh>
 
 namespace elle
 {
@@ -111,11 +99,11 @@ namespace elle
       std::cout << alignment << "[Function]" << std::endl;
 
       // dump the quantum.
-      std::cout << alignment << Dumpable::Shift << "[Quantum] "
+      std::cout << alignment << io::Dumpable::Shift << "[Quantum] "
                 << std::dec << sizeof... (T) << std::endl;
 
       // dump the handler.
-      std::cout << alignment << Dumpable::Shift << "[Handler] "
+      std::cout << alignment << io::Dumpable::Shift << "[Handler] "
                 << std::hex << this->handler << std::endl;
 
       return Status::Ok;

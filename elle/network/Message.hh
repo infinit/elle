@@ -1,19 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed feb  3 22:01:47 2010]
-//
-
 #ifndef ELLE_NETWORK_MESSAGE_HH
-#define ELLE_NETWORK_MESSAGE_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
+# define ELLE_NETWORK_MESSAGE_HH
 
 #include <elle/network/Tag.hh>
 
@@ -21,10 +7,6 @@ namespace elle
 {
   namespace network
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a message which is composed of a header and
@@ -42,7 +24,6 @@ namespace elle
     template <const Tag G>
     struct Message
     {
-      // nothing
     };
 
   }

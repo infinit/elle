@@ -1,17 +1,11 @@
 #ifndef ELLE_CONCURRENCY_PROGRAM_HH
 # define ELLE_CONCURRENCY_PROGRAM_HH
 
-#  include <elle/radix/Entity.hh>
-#  include <elle/radix/Parameters.hh>
+# include <elle/types.hh>
 
-# include <elle/concurrency/Callback.hh>
+# include <reactor/signal.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <elle/types.hh>
-#  include <list>
-#  include <signal.h>
-# include <elle/idiom/Open.hh>
-
+// XXX
 namespace reactor
 {
   class Scheduler;
@@ -19,8 +13,6 @@ namespace reactor
 
 namespace elle
 {
-  using namespace radix;
-
   namespace concurrency
   {
 //

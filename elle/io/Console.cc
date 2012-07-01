@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sat jun 18 11:11:53 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/io/Console.hh>
 
 #include <elle/standalone/Report.hh>

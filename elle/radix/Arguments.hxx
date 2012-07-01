@@ -12,10 +12,8 @@
 
 namespace elle
 {
-
   using namespace standalone;
   using namespace radix;
-  using namespace concurrency;
 
   namespace radix
   {

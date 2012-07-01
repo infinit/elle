@@ -5,21 +5,14 @@
 
 #include <elle/radix/Object.hh>
 
-#include <elle/io/Pattern.hh>
+#include <elle/io/fwd.hh>
 
 #include <elle/idiom/Open.hh>
 
 namespace elle
 {
-
-  using namespace radix;
-
   namespace io
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class abstracts a path representation.
@@ -28,7 +21,7 @@ namespace elle
     /// the pattern %name% as representing a component to be provided later.
     ///
     class Path:
-      public Object
+      public radix::Object
     {
     public:
       //
@@ -63,21 +56,16 @@ namespace elle
       String            _string;
 
     public:
+      // XXX
       std::string const& str() const
-        { return this->_string; }
+      { return this->_string; }
       std::string& str()
-        { return this->_string; }
+      { return this->_string; }
     };
 
   }
 }
 
-//
-// ---------- templates -------------------------------------------------------
-//
-
 #include <elle/io/Path.hxx>
-
-#include <elle/idiom/Close.hh>
 
 #endif

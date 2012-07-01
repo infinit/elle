@@ -1,4 +1,5 @@
 #include <elle/concurrency/Scheduler.hh>
+#include <elle/utility/Duration.hh>
 
 #include <elle/container/timeline/Bucket.hh>
 #include <elle/container/timeline/Timeline.hh>

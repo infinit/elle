@@ -1,7 +1,3 @@
-
-#include <cassert>
-#include <stdexcept>
-
 #include <elle/standalone/Morgue.hh>
 
 #include <etoile/journal/Journal.hh>
@@ -13,6 +9,12 @@
 #include <elle/concurrency/Scheduler.hh>
 
 #include <Infinit.hh>
+
+#include <elle/idiom/Close.hh>
+# include <cassert>
+# include <stdexcept>
+# include <boost/foreach.hpp>
+#include <elle/idiom/Open.hh>
 
 namespace etoile
 {
@@ -30,6 +32,7 @@ namespace etoile
     {
       assert(scope != nullptr);
       return Journal::_Record(scope);
+      // XXX
       //try
       //  {
       //    Journal::_scopes.insert(scope);
@@ -115,8 +118,8 @@ namespace etoile
                                      nucleus::proton::Version const& version,
                                      nucleus::proton::Block& out_block)
     {
-      foreach (gear::Scope* scope, Journal::_scopes)
-        foreach (nucleus::Action* action, scope->context->transcript.container)
+      BOOST_FOREACH(gear::Scope* scope, Journal::_scopes)
+        BOOST_FOREACH(nucleus::Action* action, scope->context->transcript.container)
           {
             if (address != action->address)
               continue;

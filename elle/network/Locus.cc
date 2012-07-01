@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sat nov 28 13:01:48 2009]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/network/Locus.hh>
 
 #include <elle/types.hh>
@@ -145,36 +131,6 @@ namespace elle
     embed(Locus, _());
 
 //
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the locus.
-    ///
-    //Status              Locus::Serialize(Archive&               archive) const
-    //{
-    //  // serialize the host and port.
-    //  if (archive.Serialize(this->host,
-    //                        this->port) == Status::Error)
-    //    escape("unable to serialize the locus attributes");
-
-    //  return Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts an locus.
-    /////
-    //Status              Locus::Extract(Archive&                 archive)
-    //{
-    //  // extract the locus.
-    //  if (archive.Extract(this->host,
-    //                      this->port) == Status::Error)
-    //    escape("unable to extract the locus attributes");
-
-    //  return Status::Ok;
-    //}
-
-//
 // ---------- dumpable --------------------------------------------------------
 //
 
@@ -190,7 +146,7 @@ namespace elle
       if (this->host.Dump(margin + 2) == Status::Error)
         escape("unable to dump the host");
 
-      std::cout << alignment << Dumpable::Shift << "[Port] "
+      std::cout << alignment << io::Dumpable::Shift << "[Port] "
                 << std::dec << this->port << std::endl;
 
       return Status::Ok;

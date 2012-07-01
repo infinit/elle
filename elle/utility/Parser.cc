@@ -64,34 +64,34 @@ namespace elle
       std::cout << alignment << "[Option] " << this->name << std::endl;
 
       // dump the character.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[Character] " << this->character << std::endl;
 
       // dump the string.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[String] " << this->string << std::endl;
 
       // dump the description.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[Description] " << this->description << std::endl;
 
       // dump the kind.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[Kind] " << this->kind << std::endl;
 
       // dump the state.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[State] " << this->state << std::endl;
 
       // dump the value, if present.
       if (this->value != NULL)
         {
-          std::cout << alignment << Dumpable::Shift
+          std::cout << alignment << io::Dumpable::Shift
                     << "[Value] " << *this->value << std::endl;
         }
       else
         {
-          std::cout << alignment << Dumpable::Shift
+          std::cout << alignment << io::Dumpable::Shift
                     << "[Value] " << none << std::endl;
         }
 
@@ -577,27 +577,27 @@ namespace elle
       std::cout << alignment << "[Parser]" << std::endl;
 
       // dump argc.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[Argc] " << this->argc << std::endl;
 
       // dump argv.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[Argv] " << std::hex << this->argv << std::endl;
 
       // dump the description.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[Description] " << this->description << std::endl;
 
       // dump the short options.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[Short] " << this->shorts << std::endl;
 
       // dump the long options.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[Long] " << std::hex << this->longs << std::endl;
 
       // dump the options.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[Options]" << std::endl;
 
       for (i = 0; i < this->options.size(); i++)
@@ -608,13 +608,13 @@ namespace elle
         }
 
       // dump the examples.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[Examples]" << std::endl;
 
       for (i = 0; i < this->examples.size(); i++)
         {
           // dump the example.
-          std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+          std::cout << alignment << io::Dumpable::Shift << io::Dumpable::Shift
                     << this->examples[i] << std::endl;
         }
 

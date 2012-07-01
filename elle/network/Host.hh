@@ -16,8 +16,8 @@ namespace elle
   {
 
     /// This class represents a network host.
-    class Host
-      : public elle::radix::Object
+    class Host:
+      public elle::radix::Object
     {
     public:
       //
@@ -71,10 +71,6 @@ namespace elle
       Boolean           operator<(const Host&) const;
       Boolean           operator>(const Host&) const;
 
-      // archivable
-      //Status            Serialize(Archive&) const;
-      //Status            Extract(Archive&);
-
       // dumpable
       Status            Dump(const Natural32 = 0) const;
 
@@ -88,8 +84,6 @@ namespace elle
   }
 }
 
-#endif
-
-
-
 #include <elle/network/Host.hxx>
+
+#endif

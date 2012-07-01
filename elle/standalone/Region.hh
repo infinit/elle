@@ -31,8 +31,8 @@ namespace elle
     /// along with fundamental methods such as Recycle() etc.
     ///
     class Region:
-      public Meta,
-      public Dumpable
+      public radix::Meta,
+      public io::Dumpable
     {
     public:
       //
@@ -131,10 +131,6 @@ namespace elle
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/standalone/Region.hxx>
 

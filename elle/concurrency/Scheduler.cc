@@ -1,5 +1,7 @@
 #include <elle/concurrency/Scheduler.hh>
 
+// XXX[revoir ce fichier?]
+
 namespace elle
 {
   namespace concurrency

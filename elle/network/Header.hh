@@ -13,23 +13,15 @@
 
 namespace elle
 {
-
-  using namespace radix;
-  using namespace concurrency;
-
   namespace network
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents the header which is attached to every
     /// network message.
     ///
     class Header:
-      public Object
+      public radix::Object
     {
     public:
       //
@@ -45,7 +37,7 @@ namespace elle
       //
       // methods
       //
-      Status            Create(const Event&,
+      Status            Create(const concurrency::Event&,
                                const Tag,
                                const Natural32);
 
@@ -59,14 +51,10 @@ namespace elle
       // dumpable
       Status            Dump(const Natural32 = 0) const;
 
-      // archivable
-      //Status            Serialize(Archive&) const;
-      //Status            Extract(Archive&);
-
       //
       // attributes
       //
-      Event             event;
+      concurrency::Event             event;
       Tag               tag;
       Natural32         size;
     };
@@ -74,5 +62,6 @@ namespace elle
   }
 }
 
-#endif
 #include <elle/network/Header.hxx>
+
+#endif

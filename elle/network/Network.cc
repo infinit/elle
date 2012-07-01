@@ -1,9 +1,11 @@
-#include <elle/standalone/Report.hh>
 #include <elle/network/Network.hh>
+
+#include <elle/standalone/Report.hh>
+
 #include <elle/concurrency/Event.hh>
 
 #include <elle/idiom/Close.hh>
-#include <elle/log.hh>
+# include <elle/log.hh>
 #include <elle/idiom/Open.hh>
 
 ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
@@ -16,32 +18,6 @@ namespace elle
     /// this container holds the list of registered procedures.
     ///
     Network::Container                  Network::Procedures;
-
-    ///
-    /// this method initializes the network components.
-    ///
-    Status              Network::Initialize()
-    {
-      // initialize the session.
-      if (Session::Initialize() == Status::Error)
-        escape("unable to initialize the session");
-
-      return Status::Ok;
-    }
-
-    ///
-    /// this method cleans the network components.
-    ///
-    Status              Network::Clean()
-    {
-      // clean the session.
-      if (Session::Clean() == Status::Error)
-        escape("unable to clean the session");
-
-      Network::Procedures.clear();
-
-      return Status::Ok;
-    }
 
     ///
     /// this method dumps the procedures.

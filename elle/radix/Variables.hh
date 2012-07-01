@@ -1,15 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed feb 24 08:03:32 2010]
-//
-
 #ifndef ELLE_RADIX_VARIABLES_HH
 #define ELLE_RADIX_VARIABLES_HH
+
+// XXX[class to delete]
 
 #include <elle/radix/Parameters.hh>
 
@@ -17,10 +9,6 @@ namespace elle
 {
   namespace radix
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class wraps a set of variables which are about to be
@@ -62,10 +50,6 @@ namespace elle
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/radix/Variables.hxx>
 

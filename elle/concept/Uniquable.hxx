@@ -1,12 +1,12 @@
 #ifndef  ELLE_CONCEPT_UNIQUABLE_HXX
 # define ELLE_CONCEPT_UNIQUABLE_HXX
 
+// XXX[two logs included?]
 # include <elle/log.hh>
 # include <elle/standalone/Log.hh>
-// XXX[two logs included?]
+
 # include <elle/standalone/Report.hh>
 
-// XXX?
 # include <elle/serialize/Base64Archive.hh>
 
 # include <elle/idiom/Close.hh>

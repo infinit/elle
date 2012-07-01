@@ -1,13 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [fri jul 15 10:45:39 2011]
-//
-
 #ifndef ELLE_RADIX_TRAIT_HXX
 #define ELLE_RADIX_TRAIT_HXX
 

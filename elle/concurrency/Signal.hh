@@ -1,7 +1,7 @@
 #ifndef ELLE_CONCURRENCY_SIGNAL_HH
 # define ELLE_CONCURRENCY_SIGNAL_HH
 
-#  include <map>
+# include <map>
 
 # include <elle/types.hh>
 
@@ -9,14 +9,12 @@
 # include <elle/radix/Object.hh>
 # include <elle/radix/Entity.hh>
 
+// XXX[this file should be removed in favor for reactor's signal mechanism]
+
 namespace elle
 {
   namespace concurrency
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents the generic Signal.
@@ -138,10 +136,6 @@ namespace elle
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/concurrency/Signal.hxx>
 

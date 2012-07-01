@@ -2,8 +2,6 @@
 # define ELLE_NETWORK_HEADER_HXX
 
 # include <elle/serialize/ArchiveSerializer.hxx>
-# include <elle/concurrency/Event.hh>
-# include <elle/network/Header.hh>
 
 ELLE_SERIALIZE_SPLIT(elle::network::Header);
 

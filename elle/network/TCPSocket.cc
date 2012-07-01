@@ -1,21 +1,16 @@
-#include <elle/network/Header.hh>
-#include <elle/utility/Buffer.hh>
-#include <elle/standalone/Report.hh>
+#include <elle/network/TCPSocket.hh>
+#include <elle/network/Packet.hh>
+#include <elle/network/Network.hh>
 
-#include <string>
+#include <elle/utility/Buffer.hh>
+
+#include <elle/standalone/Report.hh>
 
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 
-#include <elle/network/TCPSocket.hh>
-#include <elle/network/Packet.hh>
-#include <elle/network/Inputs.hh>
-#include <elle/network/Network.hh>
-
-#include <elle/idiom/Close.hh>
 #include <elle/log.hh>
 #include <elle/print.hh>
-#include <elle/idiom/Open.hh>
 
 #include <protocol/PacketStream.hh>
 
@@ -159,21 +154,17 @@ namespace elle
                     {
                       ELLE_LOG_TRACE("%s: RPC is an error.", *this);
                       Report  report;
-                      // FIXME: restore error messages extraction
                       // extract the error message.
-                      // if (report.Extract(*parcel->data) == Status::Error)
-                      //   // FIXME
-                      //   //escape("unable to extract the error message");
-                      //   continue;
-                      // // report the remote error.
-                      // transpose(report);
-                      // // log the error.
-                      // log("an error message has been received "
-                      //     "with no registered procedure");
-                      // ELLE_LOG_TRACE("%s: an error message has been "
-                      //                "received with no registered "
-                      //                "procedure", *this)
-                        continue;
+                      parcel->data->Reader() >> report;
+                      // report the remote error.
+                      transpose(report);
+                      // log the error.
+                      log("an error message has been received "
+                          "with no registered procedure");
+                      ELLE_LOG_TRACE("%s: an error message has been "
+                                     "received with no registered "
+                                     "procedure", *this);
+                      continue;
                     }
                   else
                     {

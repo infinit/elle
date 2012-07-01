@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [tue nov 22 09:12:59 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/utility/HTTP.hh>
 
 #include <elle/types.hh>
@@ -19,11 +5,12 @@
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Region.hh>
 
+#include <elle/utility/URI.hh>
+
 #include <elle/idiom/Open.hh>
+
 namespace elle
 {
-  using namespace standalone;
-
   namespace utility
   {
 
@@ -64,7 +51,7 @@ namespace elle
                                   Content&                      response,
                                   Code&                         code)
     {
-      Region            output;
+      standalone::Region output;
       ::CURL*           curl;
       long              r;
 
@@ -134,9 +121,9 @@ namespace elle
                                    Content&                     response,
                                    Code&                        code)
     {
-      Region            input(reinterpret_cast<const Byte*>(request.c_str()),
-                              request.length());
-      Region            output;
+      standalone::Region input(reinterpret_cast<const Byte*>(request.c_str()),
+                               request.length());
+      standalone::Region output;
       String            header = "Content-Type: " + type;
       ::CURL*           curl;
       long              r;
@@ -248,9 +235,9 @@ namespace elle
                                   Content&                      response,
                                   Code&                         code)
     {
-      Region            input(reinterpret_cast<const Byte*>(request.c_str()),
-                              request.length());
-      Region            output;
+      standalone::Region input(reinterpret_cast<const Byte*>(request.c_str()),
+                               request.length());
+      standalone::Region output;
       String            header = "Content-Type: " + type;
       ::CURL*           curl;
       long              r;
@@ -378,7 +365,7 @@ namespace elle
                                      Content&                   response,
                                      Code&                      code)
     {
-      Region            output;
+      standalone::Region output;
       ::CURL*           curl;
       long              r;
 
@@ -463,10 +450,10 @@ namespace elle
                                    size_t                       nmemb,
                                    void*                        userdata)
     {
-      Region*           region;
+      standalone::Region* region;
 
       // retrieve the region.
-      region = reinterpret_cast<Region*>(userdata);
+      region = reinterpret_cast<standalone::Region*>(userdata);
 
       // compute the size.
       size_t            s =
@@ -495,10 +482,10 @@ namespace elle
                                     size_t                      nmemb,
                                     void*                       userdata)
     {
-      Region*           region;
+      standalone::Region* region;
 
       // cast the userdata.
-      region = reinterpret_cast<Region*>(userdata);
+      region = reinterpret_cast<standalone::Region*>(userdata);
 
       // append the given data to the region.
       if (region->Append(reinterpret_cast<const Byte*>(ptr),

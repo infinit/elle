@@ -14,10 +14,6 @@ namespace elle
   namespace concurrency
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// Function generic class.
     ///
@@ -89,10 +85,6 @@ namespace elle
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/concurrency/Function.hxx>
 

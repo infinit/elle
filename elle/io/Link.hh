@@ -1,21 +1,12 @@
 #ifndef ELLE_IO_LINK_HH
 # define ELLE_IO_LINK_HH
 
-# include <elle/standalone/Region.hh>
-
-# include <elle/io/Path.hh>
+# include <elle/io/fwd.hh>
 
 namespace elle
 {
-  using namespace standalone;
-  using namespace radix;
-
   namespace io
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class abstracts the local link operations.

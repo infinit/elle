@@ -168,15 +168,27 @@ namespace etoile
     {
       // generate an identifier.
       if (this->identifier.Generate() == elle::Status::Error)
-        yield(_(), "unable to generate the identifier");
+        {
+          log("unable to recycle the object");
+
+          return;
+        }
 
       // register the actor.
       if (Actor::Add(this->identifier, this) == elle::Status::Error)
-        yield(_(), "unable to register the actor");
+        {
+          log("unable to recycle the object");
+
+          return;
+        }
 
       // add the actor to the scope's set.
       if (scope->Attach(this) == elle::Status::Error)
-        yield(_(), "unable to attach the actor to the scope");
+        {
+          log("unable to recycle the object");
+
+          return;
+        }
     }
 
     ///
@@ -186,11 +198,19 @@ namespace etoile
     {
       // remove the actor from the scope's set.
       if (this->scope->Detach(this) == elle::Status::Error)
-        yield(_(), "unable to detach the actor from the scope");
+        {
+          log("unable to recycle the object");
+
+          return;
+        }
 
       // unregister the actor.
       if (Actor::Remove(this->identifier) == elle::Status::Error)
-        yield(_(), "unable to unregister the actor");
+        {
+          log("unable to recycle the object");
+
+          return;
+        }
     }
 
 //

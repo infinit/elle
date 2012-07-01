@@ -1,10 +1,9 @@
 #ifndef ELLE_UTILITY_HTTP_HH
 # define ELLE_UTILITY_HTTP_HH
 
-
 # include <elle/types.hh>
 
-# include <elle/utility/URI.hh>
+# include <elle/utility/fwd.hh>
 
 # include <elle/idiom/Close.hh>
 #  if defined(INFINIT_MACOSX)
@@ -26,10 +25,6 @@ namespace elle
 {
   namespace utility
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class provides easy-to-use methods for sending and receiving

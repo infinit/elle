@@ -19,7 +19,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
                     "unable to initialize Elle");
 
   // set up the program.
-  if (elle::Program::Setup() == elle::Status::Error)
+  if (elle::concurrency::Program::Setup() == elle::Status::Error)
     throw reactor::Exception(elle::concurrency::scheduler(),
                     "unable to set up the program");
 
@@ -152,7 +152,7 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
                     "unable to initialize the horizon");
 
   // launch the program.
-  elle::Program::Launch();
+  elle::concurrency::Program::Launch();
 
   // delete the parser.
   delete Infinit::Parser;

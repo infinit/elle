@@ -1,14 +1,13 @@
-
 #include <elle/utility/Time.hh>
 
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Log.hh>
 
-#include <elle/idiom/Close.hh>
+#include <elle/utility/Duration.hh>
 
+#include <elle/idiom/Close.hh>
 # include <pthread.h>
 # include <ctime>
-
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -332,34 +331,6 @@ namespace elle
 
       return Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the time object.
-    ///
-    //Status              Time::Serialize(Archive&                archive) const
-    //{
-    //  // serialize the internal attributes.
-    //  if (archive.Serialize(this->nanoseconds) == Status::Error)
-    //    escape("unable to serialize the attributes");
-
-    //  return Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the time object.
-    /////
-    //Status              Time::Extract(Archive&                  archive)
-    //{
-    //  // extract the internal attributes.
-    //  if (archive.Extract(this->nanoseconds) == Status::Error)
-    //    escape("unable to extract the attributes");
-
-    //  return Status::Ok;
-    //}
 
   }
 }

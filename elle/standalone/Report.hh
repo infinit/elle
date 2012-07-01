@@ -1,9 +1,11 @@
 #ifndef ELLE_STANDALONE_REPORT_HH
 # define ELLE_STANDALONE_REPORT_HH
 
-# include <elle/io/Dumpable.hh>
-# include <elle/radix/Meta.hh>
 # include <elle/types.hh>
+
+# include <elle/radix/Meta.hh>
+
+# include <elle/io/Dumpable.hh>
 
 # include <elle/idiom/Close.hh>
 #  include <sstream>
@@ -20,25 +22,8 @@
 
 namespace elle
 {
-
-  using namespace radix;
-  using namespace io;
-
   namespace standalone
   {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    ///
-    /// the region needs to be forward declared.
-    ///
-    class Region;
-
-//
-// ---------- class -----------------------------------------------------------
-//
 
     ///
     /// this classes represents a log report, composed of a set of
@@ -58,8 +43,8 @@ namespace elle
     /// in many conflicts.
     ///
     class Report:
-      public Meta,
-      public Dumpable
+      public radix::Meta,
+      public io::Dumpable
     {
     public:
       //
@@ -126,10 +111,6 @@ namespace elle
       // dumpable
       Status            Dump(const Natural32 = 0) const;
 
-      //// archivable
-      //Status            Serialize(Archive&) const;
-      //Status            Extract(Archive&);
-
       // object-like
       template <typename T>
       Status            Recycle(const T* = NULL);
@@ -154,10 +135,6 @@ namespace elle
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/standalone/Report.hxx>
 

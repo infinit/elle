@@ -7,8 +7,6 @@
 
 #include <elle/cryptography/Cryptography.hh>
 
-#include <elle/network/Network.hh>
-
 #include <elle/radix/Radix.hh>
 
 #include <elle/Elle.hh>
@@ -53,10 +51,6 @@ namespace elle
     if (cryptography::Cryptography::Initialize() == Status::Error)
       escape("unable to initialize the cryptographic module");
 
-    // initialize the network module.
-    if (network::Network::Initialize() == Status::Error)
-      escape("unable to initialize the network module");
-
     return Status::Ok;
   }
 
@@ -65,10 +59,6 @@ namespace elle
   ///
   Status                Elle::Clean()
   {
-    // clean the network module.
-    if (network::Network::Clean() == Status::Error)
-      escape("unable to clean the network module");
-
     // clean the crypto module.
     if (cryptography::Cryptography::Clean() == Status::Error)
       escape("unable to clean the cryptographic module");

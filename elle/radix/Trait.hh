@@ -1,19 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [tue jun  7 13:43:54 2011]
-//
-
 #ifndef ELLE_RADIX_TRAIT_HH
-#define ELLE_RADIX_TRAIT_HH
+# define ELLE_RADIX_TRAIT_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+// XXX[class to delete]
 
 #include <elle/radix/Parameters.hh>
 
@@ -23,10 +11,6 @@ namespace elle
 {
   namespace radix
   {
-
-//
-// ---------- structures ------------------------------------------------------
-//
 
     ///
     /// this set of template structures enables the programmer to add
@@ -96,10 +80,6 @@ namespace elle
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/radix/Trait.hxx>
 

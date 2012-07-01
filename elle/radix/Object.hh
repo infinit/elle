@@ -1,10 +1,6 @@
 #ifndef ELLE_RADIX_OBJECT_HH
 #define ELLE_RADIX_OBJECT_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/types.hh>
 
 #include <elle/radix/Meta.hh>
@@ -14,10 +10,6 @@ namespace elle
 
   namespace radix
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this interface must be implemented by every 'object' ... in the
@@ -99,10 +91,6 @@ namespace elle
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/radix/Object.hxx>
 

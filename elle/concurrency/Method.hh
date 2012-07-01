@@ -4,14 +4,14 @@
 # include <elle/types.hh>
 
 # include <elle/radix/Object.hh>
-# include <elle/radix/Entity.hh>
 # include <elle/radix/Parameters.hh>
+
+# include <elle/io/Dumpable.hh>
 
 # include <elle/idiom/Open.hh>
 
 namespace elle
 {
-
   namespace concurrency
   {
 
@@ -31,14 +31,14 @@ namespace elle
     template <typename R,
               typename... T>
     class Method< R,
-                  Parameters<T...> >:
+                  radix::Parameters<T...> >:
       public Object
     {
     public:
       //
       // types
       //
-      typedef Parameters<T...>          P;
+      typedef radix::Parameters<T...>          P;
 
       //
       // classes
@@ -52,8 +52,8 @@ namespace elle
       /// this class is a base for inheritance.
       ///
       class Shell:
-        public Object,
-        public Dumpable
+        public radix::Object,
+        public io::Dumpable
       {
       public:
         //
@@ -155,10 +155,6 @@ namespace elle
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/concurrency/Method.hxx>
 

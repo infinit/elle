@@ -67,7 +67,7 @@ namespace elle
            scoutor != this->container.end();
            scoutor++)
         {
-          std::cout << alignment << Dumpable::Shift
+          std::cout << alignment << io::Dumpable::Shift
                     << scoutor->first << std::endl;
         }
 

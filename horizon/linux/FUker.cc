@@ -1,10 +1,17 @@
-#include <elle/concurrency/Program.hh>
-
+#include <horizon/linux/FUker.hh>
 #include <horizon/linux/FUSE.hh>
+#include <horizon/operations.hh>
+
+#include <elle/concurrency/Program.hh>
+#include <elle/concurrency/Scheduler.hh>
+#include <elle/concurrency/Callback.hh>
 
 #include <hole/Hole.hh>
 
 #include <Infinit.hh>
+
+#include <reactor/scheduler.hh>
+#include <reactor/thread.hh>
 
 #include <elle/idiom/Close.hh>
 # include <boost/function.hpp>
@@ -16,18 +23,8 @@
 # include <sys/mount.h>
 # include <sys/param.h>
 # include <sys/statfs.h>
-# include <reactor/scheduler.hh>
-# include <reactor/thread.hh>
 # include <fuse/fuse_lowlevel.h>
 #include <elle/idiom/Open.hh>
-
-#include <elle/concurrency/Scheduler.hh>
-
-#include <elle/idiom/Close.hh>
-# include <elle/log.hh>
-#include <elle/idiom/Open.hh>
-
-#include <horizon/operations.hh>
 
 ELLE_LOG_TRACE_COMPONENT("Infinit.FUSE");
 
@@ -224,7 +221,7 @@ namespace horizon
       FUker::FUSE = nullptr;
 
       // now that FUSE has stopped, make sure the program is exiting.
-      elle::Program::Exit();
+      elle::concurrency::Program::Exit();
 
       return NULL;
 
@@ -233,7 +230,7 @@ namespace horizon
       log("%s", ::strerror(errno));
 
       // now that FUSE has stopped, make sure the program is exiting.
-      elle::Program::Exit();
+      elle::concurrency::Program::Exit();
 
       return (NULL);
     }
