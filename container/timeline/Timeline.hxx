@@ -1,26 +1,12 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [fri oct 21 07:43:32 2011]
-//
-
 #ifndef ELLE_CONTAINER_TIMELINE_TIMELINE_HXX
-#define ELLE_CONTAINER_TIMELINE_TIMELINE_HXX
+# define ELLE_CONTAINER_TIMELINE_TIMELINE_HXX
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <cassert>
-#include <memory>
+# include <elle/standalone/Report.hh>
 
-#include <elle/types.hh>
-
-#include <elle/standalone/Report.hh>
+# include <cassert>
+# include <memory>
 
 namespace elle
 {

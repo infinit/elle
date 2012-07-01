@@ -1,19 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon apr 25 10:59:05 2011]
-//
-
 #ifndef ELLE_IO_PATTERN_HH
-#define ELLE_IO_PATTERN_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
+# define ELLE_IO_PATTERN_HH
 
 #include <elle/types.hh>
 
@@ -23,15 +9,8 @@
 
 namespace elle
 {
-
-  using namespace radix;
-
   namespace io
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a path pattern.
@@ -41,7 +20,7 @@ namespace elle
     /// the syntax they prefer.
     ///
     class Pattern:
-      public Object
+      public radix::Object
     {
     public:
       //
@@ -60,8 +39,6 @@ namespace elle
       // dumpable
       Status            Dump(const Natural32 = 0) const;
 
-      // archivable: nothing
-
       //
       // attributes
       //
@@ -70,7 +47,5 @@ namespace elle
 
   }
 }
-
-#include <elle/idiom/Close.hh>
 
 #endif

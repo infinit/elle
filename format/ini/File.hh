@@ -5,7 +5,7 @@
 
 # include <elle/types.hh>
 
-# include "Section.hh"
+# include <elle/format/ini/Section.hh>
 
 namespace elle { namespace format { namespace ini {
 

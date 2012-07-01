@@ -1,10 +1,6 @@
 #ifndef ELLE_NETWORK_BUNDLE_HXX
 #define ELLE_NETWORK_BUNDLE_HXX
 
-
-#include <elle/radix/Entity.hh>
-#include <elle/radix/Trait.hh>
-
 namespace elle
 {
   using namespace radix;
@@ -49,44 +45,6 @@ namespace elle
     }
 
     ///
-    /// this method serializes the variables referenced through the Arguments
-    /// attribute.
-    ///
-    //template <const Tag G,
-    //          typename... T>
-    //Status
-    //Bundle::Inputs< G,
-    //                Parameters<T...> >::Serialize(Archive&      archive) const
-    //{
-    //  Callback<
-    //    Status,
-    //    typename Trait::Reference<
-    //      typename Trait::Constant<
-    //        typename Message<G>::P
-    //        >::Type
-    //      >::Type
-    //    >               callback(&Archive::Serialize, &archive);
-
-    //  // trigger the serialization callback.
-    //  if (this->arguments.Call(callback) == Status::Error)
-    //    escape("unable to serialize the arguments");
-
-    //  return Status::Ok;
-    //}
-
-    ///
-    /// this method does nothing when it comes to Inputs bundles.
-    ///
-    //template <const Tag G,
-    //          typename... T>
-    //Status
-    //Bundle::Inputs< G,
-    //                Parameters<T...> >::Extract(Archive&)
-    //{
-    //  escape("unable to extract from an inputs bundle");
-    //}
-
-    ///
     /// this method dumps the bundle.
     ///
     template <const Tag G,
@@ -101,7 +59,7 @@ namespace elle
       std::cout << alignment << "[Bundle] Inputs" << std::endl;
 
       // dump the tag.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[Tag] " << static_cast<Natural32>(this->tag) << std::endl;
 
       // dump the arguments.
@@ -148,44 +106,6 @@ namespace elle
     }
 
     ///
-    /// this method does nothing when it comes to Outputs bundles.
-    ///
-    //template <const Tag G,
-    //          typename... T>
-    //Status
-    //Bundle::Outputs< G,
-    //                 Parameters<T...> >::Serialize(Archive&) const
-    //{
-    //  escape("unable to serialize to an outputs bundle");
-    //}
-
-    ///
-    /// this method extract information from the given archive in order
-    /// to set the values of the variables referenced through the Arguments
-    /// attribute.
-    ///
-    //template <const Tag G,
-    //          typename... T>
-    //Status
-    //Bundle::Outputs< G,
-    //                 Parameters<T...> >::Extract(Archive&       archive)
-    //{
-    //  Callback<
-    //    Status,
-    //    typename Trait::Reference<
-    //      typename Message<G>::P
-    //      >::Type
-    //    >               callback(&Archive::Extract, &archive);
-
-    //  // trigger the serialization callback.
-    //  if (this->arguments.Call(callback) == Status::Error)
-    //    escape("unable to extract the arguments");
-
-    //  return Status::Ok;
-    //}
-
-
-    ///
     /// this method dumps the bundle.
     ///
     template <const Tag G,
@@ -200,7 +120,7 @@ namespace elle
       std::cout << alignment << "[Bundle] Outputs" << std::endl;
 
       // dump the tag.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[Tag] " << static_cast<Natural32>(this->tag) << std::endl;
 
       // dump the arguments.
@@ -213,7 +133,9 @@ namespace elle
   }
 }
 
-# include <elle/radix/Arguments.hh>
+//
+// ---------- serialize -------------------------------------------------------
+//
 
 namespace elle
 {
@@ -265,8 +187,6 @@ namespace elle
     {
       static bool const value = false;
     };
-
-
 
     template<
         elle::network::Tag const G

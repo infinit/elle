@@ -4,23 +4,15 @@
 # include <elle/types.hh>
 
 # include <elle/concurrency/Event.hh>
-# include <elle/concurrency/Signal.hh>
-# include <elle/fwd.hh>
-# include <elle/network/Packet.hh>
-# include <elle/network/Parcel.hh>
-# include <elle/network/Port.hh>
-# include <elle/network/Session.hh>
+
 # include <elle/network/fwd.hh>
-# include <elle/standalone/Region.hh>
+
 # include <reactor/network/tcp-socket.hh>
+# include <reactor/mutex.hh>
+# include <reactor/thread.hh>
 
 namespace elle
 {
-
-  using namespace standalone;
-  using namespace radix;
-  using namespace concurrency;
-
   namespace network
   {
     ///
@@ -64,9 +56,10 @@ namespace elle
 
       template <typename I>
       Status            Send(const I,
-                             const Event& = Event::Null);
+                             const concurrency::Event& =
+                               concurrency::Event::Null);
       template <typename O>
-      Status            Receive(Event&, O);
+      Status            Receive(concurrency::Event&, O);
       template <typename I,
                 typename O>
       Status            Call(const I,
@@ -99,10 +92,6 @@ namespace elle
     void current_context(Context socket);
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/network/TCPSocket.hxx>
 

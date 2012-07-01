@@ -1,4 +1,3 @@
-
 #include <elle/io/Piece.hh>
 
 #include <elle/standalone/Report.hh>

@@ -1,19 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon feb  9 21:22:34 2009]
-//
-
 #ifndef ELLE_IO_DUMPABLE_HH
-#define ELLE_IO_DUMPABLE_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
+# define ELLE_IO_DUMPABLE_HH
 
 #include <elle/types.hh>
 
@@ -22,10 +8,6 @@ namespace elle
 
   namespace io
   {
-
-//
-// ---------- class -----------------------------------------------------------
-//
 
     ///
     /// this interface must be implemented by dumpable classes.

@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [tue apr 27 12:11:16 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/radix/Radix.hh>
 
 #include <elle/standalone/Report.hh>

@@ -3,9 +3,7 @@
 
 # include <elle/types.hh>
 
-# include <elle/standalone/Region.hh>
-
-# include <elle/io/Path.hh>
+# include <elle/io/fwd.hh>
 
 # include <elle/idiom/Close.hh>
 #  include <list>
@@ -13,10 +11,6 @@
 
 namespace elle
 {
-
-  using namespace standalone;
-  using namespace radix;
-
   namespace io
   {
 

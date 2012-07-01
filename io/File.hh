@@ -8,8 +8,6 @@
 
 namespace elle
 {
-  using namespace standalone;
-
   namespace io
   {
 
@@ -23,9 +21,9 @@ namespace elle
       // static methods
       //
       static Status     Read(const Path&,
-                             Region&);
+                             standalone::Region&);
       static Status     Write(const Path&,
-                              const Region&);
+                              const standalone::Region&);
       static Status     Erase(const Path&);
       static Status     Exist(const Path&);
       static Status     Dig(const Path&);

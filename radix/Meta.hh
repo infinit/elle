@@ -1,39 +1,14 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun nov 29 19:31:55 2009]
-//
-
 #ifndef ELLE_RADIX_META_HH
-#define ELLE_RADIX_META_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
+# define ELLE_RADIX_META_HH
 
 #include <elle/types.hh>
 
 #include <elle/radix/Trace.hh>
 
-#include <elle/idiom/Close.hh>
-# include <list>
-# include <stdlib.h>
-#include <elle/idiom/Open.hh>
-
 namespace elle
 {
-
-
   namespace radix
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents the root of the hierarchy. every class

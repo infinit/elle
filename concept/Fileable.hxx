@@ -8,7 +8,6 @@
 # include <elle/io/File.hh>
 # include <elle/io/Path.hh>
 
-// XXX?
 # include <elle/serialize/BinaryArchive.hxx>
 
 # include <elle/standalone/Report.hh>

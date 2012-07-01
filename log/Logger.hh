@@ -69,4 +69,4 @@ namespace elle
 
 # include <elle/log/Logger.hxx>
 
-#endif /* ! LOGGER_HH */
+#endif

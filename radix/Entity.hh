@@ -1,35 +1,12 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun feb 22 19:43:33 2009]
-//
-
 #ifndef ELLE_RADIX_ENTITY_HH
-#define ELLE_RADIX_ENTITY_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
+# define ELLE_RADIX_ENTITY_HH
 
 #include <elle/radix/Meta.hh>
 
-#include <elle/io/Dumpable.hh>
-
 namespace elle
 {
-  using namespace radix;
-  using namespace io;
-
   namespace radix
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this interface must be implemented by every 'entity' ... in the

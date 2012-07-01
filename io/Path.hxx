@@ -7,8 +7,6 @@
 
 namespace elle
 {
-
-
   namespace io
   {
 

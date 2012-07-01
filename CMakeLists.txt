@@ -34,7 +34,6 @@ ADD_LIBRARY(elle
   io/Dumpable.cc
   io/File.cc
   io/Link.cc
-  io/Manipulators.cc
   io/Pattern.cc
   io/Piece.cc
   io/Path.cc
@@ -66,7 +65,6 @@ ADD_LIBRARY(elle
   network/Network.cc
   network/Parcel.cc
   network/Locus.cc
-  network/Session.cc
   network/TCPSocket.cc
 
   utility/Buffer.cc
@@ -75,7 +73,6 @@ ADD_LIBRARY(elle
   utility/Factory.cc
   utility/HTTP.cc
   utility/Parser.cc
-  utility/REST.cc
   utility/Settings.cc
   utility/Time.cc
 

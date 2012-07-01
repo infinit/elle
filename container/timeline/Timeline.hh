@@ -2,6 +2,7 @@
 # define ELLE_CONTAINER_TIMELINE_TIMELINE_HH
 
 # include <elle/types.hh>
+
 # include <elle/radix/Entity.hh>
 
 # include <elle/utility/Time.hh>
@@ -24,10 +25,6 @@ namespace elle
     ///
     namespace timeline
     {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
       ///
       /// this container makes it easy to store objects according to a
@@ -79,10 +76,6 @@ namespace elle
     }
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/container/timeline/Timeline.hxx>
 

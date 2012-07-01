@@ -1,44 +1,21 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon apr 26 21:04:49 2010]
-//
-
 #ifndef ELLE_RADIX_TRACE_HH
-#define ELLE_RADIX_TRACE_HH
+# define ELLE_RADIX_TRACE_HH
 
-#include <elle/system/Platform.hh>
+# include <elle/system/Platform.hh>
 
-#if defined(INFINIT_LINUX)
-//
-// ---------- includes --------------------------------------------------------
-//
+# if defined(INFINIT_LINUX)
 
-#include <elle/types.hh>
-
-#include <elle/io/Dumpable.hh>
-
-#include <elle/idiom/Close.hh>
-# include <cxxabi.h>
-# include <execinfo.h>
-#include <elle/idiom/Open.hh>
+#  include <elle/types.hh>
+#  include <elle/io/Dumpable.hh>
+#  include <elle/idiom/Close.hh>
+#   include <cxxabi.h>
+#   include <execinfo.h>
+#  include <elle/idiom/Open.hh>
 
 namespace elle
 {
-  using namespace system;
-
-  using namespace io;
-
   namespace radix
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a trace i.e a sequence of function calls
@@ -107,6 +84,6 @@ namespace elle
   }
 }
 
-#endif
+# endif
 
 #endif

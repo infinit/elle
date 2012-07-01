@@ -12,6 +12,7 @@
 namespace reactor
 {
   class Exception;
+  class Mutex;
   class Operation;
   class Scheduler;
   class Signal;

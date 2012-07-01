@@ -3,19 +3,19 @@
 
 # include <elle/log.hh>
 
-# include <elle/network/Bundle.hh>
 # include <elle/network/Inputs.hh>
-# include <elle/network/Session.hh>
 # include <elle/network/TCPSocket.hh>
+# include <elle/network/Locus.hh>
+
 # include <elle/radix/Arguments.hh>
 # include <elle/radix/Variables.hh>
+
 # include <elle/serialize/BufferArchive.hh>
+
 # include <elle/standalone/Report.hh>
 
 namespace elle
 {
-  using namespace standalone;
-
   namespace network
   {
 
@@ -30,15 +30,15 @@ namespace elle
     template <const Tag I,
               const Tag O,
               const Tag E>
-    Procedure<I, O, E>::Procedure(const Callback<
+    Procedure<I, O, E>::Procedure(const concurrency::Callback<
                                     Status,
                                     R
                                     >                           routine,
-                                  const Callback<
+                                  const concurrency::Callback<
                                     Status,
                                     Parameters<>
                                     >                           prolog,
-                                  const Callback<
+                                  const concurrency::Callback<
                                     Status,
                                     Parameters<>
                                     >                           epilog):
@@ -106,7 +106,7 @@ namespace elle
       elle::serialize::InputBufferArchive archive(*parcel.data);
       ProcedureSkeletonExtractor extractor(archive);
 
-      Callback<
+      concurrency::Callback<
           Status,
           typename Trait::Reference<
               typename Message<I>::P
@@ -257,21 +257,21 @@ namespace elle
       std::cout << alignment << "[Procedure]" << std::endl;
 
       // dump the routine.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[Routine]" << std::endl;
 
       if (this->routine.Dump(margin + 2) == Status::Error)
         escape("unable to dump the callback");
 
       // dump the callback.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[Prolog]" << std::endl;
 
       if (this->prolog.Dump(margin + 2) == Status::Error)
         escape("unable to dump the callback");
 
       // dump the epilog.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[Epilog]" << std::endl;
 
       if (this->epilog.Dump(margin + 2) == Status::Error)
