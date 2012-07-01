@@ -1,26 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon oct 29 13:26:52 2007]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/cryptography/OneWay.hh>
-#include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
 #include <elle/idiom/Close.hh>
 # include <openssl/evp.h>
 # include <openssl/err.h>
 #include <elle/idiom/Open.hh>
-
 
 namespace elle
 {

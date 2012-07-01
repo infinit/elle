@@ -9,6 +9,7 @@
 
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
 
 #include <reactor/backtrace.hh>
 
@@ -151,7 +152,7 @@ namespace reactor
     unsigned i = 0;
     // Visual expects a float ... don't ask.
     const size_t width = std::log10(float(bt.size())) + 1;
-    foreach (const Backtrace::Frame& f, bt)
+    BOOST_FOREACH (const Backtrace::Frame& f, bt)
       {
         boost::format fmt("#%-" + boost::lexical_cast<std::string>(width) + "d %s\n");
         out << (fmt % i++ % f);

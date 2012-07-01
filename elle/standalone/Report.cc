@@ -1,7 +1,6 @@
 #include <elle/concurrency/Scheduler.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Region.hh>
-#include <elle/standalone/Maid.hh>
 
 #include <elle/concurrency/Callback.hh>
 #include <elle/concurrency/Program.hh>
@@ -314,7 +313,11 @@ namespace elle
 
       // recycle the report.
       if (this->Recycle(&element) == Status::Error)
-        yield(*this, "unable to recycle the report");
+        {
+          log("unable to recycle the object");
+
+          return (*this);
+        }
 
       return (*this);
     }

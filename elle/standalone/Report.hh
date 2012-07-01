@@ -2,7 +2,6 @@
 # define ELLE_STANDALONE_REPORT_HH
 
 # include <elle/io/Dumpable.hh>
-# include <elle/concurrency/Phase.hh>
 # include <elle/radix/Meta.hh>
 # include <elle/types.hh>
 
@@ -24,7 +23,6 @@ namespace elle
 
   using namespace radix;
   using namespace io;
-  using namespace concurrency;
 
   namespace standalone
   {

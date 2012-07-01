@@ -1,16 +1,10 @@
 #ifndef ELLE_CRYPTOGRAPHY_PRIVATEKEY_HXX
 # define ELLE_CRYPTOGRAPHY_PRIVATEKEY_HXX
 
-# include <elle/cryptography/Digest.hh>
-
-# include <elle/standalone/Maid.hh>
 # include <elle/standalone/Report.hh>
 
 # include <elle/utility/Buffer.hh>
 # include <elle/serialize/BufferArchive.hh>
-
-//# include <elle/cryptography/Code.hh>
-# include <elle/standalone/Region.hh>
 
 # include <elle/idiom/Open.hh>
 

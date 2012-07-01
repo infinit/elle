@@ -5,7 +5,6 @@
 #include <elle/concurrency/Program.hh>
 #include <elle/concurrency/Scheduler.hh>
 
-#include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
 #include <elle/idiom/Close.hh>

@@ -2,7 +2,6 @@
 # define ELLE_LOG_HXX
 
 # include <elle/printf.hh>
-# include <elle/log.hh>
 
 namespace elle
 {

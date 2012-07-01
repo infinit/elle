@@ -19,7 +19,6 @@ ADD_LIBRARY(elle
   IOStream.cc
 
   standalone/Log.cc
-  standalone/Maid.cc
   standalone/Morgue.cc
   standalone/Region.cc
   standalone/Report.cc
@@ -44,9 +43,7 @@ ADD_LIBRARY(elle
 
   types.cc
 
-  concurrency/Environment.cc
   concurrency/Event.cc
-  concurrency/Frame.cc
   concurrency/Program.cc
   concurrency/Routine.cc
   concurrency/Scheduler.cc

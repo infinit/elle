@@ -1,13 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun feb 22 19:43:33 2009]
-//
-
 #ifndef ELLE_RADIX_OBJECT_HH
 #define ELLE_RADIX_OBJECT_HH
 
@@ -18,8 +8,6 @@
 #include <elle/types.hh>
 
 #include <elle/radix/Meta.hh>
-
-#include <elle/concurrency/Resource.hh>
 
 namespace elle
 {
@@ -39,11 +27,8 @@ namespace elle
     /// assignment, which can be recycled but also compared. in addition,
     /// an object can be serialized hence stored offline such as in a file.
     ///
-    /// note that an object implicitly acts as a concurrency control resource.
-    ///
     class Object:
-      public Meta,
-      public elle::concurrency::Resource
+      public Meta
     {
     public:
       //

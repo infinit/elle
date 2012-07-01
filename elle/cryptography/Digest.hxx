@@ -1,9 +1,7 @@
-#ifndef  ELLE_CRYPTOGRAPHY_DIGEST_HXX
+#ifndef ELLE_CRYPTOGRAPHY_DIGEST_HXX
 # define ELLE_CRYPTOGRAPHY_DIGEST_HXX
 
 # include <cassert>
-
-# include <elle/standalone/Region.hh>
 
 # include <elle/cryptography/Digest.hh>
 

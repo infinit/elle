@@ -5,7 +5,6 @@
 
 # include <elle/radix/Entity.hh>
 
-# include <elle/concurrency/Phase.hh>
 # include <elle/concurrency/Event.hh>
 
 # include <elle/network/Locus.hh>
@@ -16,7 +15,6 @@
 
 namespace elle
 {
-
   using namespace radix;
   using namespace concurrency;
 

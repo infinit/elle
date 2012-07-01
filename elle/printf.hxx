@@ -1,15 +1,13 @@
 #ifndef  ELLE_PRINTF_HXX
 # define ELLE_PRINTF_HXX
 
-# include <cstddef> // size_t
-# include <iostream>
-# include <sstream>
-# include <typeinfo>
-# include <type_traits> // remove_cv, remove_reference
-
-# include <boost/format.hpp>
-
-# include <elle/printf.hh>
+# include <elle/idiom/Close.hh>
+#  include <cstddef>
+#  include <iostream>
+#  include <sstream>
+#  include <typeinfo>
+#  include <type_traits>
+#  include <boost/format.hpp>
 
 namespace elle
 {

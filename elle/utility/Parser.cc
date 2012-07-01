@@ -14,7 +14,6 @@
 
 #include <elle/utility/Parser.hh>
 
-#include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
 namespace elle

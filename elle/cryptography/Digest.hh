@@ -51,10 +51,6 @@ namespace elle
       // dumpable
       Status            Dump(const Natural32 = 0) const;
 
-      // archivable
-      //Status            Serialize(Archive&) const;
-      //Status            Extract(Archive&);
-
       //
       // attributes
       //
@@ -64,7 +60,6 @@ namespace elle
   }
 }
 
-# include <elle/idiom/Close.hh>
+#include <elle/cryptography/Digest.hxx>
 
 #endif
-#include <elle/cryptography/Digest.hxx>

@@ -1,6 +1,5 @@
 # include <elle/standalone/Region.hh>
 
-# include <elle/standalone/Maid.hh>
 # include <elle/standalone/Report.hh>
 # include <elle/standalone/Log.hh>
 
@@ -489,8 +488,11 @@ namespace elle
 
       // recycle the region.
       if (this->Recycle(&element) == Status::Error)
-        yield(*this, "unable to recycle the region");
+        {
+          log("unable to recycle the object");
 
+          return (*this);
+        }
       return (*this);
     }
 

@@ -1,12 +1,10 @@
 #ifndef  ELLE_CRYPTOGRAPHY_SECRETKEY_HXX
 # define ELLE_CRYPTOGRAPHY_SECRETKEY_HXX
 
-# include <elle/standalone/Maid.hh>
 # include <elle/standalone/Report.hh>
 
 # include <elle/utility/Buffer.hh>
 # include <elle/serialize/BufferArchive.hh>
-# include <elle/cryptography/Plain.hh>
 
 # include <elle/idiom/Open.hh>
 
@@ -72,7 +70,6 @@ namespace elle
 # include <elle/idiom/Open.hh>
 
 # include <elle/serialize/ArchiveSerializer.hxx>
-# include <elle/standalone/Region.hh>
 
 # include <elle/cryptography/SecretKey.hh>
 

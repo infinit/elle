@@ -1,4 +1,3 @@
-
 #include <elle/standalone/Standalone.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Log.hh>

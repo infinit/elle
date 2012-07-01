@@ -16,7 +16,6 @@
 //
 
 #include <elle/standalone/Report.hh>
-#include <elle/standalone/Maid.hh>
 
 namespace elle
 {
