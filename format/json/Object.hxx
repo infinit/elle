@@ -60,6 +60,7 @@ namespace elle { namespace format { namespace json {
               std::is_arithmetic<T>::value
           ||  std::is_same<T, std::string>::value
           ||  std::is_same<T, bool>::value
+          ||  detail::IsArray<T>::value
         );
       };
 

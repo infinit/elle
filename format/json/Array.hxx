@@ -27,6 +27,18 @@ namespace elle { namespace format { namespace json {
         _value.push_back(Object::Factory::Construct(value).release());
       }
 
+    // XXX should be "sequence" convertible, not just list
+    template<typename T>
+    Array::operator std::list<T>() const
+    {
+      std::list<T> result;
+      for (Object* obj : _value)
+      {
+        result.push_back(obj->as<T>());
+      }
+
+    }
+
 }}}
 
 #endif
