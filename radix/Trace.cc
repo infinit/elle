@@ -199,7 +199,7 @@ namespace elle
     ///
     Status              Trace::Initialize()
     {
-      Path              path;
+      io::Path              path;
 
       // create the location.
       ::sprintf(Trace::Location, "/tmp/XXXXXX");
@@ -215,16 +215,16 @@ namespace elle
         escape("unable to create the path");
 
       // if the directory exists.
-      if (Directory::Exist(path) == Status::True)
+      if (io::Directory::Exist(path) == Status::True)
         {
           // clear the directory.
-          if (Directory::Clear(path) == Status::Error)
+          if (io::Directory::Clear(path) == Status::Error)
             escape("unable to clear the directory");
         }
       else
         {
           // create the directory.
-          if (Directory::Create(path) == Status::Error)
+          if (io::Directory::Create(path) == Status::Error)
             escape("unable to create the directory");
         }
 
@@ -236,21 +236,21 @@ namespace elle
     ///
     Status              Trace::Clean()
     {
-      Path              path;
+      io::Path              path;
 
       // create the path.
       if (path.Create(Trace::Location) == Status::Error)
         escape("unable to create the path");
 
       // if the directory exists.
-      if (Directory::Exist(path) == Status::True)
+      if (io::Directory::Exist(path) == Status::True)
         {
           // clear the directory.
-          if (Directory::Clear(path) == Status::Error)
+          if (io::Directory::Clear(path) == Status::Error)
             escape("unable to clear the directory");
 
           // remove the directory.
-          if (Directory::Remove(path) == Status::Error)
+          if (io::Directory::Remove(path) == Status::Error)
             escape("unable to remove the directory");
         }
 
