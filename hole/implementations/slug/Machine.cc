@@ -1,17 +1,10 @@
-#include <elle/log.hh>
+#include <reactor/network/exception.hh>
+#include <reactor/network/tcp-server.hh>
+
 #include <elle/utility/Buffer.hh>
 #include <elle/network/Header.hh>
 #include <elle/network/Bundle.hh>
 #include <elle/standalone/Report.hh>
-#include <elle/network/Network.hh>
-#include <elle/network/Inputs.hh>
-#include <elle/network/Outputs.hh>
-#include <elle/standalone/Morgue.hh>
-#include <elle/network/TCPSocket.hh>
-#include <elle/concurrency/Callback.hh>
-
-#include <reactor/network/exception.hh>
-#include <reactor/network/tcp-server.hh>
 
 #include <lune/Passport.hh>
 
@@ -21,11 +14,20 @@
 
 #include <hole/implementations/slug/Cluster.hh>
 
+#include <elle/network/Network.hh>
+#include <elle/network/Inputs.hh>
+#include <elle/network/Outputs.hh>
+
+#include <elle/standalone/Morgue.hh>
+
+#include <elle/network/TCPSocket.hh>
 #include <hole/Hole.hh>
 #include <hole/implementations/slug/Machine.hh>
 #include <hole/implementations/slug/Manifest.hh>
 
 #include <Infinit.hh>
+
+#include <elle/log.hh>
 
 ELLE_LOG_TRACE_COMPONENT("Infinit.Hole.Slug.Machine");
 
@@ -191,6 +193,7 @@ namespace hole
             escape("unable to create the locus");
 
           _server->listen(locus.port);
+          short port = _server->local_endpoint().port();
           new reactor::Thread(elle::concurrency::scheduler(),
                               "Slug accept",
                               boost::bind(&Machine::_accept, this),
@@ -1121,9 +1124,8 @@ namespace hole
 
                   // subscribe to the signal.
                   if (host->signal.dead.Subscribe(
-                        elle::concurrency::Callback<>::Infer(
-                          &Machine::Sweep,
-                          this)) == elle::Status::Error)
+                        elle::concurrency::Callback<>::Infer(&Machine::Sweep,
+                                                this)) == elle::Status::Error)
                     throw std::runtime_error("unable to subscribe to the signal");
 
                   // add the host to the guestlist for now until it
@@ -1271,9 +1273,8 @@ namespace hole
 
               // subscribe to the signal.
               if (host->signal.dead.Subscribe(
-                    elle::concurrency::Callback<>::Infer(
-                      &Machine::Sweep,
-                      this)) == elle::Status::Error)
+                    elle::concurrency::Callback<>::Infer(&Machine::Sweep,
+                                            this)) == elle::Status::Error)
                 escape("unable to subscribe to the signal");
 
               // add the host to the guestlist.

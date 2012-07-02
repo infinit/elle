@@ -2,6 +2,7 @@
 
 #include <elle/print.hh>
 #include <elle/serialize/JSONArchive.hh>
+#include <elle/format/json/Dictionary.hxx>
 #include <elle/serialize/ListSerializer.hxx>
 
 #include "Client.hh"

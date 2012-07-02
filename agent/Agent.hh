@@ -53,6 +53,7 @@ namespace agent
     //
     static lune::Identity       Identity;
     static nucleus::Subject     Subject;
+    static elle::String         meta_token;
   };
 
 }

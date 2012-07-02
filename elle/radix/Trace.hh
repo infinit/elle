@@ -32,7 +32,7 @@ namespace elle
     ///           because it makes use of /tmp/XXXXXX
     ///
     class Trace:
-      public virtual Dumpable
+      public io::Dumpable
     {
     public:
       //

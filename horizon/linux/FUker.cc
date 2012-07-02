@@ -268,7 +268,7 @@ namespace horizon
         case hole::Hole::StateOffline:
           {
             if (hole::Hole::ready.Subscribe(
-                  elle::Callback<>::Infer(&FUker::Run)) == elle::Status::Error)
+                  elle::concurrency::Callback<>::Infer(&FUker::Run)) == elle::Status::Error)
               escape("unable to subscribe to the signal");
 
             break;
