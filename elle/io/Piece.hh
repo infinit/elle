@@ -4,25 +4,19 @@
 # include <elle/types.hh>
 
 # include <elle/radix/Object.hh>
+
 # include <elle/idiom/Open.hh>
 
 namespace elle
 {
-
-  using namespace radix;
-
   namespace io
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a variable piece of a pattern-based path.
     ///
     class Piece:
-      public Object
+      public radix::Object
     {
     public:
       //
@@ -42,8 +36,6 @@ namespace elle
 
       // dumpable
       Status            Dump(const Natural32 = 0) const;
-
-      // archivable: nothing
 
       //
       // attributes

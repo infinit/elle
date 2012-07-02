@@ -264,7 +264,7 @@ namespace hole
             // show the report.
             show();
 
-            elle::Program::Exit();
+            elle::concurrency::Program::Exit();
           }
 
         return elle::Status::Ok;

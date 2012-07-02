@@ -1,6 +1,5 @@
 #include <elle/cryptography/Digest.hh>
 
-#include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Log.hh>
 
@@ -89,34 +88,6 @@ namespace elle
 
       return Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes a digest object.
-    ///
-    //Status              Digest::Serialize(Archive&              archive) const
-    //{
-    //  // serialize the region.
-    //  if (archive.Serialize(this->region) == Status::Error)
-    //    escape("unable to serialize the region");
-
-    //  return Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts a digest object.
-    /////
-    //Status              Digest::Extract(Archive&                archive)
-    //{
-    //  // extract the content.
-    //  if (archive.Extract(this->region) == Status::Error)
-    //    escape("unable to extract the region");
-
-    //  return Status::Ok;
-    //}
 
   }
 }

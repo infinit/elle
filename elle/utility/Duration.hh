@@ -7,9 +7,6 @@
 
 namespace elle
 {
-
-  using namespace radix;
-
   namespace utility
   {
 
@@ -22,7 +19,7 @@ namespace elle
     /// with the Time class to go forward and backward in time for instance.
     ///
     class Duration:
-      public Object
+      public radix::Object
     {
     public:
       //
@@ -59,10 +56,6 @@ namespace elle
       // dumpable
       Status            Dump(const Natural32 = 0) const;
 
-      // archivable
-      //Status            Serialize(Archive&) const;
-      //Status            Extract(Archive&);
-
       //
       // attributes
       //
@@ -73,5 +66,6 @@ namespace elle
   }
 }
 
-#endif
 #include <elle/utility/Duration.hxx>
+
+#endif

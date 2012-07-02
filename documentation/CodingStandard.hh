@@ -308,6 +308,9 @@ namespace package
 /*
  * Every header file must automatically include its template-specific
  * header file.
+ *
+ * Note that the .hxx is included within the guarded section i.e
+ * #ifndef ... #endif.
  */
 # include <package/module/CodingStandard.hxx>
 

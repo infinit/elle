@@ -1,6 +1,5 @@
 #include <elle/cryptography/Cipher.hh>
 
-#include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Log.hh>
 

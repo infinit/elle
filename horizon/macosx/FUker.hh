@@ -1,27 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       horizon
-//
-// license       infinit
-//
-// author        julien quintard   [tue jul 26 15:28:37 2011]
-//
-
 #ifndef HORIZON_MACOSX_FUKER_HH
 #define HORIZON_MACOSX_FUKER_HH
-
-//
-// ---------- macros ----------------------------------------------------------
-//
 
 #ifndef FUSE_USE_VERSION
 # define FUSE_USE_VERSION               26
 #endif
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <elle/types.hh>
 
@@ -31,16 +13,13 @@
 # if defined(HAVE_SETXATTR)
 #  include <sys/xattr.h>
 # endif
+# include <pthread.h>
 #include <elle/idiom/Open.hh>
 
 namespace horizon
 {
   namespace macosx
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class abstracts the notion of FUSE-Broker i.e FUker.
@@ -56,8 +35,7 @@ namespace horizon
     /// thread to resume and terminate by returning to the kernel the
     /// result of the operation.
     ///
-    class FUker:
-      public elle::radix::Entity
+    class FUker
     {
     public:
       //

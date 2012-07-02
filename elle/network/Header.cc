@@ -1,10 +1,9 @@
-
-#include <iostream>
+#include <elle/network/Header.hh>
 
 #include <elle/standalone/Log.hh>
 #include <elle/standalone/Report.hh>
 
-#include <elle/network/Header.hh>
+#include <iostream>
 
 namespace elle
 {
@@ -41,7 +40,7 @@ namespace elle
     ///
     /// this method initialises the tag and size.
     ///
-    Status              Header::Create(const Event&             event,
+    Status              Header::Create(const concurrency::Event& event,
                                        const Tag                tag,
                                        const Natural32          size)
     {
@@ -80,52 +79,15 @@ namespace elle
         escape("unable to dump the event");
 
       // dump the tag.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[Tag] " << this->tag << std::endl;
 
       // dump the size.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[Size] " << this->size << std::endl;
 
       return Status::Ok;
     }
-
-    ///
-    /// this method serializes the name, size and tag.
-    ///
-    //Status              Header::Serialize(Archive&              archive) const
-    //{
-    //  // serialize the attributes.
-    //  if (archive.Serialize(Header::Name,
-    //                        this->event,
-    //                        this->tag,
-    //                        this->size) == Status::Error)
-    //    escape("unable to serialize the header attributes");
-
-    //  return Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the name, size and tag.
-    /////
-    //Status              Header::Extract(Archive&                archive)
-    //{
-    //  String            name;
-
-    //  // extract the attributes.
-    //  if (archive.Extract(name,
-    //                      this->event,
-    //                      this->tag,
-    //                      this->size) == Status::Error)
-    //    escape("unable to extract the header attributes");
-
-    //  // verify the name.
-    //  if (Header::Name != name)
-    //    escape("incorrect name event");
-
-    //  return Status::Ok;
-
-    //}
 
   }
 }

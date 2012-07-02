@@ -1,8 +1,8 @@
-
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/Digest.hh>
 #include <elle/cryptography/OneWay.hh>
 #include <elle/cryptography/Random.hh>
+#include <elle/cryptography/Cipher.hh>
 
 #include <elle/standalone/Log.hh>
 #include <elle/idiom/Open.hh>
@@ -328,34 +328,6 @@ namespace elle
 
       return Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes a secret key object.
-    ///
-    //Status              SecretKey::Serialize(Archive&           archive) const
-    //{
-    //  // serialize the internal key.
-    //  if (archive.Serialize(this->region) == Status::Error)
-    //    escape("unable to serialize the internal key");
-
-    //  return Status::Ok;
-    //}
-
-    /////
-    ///// this method extract a secret key from the given archive.
-    /////
-    //Status              SecretKey::Extract(Archive&             archive)
-    //{
-    //  // extract the key.
-    //  if (archive.Extract(this->region) == Status::Error)
-    //    escape("unable to extract the internal key");
-
-    //  return Status::Ok;
-    //}
 
   }
 }

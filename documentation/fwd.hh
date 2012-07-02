@@ -5,6 +5,14 @@
  * up the compilation process.
  */
 
+#ifndef PACKAGE_MODULE_FWD_HH
+# define PACKAGE_MODULE_FWD_HH
+
+/*
+ * first files defining type aliases (i.e typedefs) are included.
+ */
+# include <package/module/SimpleType.hh>
+
 namespace package
 {
   namespace module
@@ -15,3 +23,5 @@ namespace package
 
   }
 }
+
+#endif

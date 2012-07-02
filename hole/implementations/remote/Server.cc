@@ -1,18 +1,20 @@
 #include <elle/log.hh>
-
-#include <reactor/network/tcp-server.hh>
-
 #include <elle/network/Network.hh>
 #include <elle/network/Bundle.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/utility/Buffer.hh>
 #include <elle/network/Header.hh>
 #include <elle/standalone/Morgue.hh>
+#include <elle/concurrency/Callback.hh>
+
+#include <reactor/network/tcp-server.hh>
+
 #include <nucleus/proton/Block.hh>
 
 #include <hole/Hole.hh>
 #include <hole/implementations/remote/Manifest.hh>
 #include <hole/implementations/remote/Server.hh>
+
 #include <lune/Lune.hh>
 
 #include <Infinit.hh>
@@ -84,7 +86,7 @@ namespace hole
                 elle::network::Procedure<TagPush,
                                          elle::TagNone,
                                          elle::TagError>(
-                  elle::Callback<>::Infer(
+                  elle::concurrency::Callback<>::Infer(
                     &Server::Push, this))) == elle::Status::Error)
             escape("unable to register the callback");
 
@@ -130,7 +132,7 @@ namespace hole
 
             // subscribe to the signal.
             if (customer->signal.dead.Subscribe(
-                  elle::Callback<>::Infer(
+                  elle::concurrency::Callback<>::Infer(
                     &Server::Sweep, this
                     )
                   ) == elle::Status::Error)

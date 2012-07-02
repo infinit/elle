@@ -223,7 +223,7 @@ namespace satellite
       throw std::runtime_error("unable to initialize Elle");
 
     // set up the program.
-    if (elle::Program::Setup() == elle::Status::Error)
+    if (elle::concurrency::Program::Setup() == elle::Status::Error)
       throw std::runtime_error("unable to set up the program");
 
     // initialize the nucleus library.

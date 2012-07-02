@@ -1,30 +1,14 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed feb 24 08:03:32 2010]
-//
-
 #ifndef ELLE_RADIX_ARGUMENTS_HH
 #define ELLE_RADIX_ARGUMENTS_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/radix/Parameters.hh>
+
+// XXX[class to delete]
 
 namespace elle
 {
   namespace radix
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class wraps a set of arguments and provides methods, i.e

@@ -1,20 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [fri oct 16 05:24:44 2009]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/network/Host.hh>
 
-#include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Log.hh>
 
@@ -226,46 +211,6 @@ namespace elle
     embed(Host, _());
 
 //
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the host.
-    ///
-    //Status              Host::Serialize(Archive&                archive) const
-    //{
-    //  String            host(this->location.toString().toStdString());
-
-    //  // serialize the host and port.
-    //  if (archive.Serialize(static_cast<Natural8>(this->type),
-    //                        host) == Status::Error)
-    //    escape("unable to serialize the host");
-
-    //  return Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts a host.
-    /////
-    //Status              Host::Extract(Archive&                  archive)
-    //{
-    //  Natural8          type;
-    //  String            host;
-
-    //  // extract the host.
-    //  if (archive.Extract(type, host) == Status::Error)
-    //    escape("unable to extract the host");
-
-    //  // set the type.
-    //  this->type = static_cast<Host::Type>(type);
-
-    //  // set the location.
-    //  this->location.setAddress(host.c_str());
-
-    //  return Status::Ok;
-    //}
-
-//
 // ---------- dumpable --------------------------------------------------------
 //
 
@@ -277,11 +222,11 @@ namespace elle
       String            alignment(margin, ' ');
 
       std::cout << alignment << "[Host]" << std::endl;
-
-      std::cout << alignment << Dumpable::Shift << "[Type] "
+ 
+      std::cout << alignment << io::Dumpable::Shift << "[Type] "
                 << this->type << std::endl;
 
-      std::cout << alignment << Dumpable::Shift << "[Location] "
+      std::cout << alignment << io::Dumpable::Shift << "[Location] "
                 << this->location.toString().toStdString() << std::endl;
 
       return Status::Ok;

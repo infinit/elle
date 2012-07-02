@@ -1,23 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon apr 26 20:08:34 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/system/Platform.hh>
 
 #include <elle/radix/Meta.hh>
 
 #include <elle/standalone/Report.hh>
-#include <elle/standalone/Maid.hh>
 #include <elle/standalone/Log.hh>
 
 #include <elle/io/Path.hh>
@@ -26,11 +11,6 @@
 
 namespace elle
 {
-  using namespace system;
-
-  using namespace standalone;
-  using namespace io;
-
   namespace radix
   {
 

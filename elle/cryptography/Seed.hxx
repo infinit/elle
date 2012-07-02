@@ -4,7 +4,6 @@
 # include <cassert>
 
 # include <elle/serialize/ArchiveSerializer.hxx>
-# include <elle/standalone/Region.hh>
 
 # include <elle/cryptography/Seed.hh>
 

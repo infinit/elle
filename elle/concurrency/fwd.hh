@@ -10,14 +10,11 @@ namespace elle
     class Callback;
     template <typename... T>
     class Closure;
-    class Environment;
     class Event;
-    class Frame;
     template <typename... T>
     class Function;
     template <typename... T>
     class Method;
-    class Resource;
     class Routine;
     template <typename... T>
     class Section;

@@ -2,9 +2,10 @@
 
 #include <elle/types.hh>
 
-#include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Log.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -54,7 +55,7 @@ namespace elle
       std::cout << alignment << "[Routine]" << std::endl;
 
       // dump the scheme.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[Scheme] " << this->scheme << std::endl;
 
       return Status::Ok;

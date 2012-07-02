@@ -1,14 +1,14 @@
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include <elle/log.hh>
-
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/socket.hh>
 #include <reactor/network/socket-operation.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
+
+#include <elle/log.hh>
 
 ELLE_LOG_TRACE_COMPONENT("Reactor.Socket");
 

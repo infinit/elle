@@ -3,6 +3,8 @@
 
 # include <reactor/scheduler.hh>
 
+// XXX[revoir ce fichier?]
+
 namespace elle
 {
   namespace concurrency

@@ -3,6 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/cryptography/PrivateKey.hh>
+# include <elle/cryptography/Signature.hh>
 
 # include <nucleus/proton/Location.hh>
 

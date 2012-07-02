@@ -3,7 +3,6 @@
 
 # include <elle/types.hh>
 
-# include <elle/standalone/Maid.hh>
 # include <elle/standalone/Report.hh>
 
 # include <elle/radix/Entity.hh>
@@ -13,10 +12,8 @@
 
 namespace elle
 {
-
   using namespace standalone;
   using namespace radix;
-  using namespace concurrency;
 
   namespace radix
   {

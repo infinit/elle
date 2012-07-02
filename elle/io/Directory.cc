@@ -1,23 +1,18 @@
-
 #include <elle/io/Directory.hh>
 #include <elle/io/File.hh>
 #include <elle/io/Link.hh>
+#include <elle/io/Path.hh>
 
-#include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
 #include <elle/system/Platform.hh>
 #include <elle/system/System.hh>
 
-#include <vector>
-#include <sstream>
-#include <stdexcept>
-
 #include <elle/idiom/Close.hh>
-
+# include <sstream>
+# include <stdexcept>
 # include <boost/noncopyable.hpp>
 # include <QDir>
-
 # include <sys/stat.h>
 # include <unistd.h>
 # include <fcntl.h>
@@ -26,6 +21,7 @@
 # include <dirent.h>
 #include <elle/idiom/Open.hh>
 
+// XXX[to rework completely]
 namespace // usefull classes
 {
 
@@ -132,6 +128,7 @@ namespace elle
 
       return Status::Ok;
 
+      // XXX
 #if 0
       // does the directory already exist.
       if (Directory::Exist(path) == Status::True)
@@ -203,6 +200,7 @@ namespace elle
 
       return Status::Ok;
 
+      // XXX
 #if 0
       String            target(::strdup(path.string.c_str()));
       String            directory(::dirname(

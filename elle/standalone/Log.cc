@@ -1,20 +1,4 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed jul 27 09:53:07 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/standalone/Log.hh>
-#include <elle/standalone/Region.hh>
-#include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
 #include <elle/idiom/Close.hh>

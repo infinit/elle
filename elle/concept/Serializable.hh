@@ -1,12 +1,12 @@
 #ifndef  ELLE_CONCEPT_SERIALIZABLE_HH
 # define ELLE_CONCEPT_SERIALIZABLE_HH
 
-# include <string>
-# include <typeinfo>
+# include <elle/log.hh>
+# include <elle/serialize/fwd.hh>
 
 # include <elle/idiom/Close.hh>
-#  include <elle/log.hh>
-#  include <elle/serialize/fwd.hh>
+#  include <string>
+#  include <typeinfo>
 # include <elle/idiom/Open.hh>
 
 ///
@@ -93,8 +93,6 @@ namespace elle
         { InputArchive(in) >> static_cast<T&>(*this); }
     };
 
-
-
     /// Is T has Serializable<Archive> contract ?
     template<typename T, typename Archive> struct IsSerializable;
 
@@ -112,6 +110,7 @@ namespace elle
           elle::concept::Serializable<typename std::remove_cv<T>::type, Archive>
         , typename std::remove_cv<T>::type
       >::value == false*/;
+      // XXX
     };
 
     template<typename Archive> struct SerializableFor;
@@ -182,4 +181,3 @@ namespace elle
   /**/
 
 #endif
-

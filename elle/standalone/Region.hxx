@@ -1,13 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun may  2 12:28:06 2010]
-//
-
 #ifndef ELLE_STANDALONE_REGION_HXX
 #define ELLE_STANDALONE_REGION_HXX
 
@@ -40,7 +30,6 @@ namespace elle
           new (this) T(*object);
         }
 
-      // return Status::Ok in order to avoid including Report, Status and Maid.
       return Status::Ok;
     }
 

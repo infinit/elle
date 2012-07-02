@@ -1,18 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu jan 28 19:19:35 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/utility/Factory.hh>
+
+#include <elle/idiom/Close.hh>
+# include <iostream>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -77,7 +67,7 @@ namespace elle
            scoutor != this->container.end();
            scoutor++)
         {
-          std::cout << alignment << Dumpable::Shift
+          std::cout << alignment << io::Dumpable::Shift
                     << scoutor->first << std::endl;
         }
 

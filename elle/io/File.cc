@@ -1,40 +1,23 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu may 27 16:18:11 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/system/Platform.hh>
+#include <elle/system/System.hh>
 
 #include <elle/io/File.hh>
 #include <elle/io/Directory.hh>
+#include <elle/io/Path.hh>
 
-#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Region.hh>
 #include <elle/standalone/Report.hh>
 
-#include <elle/system/System.hh>
-
-#include <vector>
-#include <sstream>
-
 #include <elle/idiom/Close.hh>
+# include <vector>
+# include <sstream>
 # include <sys/stat.h>
 # include <unistd.h>
 # include <fcntl.h>
 # include <libgen.h>
-
 # if defined(INFINIT_WINDOWS)
 #  include <windows.h>
 # endif
-
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -53,7 +36,7 @@ namespace elle
     /// this method reads the given file's content.
     ///
     Status              File::Read(const Path&                  path,
-                                   Region&                      data)
+                                   standalone::Region& data)
     {
       struct ::stat     status;
       int               fd;
@@ -112,7 +95,7 @@ namespace elle
     /// this method writes the given data into the given file.
     ///
     Status              File::Write(const Path&                 path,
-                                    const Region&               data)
+                                    const standalone::Region& data)
     {
       int               fd;
       Natural32         woffset = 0;
@@ -160,7 +143,7 @@ namespace elle
     /// this method reads the given file's content.
     ///
     Status              File::Read(const Path&                  path,
-                                   Region&                      data)
+                                   standalone::Region& data)
     {
       struct ::stat     status;
       HANDLE            fd;
@@ -222,7 +205,7 @@ namespace elle
     /// this method writes the given data into the given file.
     ///
     Status              File::Write(const Path&                 path,
-                                    const Region&               data)
+                                    const standalone::Region& data)
     {
       HANDLE            fd;
       DWORD             woffset = 0;

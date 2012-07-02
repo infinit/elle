@@ -2,31 +2,22 @@
 # define ELLE_CONCURRENCY_EVENT_HH
 
 # include <elle/types.hh>
+
 # include <elle/serialize/fwd.hh>
+# include <elle/network/fwd.hh>
+
 # include <elle/radix/Object.hh>
 
 # include <elle/idiom/Close.hh>
-#  include <openssl/err.h>
 #  include <reactor/semaphore.hh>
 # include <elle/idiom/Open.hh>
 
 namespace elle
 {
-
   using namespace radix;
-
-  // XXX
-  namespace network
-  {
-    class Parcel;
-  }
 
   namespace concurrency
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class is used to uniquely identify events, network packets and
@@ -88,5 +79,6 @@ namespace elle
   }
 }
 
-#endif
 #include <elle/concurrency/Event.hxx>
+
+#endif

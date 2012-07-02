@@ -12,10 +12,6 @@ namespace elle
   namespace radix
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// this class provides methods for managing the radix module.
     ///

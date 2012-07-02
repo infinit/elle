@@ -1,33 +1,21 @@
 #ifndef ELLE_STANDALONE_MORGUE_HH
 # define ELLE_STANDALONE_MORGUE_HH
 
-# include <elle/idiom/Close.hh>
-#  include <list>
-# include <elle/idiom/Open.hh>
-
-# include <elle/idiom/Close.hh>
-#  include <reactor/signal.hh>
-#  include <reactor/thread.hh>
-# include <elle/idiom/Open.hh>
-#include <elle/types.hh>
-
-
 # include <elle/types.hh>
 
 # include <elle/radix/Entity.hh>
 # include <elle/radix/Meta.hh>
 
+# include <elle/idiom/Close.hh>
+#  include <list>
+#  include <reactor/signal.hh>
+#  include <reactor/thread.hh>
+# include <elle/idiom/Open.hh>
+
 namespace elle
 {
-
-  using namespace concurrency;
-
   namespace standalone
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// the morgue functionality provides a way for delaying the given
@@ -41,7 +29,7 @@ namespace elle
     /// as such operations may induce side effects.
     ///
     class Morgue:
-      public Entity
+      public radix::Entity
     {
     public:
       //
@@ -52,7 +40,7 @@ namespace elle
       //
       // types
       //
-      typedef std::list<Meta*>                          Container;
+      typedef std::list<radix::Meta*> Container;
       typedef typename Container::iterator              Iterator;
       typedef typename Container::const_iterator        Scoutor;
 
@@ -104,10 +92,6 @@ namespace elle
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/standalone/Morgue.hxx>
 

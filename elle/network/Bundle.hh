@@ -3,11 +3,9 @@
 
 # include <elle/radix/Entity.hh>
 # include <elle/radix/Arguments.hh>
-# include <elle/radix/Variables.hh>
 # include <elle/radix/Parameters.hh>
 
 # include <elle/network/Tag.hh>
-# include <elle/network/Message.hh>
 
 namespace elle
 {
@@ -60,10 +58,6 @@ namespace elle
         // interfaces
         //
 
-        // archivable
-        //Status          Serialize(Archive&) const;
-        //Status          Extract(Archive&);
-
         // dumpable
         Status          Dump(const Natural32 = 0) const;
 
@@ -109,10 +103,6 @@ namespace elle
         // interfaces
         //
 
-        // archivable
-        //Status          Serialize(Archive&) const;
-        //Status          Extract(Archive&);
-
         // dumpable
         Status          Dump(const Natural32 = 0) const;
 
@@ -127,10 +117,6 @@ namespace elle
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/network/Bundle.hxx>
 

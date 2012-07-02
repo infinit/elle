@@ -1,6 +1,8 @@
 #ifndef ELLE_IO_FWD_HH
 # define ELLE_IO_FWD_HH
 
+# include <elle/io/Unique.hh>
+
 namespace elle
 {
   namespace io

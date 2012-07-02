@@ -1,24 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu jan 28 18:56:42 2010]
-//
-
 #ifndef ELLE_UTILITY_FACTORY_HXX
-#define ELLE_UTILITY_FACTORY_HXX
+# define ELLE_UTILITY_FACTORY_HXX
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/standalone/Report.hh>
 
-#include <elle/standalone/Maid.hh>
-#include <elle/standalone/Report.hh>
-
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -42,7 +27,7 @@ namespace elle
     /// this method allocates a new object of the type of the functionoid.
     ///
     template <typename T>
-    Status      Factory::Generatoid<T>::Allocate(Meta*&         meta) const
+    Status      Factory::Generatoid<T>::Allocate(radix::Meta*& meta) const
     {
       // allocate the object.
       meta = new T;
@@ -69,7 +54,7 @@ namespace elle
 
       // insert the generator in the container.
       auto result = this->container.insert(
-        std::pair<const Product,Factory::Functionoid*>(identifier, generatoid)
+        std::pair<const Product, Factory::Functionoid*>(identifier, generatoid)
       );
 
       // check if the insertion was successful.

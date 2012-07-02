@@ -1,15 +1,15 @@
 #ifndef ELLE_SERIALIZE_BASEARCHIVE_HXX
 # define ELLE_SERIALIZE_BASEARCHIVE_HXX
 
-//XXX
-# include <iostream>
-
-# include <boost/detail/endian.hpp>
-
 # include <elle/concept/Serializable.hh>
 
 # include "BaseArchive.hh"
 # include "ArchiveSerializer.hxx"
+
+# include <elle/idiom/Close.hh>
+#  include <iostream>
+#  include <boost/detail/endian.hpp>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {

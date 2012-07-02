@@ -98,7 +98,4 @@ namespace elle {
 std::ostream& operator <<(std::ostream& out, elle::Large const& value);
 std::ostream& operator <<(std::ostream& out, elle::Null);
 
-#endif /* ! TYPES_HH */
-
-
-
+#endif

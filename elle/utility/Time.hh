@@ -1,29 +1,24 @@
 #ifndef ELLE_UTILITY_TIME_HH
 # define ELLE_UTILITY_TIME_HH
 
+# include <elle/system/Platform.hh>
+
 # include <elle/types.hh>
 
 # include <elle/radix/Object.hh>
 
-# include <elle/utility/Duration.hh>
-
-# include <elle/system/Platform.hh>
+# include <elle/utility/fwd.hh>
 
 # include <elle/idiom/Close.hh>
 #  include <QDateTime>
 #  include <ctime>
-
 #  if defined(INFINIT_WINDOWS)
 #   include <windows.h>
 #  endif
-
 # include <elle/idiom/Open.hh>
 
 namespace elle
 {
-
-  using namespace radix;
-
   namespace utility
   {
 
@@ -32,7 +27,7 @@ namespace elle
     /// since epoch.
     ///
     class Time:
-      public Object
+      public radix::Object
     {
     public:
       //
@@ -75,10 +70,6 @@ namespace elle
       // dumpable
       Status            Dump(const Natural32 = 0) const;
 
-      // archivable
-      //Status            Serialize(Archive&) const;
-      //Status            Extract(Archive&);
-
       //
       // attributes
       //
@@ -88,5 +79,6 @@ namespace elle
   }
 }
 
-#endif
 #include <elle/utility/Time.hxx>
+
+#endif

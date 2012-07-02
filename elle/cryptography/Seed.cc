@@ -1,4 +1,3 @@
-
 #include <iostream>
 
 #include <elle/cryptography/PrivateKey.hh>
@@ -148,34 +147,6 @@ namespace elle
 
       return Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes a seed object.
-    ///
-    //Status              Seed::Serialize(Archive&                archive) const
-    //{
-    //  // serialize the internal region.
-    //  if (archive.Serialize(this->region) == Status::Error)
-    //    escape("unable to serialize the internal region");
-
-    //  return Status::Ok;
-    //}
-
-    /////
-    ///// this method extract a seed from the given archive.
-    /////
-    //Status              Seed::Extract(Archive&                  archive)
-    //{
-    //  // extract the region.
-    //  if (archive.Extract(this->region) == Status::Error)
-    //    escape("unable to extract the internal region");
-
-    //  return Status::Ok;
-    //}
 
   }
 }

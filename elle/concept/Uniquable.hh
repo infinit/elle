@@ -1,11 +1,11 @@
-#ifndef  ELLE_CONCEPT_UNIQUABLE_HH
+#ifndef ELLE_CONCEPT_UNIQUABLE_HH
 # define ELLE_CONCEPT_UNIQUABLE_HH
 
 # include <elle/types.hh>
 
-# include <elle/concept/Serializable.hh>
-# include <elle/io/Unique.hh>
+# include <elle/io/fwd.hh>
 # include <elle/serialize/fwd.hh>
+# include <elle/concept/Serializable.hh>
 
 /// The unique default archive type is defined with this macros.
 # define ELLE_CONCEPT_UNIQUABLE_DEFAULT_ARCHIVE                               \

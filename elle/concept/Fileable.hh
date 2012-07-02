@@ -1,7 +1,6 @@
-#ifndef  ELLE_CONCEPT_FILEABLE_HH
+#ifndef ELLE_CONCEPT_FILEABLE_HH
 # define ELLE_CONCEPT_FILEABLE_HH
 
-///
 /// This module provides the 'Fileable' concept.
 /// Requirements:
 ///   - The class is serializable (XXX make doc on serializable concept)
@@ -36,14 +35,14 @@
 ///     : public elle::concept::Fileable<MyclassImplem>
 ///   {};
 /// ---------------------------------------------------------------------------
-///
 
-# include <string>
-# include <typeinfo>
-
+# include <elle/io/fwd.hh>
 # include <elle/concept/Serializable.hh>
-# include <elle/io/Path.hh>
-# include <elle/serialize/BinaryArchive.fwd.hh>
+
+# include <elle/idiom/Close.hh>
+#  include <string>
+#  include <typeinfo>
+# include <elle/idiom/Open.hh>
 
 # define ELLE_CONCEPT_FILEABLE_METHODS(...)                                   \
   using elle::concept::Fileable<__VA_ARGS__>::Store;                          \
@@ -69,8 +68,8 @@ namespace elle
       , Fileable<Archive>
     {};
 
-  } // !concept
-} // !elle
+  }
+}
 
 # include "Fileable.hxx"
 

@@ -1,9 +1,10 @@
-#ifndef  ELLE_UTILITY_BUFFERSTREAM_HH
+#ifndef ELLE_UTILITY_BUFFERSTREAM_HH
 # define ELLE_UTILITY_BUFFERSTREAM_HH
 
-# include <iosfwd>
 # include <elle/utility/fwd.hh>
 # include <elle/utility/Buffer.hh>
+
+# include <iosfwd>
 
 namespace elle
 {

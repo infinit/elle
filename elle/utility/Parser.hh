@@ -13,13 +13,8 @@
 
 namespace elle
 {
-
   namespace utility
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class wraps the command line parser by enabling one to define
@@ -27,7 +22,7 @@ namespace elle
     /// their type by operating an automatic conversion.
     ///
     class Parser:
-      public Entity
+      public radix::Entity
     {
     public:
       //
@@ -76,7 +71,7 @@ namespace elle
       // classes
       //
       class Option:
-        public Entity
+        public radix::Entity
       {
       public:
         //
@@ -179,20 +174,6 @@ namespace elle
                               const T);
       };
 
-      //template <typename T>
-      //struct            Behaviour<T, true>
-      //{
-      //  template <const Format F>
-      //  static Status   Value(Parser&,
-      //                        const String&,
-      //                        Uniquable<F>&);
-      //  template <const Format F>
-      //  static Status   Value(Parser&,
-      //                        const String&,
-      //                        Uniquable<F>&,
-      //                        const Uniquable<F>);
-      //};
-
       Void              Usage();
 
       //
@@ -219,10 +200,6 @@ namespace elle
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/utility/Parser.hxx>
 

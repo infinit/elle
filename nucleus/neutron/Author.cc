@@ -146,7 +146,7 @@ namespace nucleus
       std::cout << alignment << "[Author]" << std::endl;
 
       // dump the role.
-      std::cout << alignment << elle::Dumpable::Shift << "[Role] "
+      std::cout << alignment << elle::io::Dumpable::Shift << "[Role] "
                 << std::dec << this->role << std::endl;
 
       // depending on the role.
@@ -167,7 +167,7 @@ namespace nucleus
             //
 
             // dump the index.
-            std::cout << alignment << elle::Dumpable::Shift
+            std::cout << alignment << elle::io::Dumpable::Shift
                       << "[Index] " << std::dec << this->lord.index
                       << std::endl;
 

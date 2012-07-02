@@ -1,8 +1,9 @@
 #ifndef ELLE_CRYPTOGRAPHY_ONEWAY_HH
 # define ELLE_CRYPTOGRAPHY_ONEWAY_HH
 
-# include <elle/cryptography/Plain.hh>
-# include <elle/cryptography/Digest.hh>
+# include <elle/types.hh>
+
+# include <elle/cryptography/fwd.hh>
 
 namespace elle
 {
