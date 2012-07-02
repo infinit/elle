@@ -20,6 +20,12 @@ namespace reactor
     , _exception(0)
   {}
 
+  Waitable::Waitable(Waitable&& source)
+    : _name(source._name)
+    , _threads(std::move(source._threads))
+    , _exception(source._exception)
+  {}
+
   Waitable::~Waitable()
   {
     assert(_threads.empty());

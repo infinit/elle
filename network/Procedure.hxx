@@ -101,6 +101,7 @@ namespace elle
               const Tag E>
     Status              Procedure<I, O, E>::Skeleton(TCPSocket* socket,
                                                      Locus& locus,
+                                                     infinit::protocol::Stream& channel,
                                                      Parcel&   parcel) const
     {
       serialize::InputBufferArchive archive(*parcel.data);
@@ -162,7 +163,7 @@ namespace elle
       // call the routine.
       Context ctx;
       ctx.socket = socket;
-      ctx.parcel = &parcel;
+      ctx.channel = &channel;
       std::string host;
       if (locus.host.Convert(host) == Status::Error)
         escape("unable to convert the host name");
@@ -186,8 +187,7 @@ namespace elle
           standalone::Report& report = standalone::Report::report.Get();
 
           // reply with the report.
-          if (socket->Reply(Inputs<E>(report)) == Status::Error)
-            escape("unable to reply with the status");
+          socket->reply(Inputs<E>(report));
 
           // flush the report since it has been sent
           // to the sender.
@@ -217,9 +217,8 @@ namespace elle
             typename
               Message<O>::B::Inputs     bundle(outputs);
 
-            // reply with the output bundle.
-            if (socket->Reply(bundle) == Status::Error)
-              escape("unable to reply to the caller");
+            // Reply with the output bundle.
+            socket->reply(bundle);
 
             break;
           }
