@@ -30,10 +30,9 @@ class Device(Page):
     Create a new device
         POST /device {
             'name': 'pretty name', # required
-            'addresses': [
-                {'ip': 'ip address 1', 'port': 1912},
-                ...
-            ],
+            'local_ip': 'local ip address',
+            'local_port': 1912,
+            'extern_port': 343,
         }
             -> {
                 'success': True,
@@ -45,10 +44,9 @@ class Device(Page):
         POST /device {
             '_id': "id",
             'name': 'pretty name', # optional
-            'addresses': [ # optional
-                {'ip': 'ip address 1', 'port': 1912},
-                ...
-            ],
+            'local_ip': 'local ip address',
+            'local_port': 1912,
+            'extern_port': 343,
         }
             -> {
                 'success': True,
@@ -86,39 +84,24 @@ class Device(Page):
 
         return func(device)
 
-    def _parse_addresses(self, addresses):
-        parsed_addresses = []
-        for i, addr in enumerate(addresses):
-            ip = addr.get('ip', '').strip()
-            if not ip:
-                raise Exception(
-                    "address %d: You have to provide a valid IP" % i
-                )
-            port = int(addr.get('port', 0))
-            if not port:
-                raise Exception(
-                    "address %d: You have to provide a valid port" % i
-                )
-            parsed_addresses.append({'ip': ip, 'port': port})
-        return parsed_addresses
-
     def _create(self, device):
         name = device.get('name', '').strip()
         if not name:
             return self.error("You have to provide a valid device name")
-        addresses = device.get('addresses', [])
-        if not addresses:
-            return self.error("You have to provide at least on address")
-
-        try:
-            parsed_addresses = self._parse_addresses(addresses)
-        except Exception, err:
-            return self.error(str(err))
 
         device = {
             'name': name,
-            'addresses': parsed_addresses,
             'owner': self.user['_id'],
+        }
+
+        device['local_address'] = {
+            'ip': device['ip'],
+            'port': device.get('local_port', 0),
+        }
+
+        device['extern_address'] = {
+            'ip': web.ctx.env.get('HTTP_REFERER'),
+            'port': device.get('extern_port', device['local_address']['port']),
         }
 
         id = database.devices.insert(device)
@@ -152,13 +135,17 @@ class Device(Page):
             if not name:
                 return self.error("You have to provide a valid device name")
             to_save['name'] = name
-        if 'addresses' in device:
-            addresses = device['addresses']
-            try:
-                addresses = self._parse_addresses(device['addresses'])
-            except Exception, err:
-                return self.error(str(err))
-            to_save['addresses'] = addresses
+
+        if 'local_ip' in device:
+            to_save['local_address']['ip'] = device['local_ip']
+        if 'local_port' in device:
+            to_save['local_address']['port'] = device['local_port']
+
+        to_save['extern_address'] = {
+            'ip': web.ctx.env.get('HTTP_REFERER'),
+            'port': device.get('extern_port', to_save['local_address']['port']),
+        }
+
         id = database.devices.save(to_save)
         return self.success({
             'updated_device_id': str(id),
