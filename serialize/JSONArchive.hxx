@@ -118,7 +118,7 @@ namespace elle { namespace serialize {
 
       template<typename T> _DictStream& operator >>(NamedValue<T>&& pair)
       {
-        json::Object const& obj = _dict[pair.name];
+        this->Load(_dict[pair.name], pair.value);
         return *this;
       }
 
