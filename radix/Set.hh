@@ -1,19 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [fri jul 15 14:49:26 2011]
-//
-
 #ifndef ELLE_RADIX_SET_HH
 #define ELLE_RADIX_SET_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+// XXX[class to delete]
 
 #include <elle/radix/Parameters.hh>
 

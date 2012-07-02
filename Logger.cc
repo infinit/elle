@@ -1,4 +1,3 @@
-
 #include <elle/log.hh>
 
 namespace elle

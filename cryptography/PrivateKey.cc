@@ -1,9 +1,10 @@
+#include <elle/standalone/Log.hh>
 
 #include <elle/cryptography/PrivateKey.hh>
 #include <elle/cryptography/PublicKey.hh>
 #include <elle/cryptography/OneWay.hh>
 #include <elle/cryptography/SecretKey.hh>
-#include <elle/standalone/Log.hh>
+#include <elle/cryptography/Seed.hh>
 
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/Code.hh>

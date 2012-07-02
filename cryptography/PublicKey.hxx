@@ -1,7 +1,6 @@
 #ifndef  ELLE_CRYPTOGRAPHY_PUBLICKEY_HXX
 # define ELLE_CRYPTOGRAPHY_PUBLICKEY_HXX
 
-# include <elle/standalone/Maid.hh>
 # include <elle/standalone/Report.hh>
 
 # include <elle/utility/Buffer.hh>
@@ -161,5 +160,3 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::cryptography::PublicKey,
 }
 
 #endif
-
-

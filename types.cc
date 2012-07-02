@@ -1,4 +1,3 @@
-
 #include <cstring>
 #include <iostream>
 
@@ -8,7 +7,6 @@ namespace elle
 {
   Null const none = Null::Nil;
 }
-
 
 std::ostream& operator <<(std::ostream& stream, elle::Null)
 {

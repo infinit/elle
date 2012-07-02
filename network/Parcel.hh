@@ -5,29 +5,12 @@
 
 # include <elle/radix/Entity.hh>
 
-# include <elle/network/Data.hh>
+# include <elle/network/fwd.hh>
 
 namespace elle
 {
-
-  using namespace radix;
-
   namespace network
   {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    ///
-    /// these classes need to be forward declared to avoid conflicts.
-    ///
-    class Session;
-    class Header;
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class is just a wrapper for packets freshly received.
@@ -38,15 +21,14 @@ namespace elle
     /// data can be fetched and extracted.
     ///
     class Parcel:
-      public Entity
+      public radix::Entity
     {
     public:
       //
       // constructors & destructors
       //
       Parcel();
-      Parcel(Session*,
-             Header*,
+      Parcel(Header*,
              Data*);
       ~Parcel();
 
@@ -60,20 +42,11 @@ namespace elle
       //
       // attributes
       //
-      Session*          session;
-
       Header*           header;
       Data*             data;
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/network/Session.hh>
-#include <elle/network/Header.hh>
 
 #endif

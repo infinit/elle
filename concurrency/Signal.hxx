@@ -213,7 +213,7 @@ namespace elle
       std::cout << alignment << "[Signal]" << std::endl;
 
       // dump the mode.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << io::Dumpable::Shift
                 << "[Functionoids] " << this->container.size() << std::endl;
 
       return Status::Ok;

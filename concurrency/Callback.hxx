@@ -1,24 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar 24 23:43:50 2010]
-//
-
 #ifndef ELLE_CONCURRENCY_CALLBACK_HXX
-#define ELLE_CONCURRENCY_CALLBACK_HXX
+# define ELLE_CONCURRENCY_CALLBACK_HXX
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-
-#include <elle/standalone/Maid.hh>
-#include <elle/standalone/Report.hh>
+# include <elle/standalone/Report.hh>
 
 namespace elle
 {

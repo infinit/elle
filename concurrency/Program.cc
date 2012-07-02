@@ -1,20 +1,14 @@
-
 #include <elle/system/Platform.hh>
 
-#include <elle/concurrency/Callback.hh>
 #include <elle/concurrency/Program.hh>
 #include <elle/concurrency/Scheduler.hh>
-
-#include <elle/standalone/Maid.hh>
-#include <elle/standalone/Report.hh>
 
 #include <elle/idiom/Close.hh>
 # include <reactor/scheduler.hh>
 # include <reactor/signal.hh>
 # include <reactor/thread.hh>
+# include <signal.h>
 #include <elle/idiom/Open.hh>
-
-#include <hole/Hole.hh>
 
 #include <elle/log.hh>
 
@@ -62,7 +56,7 @@ namespace elle
     {
       ELLE_LOG_TRACE_SCOPE("Launch");
 
-      elle::concurrency::scheduler().current()->wait(_exit);
+      concurrency::scheduler().current()->wait(_exit);
     }
 
     ///

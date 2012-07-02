@@ -1,38 +1,12 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun feb 22 19:43:33 2009]
-//
-
 #ifndef ELLE_RADIX_ENTITY_HH
-#define ELLE_RADIX_ENTITY_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
+# define ELLE_RADIX_ENTITY_HH
 
 #include <elle/radix/Meta.hh>
 
-#include <elle/io/Dumpable.hh>
-
-#include <elle/concurrency/Resource.hh>
-
 namespace elle
 {
-  using namespace radix;
-  using namespace io;
-  using namespace concurrency;
-
   namespace radix
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this interface must be implemented by every 'entity' ... in the
@@ -41,15 +15,8 @@ namespace elle
     /// an entity is an instance that cannot be assigned, serialized
     /// hence stored on external media.
     ///
-    /// however, an entity, like for objects, can be dumped.
-    ///
-    /// note that an entity, as for objects, implicitly acts as a
-    /// concurrency control resource.
-    ///
     class Entity:
-      public Meta,
-      public Resource
-      //public virtual Dumpable
+      public Meta
     {
     public:
       //

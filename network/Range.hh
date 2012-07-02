@@ -1,31 +1,12 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       network
-//
-// author        julien quintard   [fri mar 26 13:07:25 2010]
-//
-
 #ifndef ELLE_NETWORK_RANGE_HH
-#define ELLE_NETWORK_RANGE_HH
+# define ELLE_NETWORK_RANGE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
 #include <elle/types.hh>
 
 namespace elle
 {
   namespace network
   {
-
-//
-// ---------- structures ------------------------------------------------------
-//
 
     ///
     /// this structure defines the range capacity.
@@ -54,10 +35,6 @@ namespace elle
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/network/Range.hxx>
 

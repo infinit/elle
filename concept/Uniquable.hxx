@@ -1,16 +1,16 @@
 #ifndef  ELLE_CONCEPT_UNIQUABLE_HXX
 # define ELLE_CONCEPT_UNIQUABLE_HXX
 
-# include <elle/idiom/Close.hh>
-
-# include <sstream>
-
-# include <elle/concept/Uniquable.hh>
+// XXX[two logs included?]
 # include <elle/log.hh>
-# include <elle/serialize/Base64Archive.hh>
 # include <elle/standalone/Log.hh>
+
 # include <elle/standalone/Report.hh>
 
+# include <elle/serialize/Base64Archive.hh>
+
+# include <elle/idiom/Close.hh>
+#  include <sstream>
 # include <elle/idiom/Open.hh>
 
 namespace elle

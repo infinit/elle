@@ -20,7 +20,7 @@ namespace elle
     /// or static method.
     ///
     class Routine:
-      public Object
+      public radix::Object
     {
     public:
       //
@@ -58,7 +58,5 @@ namespace elle
 
   }
 }
-
-# include <elle/idiom/Close.hh>
 
 #endif

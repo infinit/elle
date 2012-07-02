@@ -11,15 +11,10 @@
 
 namespace elle
 {
-
   using namespace radix;
 
   namespace concurrency
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// Callback generic class.
@@ -110,10 +105,6 @@ namespace elle
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/concurrency/Callback.hxx>
 

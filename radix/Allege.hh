@@ -1,32 +1,14 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon jul 18 14:56:45 2011]
-//
-
 #ifndef ELLE_RADIX_ALLEGE_HH
 #define ELLE_RADIX_ALLEGE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/types.hh>
+
+// XXX[class to delete]
 
 namespace elle
 {
-
-
   namespace radix
   {
-
-//
-// ---------- structures ------------------------------------------------------
-//
 
     ///
     /// default Allege structure.

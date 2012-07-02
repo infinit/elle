@@ -149,7 +149,7 @@ namespace elle
           Meta*         instance = *scoutor;
 
           // dump the instance's address.
-          std::cout << alignment << Dumpable::Shift
+          std::cout << alignment << io::Dumpable::Shift
                     << "[Instance] " << std::hex << instance << std::endl;
         }
 

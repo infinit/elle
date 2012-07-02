@@ -1,31 +1,16 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun may 22 13:08:22 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/io/Link.hh>
 #include <elle/io/File.hh>
 #include <elle/io/Directory.hh>
+#include <elle/io/Path.hh>
 
-#include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
 #include <elle/system/System.hh>
 #include <elle/system/Platform.hh>
 
-#include <vector>
-#include <sstream>
-
 #include <elle/idiom/Close.hh>
+# include <vector>
+# include <sstream>
 # include <sys/stat.h>
 # include <unistd.h>
 # include <fcntl.h>

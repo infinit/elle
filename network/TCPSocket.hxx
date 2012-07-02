@@ -1,28 +1,23 @@
 #ifndef ELLE_NETWORK_TCPSOCKET_HXX
 #define ELLE_NETWORK_TCPSOCKET_HXX
 
-#include <elle/idiom/Close.hh>
-# include <elle/print.hh>
-# include <reactor/scheduler.hh>
-# include <reactor/thread.hh>
-#include <elle/idiom/Open.hh>
-
 #include <elle/concurrency/Event.hh>
 #include <elle/concurrency/Program.hh>
-#include <elle/standalone/Maid.hh>
+#include <elle/concurrency/Scheduler.hh>
+
 #include <elle/standalone/Report.hh>
 
-#include <elle/network/Packet.hh>
+#include <elle/network/Parcel.hh>
 #include <elle/network/Header.hh>
 #include <elle/network/Data.hh>
-#include <elle/network/Parcel.hh>
-
 
 #include <elle/Manifest.hh>
 
-#include <elle/idiom/Close.hh>
 #include <elle/log.hh>
-#include <elle/idiom/Open.hh>
+#include <elle/print.hh>
+
+#include <reactor/scheduler.hh>
+#include <reactor/thread.hh>
 
 #include <protocol/PacketStream.hh>
 
@@ -40,7 +35,7 @@ namespace elle
     ///
     template <typename I>
     Status              TCPSocket::Send(const I                 inputs,
-                                        const Event&            event)
+                                        const concurrency::Event& event)
     {
       ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
       ELLE_LOG_TRACE_SCOPE("%s: send packet %s with event %s",
@@ -54,7 +49,7 @@ namespace elle
           Data whole;
           whole.Writer() << inputs.tag << event << body;
 
-          reactor::Lock lock(elle::concurrency::scheduler(), _socket_write_lock);
+          reactor::Lock lock(concurrency::scheduler(), _socket_write_lock);
           {
             unsigned char* copy = (unsigned char*)malloc(whole.Size());
             memcpy(copy, whole.Contents(), whole.Size());
@@ -76,7 +71,7 @@ namespace elle
     ///
     template <typename O>
     Status
-    TCPSocket::Receive(Event& event, O outputs)
+    TCPSocket::Receive(concurrency::Event& event, O outputs)
     {
       ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
       Parcel* parcel;
@@ -84,7 +79,7 @@ namespace elle
       // block the current fiber until the given event is received.
       ELLE_LOG_TRACE("%s: wait on event %s for tag %s",
                      *this, event.Identifier(), outputs.tag);
-      scheduler().current()->wait(event.Signal());
+      concurrency::scheduler().current()->wait(event.Signal());
       parcel = event.Parcel();
       ELLE_LOG_TRACE("%s: awaken on event %s with tag %s",
                      *this, event.Identifier(), parcel->header->tag);
@@ -147,8 +142,9 @@ namespace elle
     Status              TCPSocket::Call(const I                 inputs,
                                         O                       outputs)
     {
+      concurrency::Event event;
+
       ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
-      Event             event;
 
       // generate an event to link the request with the response.
       if (event.Generate() == Status::Error)

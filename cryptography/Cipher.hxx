@@ -1,10 +1,9 @@
-#ifndef  ELLE_CRYPTOGRAPHY_CIPHER_HXX
+#ifndef ELLE_CRYPTOGRAPHY_CIPHER_HXX
 # define ELLE_CRYPTOGRAPHY_CIPHER_HXX
 
 # include <cassert>
 
 # include <elle/serialize/ArchiveSerializer.hxx>
-# include <elle/standalone/Region.hh>
 
 # include <elle/cryptography/Cipher.hh>
 

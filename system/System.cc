@@ -1,20 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon jan 26 20:23:52 2009]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/system/System.hh>
 
-#include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
 #include <elle/idiom/Close.hh>

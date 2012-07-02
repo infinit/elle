@@ -1,38 +1,24 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon apr 26 21:25:23 2010]
-//
-
 #include <elle/system/Platform.hh>
 
-#if defined(INFINIT_LINUX)
-//
-// ---------- includes --------------------------------------------------------
-//
+# if defined(INFINIT_LINUX)
 
-#include <elle/radix/Trace.hh>
+#  include <elle/radix/Trace.hh>
 
-#include <elle/types.hh>
+#  include <elle/types.hh>
 
-#include <elle/standalone/Maid.hh>
-#include <elle/standalone/Report.hh>
+#  include <elle/standalone/Report.hh>
 
-#include <elle/io/Path.hh>
-#include <elle/io/Directory.hh>
+#  include <elle/io/Path.hh>
+#  include <elle/io/Directory.hh>
 
-#include <elle/idiom/Close.hh>
-# include <sys/stat.h>
-# include <unistd.h>
-# include <fcntl.h>
-# include <libgen.h>
-# include <sys/types.h>
-# include <dirent.h>
-#include <elle/idiom/Open.hh>
+#  include <elle/idiom/Close.hh>
+#   include <sys/stat.h>
+#   include <unistd.h>
+#   include <fcntl.h>
+#   include <libgen.h>
+#   include <sys/types.h>
+#   include <dirent.h>
+#  include <elle/idiom/Open.hh>
 
 namespace elle
 {

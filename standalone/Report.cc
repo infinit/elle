@@ -1,16 +1,10 @@
-#include <elle/concurrency/Scheduler.hh>
 #include <elle/standalone/Report.hh>
-#include <elle/standalone/Region.hh>
-#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Log.hh>
 
-#include <elle/concurrency/Callback.hh>
-#include <elle/concurrency/Program.hh>
+#include <elle/concurrency/Scheduler.hh>
 
 namespace elle
 {
-
-  using namespace concurrency;
-
   namespace standalone
   {
 
@@ -185,72 +179,6 @@ namespace elle
     }
 
 //
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes a report.
-    ///
-    //Status              Report::Serialize(Archive&              archive) const
-    //{
-    //  Report::Scoutor   scoutor;
-
-    //  // serialize the number of messages.
-    //  if (archive.Serialize(
-    //        static_cast<Natural32>(this->container.size())) == Status::Error)
-    //    escape("unable to serialize the number of messages");
-
-    //  // go through the container.
-    //  for (scoutor = this->container.begin();
-    //       scoutor != this->container.end();
-    //       scoutor++)
-    //    {
-    //      Report::Entry*        entry = *scoutor;
-
-    //      // serialize the entry.
-    //      if (archive.Serialize(entry->location,
-    //                            entry->time,
-    //                            entry->message) == Status::Error)
-    //        escape("unable to serialize the entry");
-    //    }
-
-    //  return Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts a report.
-    /////
-    //Status              Report::Extract(Archive&                archive)
-    //{
-    //  Natural32         size;
-    //  Natural32         i;
-
-    //  // extract the number of messages.
-    //  if (archive.Extract(size) == Status::Error)
-    //    escape("unable to extract the number of messages");
-
-    //  // iterate and recreate the messages.
-    //  for (i = 0; i < size; i++)
-    //    {
-    //      Report::Entry*        entry;
-
-    //      // allocate a new entry.
-    //      entry = new Report::Entry;
-
-    //      // extract the entry.
-    //      if (archive.Extract(entry->location,
-    //                          entry->time,
-    //                          entry->message) == Status::Error)
-    //        escape("unable to serialize the entry");
-
-    //      // push the extract entry in the container.
-    //      this->container.push_front(entry);
-    //    }
-
-    //  return Status::Ok;
-    //}
-
-//
 // ---------- object-like -----------------------------------------------------
 //
 
@@ -314,7 +242,11 @@ namespace elle
 
       // recycle the report.
       if (this->Recycle(&element) == Status::Error)
-        yield(*this, "unable to recycle the report");
+        {
+          log("unable to recycle the object");
+
+          return (*this);
+        }
 
       return (*this);
     }

@@ -1,31 +1,14 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed feb  3 16:05:34 2010]
-//
-
 #ifndef ELLE_NETWORK_NETWORK_HXX
-#define ELLE_NETWORK_NETWORK_HXX
+# define ELLE_NETWORK_NETWORK_HXX
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/standalone/Report.hh>
 
-#include <elle/standalone/Maid.hh>
-#include <elle/standalone/Report.hh>
+# include <elle/network/Procedure.hh>
 
 namespace elle
 {
   namespace network
   {
-
-//
-// ---------- network ---------------------------------------------------------
-//
 
     ///
     /// this method registers a callback associated with a set of types so that

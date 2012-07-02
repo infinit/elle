@@ -1,4 +1,3 @@
-
 #include <elle/io/Dumpable.hh>
 
 namespace elle

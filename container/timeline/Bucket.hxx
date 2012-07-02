@@ -1,24 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [fri oct 21 07:35:21 2011]
-//
-
 #ifndef ELLE_CONTAINER_TIMELINE_BUCKET_HXX
-#define ELLE_CONTAINER_TIMELINE_BUCKET_HXX
+# define ELLE_CONTAINER_TIMELINE_BUCKET_HXX
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-
-#include <elle/standalone/Maid.hh>
-#include <elle/standalone/Report.hh>
+# include <elle/standalone/Report.hh>
 
 namespace elle
 {

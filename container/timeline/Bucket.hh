@@ -11,17 +11,12 @@
 
 namespace elle
 {
-
   using namespace radix;
 
   namespace container
   {
     namespace timeline
     {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
       ///
       /// this class represents a set of timeline objects grouped together
@@ -65,10 +60,6 @@ namespace elle
     }
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/container/timeline/Bucket.hxx>
 

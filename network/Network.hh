@@ -1,39 +1,16 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu oct 15 14:32:58 2009]
-//
-
 #ifndef ELLE_NETWORK_NETWORK_HH
-#define ELLE_NETWORK_NETWORK_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
+# define ELLE_NETWORK_NETWORK_HH
 
 #include <elle/types.hh>
 
-#include <elle/radix/Entity.hh>
-#include <elle/radix/Trait.hh>
-
+#include <elle/network/fwd.hh>
 #include <elle/network/Tag.hh>
 #include <elle/network/Parcel.hh>
-#include <elle/network/Message.hh>
-#include <elle/network/Procedure.hh>
-
-#include <elle/utility/Buffer.hh>
 
 #include <elle/idiom/Open.hh>
 
 namespace elle
 {
-
-  using namespace radix;
-
   ///
   /// this namespace contains everything related to network communications.
   ///
@@ -73,9 +50,6 @@ namespace elle
       //
       // static methods
       //
-      static Status     Initialize();
-      static Status     Clean();
-
       template <const Tag I,
                 const Tag O,
                 const Tag E>
@@ -92,10 +66,6 @@ namespace elle
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/network/Network.hxx>
 

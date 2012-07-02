@@ -1,8 +1,6 @@
 #ifndef ELLE_NETWORK_PROCEDURE_HH
 # define ELLE_NETWORK_PROCEDURE_HH
 
-# include <elle/utility/fwd.hh>
-
 # include <elle/radix/Parameters.hh>
 # include <elle/radix/Trait.hh>
 # include <elle/radix/Set.hh>
@@ -16,10 +14,6 @@
 
 namespace elle
 {
-
-  using namespace radix;
-  using namespace concurrency;
-
   namespace network
   {
 
@@ -78,12 +72,12 @@ namespace elle
             typename Message<O>::P
             >::Type                             R;
 
-      typedef Callback<Status, Parameters<>> BaseCallback;
+      typedef concurrency::Callback<Status, Parameters<>> BaseCallback;
 
       //
       // constructors & destructors
       //
-      Procedure(const Callback< Status,
+      Procedure(const concurrency::Callback< Status,
                                 R >,
                 const BaseCallback = BaseCallback::Null,
                 const BaseCallback = BaseCallback::Null);
@@ -92,7 +86,6 @@ namespace elle
       // methods
       //
       Status            Skeleton(TCPSocket*, Locus&, Parcel&) const;
-      //Status            Skeleton(elle::utility::Buffer&) const;
 
       //
       // interfaces
@@ -107,16 +100,16 @@ namespace elle
       //
       // attributes
       //
-      Callback<
+      concurrency::Callback<
         Status,
         R
         >               routine;
 
-      Callback<
+      concurrency::Callback<
         Status,
         Parameters<>
         >               prolog;
-      Callback<
+      concurrency::Callback<
         Status,
         Parameters<>
         >               epilog;
@@ -124,10 +117,6 @@ namespace elle
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <elle/network/Procedure.hxx>
 

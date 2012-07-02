@@ -3,11 +3,11 @@
 
 # include <memory>
 
-# include <elle/concept/Fileable.hh>
 # include <elle/concept/Uniquable.hh>
-# include <elle/io/Dumpable.hh>
-# include <elle/serialize/fwd.hh>
 
+# include <elle/io/Dumpable.hh>
+
+# include <elle/serialize/fwd.hh>
 
 namespace elle
 {
@@ -29,16 +29,16 @@ namespace elle
     ///
     /// @see WeakBuffer for a buffer that doesn't own the data
     class Buffer
-      : public elle::io::Dumpable
-      , public elle::concept::MakeUniquable<Buffer>
+      : public io::Dumpable
+      , public concept::MakeUniquable<Buffer>
     {
-      friend class elle::serialize::ArchiveSerializer<Buffer>;
+      friend class serialize::ArchiveSerializer<Buffer>;
     public:
-      typedef elle::Byte                                          ContentType;
+      typedef Byte                                          ContentType;
       typedef std::unique_ptr<ContentType, detail::MallocDeleter> ContentPtr;
       typedef std::pair<ContentPtr, size_t>                       ContentPair;
     private:
-      elle::Byte*       _contents;
+      Byte*       _contents;
       size_t            _size;
       size_t            _buffer_size;
 
@@ -46,7 +46,7 @@ namespace elle
       Buffer();
       Buffer(size_t                 size);
       Buffer(ContentPair&&          pair);
-      Buffer(elle::Byte const* data, size_t size);
+      Buffer(Byte const* data, size_t size);
 
       // Buffer class is moveable
       Buffer(Buffer&&               other);
@@ -67,8 +67,8 @@ namespace elle
       /// Properties for the size and the buffer contents
       void                Size(size_t size);
       size_t              Size() const { return this->_size; }
-      elle::Byte const*   Contents() const { return this->_contents; }
-      elle::Byte*         MutableContents() { return this->_contents; }
+      Byte const*   Contents() const { return this->_contents; }
+      Byte*         MutableContents() { return this->_contents; }
 
       /// Reset the size to zero.
       void                Reset() { this->Size(0); }
@@ -79,8 +79,8 @@ namespace elle
       ContentPair         Release();
 
       /// Binary serialization shorcut.
-      elle::serialize::OutputBufferArchive  Writer();
-      elle::serialize::InputBufferArchive   Reader() const;
+      serialize::OutputBufferArchive  Writer();
+      serialize::InputBufferArchive   Reader() const;
 
       virtual Status    Dump(const Natural32 shift = 0) const;
 
@@ -90,15 +90,15 @@ namespace elle
 
 
     class WeakBuffer
-      : public elle::concept::MakeUniquable<WeakBuffer>
+      : public concept::MakeUniquable<WeakBuffer>
     {
     private:
-      elle::Byte const*   _contents;
+      Byte const*   _contents;
       size_t              _size;
 
     public:
       WeakBuffer(void const* data, size_t size)
-        : _contents(static_cast<elle::Byte const*>(data))
+        : _contents(static_cast<Byte const*>(data))
         , _size(size)
       {}
 
@@ -118,9 +118,9 @@ namespace elle
       {}
 
       size_t              Size() const        { return this->_size; }
-      elle::Byte const*   Contents() const    { return this->_contents; }
+      Byte const*   Contents() const    { return this->_contents; }
 
-      elle::serialize::InputBufferArchive  Reader() const;
+      serialize::InputBufferArchive  Reader() const;
     };
 
   }
@@ -128,4 +128,4 @@ namespace elle
 
 # include <elle/utility/Buffer.hxx>
 
-#endif /* ! BUFFER_HH */
+#endif

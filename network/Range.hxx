@@ -1,19 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [fri mar 26 17:18:42 2010]
-//
-
 #ifndef ELLE_NETWORK_RANGE_HXX
-#define ELLE_NETWORK_RANGE_HXX
-
-//
-// ---------- includes --------------------------------------------------------
-//
+# define ELLE_NETWORK_RANGE_HXX
 
 #include <elle/network/Tag.hh>
 
@@ -21,10 +7,6 @@ namespace elle
 {
   namespace network
   {
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
     ///
     /// this template specializes the Dependency structure with

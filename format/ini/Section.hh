@@ -41,9 +41,7 @@ namespace elle { namespace format { namespace ini {
 
 }}}
 
-# include <elle/idiom/Close.hh>
 # include "Section.hxx"
-# include <elle/idiom/Open.hh>
 
 #endif /* ! SECTION_HH */
 

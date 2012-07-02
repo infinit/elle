@@ -19,7 +19,6 @@ ADD_LIBRARY(elle
   IOStream.cc
 
   standalone/Log.cc
-  standalone/Maid.cc
   standalone/Morgue.cc
   standalone/Region.cc
   standalone/Report.cc
@@ -35,7 +34,6 @@ ADD_LIBRARY(elle
   io/Dumpable.cc
   io/File.cc
   io/Link.cc
-  io/Manipulators.cc
   io/Pattern.cc
   io/Piece.cc
   io/Path.cc
@@ -44,9 +42,7 @@ ADD_LIBRARY(elle
 
   types.cc
 
-  concurrency/Environment.cc
   concurrency/Event.cc
-  concurrency/Frame.cc
   concurrency/Program.cc
   concurrency/Routine.cc
   concurrency/Scheduler.cc
@@ -69,7 +65,6 @@ ADD_LIBRARY(elle
   network/Network.cc
   network/Parcel.cc
   network/Locus.cc
-  network/Session.cc
   network/TCPSocket.cc
 
   utility/Buffer.cc
@@ -78,7 +73,6 @@ ADD_LIBRARY(elle
   utility/Factory.cc
   utility/HTTP.cc
   utility/Parser.cc
-  utility/REST.cc
   utility/Settings.cc
   utility/Time.cc
 

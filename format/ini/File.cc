@@ -3,7 +3,7 @@
 
 #include <reactor/exception.hh>
 
-#include "File.hh"
+#include <elle/format/ini/File.hh>
 
 using namespace elle::format::ini;
 
