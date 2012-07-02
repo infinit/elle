@@ -1,19 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       oracle/disciples/metalib
-//
-// license       infinit
-//
-// author        Raphael Londeix   [Mon 20 Feb 2012 02:57:13 PM CET]
-//
+#include <iostream>
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include "lune/Lune.hh"
+#include <lune/Lune.hh>
 #include <elle/Elle.hh>
+#include <elle/idiom/Close.hh>
 
 #include "identity.hh"
 #include "passport.hh"
