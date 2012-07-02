@@ -21,8 +21,6 @@
 
 namespace elle
 {
-  using namespace standalone;
-
   namespace cryptography
   {
 
@@ -297,7 +295,7 @@ namespace elle
     ///
     /// this method generates a region.
     ///
-    Status              Random::Generate(Region&                value,
+    Status              Random::Generate(standalone::Region& value,
                                          const Natural32        size)
     {
       // prepare the region.

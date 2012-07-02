@@ -7,7 +7,6 @@
 
 namespace elle
 {
-
   namespace cryptography
   {
 

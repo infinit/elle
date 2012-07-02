@@ -19,7 +19,6 @@
 
 namespace elle
 {
-
   namespace cryptography
   {
 
@@ -31,7 +30,7 @@ namespace elle
     /// Etoile's agent.
     ///
     class PrivateKey:
-      public Object
+      public radix::Object
     {
     public:
       //

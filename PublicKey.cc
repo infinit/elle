@@ -428,10 +428,10 @@ namespace elle
           std::cout << alignment << "[PublicKey] " << std::endl;
 
           // dump the internal numbers.
-          std::cout << alignment << Dumpable::Shift << "[n] "
+          std::cout << alignment << io::Dumpable::Shift << "[n] "
                     << *this->_key->pkey.rsa->n << std::endl;
 
-          std::cout << alignment << Dumpable::Shift << "[e] "
+          std::cout << alignment << io::Dumpable::Shift << "[e] "
                     << *this->_key->pkey.rsa->e << std::endl;
         }
 

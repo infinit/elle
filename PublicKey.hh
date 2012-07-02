@@ -23,9 +23,6 @@
 
 namespace elle
 {
-
-  using namespace radix;
-
   namespace cryptography
   {
 
@@ -37,7 +34,7 @@ namespace elle
     /// this class represents a public key.
     ///
     class PublicKey
-      : public Object
+      : public radix::Object
       , public elle::concept::MakeUniquable<PublicKey>
     {
     public:

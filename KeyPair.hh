@@ -26,7 +26,7 @@ namespace elle
     /// noted with a lower-case 'k'.
     ///
     class KeyPair
-      : public Object
+      : public radix::Object
       , public elle::concept::Serializable<KeyPair>
       , public elle::concept::Fileable<>
     {
@@ -78,12 +78,12 @@ namespace elle
       Status            Dump(const Natural32 = 0) const;
 
       // fileable
-      Status            Load(const Path&,
+      Status            Load(const io::Path&,
                              const String&);
-      Status            Store(const Path&,
+      Status            Store(const io::Path&,
                               const String&) const;
-      Status            Erase(const Path&) const;
-      Status            Exist(const Path&) const;
+      Status            Erase(const io::Path&) const;
+      Status            Exist(const io::Path&) const;
 
       //
       // attributes

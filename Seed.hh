@@ -12,9 +12,6 @@
 
 namespace elle
 {
-
-  using namespace radix;
-
   namespace cryptography
   {
 
@@ -23,7 +20,7 @@ namespace elle
     /// rotating keys.
     ///
     class Seed:
-      public Object
+      public radix::Object
     {
     public:
       //

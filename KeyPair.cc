@@ -25,9 +25,6 @@
 
 namespace elle
 {
-  using namespace standalone;
-  using namespace io;
-
   namespace cryptography
   {
 
@@ -274,10 +271,10 @@ namespace elle
     ///
     /// this method erases the key pair file.
     ///
-    Status              KeyPair::Erase(const Path&              path) const
+    Status              KeyPair::Erase(const io::Path& path) const
     {
       // erase the file.
-      if (File::Erase(path) == Status::Error)
+      if (io::File::Erase(path) == Status::Error)
         escape("unable to erase the file");
 
       return Status::Ok;
@@ -286,9 +283,9 @@ namespace elle
     ///
     /// this method tests the key pair file.
     ///
-    Status              KeyPair::Exist(const Path&              path) const
+    Status              KeyPair::Exist(const io::Path& path) const
     {
-      return (File::Exist(path));
+      return (io::File::Exist(path));
     }
 
   }

@@ -5,8 +5,6 @@
 
 namespace elle
 {
-  using namespace standalone;
-
   namespace cryptography
   {
 
