@@ -201,7 +201,7 @@ namespace hole
           short port = _server->local_endpoint().port();
             {
               // XXX should be done with a signal
-              plasma::meta::Client client("127.0.0.1", 12345);
+              plasma::meta::Client client("127.0.0.1", 23456);
               lune::Passport passport;
               if (passport.Load() != elle::Status::Ok)
                 escape("Cannot load passport");
@@ -212,7 +212,7 @@ namespace hole
                 }
               catch (std::exception const& err)
                 {
-                  escape("Cannot update device port: %s", err.what());
+                  log("Cannot update device port: %s", err.what()); // XXX[to improve]
                 }
             }
           new reactor::Thread(elle::concurrency::scheduler(),
