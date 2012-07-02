@@ -1,6 +1,8 @@
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
 
+#include <agent/Agent.hh>
+
 #include <elle/utility/Buffer.hh>
 #include <elle/network/Header.hh>
 #include <elle/network/Bundle.hh>
@@ -26,6 +28,9 @@
 #include <hole/implementations/slug/Manifest.hh>
 
 #include <Infinit.hh>
+
+
+#include <plasma/meta/Client.hh>
 
 #include <elle/log.hh>
 
@@ -194,6 +199,22 @@ namespace hole
 
           _server->listen(locus.port);
           short port = _server->local_endpoint().port();
+            {
+              // XXX should be done with a signal
+              plasma::meta::Client client("127.0.0.1", 12345);
+              lune::Passport passport;
+              if (passport.Load() != elle::Status::Ok)
+                escape("Cannot load passport");
+              try
+                {
+                  client.token(agent::Agent::meta_token);
+                  client.update_device(passport.id, nullptr, nullptr, port);
+                }
+              catch (std::exception const& err)
+                {
+                  escape("Cannot update device port: %s", err.what());
+                }
+            }
           new reactor::Thread(elle::concurrency::scheduler(),
                               "Slug accept",
                               boost::bind(&Machine::_accept, this),

@@ -8,7 +8,7 @@ add_definitions(-fPIC)
 add_library(metalib SHARED ${metalib_srcs})
 link_directories(${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(metalib
-    elle lune hole nucleus infinit
+    elle lune hole metal nucleus infinit
 	##	libboost_system${CMAKE_SHARED_LIBRARY_SUFFIX}
 	##	libboost_signals${CMAKE_SHARED_LIBRARY_SUFFIX}
     ${INFINIT_OPENSSL_SHARED_LIBRARIES}

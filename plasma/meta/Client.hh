@@ -137,6 +137,9 @@ namespace plasma
                                          short port);
       NetworksResponse networks();
 
+    public:
+      void token(std::string const& tok);
+
     private:
       template<typename T>
       T _get(std::string const& url);

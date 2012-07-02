@@ -1,7 +1,9 @@
-PROJECT(Agent CXX)
+project(Agent CXX)
 
-ADD_LIBRARY(agent
+add_definitions(-fPIC)
+
+add_library(agent
   Agent.cc
 )
 
-TARGET_LINK_LIBRARIES(agent nucleus lune)
+target_link_libraries(agent nucleus lune)
