@@ -1,6 +1,7 @@
 #ifndef LUNE_PHRASE_HH
 # define LUNE_PHRASE_HH
 
+# include <elle/types.hh>
 # include <elle/radix/Object.hh>
 # include <elle/concept/Fileable.hh>
 # include <elle/network/Port.hh>

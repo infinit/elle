@@ -1,8 +1,11 @@
 #ifndef LUNE_PASSPORT_HH
 # define LUNE_PASSPORT_HH
 
-# include <lune/Authority.hh>
-
+# include <lune/fwd.hh>
+# include <elle/radix/Object.hh>
+# include <elle/concept/Fileable.hh>
+# include <elle/concept/Uniquable.hh>
+# include <elle/cryptography/Signature.hh>
 # include <hole/Label.hh>
 
 # include <elle/idiom/Open.hh>

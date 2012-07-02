@@ -4,7 +4,11 @@
 #include <elle/standalone/Report.hh>
 #include <elle/idiom/Open.hh>
 
-#include <boost/filesystem.hpp>
+#include <lune/Lune.hh>
+
+#include <elle/idiom/Close.hh>
+# include <boost/filesystem.hpp>
+#include <elle/idiom/Open.hh>
 
 #include <Infinit.hh>
 

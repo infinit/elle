@@ -2,9 +2,10 @@
 # define LUNE_SET_HH
 
 # include <elle/types.hh>
+# include <elle/radix/Object.hh>
 # include <elle/concept/Fileable.hh>
 
-# include <elle/network/Locus.hh>
+# include <elle/network/fwd.hh>
 
 # include <elle/idiom/Open.hh>
 

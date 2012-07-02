@@ -4,18 +4,16 @@
 # include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/KeyPair.hh>
 # include <elle/cryptography/Signature.hh>
-
 # include <elle/concept/Fileable.hh>
 # include <elle/radix/Object.hh>
 # include <elle/concept/Uniquable.hh>
+
+# include <lune/fwd.hh>
 
 # include <elle/idiom/Open.hh>
 
 namespace lune
 {
-
-  // XXX
-  class Authority;
 
   ///
   /// this class represents an identity issued by the Infinit authority

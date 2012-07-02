@@ -1,12 +1,12 @@
 #include <hole/Label.hh>
 
 #include <elle/io/File.hh>
-#include <elle/io/Piece.hh>
+#include <elle/serialize/TupleSerializer.hxx>
 #include <elle/cryptography/PrivateKey.hh>
-#include <elle/serialize/TupleSerializer.hxx> // XXX[hh]
 
 #include <lune/Passport.hh>
 #include <lune/Lune.hh>
+#include <lune/Authority.hh>
 
 namespace lune
 {

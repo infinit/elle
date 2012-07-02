@@ -1,10 +1,11 @@
 #ifndef LUNE_DESCRIPTOR_HH
 # define LUNE_DESCRIPTOR_HH
 
-# include <nucleus/Nucleus.hh>
+# include <nucleus/proton/Address.hh>
 # include <hole/Model.hh>
-# include <lune/Authority.hh>
+# include <lune/fwd.hh>
 # include <elle/serialize/fwd.hh>
+# include <elle/cryptography/Signature.hh>
 # include <elle/idiom/Open.hh>
 
 namespace lune
@@ -38,7 +39,7 @@ namespace lune
     elle::Status        Create(const elle::String id,
                                const elle::String&,
                                const hole::Model&,
-                               const nucleus::Address&,
+                               const nucleus::proton::Address&,
                                const elle::Boolean,
                                const elle::Natural32,
                                const elle::Real&,
@@ -73,7 +74,7 @@ namespace lune
   public: // XXX
     elle::String        name;
     hole::Model         model;
-    nucleus::Address    root;
+    nucleus::proton::Address root;
     elle::Boolean       history;
     elle::Natural32     extent;
     elle::Real          contention;

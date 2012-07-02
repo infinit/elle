@@ -2,7 +2,7 @@
 # define LUNE_DICTIONARY_HH
 
 # include <elle/concept/Fileable.hh>
-# include <nucleus/Nucleus.hh>
+# include <nucleus/proton/Address.hh>
 
 # include <lune/Map.hh>
 
@@ -47,7 +47,7 @@ namespace lune
     // attributes
     //
     Map<elle::cryptography::PublicKey>        users;
-    Map<nucleus::Address>       groups;
+    Map<nucleus::proton::Address> groups;
   };
 
 }

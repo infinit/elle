@@ -1,8 +1,10 @@
 #include <lune/Descriptor.hh>
+#include <lune/Authority.hh>
 #include <lune/Lune.hh>
 
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
+#include <elle/cryptography/PrivateKey.hh>
 
 #include <nucleus/proton/Address.hh>
 
@@ -57,7 +59,7 @@ namespace lune
   elle::Status          Descriptor::Create(const elle::String id,
                                            const elle::String&  name,
                                            const hole::Model&   model,
-                                           const nucleus::Address& root,
+                                           const nucleus::proton::Address& root,
                                            const elle::Boolean  history,
                                            const elle::Natural32 extent,
                                            const elle::Real&    contention,

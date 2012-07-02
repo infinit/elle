@@ -1,9 +1,8 @@
-#include <elle/utility/Settings.hh>
-
 #include <lune/Configuration.hh>
 
+#include <elle/utility/Settings.hh>
+
 #include <lune/Lune.hh>
-#include <horizon/Horizon.hh>
 
 namespace lune
 {

@@ -5,6 +5,7 @@
 #include <elle/io/Console.hh>
 #include <elle/io/Unique.hh>
 #include <elle/utility/Parser.hh>
+#include <elle/serialize/TupleSerializer.hxx>
 
 #include <satellites/authority/Authority.hh>
 

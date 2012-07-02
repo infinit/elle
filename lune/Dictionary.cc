@@ -3,7 +3,6 @@
 
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
-#include <elle/cryptography/PublicKey.hh>
 
 namespace lune
 {

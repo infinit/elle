@@ -9,9 +9,11 @@
 #include <lune/Phrase.hh>
 #include <lune/Log.hh>
 
+#include <nucleus/proton/History.hh>
+#include <nucleus/proton/Block.hh>
+
 #include <elle/io/Path.hh>
 #include <elle/io/Piece.hh>
-#include <elle/io/File.hh>
 #include <elle/system/System.hh>
 
 #include <Infinit.hh>
@@ -354,7 +356,7 @@ namespace lune
             "reserve" +
             elle::system::System::Path::Separator +
             "%ADDRESS%" +
-            nucleus::Block::Extension) == elle::Status::Error)
+            nucleus::proton::Block::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
 
       // create the mutable block pattern within the reserve.
@@ -370,7 +372,7 @@ namespace lune
             "%ADDRESS%" +
             "#" +
             "%VERSION%" +
-            nucleus::Block::Extension) == elle::Status::Error)
+            nucleus::proton::Block::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
 
       // create the mutable block's history pattern within the reserve.
@@ -384,7 +386,7 @@ namespace lune
             "reserve" +
             elle::system::System::Path::Separator +
             "%ADDRESS%" +
-            nucleus::History::Extension) == elle::Status::Error)
+            nucleus::proton::History::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
 
       // create the shelter path pattern.
@@ -409,7 +411,7 @@ namespace lune
             "shelter" +
             elle::system::System::Path::Separator +
             "%ADDRESS%" +
-            nucleus::Block::Extension) == elle::Status::Error)
+            nucleus::proton::Block::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
 
       // create the mutable block pattern within the shelter.
@@ -425,7 +427,7 @@ namespace lune
             "%ADDRESS%" +
             "#" +
             "%VERSION%" +
-            nucleus::Block::Extension) == elle::Status::Error)
+            nucleus::proton::Block::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
 
       // create the mutable block's history pattern within the shelter.
@@ -439,7 +441,7 @@ namespace lune
             "shelter" +
             elle::system::System::Path::Separator +
             "%ADDRESS%" +
-            nucleus::History::Extension) == elle::Status::Error)
+            nucleus::proton::History::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
     }
 
