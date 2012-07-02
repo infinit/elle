@@ -7,10 +7,6 @@
 
 namespace elle
 {
-
-  using namespace standalone;
-  using namespace radix;
-
   namespace radix
   {
 

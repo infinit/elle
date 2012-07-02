@@ -14,8 +14,6 @@
 
 namespace elle
 {
-  using namespace radix;
-
   namespace concurrency
   {
 
@@ -24,7 +22,7 @@ namespace elle
     /// so on.
     ///
     class Event
-      : public Object
+      : public radix::Object
     {
     public:
       //

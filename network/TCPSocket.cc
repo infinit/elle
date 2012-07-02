@@ -153,7 +153,7 @@ namespace elle
                   if (tag == TagError)
                     {
                       ELLE_LOG_TRACE("%s: RPC is an error.", *this);
-                      Report  report;
+                      standalone::Report  report;
                       // extract the error message.
                       parcel->data->Reader() >> report;
                       // report the remote error.

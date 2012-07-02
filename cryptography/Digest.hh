@@ -11,10 +11,6 @@
 
 namespace elle
 {
-
-  using namespace standalone;
-  using namespace radix;
-
   namespace cryptography
   {
 
@@ -22,7 +18,7 @@ namespace elle
     /// this class represents an asymmetrically encrypted text.
     ///
     class Digest
-      : public Object
+      : public radix::Object
       , public elle::concept::MakeUniquable<
             Digest,
             elle::serialize::HexadecimalArchive
@@ -54,7 +50,7 @@ namespace elle
       //
       // attributes
       //
-      Region            region;
+      standalone::Region region;
     };
 
   }

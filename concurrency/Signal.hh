@@ -27,20 +27,20 @@ namespace elle
     /// when it is emitted, the subscribed callbacks are called.
     ///
     template <typename... T>
-    class Signal< Parameters<T...> >:
-      public elle::radix::Object
+    class Signal< radix::Parameters<T...> >:
+      public radix::Object
     {
     public:
       //
       // types
       //
-      typedef Parameters<T...>          P;
+      typedef radix::Parameters<T...>          P;
 
       ///
       /// this class represents the functionoid used to forward the call.
       ///
       class Functionoid:
-        public Entity
+        public radix::Entity
       {
       public:
         virtual Functionoid* clone() const = 0;
@@ -114,7 +114,7 @@ namespace elle
       Status            Emit(T...);
       Status            AsyncEmit(T...);
       static
-      Status            EmitOne(Signal< Parameters<T...> >::Functionoid* f,
+      Status            EmitOne(Signal< radix::Parameters<T...> >::Functionoid* f,
                                 T...);
 
       Status            Flush();

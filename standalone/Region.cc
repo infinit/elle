@@ -7,9 +7,6 @@
 
 namespace elle
 {
-
-  using namespace standalone;
-
   namespace standalone
   {
 

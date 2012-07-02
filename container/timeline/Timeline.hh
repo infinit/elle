@@ -15,8 +15,6 @@
 
 namespace elle
 {
-  using namespace radix;
-
   namespace container
   {
     ///
@@ -35,7 +33,7 @@ namespace elle
       ///
       template <typename T>
       class Timeline:
-        public Entity
+        public radix::Entity
       {
       public:
         //

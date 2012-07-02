@@ -99,7 +99,7 @@ namespace elle
           // the report to the local one.
           if (tag == TagError)
             {
-              Report    report;
+              standalone::Report    report;
 
               parcel->data->Reader() >> report;
 

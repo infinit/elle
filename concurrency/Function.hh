@@ -10,7 +10,6 @@
 
 namespace elle
 {
-
   namespace concurrency
   {
 
@@ -26,14 +25,14 @@ namespace elle
     template <typename R,
               typename... T>
     class Function< R,
-                    Parameters<T...> >:
-      public Object
+                    radix::Parameters<T...> >:
+      public radix::Object
     {
     public:
       //
       // types
       //
-      typedef Parameters<T...>          P;
+      typedef radix::Parameters<T...>          P;
 
       //
       // types
@@ -80,7 +79,7 @@ namespace elle
       //
       template <typename R,
                 typename... T>
-      static Function< R, Parameters<T...> >    Infer(R (*)(T...));
+      static Function< R, radix::Parameters<T...> >    Infer(R (*)(T...));
     };
 
   }

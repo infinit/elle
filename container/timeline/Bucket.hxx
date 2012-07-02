@@ -7,8 +7,6 @@
 
 namespace elle
 {
-  using namespace standalone;
-
   namespace container
   {
     namespace timeline

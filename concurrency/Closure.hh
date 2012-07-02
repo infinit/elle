@@ -11,8 +11,6 @@
 
 namespace elle
 {
-  using namespace radix;
-
   namespace concurrency
   {
     ///
@@ -34,19 +32,19 @@ namespace elle
     template <typename R,
               typename... U>
     class Closure< R,
-                   Parameters<U...> >:
-      public Entity
+                   radix::Parameters<U...> >:
+      public radix::Entity
     {
     public:
       //
       // types
       //
-      typedef Parameters<U...>          P;
+      typedef radix::Parameters<U...>          P;
 
       //
       // constructors & destructors
       //
-      Closure(Callback< R, Parameters<U...> >,
+      Closure(Callback< R, radix::Parameters<U...> >,
               U&...);
 
       //
@@ -60,7 +58,7 @@ namespace elle
       //
 
       // object
-      declare(_(Closure< R, Parameters<U...> >));
+      declare(_(Closure< R, radix::Parameters<U...> >));
 
       // dumpable
       Status            Dump(const Natural32 = 0) const;
@@ -68,8 +66,8 @@ namespace elle
       //
       // attributes
       //
-      Callback< R, Parameters<U...> >   callback;
-      Arguments< Parameters<U...> >     arguments;
+      Callback< R, radix::Parameters<U...> >   callback;
+      radix::Arguments< radix::Parameters<U...> >     arguments;
     };
 
     ///
@@ -98,20 +96,20 @@ namespace elle
               typename... U,
               typename... V>
     class Closure< R,
-                   Parameters<U...>,
-                   Parameters<V...> >:
-      public Entity
+                   radix::Parameters<U...>,
+                   radix::Parameters<V...> >:
+      public radix::Entity
     {
     public:
       //
       // types
       //
-      typedef Parameters<U..., V...>    P;
+      typedef radix::Parameters<U..., V...>    P;
 
       //
       // constructors & destructors
       //
-      Closure(Callback< R, Parameters<U..., V...> >,
+      Closure(Callback< R, radix::Parameters<U..., V...> >,
               U&...);
 
       //
@@ -125,7 +123,7 @@ namespace elle
       //
 
       // object
-      declare(_(Closure< R, Parameters<U...>, Parameters<V...> >));
+      declare(_(Closure< R, radix::Parameters<U...>, radix::Parameters<V...> >));
 
       // dumpable
       Status            Dump(const Natural32 = 0) const;
@@ -133,8 +131,8 @@ namespace elle
       //
       // attributes
       //
-      Callback< R, Parameters<U..., V...> >     callback;
-      Arguments< Parameters<U...> >             arguments;
+      Callback< R, radix::Parameters<U..., V...> >     callback;
+      radix::Arguments< radix::Parameters<U...> >             arguments;
     };
 
     ///
@@ -150,28 +148,28 @@ namespace elle
       template <typename R,
                 typename... U>
       static Closure< R,
-                      Parameters<U...> >        Infer(R (*)(U...));
+                      radix::Parameters<U...> >        Infer(R (*)(U...));
       template <typename R,
                 typename C,
                 typename... U>
       static Closure< R,
-                      Parameters<U...> >        Infer(R (C::*)(U...),
+                      radix::Parameters<U...> >        Infer(R (C::*)(U...),
                                                       C*);
 
       template <typename R,
                 typename... U,
                 typename... V>
       static Closure< R,
-                      Parameters<U...>,
-                      Parameters<V...> >        Infer(R (*)(U..., V...),
+                      radix::Parameters<U...>,
+                      radix::Parameters<V...> >        Infer(R (*)(U..., V...),
                                                       U&...);
       template <typename R,
                 typename C,
                 typename... U,
                 typename... V>
       static Closure< R,
-                      Parameters<U...>,
-                      Parameters<V...> >        Infer(R (C::*)(U..., V...),
+                      radix::Parameters<U...>,
+                      radix::Parameters<V...> >        Infer(R (C::*)(U..., V...),
                                                       C*,
                                                       U&...);
     };

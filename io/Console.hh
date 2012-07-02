@@ -5,7 +5,6 @@
 
 namespace elle
 {
-
   namespace io
   {
 

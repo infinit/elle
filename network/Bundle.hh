@@ -9,8 +9,6 @@
 
 namespace elle
 {
-  using namespace radix;
-
   namespace network
   {
 
@@ -37,14 +35,14 @@ namespace elle
       ///
       template <const Tag G,
                 typename... T>
-      class Inputs< G, Parameters<T...> >
-        : public Entity
+      class Inputs< G, radix::Parameters<T...> >
+        : public radix::Entity
       {
       public:
         //
         // types
         //
-        typedef Parameters<const T&...>                         P;
+        typedef radix::Parameters<const T&...>                         P;
 
         //
         // constructors & destructors
@@ -52,7 +50,7 @@ namespace elle
         Inputs(const T&...);
         template <template <typename...> class E,
                   typename... U>
-        Inputs(E< Parameters<U...> >&);
+        Inputs(E< radix::Parameters<U...> >&);
 
         //
         // interfaces
@@ -65,7 +63,7 @@ namespace elle
         // attributes
         //
         Tag             tag;
-        Arguments<P>    arguments;
+        radix::Arguments<P>    arguments;
       };
 
       ///
@@ -82,14 +80,14 @@ namespace elle
       ///
       template <const Tag G,
                 typename... T>
-      class Outputs< G, Parameters<T...> >
-        : public Entity
+      class Outputs< G, radix::Parameters<T...> >
+        : public radix::Entity
       {
       public:
         //
         // types
         //
-        typedef Parameters<T&...>                               P;
+        typedef radix::Parameters<T&...>                               P;
 
         //
         // constructors & destructors
@@ -97,7 +95,7 @@ namespace elle
         Outputs(T&...);
         template <template <typename...> class E,
                   typename... U>
-        Outputs(E< Parameters<U...> >&);
+        Outputs(E< radix::Parameters<U...> >&);
 
         //
         // interfaces
@@ -110,7 +108,7 @@ namespace elle
         // attributes
         //
         Tag             tag;
-        Arguments<P>    arguments;
+        radix::Arguments<P>    arguments;
       };
 
     };

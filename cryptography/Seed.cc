@@ -85,7 +85,7 @@ namespace elle
                                      Seed&                      seed) const
     {
       Code              code;
-      Region            chunk;
+      standalone::Region chunk;
 
       // wrap the seed's region.
       if (chunk.Wrap(this->region.contents,
