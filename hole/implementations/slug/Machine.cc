@@ -136,7 +136,7 @@ namespace hole
           auto                  end = Hole::Set.loci.end();
 
           // retrieve the machine's listening port.
-          this->port = Infinit::Configuration["hole"].Get("slug.port", Machine::Default::Port);
+          this->port = Infinit::Configuration["hole"].Get("slug.port", 0);
 
           // for every locus in the set.
           for (; iterator != end; ++iterator)
