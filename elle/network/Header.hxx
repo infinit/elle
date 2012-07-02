@@ -11,9 +11,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(elle::network::Header,
                       version)
 {
   assert(version == 0);
-  archive & value.event;
   archive & value.tag;
-  archive & value.size;
 }
 
 ELLE_SERIALIZE_SPLIT_LOAD(elle::network::Header,
@@ -22,9 +20,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::network::Header,
                       version)
 {
   assert(version == 0);
-  archive & value.event;
   archive & value.tag;
-  archive & value.size;
 }
 
 #endif

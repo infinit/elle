@@ -2,7 +2,7 @@
 
 #include <elle/log.hh>
 
-#include <protocol/PacketStream.hh>
+#include <protocol/Serializer.hh>
 
 ELLE_LOG_TRACE_COMPONENT("Infinit.Protocol");
 
@@ -15,9 +15,9 @@ namespace infinit
     `----------------*/
 
     static std::ostream&
-    operator << (std::ostream& s, PacketStream const& ps)
+    operator << (std::ostream& s, Serializer const& ps)
     {
-      s << "infinit::protocol::StreamBuffer(" << &ps << ")";
+      s << "infinit::protocol::Serializer(" << &ps << ")";
       return s;
     }
 
@@ -25,8 +25,9 @@ namespace infinit
     | Construction |
     `-------------*/
 
-    PacketStream::PacketStream(std::iostream& stream)
-      : _stream(stream)
+    Serializer::Serializer(reactor::Scheduler& scheduler, std::iostream& stream)
+      : Super(scheduler)
+      , _stream(stream)
     {}
 
     /*----------.
@@ -34,13 +35,11 @@ namespace infinit
     `----------*/
 
     Packet
-    PacketStream::read()
+    Serializer::read()
     {
       ELLE_LOG_TRACE("%s: read packet", *this)
         {
-          uint32_t size;
-          _stream.read(reinterpret_cast<char*>(&size), sizeof(size));
-          size = ntohl(size);
+          uint32_t size(_uint32_get(_stream));
           ELLE_LOG_TRACE("%s: packet size: %s, reading body", *this, size);
           Packet res(size);
           _stream.read(reinterpret_cast<char*>(res._data), size);
@@ -53,14 +52,12 @@ namespace infinit
     | Sending |
     `--------*/
     void
-    PacketStream::write(Packet& packet)
+    Serializer::write(Packet& packet)
     {
       ELLE_LOG_TRACE("%s: send packet of size %s",
                      *this, packet._data_size)
         {
-          uint32_t size = htonl(packet._data_size);
-          _stream.write(reinterpret_cast<char*>(&size),
-                        sizeof(size));
+          _uint32_put(_stream, packet._data_size);
           _stream.write(reinterpret_cast<char*>(packet._data),
                         packet._data_size);
         }

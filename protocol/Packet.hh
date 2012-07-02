@@ -26,6 +26,7 @@ namespace infinit
     | Properties |
     `-----------*/
     public:
+      const Byte* data() const;
       elle::Size size() const;
 
     /*--------.
@@ -36,10 +37,17 @@ namespace infinit
       friend class StreamBuffer;
       Packet(Size data_size);
       Packet(const Packet&);
-      friend class PacketStream;
+      friend class Serializer;
       Byte* _data;
       unsigned int _data_size;
     };
+
+    /*----------------.
+    | Pretty printing |
+    `----------------*/
+
+    // FIXME: use a printable interface
+    std::ostream& operator << (std::ostream& stream, Packet const& p);
   }
 }
 

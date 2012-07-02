@@ -20,9 +20,9 @@ namespace infinit
       };
 
       StreamBuffer(Packet& p)
-      : _packet(p)
-      , _size(0)
-      , _mode(Mode::fresh)
+        : _mode(Mode::fresh)
+        , _packet(p)
+        , _size(0)
       {}
 
       virtual elle::Buffer write_buffer()
@@ -55,6 +55,8 @@ namespace infinit
               assert(_packet._data);
               _mode = Mode::eof;
               return elle::Buffer(_packet._data, _packet._data_size);
+            case Mode::write:
+              std::abort();
           }
       }
 
@@ -92,6 +94,12 @@ namespace infinit
     | Properties |
     `-----------*/
 
+    const Packet::Byte*
+    Packet::data() const
+    {
+      return this->_data;
+    }
+
     elle::Size
     Packet::size() const
     {
@@ -107,5 +115,16 @@ namespace infinit
       , _data(new Byte[data_size])
       , _data_size(data_size)
     {}
+
+    /*----------------.
+    | Pretty printing |
+    `----------------*/
+
+    std::ostream&
+    operator << (std::ostream& stream, Packet const& p)
+    {
+      stream << "packet of size " << p.size();
+      return stream;
+    }
   }
 }

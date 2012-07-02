@@ -1,7 +1,12 @@
 #ifndef ELLE_NETWORK_TCPSOCKET_HXX
 #define ELLE_NETWORK_TCPSOCKET_HXX
 
-#include <elle/concurrency/Event.hh>
+#include <elle/idiom/Close.hh>
+# include <elle/print.hh>
+# include <reactor/scheduler.hh>
+# include <reactor/thread.hh>
+#include <elle/idiom/Open.hh>
+
 #include <elle/concurrency/Program.hh>
 #include <elle/concurrency/Scheduler.hh>
 
@@ -19,52 +24,41 @@
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
-#include <protocol/PacketStream.hh>
+# include <protocol/Channel.hh>
+# include <protocol/ChanneledStream.hh>
+# include <protocol/Serializer.hh>
 
 namespace elle
 {
   namespace network
   {
-
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-    ///
-    /// this method sends a packet.
-    ///
     template <typename I>
-    Status              TCPSocket::Send(const I                 inputs,
-                                        const concurrency::Event& event)
+    void
+    TCPSocket::send(const I inputs)
+    {
+      send(inputs, *_channels);
+    }
+
+    template <typename I>
+    void
+    TCPSocket::send(const I inputs, infinit::protocol::Stream& channel)
     {
       ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
-      ELLE_LOG_TRACE_SCOPE("%s: send packet %s with event %s",
-                           *this, inputs.tag, event.Identifier());
+      ELLE_LOG_TRACE_SCOPE("%s: send packet %s", *this, inputs.tag);
 
-      try
-        {
-          Data body;
-          body.Writer() << inputs;
+      Data body;
+      body.Writer() << inputs;
 
-          Data whole;
-          whole.Writer() << inputs.tag << event << body;
+      infinit::protocol::Packet packet;
+      serialize::OutputBinaryArchive whole(packet);
+      whole << inputs.tag << body;
 
-          infinit::protocol::Packet packet;
-          packet.write((char*)whole.Contents(), whole.Size());
-          packet.flush();
+      packet.flush();
 
-          infinit::protocol::PacketStream ps(*_socket);
-          {
-            reactor::Lock lock(elle::concurrency::scheduler(), _socket_write_lock);
-            ps.write(packet);
-          }
-        }
-      catch (std::exception const& e)
-        {
-          escape("%s", e.what());
-        }
-
-      return Status::Ok;
+      {
+        reactor::Lock lock(elle::concurrency::scheduler(), _stream_write_lock);
+        channel.write(packet);
+      }
     }
 
     ///
@@ -72,20 +66,13 @@ namespace elle
     ///
     template <typename O>
     Status
-    TCPSocket::Receive(concurrency::Event& event, O outputs)
+    TCPSocket::receive(infinit::protocol::Stream& channel, O outputs)
     {
       ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
-      Parcel* parcel;
+      ELLE_LOG_TRACE_SCOPE("%s: wait for answer.", *this);
 
-      // block the current fiber until the given event is received.
-      ELLE_LOG_TRACE("%s: wait on event %s for tag %s",
-                     *this, event.Identifier(), outputs.tag);
-      concurrency::scheduler().current()->wait(event.Signal());
-      parcel = event.Parcel();
-      ELLE_LOG_TRACE("%s: awaken on event %s with tag %s",
-                     *this, event.Identifier(), parcel->header->tag);
-
-      assert(parcel != nullptr && "The event should have filled the parcel");
+      infinit::protocol::Packet packet(channel.read());
+      Parcel* parcel = _read_parcel(packet);
 
       // check the tag.
       if (parcel->header->tag != outputs.tag)
@@ -143,27 +130,19 @@ namespace elle
     Status              TCPSocket::Call(const I                 inputs,
                                         O                       outputs)
     {
-      concurrency::Event event;
-
       ELLE_LOG_TRACE_COMPONENT("Infinit.Network");
 
-      // generate an event to link the request with the response.
-      if (event.Generate() == Status::Error)
-        escape("unable to generate the event");
-      event.Signal();
+      infinit::protocol::Channel channel(*_channels);
 
-      // send the inputs.
-      ELLE_LOG_TRACE("%s: call tag %s on event %s and await tag %s",
-                     *this, inputs.tag, event.Identifier(), outputs.tag)
+      // Send the inputs.
+      ELLE_LOG_TRACE("%s: call tag %s and await tag %s",
+                     *this, inputs.tag, outputs.tag)
         {
-          if (this->Send(inputs, event) == Status::Error)
-            escape("unable to send the inputs");
-
-          // wait for the reply.
-          if (this->Receive(event, outputs) == Status::Error)
+          this->send(inputs, channel);
+          if (this->receive(channel, outputs) == Status::Error)
             escape("unable to receive the outputs");
         }
-      event.Cleanup();
+
       return Status::Ok;
     }
 
@@ -172,15 +151,11 @@ namespace elle
     /// whose tag is specified in the current session.
     ///
     template <typename I>
-    Status              TCPSocket::Reply(const I                inputs)
+    void
+    TCPSocket::reply(const I inputs)
     {
-      if (this->Send(inputs, current_context().parcel->header->event) == Status::Error)
-        escape("unable to send the reply");
-      current_context().parcel->header->event.Cleanup();
-
-      return Status::Ok;
+      this->send(inputs, *current_context().channel);
     }
-
   }
 }
 

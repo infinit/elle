@@ -1,21 +1,27 @@
-#ifndef INFINIT_PROTOCOL_PACKET_STREAM_HH
-# define INFINIT_PROTOCOL_PACKET_STREAM_HH
+#ifndef INFINIT_PROTOCOL_PACKET_SERIALIZER_HH
+# define INFINIT_PROTOCOL_PACKET_SERIALIZER_HH
 
 # include <iostream>
 
-# include <protocol/Packet.hh>
+# include <protocol/Stream.hh>
 
 namespace infinit
 {
   namespace protocol
   {
-    class PacketStream
+    class Serializer: public Stream
     {
+    /*------.
+    | Types |
+    `------*/
+    public:
+      typedef Stream Super;
+
     /*-------------.
     | Construction |
     `-------------*/
     public:
-      PacketStream(std::iostream& stream);
+      Serializer(reactor::Scheduler& scheduler, std::iostream& stream);
 
     /*----------.
     | Receiving |

@@ -11,15 +11,12 @@ namespace elle
 {
   namespace network
   {
-
+    /// This class is just a wrapper for packets freshly received.
     ///
-    /// this class is just a wrapper for packets freshly received.
-    ///
-    /// whenver a message is being receveid, a parcel is author . then
-    /// the session associated with this message is recorded before extracting
-    /// the header. finally knowing the message's constituent types, the
-    /// data can be fetched and extracted.
-    ///
+    /// Whenever a message is being receveid, a parcel is author.
+    /// Then the session associated with this message is recorded
+    /// before extracting the header. finally knowing the message's
+    /// constituent types, the data can be fetched and extracted.
     class Parcel:
       public radix::Entity
     {

@@ -2,8 +2,6 @@
 
 #include <elle/standalone/Report.hh>
 
-#include <elle/concurrency/Event.hh>
-
 #include <elle/idiom/Close.hh>
 # include <elle/log.hh>
 #include <elle/idiom/Open.hh>
