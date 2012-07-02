@@ -171,5 +171,8 @@ namespace elle { namespace format { namespace json {
 
 }}} // !namespace elle::format::json
 
+# include "Array.hxx" // XXX fix undefined reference in Object::Load<list>()
+
 #endif
+
 
