@@ -1,7 +1,10 @@
 #include <agent/Agent.hh>
 
+#include <elle/io/Console.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/idiom/Open.hh>
+
+#include <boost/filesystem.hpp>
 
 #include <Infinit.hh>
 
@@ -27,6 +30,8 @@ namespace agent
   ///
   nucleus::neutron::Subject Agent::Subject;
 
+  elle::String                  Agent::meta_token;
+
 //
 // ---------- methods ---------------------------------------------------------
 //
@@ -37,7 +42,6 @@ namespace agent
   elle::Status          Agent::Initialize()
   {
     elle::String        prompt;
-    elle::String        pass;
 
     // disable the meta logging.
     if (elle::radix::Meta::Disable() == elle::Status::Error)
@@ -51,31 +55,49 @@ namespace agent
       if (Agent::Identity.Exist(Infinit::User) == elle::Status::False)
         escape("the user identity does not seem to exist");
 
-      // prompt the user for the passphrase.
-      /* XXX[to change to a better version where we retrieve the passphrase from
-             the watchdog]
-      prompt = "Enter passphrase for keypair '" + Infinit::User + "': ";
+      // XXX to be improved with security in mind
+      elle::io::Path home;
+      home.Create(lune::Lune::Home);
+      boost::filesystem::path path{home.str()};
+      path /= "identity.wtg";
 
-      if (elle::io::Console::Input(
-            pass,
-            prompt,
-            elle::io::Console::OptionPassword) == elle::Status::Error)
-        escape("unable to read the input");
-      */
-      // XXX[temporary fix]
-      pass = "";
+      std::ifstream identity_file(path.string());
+      if (identity_file.good())
+        {
+          std::getline(identity_file, Agent::meta_token);
+          std::string clear_identity;
+          std::getline(identity_file, clear_identity);
+          Agent::Identity.Restore(clear_identity);
+        }
+      else
+        {
+          elle::log::warn("Cannot load identity from watchdog ", path.string());
+          elle::String        pass;
+          // prompt the user for the passphrase.
+          /* XXX[to change to a better version where we retrieve the passphrase from
+                 the watchdog]
+          prompt = "Enter passphrase for keypair '" + Infinit::User + "': ";
 
-      // load the identity.
-      if (Agent::Identity.Load(Infinit::User) == elle::Status::Error)
-        escape("unable to load the identity");
+          if (elle::io::Console::Input(
+                pass,
+                prompt,
+                elle::io::Console::OptionPassword) == elle::Status::Error)
+            escape("unable to read the input");
+          */
+          // XXX[temporary fix]
 
-      // verify the identity.
-      if (Agent::Identity.Validate(Infinit::Authority) == elle::Status::Error)
-        escape("the identity seems to be invalid");
+          // load the identity.
+          if (Agent::Identity.Load(Infinit::User) == elle::Status::Error)
+            escape("unable to load the identity");
 
-      // decrypt the identity.
-      if (Agent::Identity.Decrypt(pass) == elle::Status::Error)
-        escape("unable to decrypt the identity");
+          // verify the identity.
+          if (Agent::Identity.Validate(Infinit::Authority) == elle::Status::Error)
+            escape("the identity seems to be invalid");
+
+          // decrypt the identity.
+          if (Agent::Identity.Decrypt(pass) == elle::Status::Error)
+            escape("unable to decrypt the identity");
+        }
     }
 
     //

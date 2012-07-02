@@ -103,5 +103,16 @@ namespace reactor
     {
       return listen(EndPoint(boost::asio::ip::tcp::v4(), port));
     }
+
+    TCPServer::EndPoint
+    TCPServer::local_endpoint() const
+    {
+      if (_acceptor == nullptr)
+        throw Exception(
+            const_cast<TCPServer*>(this)->scheduler(), //XXX
+            "The server is not listening.");
+      return _acceptor->local_endpoint();
+    }
+
   }
 }

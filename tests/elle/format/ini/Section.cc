@@ -2,7 +2,7 @@
 #include <cassert>
 #include <iostream>
 
-#include <elle/format/ini/Section.hxx>
+#include <elle/format/ini/Section.hh>
 
 namespace ini = elle::format::ini;
 

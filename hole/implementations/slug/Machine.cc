@@ -1,17 +1,12 @@
-#include <elle/log.hh>
+#include <reactor/network/exception.hh>
+#include <reactor/network/tcp-server.hh>
+
+#include <agent/Agent.hh>
+
 #include <elle/utility/Buffer.hh>
 #include <elle/network/Header.hh>
 #include <elle/network/Bundle.hh>
 #include <elle/standalone/Report.hh>
-#include <elle/network/Network.hh>
-#include <elle/network/Inputs.hh>
-#include <elle/network/Outputs.hh>
-#include <elle/standalone/Morgue.hh>
-#include <elle/network/TCPSocket.hh>
-#include <elle/concurrency/Callback.hh>
-
-#include <reactor/network/exception.hh>
-#include <reactor/network/tcp-server.hh>
 
 #include <lune/Passport.hh>
 
@@ -21,11 +16,23 @@
 
 #include <hole/implementations/slug/Cluster.hh>
 
+#include <elle/network/Network.hh>
+#include <elle/network/Inputs.hh>
+#include <elle/network/Outputs.hh>
+
+#include <elle/standalone/Morgue.hh>
+
+#include <elle/network/TCPSocket.hh>
 #include <hole/Hole.hh>
 #include <hole/implementations/slug/Machine.hh>
 #include <hole/implementations/slug/Manifest.hh>
 
 #include <Infinit.hh>
+
+
+#include <plasma/meta/Client.hh>
+
+#include <elle/log.hh>
 
 ELLE_LOG_TRACE_COMPONENT("Infinit.Hole.Slug.Machine");
 
@@ -134,7 +141,7 @@ namespace hole
           auto                  end = Hole::Set.loci.end();
 
           // retrieve the machine's listening port.
-          this->port = Infinit::Configuration["hole"].Get("slug.port", Machine::Default::Port);
+          this->port = Infinit::Configuration["hole"].Get("slug.port", 0);
 
           // for every locus in the set.
           for (; iterator != end; ++iterator)
@@ -191,6 +198,23 @@ namespace hole
             escape("unable to create the locus");
 
           _server->listen(locus.port);
+          short port = _server->local_endpoint().port();
+            {
+              // XXX should be done with a signal
+              plasma::meta::Client client("127.0.0.1", 12345);
+              lune::Passport passport;
+              if (passport.Load() != elle::Status::Ok)
+                escape("Cannot load passport");
+              try
+                {
+                  client.token(agent::Agent::meta_token);
+                  client.update_device(passport.id, nullptr, nullptr, port);
+                }
+              catch (std::exception const& err)
+                {
+                  escape("Cannot update device port: %s", err.what());
+                }
+            }
           new reactor::Thread(elle::concurrency::scheduler(),
                               "Slug accept",
                               boost::bind(&Machine::_accept, this),
@@ -1121,9 +1145,8 @@ namespace hole
 
                   // subscribe to the signal.
                   if (host->signal.dead.Subscribe(
-                        elle::concurrency::Callback<>::Infer(
-                          &Machine::Sweep,
-                          this)) == elle::Status::Error)
+                        elle::concurrency::Callback<>::Infer(&Machine::Sweep,
+                                                this)) == elle::Status::Error)
                     throw std::runtime_error("unable to subscribe to the signal");
 
                   // add the host to the guestlist for now until it
@@ -1271,9 +1294,8 @@ namespace hole
 
               // subscribe to the signal.
               if (host->signal.dead.Subscribe(
-                    elle::concurrency::Callback<>::Infer(
-                      &Machine::Sweep,
-                      this)) == elle::Status::Error)
+                    elle::concurrency::Callback<>::Infer(&Machine::Sweep,
+                                            this)) == elle::Status::Error)
                 escape("unable to subscribe to the signal");
 
               // add the host to the guestlist.

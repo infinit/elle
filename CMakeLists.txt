@@ -189,7 +189,7 @@ target_link_libraries(8infinit
   infinit
   ${Boost_LIBRARIES}
   ${CMAKE_THREAD_LIBS_INIT}
-  elle etoile nucleus lune agent hole horizon nucleus protocol
+  elle etoile nucleus lune agent  hole metal horizon nucleus protocol
 )
 
 # XXX

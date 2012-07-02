@@ -2,6 +2,7 @@
 
 #include <elle/print.hh>
 #include <elle/serialize/JSONArchive.hh>
+#include <elle/format/json/Dictionary.hxx>
 #include <elle/serialize/ListSerializer.hxx>
 
 #include "Client.hh"
@@ -142,8 +143,8 @@ namespace plasma
     {
       json::Dictionary request{std::map<std::string, std::string>{
           {"name", name},
-          {"ip", local_address},
-          {"port", elle::sprint(port)},
+          {"local_ip", local_address},
+          {"local_port", elle::sprint(port)},
       }};
       return this->_post<CreateDeviceResponse>("/devices", request);
     }
@@ -161,9 +162,9 @@ namespace plasma
       if (name != nullptr)
         request["name"] = *name;
       if (local_address != nullptr)
-        request["ip"] = *local_address;
+        request["local_ip"] = *local_address;
       if (port != 0)
-        request["port"] = port;
+        request["local_port"] = port;
 
       return this->_post<UpdateDeviceResponse>("/devices", request);
 
@@ -172,6 +173,11 @@ namespace plasma
     NetworksResponse Client::networks()
     {
       return this->_get<NetworksResponse>("/networks");
+    }
+
+    void Client::token(std::string const& tok)
+    {
+      _impl->token = tok;
     }
 
     // - Generic http POST and GET --------------------------------------------
