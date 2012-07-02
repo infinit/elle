@@ -36,7 +36,7 @@ namespace elle { namespace format { namespace json {
       {
         result.push_back(obj->as<T>());
       }
-
+      return result;
     }
 
 }}}
