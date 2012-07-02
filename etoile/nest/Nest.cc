@@ -356,7 +356,7 @@ elle::Status            Nest::Show(const elle::Natural32        margin)
 
   std::cout << alignment << "[Nest]" << std::endl;
 
-  std::cout << alignment << elle::Dumpable::Shift << "[Placements] #"
+  std::cout << alignment << elle::io::Dumpable::Shift << "[Placements] #"
             << Nest::Placements.size() << std::endl;
 
   for (; i != e; ++i)
@@ -368,12 +368,13 @@ elle::Status            Nest::Show(const elle::Natural32        margin)
   auto                  j = Nest::Addresses.begin();
   auto                  f = Nest::Addresses.end();
 
-  std::cout << alignment << elle::Dumpable::Shift << "[Addresses] #"
+  std::cout << alignment << elle::io::Dumpable::Shift << "[Addresses] #"
             << Nest::Addresses.size() << std::endl;
 
   for (; j != f; ++j)
     {
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
                 << "[Pod] " << std::hex << j->second << std::endl;
     }
 

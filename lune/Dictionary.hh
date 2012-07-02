@@ -11,10 +11,6 @@
 namespace lune
 {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
   ///
   /// this class maintains a mapping between local users/groups and
   /// Infinit identifiers so that Infinit can be used with local file
@@ -40,13 +36,8 @@ namespace lune
     // dumpable
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
-    // archivable
-    //elle::Status        Serialize(elle::Archive&) const;
-    //elle::Status        Extract(elle::Archive&);
-
     // fileable
     ELLE_CONCEPT_FILEABLE_METHODS();
-
     elle::Status        Load(const elle::String&);
     elle::Status        Store(const elle::String&) const;
     elle::Status        Erase(const elle::String&) const;
@@ -61,5 +52,6 @@ namespace lune
 
 }
 
-#endif
 #include <lune/Dictionary.hxx>
+
+#endif

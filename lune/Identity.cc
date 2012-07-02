@@ -1,12 +1,14 @@
+#include <lune/Identity.hh>
+#include <lune/Authority.hh>
+#include <lune/Lune.hh>
+
 #include <elle/cryptography/KeyPair.hh>
 #include <elle/cryptography/Cipher.hh>
+#include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/Signature.hh>
-
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
-
-#include <lune/Identity.hh>
-#include <lune/Lune.hh>
+#include <elle/serialize/TupleSerializer.hxx> // XXX[hh]
 
 namespace lune
 {
@@ -190,11 +192,11 @@ namespace lune
     std::cout << alignment << "[Identity]" << std::endl;
 
     // dump the id.
-    std::cout << alignment << elle::Dumpable::Shift
+    std::cout << alignment << elle::io::Dumpable::Shift
               << "[Id] " << this->_id << std::endl;
 
     // dump the name.
-    std::cout << alignment << elle::Dumpable::Shift
+    std::cout << alignment << elle::io::Dumpable::Shift
               << "[Name] " << this->name << std::endl;
 
     // dump the pair.
@@ -215,12 +217,16 @@ namespace lune
     return elle::Status::Ok;
   }
 
+//
+// ---------- fileable --------------------------------------------------------
+//
+
   ///
   /// this method loads a user's identity file.
   ///
   elle::Status          Identity::Load(const elle::String&      name)
   {
-    elle::Path          path;
+    elle::io::Path          path;
     elle::standalone::Region        region;
 
     // create the path.
@@ -242,7 +248,7 @@ namespace lune
   ///
   elle::Status          Identity::Store(const elle::String&     name) const
   {
-    elle::Path          path;
+    elle::io::Path          path;
     elle::standalone::Region        region;
     elle::String        string;
 
@@ -265,7 +271,7 @@ namespace lune
   ///
   elle::Status          Identity::Erase(const elle::String&     name) const
   {
-    elle::Path          path;
+    elle::io::Path          path;
 
     // create the path.
     if (path.Create(Lune::User::Identity) == elle::Status::Error)
@@ -287,7 +293,7 @@ namespace lune
   ///
   elle::Status          Identity::Exist(const elle::String&     name) const
   {
-    elle::Path          path;
+    elle::io::Path          path;
 
     // create the path.
     if (path.Create(Lune::User::Identity) == elle::Status::Error)

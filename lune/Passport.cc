@@ -1,9 +1,9 @@
-
-#include <elle/serialize/TupleSerializer.hxx>
 #include <hole/Label.hh>
 
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
+#include <elle/cryptography/PrivateKey.hh>
+#include <elle/serialize/TupleSerializer.hxx> // XXX[hh]
 
 #include <lune/Passport.hh>
 #include <lune/Lune.hh>
@@ -92,7 +92,7 @@ namespace lune
       escape("unable to dump the label");
 
     // dump the id.
-    std::cout << alignment << elle::Dumpable::Shift << "[Id] "
+    std::cout << alignment << elle::io::Dumpable::Shift << "[Id] "
               << this->id << std::endl;
 
     // dump the signature.
@@ -103,38 +103,6 @@ namespace lune
   }
 
 //
-// ---------- archivable ------------------------------------------------------
-//
-
-  ///
-  /// this method serializes the object.
-  ///
-  //elle::Status          Passport::Serialize(elle::Archive&      archive) const
-  //{
-  //  // serialize the attributes.
-  //  if (archive.Serialize(this->label,
-  //                        this->id,
-  //                        this->signature) == elle::Status::Error)
-  //    escape("unable to serialize the attributes");
-
-  //  return elle::Status::Ok;
-  //}
-
-  /////
-  ///// this method extracts the object.
-  /////
-  //elle::Status          Passport::Extract(elle::Archive&        archive)
-  //{
-  //  // extract the attributes.
-  //  if (archive.Extract(this->label,
-  //                      this->id,
-  //                      this->signature) == elle::Status::Error)
-  //    escape("unable to extract the attributes");
-
-  //  return elle::Status::Ok;
-  //}
-
-//
 // ---------- fileable --------------------------------------------------------
 //
 
@@ -143,7 +111,7 @@ namespace lune
   ///
   elle::Status          Passport::Load()
   {
-    elle::Path          path;
+    elle::io::Path          path;
     elle::standalone::Region        region;
 
     // create the path.
@@ -161,7 +129,7 @@ namespace lune
   ///
   elle::Status          Passport::Store() const
   {
-    elle::Path          path;
+    elle::io::Path          path;
     elle::standalone::Region        region;
     elle::String        string;
 
@@ -180,7 +148,7 @@ namespace lune
   ///
   elle::Status          Passport::Erase() const
   {
-    elle::Path          path;
+    elle::io::Path          path;
 
     // create the path.
     if (path.Create(Lune::Passport) == elle::Status::Error)
@@ -198,7 +166,7 @@ namespace lune
   ///
   elle::Status          Passport::Exist() const
   {
-    elle::Path          path;
+    elle::io::Path          path;
 
     // create the path.
     if (path.Create(Lune::Passport) == elle::Status::Error)

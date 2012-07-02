@@ -16,7 +16,7 @@
 //
 
 #include <elle/types.hh>
-#include <lune/Lune.hh>
+#include <lune/Phrase.hh>
 
 ///
 /// the principal Etoile namespace which provides functionalities for

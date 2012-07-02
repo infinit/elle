@@ -1,14 +1,4 @@
 //
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [mon mar  8 23:05:41 2010]
-//
-
-//
 // ---------- macro-functions -------------------------------------------------
 //
 
@@ -348,24 +338,22 @@
 #define message(_tag_, _parameters_)                                    \
   namespace elle                                                        \
   {                                                                     \
-    using namespace radix;                                              \
-                                                                        \
     namespace network                                                   \
     {                                                                   \
       template <>                                                       \
       struct Message< _tag_ >:                                          \
-        public Entity                                                   \
+        public radix::Entity                                            \
       {                                                                 \
       public:                                                           \
         static const Tag                        G = _tag_;              \
                                                                         \
-        typedef Parameters<_parameters_ >       P;                      \
+        typedef radix::Parameters<_parameters_ > P;                     \
                                                                         \
         struct                                  B                       \
         {                                                               \
           typedef Bundle::Inputs<G,                                     \
                                  typename                               \
-                                   Trait::Constant<                     \
+                                   radix::Trait::Constant<              \
                                      P                                  \
                                    >::Type                              \
                                  >              Inputs;                 \

@@ -176,7 +176,7 @@ namespace nucleus
       // if present, dump the content.
       if (this->content != NULL)
         {
-          std::cout << alignment << elle::Dumpable::Shift
+          std::cout << alignment << elle::io::Dumpable::Shift
                     << "[Content]" << std::endl;
 
           if (this->content->Dump(margin + 4) == elle::Status::Error)
@@ -184,14 +184,14 @@ namespace nucleus
         }
       else
         {
-          std::cout << alignment << elle::Dumpable::Shift
+          std::cout << alignment << elle::io::Dumpable::Shift
                     << "[Content] " << elle::none << std::endl;
         }
 
       // if present, dump the cipher.
       if (this->cipher != NULL)
         {
-          std::cout << alignment << elle::Dumpable::Shift
+          std::cout << alignment << elle::io::Dumpable::Shift
                     << "[Cipher]" << std::endl;
 
           if (this->cipher->Dump(margin + 4) == elle::Status::Error)
@@ -199,7 +199,7 @@ namespace nucleus
         }
       else
         {
-          std::cout << alignment << elle::Dumpable::Shift
+          std::cout << alignment << elle::io::Dumpable::Shift
                     << "[Cipher] " << elle::none << std::endl;
         }
 

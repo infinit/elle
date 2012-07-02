@@ -10,6 +10,7 @@
 #include <reactor/network/tcp-server.hh>
 
 #include <nucleus/proton/Block.hh>
+#include <nucleus/proton/Block.hh>
 
 #include <hole/Hole.hh>
 #include <hole/implementations/remote/Manifest.hh>
@@ -711,7 +712,7 @@ namespace hole
         if (this->_locus.Dump(margin + 2) == elle::Status::Error)
           escape("unable to dump the locus");
 
-        std::cout << alignment << elle::Dumpable::Shift
+        std::cout << alignment << elle::io::Dumpable::Shift
                   << "[Customers] " << this->container.size() << std::endl;
 
         // go though the customer.

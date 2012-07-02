@@ -1,4 +1,3 @@
-
 #include <elle/log.hh>
 
 #include <boost/lexical_cast.hpp>
@@ -18,12 +17,12 @@
 #include <hole/Hole.hh>
 #include <Infinit.hh>
 
+ELLE_LOG_TRACE_COMPONENT("nucleus.proton.MutableBlock");
+
 namespace nucleus
 {
   namespace proton
   {
-
-    ELLE_LOG_TRACE_COMPONENT("nucleus.proton.MutableBlock");
 
 //
 // ---------- constructs & destructors ----------------------------------------
@@ -130,7 +129,7 @@ namespace nucleus
                                            const Address&       address,
                                            const Version&       version)
     {
-      elle::Path        path;
+      elle::io::Path        path;
       elle::String      unique;
 
       // first, turn the block's address into a hexadecimal string.
@@ -184,7 +183,7 @@ namespace nucleus
           // if the requested version is the latest...
           if (version == Version::Last)
             {
-              elle::Path        link;
+              elle::io::Path        link;
               elle::standalone::Region      r;
 
               // copy the path.
@@ -241,7 +240,7 @@ namespace nucleus
                                             const Address&      address)
       const
     {
-      elle::Path        file;
+      elle::io::Path        file;
       elle::String      unique;
 
 
@@ -325,7 +324,7 @@ namespace nucleus
           // of the latest version of the mutable block.
           //
           elle::String          number;
-          elle::Path            link;
+          elle::io::Path            link;
           elle::standalone::Region          region;
           nucleus::History      history;
 
@@ -408,8 +407,8 @@ namespace nucleus
     elle::Status        MutableBlock::Erase(const Network&      network,
                                             const Address&      address)
     {
-      elle::Unique      unique;
-      elle::Path        path;
+      elle::io::Unique      unique;
+      elle::io::Path        path;
 
 
       // turn the block's address into a hexadecimal string.
@@ -469,7 +468,7 @@ namespace nucleus
             {
               nucleus::Version  version;
               elle::String      number;
-              elle::Path        file;
+              elle::io::Path        file;
 
               // select a particular version.
               if (history.Select(i, version) == elle::Status::Error)
@@ -530,7 +529,7 @@ namespace nucleus
                                             const Version&      version)
       const
     {
-      elle::Path                path;
+      elle::io::Path                path;
       elle::String              unique;
 
       // first, turn the block's address into a hexadecimal string.
@@ -568,7 +567,7 @@ namespace nucleus
           // if the requested version is the latest...
           if (version == Version::Last)
             {
-              elle::Path        link;
+              elle::io::Path        link;
               elle::standalone::Region      r;
 
               // copy the path.

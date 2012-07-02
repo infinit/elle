@@ -1,9 +1,15 @@
+#include <satellites/passport/Passport.hh>
+
+#include <Infinit.hh>
 #include <elle/Elle.hh>
+#include <lune/Lune.hh>
+#include <etoile/Etoile.hh>
+#include <hole/Hole.hh>
+#include <lune/Authority.hh>
+#include <lune/Passport.hh>
 #include <elle/cryptography/Random.hh>
 #include <elle/io/Console.hh>
 #include <elle/utility/Parser.hh>
-
-#include <satellites/passport/Passport.hh>
 
 namespace satellite
 {

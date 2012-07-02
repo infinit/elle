@@ -1,11 +1,15 @@
-
+#include <Infinit.hh>
+#include <lune/Lune.hh>
+#include <etoile/Etoile.hh>
 #include <elle/Elle.hh>
 #include <elle/cryptography/PublicKey.hh>
 #include <elle/io/Console.hh>
 #include <elle/io/Piece.hh>
 #include <elle/io/Directory.hh>
 #include <elle/utility/Parser.hh>
-
+#include <lune/Identity.hh>
+#include <lune/Authority.hh>
+#include <lune/Dictionary.hh>
 #include <satellites/user/User.hh>
 
 namespace satellite
@@ -137,7 +141,7 @@ namespace satellite
     // remove the user directory.
     //
     {
-      elle::Path        path;
+      elle::io::Path        path;
 
       // create the user path.
       if (path.Create(lune::Lune::User::Root) == elle::Status::Error)
@@ -168,7 +172,7 @@ namespace satellite
     elle::String        pass;
     lune::Identity      identity;
     elle::cryptography::PublicKey     K;
-    elle::Unique        unique;
+    elle::io::Unique        unique;
 
     // check the argument.
     if (name.empty() == true)

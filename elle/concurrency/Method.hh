@@ -15,10 +15,6 @@ namespace elle
   namespace concurrency
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// Method generic class.
     ///
@@ -32,7 +28,7 @@ namespace elle
               typename... T>
     class Method< R,
                   radix::Parameters<T...> >:
-      public Object
+      public radix::Object
     {
     public:
       //
@@ -149,7 +145,7 @@ namespace elle
       template <typename R,
                 typename C,
                 typename... T>
-      static Method< R, Parameters<T...> >      Infer(R (C::*)(T...),
+      static Method< R, radix::Parameters<T...> >      Infer(R (C::*)(T...),
                                                       C*);
     };
 

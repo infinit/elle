@@ -42,8 +42,6 @@ virtual void deserialize(is&) { throw false; }                                \
   )                                                                           \
   /**/
 
-
-
 namespace nucleus
 {
   namespace proton
@@ -118,7 +116,6 @@ namespace nucleus
 
   }
 }
-
 
 # include <nucleus/proton/Block.hxx>
 

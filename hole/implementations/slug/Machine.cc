@@ -1742,11 +1742,11 @@ namespace hole
         std::cout << alignment << "[Machine]" << std::endl;
 
         // dump the state.
-        std::cout << alignment << elle::Dumpable::Shift
+        std::cout << alignment << elle::io::Dumpable::Shift
                   << "[State] " << this->state << std::endl;
 
         // dump the port.
-        std::cout << alignment << elle::Dumpable::Shift
+        std::cout << alignment << elle::io::Dumpable::Shift
                   << "[Port] " << std::dec << this->port << std::endl;
 
         // dump the guestlist.

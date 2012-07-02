@@ -4,7 +4,6 @@
 # include <cassert>
 
 # include <elle/serialize/Pointer.hh>
-# include <elle/cryptography/Code.hh>
 
 # include <nucleus/neutron/Token.hh>
 

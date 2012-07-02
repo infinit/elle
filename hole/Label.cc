@@ -130,7 +130,7 @@ namespace hole
     // display the label depending on its value.
     if (*this == Label::Null)
       {
-        std::cout << alignment << elle::Dumpable::Shift
+        std::cout << alignment << elle::io::Dumpable::Shift
                   << "[Digest] " << elle::none << std::endl;
       }
     else
@@ -142,60 +142,5 @@ namespace hole
 
     return elle::Status::Ok;
   }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-  ///
-  /// this method serializes the label object.
-  ///
-  //elle::Status          Label::Serialize(elle::Archive& archive) const
-  //{
-  //  if (this->digest != NULL)
-  //    {
-  //      // serialize the internal digest.
-  //      if (archive.Serialize(*this->digest) == elle::Status::Error)
-  //        escape("unable to serialize the digest");
-  //    }
-  //  else
-  //    {
-  //      // serialize 'none'.
-  //      if (archive.Serialize(elle::none) == elle::Status::Error)
-  //        escape("unable to serialize 'none'");
-  //    }
-
-  //  return elle::Status::Ok;
-  //}
-
-  /////
-  ///// this method extracts the label object.
-  /////
-  //elle::Status          Label::Extract(elle::Archive&           archive)
-  //{
-  //  elle::Archive::Type type;
-
-  //  // fetch the next element's type.
-  //  if (archive.Fetch(type) == elle::Status::Error)
-  //    escape("unable to fetch the next element's type");
-
-  //  if (type == elle::Archive::TypeNull)
-  //    {
-  //      // nothing to do, keep the digest to NULL.
-  //      if (archive.Extract(elle::none) == elle::Status::Error)
-  //        escape("unable to extract null");
-  //    }
-  //  else
-  //    {
-  //      // allocate a digest.
-  //      this->digest = new elle::cryptography::Digest;
-
-  //      // extract the internal digest.
-  //      if (archive.Extract(*this->digest) == elle::Status::Error)
-  //        escape("unable to extract the digest");
-  //    }
-
-  //  return elle::Status::Ok;
-  //}
 
 }

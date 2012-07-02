@@ -15,8 +15,8 @@ namespace elle
     ///
     template <typename R,
               typename... U>
-    Closure< R, Parameters<U...> >::Closure(
-        Callback< R, Parameters<U...> >                         callback,
+    Closure< R, radix::Parameters<U...> >::Closure(
+        Callback< R, radix::Parameters<U...> >                         callback,
         U&...                                                   objects):
       callback(callback),
       arguments(objects...)
@@ -29,7 +29,7 @@ namespace elle
     ///
     template <typename R,
               typename... U>
-    R           Closure< R, Parameters<U...> >::Call()
+    R           Closure< R, radix::Parameters<U...> >::Call()
     {
       return (this->arguments.Call(this->callback));
     }
@@ -39,7 +39,7 @@ namespace elle
     ///
     template <typename R,
               typename... U>
-    Void        Closure< R, Parameters<U...> >::Trigger()
+    Void        Closure< R, radix::Parameters<U...> >::Trigger()
     {
       this->arguments.Trigger(this->callback);
     }
@@ -47,7 +47,7 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(_(Closure< R, Parameters<U...> >),
+    embed(_(Closure< R, radix::Parameters<U...> >),
           _(template <typename R,
                       typename... U>));
 
@@ -57,7 +57,7 @@ namespace elle
     template <typename R,
               typename... U>
     Status
-    Closure< R, Parameters<U...> >::Dump(const Natural32        margin) const
+    Closure< R, radix::Parameters<U...> >::Dump(const Natural32        margin) const
     {
       String            alignment(margin, ' ');
 
@@ -85,9 +85,9 @@ namespace elle
               typename... U,
               typename... V>
     Closure< R,
-             Parameters<U...>,
-             Parameters<V...> >::Closure(
-        Callback< R, Parameters<U..., V...> >                   callback,
+             radix::Parameters<U...>,
+             radix::Parameters<V...> >::Closure(
+        Callback< R, radix::Parameters<U..., V...> >                   callback,
         U&...                                                   objects):
       callback(callback),
       arguments(objects...)
@@ -102,8 +102,8 @@ namespace elle
               typename... U,
               typename... V>
     R           Closure< R,
-                         Parameters<U...>,
-                         Parameters<V...> >::Call(V&...         objects)
+                         radix::Parameters<U...>,
+                         radix::Parameters<V...> >::Call(V&...         objects)
     {
       return (this->arguments.Trigger(this->callback, objects...));
     }
@@ -115,8 +115,8 @@ namespace elle
               typename... U,
               typename... V>
     Void        Closure< R,
-                         Parameters<U...>,
-                         Parameters<V...> >::Trigger(V&...      objects)
+                         radix::Parameters<U...>,
+                         radix::Parameters<V...> >::Trigger(V&...      objects)
     {
       this->arguments.Trigger(this->callback, objects...);
     }
@@ -124,7 +124,7 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(_(Closure< R, Parameters<U...>, Parameters<V...> >),
+    embed(_(Closure< R, radix::Parameters<U...>, radix::Parameters<V...> >),
           _(template <typename R,
                       typename... U,
                       typename... V>));
@@ -137,8 +137,8 @@ namespace elle
               typename... V>
     Status
     Closure< R,
-             Parameters<U...>,
-             Parameters<V...> >::Dump(const Natural32           margin) const
+             radix::Parameters<U...>,
+             radix::Parameters<V...> >::Dump(const Natural32           margin) const
     {
       String            alignment(margin, ' ');
 
@@ -164,10 +164,10 @@ namespace elle
     ///
     template <typename R,
               typename... U>
-    Closure< R, Parameters<U...> >
+    Closure< R, radix::Parameters<U...> >
     Closure<>::Infer(R                                  (*handler)(U...))
     {
-      return (Closure< R, Parameters<U...> >(
+      return (Closure< R, radix::Parameters<U...> >(
                 Callback<>::Infer(handler)));
     }
 
@@ -177,11 +177,11 @@ namespace elle
     template <typename R,
               typename C,
               typename... U>
-    Closure< R, Parameters<U...> >
+    Closure< R, radix::Parameters<U...> >
     Closure<>::Infer(R                                  (C::*handler)(U...),
                      C*                                 object)
     {
-      return (Closure< R, Parameters<U...> >(
+      return (Closure< R, radix::Parameters<U...> >(
                 Callback<>::Infer(handler, object)));
     }
 
@@ -192,12 +192,12 @@ namespace elle
     template <typename R,
               typename... U,
               typename... V>
-    Closure< R, Parameters<U...>, Parameters<V...> >
+    Closure< R, radix::Parameters<U...>, radix::Parameters<V...> >
     Closure<>::Infer(R                                  (*handler)(U...,
                                                                    V...),
                      U&...                              arguments)
     {
-      return (Closure< R, Parameters<U...>, Parameters<V...> >(
+      return (Closure< R, radix::Parameters<U...>, radix::Parameters<V...> >(
                 Callback<>::Infer(handler), arguments...));
     }
 
@@ -209,13 +209,13 @@ namespace elle
               typename C,
               typename... U,
               typename... V>
-    Closure< R, Parameters<U...>, Parameters<V...> >
+    Closure< R, radix::Parameters<U...>, radix::Parameters<V...> >
     Closure<>::Infer(R                                  (C::*handler)(U...,
                                                                       V...),
                      C*                                 object,
                      U&...                              arguments)
     {
-      return (Closure< R, Parameters<U...>, Parameters<V...> >(
+      return (Closure< R, radix::Parameters<U...>, radix::Parameters<V...> >(
                 Callback<>::Infer(handler, object), arguments...));
     }
 

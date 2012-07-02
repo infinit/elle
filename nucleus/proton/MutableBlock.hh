@@ -42,7 +42,7 @@ namespace nucleus
     ///
     class MutableBlock
       : public Block
-      //, public elle::concept::Fileable<MutableBlock>
+    // XXX public elle::concept::Fileable<MutableBlock>
     {
     public:
       //
@@ -80,6 +80,7 @@ namespace nucleus
                               const Version&) const;
 
       static elle::Status Erase(Network const&, Address const&);
+
       //
       // attributes
       //

@@ -56,7 +56,7 @@ namespace elle
               const Tag O = TagNone,
               const Tag E = TagError>
     class Procedure:
-      public Object
+      public radix::Object
     {
     public:
       //
@@ -64,15 +64,15 @@ namespace elle
       //
       typedef
         typename
-          Set::Union<
+      radix::Set::Union<
             typename
-              Trait::Constant<
+      radix::Trait::Constant<
                 typename Message<I>::P
               >::Type,
             typename Message<O>::P
             >::Type                             R;
 
-      typedef concurrency::Callback<Status, Parameters<>> BaseCallback;
+      typedef concurrency::Callback<Status, radix::Parameters<>> BaseCallback;
 
       //
       // constructors & destructors
@@ -107,11 +107,11 @@ namespace elle
 
       concurrency::Callback<
         Status,
-        Parameters<>
+        radix::Parameters<>
         >               prolog;
       concurrency::Callback<
         Status,
-        Parameters<>
+        radix::Parameters<>
         >               epilog;
     };
 

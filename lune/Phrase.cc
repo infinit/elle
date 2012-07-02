@@ -1,5 +1,7 @@
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
+#include <elle/standalone/Log.hh>
+#include <elle/standalone/Region.hh>
 
 #include <lune/Phrase.hh>
 #include <lune/Lune.hh>
@@ -71,43 +73,13 @@ namespace lune
 
     std::cout << alignment << "[Phrase]" << std::endl;
 
-    std::cout << alignment << elle::Dumpable::Shift
+    std::cout << alignment << elle::io::Dumpable::Shift
               << "[Port] " << std::dec << this->port << std::endl;
-    std::cout << alignment << elle::Dumpable::Shift
+    std::cout << alignment << elle::io::Dumpable::Shift
               << "[Pass] " << this->pass << std::endl;
 
     return elle::Status::Ok;
   }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-  ///
-  /// this method serializes the object.
-  ///
-  //elle::Status          Phrase::Serialize(elle::Archive&        archive) const
-  //{
-  //  // serialize the attributes.
-  //  if (archive.Serialize(this->pass,
-  //                        this->portal) == elle::Status::Error)
-  //    escape("unable to serialize the attributes");
-
-  //  return elle::Status::Ok;
-  //}
-
-  /////
-  ///// this method extracts the object.
-  /////
-  //elle::Status          Phrase::Extract(elle::Archive&          archive)
-  //{
-  //  // extract the attributes.
-  //  if (archive.Extract(this->pass,
-  //                      this->portal) == elle::Status::Error)
-  //    escape("unable to extract the attributes");
-
-  //  return elle::Status::Ok;
-  //}
 
 //
 // ---------- fileable --------------------------------------------------------
@@ -118,7 +90,7 @@ namespace lune
   ///
   elle::Status          Phrase::Load(const elle::String&        network)
   {
-    elle::Path          path;
+    elle::io::Path          path;
 
     // create the path.
     if (path.Create(Lune::Network::Phrase) == elle::Status::Error)
@@ -139,7 +111,7 @@ namespace lune
   ///
   elle::Status          Phrase::Store(const elle::String&       network) const
   {
-    elle::Path          path;
+    elle::io::Path          path;
     elle::standalone::Region        region;
     elle::String        string;
 
@@ -161,7 +133,7 @@ namespace lune
   ///
   elle::Status          Phrase::Erase(const elle::String&       network) const
   {
-    elle::Path          path;
+    elle::io::Path          path;
 
     // create the path.
     if (path.Create(Lune::Network::Phrase) == elle::Status::Error)
@@ -183,7 +155,7 @@ namespace lune
   ///
   elle::Status          Phrase::Exist(const elle::String&       network) const
   {
-    elle::Path          path;
+    elle::io::Path          path;
 
     // create the path.
     if (path.Create(Lune::Network::Phrase) == elle::Status::Error)

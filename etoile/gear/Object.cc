@@ -97,21 +97,23 @@ namespace etoile
       else
         {
           // dump none.
-          std::cout << alignment << elle::Dumpable::Shift
+          std::cout << alignment << elle::io::Dumpable::Shift
                     << "[Access] " << elle::none << std::endl;
         }
 
       // dump the rights.
-      std::cout << alignment << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Rights]" << std::endl;
 
       // dump the role.
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
                 << "[Role] "
                 << this->rights.role << std::endl;
 
       // dump the permissions.
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
                 << "[Permissions] "
                 << (int)this->rights.permissions
                 << std::endl;

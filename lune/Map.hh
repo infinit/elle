@@ -70,10 +70,6 @@ namespace lune
     // dumpable
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
-    // archivable
-    //elle::Status        Serialize(elle::Archive&) const;
-    //elle::Status        Extract(elle::Archive&);
-
     //
     // attributes
     //
@@ -83,7 +79,5 @@ namespace lune
 }
 
 # include <lune/Map.hxx>
-
-# include <elle/idiom/Close.hh>
 
 #endif

@@ -1,6 +1,8 @@
 #include <elle/cryptography/PublicKey.hh>
 #include <elle/cryptography/PrivateKey.hh>
+#include <elle/cryptography/KeyPair.hh>
 #include <elle/cryptography/Cipher.hh>
+#include <elle/cryptography/SecretKey.hh>
 #include <elle/serialize/TupleSerializer.hxx>
 
 #include <lune/Authority.hh>
@@ -212,7 +214,7 @@ namespace lune
     std::cout << alignment << "[Authority]" << std::endl;
 
     // dump the type.
-    std::cout << alignment << elle::Dumpable::Shift
+    std::cout << alignment << elle::io::Dumpable::Shift
               << "[Type] " << this->type << std::endl;
 
     // dump the public key.
@@ -238,80 +240,15 @@ namespace lune
   }
 
 //
-// ---------- archivable ------------------------------------------------------
-//
-
-  ///
-  /// this method serializes the object.
-  ///
-  //elle::Status          Authority::Serialize(elle::Archive&     archive) const
-  //{
-  //  // check the cipher.
-  //  if (this->cipher == NULL)
-  //    escape("unable to serialize an unencrypted authority");
-
-  //  // serialize the type and cipher.
-  //  if (archive.Serialize(static_cast<elle::Natural8>(this->type),
-  //                        *this->cipher) == elle::Status::Error)
-  //    escape("unable to serialize the attributes");
-
-  //  return elle::Status::Ok;
-  //}
-
-  /////
-  ///// this method extracts the object.
-  /////
-  //elle::Status          Authority::Extract(elle::Archive&       archive)
-  //{
-  //  elle::Natural8      type;
-
-  //  // allocate the cipher.
-  //  this->cipher = new elle::cryptography::Cipher;
-
-  //  // extract the type and cipher.
-  //  if (archive.Extract(type, *this->cipher) == elle::Status::Error)
-  //    escape("unable to extract the attributes");
-
-  //  // set the type.
-  //  this->type = static_cast<Authority::Type>(type);
-
-  //  return elle::Status::Ok;
-  //}
-
-//
 // ---------- fileable --------------------------------------------------------
 //
-
-  ///
-  /// this method loads an authority file.
-  ///
-  //elle::Status          Authority::Load(elle::Path const& path)
-  //{
-  //  elle::standalone::Region        region;
-
-  //  // read the file's content.
-  //  if (elle::io::File::Read(path, region) == elle::Status::Error)
-  //    escape("unable to read the file's content");
-
-  //  // decode and extract the object.
-  //  auto status = elle::Hexadecimal::Decode(
-  //      // XXX this copy the whole buffer, not opti
-  //      elle::String(reinterpret_cast<char*>(region.contents), region.size),
-  //      *this
-  //  );
-
-  //  if (status == elle::Status::Error)
-  //    escape("unable to decode the object");
-
-  //  return elle::Status::Ok;
-  //}
 
   ///
   /// this method loads the system's authority file.
   ///
   elle::Status          Authority::Load()
   {
-    elle::Path          path;
+    elle::io::Path          path;
 
     // create the path.
     if (path.Create(Lune::Authority) == elle::Status::Error)
@@ -325,7 +262,7 @@ namespace lune
   ///
   elle::Status          Authority::Store() const
   {
-    elle::Path          path;
+    elle::io::Path          path;
     elle::standalone::Region        region;
     elle::String        string;
 
@@ -344,7 +281,7 @@ namespace lune
   ///
   elle::Status          Authority::Erase() const
   {
-    elle::Path          path;
+    elle::io::Path          path;
 
     // create the path.
     if (path.Create(Lune::Authority) == elle::Status::Error)
@@ -362,7 +299,7 @@ namespace lune
   ///
   elle::Status          Authority::Exist() const
   {
-    elle::Path          path;
+    elle::io::Path          path;
 
     // create the path.
     if (path.Create(Lune::Authority) == elle::Status::Error)

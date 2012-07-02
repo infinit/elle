@@ -309,7 +309,8 @@ namespace hole
       /// received which indicates the client that an error occured while
       /// processing one of its requests.
       ///
-      elle::Status      Client::Exception(const elle::Report&   report)
+      elle::Status      Client::Exception(
+        const elle::standalone::Report& report)
       {
         ELLE_LOG_TRACE_SCOPE("Exception");
 

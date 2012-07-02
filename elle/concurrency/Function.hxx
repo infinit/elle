@@ -22,7 +22,7 @@ namespace elle
     ///
     template <typename R,
               typename... T>
-    Function< R, Parameters<T...> >::Function(Handler           handler):
+    Function< R, radix::Parameters<T...> >::Function(Handler           handler):
       handler(handler)
     {
     }
@@ -32,10 +32,10 @@ namespace elle
     ///
     template <typename R,
               typename... T>
-    Function< R, Parameters<T...> >::Function(
+    Function< R, radix::Parameters<T...> >::Function(
                                        const Function<
                                          R,
-                                         Parameters<
+                                         radix::Parameters<
                                            T...
                                            >
                                          >&                     function):
@@ -55,7 +55,7 @@ namespace elle
     template <typename R,
               typename... T>
     R
-    Function< R, Parameters<T...> >::Call(T...                  arguments)
+    Function< R, radix::Parameters<T...> >::Call(T...                  arguments)
     {
       return (this->handler(arguments...));
     }
@@ -66,7 +66,7 @@ namespace elle
     template <typename R,
               typename... T>
     Void
-    Function< R, Parameters<T...> >::Trigger(T...               arguments)
+    Function< R, radix::Parameters<T...> >::Trigger(T...               arguments)
     {
       this->handler(arguments...);
     }
@@ -78,7 +78,7 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(_(Function< R, Parameters<T...> >),
+    embed(_(Function< R, radix::Parameters<T...> >),
           _(template <typename R,
                       typename... T>));
 
@@ -92,7 +92,7 @@ namespace elle
     template <typename R,
               typename... T>
     Status
-    Function< R, Parameters<T...> >::Dump(const Natural32       margin) const
+    Function< R, radix::Parameters<T...> >::Dump(const Natural32       margin) const
     {
       String            alignment(margin, ' ');
 
@@ -118,10 +118,10 @@ namespace elle
     ///
     template <typename R,
               typename... T>
-    Function< R, Parameters<T...> >
+    Function< R, radix::Parameters<T...> >
     Function<>::Infer(R                                 (*handler)(T...))
     {
-      return (Function< R, Parameters<T...> >(handler));
+      return (Function< R, radix::Parameters<T...> >(handler));
     }
 
   }

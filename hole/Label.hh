@@ -60,10 +60,6 @@ namespace hole
     // dumpable
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
-    // archivable
-    //elle::Status        Serialize(elle::Archive&) const;
-    //elle::Status        Extract(elle::Archive&);
-
     //
     // attributes
     //
@@ -76,8 +72,6 @@ namespace hole
 // ---------- templates -------------------------------------------------------
 //
 
-#include <hole/Label.hxx>
-
-# include <elle/idiom/Close.hh>
+# include <hole/Label.hxx>
 
 #endif

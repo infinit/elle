@@ -154,7 +154,7 @@ namespace hole
              scoutor != this->container.end();
              scoutor++)
           {
-            std::cout << alignment << elle::Dumpable::Shift
+            std::cout << alignment << elle::io::Dumpable::Shift
                       << "[Neighbour]" << std::endl;
 
             // dump the locus.

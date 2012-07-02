@@ -3,8 +3,6 @@
 
 namespace elle
 {
-  using namespace radix;
-
   namespace network
   {
 
@@ -18,7 +16,7 @@ namespace elle
     template <const Tag G,
               typename... T>
     Bundle::Inputs< G,
-                    Parameters<T...> >::Inputs(const T&...      objects):
+                    radix::Parameters<T...> >::Inputs(const T&...      objects):
       tag(G),
       arguments(objects...)
     {
@@ -33,9 +31,9 @@ namespace elle
     template <template <typename...> class E,
               typename... U>
     Bundle::Inputs< G,
-                    Parameters<T...> >::Inputs(
+                    radix::Parameters<T...> >::Inputs(
                                                E<
-                                                 Parameters<
+                                               radix::Parameters<
                                                    U...
                                                    >
                                                  >&             ensemble):
@@ -51,7 +49,7 @@ namespace elle
               typename... T>
     Status
     Bundle::Inputs< G,
-                    Parameters<T...> >::Dump(const Natural32    margin)
+                    radix::Parameters<T...> >::Dump(const Natural32    margin)
       const
     {
       String    alignment(margin, ' ');
@@ -79,7 +77,7 @@ namespace elle
     template <const Tag G,
               typename... T>
     Bundle::Outputs< G,
-                     Parameters<T...> >::Outputs(T&...          objects):
+                     radix::Parameters<T...> >::Outputs(T&...          objects):
       tag(G),
       arguments(objects...)
     {
@@ -94,9 +92,9 @@ namespace elle
     template <template <typename...> class E,
               typename... U>
     Bundle::Outputs< G,
-                     Parameters<T...> >::Outputs(
+                     radix::Parameters<T...> >::Outputs(
                                            E<
-                                             Parameters<
+                                           radix::Parameters<
                                                U...
                                                >
                                              >&                 ensemble):
@@ -112,7 +110,7 @@ namespace elle
               typename... T>
     Status
     Bundle::Outputs< G,
-                     Parameters<T...> >::Dump(const Natural32 margin)
+                     radix::Parameters<T...> >::Dump(const Natural32 margin)
       const
     {
       String    alignment(margin, ' ');

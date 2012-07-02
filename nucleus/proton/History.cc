@@ -130,11 +130,11 @@ namespace nucleus
           Version       version;
 
           // display the entry.
-          std::cout << alignment << elle::Dumpable::Shift
+          std::cout << alignment << elle::io::Dumpable::Shift
                     << "[Entry]" << std::endl;
 
           // display the index.
-          std::cout << alignment << elle::Dumpable::Shift
+          std::cout << alignment << elle::io::Dumpable::Shift
                     << "[Index] " << i << std::endl;
 
           // retrieve the version.
@@ -247,7 +247,7 @@ namespace nucleus
     elle::Status        History::Load(const Network&            network,
                                       const Address&            address)
     {
-      elle::Path        path;
+      elle::io::Path       path;
       elle::String      unique;
 
       STRINGIFY_ADDRESS(address, unique);
@@ -272,7 +272,7 @@ namespace nucleus
     elle::Status        History::Store(const Network&           network,
                                        const Address&           address) const
     {
-      elle::Path        path;
+      elle::io::Path        path;
       elle::String      unique;
 
       STRINGIFY_ADDRESS(address, unique);
@@ -296,7 +296,7 @@ namespace nucleus
     elle::Status        History::Erase(const Network&           network,
                                        const Address&           address) const
     {
-      elle::Path        path;
+      elle::io::Path        path;
       elle::String      unique;
 
       STRINGIFY_ADDRESS(address, unique);
@@ -328,7 +328,7 @@ namespace nucleus
     elle::Status        History::Exist(const Network&           network,
                                        const Address&           address) const
     {
-      elle::Path        path;
+      elle::io::Path        path;
       elle::String      unique;
 
       STRINGIFY_ADDRESS(address, unique);

@@ -14,11 +14,8 @@
 namespace lune
 {
 
+  // XXX
   class Authority;
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
   ///
   /// this class represents an identity issued by the Infinit authority
@@ -75,10 +72,6 @@ namespace lune
     // dumpable
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
-    // archivable
-    //elle::Status        Serialize(elle::Archive&) const;
-    //elle::Status        Extract(elle::Archive&);
-
     // fileable
     ELLE_CONCEPT_FILEABLE_METHODS();
     elle::Status        Load(const elle::String&);
@@ -103,7 +96,6 @@ namespace lune
 
 }
 
-# include <elle/idiom/Close.hh>
+#include <lune/Identity.hxx>
 
 #endif
-#include <lune/Identity.hxx>

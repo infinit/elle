@@ -410,7 +410,7 @@ namespace etoile
       {
         Scope::S::O::Scoutor    scoutor;
 
-        std::cout << alignment << elle::Dumpable::Shift
+        std::cout << alignment << elle::io::Dumpable::Shift
                   << "[Onymous] " << Scope::Scopes::Onymous.size()
                   << std::endl;
 
@@ -422,8 +422,8 @@ namespace etoile
             // dump the scope, if present.
             if (scoutor->second == nullptr)
               {
-                std::cout << alignment << elle::Dumpable::Shift
-                          << elle::Dumpable::Shift
+                std::cout << alignment << elle::io::Dumpable::Shift
+                          << elle::io::Dumpable::Shift
                           << "[Scope] " << elle::none << std::endl;
               }
             else
@@ -440,7 +440,7 @@ namespace etoile
       {
         Scope::S::A::Scoutor    scoutor;
 
-        std::cout << alignment << elle::Dumpable::Shift
+        std::cout << alignment << elle::io::Dumpable::Shift
                   << "[Anonymous] " << Scope::Scopes::Anonymous.size()
                   << std::endl;
 
@@ -452,8 +452,8 @@ namespace etoile
             // dump the scope, if present.
             if (*scoutor == nullptr)
               {
-                std::cout << alignment << elle::Dumpable::Shift
-                          << elle::Dumpable::Shift
+                std::cout << alignment << elle::io::Dumpable::Shift
+                          << elle::io::Dumpable::Shift
                           << "[Scope] " << elle::none << std::endl;
               }
             else
@@ -1434,7 +1434,7 @@ namespace etoile
         }
       else
         {
-          std::cout << alignment << elle::Dumpable::Shift
+          std::cout << alignment << elle::io::Dumpable::Shift
                     << "[Context] " << elle::none << std::endl;
         }
 
@@ -1446,11 +1446,11 @@ namespace etoile
         }
       else
         {
-          std::cout << alignment << elle::Dumpable::Shift
+          std::cout << alignment << elle::io::Dumpable::Shift
                     << "[Chronicle] " << elle::none << std::endl;
         }
 
-      std::cout << alignment << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Actors]" << std::endl;
 
       // go through the actors.

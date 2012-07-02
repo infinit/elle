@@ -1,5 +1,3 @@
-
-
 #include <nucleus/proton/Action.hh>
 
 #include <elle/idiom/Open.hh>
@@ -47,7 +45,7 @@ namespace nucleus
       std::cout << alignment << "[Action]" << std::endl;
 
       // display the type.
-      std::cout << alignment << elle::Dumpable::Shift << "[Type] "
+      std::cout << alignment << elle::io::Dumpable::Shift << "[Type] "
                 << this->type << std::endl;
 
       // dump according to the type.

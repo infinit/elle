@@ -22,8 +22,6 @@
 
 namespace elle
 {
-  using namespace system;
-
   namespace io
   {
 
@@ -304,15 +302,15 @@ namespace elle
       free(tmp_str);
 
       // go through the components of the path.
-      while (std::getline(stream, item, System::Path::Separator))
+      while (std::getline(stream, item, system::System::Path::Separator))
         {
           // update the intermediate chemin.
           if (chemin.str().empty() && item.empty())
-            chemin.str() = System::Path::Separator;
+            chemin.str() = system::System::Path::Separator;
           else
             {
               chemin.str().append(item);
-              chemin.str().append(1, System::Path::Separator);
+              chemin.str().append(1, system::System::Path::Separator);
             }
 
           // retrieve information on the path. should this operation fail

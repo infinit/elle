@@ -146,10 +146,10 @@ elle::Status            Pod::Dump(elle::Natural32               margin) const
 
   std::cout << alignment << "[Pod] " << std::hex << this << std::endl;
 
-  std::cout << alignment << elle::Dumpable::Shift << "[Nature] "
+  std::cout << alignment << elle::io::Dumpable::Shift << "[Nature] "
             << std::dec << this->nature << std::endl;
 
-  std::cout << alignment << elle::Dumpable::Shift << "[State] "
+  std::cout << alignment << elle::io::Dumpable::Shift << "[State] "
             << std::dec << this->state << std::endl;
 
   if (this->placement.Dump(margin + 2) == elle::Status::Error)
@@ -165,11 +165,11 @@ elle::Status            Pod::Dump(elle::Natural32               margin) const
     }
   else
     {
-      std::cout << alignment << elle::Dumpable::Shift << "[Block] "
+      std::cout << alignment << elle::io::Dumpable::Shift << "[Block] "
                 << elle::none << std::endl;
     }
 
-  std::cout << alignment << elle::Dumpable::Shift << "[Counter] "
+  std::cout << alignment << elle::io::Dumpable::Shift << "[Counter] "
             << std::dec << this->counter << std::endl;
 
   return elle::Status::Ok;

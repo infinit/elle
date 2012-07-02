@@ -1,9 +1,5 @@
 #include <boost/format.hpp>
 
-#include <lune/Descriptor.hh>
-#include <lune/Set.hh>
-#include <lune/Passport.hh>
-
 #include <nucleus/proton/Address.hh>
 
 #include <hole/Hole.hh>
@@ -65,7 +61,7 @@ namespace hole
     nucleus::Network    network;
 
     // disable the meta logging.
-    if (elle::Meta::Disable() == elle::Status::Error)
+    if (elle::radix::Meta::Disable() == elle::Status::Error)
       throw Exception(elle::concurrency::scheduler(),
                       "unable to disable the meta logging");
 
@@ -120,7 +116,7 @@ namespace hole
     }
 
     // enable the meta logging.
-    if (elle::Meta::Enable() == elle::Status::Error)
+    if (elle::radix::Meta::Enable() == elle::Status::Error)
       throw Exception(elle::concurrency::scheduler(),
                       "unable to enable the meta logging");
 

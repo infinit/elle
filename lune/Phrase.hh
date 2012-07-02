@@ -49,10 +49,6 @@ namespace lune
     // dumpable
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
-    // archivable
-    //elle::Status        Serialize(elle::Archive&) const;
-    //elle::Status        Extract(elle::Archive&);
-
     // fileable
     ELLE_CONCEPT_FILEABLE_METHODS();
     elle::Status        Load(const elle::String&);
@@ -69,7 +65,6 @@ namespace lune
 
 }
 
-# include <elle/idiom/Close.hh>
+#include <lune/Phrase.hxx>
 
 #endif
-#include <lune/Phrase.hxx>

@@ -10,10 +10,6 @@
 namespace lune
 {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
   ///
   /// this class represents a network descriptor.
   ///
@@ -61,12 +57,7 @@ namespace lune
     // dumpable
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
-    // archivable
-    //elle::Status        Serialize(elle::Archive&) const;
-    //elle::Status        Extract(elle::Archive&);
-
     // fileable
-
     ELLE_CONCEPT_FILEABLE_METHODS();
     elle::Status        Load(const elle::String&);
     elle::Status        Store(const elle::String&) const;
@@ -97,7 +88,6 @@ namespace lune
 
 }
 
-#include <elle/idiom/Close.hh>
+#include <lune/Descriptor.hxx>
 
 #endif
-#include <lune/Descriptor.hxx>

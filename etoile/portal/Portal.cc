@@ -657,11 +657,11 @@ namespace etoile
       std::cout << alignment << "[Portal]" << std::endl;
 
       // dump the line.
-      std::cout << alignment << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Port] " << Portal::port << std::endl;
 
       // dump the applications.
-      std::cout << alignment << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Applications]" << std::endl;
 
       // go through the applications.

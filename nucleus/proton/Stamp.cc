@@ -1,8 +1,7 @@
+#include <nucleus/proton/Location.hh>
+#include <nucleus/proton/Stamp.hh>
 
 #include <elle/serialize/TupleSerializer.hxx>
-#include <nucleus/proton/Location.hh>
-
-#include <nucleus/proton/Stamp.hh>
 
 #include <Infinit.hh>
 
@@ -98,7 +97,7 @@ namespace nucleus
 
       // dump the master.
 
-      std::cout << alignment << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Master]" << std::endl;
 
       if (this->master.Dump(margin + 4) == elle::Status::Error)
@@ -106,7 +105,7 @@ namespace nucleus
 
       // dump the master.
 
-      std::cout << alignment << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Slave]" << std::endl;
 
       if (this->slave.Dump(margin + 4) == elle::Status::Error)

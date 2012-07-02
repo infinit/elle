@@ -83,18 +83,4 @@ namespace lune
 
 }
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <lune/Authority.hh>
-#include <lune/Configuration.hh>
-#include <lune/Descriptor.hh>
-#include <lune/Dictionary.hh>
-#include <lune/Identity.hh>
-#include <lune/Log.hh>
-#include <lune/Passport.hh>
-#include <lune/Phrase.hh>
-#include <lune/Set.hh>
-
 #endif

@@ -20,8 +20,8 @@ namespace elle
     template <typename R,
               typename... T>
     const Callback< R,
-                    Parameters<T...> >  Callback< R,
-                                                  Parameters<T...> >::Null;
+                    radix::Parameters<T...> >  Callback< R,
+                                                  radix::Parameters<T...> >::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -32,7 +32,7 @@ namespace elle
     ///
     template <typename R,
               typename... T>
-    Callback< R, Parameters<T...> >::Callback():
+    Callback< R, radix::Parameters<T...> >::Callback():
       Routine::Routine(Routine::SchemeUnknown)
     {
     }
@@ -42,17 +42,17 @@ namespace elle
     ///
     template <typename R,
               typename... T>
-    Callback< R, Parameters<T...> >::Callback(
+    Callback< R, radix::Parameters<T...> >::Callback(
                                        typename
                                          Function<
                                            R,
-                                           Parameters<
+                                           radix::Parameters<
                                              T...
                                              >
                                            >::Handler           handler):
       Routine::Routine(Routine::SchemeFunction),
 
-      function(new Function< R, Parameters<T...> >(handler))
+      function(new Function< R, radix::Parameters<T...> >(handler))
     {
     }
 
@@ -62,11 +62,11 @@ namespace elle
     template <typename R,
               typename... T>
     template <typename C>
-    Callback< R, Parameters<T...> >::Callback(
+    Callback< R, radix::Parameters<T...> >::Callback(
                                        typename
                                          Method<
                                            R,
-                                           Parameters<
+                                           radix::Parameters<
                                              T...
                                              >
                                            >::
@@ -75,7 +75,7 @@ namespace elle
                                        C*                       object):
       Routine::Routine(Routine::SchemeMethod),
 
-      method(new Method< R, Parameters<T...> >(handler, object))
+      method(new Method< R, radix::Parameters<T...> >(handler, object))
     {
     }
 
@@ -84,11 +84,11 @@ namespace elle
     ///
     template <typename R,
               typename... T>
-    Callback< R, Parameters<T...> >::Callback(
+    Callback< R, radix::Parameters<T...> >::Callback(
                                        const
                                          Callback<
                                            R,
-                                           Parameters<
+                                           radix::Parameters<
                                              T...
                                              >
                                            >&                   callback):
@@ -101,7 +101,7 @@ namespace elle
           {
             // clone the function.
             this->function =
-              new Function< R, Parameters<T...> >(*callback.function);
+              new Function< R, radix::Parameters<T...> >(*callback.function);
 
             break;
           }
@@ -109,7 +109,7 @@ namespace elle
           {
             // clone the method.
             this->method =
-              new Method< R, Parameters<T...> >(*callback.method);
+              new Method< R, radix::Parameters<T...> >(*callback.method);
 
             break;
           }
@@ -125,7 +125,7 @@ namespace elle
     ///
     template <typename R,
               typename... T>
-    Callback< R, Parameters<T...> >::~Callback()
+    Callback< R, radix::Parameters<T...> >::~Callback()
     {
       // release the the content.
       switch (this->scheme)
@@ -161,7 +161,7 @@ namespace elle
     template <typename R,
               typename... T>
     R
-    Callback< R, Parameters<T...> >::Call(T...                  arguments)
+    Callback< R, radix::Parameters<T...> >::Call(T...                  arguments)
       const
     {
       // call depending on the scheme.
@@ -199,7 +199,7 @@ namespace elle
     template <typename R,
               typename... T>
     Void
-    Callback< R, Parameters<T...> >::Trigger(T...               arguments)
+    Callback< R, radix::Parameters<T...> >::Trigger(T...               arguments)
       const
     {
       // call depending on the scheme.
@@ -233,7 +233,7 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(_(Callback< R, Parameters<T...> >),
+    embed(_(Callback< R, radix::Parameters<T...> >),
           _(template <typename R,
                       typename... T>));
 
@@ -247,7 +247,7 @@ namespace elle
     template <typename R,
               typename... T>
     Status
-    Callback< R, Parameters<T...> >::Dump(const Natural32       margin) const
+    Callback< R, radix::Parameters<T...> >::Dump(const Natural32       margin) const
     {
       String            alignment(margin, ' ');
 
@@ -294,10 +294,10 @@ namespace elle
     ///
     template <typename R,
               typename... T>
-    Callback< R, Parameters<T...> >
+    Callback< R, radix::Parameters<T...> >
     Callback<>::Infer(R                                 (*handler)(T...))
     {
-      return (Callback< R, Parameters<T...> >(handler));
+      return (Callback< R, radix::Parameters<T...> >(handler));
     }
 
     ///
@@ -306,11 +306,11 @@ namespace elle
     template <typename R,
               typename C,
               typename... T>
-    Callback< R, Parameters<T...> >
+    Callback< R, radix::Parameters<T...> >
     Callback<>::Infer(R                                 (C::*handler)(T...),
                       C*                                object)
     {
-      return (Callback< R, Parameters<T...> >(handler, object));
+      return (Callback< R, radix::Parameters<T...> >(handler, object));
     }
 
   }

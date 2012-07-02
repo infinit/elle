@@ -1,19 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [thu apr  1 19:48:42 2010]
-//
-
 #ifndef NUCLEUS_NEUTRON_TRAIT_HH
 #define NUCLEUS_NEUTRON_TRAIT_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <elle/types.hh>
 
@@ -70,10 +56,6 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
-
       // rangeable
       elle::String&     Symbol();
 
@@ -87,5 +69,6 @@ namespace nucleus
   }
 }
 
-#endif
 #include <nucleus/neutron/Trait.hxx>
+
+#endif

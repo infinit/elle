@@ -25,7 +25,6 @@
 
 #include <elle/types.hh>
 #include <nucleus/Nucleus.hh>
-#include <lune/Lune.hh>
 
 #include <elle/idiom/Close.hh>
 # define _GNU_SOURCE

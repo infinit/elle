@@ -184,7 +184,7 @@ namespace hole
                   << std::hex << this << std::endl;
 
         // display the state.
-        std::cout << alignment << elle::Dumpable::Shift
+        std::cout << alignment << elle::io::Dumpable::Shift
                   << "[State] " << std::dec << this->state << std::endl;
 
         // dump the locus.

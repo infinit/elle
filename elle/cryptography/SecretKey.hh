@@ -16,9 +16,6 @@
 
 namespace elle
 {
-
-  using namespace radix;
-
   namespace cryptography
   {
 
@@ -26,7 +23,7 @@ namespace elle
     /// this class represents a secret key for symmetric encryption.
     ///
     class SecretKey:
-      public Object
+      public radix::Object
     {
     public:
       //
@@ -83,7 +80,7 @@ namespace elle
       Status            Dump(const Natural32 = 0) const;
 
     public:
-      Region            region;
+      standalone::Region region;
     };
 
   }

@@ -1,10 +1,16 @@
+#include <satellites/dictionary/Dictionary.hh>
+
+#include <Infinit.hh>
 #include <elle/Elle.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/cryptography/PublicKey.hh>
-
+#include <elle/io/Unique.hh>
+#include <lune/Lune.hh>
+#include <lune/Dictionary.hh>
+#include <lune/Identity.hh>
+#include <lune/Map.hh>
 #include <nucleus/proton/Address.hh>
-
-#include <satellites/dictionary/Dictionary.hh>
+#include <etoile/Etoile.hh>
 
 namespace satellite
 {
@@ -28,7 +34,7 @@ namespace satellite
   elle::Status          Dictionary::Add(elle::String const& user,
                                         const Dictionary::Type& type,
                                         const elle::String&     name,
-                                        const elle::Unique&     identifier)
+                                        const elle::io::Unique&     identifier)
   {
     lune::Dictionary    dictionary;
 
@@ -297,7 +303,7 @@ namespace satellite
       case Dictionary::TypeUser:
         {
           elle::cryptography::PublicKey*      K;
-          elle::Unique          unique;
+          elle::io::Unique          unique;
 
           // retrieve the entry.
           if (dictionary.users.Lookup(name, K) != elle::Status::True)
@@ -316,7 +322,7 @@ namespace satellite
       case Dictionary::TypeGroup:
         {
           nucleus::Address*     address;
-          elle::Unique          unique;
+          elle::io::Unique          unique;
 
           // retrieve the entry.
           if (dictionary.groups.Lookup(name, address) != elle::Status::True)
@@ -523,7 +529,7 @@ namespace satellite
           elle::String t;
           Dictionary::Type      type;
           elle::String          name;
-          elle::Unique          identifier;
+          elle::io::Unique          identifier;
 
           // retrieve the user.
           if (Infinit::Parser->Value("User", user) == elle::Status::Error)

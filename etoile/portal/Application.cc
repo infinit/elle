@@ -97,11 +97,11 @@ namespace etoile
       std::cout << alignment << "[Application]" << std::endl;
 
       // dump the state.
-      std::cout << alignment << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
                 << "[State] " << std::dec << this->state << std::endl;
 
       // dump the processing.
-      std::cout << alignment << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Processing] " << std::dec
                 << this->processing << std::endl;
 

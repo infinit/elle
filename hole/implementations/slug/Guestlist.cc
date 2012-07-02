@@ -169,12 +169,12 @@ namespace hole
              scoutor != this->container.end();
              scoutor++)
           {
-            std::cout << alignment << elle::Dumpable::Shift
+            std::cout << alignment << elle::io::Dumpable::Shift
                       << "[Guest]" << std::endl;
 
             // dump the socket's address.
-            std::cout << alignment << elle::Dumpable::Shift
-                      << elle::Dumpable::Shift
+            std::cout << alignment << elle::io::Dumpable::Shift
+                      << elle::io::Dumpable::Shift
                       << "[TCPSocket] " << scoutor->first << std::endl;
 
             // dump the host.

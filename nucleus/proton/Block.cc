@@ -1,4 +1,3 @@
-
 #include <elle/standalone/Log.hh>
 
 #include <nucleus/proton/Block.hh>
@@ -93,15 +92,15 @@ namespace nucleus
         escape("unable to dump the network");
 
       // dump the family.
-      std::cout << alignment << elle::Dumpable::Shift << "[Family] "
+      std::cout << alignment << elle::io::Dumpable::Shift << "[Family] "
                 << std::dec << this->family << std::endl;
 
       // dump the component.
-      std::cout << alignment << elle::Dumpable::Shift << "[Component] "
+      std::cout << alignment << elle::io::Dumpable::Shift << "[Component] "
                 << std::dec << this->component << std::endl;
 
       // dump the state.
-      std::cout << alignment << elle::Dumpable::Shift << "[State] "
+      std::cout << alignment << elle::io::Dumpable::Shift << "[State] "
                 << std::dec << this->state << std::endl;
 
       return elle::Status::Ok;

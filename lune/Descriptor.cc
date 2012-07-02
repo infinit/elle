@@ -1,12 +1,10 @@
-
-#include <nucleus/proton/Address.hh>
 #include <lune/Descriptor.hh>
+#include <lune/Lune.hh>
 
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
-#include <lune/Descriptor.hh>
-#include <lune/Lune.hh>
+#include <nucleus/proton/Address.hh>
 
 namespace lune
 {
@@ -144,29 +142,30 @@ namespace lune
 
     std::cout << alignment << "[Descriptor]" << std::endl;
 
-    std::cout << alignment << elle::Dumpable::Shift << "[id] "
+    std::cout << alignment << elle::io::Dumpable::Shift << "[id] "
               << this->_id << std::endl
-              << alignment << elle::Dumpable::Shift << "[Name] "
+              << alignment << elle::io::Dumpable::Shift << "[Name] "
               << this->name << std::endl;
 
     if (this->model.Dump(margin + 2) == elle::Status::Error)
       escape("unable to dump the model");
 
-    std::cout << alignment << elle::Dumpable::Shift << "[Root] " << std::endl;
+    std::cout << alignment << elle::io::Dumpable::Shift
+              << "[Root] " << std::endl;
 
     if (this->root.Dump(margin + 4) == elle::Status::Error)
       escape("unable to dump the address");
 
-    std::cout << alignment << elle::Dumpable::Shift << "[History] "
+    std::cout << alignment << elle::io::Dumpable::Shift << "[History] "
               << static_cast<elle::Natural32>(this->history) << std::endl;
 
-    std::cout << alignment << elle::Dumpable::Shift << "[Extent] "
+    std::cout << alignment << elle::io::Dumpable::Shift << "[Extent] "
               << this->extent << std::endl;
 
-    std::cout << alignment << elle::Dumpable::Shift << "[Contention] "
+    std::cout << alignment << elle::io::Dumpable::Shift << "[Contention] "
               << this->contention << std::endl;
 
-    std::cout << alignment << elle::Dumpable::Shift << "[Balancing] "
+    std::cout << alignment << elle::io::Dumpable::Shift << "[Balancing] "
               << this->balancing << std::endl;
 
     if (this->signature.Dump(margin + 2) == elle::Status::Error)
@@ -184,7 +183,7 @@ namespace lune
   ///
   elle::Status          Descriptor::Load(const elle::String&    name)
   {
-    elle::Path          path;
+    elle::io::Path          path;
     elle::standalone::Region        region;
 
     // create the path.
@@ -206,7 +205,7 @@ namespace lune
   ///
   elle::Status          Descriptor::Store(const elle::String&   name) const
   {
-    elle::Path          path;
+    elle::io::Path          path;
     elle::standalone::Region        region;
     elle::String        string;
 
@@ -229,7 +228,7 @@ namespace lune
   ///
   elle::Status          Descriptor::Erase(const elle::String&   name) const
   {
-    elle::Path          path;
+    elle::io::Path          path;
 
     // create the path.
     if (path.Create(Lune::Network::Descriptor) == elle::Status::Error)
@@ -251,7 +250,7 @@ namespace lune
   ///
   elle::Status          Descriptor::Exist(const elle::String&   name) const
   {
-    elle::Path          path;
+    elle::io::Path          path;
 
     // create the path.
     if (path.Create(Lune::Network::Descriptor) == elle::Status::Error)

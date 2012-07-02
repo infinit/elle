@@ -233,7 +233,7 @@ namespace etoile
                 << std::hex << this << std::endl;
 
       // dump the attributes.
-      std::cout << alignment << elle::Dumpable::Shift << "[Slab] "
+      std::cout << alignment << elle::io::Dumpable::Shift << "[Slab] "
                 << this->slab << std::endl;
 
       if (this->location.Dump(margin + 2) == elle::Status::Error)
@@ -242,10 +242,10 @@ namespace etoile
       if (this->timestamp.Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the timestamp");
 
-      std::cout << alignment << elle::Dumpable::Shift << "[Parent] "
+      std::cout << alignment << elle::io::Dumpable::Shift << "[Parent] "
                 << std::hex << this->parent << std::endl;
 
-      std::cout << alignment << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Children]" << std::endl;
 
       // recursively dump all the sub-riffles.

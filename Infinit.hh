@@ -1,11 +1,11 @@
-
 #ifndef INFINIT_HH
 #define INFINIT_HH
 
 #include <elle/types.hh>
 #include <elle/utility/fwd.hh>
 
-#include <lune/Lune.hh>
+#include <lune/Authority.hh>
+#include <lune/Configuration.hh>
 
 //
 // ---------- classes ---------------------------------------------------------

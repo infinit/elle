@@ -64,9 +64,7 @@ namespace lune
     // dumpable
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
-    // archivable
-    //elle::Status        Serialize(elle::Archive&) const;
-    //elle::Status        Extract(elle::Archive&);
+    // fileable
     using elle::concept::Fileable<>::Load;
     using elle::concept::Fileable<>::Store;
 
@@ -88,7 +86,6 @@ namespace lune
 
 }
 
-# include <elle/idiom/Close.hh>
+#include <lune/Authority.hxx>
 
 #endif
-#include <lune/Authority.hxx>

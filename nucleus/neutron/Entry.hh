@@ -1,23 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri apr  2 00:03:02 2010]
-//
-
 #ifndef NUCLEUS_NEUTRON_ENTRY_HH
-#define NUCLEUS_NEUTRON_ENTRY_HH
+# define NUCLEUS_NEUTRON_ENTRY_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-
-#include <nucleus/proton/Address.hh>
+# include <nucleus/proton/Address.hh>
 
 namespace nucleus
 {
@@ -64,10 +50,6 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
-
       // rangeable
       elle::String&     Symbol();
 
@@ -81,5 +63,6 @@ namespace nucleus
   }
 }
 
-#endif
 #include <nucleus/neutron/Entry.hxx>
+
+#endif

@@ -157,7 +157,7 @@ namespace nucleus
         escape("unable to dump the subject");
 
       // dump the permissions.
-      std::cout << alignment << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Permissions] " << std::dec
                 << (int)this->permissions << std::endl;
 
@@ -167,42 +167,6 @@ namespace nucleus
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the record object.
-    ///
-    //elle::Status        Record::Serialize(elle::Archive&        archive) const
-    //{
-    //  // serialize the attributes.
-    //  if (archive.Serialize(this->subject,
-    //                        this->permissions,
-    //                        this->token) == elle::Status::Error)
-    //    escape("unable to serialize the record");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the record object.
-    /////
-    //elle::Status        Record::Extract(elle::Archive&          archive)
-    //{
-    //  // extract the attributes.
-    //  if (archive.Extract(this->subject,
-    //                      this->permissions,
-    //                      this->token) == elle::Status::Error)
-    //    escape("unable to extract the record");
-
-    //  return elle::Status::Ok;
-    //}
-
-//
-// ---------- rangeable -------------------------------------------------------
-//
 
     ///
     /// this method returns the symbol of a record i.e the subject.

@@ -69,7 +69,7 @@ namespace hole
         elle::Status            Error(elle::String);
 
         elle::Status            Authenticated();
-        elle::Status            Exception(const elle::Report&);
+        elle::Status            Exception(const elle::standalone::Report&);
 
         //
         // interfaces

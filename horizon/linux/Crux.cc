@@ -1,6 +1,5 @@
 #include <elle/log.hh>
 
-
 #include <horizon/linux/Crux.hh>
 #include <horizon/linux/Linux.hh>
 #include <horizon/linux/Janitor.hh>

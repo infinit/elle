@@ -137,27 +137,27 @@ namespace etoile
       std::cout << alignment << "[Abstract]" << std::endl;
 
       // dump the genre.
-      std::cout << alignment << elle::Dumpable::Shift << "[Genre] "
+      std::cout << alignment << elle::io::Dumpable::Shift << "[Genre] "
                 << this->genre << std::endl;
 
       //
       // dump the stamps.
       //
       {
-        std::cout << alignment << elle::Dumpable::Shift
+        std::cout << alignment << elle::io::Dumpable::Shift
                   << "[Stamps]" << std::endl;
 
         // dump the creation time.
-        std::cout << alignment << elle::Dumpable::Shift
-                  << elle::Dumpable::Shift
+        std::cout << alignment << elle::io::Dumpable::Shift
+                  << elle::io::Dumpable::Shift
                   << "[Creation]" << std::endl;
 
         if (this->stamps.creation.Dump(margin + 6) == elle::Status::Error)
           escape("unable to dump the creation time");
 
         // dump the modification time.
-        std::cout << alignment << elle::Dumpable::Shift
-                  << elle::Dumpable::Shift
+        std::cout << alignment << elle::io::Dumpable::Shift
+                  << elle::io::Dumpable::Shift
                   << "[Modification]" << std::endl;
 
         if (this->stamps.modification.Dump(margin + 6) == elle::Status::Error)
@@ -165,27 +165,27 @@ namespace etoile
       }
 
       // dump the size.
-      std::cout << alignment << elle::Dumpable::Shift << "[Size] "
+      std::cout << alignment << elle::io::Dumpable::Shift << "[Size] "
                 << std::dec << this->size << std::endl;
 
       //
       // dump the public keys.
       //
       {
-        std::cout << alignment << elle::Dumpable::Shift
+        std::cout << alignment << elle::io::Dumpable::Shift
                   << "[Keys]" << std::endl;
 
         // dump the owner public key.
-        std::cout << alignment << elle::Dumpable::Shift
-                  << elle::Dumpable::Shift
+        std::cout << alignment << elle::io::Dumpable::Shift
+                  << elle::io::Dumpable::Shift
                   << "[Owner]" << std::endl;
 
         if (this->keys.owner.Dump(margin + 6) == elle::Status::Error)
           escape("unable to dump the owner public key");
 
         // dump the author public key.
-        std::cout << alignment << elle::Dumpable::Shift
-                  << elle::Dumpable::Shift
+        std::cout << alignment << elle::io::Dumpable::Shift
+                  << elle::io::Dumpable::Shift
                   << "[Author]" << std::endl;
 
         if (this->keys.author.Dump(margin + 6) == elle::Status::Error)
@@ -196,12 +196,12 @@ namespace etoile
       // dump the permissions.
       //
       {
-        std::cout << alignment << elle::Dumpable::Shift
+        std::cout << alignment << elle::io::Dumpable::Shift
                   << "[Permissions]" << std::endl;
 
         // dump the owner permissions.
-        std::cout << alignment << elle::Dumpable::Shift
-                  << elle::Dumpable::Shift
+        std::cout << alignment << elle::io::Dumpable::Shift
+                  << elle::io::Dumpable::Shift
                   << "[Owner] " << (int)this->permissions.owner << std::endl;
       }
 
@@ -209,17 +209,17 @@ namespace etoile
       // dump the versions.
       //
       {
-        std::cout << alignment << elle::Dumpable::Shift
+        std::cout << alignment << elle::io::Dumpable::Shift
                   << "[Versions]" << std::endl;
 
         // dump the meta version.
-        std::cout << alignment << elle::Dumpable::Shift
-                  << elle::Dumpable::Shift
+        std::cout << alignment << elle::io::Dumpable::Shift
+                  << elle::io::Dumpable::Shift
                   << "[Meta] " << std::dec << this->versions.meta << std::endl;
 
         // dump the data version.
-        std::cout << alignment << elle::Dumpable::Shift
-                  << elle::Dumpable::Shift
+        std::cout << alignment << elle::io::Dumpable::Shift
+                  << elle::io::Dumpable::Shift
                   << "[Data] " << std::dec << this->versions.data << std::endl;
       }
 

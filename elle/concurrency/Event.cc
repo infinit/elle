@@ -11,8 +11,6 @@
 
 namespace elle
 {
-  using namespace cryptography;
-
   namespace concurrency
   {
     /// this variable defines an unused hence null Event.
@@ -51,7 +49,8 @@ namespace elle
       do
         {
           // generate the identifier.
-          if (Random::Generate(this->_identifier) == Status::Error)
+          if (cryptography::Random::Generate(
+                this->_identifier) == Status::Error)
             escape("unable to generate the identifier");
         } while (*this == Event::Null);
 

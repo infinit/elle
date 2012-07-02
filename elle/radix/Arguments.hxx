@@ -12,15 +12,8 @@
 
 namespace elle
 {
-  using namespace standalone;
-  using namespace radix;
-
   namespace radix
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// these classes specialize the Arguments class depending on the number
@@ -2451,7 +2444,7 @@ namespace elle
       template<size_t const N, typename... T>
         struct ArgumentsSerializer
         {
-          typedef elle::radix::Arguments< Parameters<T...> > Type;
+          typedef elle::radix::Arguments< radix::Parameters<T...> > Type;
 
           template<typename Archive>
             static void
@@ -2478,7 +2471,7 @@ namespace elle
       template<typename... T>
         struct ArgumentsSerializer<0, T...>
         {
-          typedef elle::radix::Arguments< Parameters<T...> > Type;
+          typedef elle::radix::Arguments< radix::Parameters<T...> > Type;
           template<typename Archive>
             static void Serialize(Archive&, Type&) {}
         };
@@ -2492,10 +2485,10 @@ namespace elle
   {
 
     template<typename... T>
-      struct ArchiveSerializer< elle::radix::Arguments< Parameters<T...> >>
+      struct ArchiveSerializer< elle::radix::Arguments< radix::Parameters<T...> >>
       {
       public:
-        typedef elle::radix::Arguments< Parameters<T...> > Type;
+        typedef elle::radix::Arguments< radix::Parameters<T...> > Type;
 
       public:
         template<typename Archive> static void
@@ -2503,7 +2496,7 @@ namespace elle
           {
             assert(version == 0);
             typedef elle::radix::detail::ArgumentsSerializer<sizeof...(T), T...> Serializer;
-            _ELLE_SERIALIZE_LOG_ACTION(elle::radix::Arguments<Parameters<T...>>, version, Archive::mode, value)
+            _ELLE_SERIALIZE_LOG_ACTION(elle::radix::Arguments<radix::Parameters<T...>>, version, Archive::mode, value)
             {
               Serializer::Serialize(ar, value);
             }
@@ -2511,7 +2504,7 @@ namespace elle
       };
 
     template<typename... T>
-    struct StoreClassVersion< elle::radix::Arguments< Parameters<T...> >>
+    struct StoreClassVersion< elle::radix::Arguments< radix::Parameters<T...> >>
     {
       static bool const value = false;
     };

@@ -69,7 +69,7 @@ namespace etoile
         }
       else
         {
-          std::cout << alignment << elle::Dumpable::Shift
+          std::cout << alignment << elle::io::Dumpable::Shift
                     << "[Contents] " << elle::none << std::endl;
         }
 

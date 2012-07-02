@@ -8,7 +8,7 @@
 # include <nucleus/Nucleus.hh>
 # include <nucleus/Derivable.hh>
 
-# include <lune/Lune.hh>
+# include <lune/fwd.hh>
 
 # include <hole/implementations/remote/Customer.hh>
 

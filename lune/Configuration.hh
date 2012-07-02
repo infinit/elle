@@ -1,29 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [sun jun 19 23:13:28 2011]
-//
-
 #ifndef LUNE_CONFIGURATION_HH
-#define LUNE_CONFIGURATION_HH
+# define LUNE_CONFIGURATION_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
-#include <elle/utility/Settings.hh>
+# include <elle/types.hh>
+# include <elle/utility/Settings.hh>
 
 namespace lune
 {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
   ///
   /// this class represents a configuration file which can be used to
@@ -99,9 +81,6 @@ namespace lune
     //
     // interfaces
     //
-
-    // object
-    //declare(Configuration);
 
     // dumpable
     elle::Status                Dump(const elle::Natural32 = 0) const;

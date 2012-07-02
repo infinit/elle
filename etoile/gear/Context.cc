@@ -48,15 +48,15 @@ namespace etoile
       std::cout << alignment << "[Context] " << std::endl;
 
       // display the nature.
-      std::cout << alignment << elle::Dumpable::Shift << "[Nature] "
+      std::cout << alignment << elle::io::Dumpable::Shift << "[Nature] "
                 << this->nature << std::endl;
 
       // display the state.
-      std::cout << alignment << elle::Dumpable::Shift << "[State] "
+      std::cout << alignment << elle::io::Dumpable::Shift << "[State] "
                 << this->state << std::endl;
 
       // display the operation.
-      std::cout << alignment << elle::Dumpable::Shift << "[Operation] "
+      std::cout << alignment << elle::io::Dumpable::Shift << "[Operation] "
                 << this->operation << std::endl;
 
       // dump the transcript.

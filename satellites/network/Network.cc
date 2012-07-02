@@ -1,10 +1,19 @@
+#include <satellites/network/Network.hh>
+
+#include <Infinit.hh>
 #include <elle/Elle.hh>
+#include <lune/Lune.hh>
+#include <etoile/Etoile.hh>
+#include <hole/Hole.hh>
 #include <elle/io/Console.hh>
 #include <elle/io/Directory.hh>
 #include <elle/io/Piece.hh>
 #include <elle/utility/Parser.hh>
-
-#include <satellites/network/Network.hh>
+#include <lune/Authority.hh>
+#include <lune/Descriptor.hh>
+#include <lune/Identity.hh>
+#include <nucleus/proton/Network.hh>
+#include <nucleus/proton/Address.hh>
 
 namespace satellite
 {
@@ -107,9 +116,6 @@ namespace satellite
       // decrypt the authority.
       if (identity.Decrypt(pass) == elle::Status::Error)
         escape("unable to decrypt the identity");
-
-      // XXX
-      identity.Dump();
     }
 
     //
@@ -190,7 +196,7 @@ namespace satellite
     //
     {
       lune::Descriptor  descriptor;
-      elle::Path        path;
+      elle::io::Path        path;
 
       // does the network exist.
       if (descriptor.Exist(name) == elle::Status::True)
@@ -205,7 +211,7 @@ namespace satellite
     // destroy the reserve, if necessary
     //
     {
-      elle::Path        path;
+      elle::io::Path        path;
 
       // create the reserve path.
       if (path.Create(lune::Lune::Network::Reserve::Root) == elle::Status::Error)
@@ -232,7 +238,7 @@ namespace satellite
     // destroy the shelter.
     //
     {
-      elle::Path        path;
+      elle::io::Path        path;
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::Root) == elle::Status::Error)
@@ -259,7 +265,7 @@ namespace satellite
     // remove the network directory.
     //
     {
-      elle::Path        path;
+      elle::io::Path        path;
 
       // create the network path.
       if (path.Create(lune::Lune::Network::Root) == elle::Status::Error)

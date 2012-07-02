@@ -1,15 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       lune
-//
-// license       infinit
-//
-// author        julien quintard   [sun apr 18 11:02:43 2010]
-//
-
 #ifndef LUNE_MAP_HXX
-#define LUNE_MAP_HXX
+# define LUNE_MAP_HXX
 
 namespace lune
 {
@@ -206,7 +196,7 @@ namespace lune
         Map<T>::Entry*  entry = *scoutor;
 
         // dump the name.
-        std::cout << alignment << elle::Dumpable::Shift << "[Name] "
+        std::cout << alignment << elle::io::Dumpable::Shift << "[Name] "
                   << entry->name << std::endl;
 
         // dump the value.

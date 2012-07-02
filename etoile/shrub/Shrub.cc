@@ -420,7 +420,7 @@ namespace etoile
       // make sure this root riffle is present.
       if (Shrub::Riffles != NULL)
         {
-          std::cout << alignment << elle::Dumpable::Shift
+          std::cout << alignment << elle::io::Dumpable::Shift
                     << "[Riffles]" << std::endl;
 
           // just initiate a recursive dump, starting with the root riffle.

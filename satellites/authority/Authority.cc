@@ -1,7 +1,9 @@
 #include <elle/cryptography/PublicKey.hh>
+#include <elle/cryptography/KeyPair.hh>
 
 #include <elle/Elle.hh>
 #include <elle/io/Console.hh>
+#include <elle/io/Unique.hh>
 #include <elle/utility/Parser.hh>
 
 #include <satellites/authority/Authority.hh>
@@ -91,7 +93,7 @@ namespace satellite
     elle::String        prompt;
     elle::String        pass;
     lune::Authority     authority;
-    elle::Unique        unique;
+    elle::io::Unique        unique;
 
     // check if the authority exists.
     if (authority.Exist() == elle::Status::False)

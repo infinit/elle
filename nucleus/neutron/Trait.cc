@@ -77,45 +77,15 @@ namespace nucleus
       std::cout << alignment << "[Trait]" << std::endl;
 
       // dump the name.
-      std::cout << alignment << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Name] " << this->name << std::endl;
 
       // dump the value.
-      std::cout << alignment << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Value] " << this->value << std::endl;
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the trait object.
-    ///
-    //elle::Status        Trait::Serialize(elle::Archive&         archive) const
-    //{
-    //  // serialize the attributes.
-    //  if (archive.Serialize(this->name,
-    //                        this->value) == elle::Status::Error)
-    //    escape("unable to serialize the trait");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the trait object.
-    /////
-    //elle::Status        Trait::Extract(elle::Archive&           archive)
-    //{
-    //  // extract the attributes.
-    //  if (archive.Extract(this->name,
-    //                      this->value) == elle::Status::Error)
-    //    escape("unable to extract the trait");
-
-    //  return elle::Status::Ok;
-    //}
 
 //
 // ---------- rangeable -------------------------------------------------------

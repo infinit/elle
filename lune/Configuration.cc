@@ -180,15 +180,6 @@ namespace lune
   }
 
 //
-// ---------- object ----------------------------------------------------------
-//
-
-  ///
-  /// this macro-function call generates the object.
-  ///
-  //embed(Configuration, _());
-
-//
 // ---------- dumpable --------------------------------------------------------
 //
 
@@ -220,7 +211,7 @@ namespace lune
   ///
   elle::Status          Configuration::Load()
   {
-    elle::Path          path;
+    elle::io::Path          path;
 
     // create the path.
     if (path.Create(Lune::Configuration) == elle::Status::Error)
@@ -238,7 +229,7 @@ namespace lune
   ///
   elle::Status          Configuration::Store() const
   {
-    elle::Path          path;
+    elle::io::Path          path;
 
     // create the path.
     if (path.Create(Lune::Configuration) == elle::Status::Error)
@@ -256,7 +247,7 @@ namespace lune
   ///
   elle::Status          Configuration::Erase() const
   {
-    elle::Path          path;
+    elle::io::Path          path;
 
     // create the path.
     if (path.Create(Lune::Configuration) == elle::Status::Error)
@@ -274,7 +265,7 @@ namespace lune
   ///
   elle::Status          Configuration::Exist() const
   {
-    elle::Path          path;
+    elle::io::Path          path;
 
     // create the path.
     if (path.Create(Lune::Configuration) == elle::Status::Error)

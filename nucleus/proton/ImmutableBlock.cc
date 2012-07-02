@@ -55,7 +55,7 @@ namespace nucleus
     elle::Status        ImmutableBlock::Load(const Network&     network,
                                              const Address&     address)
     {
-      elle::Path        path;
+      elle::io::Path        path;
       elle::String      unique;
 
       if (address.digest->Save(unique) == elle::Status::Error)
@@ -87,7 +87,7 @@ namespace nucleus
     elle::Status        ImmutableBlock::Store(const Network&    network,
                                               const Address&    address) const
     {
-      elle::Path        path;
+      elle::io::Path        path;
       elle::String      unique;
 
       if (address.digest->Save(unique) == elle::Status::Error)
@@ -119,7 +119,7 @@ namespace nucleus
     elle::Status        ImmutableBlock::Erase(const Network&    network,
                                               const Address&    address)
     {
-      elle::Path        path;
+      elle::io::Path        path;
       elle::String      unique;
 
       if (address.digest->Save(unique) == elle::Status::Error)
@@ -159,7 +159,7 @@ namespace nucleus
     elle::Status        ImmutableBlock::Exist(const Network&    network,
                                               const Address&    address) const
     {
-      elle::Path        path;
+      elle::io::Path        path;
       elle::String      unique;
 
       if (address.digest->Save(unique) == elle::Status::Error)

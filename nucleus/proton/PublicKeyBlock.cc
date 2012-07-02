@@ -126,53 +126,13 @@ namespace nucleus
         escape("unable to dump the underlying block");
 
       // dump the PKB's public key.
-      std::cout << alignment << elle::Dumpable::Shift << "[K]" << std::endl;
+      std::cout << alignment << elle::io::Dumpable::Shift << "[K]" << std::endl;
 
       if (this->K.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the public key");
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the block object.
-    ///
-    //elle::Status        PublicKeyBlock::Serialize(elle::Archive& archive) const
-    //{
-    //  // serialize the parent class.
-    //  if (MutableBlock::Serialize(archive) == elle::Status::Error)
-    //    escape("unable to serialize the underlying block");
-
-    //  // serialize the public key.
-    //  if (archive.Serialize(this->K) == elle::Status::Error)
-    //    escape("unable to serialize the public key");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the block object.
-    /////
-    //elle::Status        PublicKeyBlock::Extract(elle::Archive&  archive)
-    //{
-    //  // extract the parent class.
-    //  if (MutableBlock::Extract(archive) == elle::Status::Error)
-    //    escape("unable to extract the underlying block");
-
-    //  // check the family.
-    //  if (this->family != FamilyPublicKeyBlock)
-    //    escape("invalid family");
-
-    //  // extract the public key.
-    //  if (archive.Extract(this->K) == elle::Status::Error)
-    //    escape("unable to extract the public key");
-
-    //  return elle::Status::Ok;
-    //}
 
   }
 }

@@ -5,7 +5,6 @@
 # include <iostream>
 
 # include <elle/serialize/Pointer.hh>
-# include <elle/cryptography/Cipher.hh>
 
 # include <lune/Authority.hh>
 

@@ -306,7 +306,7 @@ namespace nucleus
                 << std::dec << this->container.size() << std::endl;
 
       // dump the options.
-      std::cout << alignment << elle::Dumpable::Shift << "[Options] "
+      std::cout << alignment << elle::io::Dumpable::Shift << "[Options] "
                 << this->options << std::endl;
 
       // dump every item.

@@ -38,7 +38,7 @@ namespace nucleus
     elle::Status        Address::Initialize()
     {
       // disable the meta logging.
-      if (elle::Meta::Disable() == elle::Status::Error)
+      if (elle::radix::Meta::Disable() == elle::Status::Error)
         escape("unable to disable the meta logging");
 
       // create the any address with default meaningless values.
@@ -50,7 +50,7 @@ namespace nucleus
         escape("unable to create the any address");
 
     // enable the meta logging.
-    if (elle::Meta::Enable() == elle::Status::Error)
+    if (elle::radix::Meta::Enable() == elle::Status::Error)
       escape("unable to enable the meta logging");
 
       return elle::Status::Ok;
@@ -213,11 +213,11 @@ namespace nucleus
           std::cout << alignment << "[Address]" << std::endl;
 
           // display the family.
-          std::cout << alignment << elle::Dumpable::Shift << "[Family] "
+          std::cout << alignment << elle::io::Dumpable::Shift << "[Family] "
                     << this->family << std::endl;
 
           // display the component.
-          std::cout << alignment << elle::Dumpable::Shift << "[Component] "
+          std::cout << alignment << elle::io::Dumpable::Shift << "[Component] "
                     << this->component << std::endl;
 
           // dump the digest.
@@ -227,66 +227,6 @@ namespace nucleus
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the address object.
-    ///
-    //elle::Status        Address::Serialize(elle::Archive&       archive) const
-    //{
-    //  if (this->digest != NULL)
-    //    {
-    //      // serialize the internal digest.
-    //      if (archive.Serialize(static_cast<elle::Natural8>(this->family),
-    //                            static_cast<elle::Natural8>(this->component),
-    //                            *this->digest) == elle::Status::Error)
-    //        escape("unable to serialize the digest");
-    //    }
-    //  else
-    //    {
-    //      // serialize 'none'.
-    //      if (archive.Serialize(elle::none) == elle::Status::Error)
-    //        escape("unable to serialize 'none'");
-    //    }
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the address object.
-    /////
-    //elle::Status        Address::Extract(elle::Archive&         archive)
-    //{
-    //  elle::Archive::Type       type;
-
-    //  // fetch the next element's type.
-    //  if (archive.Fetch(type) == elle::Status::Error)
-    //    escape("unable to fetch the next element's type");
-
-    //  if (type == elle::Archive::TypeNull)
-    //    {
-    //      // nothing to do, keep the digest to NULL.
-    //      if (archive.Extract(elle::none) == elle::Status::Error)
-    //        escape("unable to extract null");
-    //    }
-    //  else
-    //    {
-    //      // allocate a digest.
-    //      this->digest = new elle::cryptography::Digest;
-
-    //      // extract the internal digest.
-    //      if (archive.Extract(
-    //            reinterpret_cast<elle::Natural8&>(this->family),
-    //            reinterpret_cast<elle::Natural8&>(this->component),
-    //            *this->digest) == elle::Status::Error)
-    //        escape("unable to extract the digest");
-    //    }
-
-    //  return elle::Status::Ok;
-    //}
 
   }
 }

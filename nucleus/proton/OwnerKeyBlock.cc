@@ -149,29 +149,33 @@ namespace nucleus
         escape("unable to dump the underlying block");
 
       // dump the OKB's public key.
-      std::cout << alignment << elle::Dumpable::Shift << "[K]" << std::endl;
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << "[K]" << std::endl;
 
       if (this->K.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the public key");
 
       // dump the stamp.
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
                 << "[Stamp]" << std::endl;
 
       if (this->stamp.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the stamp");
 
       // dump the owner part.
-      std::cout << alignment << elle::Dumpable::Shift << "[Owner]"
+      std::cout << alignment << elle::io::Dumpable::Shift << "[Owner]"
                 << std::endl;
 
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
                 << "[K]" << std::endl;
 
       if (this->owner.K.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the owner's public key");
 
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
                 << "[Signature]" << std::endl;
 
       if (this->owner.signature.Dump(margin + 6) == elle::Status::Error)

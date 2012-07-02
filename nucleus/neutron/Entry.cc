@@ -1,14 +1,4 @@
 //
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [thu apr  1 22:00:03 2010]
-//
-
-//
 // ---------- includes --------------------------------------------------------
 //
 
@@ -89,7 +79,7 @@ namespace nucleus
       std::cout << alignment << "[Entry]" << std::endl;
 
       // dump the name.
-      std::cout << alignment << elle::Dumpable::Shift << "[Name] "
+      std::cout << alignment << elle::io::Dumpable::Shift << "[Name] "
                 << this->name << std::endl;
 
       // dump the address.
@@ -98,36 +88,6 @@ namespace nucleus
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the entry object.
-    ///
-    //elle::Status        Entry::Serialize(elle::Archive&         archive) const
-    //{
-    //  // serialize the attributes.
-    //  if (archive.Serialize(this->name,
-    //                        this->address) == elle::Status::Error)
-    //    escape("unable to serialize the entry");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the entry object.
-    /////
-    //elle::Status        Entry::Extract(elle::Archive&           archive)
-    //{
-    //  // extract the attributes.
-    //  if (archive.Extract(this->name,
-    //                      this->address) == elle::Status::Error)
-    //    escape("unable to extract the entry");
-
-    //  return elle::Status::Ok;
-    //}
 
 //
 // ---------- rangeable -------------------------------------------------------

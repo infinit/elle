@@ -241,7 +241,7 @@ namespace nucleus
       std::cout << alignment << "[Subject]" << std::endl;
 
       // display the type.
-      std::cout << alignment << elle::Dumpable::Shift << "[Type] "
+      std::cout << alignment << elle::io::Dumpable::Shift << "[Type] "
                 << this->type << std::endl;
 
       // compare the identifier.
@@ -249,7 +249,7 @@ namespace nucleus
         {
         case Subject::TypeUser:
           {
-            std::cout << alignment << elle::Dumpable::Shift
+            std::cout << alignment << elle::io::Dumpable::Shift
                       << "[Identifier]" << std::endl;
 
             // dump the user public key.
@@ -260,7 +260,7 @@ namespace nucleus
           }
         case Subject::TypeGroup:
           {
-            std::cout << alignment << elle::Dumpable::Shift
+            std::cout << alignment << elle::io::Dumpable::Shift
                       << "[Identifier]" << std::endl;
 
             // dump the group address.
@@ -277,92 +277,6 @@ namespace nucleus
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the subject.
-    ///
-    //elle::Status        Subject::Serialize(elle::Archive&       archive) const
-    //{
-    //  // serialize the type.
-    //  if (archive.Serialize(static_cast<elle::Natural8>(this->type)) ==
-    //      elle::Status::Error)
-    //    escape("unable to serialize the type");
-
-    //  // serialize the identifier.
-    //  switch (this->type)
-    //    {
-    //    case Subject::TypeUser:
-    //      {
-    //        // serialize the user public key.
-    //        if (archive.Serialize(*this->user) == elle::Status::Error)
-    //          escape("unable to serialize the user public key");
-
-    //        break;
-    //      }
-    //    case Subject::TypeGroup:
-    //      {
-    //        // serialize the group address.
-    //        if (archive.Serialize(*this->group) == elle::Status::Error)
-    //          escape("unable to serialize the group address");
-
-    //        break;
-    //      }
-    //    default:
-    //      {
-    //        break;
-    //      }
-    //    }
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the subject.
-    /////
-    //elle::Status        Subject::Extract(elle::Archive&         archive)
-    //{
-    //  // extract the type.
-    //  if (archive.Extract(reinterpret_cast<elle::Natural8&>(this->type)) ==
-    //      elle::Status::Error)
-    //    escape("unable to extract the type");
-
-    //  // extract the identifier.
-    //  switch (this->type)
-    //    {
-    //    case Subject::TypeUser:
-    //      {
-    //        // allocate a new public key.
-    //        this->user = new elle::cryptography::PublicKey;
-
-    //        // extract the user public key.
-    //        if (archive.Extract(*this->user) == elle::Status::Error)
-    //          escape("unable to extract the user public key");
-
-    //        break;
-    //      }
-    //    case Subject::TypeGroup:
-    //      {
-    //        // allocate a new address.
-    //        this->group = new proton::Address;
-
-    //        // extract the group address.
-    //        if (archive.Extract(*this->group) == elle::Status::Error)
-    //          escape("unable to extract the group address");
-
-    //        break;
-    //      }
-    //    default:
-    //      {
-    //        break;
-    //      }
-    //    }
-
-    //  return elle::Status::Ok;
-    //}
 
   }
 }

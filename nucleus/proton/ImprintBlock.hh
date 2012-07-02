@@ -69,10 +69,6 @@ namespace nucleus
       // fileable
       ELLE_CONCEPT_SERIALIZABLE_METHODS(ImprintBlock);
 
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
-
       //
       // attributes
       //

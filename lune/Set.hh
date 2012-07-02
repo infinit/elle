@@ -11,10 +11,6 @@
 namespace lune
 {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
   ///
   /// this class holds the set or subset of initial nodes required for
   /// a hole implementation to initiate connections.
@@ -66,5 +62,6 @@ namespace lune
 
 }
 
-#endif
 #include <lune/Set.hxx>
+
+#endif

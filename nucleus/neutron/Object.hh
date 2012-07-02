@@ -23,10 +23,6 @@ namespace nucleus
   namespace neutron
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// this class is the most important of the whole Infinit project
     /// as it describes file system objects being files, directories and
@@ -98,10 +94,6 @@ namespace nucleus
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
-
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
 
       ELLE_CONCEPT_SERIALIZABLE_METHODS(Object);
       ELLE_CONCEPT_SERIALIZABLE_METHODS(Object, elle::serialize::BufferArchive);

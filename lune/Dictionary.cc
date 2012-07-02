@@ -1,11 +1,9 @@
+#include <lune/Dictionary.hh>
+#include <lune/Lune.hh>
 
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
-
-#include <lune/Dictionary.hh>
 #include <elle/cryptography/PublicKey.hh>
-
-#include <lune/Lune.hh>
 
 namespace lune
 {
@@ -53,34 +51,6 @@ namespace lune
   }
 
 //
-// ---------- archivable ------------------------------------------------------
-//
-
-  ///
-  /// this method serializes a dictionary.
-  ///
-  //elle::Status          Dictionary::Serialize(elle::Archive&    archive) const
-  //{
-  //  // serialize the maps.
-  //  if (archive.Serialize(this->users, this->groups) == elle::Status::Error)
-  //    escape("unable to serialize the maps");
-
-  //  return elle::Status::Ok;
-  //}
-
-  /////
-  ///// this method extract a public key from the given archive.
-  /////
-  //elle::Status          Dictionary::Extract(elle::Archive&      archive)
-  //{
-  //  // extract the maps.
-  //  if (archive.Extract(this->users, this->groups) == elle::Status::Error)
-  //    escape("unable to extract the maps");
-
-  //  return elle::Status::Ok;
-  //}
-
-//
 // ---------- fileable --------------------------------------------------------
 //
 
@@ -89,7 +59,7 @@ namespace lune
   ///
   elle::Status          Dictionary::Load(const elle::String&    name)
   {
-    elle::Path          path;
+    elle::io::Path          path;
     elle::standalone::Region        region;
 
     // create the path.
@@ -111,7 +81,7 @@ namespace lune
   ///
   elle::Status          Dictionary::Store(const elle::String&   name) const
   {
-    elle::Path          path;
+    elle::io::Path          path;
     elle::standalone::Region        region;
     elle::String        string;
 
@@ -134,7 +104,7 @@ namespace lune
   ///
   elle::Status          Dictionary::Erase(const elle::String&   name) const
   {
-    elle::Path          path;
+    elle::io::Path          path;
 
     // create the path.
     if (path.Create(Lune::User::Dictionary) == elle::Status::Error)
@@ -156,7 +126,7 @@ namespace lune
   ///
   elle::Status          Dictionary::Exist(const elle::String&   name) const
   {
-    elle::Path          path;
+    elle::io::Path          path;
 
     // create the path.
     if (path.Create(Lune::User::Dictionary) == elle::Status::Error)

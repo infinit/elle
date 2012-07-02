@@ -15,10 +15,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <Infinit.hh>
 #include <elle/types.hh>
-#include <lune/Lune.hh>
-#include <etoile/Etoile.hh>
+#include <elle/io/fwd.hh>
 
 namespace satellite
 {
@@ -60,7 +58,7 @@ namespace satellite
     static elle::Status         Add(elle::String const&,
                                     const Type&,
                                     const elle::String&,
-                                    const elle::Unique&);
+                                    const elle::io::Unique&);
     static elle::Status         Remove(elle::String const&,
                                        const Type&,
                                        const elle::String&);

@@ -53,10 +53,6 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      //// archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
-
       //
       // attributes
       //
@@ -66,5 +62,6 @@ namespace nucleus
   }
 }
 
-#endif
 #include <nucleus/neutron/Token.hxx>
+
+#endif

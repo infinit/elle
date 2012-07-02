@@ -55,5 +55,6 @@ namespace nucleus
   }
 }
 
-#endif
 #include <nucleus/proton/ImmutableBlock.hxx>
+
+#endif

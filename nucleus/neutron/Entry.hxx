@@ -4,7 +4,6 @@
 # include <cassert>
 
 # include <elle/serialize/ArchiveSerializer.hxx>
-# include <nucleus/proton/Address.hh>
 
 # include <nucleus/neutron/Entry.hh>
 

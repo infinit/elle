@@ -1,4 +1,3 @@
-
 #include <elle/cryptography/PublicKey.hh>
 #include <elle/utility/Time.hh>
 
@@ -80,7 +79,7 @@ elle::String                    Infinit::Mountpoint;
 elle::Status            Infinit::Initialize()
 {
   // disable the meta logging.
-  if (elle::Meta::Disable() == elle::Status::Error)
+  if (elle::radix::Meta::Disable() == elle::Status::Error)
     escape("unable to disable the meta logging");
 
   //
@@ -123,7 +122,7 @@ elle::Status            Infinit::Initialize()
   }
 
   // enable the meta logging.
-  if (elle::Meta::Enable() == elle::Status::Error)
+  if (elle::radix::Meta::Enable() == elle::Status::Error)
     escape("unable to enable the meta logging");
 
   return elle::Status::Ok;

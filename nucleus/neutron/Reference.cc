@@ -97,39 +97,11 @@ namespace nucleus
       std::cout << alignment << "[Reference] " << std::endl;
 
       // dump the target.
-      std::cout << alignment << elle::Dumpable::Shift << "[Target] "
+      std::cout << alignment << elle::io::Dumpable::Shift << "[Target] "
                 << this->target << std::endl;
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the object.
-    ///
-    //elle::Status        Reference::Serialize(elle::Archive&     archive) const
-    //{
-    //  // serialize the target.
-    //  if (archive.Serialize(this->target) == elle::Status::Error)
-    //    escape("unable to serialize the target");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the object.
-    /////
-    //elle::Status        Reference::Extract(elle::Archive&       archive)
-    //{
-    //  // extract the target.
-    //  if (archive.Extract(this->target) == elle::Status::Error)
-    //    escape("unable to extract the target");
-
-    //  return elle::Status::Ok;
-    //}
 
   }
 }

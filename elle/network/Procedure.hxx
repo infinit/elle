@@ -36,11 +36,11 @@ namespace elle
                                     >                           routine,
                                   const concurrency::Callback<
                                     Status,
-                                    Parameters<>
+                                    radix::Parameters<>
                                     >                           prolog,
                                   const concurrency::Callback<
                                     Status,
-                                    Parameters<>
+                                    radix::Parameters<>
                                     >                           epilog):
       routine(routine),
       prolog(prolog),
@@ -57,20 +57,20 @@ namespace elle
       struct ProcedureSkeletonExtractor
       {
       private:
-        elle::serialize::InputBufferArchive& _archive;
+        serialize::InputBufferArchive& _archive;
 
       public:
-        ProcedureSkeletonExtractor(elle::serialize::InputBufferArchive& archive)
+        ProcedureSkeletonExtractor(serialize::InputBufferArchive& archive)
           : _archive(archive)
         {}
 
-        elle::Status Load()
+        Status Load()
         {
-          return elle::Status::Ok;
+          return Status::Ok;
         }
 
         template<typename T1, typename ...T>
-        elle::Status Load(T1& v1, T&... values)
+        Status Load(T1& v1, T&... values)
         {
           ELLE_LOG_TRACE_COMPONENT("elle.network.Procedure");
           ELLE_LOG_TRACE("Skeleton extract %p", &v1)
@@ -84,10 +84,10 @@ namespace elle
               ELLE_LOG_TRACE(
                 "An exception occured while extracting skeleton: %s",
                 err.what());
-              return elle::Status::Error;
+              return Status::Error;
             }
           assert(false && "unreachable");
-          return (elle::Status::Ok);
+          return (Status::Ok);
         }
       };
     }
@@ -103,23 +103,23 @@ namespace elle
                                                      Locus& locus,
                                                      Parcel&   parcel) const
     {
-      elle::serialize::InputBufferArchive archive(*parcel.data);
+      serialize::InputBufferArchive archive(*parcel.data);
       ProcedureSkeletonExtractor extractor(archive);
 
       concurrency::Callback<
           Status,
-          typename Trait::Reference<
+            typename radix::Trait::Reference<
               typename Message<I>::P
           >::Type
       >               extract(&ProcedureSkeletonExtractor::Load, &extractor);
 
-      Variables<
-        typename Trait::Bare<
+      radix::Variables<
+      typename radix::Trait::Bare<
           typename Message<I>::P
           >::Type
         >               inputs;
-      Variables<
-        typename Trait::Bare<
+      radix::Variables<
+        typename radix::Trait::Bare<
           typename Message<O>::P
           >::Type
         >               outputs;
@@ -145,19 +145,19 @@ namespace elle
       // at this point, an Arguments is created which references both
       // the inputs and outputs. thus no copy is made while the
       // outputs can still be accessed through the _outputs_ variable.
-      Arguments<
+      radix::Arguments<
         typename
-        Set::Union<
+          radix::Set::Union<
           typename
-          Trait::Bare<
+          radix::Trait::Bare<
             typename Message<I>::P
             >::Type,
               typename
-              Trait::Bare<
+            radix::Trait::Bare<
               typename Message<O>::P
               >::Type
           >::Type
-          >               arguments = Arguments<>::Union(inputs, outputs);
+          >               arguments = radix::Arguments<>::Union(inputs, outputs);
 
       // call the routine.
       Context ctx;
@@ -167,7 +167,7 @@ namespace elle
       if (locus.host.Convert(host) == Status::Error)
         escape("unable to convert the host name");
       ctx.host = host;
-      elle::network::current_context(ctx);
+      network::current_context(ctx);
 
       status = arguments.Call(this->routine);
 
@@ -183,7 +183,7 @@ namespace elle
           //
           // serialize the report and send it to the caller.
           //
-          Report& report = elle::standalone::Report::report.Get();
+          standalone::Report& report = standalone::Report::report.Get();
 
           // reply with the report.
           if (socket->Reply(Inputs<E>(report)) == Status::Error)

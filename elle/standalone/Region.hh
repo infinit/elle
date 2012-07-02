@@ -14,10 +14,6 @@
 
 namespace elle
 {
-
-  using namespace radix;
-  using namespace io;
-
   namespace standalone
   {
 

@@ -1,8 +1,11 @@
+#include <satellites/setup/Setup.hh>
 #include <elle/Elle.hh>
 #include <elle/io/Directory.hh>
 #include <elle/utility/Parser.hh>
-
-#include <satellites/setup/Setup.hh>
+#include <Infinit.hh>
+#include <lune/Lune.hh>
+#include <etoile/Etoile.hh>
+#include <lune/Configuration.hh>
 
 namespace satellite
 {
@@ -25,7 +28,7 @@ namespace satellite
   ///
   elle::Status          Setup::Initialize()
   {
-    elle::Path          path;
+    elle::io::Path          path;
     lune::Configuration configuration;
 
     //
@@ -76,7 +79,7 @@ namespace satellite
   ///
   elle::Status          Setup::Clean()
   {
-    elle::Path          path;
+    elle::io::Path          path;
 
     //
     // remove the configuration, if necessary.

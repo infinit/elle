@@ -9,9 +9,6 @@
 
 namespace elle
 {
-
-  using namespace radix;
-
   namespace concurrency
   {
 

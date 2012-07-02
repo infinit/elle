@@ -5,7 +5,7 @@
 # include <reactor/network/tcp-server.hh>
 # include <nucleus/Nucleus.hh>
 # include <nucleus/Derivable.hh>
-# include <lune/Lune.hh>
+# include <lune/fwd.hh>
 
 # include <hole/implementations/slug/Guestlist.hh>
 # include <hole/implementations/slug/Neighbourhood.hh>

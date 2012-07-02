@@ -7,10 +7,6 @@
 namespace lune
 {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
   ///
   /// this class represents the local log file.
   ///

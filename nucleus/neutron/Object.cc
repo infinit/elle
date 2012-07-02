@@ -486,22 +486,29 @@ namespace nucleus
         escape("unable to dump the author");
 
       // dump the meta part.
-      std::cout << alignment << elle::Dumpable::Shift << "[Meta]" << std::endl;
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << "[Meta]" << std::endl;
 
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
                 << "[Owner] " << std::endl;
 
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
-                << elle::Dumpable::Shift << "[Permissions] " << std::dec
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift << "[Permissions] " << std::dec
                 << (int)this->meta.owner.permissions << std::endl;
 
       if (this->meta.owner.token.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the meta owner's token");
 
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
-                << "[Genre] " << std::dec << (int)this->meta.genre << std::endl;
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
+                << "[Genre] " << std::dec
+                << static_cast<elle::Natural32>(this->meta.genre)
+                << std::endl;
 
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
                 << "[Stamp] " << std::endl;
       if (this->meta.stamp.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the meta stamp");
@@ -509,7 +516,8 @@ namespace nucleus
       if (this->meta.attributes.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the meta attributess");
 
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
                 << "[Access]" << std::endl;
       if (this->meta.access.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the meta access address");
@@ -517,26 +525,32 @@ namespace nucleus
       if (this->meta.version.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the meta version");
 
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
                 << "[Signature]" << std::endl;
       if (this->meta.signature.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the meta signature");
 
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
                 << "[State] " << std::dec << this->meta.state << std::endl;
 
       // dump the data part.
-      std::cout << alignment << elle::Dumpable::Shift << "[Data]" << std::endl;
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << "[Data]" << std::endl;
 
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
                 << "[Contents]" << std::endl;
       if (this->data.contents.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the contents' address");
 
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
                 << "[Size] " << std::dec << this->data.size << std::endl;
 
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
                 << "[Stamp]" << std::endl;
       if (this->data.stamp.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the data stamp");
@@ -544,102 +558,18 @@ namespace nucleus
       if (this->data.version.Dump(margin + 4) == elle::Status::Error)
         escape("unable to dump the data version");
 
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
                 << "[Signature]" << std::endl;
       if (this->data.signature.Dump(margin + 6) == elle::Status::Error)
         escape("unable to dump the data signature");
 
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
+                << elle::io::Dumpable::Shift
                 << "[State] " << std::dec << this->data.state << std::endl;
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the object.
-    ///
-    //:w
-    ////elle::Status        Object::Serialize(elle::Archive&        archive) const
-    //{
-    //  // call the parent class.
-    //  if (proton::ImprintBlock::Serialize(archive) == elle::Status::Error)
-    //    escape("unable to serialize the underlying physical block");
-
-    //  // serialize the author part.
-    //  if (archive.Serialize(this->author) == elle::Status::Error)
-    //    escape("unable to serialize the author");
-
-    //  // serialize the meta part.
-    //  if (archive.Serialize(this->meta.owner.permissions,
-    //                        this->meta.owner.token,
-    //                        this->meta.genre,
-    //                        this->meta.stamp,
-    //                        this->meta.attributes,
-    //                        this->meta.access,
-    //                        this->meta.version,
-    //                        this->meta.signature) == elle::Status::Error)
-    //    escape("unable to serialize the meta part");
-
-    //  // serialize the data part.
-    //  if (archive.Serialize(this->data.contents,
-    //                        this->data.size,
-    //                        this->data.stamp,
-    //                        this->data.version,
-    //                        this->data.signature) == elle::Status::Error)
-    //    escape("unable to serialize the data part");
-
-    //  return elle::Status::Ok;
-    //}
-
-    ///
-    /// this method extracts the object.
-    ///
-    //elle::Status        Object::Extract(elle::Archive&          archive)
-    //{
-    //  // call the parent class.
-    //  if (proton::ImprintBlock::Extract(archive) == elle::Status::Error)
-    //    escape("unable to extract the underyling physical block");
-
-    //  // compare the component.
-    //  if (this->component != ComponentObject)
-    //    escape("the archive does not seem to contain an object");
-
-    //  // extract the author part.
-    //  if (archive.Extract(this->author) == elle::Status::Error)
-    //    escape("unable to extract the author");
-
-    //  // extract the meta part.
-    //  if (archive.Extract(this->meta.owner.permissions,
-    //                      this->meta.owner.token,
-    //                      this->meta.genre,
-    //                      this->meta.stamp,
-    //                      this->meta.attributes,
-    //                      this->meta.access,
-    //                      this->meta.version,
-    //                      this->meta.signature) == elle::Status::Error)
-    //    escape("unable to extract the meta part");
-
-    //  // extract the data part.
-    //  if (archive.Extract(this->data.contents,
-    //                      this->data.size,
-    //                      this->data.stamp,
-    //                      this->data.version,
-    //                      this->data.signature) == elle::Status::Error)
-    //    escape("unable to extract the data part");
-
-    //  // compute the owner record.
-    //  if (this->meta.owner.record.Update(
-    //        this->owner.subject,
-    //        this->meta.owner.permissions,
-    //        this->meta.owner.token) == elle::Status::Error)
-    //    escape("unable to create the owner access record");
-
-    //  return elle::Status::Ok;
-    //}
 
   }
 }

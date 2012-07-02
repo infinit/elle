@@ -4,7 +4,10 @@
 # include <elle/types.hh>
 # include <elle/concurrency/Signal.hh>
 # include <nucleus/Nucleus.hh>
-# include <lune/Lune.hh>
+
+# include <lune/Descriptor.hh>
+# include <lune/Set.hh>
+# include <lune/Passport.hh>
 
 # include <hole/Holeable.hh>
 

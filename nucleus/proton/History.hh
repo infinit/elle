@@ -1,4 +1,4 @@
-#ifndef  NUCLEUS_PROTON_HISTORY_HH
+#ifndef NUCLEUS_PROTON_HISTORY_HH
 # define NUCLEUS_PROTON_HISTORY_HH
 
 # include <elle/concept/Fileable.hh>

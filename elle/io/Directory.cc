@@ -109,8 +109,6 @@ namespace // usefull classes
 
 namespace elle
 {
-  using namespace system;
-
   namespace io
   {
 
@@ -210,15 +208,15 @@ namespace elle
       Path              chemin;
 
       // go through the components of the path.
-      while (std::getline(stream, item, System::Path::Separator))
+      while (std::getline(stream, item, system::System::Path::Separator))
         {
           // update the intermediate chemin.
           if (chemin.string.empty() && item.empty())
-            chemin.string = System::Path::Separator;
+            chemin.string = system::System::Path::Separator;
           else
             {
               chemin.string.append(item);
-              chemin.string.append(1, System::Path::Separator);
+              chemin.string.append(1, system::System::Path::Separator);
             }
 
           // retrieve information on the path. should this operation fail
@@ -263,7 +261,7 @@ namespace elle
             continue;
 
           // create the target path.
-          String path_str(path.str() + System::Path::Separator + *it);
+          String path_str(path.str() + system::System::Path::Separator + *it);
           if (target.Create(path_str) == Status::Error)
             escape("unable to create the target path");
 

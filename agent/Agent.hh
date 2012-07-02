@@ -1,24 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       agent
-//
-// license       infinit
-//
-// author        julien quintard   [thu mar  4 17:20:28 2010]
-//
-
 #ifndef AGENT_AGENT_HH
-#define AGENT_AGENT_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
+# define AGENT_AGENT_HH
 
 #include <Infinit.hh>
-
 #include <elle/types.hh>
-#include <lune/Lune.hh>
+#include <lune/Identity.hh>
+#include <nucleus/neutron/Subject.hh>
 
 ///
 /// the agent namespace contains everything related to the agent
@@ -27,10 +13,6 @@
 ///
 namespace agent
 {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
   ///
   /// this class implements the agent by providing an entry point
@@ -51,8 +33,8 @@ namespace agent
     //
     // static attributes
     //
-    static lune::Identity       Identity;
-    static nucleus::Subject     Subject;
+    static lune::Identity Identity;
+    static nucleus::neutron::Subject Subject;
   };
 
 }

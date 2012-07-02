@@ -327,11 +327,11 @@ namespace etoile
         escape("unable to dump the identifier");
 
       // dump the scope's address.
-      std::cout << alignment << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Scope] " << std::hex << this->scope << std::endl;
 
       // dump the state.
-      std::cout << alignment << elle::Dumpable::Shift
+      std::cout << alignment << elle::io::Dumpable::Shift
                 << "[State] " << std::dec << this->state << std::endl;
 
       return elle::Status::Ok;

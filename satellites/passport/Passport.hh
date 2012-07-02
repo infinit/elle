@@ -15,11 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <Infinit.hh>
 #include <elle/types.hh>
-#include <lune/Lune.hh>
-#include <etoile/Etoile.hh>
-#include <hole/Hole.hh>
 
 namespace satellite
 {

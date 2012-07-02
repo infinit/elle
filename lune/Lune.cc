@@ -1,8 +1,18 @@
+#include <lune/Lune.hh>
+#include <lune/Authority.hh>
+#include <lune/Passport.hh>
+#include <lune/Configuration.hh>
+#include <lune/Identity.hh>
+#include <lune/Dictionary.hh>
+#include <lune/Descriptor.hh>
+#include <lune/Set.hh>
+#include <lune/Phrase.hh>
+#include <lune/Log.hh>
+
+#include <elle/io/Path.hh>
 #include <elle/io/Piece.hh>
 #include <elle/io/File.hh>
 #include <elle/system/System.hh>
-
-#include <lune/Lune.hh>
 
 #include <Infinit.hh>
 
@@ -16,142 +26,142 @@ namespace lune
   ///
   /// this variable contains the path to the Infinit directory.
   ///
-  elle::Pattern                 Lune::Home;
+  elle::io::Pattern                 Lune::Home;
 
   ///
   /// this variable contains the path to the Infinit authority
   /// file.
   ///
-  elle::Pattern                 Lune::Authority;
+  elle::io::Pattern                 Lune::Authority;
 
   ///
   /// this variable contains the path to the Infinit passport
   /// file.
   ///
-  elle::Pattern                 Lune::Passport;
+  elle::io::Pattern                 Lune::Passport;
 
   ///
   /// this variable contains the pattern-based path to the configuration
   /// file.
   ///
-  elle::Pattern                 Lune::Configuration;
+  elle::io::Pattern                 Lune::Configuration;
 
   ///
   /// this variable contains the pattern-based path to the user identity file.
   ///
-  elle::Pattern                 Lune::Identity;
+  elle::io::Pattern                 Lune::Identity;
 
   ///
   /// this variable contains the pattern-based path to the user dictionary
   /// file.
   ///
-  elle::Pattern                 Lune::Dictionary;
+  elle::io::Pattern                 Lune::Dictionary;
 
   ///
   /// this variable contains path to the users directory.
   ///
-  elle::Pattern                 Lune::Users;
+  elle::io::Pattern                 Lune::Users;
 
   ///
   /// this variable contains the pattern-based path to a specific user
   /// directory
   ///
-  elle::Pattern                 Lune::User::Root;
+  elle::io::Pattern                 Lune::User::Root;
 
   ///
   /// this variable holds the pattern of the path leading to a given
   /// user identity.
   ///
-  elle::Pattern                 Lune::User::Identity;
+  elle::io::Pattern                 Lune::User::Identity;
 
   ///
   /// this variable holds the pattern of the path leading to a given
   /// user dictionary.
   ///
-  elle::Pattern                 Lune::User::Dictionary;
+  elle::io::Pattern                 Lune::User::Dictionary;
 
   ///
   /// this variable contains path to the networks directory.
   ///
-  elle::Pattern                 Lune::Networks;
+  elle::io::Pattern                 Lune::Networks;
 
   ///
   /// this variable contains the pattern-based path to a specific network
   /// directory.
   ///
-  elle::Pattern                 Lune::Network::Root;
+  elle::io::Pattern                 Lune::Network::Root;
 
   ///
   /// this variable holds the pattern of the path leading to a given
   /// network descriptor.
   ///
-  elle::Pattern                 Lune::Network::Descriptor;
+  elle::io::Pattern                 Lune::Network::Descriptor;
 
   ///
   /// this variable holds the pattern of the path leading to a given
   /// network set of initial nodes.
   ///
-  elle::Pattern                 Lune::Network::Set;
+  elle::io::Pattern                 Lune::Network::Set;
 
   ///
   /// this variable contains the pattern-based path to the network-specific
   /// phrase file.
   ///
-  elle::Pattern                 Lune::Network::Phrase;
+  elle::io::Pattern                 Lune::Network::Phrase;
 
   ///
   /// this variable contains the pattern-based path to the network-specific
   /// log file.
   ///
-  elle::Pattern                 Lune::Network::Log;
+  elle::io::Pattern                 Lune::Network::Log;
 
   ///
   /// this variable holds the pattern of the path leading to a given
   /// network's reserve.
   ///
-  elle::Pattern                 Lune::Network::Reserve::Root;
+  elle::io::Pattern                 Lune::Network::Reserve::Root;
 
   ///
   /// this variable holds the pattern of the path leading to a specific
   /// immutable block within the network's reserve.
   ///
-  elle::Pattern                 Lune::Network::Reserve::ImmutableBlock;
+  elle::io::Pattern                 Lune::Network::Reserve::ImmutableBlock;
 
   ///
   /// this variable holds the pattern of the path leading to a specific
   /// mutable block within the network's reserve.
   ///
-  elle::Pattern                 Lune::Network::Reserve::MutableBlock;
+  elle::io::Pattern                 Lune::Network::Reserve::MutableBlock;
 
   ///
   /// this variable holds the pattern of the path leading to a specific
   /// mutable block's history within the network's reserve.
   ///
-  elle::Pattern                 Lune::Network::Reserve::History;
+  elle::io::Pattern                 Lune::Network::Reserve::History;
 
   ///
   /// this variable holds the pattern of the path leading to a given
   /// network's shelter.
   ///
-  elle::Pattern                 Lune::Network::Shelter::Root;
+  elle::io::Pattern                 Lune::Network::Shelter::Root;
 
   ///
   /// this variable holds the pattern of the path leading to a specific
   /// immutable block within the network's shelter.
   ///
-  elle::Pattern                 Lune::Network::Shelter::ImmutableBlock;
+  elle::io::Pattern                 Lune::Network::Shelter::ImmutableBlock;
 
   ///
   /// this variable holds the pattern of the path leading to a specific
   /// mutable block within the network's shelter.
   ///
-  elle::Pattern                 Lune::Network::Shelter::MutableBlock;
+  elle::io::Pattern                 Lune::Network::Shelter::MutableBlock;
 
   ///
   /// this variable holds the pattern of the path leading to a specific
   /// mutable block's history within the network's shelter.
   ///
-  elle::Pattern                 Lune::Network::Shelter::History;
+  elle::io::Pattern                 Lune::Network::Shelter::History;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -437,7 +447,7 @@ namespace lune
     // setup the log mechanism.
     //
     {
-      elle::Path          path;
+      elle::io::Path          path;
 
       // create the path.
       if (path.Create(Lune::Network::Log) == elle::Status::Error)
@@ -449,7 +459,7 @@ namespace lune
         escape("unable to complete the path");
 
       // setup the log.
-      if (elle::Log::Setup(path.str()) == elle::Status::Error)
+      if (elle::standalone::Log::Setup(path.str()) == elle::Status::Error)
         escape("unable to set up the log system");
     }
 

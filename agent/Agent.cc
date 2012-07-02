@@ -1,7 +1,8 @@
-#include <elle/io/Console.hh>
-
 #include <agent/Agent.hh>
-#include <hole/Hole.hh>
+
+#include <elle/standalone/Report.hh>
+#include <elle/idiom/Open.hh>
+
 #include <Infinit.hh>
 
 namespace agent
@@ -24,7 +25,7 @@ namespace agent
   ///
   /// this variable represents the user subject.
   ///
-  nucleus::Subject              Agent::Subject;
+  nucleus::neutron::Subject Agent::Subject;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -39,7 +40,7 @@ namespace agent
     elle::String        pass;
 
     // disable the meta logging.
-    if (elle::Meta::Disable() == elle::Status::Error)
+    if (elle::radix::Meta::Disable() == elle::Status::Error)
       escape("unable to disable the meta logging");
 
     //
@@ -87,7 +88,7 @@ namespace agent
     }
 
     // enable the meta logging.
-    if (elle::Meta::Enable() == elle::Status::Error)
+    if (elle::radix::Meta::Enable() == elle::Status::Error)
       escape("unable to enable the meta logging");
 
     return elle::Status::Ok;

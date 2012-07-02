@@ -11,8 +11,6 @@
 
 namespace elle
 {
-  using namespace radix;
-
   namespace concurrency
   {
 
@@ -29,7 +27,7 @@ namespace elle
     template <typename R,
               typename... T>
     class Callback< R,
-                    Parameters<T...> >:
+                    radix::Parameters<T...> >:
       public Routine
     {
     public:
@@ -37,12 +35,12 @@ namespace elle
       // constants
       //
       static const Callback< R,
-                             Parameters<T...> >         Null;
+                             radix::Parameters<T...> >         Null;
 
       //
       // types
       //
-      typedef Parameters<T...>          P;
+      typedef radix::Parameters<T...>          P;
 
       //
       // constructors & destructors
@@ -66,7 +64,7 @@ namespace elle
       //
 
       // object
-      declare(_(Callback< R, Parameters<T...> >));
+      declare(_(Callback< R, radix::Parameters<T...> >));
 
       // dumpable
       Status            Dump(const Natural32 = 0) const;
@@ -94,12 +92,12 @@ namespace elle
       template <typename R,
                 typename... T>
       static Callback< R,
-                       Parameters<T...> >       Infer(R (*)(T...));
+                       radix::Parameters<T...> >       Infer(R (*)(T...));
       template <typename R,
                 typename C,
                 typename... T>
       static Callback< R,
-                       Parameters<T...> >       Infer(R (C::*)(T...),
+                       radix::Parameters<T...> >       Infer(R (C::*)(T...),
                                                       C*);
     };
 

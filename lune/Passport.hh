@@ -45,13 +45,8 @@ namespace lune
     // dumpable
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
-    // archivable
-    //elle::Status        Serialize(elle::Archive&) const;
-    //elle::Status        Extract(elle::Archive&);
-
     // fileable
     ELLE_CONCEPT_FILEABLE_METHODS();
-
     elle::Status        Load();
     elle::Status        Store() const;
     elle::Status        Erase() const;
@@ -70,7 +65,6 @@ namespace lune
 
 }
 
-# include <elle/idiom/Close.hh>
+# include <lune/Passport.hxx>
 
 #endif
-#include <lune/Passport.hxx>
