@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+
+import os, sys
+import getpass
+import argparse
+
+parser = argparse.ArgumentParser(description="Launcher for infinit")
+
+parser.add_argument(
+    '--register',
+    '-r',
+    help="Register instead of log in",
+    action="store_true"
+)
+
+
+def register(state):
+    print("Registering to infinit")
+    fullname = input("Enter your fullname: ").strip()
+    email = input("email: ").strip()
+    while True:
+        password = getpass.getpass("password: ")
+        password2 = getpass.getpass("confirm password: ")
+        if password != password2:
+            print("Passwords don't match!")
+        elif len(password) < 4:
+            print("Password too short")
+        else:
+            break
+
+    import socket
+    default_dev_name = socket.gethostname().strip()
+    dev_name = input("Computer name (defaults to '%s'): " % default_dev_name).strip()
+    if not dev_name:
+        dev_name = default_dev_name
+
+    state.register(fullname, email, password, dev_name)
+
+
+
+def login(state):
+    print("Authentication required (if you don't have an account, try -r)")
+    email = input("email: ").strip()
+    password = getpass.getpass("password: ")
+    state.login(email, password)
+
+def main(state):
+    args = parser.parse_args()
+    if args.register:
+        register(state)
+    else:
+        login(state)
+
+
+if __name__ == '__main__':
+    file_dir = os.path.abspath(os.path.dirname(__file__))
+    sys.path = [
+        os.path.join(file_dir, '..', 'gap', 'python'),
+        os.path.join(file_dir, '..', 'python'),
+    ] + sys.path
+
+    import gap
+    state = gap.State()
+    try:
+        main(state)
+    except KeyboardInterrupt:
+        del state

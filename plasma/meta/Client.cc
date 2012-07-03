@@ -247,12 +247,19 @@ namespace plasma
       {
         boost::asio::streambuf request;
         std::ostream request_stream(&request);
-        request_stream << method << url << " HTTP/1.0" CRLF
+        request_stream << method << ' ' << url << " HTTP/1.0" CRLF
                        << "Host: " << _impl->server << CRLF
-                       << "Accept: */*" CRLF
-                       << "Content-Length: " << elle::sprint(body.size()) << CRLF
-                       << "Connection: close" CRLF CRLF
-                       << body;
+                       << "User-Agent: MetaClient" CRLF
+                       << "Connection: close" CRLF;
+        if (_impl->token.size())
+          request_stream << "Authorization: " << _impl->token << CRLF;
+
+        if (body.size())
+          request_stream << "Content-Length: " << elle::sprint(body.size()) << CRLF
+                         << "Content-Type: application/json" << CRLF CRLF
+                         << body;
+        else
+          request_stream << CRLF;
 
         // Send the request.
         boost::asio::write(socket, request);
@@ -275,8 +282,10 @@ namespace plasma
       if (!response_stream || http_version.substr(0, 5) != "HTTP/")
         throw std::runtime_error("Invalid response");
       if (status_code != 200)
-        throw std::runtime_error(
-            elle::sprint("Response returned with status code ", status_code));
+        {
+          throw std::runtime_error("Response returned with status code " +
+              elle::sprint(status_code));
+        }
 
       // Read the response headers, which are terminated by a blank line.
       boost::asio::read_until(socket, response, "\r\n\r\n");
@@ -284,8 +293,7 @@ namespace plasma
       // Process the response headers.
       std::string header;
       while (std::getline(response_stream, header) && header != "\r")
-        std::cout << "*** " << header << "\n";
-      std::cout << "===\n";
+        {/* consume header lines */}
 
       // Write whatever content we already have to output.
       if (response.size() > 0)

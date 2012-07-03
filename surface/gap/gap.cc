@@ -81,6 +81,11 @@ extern "C"
       delete __TO_CPP(state);
     }
 
+    gap_Status gap_meta_status(gap_State* state)
+    {
+      return gap_ok;
+    }
+
     gap_Status gap_refresh_networks(gap_State* state)
     {
       __WRAP_CPP(state, refresh_networks);
@@ -102,6 +107,30 @@ extern "C"
       return nullptr;
     };
 
+    char* gap_hash_password(gap_State* state,
+                            char const* email,
+                            char const* password)
+    {
+      assert(state != nullptr);
+      assert(email != nullptr);
+      assert(password != nullptr);
+
+      try
+      {
+        std::string h = __TO_CPP(state)->hash_password(email, password);
+        return ::strdup(h.c_str());
+      }
+      catch (std::exception const& err)
+      {
+        elle::log::error("Couldn't hash the password:", err.what());
+      }
+      return nullptr;
+    }
+
+    void gap_hash_free(char* h)
+    {
+      ::free(h);
+    }
 
     gap_Status gap_login(gap_State* state,
                          char const* email,
@@ -121,15 +150,13 @@ extern "C"
       assert(fullname != nullptr);
       assert(email != nullptr);
       assert(password != nullptr);
+
       __WRAP_CPP_RET(state, register_, fullname, email, password);
       if (ret == gap_ok && device_name != nullptr)
-        return gap_set_device_name(state, device_name);
+        {
+          __WRAP_CPP(state, update_device, device_name, true);
+        }
       return ret;
-    }
-
-    gap_Status gap_meta_alive(gap_State* state)
-    {
-      return gap_ok;
     }
 
     gap_Status gap_set_device_name(gap_State* state,

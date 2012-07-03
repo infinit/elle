@@ -102,9 +102,6 @@ find_package(Boost COMPONENTS system thread signals filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 message("-- Boost libraries: ${Boost_LIBRARIES}")
 
-
-
-
 cmake_minimum_required(VERSION 2.6)
 
 # follow symlink when copying

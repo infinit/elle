@@ -1,6 +1,7 @@
 
 #include <cstdlib>
 #include <fstream>
+#include <sstream>
 #include <pwd.h>
 #include <stdexcept>
 #include <sys/types.h>
@@ -8,12 +9,15 @@
 
 #include <boost/filesystem.hpp>
 
+#include <openssl/sha.h>
+
 #include <QString>
 #include <QByteArray>
 #include <QLocalSocket>
 
 #include <elle/log.hh>
 #include <elle/network/Host.hh>
+#include <elle/serialize/HexadecimalArchive.hh>
 
 #include <lune/Dictionary.hh>
 #include <lune/Identity.hh>
@@ -141,10 +145,24 @@ namespace surface
     }
 
     // XXX no hash occurs
-    std::string State::_hash_password(std::string const& email,
-                                      std::string const& password)
+    std::string State::hash_password(std::string const& email,
+                                     std::string const& password)
     {
-      return password;
+      unsigned char hash[SHA256_DIGEST_LENGTH];
+      SHA256_CTX context;
+      std::string to_hash = email + "MEGABIET" + password + email + "MEGABIET";
+
+      if (SHA256_Init(&context) == 0 ||
+          SHA256_Update(&context, to_hash.c_str(), to_hash.size()) == 0 ||
+          SHA256_Final(hash, &context) == 0)
+        throw Exception(gap_internal_error, "Cannot hash login/password");
+
+      std::ostringstream out;
+      elle::serialize::OutputHexadecimalArchive ar(out);
+
+      ar.SaveBinary(hash, SHA256_DIGEST_LENGTH);
+
+      return out.str();
     }
 
     void State::login(std::string const& email, std::string const& password)
@@ -165,8 +183,7 @@ namespace surface
           if (identity.Restore(res.identity)    == elle::Status::Error ||
               identity.Decrypt(password)        == elle::Status::Error ||
               identity.Clear()                  == elle::Status::Error ||
-              identity.Save(identity_clear)     == elle::Status::Error
-             )
+              identity.Save(identity_clear)     == elle::Status::Error)
             throw Exception(gap_internal_error,
                             "Couldn't decrypt the identity file !");
         }
@@ -218,7 +235,7 @@ namespace surface
         }
     }
 
-    void State::update_device(std::string const& name, short port)
+    void State::update_device(std::string const& name, bool force_create)
     {
       std::string local_address = detail::get_local_address();
       elle::log::debug("Registering new device", name, "for host:", local_address);
@@ -228,12 +245,13 @@ namespace surface
 
       std::string passport_string;
 
-      if (!fs::exists(passport_path))
+      if (force_create || !fs::exists(passport_path))
         {
-          auto res = this->_api->create_device(name, local_address, port);
+          auto res = this->_api->create_device(name, local_address, 0);
           if (!res.success)
             throw Exception(gap_api_error, res.error);
           passport_string = res.passport;
+          elle::log::debug("Created device id:", res.created_device_id);
         }
       else
         {
@@ -242,11 +260,12 @@ namespace surface
           if (passport.Load() == elle::Status::Error)
             throw Exception(gap_internal_error, "Cannot load the passport");
 
+          elle::log::debug("Passport id:", passport.id);
           auto res = this->_api->update_device(
               passport.id,
               &name,
               &local_address,
-              port);
+              0);
 
           if (!res.success)
             throw Exception(gap_api_error, res.error);

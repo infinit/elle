@@ -1,6 +1,8 @@
 # -*- encoding: utf-8 -*-
 
 import json
+import meta
+import web
 
 import metalib
 
@@ -75,7 +77,6 @@ class Device(Page):
 
     def POST(self):
         self.requireLoggedIn()
-        i = self.input
         device = self.data
         if '_id' in device:
             func = self._update
@@ -85,17 +86,18 @@ class Device(Page):
         return func(device)
 
     def _create(self, device):
+        print("Create device", device)
         name = device.get('name', '').strip()
         if not name:
             return self.error("You have to provide a valid device name")
 
-        device = {
+        device.update({
             'name': name,
             'owner': self.user['_id'],
-        }
+        })
 
         device['local_address'] = {
-            'ip': device['ip'],
+            'ip': device['local_ip'],
             'port': device.get('local_port', 0),
         }
 

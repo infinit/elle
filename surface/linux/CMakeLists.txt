@@ -1,0 +1,2 @@
+
+file(COPY infinit DESTINATION .)

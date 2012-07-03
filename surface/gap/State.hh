@@ -42,7 +42,10 @@ namespace surface
       void register_(std::string const& fullname,
                      std::string const& email,
                      std::string const& password);
-      void update_device(std::string const& name, short port = 12345);
+      void update_device(std::string const& name,
+                         bool force_create = false);
+      std::string hash_password(std::string const& email,
+                                std::string const& password);
 
     /// properties
     public:
@@ -52,8 +55,6 @@ namespace surface
       std::string _watchdog_id() const;
       void _send_watchdog_cmd(std::string const& cmd);
       void _reload_networks();
-      std::string _hash_password(std::string const& email,
-                                 std::string const& password);
     };
 
   }
