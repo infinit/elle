@@ -46,10 +46,13 @@ namespace surface
                          bool force_create = false);
       std::string hash_password(std::string const& email,
                                 std::string const& password);
+      void create_network(std::string const& name);
+      void stop_watchdog();
+      void launch_watchdog();
 
     /// properties
     public:
-      std::map<std::string, Network*> const& networks() const;
+      std::map<std::string, Network*> const& networks();
 
     private:
       std::string _watchdog_id() const;

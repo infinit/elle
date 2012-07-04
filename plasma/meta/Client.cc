@@ -72,6 +72,11 @@ SERIALIZE_RESPONSE(plasma::meta::NetworksResponse, ar, res)
   ar & named("networks", res.networks);
 }
 
+SERIALIZE_RESPONSE(plasma::meta::CreateNetworkResponse, ar, res)
+{
+  ar & named("created_network_id", res.created_network_id);
+}
+
 namespace plasma
 {
   namespace meta
@@ -170,14 +175,31 @@ namespace plasma
 
     }
 
-    NetworksResponse Client::networks()
+    NetworksResponse
+    Client::networks()
     {
       return this->_get<NetworksResponse>("/networks");
     }
 
-    void Client::token(std::string const& tok)
+    CreateNetworkResponse
+    Client::create_network(std::string const& name)
+    {
+      json::Dictionary request{std::map<std::string, std::string>{
+          {"name", name},
+      }};
+      return this->_post<CreateNetworkResponse>("/network", request);
+    }
+
+    void
+    Client::token(std::string const& tok)
     {
       _impl->token = tok;
+    }
+
+    std::string const&
+    Client::token() const
+    {
+      return _impl->token;
     }
 
     // - Generic http POST and GET --------------------------------------------

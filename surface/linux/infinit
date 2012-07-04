@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- encoding: utf-8 -*-
 
+import cmd
 import os, sys
 import getpass
 import argparse
@@ -14,6 +15,60 @@ parser.add_argument(
     action="store_true"
 )
 
+parser.add_argument(
+    '--new-network',
+    '-n',
+    help="Create a new network",
+    action="store_true"
+)
+
+parser.add_argument(
+    '--watchdog-bin',
+    help="Specify the watchdog binary",
+    default=os.path.join(
+        os.path.abspath(os.path.dirname(__file__)),
+        '8watchdog'
+    )
+)
+
+parser.add_argument(
+    '--no-update',
+    help="Skip the update process",
+    action="store_true",
+)
+
+shell_intro = """
+Welcome to the infinit shell (type help for a list of commands).
+"""
+
+class InfinitShell(cmd.Cmd):
+    def __init__(self, state, args):
+        self._state = state
+        self._args = args
+        self.prompt = state.email + '$ '
+        super(InfinitShell, self).__init__()
+
+    def do_networks(self, args):
+        networks = self._state.networks()
+        for network in networks:
+            print(network)
+
+    def do_create_network(self, args):
+        name = args.strip()
+        if not name:
+            print("You have to specify a name")
+            return
+        self._state.create_network(name)
+
+    def default(self, line):
+        if line == 'EOF':
+            print()
+            raise KeyboardInterrupt()
+        print("Command not found:", line)
+
+def start_shell(state, args):
+    shell = InfinitShell(state, args)
+    shell.cmdloop(shell_intro)
 
 def register(state):
     print("Registering to infinit")
@@ -37,21 +92,43 @@ def register(state):
 
     state.register(fullname, email, password, dev_name)
 
-
-
 def login(state):
     print("Authentication required (if you don't have an account, try -r)")
     email = input("email: ").strip()
     password = getpass.getpass("password: ")
     state.login(email, password)
 
+MANIFEST_URI = "http://download.infinit.im/linux64/manifest.xml"
+
+def update_binaries():
+    from urllib.request import urlopen
+    manifest = urlopen(MANIFEST_URI).read()
+    import xml.etree.cElementTree as et
+    root = et.fromstring(manifest)
+    binaries = []
+    for el in root:
+        binaries.append(dict(el.items()))
+
+    from pprint import pprint as pp
+    pp(binaries)
+
+
 def main(state):
     args = parser.parse_args()
+
+    if not args.no_update:
+        update_binaries()
+
     if args.register:
         register(state)
     else:
         login(state)
 
+    if not os.path.exists(args.watchdog_bin):
+        print("Cannot find the watchdog binary, please specify it with --watchdog-bin")
+        return
+
+    start_shell(state, args)
 
 if __name__ == '__main__':
     file_dir = os.path.abspath(os.path.dirname(__file__))

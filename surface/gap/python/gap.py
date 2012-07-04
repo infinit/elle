@@ -18,6 +18,7 @@ class State:
 
     def __init__(self):
         self._state = _gap.new()
+        self.email = ''
 
     def __del__(self):
         _gap.free(self._state)
@@ -39,6 +40,7 @@ class State:
         return res
 
     def login(self, email, password):
+        self.email = email
         pw_hash = self._call('hash_password', email, password)
         try:
             self._call('login', email, pw_hash)
@@ -46,11 +48,18 @@ class State:
             _gap.hash_free(pw_hash)
 
     def register(self, fullname, email, password, dev_name):
+        self.email = email
         pw_hash = self._call('hash_password', email, password)
         try:
             self._call('register', fullname, email, pw_hash, dev_name)
         finally:
             _gap.hash_free(pw_hash)
+
+    def create_network(self, name):
+        self._call('create_network', name)
+
+    def networks(self):
+        return _gap.networks(self._state)
 
 if __name__ == "__main__":
     import doctest
