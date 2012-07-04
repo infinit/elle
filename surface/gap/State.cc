@@ -28,7 +28,6 @@
 
 #include <plasma/common/resources.hh>
 
-#include "API.hh"
 #include "State.hh"
 
 namespace surface
