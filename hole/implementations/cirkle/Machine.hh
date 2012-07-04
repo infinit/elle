@@ -1,27 +1,15 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [wed aug 31 15:05:39 2011]
-//
-
 #ifndef HOLE_IMPLEMENTATIONS_CIRKLE_MACHINE_HH
-#define HOLE_IMPLEMENTATIONS_CIRKLE_MACHINE_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
+# define HOLE_IMPLEMENTATIONS_CIRKLE_MACHINE_HH
 
 #include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
-#include <lune/Lune.hh>
 
+#include <nucleus/proton/fwd.hh>
+
+#include <lune/fwd.hh>
+
+#include <hole/implementations/cirkle/fwd.hh>
 #include <hole/implementations/cirkle/Neighbourhood.hh>
 #include <hole/implementations/cirkle/RoutingTable.hh>
-#include <hole/implementations/cirkle/Cluster.hh>
 
 namespace hole
 {
@@ -29,10 +17,6 @@ namespace hole
   {
     namespace cirkle
     {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
       ///
       /// XXX represents the current host
@@ -70,16 +54,16 @@ namespace hole
         //
         elle::Status            Launch();
 
-        elle::Status            Put(const nucleus::Address&,
-                                    const nucleus::ImmutableBlock&);
-        elle::Status            Put(const nucleus::Address&,
-                                    const nucleus::MutableBlock&);
-        elle::Status            Get(const nucleus::Address&,
-                                    nucleus::ImmutableBlock&);
-        elle::Status            Get(const nucleus::Address&,
-                                    const nucleus::Version&,
-                                    nucleus::MutableBlock&);
-        elle::Status            Kill(const nucleus::Address&);
+        elle::Status            Put(const nucleus::proton::Address&,
+                                    const nucleus::proton::ImmutableBlock&);
+        elle::Status            Put(const nucleus::proton::Address&,
+                                    const nucleus::proton::MutableBlock&);
+        elle::Status            Get(const nucleus::proton::Address&,
+                                    nucleus::proton::ImmutableBlock&);
+        elle::Status            Get(const nucleus::proton::Address&,
+                                    const nucleus::proton::Version&,
+                                    nucleus::proton::MutableBlock&);
+        elle::Status            Kill(const nucleus::proton::Address&);
 
         //
         // callbacks
@@ -94,12 +78,12 @@ namespace hole
 
         elle::Status            Gossip();
 
-        elle::Status            Push(const nucleus::Address&,
+        elle::Status            Push(const nucleus::proton::Address&,
                                      const
-                                       nucleus::Derivable<nucleus::Block>&);
-        elle::Status            Pull(const nucleus::Address&,
-                                     const nucleus::Version&);
-        elle::Status            Wipe(const nucleus::Address&);
+                                       nucleus::proton::Derivable<nucleus::proton::Block>&);
+        elle::Status            Pull(const nucleus::proton::Address&,
+                                     const nucleus::proton::Version&);
+        elle::Status            Wipe(const nucleus::proton::Address&);
 
         //
         // interfaces

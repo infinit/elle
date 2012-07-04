@@ -1,8 +1,7 @@
 #ifndef HOLE_IMPLEMENTATIONS_SLUG_SLUG_HH
 # define HOLE_IMPLEMENTATIONS_SLUG_SLUG_HH
 
-# include <elle/types.hh>
-# include <hole/implementations/slug/Machine.hh>
+# include <hole/implementations/slug/fwd.hh>
 
 namespace hole
 {
@@ -13,10 +12,6 @@ namespace hole
     ///
     namespace slug
     {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
       ///
       /// XXX
@@ -34,17 +29,5 @@ namespace hole
     }
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-# include <hole/implementations/slug/Bank.hh>
-# include <hole/implementations/slug/Cluster.hh>
-# include <hole/implementations/slug/Host.hh>
-# include <hole/implementations/slug/Implementation.hh>
-# include <hole/implementations/slug/Machine.hh>
-# include <hole/implementations/slug/Manifest.hh>
-# include <hole/implementations/slug/Neighbourhood.hh>
 
 #endif

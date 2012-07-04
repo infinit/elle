@@ -51,15 +51,6 @@ namespace hole
         elle::Status    Authenticated();
 
         //
-        // callbacks
-        //
-        elle::Status    Connected();
-        elle::Status    Disconnected();
-        // XXX: const string&
-        elle::Status    Error(elle::String);
-        elle::Status    Abort();
-
-        //
         // interfaces
         //
 

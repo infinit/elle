@@ -1,24 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 12 15:56:25 2011]
-//
-
 #ifndef HOLE_IMPLEMENTATIONS_CIRKLE_ROUTINGTABLE_HH
-#define HOLE_IMPLEMENTATIONS_CIRKLE_ROUTINGTABLE_HH
+# define HOLE_IMPLEMENTATIONS_CIRKLE_ROUTINGTABLE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-
-#include <hole/Label.hh>
-#include <hole/implementations/cirkle/Neighbour.hh>
+# include <hole/Label.hh>
+# include <hole/implementations/cirkle/Neighbour.hh>
 
 namespace hole
 {

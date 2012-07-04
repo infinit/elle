@@ -1,8 +1,5 @@
 #include <hole/implementations/slug/Guestlist.hh>
 
-#include <elle/network/Locus.hh>
-#include <elle/utility/Time.hh>
-
 #include <elle/idiom/Open.hh>
 
 namespace hole

@@ -17,7 +17,7 @@
 
 #include <elle/types.hh>
 
-#include <hole/implementations/cirkle/RoutingTable.hh>
+#include <hole/implementations/cirkle/fwd.hh>
 
 #include <elle/idiom/Close.hh>
 # include <list>
@@ -68,10 +68,6 @@ namespace hole
         // dumpable
         elle::Status            Dump(const elle::Natural32 = 0) const;
 
-        // archivable
-        //elle::Status            Serialize(elle::Archive&) const;
-        //elle::Status            Extract(elle::Archive&);
-
         //
         // attributes
         //
@@ -82,5 +78,6 @@ namespace hole
   }
 }
 
-#endif
 #include <hole/implementations/cirkle/Cluster.hxx>
+
+#endif

@@ -1,20 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 12 14:03:04 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <hole/implementations/slug/Slug.hh>
-
-#include <hole/Hole.hh>
+#include <hole/implementations/slug/Machine.hh>
 
 namespace hole
 {

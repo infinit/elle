@@ -2,7 +2,6 @@
 #include <hole/implementations/slug/Neighbourhood.hh>
 
 #include <elle/network/Locus.hh>
-#include <elle/utility/Time.hh>
 
 namespace hole
 {

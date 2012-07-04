@@ -6,8 +6,6 @@
 # include <elle/serialize/ListSerializer.hxx>
 # include <elle/network/Locus.hh>
 
-# include <hole/implementations/cirkle/Cluster.hh>
-
 ELLE_SERIALIZE_SIMPLE(hole::implementations::cirkle::Cluster,
                       archive,
                       value,

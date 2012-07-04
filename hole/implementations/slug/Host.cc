@@ -46,7 +46,7 @@ namespace hole
                                           hostname,
                                           this->locus.port);
         this->socket = new elle::network::TCPSocket(socket);
-        Connected();
+        this->state = Host::StateConnected;
       }
 
       ///
@@ -87,83 +87,6 @@ namespace hole
       elle::Status      Host::Authenticated()
       {
         this->state = Host::StateAuthenticated;
-
-        return elle::Status::Ok;
-      }
-
-//
-// ---------- callbacks -------------------------------------------------------
-//
-
-      ///
-      /// XXX
-      ///
-      elle::Status      Host::Abort()
-      {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Host::Abort()\n");
-
-        // if the host has not been authenticated...
-        if (this->state != Host::StateAuthenticated)
-          {
-            // emit the signal.
-            if (this->signal.dead.Emit(this) == elle::Status::Error)
-              escape("unable to emit the signal");
-
-            // set the state.
-            this->state = Host::StateDead;
-          }
-
-        return elle::Status::Ok;
-      }
-
-      ///
-      /// XXX
-      ///
-      elle::Status      Host::Connected()
-      {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Host::Connected()\n");
-
-        // set the state.
-        this->state = Host::StateConnected;
-
-        return elle::Status::Ok;
-      }
-
-      ///
-      /// XXX
-      ///
-      elle::Status      Host::Disconnected()
-      {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Host::Disconnected()\n");
-
-        // emit the signal.
-        if (this->signal.dead.Emit(this) == elle::Status::Error)
-          escape("unable to emit the signal");
-
-        // set the state.
-        this->state = Host::StateDead;
-
-        return elle::Status::Ok;
-      }
-
-      ///
-      /// XXX
-      ///
-      elle::Status      Host::Error(elle::String)
-      {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::slug::Host::Error()\n");
-
-        //
-        // nothing to do.
-        //
 
         return elle::Status::Ok;
       }
