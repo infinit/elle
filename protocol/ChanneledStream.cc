@@ -98,41 +98,30 @@ namespace infinit
                   _reading = true;
                   Packet p(_backend.read());
                   int channel_id = _uint32_get(p);
-                  Packet res;
-                  {
-                    // FIXME: size
-                    // FIXME: copying like this SUCKS
-                    char* buf = new char[p.size() - 4];
-                    p.read(buf, p.size() - 4);
-                    res.write(buf, p.size() - 4);
-                    // FIXME: automatically flush when size or data is used
-                    res.flush();
-                    delete [] buf;
-                  }
-                  ELLE_LOG_TRACE("%s: received %s on channel %s.", *this, res, channel_id)
+                  // FIXME: The size of the packet isn't
+                  // adjusted. This is cosmetic though.
+                  ELLE_LOG_TRACE("%s: received %s on channel %s.", *this, p, channel_id);
                   if (channel_id == requested_channel)
                     {
                       // Wake another thread so it can read future packets.
                       for (auto channel: _channels)
                         if (channel.second->_available.signal_one())
-                          {
-                            break;
-                          }
+                          break;
                       _reading = false;
-                      return res;
+                      return p;
                     }
                   else
                     {
                       auto it = _channels.find(channel_id);
                       if (it != _channels.end())
                         {
-                          it->second->_packets.push_back(std::move(res));
+                          it->second->_packets.push_back(std::move(p));
                           it->second->_available.signal_one();
                         }
                     else
                       {
                         _channels_new.push_back(Channel(*this, channel_id));
-                        _channels_new.back()._packets.push_back(std::move(res));
+                        _channels_new.back()._packets.push_back(std::move(p));
                         _channel_available.signal_one();
                       }
                     }
