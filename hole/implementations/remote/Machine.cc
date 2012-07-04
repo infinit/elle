@@ -89,8 +89,10 @@ namespace hole
         ELLE_LOG_TRACE("try starting as a client")
           try
             {
+              std::string host;
+              locus.host.Convert(host);
               // allocate a client.
-              auto client = std::unique_ptr<Client>(new Client(locus));
+              auto client = std::unique_ptr<Client>(new Client(host, locus.port));
 
               // launch the client.
 

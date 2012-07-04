@@ -3,6 +3,7 @@
 #include <hole/implementations/remote/Machine.hh>
 #include <hole/implementations/remote/Client.hh>
 
+#include <elle/concurrency/Scheduler.hh>
 #include <elle/standalone/Report.hh>
 
 #include <elle/idiom/Open.hh>
@@ -52,96 +53,52 @@ namespace hole
         return elle::Status::Ok;
       }
 
-      ///
-      /// this method stores an immutable block.
-      ///
-      elle::Status      Implementation::Put(
-                          const nucleus::proton::Address& address,
+      void
+      Implementation::Put(const nucleus::proton::Address& address,
                           const nucleus::proton::ImmutableBlock& block)
       {
-        // check if the machine is a client.
         if (Remote::Computer->role != Machine::RoleClient)
-          escape("the hole is not acting as a remote client as it should");
-
-        // forward the request to the machine.
-        if (Remote::Computer->client->Put(address, block) == elle::Status::Error)
-          escape("unable to put the block");
-
-        return elle::Status::Ok;
+          throw reactor::Exception(elle::concurrency::scheduler(),
+                                   "the hole is not acting as a remote client as it should");
+        Remote::Computer->client->Put(address, block);
       }
 
-      ///
-      /// this method stores a mutable block.
-      ///
-      elle::Status      Implementation::Put(
-                          const nucleus::proton::Address& address,
+      void
+      Implementation::Put(const nucleus::proton::Address& address,
                           const nucleus::proton::MutableBlock& block)
       {
-        // check if the machine is a client.
         if (Remote::Computer->role != Machine::RoleClient)
-          escape("the hole is not acting as a remote client as it should");
-
-        // forward the request to the machine.
-        if (Remote::Computer->client->Put(address, block) == elle::Status::Error)
-          escape("unable to put the block");
-
-        return elle::Status::Ok;
+          throw reactor::Exception(elle::concurrency::scheduler(),
+                                   "the hole is not acting as a remote client as it should");
+        Remote::Computer->client->Put(address, block);
       }
 
-      ///
-      /// this method retrieves an immutable block.
-      ///
-      elle::Status      Implementation::Get(
-                          const nucleus::proton::Address& address,
-                          nucleus::proton::ImmutableBlock& block)
+      std::unique_ptr<nucleus::proton::Block>
+      Implementation::Get(const nucleus::proton::Address& address)
       {
-        // check if the machine is a client.
         if (Remote::Computer->role != Machine::RoleClient)
-          escape("the hole is not acting as a remote client as it should");
-
-        // forward the request to the machine.
-        if (Remote::Computer->client->Get(address, block) == elle::Status::Error)
-          escape("unable to get the block");
-
-        return elle::Status::Ok;
+          throw reactor::Exception(elle::concurrency::scheduler(),
+                                   "the hole is not acting as a remote client as it should");
+        return Remote::Computer->client->Get(address);
       }
 
-      ///
-      /// this method retrieves a mutable block.
-      ///
-      elle::Status      Implementation::Get(
-                          const nucleus::proton::Address& address,
-                          const nucleus::proton::Version& version,
-                          nucleus::proton::MutableBlock& block)
+      std::unique_ptr<nucleus::proton::Block>
+      Implementation::Get(const nucleus::proton::Address& address,
+                          const nucleus::proton::Version& version)
       {
-        // check if the machine is a client.
         if (Remote::Computer->role != Machine::RoleClient)
-          escape("the hole is not acting as a remote client as it should");
-
-        // forward the request to the machine.
-        if (Remote::Computer->client->Get(address,
-                                          version,
-                                          block) == elle::Status::Error)
-          escape("unable to get the block");
-
-        return elle::Status::Ok;
+          throw reactor::Exception(elle::concurrency::scheduler(),
+                                   "the hole is not acting as a remote client as it should");
+        return Remote::Computer->client->Get(address, version);
       }
 
-      ///
-      /// this method removes a block.
-      ///
-      elle::Status      Implementation::Kill(
-                          const nucleus::proton::Address& address)
+      void
+      Implementation::Kill(const nucleus::proton::Address& address)
       {
-        // check if the machine is a client.
         if (Remote::Computer->role != Machine::RoleClient)
-          escape("the hole is not acting as a remote client as it should");
-
-        // forward the request to the machine.
-        if (Remote::Computer->client->Kill(address) == elle::Status::Error)
-          escape("unable to kill the block");
-
-        return elle::Status::Ok;
+          throw reactor::Exception(elle::concurrency::scheduler(),
+                                   "the hole is not acting as a remote client as it should");
+        Remote::Computer->client->Kill(address);
       }
 
 //

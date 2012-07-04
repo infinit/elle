@@ -43,6 +43,16 @@ namespace infinit
         _backend._channels.erase(_id);
     }
 
+    /*---------.
+    | Printing |
+    `---------*/
+
+    void
+    Channel::print(std::ostream& s) const
+    {
+      s << "channel " << _id;
+    }
+
     /*-----------.
     | Properties |
     `-----------*/
@@ -73,5 +83,10 @@ namespace infinit
       _backend._write(packet, _id);
     }
 
+    std::ostream& operator << (std::ostream& s, Channel const& channel)
+    {
+      channel.print(s);
+      return s;
+    }
   }
 }

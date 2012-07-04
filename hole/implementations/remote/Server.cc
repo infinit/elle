@@ -281,16 +281,16 @@ namespace hole
               // a referenced access block.
               if (object->meta.access != nucleus::proton::Address::Null)
                 {
-                  nucleus::neutron::Access access;
-
-                  // load the access block.
-                  if (Hole::Pull(object->meta.access,
-                                 nucleus::proton::Version::Last,
-                                 access) == elle::Status::Error)
-                    escape("unable to load the access block");
+                  std::unique_ptr<nucleus::proton::Block> block
+                    (Hole::Pull(object->meta.access, nucleus::proton::Version::Last));
+                  std::unique_ptr<nucleus::neutron::Access> access
+                    (dynamic_cast<nucleus::neutron::Access*>(block.release()));
+                  if (access == nullptr)
+                    throw reactor::Exception(elle::concurrency::scheduler(),
+                                             "expected an access block");
 
                   // validate the object, providing the
-                  if (object->Validate(address, access) == elle::Status::Error)
+                  if (object->Validate(address, *access) == elle::Status::Error)
                     escape("unable to validate the object");
                 }
               else
@@ -387,16 +387,17 @@ namespace hole
               // a referenced access block.
               if (object->meta.access != nucleus::proton::Address::Null)
                 {
-                  nucleus::neutron::Access access;
-
-                  // load the access block.
-                  if (Hole::Pull(object->meta.access,
-                                 nucleus::proton::Version::Last,
-                                 access) == elle::Status::Error)
-                    escape("unable to load the access block");
+                  // Load the access block.
+                  std::unique_ptr<nucleus::proton::Block> block
+                    (Hole::Pull(object->meta.access, nucleus::proton::Version::Last));
+                  std::unique_ptr<nucleus::neutron::Access> access
+                    (dynamic_cast<nucleus::neutron::Access*>(block.release()));
+                  if (!access)
+                    throw reactor::Exception(elle::concurrency::scheduler(),
+                                             "expected an access block");
 
                   // validate the object, providing the
-                  if (object->Validate(address, access) == elle::Status::Error)
+                  if (object->Validate(address, *access) == elle::Status::Error)
                     escape("unable to validate the object");
                 }
               else

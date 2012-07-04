@@ -39,14 +39,14 @@ namespace hole
     static elle::Status         Clean();
 
     static elle::Status         Ready();
-
     static elle::Status         Origin(nucleus::proton::Address&);
     static elle::Status         Push(const nucleus::proton::Address&,
                                      const nucleus::proton::Block&);
-    static elle::Status         Pull(const nucleus::proton::Address&,
-                                     const nucleus::proton::Version&,
-                                     nucleus::proton::Block&);
-    static elle::Status         Wipe(const nucleus::proton::Address&);
+    /// The block associated with the given address.
+    static std::unique_ptr<nucleus::proton::Block>
+    Pull(const nucleus::proton::Address&, const nucleus::proton::Version&);
+    /// Remove the block associated with the given address.
+    static void Wipe(const nucleus::proton::Address&);
 
     //
     // static attributes

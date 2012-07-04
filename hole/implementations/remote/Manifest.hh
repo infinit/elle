@@ -6,8 +6,47 @@
 # include <nucleus/fwd.hh>
 
 # include <lune/fwd.hh>
+# include <nucleus/Nucleus.hh>
+# include <nucleus/Derivable.hh>
 
 # include <etoile/Manifest.hh>
+
+# include <protocol/RPC.hh>
+
+namespace hole
+{
+  namespace implementations
+  {
+    namespace remote
+    {
+      struct RPC: public infinit::protocol::RPC<elle::serialize::InputBinaryArchive,
+                                                elle::serialize::OutputBinaryArchive>
+      {
+        RemoteProcedure<bool, lune::Passport&> challenge;
+        RemoteProcedure<bool> authenticated;
+        RemoteProcedure<bool,
+                        nucleus::proton::Address const&,
+                        nucleus::Derivable&> push;
+        RemoteProcedure<nucleus::Derivable,
+                        nucleus::proton::Address const&,
+                        nucleus::proton::Version const&> pull;
+        RemoteProcedure<bool, nucleus::Derivable&> block;
+        RemoteProcedure<bool, nucleus::proton::Address const&> wipe;
+
+        RPC(infinit::protocol::ChanneledStream& channels)
+          : infinit::protocol::RPC<elle::serialize::InputBinaryArchive,
+                                   elle::serialize::OutputBinaryArchive>(channels)
+          , challenge(*this)
+          , authenticated(*this)
+          , push(*this)
+          , pull(*this)
+          , block(*this)
+          , wipe(*this)
+        {}
+      };
+    }
+  }
+}
 
 namespace hole
 {

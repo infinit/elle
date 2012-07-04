@@ -139,7 +139,7 @@ add_custom_command(
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost COMPONENTS system thread signals filesystem REQUIRED)
+find_package(Boost COMPONENTS system thread signals filesystem unit_test_framework REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIRS})
 message("-- Boost libraries: ${Boost_LIBRARIES}")

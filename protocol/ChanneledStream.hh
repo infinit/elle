@@ -41,6 +41,7 @@ namespace infinit
       virtual Packet read();
       Channel accept();
     private:
+      void _read(bool channel, int requested_channel);
       Packet _read(Channel* channel);
       bool _reading;
 

@@ -29,33 +29,30 @@ namespace hole
   {
     namespace remote
     {
-
 //
 // ---------- constructors & destructors --------------------------------------
 //
 
-      ///
-      /// default constructor.
-      ///
-      Client::Client(const elle::network::Locus& locus):
-        state(Client::StateUnknown),
-        locus(locus),
-        socket(nullptr)
+      /*-------------.
+      | Construction |
+      `-------------*/
+
+      Client::Client(std::string const& host, int port)
+        : state(Client::StateUnknown)
+        , _stream(elle::concurrency::scheduler(), host, port)
+        , _serializer(elle::concurrency::scheduler(), _stream)
+        , _channels(elle::concurrency::scheduler(), _serializer, true)
+        , _rpc(_channels)
       {
+        this->state = Client::StateConnected;
+
+        // Authenticate to the server.
+        ELLE_LOG_TRACE("Authenticate to the server")
+          _rpc.challenge(Hole::Passport);
       }
 
-      ///
-      /// the destructor.
-      ///
       Client::~Client()
-      {
-        // delete the socket.
-        if (this->socket != nullptr)
-        {
-          delete this->socket;
-          this->socket = 0;
-        }
-      }
+      {}
 
 //
 // ---------- peer ------------------------------------------------------------
@@ -68,162 +65,59 @@ namespace hole
       {
         ELLE_LOG_TRACE_SCOPE("Launch");
 
-        //
-        // register the messages.
-        //
-        {
-          // register the message.
-          if (elle::network::Network::Register(
-                elle::network::Procedure<TagAuthenticated>(
-                  elle::concurrency::Callback<>::Infer(
-                    &Client::Authenticated, this))) == elle::Status::Error)
-            escape("unable to register the callback");
-        }
-
-        {
-          std::string hostname;
-          this->locus.host.Convert(hostname);
-          auto socket = new reactor::network::TCPSocket
-            (elle::concurrency::scheduler(), hostname, this->locus.port);
-          this->socket = new elle::network::TCPSocket(socket, true);
-          this->state = Client::StateConnected;
-        }
-
-        // Authenticate to the server.
-        ELLE_LOG_TRACE("Authenticate to the server")
-          this->socket->send(elle::network::Inputs<TagChallenge>(Hole::Passport));
-
         return elle::Status::Ok;
       }
 
-      ///
-      /// this method stores an immutable block.
-      ///
-      elle::Status      Client::Put(const nucleus::proton::Address& address,
-                                    const nucleus::proton::ImmutableBlock& block)
+      void
+      Client::Put(const nucleus::proton::Address& address,
+                  const nucleus::proton::ImmutableBlock& block)
       {
         nucleus::Derivable derivable(
           address.component,
           block,
           nucleus::Derivable::Kind::output);
 
-        ELLE_LOG_TRACE_SCOPE("Put[Immutable]");
-
-        // check that the client is connected.
-        if (this->socket == nullptr)
-          escape("the client seems to have been disconnected");
-
-        // transfer to the remote.
-        if (this->socket->Call(
-              elle::network::Inputs<TagPush>(address, derivable),
-              elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
-          escape("unable to transfer the request");
-
-        return elle::Status::Ok;
+        ELLE_LOG_TRACE("Put[Immutable]")
+          this->_rpc.push(address, derivable);
       }
 
-      ///
-      /// this method stores a mutable block.
-      ///
-      elle::Status      Client::Put(const nucleus::proton::Address& address,
-                                    const nucleus::proton::MutableBlock& block)
+      void
+      Client::Put(const nucleus::proton::Address& address,
+                  const nucleus::proton::MutableBlock& block)
       {
         nucleus::Derivable derivable(address.component, block);
 
-        ELLE_LOG_TRACE_SCOPE("Put[Mutable]");
-
-        // check that the client is connected.
-        if (this->socket == nullptr)
-          escape("the client seems to have been disconnected");
-
-        // transfer to the remote.
-        if (this->socket->Call(
-              elle::network::Inputs<TagPush>(address, derivable),
-              elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
-          escape("unable to transfer the request");
-
-        return elle::Status::Ok;
+        ELLE_LOG_TRACE("Put[Mutable]")
+          this->_rpc.push(address, derivable);
       }
 
-      ///
-      /// this method retrieves an immutable block.
-      ///
-      elle::Status      Client::Get(const nucleus::proton::Address& address,
-                                    nucleus::proton::ImmutableBlock&  block)
+
+      std::unique_ptr<nucleus::proton::Block>
+      Client::Get(const nucleus::proton::Address& address)
       {
-        nucleus::Derivable derivable(
-          address.component,
-          block,
-          nucleus::Derivable::Kind::output);
-
-        ELLE_LOG_TRACE_SCOPE("Get[Immutable]");
-
-        // check that the client is connected.
-        if (this->socket == nullptr)
-          escape("the client seems to have been disconnected");
-
-        // transfer to the remote.
-        if (this->socket->Call(
-              elle::network::Inputs<TagPull>(address,
-                                    nucleus::proton::Version::Any),
-              elle::network::Outputs<TagBlock>(derivable)) == elle::Status::Error)
-          escape("unable to transfer the request");
-
-        return elle::Status::Ok;
+        ELLE_LOG_TRACE("Get[Immutable]")
+            return this->_rpc.pull(address, nucleus::proton::Version::Any).release();
       }
 
-      ///
-      /// this method retrieves a mutable block.
-      ///
-      elle::Status      Client::Get(const nucleus::proton::Address& address,
-                                    const nucleus::proton::Version& version,
-                                    nucleus::proton::MutableBlock& block)
+      std::unique_ptr<nucleus::proton::Block>
+      Client::Get(const nucleus::proton::Address& address,
+                  const nucleus::proton::Version& version)
       {
-        nucleus::Derivable derivable(
-          address.component,
-          block,
-          nucleus::Derivable::Kind::output);
-
-        ELLE_LOG_TRACE_SCOPE("Get[Mutable]");
-
-        // check that the client is connected.
-        if (this->socket == nullptr)
-          escape("the client seems to have been disconnected");
-
-        // transfer to the remote.
-        if (this->socket->Call(
-              elle::network::Inputs<TagPull>(address, version),
-              elle::network::Outputs<TagBlock>(derivable)) == elle::Status::Error)
-          escape("unable to transfer the request");
-
-        return elle::Status::Ok;
+        ELLE_LOG_TRACE("Get[Mutable]")
+          return this->_rpc.pull(address, version).release();
       }
 
-      ///
-      /// this method removes a block.
-      ///
-      elle::Status      Client::Kill(const nucleus::proton::Address& address)
+      void
+      Client::Kill(const nucleus::proton::Address& address)
       {
-        ELLE_LOG_TRACE_SCOPE("Kill");
-
-        // check that the client is connected.
-        if (this->socket == nullptr)
-          escape("the client seems to have been disconnected");
-
-        // transfer to the remote.
-        if (this->socket->Call(
-              elle::network::Inputs<TagWipe>(address),
-              elle::network::Outputs<elle::TagOk>()) == elle::Status::Error)
-          escape("unable to transfer the request");
-
-        return elle::Status::Ok;
+        ELLE_LOG_TRACE("Kill")
+          this->_rpc.wipe(address);
       }
 
 //
 // ---------- callbacks -------------------------------------------------------
 //
 
-      ///
       /// this callback is triggered when the Authenticated message is
       /// received from the server meaning that the challenge has been passed.
       ///
@@ -267,10 +161,6 @@ namespace hole
         elle::String    alignment(margin, ' ');
 
         std::cout << alignment << "[Client]" << std::endl;
-
-        // dump the locus.
-        if (this->locus.Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the locus");
 
         return elle::Status::Ok;
       }

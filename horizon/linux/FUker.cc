@@ -122,6 +122,7 @@ namespace horizon
 
           // XXX
           "-s",
+          "-d",
 
           //
           // this option does not register FUSE as a daemon but

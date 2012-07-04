@@ -2,7 +2,10 @@
 #include <hole/implementations/slug/Slug.hh>
 #include <hole/implementations/slug/Machine.hh>
 
+#include <nucleus/proton/Block.hh>
 #include <nucleus/proton/Network.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace hole
 {
@@ -53,76 +56,37 @@ namespace hole
         return elle::Status::Ok;
       }
 
-      ///
-      /// this method stores an immutable block.
-      ///
-      elle::Status      Implementation::Put(
-                          const nucleus::proton::Address& address,
+      void
+      Implementation::Put(const nucleus::proton::Address& address,
                           const nucleus::proton::ImmutableBlock& block)
       {
-        // forward the request to the machine.
-        if (Slug::Computer->Put(address, block) == elle::Status::Error)
-          escape("unable to put the block");
-
-        return elle::Status::Ok;
+        Slug::Computer->Put(address, block);
       }
 
-      ///
-      /// this method stores a mutable block.
-      ///
-      elle::Status      Implementation::Put(
-                          const nucleus::proton::Address& address,
+      void
+      Implementation::Put(const nucleus::proton::Address& address,
                           const nucleus::proton::MutableBlock& block)
       {
-        // forward the request to the machine.
-        if (Slug::Computer->Put(address, block) == elle::Status::Error)
-          escape("unable to put the block");
-
-        return elle::Status::Ok;
+        Slug::Computer->Put(address, block);
       }
 
-      ///
-      /// this method retrieves an immutable block.
-      ///
-      elle::Status      Implementation::Get(
-                          const nucleus::proton::Address& address,
-                          nucleus::proton::ImmutableBlock& block)
+      std::unique_ptr<nucleus::proton::Block>
+      Implementation::Get(const nucleus::proton::Address& address)
       {
-        // forward the request to the machine.
-        if (Slug::Computer->Get(address, block) == elle::Status::Error)
-          escape("unable to get the block");
-
-        return elle::Status::Ok;
+        return Slug::Computer->Get(address);
       }
 
-      ///
-      /// this method retrieves a mutable block.
-      ///
-      elle::Status      Implementation::Get(
-                          const nucleus::proton::Address& address,
-                          const nucleus::proton::Version& version,
-                          nucleus::proton::MutableBlock& block)
+      std::unique_ptr<nucleus::proton::Block>
+      Implementation::Get(const nucleus::proton::Address& address,
+                          const nucleus::proton::Version& version)
       {
-        // forward the request to the machine.
-        if (Slug::Computer->Get(address,
-                                version,
-                                block) == elle::Status::Error)
-          escape("unable to get the block");
-
-        return elle::Status::Ok;
+        return Slug::Computer->Get(address, version);
       }
 
-      ///
-      /// this method removes a block.
-      ///
-      elle::Status      Implementation::Kill(
-                          const nucleus::proton::Address& address)
+      void
+      Implementation::Kill(const nucleus::proton::Address& address)
       {
-        // forward the request to the machine.
-        if (Slug::Computer->Kill(address) == elle::Status::Error)
-          escape("unable to kill the block");
-
-        return elle::Status::Ok;
+        Slug::Computer->Kill(address);
       }
 
 //

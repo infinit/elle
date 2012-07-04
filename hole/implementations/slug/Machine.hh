@@ -56,16 +56,18 @@ namespace hole
         //
         elle::Status            Launch();
 
-        elle::Status            Put(const nucleus::proton::Address&,
-                                    const nucleus::proton::ImmutableBlock&);
-        elle::Status            Put(const nucleus::proton::Address&,
-                                    const nucleus::proton::MutableBlock&);
-        elle::Status            Get(const nucleus::proton::Address&,
-                                    nucleus::proton::ImmutableBlock&);
-        elle::Status            Get(const nucleus::proton::Address&,
-                                    const nucleus::proton::Version&,
-                                    nucleus::proton::MutableBlock&);
-        elle::Status            Kill(const nucleus::proton::Address&);
+        /// Store an immutable block.
+        void Put(const nucleus::proton::Address&, const nucleus::proton::ImmutableBlock&);
+        /// Store a mutable block.
+        void Put(const nucleus::proton::Address&, const nucleus::proton::MutableBlock&);
+        /// Retrieves an immutable block.
+        std::unique_ptr<nucleus::proton::Block>
+        Get(const nucleus::proton::Address&);
+        /// Retrieves a mutable block.
+        std::unique_ptr<nucleus::proton::Block>
+        Get(const nucleus::proton::Address&, const nucleus::proton::Version&);
+        /// Remove a block.
+        void Kill(const nucleus::proton::Address&);
 
         //
         // callbacks

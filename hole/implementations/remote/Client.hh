@@ -3,11 +3,16 @@
 
 # include <elle/types.hh>
 # include <elle/radix/Entity.hh>
-
 # include <elle/network/fwd.hh>
-# include <elle/network/Locus.hh>
+
+# include <reactor/network/tcp-socket.hh>
 
 # include <nucleus/proton/fwd.hh>
+# include <nucleus/Nucleus.hh>
+# include <hole/implementations/remote/Manifest.hh>
+
+# include <protocol/ChanneledStream.hh>
+# include <protocol/Serializer.hh>
 
 namespace hole
 {
@@ -35,10 +40,11 @@ namespace hole
             StateAuthenticated
           };
 
-        //
-        // constructors & destructors
-        //
-        Client(const elle::network::Locus&);
+      /*-------------.
+      | Construction |
+      `-------------*/
+      public:
+        Client(std::string const& host, int port);
         ~Client();
 
         //
@@ -46,16 +52,18 @@ namespace hole
         //
         elle::Status            Launch();
 
-        elle::Status            Put(const nucleus::proton::Address&,
-                                    const nucleus::proton::ImmutableBlock&);
-        elle::Status            Put(const nucleus::proton::Address&,
-                                    const nucleus::proton::MutableBlock&);
-        elle::Status            Get(const nucleus::proton::Address&,
-                                    nucleus::proton::ImmutableBlock&);
-        elle::Status            Get(const nucleus::proton::Address&,
-                                    const nucleus::proton::Version&,
-                                    nucleus::proton::MutableBlock&);
-        elle::Status            Kill(const nucleus::proton::Address&);
+        /// Store an immutable block.
+        void Put(const nucleus::proton::Address&, const nucleus::proton::ImmutableBlock&);
+        /// Store a mutable block.
+        void Put(const nucleus::proton::Address&, const nucleus::proton::MutableBlock&);
+        /// Retrieve an immutable block.
+        std::unique_ptr<nucleus::proton::Block>
+        Get(const nucleus::proton::Address&);
+        /// Retrieve a mutable block.
+        std::unique_ptr<nucleus::proton::Block>
+        Get(const nucleus::proton::Address&, const nucleus::proton::Version&);
+        /// Remove a block.
+        void Kill(const nucleus::proton::Address&);
 
         //
         // callbacks
@@ -75,8 +83,11 @@ namespace hole
         //
         State                   state;
 
-        elle::network::Locus             locus;
-        elle::network::TCPSocket*        socket;
+      private:
+        reactor::network::TCPSocket _stream;
+        infinit::protocol::Serializer _serializer;
+        infinit::protocol::ChanneledStream _channels;
+        RPC _rpc;
       };
 
     }

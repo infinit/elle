@@ -29,6 +29,12 @@ namespace infinit
     private:
       Channel(ChanneledStream& backend, int id);
 
+    /*---------.
+    | Printing |
+    `---------*/
+    public:
+      void print(std::ostream& s) const;
+
     /*-----------.
     | Properties |
     `-----------*/
@@ -57,6 +63,9 @@ namespace infinit
       std::list<Packet> _packets;
       reactor::Signal _available;
     };
+
+    // FIXME: printable interface
+    std::ostream& operator << (std::ostream& s, Channel const& channel);
   }
 }
 

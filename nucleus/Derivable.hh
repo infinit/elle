@@ -46,6 +46,15 @@ namespace nucleus
       , _dynamic_construct(true)
     {}
 
+    Derivable(Derivable&& source)
+      : kind(source.kind)
+      , _component(source._component)
+      , _block(source._block)
+      , _dynamic_construct(source._dynamic_construct)
+    {
+      source._block = nullptr;
+    }
+
     ~Derivable()
     {
       if (this->_dynamic_construct)

@@ -3,6 +3,7 @@
 
 # include <elle/types.hh>
 # include <elle/radix/Entity.hh>
+# include <elle/network/Locus.hh>
 
 # include <reactor/fwd.hh>
 # include <reactor/network/fwd.hh>

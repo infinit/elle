@@ -8,6 +8,7 @@
 #include <nucleus/proton/Version.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Access.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <elle/log.hh>
 
@@ -24,35 +25,30 @@ namespace hole
 //
 // ---------- holeable --------------------------------------------------------
 //
-
-      ///
-      /// this method stores an immutable block.
-      ///
-      elle::Status      Machine::Put(const nucleus::proton::Address& address,
-                                     const nucleus::proton::ImmutableBlock& block)
+      void
+      Machine::Put(const nucleus::proton::Address& address,
+                   const nucleus::proton::ImmutableBlock& block)
       {
-        // debug.
+        // Debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::local::Put[Immutable]()\n");
 
-        // does the block already exist.
+        // Check if the block already exist.
         if (block.Exist(Hole::Implementation->network,
                         address) == elle::Status::True)
-          escape("this immutable block seems to already exist");
+          throw reactor::Exception(elle::concurrency::scheduler(),
+                                   "this immutable block seems to already exist");
 
-        // store the block.
+        // Store the block.
         if (block.Store(Hole::Implementation->network,
                         address) == elle::Status::Error)
-          escape("unable to store the block");
-
-        return elle::Status::Ok;
+          throw reactor::Exception(elle::concurrency::scheduler(),
+                                   "unable to store the block");
       }
 
-      ///
-      /// this method stores a mutable block.
-      ///
-      elle::Status      Machine::Put(const nucleus::proton::Address& address,
-                                     const nucleus::proton::MutableBlock& block)
+      void
+      Machine::Put(const nucleus::proton::Address&    address,
+                   const nucleus::proton::MutableBlock& block)
       {
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -74,21 +70,23 @@ namespace hole
               // a referenced access block.
               if (object->meta.access != nucleus::proton::Address::Null)
                 {
-                  nucleus::neutron::Access access;
                   ELLE_LOG_TRACE(
-                      "Put nucleus::Object MutableBlock %p"
-                      " with a referenced access block",
-                      this
-                  ) {
-                      // load the access block.
-                      if (Hole::Pull(object->meta.access,
-                                     nucleus::proton::Version::Last,
-                                     access) == elle::Status::Error)
-                        escape("unable to load the access block");
+                    "Put nucleus::Object MutableBlock %p"
+                    " with a referenced access block",
+                    this
+                    ) {
+                    // Load the access block.
+                    std::unique_ptr<nucleus::proton::Block> block
+                      (Hole::Pull(object->meta.access, nucleus::proton::Version::Last));
+                    std::unique_ptr<nucleus::neutron::Access> access
+                      (dynamic_cast<nucleus::neutron::Access*>(block.release()));
+                    if (access == nullptr)
+                      throw reactor::Exception(elle::concurrency::scheduler(),
+                                               "expected an access block");
 
-                      // validate the object, providing the
-                      if (object->Validate(address, access) == elle::Status::Error)
-                        escape("unable to validate the object");
+                    if (object->Validate(address, *access) == elle::Status::Error)
+                      throw reactor::Exception(elle::concurrency::scheduler(),
+                                               "unable to validate the object");
                   }
                 }
               else
@@ -102,7 +100,8 @@ namespace hole
                       if (object->Validate(
                             address,
                             nucleus::neutron::Access::Null) == elle::Status::Error)
-                        escape("unable to validate the object");
+                        throw reactor::Exception(elle::concurrency::scheduler(),
+                                                 "unable to validate the object");
                   }
                 }
 
@@ -114,15 +113,16 @@ namespace hole
                 {
                   // validate the block through the common interface.
                   if (block.Validate(address) == elle::Status::Error)
-                    escape("the block seems to be invalid");
+                    throw reactor::Exception(elle::concurrency::scheduler(),
+                                             "the block seems to be invalid");
                 }
 
               break;
             }
           case nucleus::neutron::ComponentUnknown:
             {
-              escape("unknown component '%u'",
-                     address.component);
+              throw reactor::Exception(elle::concurrency::scheduler(),
+                                       elle::sprintf("unknown component '%u'", address.component));
             }
           }
 
@@ -131,60 +131,58 @@ namespace hole
             // store the block.
             if (block.Store(Hole::Implementation->network,
                             address) == elle::Status::Error)
-              escape("unable to store the block");
+              throw reactor::Exception(elle::concurrency::scheduler(), "unable to store the block");
           }
 
         ELLE_LOG_TRACE("Block %p successfully stored", &block);
-        return elle::Status::Ok;
       }
 
-      ///
-      /// this method retrieves an immutable block.
-      ///
-      elle::Status      Machine::Get(const nucleus::proton::Address& address,
-                                     nucleus::proton::ImmutableBlock& block)
+      std::unique_ptr<nucleus::proton::Block>
+      Machine::Get(const nucleus::proton::Address& address)
       {
-        // debug.
+        // Debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::local::Get[Immutable]()\n");
 
-        // does the block exist.
-        if (block.Exist(Hole::Implementation->network,
-                        address) == elle::Status::False)
-          escape("the block does not seem to exist");
+        nucleus::proton::ImmutableBlock* block;
+        nucleus::Nucleus::Factory.Build(address.component, block);
 
-        // load the block.
-        if (block.Load(Hole::Implementation->network,
+        // Does the block exist.
+        if (block->Exist(Hole::Implementation->network, address) == elle::Status::False)
+          throw reactor::Exception(elle::concurrency::scheduler(), "the block does not seem to exist");
+
+        // Load the block.
+        if (block->Load(Hole::Implementation->network,
                        address) == elle::Status::Error)
-          escape("unable to load the block");
+          throw reactor::Exception(elle::concurrency::scheduler(), "unable to load the block");
 
-        // validate the block.
-        if (block.Validate(address) == elle::Status::Error)
-          escape("the block seems to be invalid");
+        // Validate the block.
+        if (block->Validate(address) == elle::Status::Error)
+          throw reactor::Exception(elle::concurrency::scheduler(), "the block seems to be invalid");
 
-        return elle::Status::Ok;
+        return std::unique_ptr<nucleus::proton::Block>(block);
       }
 
-      ///
-      /// this method retrieves a mutable block.
-      ///
-      elle::Status      Machine::Get(const nucleus::proton::Address& address,
-                                     const nucleus::proton::Version& version,
-                                     nucleus::proton::MutableBlock& block)
+      std::unique_ptr<nucleus::proton::Block>
+      Machine::Get(const nucleus::proton::Address&    address,
+                   const nucleus::proton::Version&    version)
       {
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::local::Get[Mutable]()\n");
 
+        nucleus::proton::MutableBlock* block;
+        nucleus::Nucleus::Factory.Build(address.component, block);
+
         // does the block exist.
-        if (block.Exist(Hole::Implementation->network,
+        if (block->Exist(Hole::Implementation->network,
                         address, version) == elle::Status::False)
-          escape("the block does not seem to exist");
+          throw reactor::Exception(elle::concurrency::scheduler(), "the block does not seem to exist");
 
         // load the block.
-        if (block.Load(Hole::Implementation->network,
+        if (block->Load(Hole::Implementation->network,
                        address, version) == elle::Status::Error)
-          escape("unable to load the block");
+          throw reactor::Exception(elle::concurrency::scheduler(), "unable to load the block");
 
         // validate the block, depending on its component.
         //
@@ -195,24 +193,25 @@ namespace hole
           case nucleus::neutron::ComponentObject:
             {
               const nucleus::neutron::Object* object =
-                static_cast<const nucleus::neutron::Object*>(&block);
-              assert(dynamic_cast<const nucleus::neutron::Object*>(&block) != nullptr);
+                static_cast<const nucleus::neutron::Object*>(block);
+              assert(dynamic_cast<const nucleus::neutron::Object*>(block) != nullptr);
 
               // validate the object according to the presence of
               // a referenced access block.
               if (object->meta.access != nucleus::proton::Address::Null)
                 {
-                  nucleus::neutron::Access access;
+                  // Load the access block.
+                  std::unique_ptr<nucleus::proton::Block> block
+                    (Hole::Pull(object->meta.access, nucleus::proton::Version::Last));
+                  std::unique_ptr<nucleus::neutron::Access> access
+                    (dynamic_cast<nucleus::neutron::Access*>(block.release()));
+                  if (access == nullptr)
+                    throw reactor::Exception(elle::concurrency::scheduler(),
+                                             "expected an access block");
 
-                  // load the access block.
-                  if (Hole::Pull(object->meta.access,
-                                 nucleus::proton::Version::Last,
-                                 access) == elle::Status::Error)
-                    escape("unable to load the access block");
-
-                  // validate the object, providing the
-                  if (object->Validate(address, access) == elle::Status::Error)
-                    escape("unable to validate the object");
+                  // Validate the object.
+                  if (object->Validate(address, *access) == elle::Status::Error)
+                    throw reactor::Exception(elle::concurrency::scheduler(), "unable to validate the object");
                 }
               else
                 {
@@ -220,7 +219,7 @@ namespace hole
                   if (object->Validate(
                         address,
                         nucleus::neutron::Access::Null) == elle::Status::Error)
-                    escape("unable to validate the object");
+                    throw reactor::Exception(elle::concurrency::scheduler(), "unable to validate the object");
                 }
 
               break;
@@ -228,25 +227,23 @@ namespace hole
           default:
             {
               // validate the block through the common interface.
-              if (block.Validate(address) == elle::Status::Error)
-                escape("the block seems to be invalid");
+              if (block->Validate(address) == elle::Status::Error)
+                throw reactor::Exception(elle::concurrency::scheduler(), "the block seems to be invalid");
 
               break;
             }
           case nucleus::neutron::ComponentUnknown:
             {
-              escape("unknown component '%u'",
-                     address.component);
+              throw reactor::Exception(elle::concurrency::scheduler(),
+                                       elle::sprintf("unknown component '%u'",
+                                                     address.component));
             }
           }
-
-        return elle::Status::Ok;
+        return std::unique_ptr<nucleus::proton::Block>(block);
       }
 
-      ///
-      /// this method removes a block.
-      ///
-      elle::Status      Machine::Kill(const nucleus::proton::Address& address)
+      void
+      Machine::Kill(const nucleus::proton::Address& address)
       {
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -259,11 +256,9 @@ namespace hole
           case nucleus::proton::FamilyContentHashBlock:
             {
               // erase the immutable block.
-              if (nucleus::proton::ImmutableBlock::Erase(
-                    Hole::Implementation->network,
-                    address) == elle::Status::Error)
-                escape("unable to erase the block");
-
+              if (nucleus::proton::ImmutableBlock::Erase(Hole::Implementation->network,
+                           address) == elle::Status::Error)
+                throw reactor::Exception(elle::concurrency::scheduler(), "unable to erase the block");
               break;
             }
           case nucleus::proton::FamilyPublicKeyBlock:
@@ -271,20 +266,17 @@ namespace hole
           case nucleus::proton::FamilyImprintBlock:
             {
               // retrieve the mutable block.
-              if (nucleus::proton::MutableBlock::Erase(
-                    Hole::Implementation->network,
-                    address) == elle::Status::Error)
-                escape("unable to erase the block");
+              if (nucleus::proton::MutableBlock::Erase(Hole::Implementation->network,
+                           address) == elle::Status::Error)
+                throw reactor::Exception(elle::concurrency::scheduler(), "unable to erase the block");
 
               break;
             }
           default:
             {
-              escape("unknown block family");
+              throw reactor::Exception(elle::concurrency::scheduler(), "unknown block family");
             }
           }
-
-        return elle::Status::Ok;
       }
 
 //
