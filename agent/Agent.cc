@@ -70,7 +70,8 @@ namespace agent
           std::getline(identity_file, Agent::meta_token);
           std::string clear_identity;
           std::getline(identity_file, clear_identity);
-          Agent::Identity.Restore(clear_identity);
+          if (Agent::Identity.Restore(clear_identity) == elle::Status::Error)
+            escape("unable to restore the identity");
         }
       else
         {

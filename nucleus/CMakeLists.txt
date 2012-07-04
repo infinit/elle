@@ -41,4 +41,4 @@ ADD_LIBRARY(nucleus
 
 
 
-TARGET_LINK_LIBRARIES(nucleus elle)
+TARGET_LINK_LIBRARIES(nucleus hole elle)
