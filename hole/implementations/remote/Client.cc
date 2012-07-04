@@ -92,21 +92,13 @@ namespace hole
           this->locus.host.Convert(hostname);
           auto socket = new reactor::network::TCPSocket
             (elle::concurrency::scheduler(), hostname, this->locus.port);
-          this->socket = new elle::network::TCPSocket(socket);
+          this->socket = new elle::network::TCPSocket(socket, true);
           Connected();
         }
 
-        //
-        // authenticate to the server.
-        //
+        // Authenticate to the server.
         ELLE_LOG_TRACE("Authenticate to the server")
-          {
-            // send the passport.
-            if (this->socket->Send(
-                  elle::network::Inputs<TagChallenge>(Hole::Passport)) ==
-                elle::Status::Error)
-              escape("unable to send the challenge");
-          }
+          this->socket->send(elle::network::Inputs<TagChallenge>(Hole::Passport));
 
         return elle::Status::Ok;
       }

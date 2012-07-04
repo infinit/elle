@@ -42,7 +42,6 @@ ADD_LIBRARY(elle
 
   types.cc
 
-  concurrency/Event.cc
   concurrency/Program.cc
   concurrency/Routine.cc
   concurrency/Scheduler.cc
@@ -136,6 +135,7 @@ ADD_LIBRARY(elle
 
 add_definitions(-fPIC)
 target_link_libraries(elle
+        protocol
 	${INFINIT_OPENSSL_STATIC_LIBRARIES}
 	${INFINIT_MSGPACK_STATIC_LIBRARIES}
 	${INFINIT_JSONCPP_STATIC_LIBRARIES}

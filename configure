@@ -10,10 +10,10 @@ DEBUG=1
 MAKEOPT="--quiet -j$(($(grep processor /proc/cpuinfo | wc -l) + 1))"
 CPPFLAGS="$CPPFLAGS -D_LARGE_FILE -D_FILE_OFFSET_BITS=64 -DWINVER=0x0600"
 CFLAGS="$CFLAGS -std=c99 -W -Wall -Wstrict-prototypes -pipe"
-CFLAGS="$CFLAGS -Wfloat-equal -Wundef -Wpointer-arith"
+CFLAGS="$CFLAGS -Wfloat-equal -Wpointer-arith"
 CFLAGS="$CFLAGS -Wmissing-declarations -Wnested-externs"
 CFLAGS="$CFLAGS -Wmissing-prototypes"
-CXXFLAGS="$CXXFLAGS -std=c++0x -Wall -Wextra -Wundef -Wpointer-arith -Wabi"
+CXXFLAGS="$CXXFLAGS -std=c++0x -Wall -Wextra -Wpointer-arith -Wabi"
 CXXFLAGS="$CXXFLAGS -Wcast-align -Wno-empty-body" #XXX msgpack vomit with -Wold-style-cast
 LDFLAGS="$LDFLAGS"
 PREFIX="/usr/local"

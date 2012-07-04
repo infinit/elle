@@ -117,10 +117,10 @@ namespace horizon
       const char*       arguments[] =
         {
           "horizon",
+          "-s",
 
           // XXX
           "-s",
-          "-d",
 
           //
           // this option does not register FUSE as a daemon but

@@ -706,7 +706,7 @@ namespace etoile
             auto application = std::unique_ptr<Application>(new Application);
 
             // create the application.
-            if (application->Create(new elle::network::TCPSocket(socket)) == elle::Status::Error)
+            if (application->Create(new elle::network::TCPSocket(socket, true)) == elle::Status::Error)
               std::abort();
 
             // record the application.
@@ -743,10 +743,8 @@ namespace etoile
       // set the application as being authenticated.
       application->state = Application::StateAuthenticated;
 
-      // reply with the Authenticated message.
-      if (application->socket->Reply(
-            elle::network::Inputs<TagAuthenticated>()) == elle::Status::Error)
-        escape("unable to reply to the application");
+      // Reply with the Authenticated message.
+      application->socket->reply(elle::network::Inputs<TagAuthenticated>());
 
       return elle::Status::Ok;
     }

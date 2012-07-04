@@ -5,8 +5,6 @@
 
 # include <elle/radix/Object.hh>
 
-# include <elle/concurrency/Event.hh>
-
 # include <elle/network/Tag.hh>
 
 # include <elle/idiom/Open.hh>
@@ -34,12 +32,7 @@ namespace elle
       //
       Header();
 
-      //
-      // methods
-      //
-      Status            Create(const concurrency::Event&,
-                               const Tag,
-                               const Natural32);
+      Status Create(Tag const);
 
       //
       // interfaces
@@ -54,11 +47,8 @@ namespace elle
       //
       // attributes
       //
-      concurrency::Event             event;
       Tag               tag;
-      Natural32         size;
     };
-
   }
 }
 

@@ -21,14 +21,16 @@ namespace reactor
       /// Collection of threads blocked on this.
       typedef std::set<Thread*> Waiters;
 
-    /*-------------.
-    | Construction |
-    `-------------*/
-    public:
-      /// Construct a Waitable.
-      Waitable(const std::string& name = std::string());
-      /// Destroy a Waitable.
-      virtual ~Waitable();
+  /*-------------.
+  | Construction |
+  `-------------*/
+  public:
+    /// Construct a Waitable.
+    Waitable(const std::string& name = std::string());
+    /// Move a Waitable.
+    Waitable(Waitable&& source);
+    /// Destroy a Waitable.
+    virtual ~Waitable();
 
     /*-------.
     | Status |
