@@ -94,12 +94,6 @@ namespace infinit
     | Properties |
     `-----------*/
 
-    const Packet::Byte*
-    Packet::data() const
-    {
-      return this->_data;
-    }
-
     elle::Size
     Packet::size() const
     {
@@ -110,7 +104,7 @@ namespace infinit
     | Details |
     `--------*/
 
-    Packet::Packet(Size data_size)
+    Packet::Packet(elle::Size data_size)
       : elle::IOStream(new StreamBuffer(*this))
       , _data(new Byte[data_size])
       , _data_size(data_size)
