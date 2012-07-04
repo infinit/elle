@@ -2,12 +2,13 @@
 # define ETOILE_PORTAL_PORTAL_HH
 
 # include <elle/types.hh>
-# include <lune/Lune.hh>
 
 # include <reactor/fwd.hh>
 # include <reactor/network/fwd.hh>
 
 # include <etoile/portal/Application.hh>
+
+# include <lune/Phrase.hh>
 
 # include <elle/idiom/Close.hh>
 #  include <map>
@@ -24,10 +25,6 @@ namespace etoile
   ///
   namespace portal
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class is responsible for managing the external applications
@@ -74,17 +71,10 @@ namespace etoile
       static Container applications;
       static reactor::network::TCPServer* server;
       static reactor::Thread* acceptor;
+      static lune::Phrase phrase;
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/portal/Wrapper.hh>
-
-#include <etoile/portal/Manifest.hh>
 
 #endif

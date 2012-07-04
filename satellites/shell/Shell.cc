@@ -1,11 +1,17 @@
-#include <elle/Elle.hh>
-#include <elle/utility/Parser.hh>
 #include <satellites/shell/Shell.hh>
 
+#include <elle/Elle.hh>
+#include <elle/utility/Parser.hh>
+#include <elle/concurrency/Program.hh>
+
 #include <lune/Lune.hh>
+
 #include <etoile/Etoile.hh>
+
 #include <agent/Agent.hh>
+
 #include <hole/Hole.hh>
+
 #include <Infinit.hh>
 
 namespace satellite

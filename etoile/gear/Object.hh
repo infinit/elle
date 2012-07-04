@@ -3,7 +3,15 @@
 
 # include <elle/types.hh>
 # include <elle/concurrency/Callback.hh>
-# include <nucleus/Nucleus.hh>
+# include <elle/cryptography/SecretKey.hh>
+
+# include <nucleus/proton/Location.hh>
+# include <nucleus/neutron/fwd.hh>
+# include <nucleus/neutron/Object.hh>
+# include <nucleus/neutron/Role.hh>
+# include <nucleus/neutron/Permissions.hh>
+# include <nucleus/neutron/Record.hh>
+# include <nucleus/neutron/Author.hh>
 
 # include <etoile/gear/Context.hh>
 # include <etoile/gear/Nature.hh>
@@ -80,26 +88,22 @@ namespace etoile
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
-
       //
       // attributes
       //
-      nucleus::Location         location;
+      nucleus::proton::Location location;
 
-      nucleus::Object           object;
-      nucleus::Access*          access;
+      nucleus::neutron::Object object;
+      nucleus::neutron::Access* access;
 
       struct
       {
-        nucleus::Role           role;
-        nucleus::Permissions    permissions;
-        elle::cryptography::SecretKey         key;
-        nucleus::Record         record;
-      }                         rights;
-      nucleus::Author           author;
+        nucleus::neutron::Role role;
+        nucleus::neutron::Permissions permissions;
+        elle::cryptography::SecretKey key;
+        nucleus::neutron::Record record;
+      } rights;
+      nucleus::neutron::Author author;
     };
 
   }

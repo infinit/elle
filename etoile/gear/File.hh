@@ -1,39 +1,23 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 14 23:13:51 2009]
-//
-
 #ifndef ETOILE_GEAR_FILE_HH
-#define ETOILE_GEAR_FILE_HH
+# define ETOILE_GEAR_FILE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/concurrency/Callback.hh>
 
-#include <elle/types.hh>
-#include <elle/concurrency/Callback.hh>
-#include <nucleus/Nucleus.hh>
+# include <nucleus/proton/fwd.hh>
+# include <nucleus/neutron/Data.hh>
 
-#include <etoile/gear/Object.hh>
-#include <etoile/gear/Nature.hh>
+# include <etoile/gear/Object.hh>
+# include <etoile/gear/Nature.hh>
 
-#include <etoile/automaton/File.hh>
+# include <etoile/automaton/File.hh>
 
-#include <etoile/wall/File.hh>
+# include <etoile/wall/File.hh>
 
 namespace etoile
 {
   namespace gear
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a file-specific context.
@@ -63,7 +47,7 @@ namespace etoile
                   >
                 >                               S;
 
-      typedef nucleus::Data                     C;
+      typedef nucleus::neutron::Data C;
 
       //
       // constructors & destructors
@@ -78,14 +62,10 @@ namespace etoile
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
-
       //
       // attributes
       //
-      nucleus::Contents<C>*     contents;
+      nucleus::proton::Contents<C>*     contents;
     };
 
   }

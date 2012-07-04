@@ -1,16 +1,24 @@
+#include <satellites/user/User.hh>
+
 #include <Infinit.hh>
+
 #include <lune/Lune.hh>
+
 #include <etoile/Etoile.hh>
+
+#include <nucleus/Nucleus.hh>
+
 #include <elle/Elle.hh>
 #include <elle/cryptography/PublicKey.hh>
 #include <elle/io/Console.hh>
 #include <elle/io/Piece.hh>
 #include <elle/io/Directory.hh>
 #include <elle/utility/Parser.hh>
+#include <elle/concurrency/Program.hh>
+
 #include <lune/Identity.hh>
 #include <lune/Authority.hh>
 #include <lune/Dictionary.hh>
-#include <satellites/user/User.hh>
 
 namespace satellite
 {
@@ -431,23 +439,6 @@ namespace satellite
       throw std::runtime_error("unable to clean Elle");
   }
 }
-
-// elle::Status
-// Main(elle::Natural32 argc, elle::Character* argv[])
-// {
-//   try
-//     {
-//       satellite::User(argc, argv);
-//     }
-//   catch (std::runtime_error& e)
-//     {
-//       std::cerr << argv[0] << ": fatal error: " << e.what() << std::endl;
-//       elle::concurrency::scheduler().terminate();
-//       return elle::Status::Error;
-//     }
-//   elle::concurrency::scheduler().terminate();
-//   return elle::Status::Ok;
-// }
 
 int
 main(int argc, char** argv)

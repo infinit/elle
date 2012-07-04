@@ -1,38 +1,23 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [mon aug  8 12:59:07 2011]
-//
-
 #ifndef ETOILE_SHRUB_RIFFLE_HH
-#define ETOILE_SHRUB_RIFFLE_HH
+# define ETOILE_SHRUB_RIFFLE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/radix/Entity.hh>
+# include <elle/utility/Time.hh>
 
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
+# include <nucleus/proton/Location.hh>
 
-#include <etoile/path/Slab.hh>
+# include <etoile/path/Slab.hh>
 
-#include <elle/idiom/Close.hh>
-# include <map>
-# include <utility>
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  include <map>
+#  include <utility>
+# include <elle/idiom/Open.hh>
 
 namespace etoile
 {
   namespace shrub
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a riffle i.e a component of the hierarchical
@@ -66,13 +51,13 @@ namespace etoile
       // methods
       //
       elle::Status              Create(const path::Slab&,
-                                       const nucleus::Location&,
+                                       const nucleus::proton::Location&,
                                        Riffle* = NULL);
 
       elle::Status              Resolve(const path::Slab&,
                                         Riffle*&);
       elle::Status              Update(const path::Slab&,
-                                       const nucleus::Location&);
+                                       const nucleus::proton::Location&);
       elle::Status              Destroy(const path::Slab&);
 
       elle::Status              Flush();
@@ -88,7 +73,7 @@ namespace etoile
       // attributes
       //
       path::Slab                slab;
-      nucleus::Location         location;
+      nucleus::proton::Location location;
 
       elle::utility::Time                timestamp;
 

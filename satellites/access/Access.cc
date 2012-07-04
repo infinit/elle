@@ -1,24 +1,30 @@
-#include <limits>
+#include <satellites/access/Access.hh>
 
 #include <elle/Elle.hh>
-#include <elle/concurrency/Closure.hh>
-#include <elle/network/Header.hh>
+#include <elle/network/TCPSocket.hh>
 #include <elle/network/Inputs.hh>
 #include <elle/network/Outputs.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/concurrency/Program.hh>
 
 #include <etoile/gear/Identifier.hh>
 #include <etoile/path/Way.hh>
 #include <etoile/path/Chemin.hh>
+#include <etoile/portal/Manifest.hh>
 
+#include <nucleus/Nucleus.hh>
 #include <nucleus/neutron/Range.hh>
 #include <nucleus/neutron/Record.hh>
 #include <nucleus/neutron/Subject.hh>
 
-#include <satellites/access/Access.hh>
+#include <lune/Lune.hh>
+#include <lune/Phrase.hh>
 
-#include <boost/foreach.hpp>
+#include <elle/idiom/Close.hh>
+# include <boost/foreach.hpp>
+# include <limits>
+#include <elle/idiom/Open.hh>
 
 namespace satellite
 {
@@ -122,11 +128,11 @@ namespace satellite
   /// identifier.
   ///
   elle::Status          Access::Lookup(const etoile::path::Way& way,
-                                       const nucleus::Subject&  subject)
+                                       const nucleus::neutron::Subject&  subject)
   {
     etoile::path::Chemin        chemin;
     etoile::gear::Identifier    identifier;
-    nucleus::Record             record;
+    nucleus::neutron::Record             record;
 
     // connect to Etoile.
     if (Access::Connect() == elle::Status::Error)
@@ -187,7 +193,7 @@ namespace satellite
   {
     etoile::path::Chemin                chemin;
     etoile::gear::Identifier            identifier;
-    nucleus::Range<nucleus::Record>     range;
+    nucleus::neutron::Range<nucleus::neutron::Record>     range;
 
     // connect to Etoile.
     if (Access::Connect() == elle::Status::Error)
@@ -211,8 +217,8 @@ namespace satellite
     if (Access::socket->Call(
           elle::network::Inputs<etoile::portal::TagAccessConsult>(
             identifier,
-            std::numeric_limits<nucleus::Index>::min(),
-            std::numeric_limits<nucleus::Size>::max()),
+            std::numeric_limits<nucleus::neutron::Index>::min(),
+            std::numeric_limits<nucleus::neutron::Size>::max()),
           elle::network::Outputs<etoile::portal::TagAccessRange>(range)) ==
         elle::Status::Error)
       goto _error;
@@ -250,8 +256,8 @@ namespace satellite
   /// identifier.
   ///
   elle::Status          Access::Grant(const etoile::path::Way&  way,
-                                      const nucleus::Subject&   subject,
-                                      const nucleus::Permissions permissions)
+                                      const nucleus::neutron::Subject&   subject,
+                                      const nucleus::neutron::Permissions permissions)
   {
     etoile::path::Chemin        chemin;
     etoile::gear::Identifier    identifier;
@@ -309,11 +315,11 @@ namespace satellite
   /// this method revokes an existing access.
   ///
   elle::Status          Access::Revoke(const etoile::path::Way& way,
-                                       const nucleus::Subject&  subject)
+                                       const nucleus::neutron::Subject&  subject)
   {
     etoile::path::Chemin        chemin;
     etoile::gear::Identifier    identifier;
-    nucleus::Record             record;
+    nucleus::neutron::Record             record;
 
     // connect to Etoile.
     if (Access::Connect() == elle::Status::Error)
@@ -585,8 +591,8 @@ namespace satellite
         {
           elle::String                  path;
           elle::String                  string;
-          nucleus::Subject::Type        type;
-          nucleus::Subject              subject;
+          nucleus::neutron::Subject::Type        type;
+          nucleus::neutron::Subject              subject;
 
           // retrieve the path.
           if (Infinit::Parser->Value("Path",
@@ -599,7 +605,7 @@ namespace satellite
             escape("unable to retrieve the type value");
 
           // convert the string into a subject type.
-          if (nucleus::Subject::Convert(string, type) == elle::Status::Error)
+          if (nucleus::neutron::Subject::Convert(string, type) == elle::Status::Error)
             escape("unable to convert the string '%s' into a "
                    "valid subject type",
                    string.c_str());
@@ -607,7 +613,7 @@ namespace satellite
           // build a subject depending on the type.
           switch (type)
             {
-            case nucleus::Subject::TypeUser:
+            case nucleus::neutron::Subject::TypeUser:
               {
                 elle::cryptography::PublicKey         K;
                 std::string                           res;
@@ -629,7 +635,7 @@ namespace satellite
 
                 break;
               }
-            case nucleus::Subject::TypeGroup:
+            case nucleus::neutron::Subject::TypeGroup:
               {
                 // XXX
                 escape("not yet supported");
@@ -671,9 +677,9 @@ namespace satellite
         {
           elle::String                  path;
           elle::String                  string;
-          nucleus::Subject::Type        type;
-          nucleus::Subject              subject;
-          nucleus::Permissions          permissions;
+          nucleus::neutron::Subject::Type        type;
+          nucleus::neutron::Subject              subject;
+          nucleus::neutron::Permissions          permissions;
 
           // retrieve the path.
           if (Infinit::Parser->Value("Path",
@@ -686,7 +692,7 @@ namespace satellite
             escape("unable to retrieve the type value");
 
           // convert the string into a subject type.
-          if (nucleus::Subject::Convert(string, type) == elle::Status::Error)
+          if (nucleus::neutron::Subject::Convert(string, type) == elle::Status::Error)
             escape("unable to convert the string '%s' into a "
                    "valid subject type",
                    string.c_str());
@@ -694,7 +700,7 @@ namespace satellite
           // build a subject depending on the type.
           switch (type)
             {
-            case nucleus::Subject::TypeUser:
+            case nucleus::neutron::Subject::TypeUser:
               {
                 elle::cryptography::PublicKey         K;
                 std::string res;
@@ -716,7 +722,7 @@ namespace satellite
 
                 break;
               }
-            case nucleus::Subject::TypeGroup:
+            case nucleus::neutron::Subject::TypeGroup:
               {
                 // XXX
                 escape("not yet supported");
@@ -731,15 +737,15 @@ namespace satellite
             }
 
           // initialize the permissions to none.
-          permissions = nucleus::PermissionNone;
+          permissions = nucleus::neutron::PermissionNone;
 
           // grant the read permission, if requested.
           if (Infinit::Parser->Test("Read") == elle::Status::True)
-            permissions |= nucleus::PermissionRead;
+            permissions |= nucleus::neutron::PermissionRead;
 
           // grant the write permission, if requested.
           if (Infinit::Parser->Test("Write") == elle::Status::True)
-            permissions |= nucleus::PermissionWrite;
+            permissions |= nucleus::neutron::PermissionWrite;
 
           // declare additional local variables.
           etoile::path::Way             way(path);
@@ -753,8 +759,8 @@ namespace satellite
         {
           elle::String                  path;
           elle::String                  string;
-          nucleus::Subject::Type        type;
-          nucleus::Subject              subject;
+          nucleus::neutron::Subject::Type        type;
+          nucleus::neutron::Subject              subject;
 
           // retrieve the path.
           if (Infinit::Parser->Value("Path",
@@ -767,7 +773,7 @@ namespace satellite
             escape("unable to retrieve the type value");
 
           // convert the string into a subject type.
-          if (nucleus::Subject::Convert(string, type) == elle::Status::Error)
+          if (nucleus::neutron::Subject::Convert(string, type) == elle::Status::Error)
             escape("unable to convert the string '%s' into a "
                    "valid subject type",
                    string.c_str());
@@ -775,7 +781,7 @@ namespace satellite
           // build a subject depending on the type.
           switch (type)
             {
-            case nucleus::Subject::TypeUser:
+            case nucleus::neutron::Subject::TypeUser:
               {
                 elle::cryptography::PublicKey         K;
                 std::string res;
@@ -797,7 +803,7 @@ namespace satellite
 
                 break;
               }
-            case nucleus::Subject::TypeGroup:
+            case nucleus::neutron::Subject::TypeGroup:
               {
                 // XXX
                 escape("not yet supported");

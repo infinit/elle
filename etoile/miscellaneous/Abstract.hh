@@ -1,31 +1,22 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar 31 16:05:57 2010]
-//
-
 #ifndef ETOILE_MISCELLANEOUS_ABSTRACT_HH
-#define ETOILE_MISCELLANEOUS_ABSTRACT_HH
+# define ETOILE_MISCELLANEOUS_ABSTRACT_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/utility/Time.hh>
+# include <elle/cryptography/PublicKey.hh>
 
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
+# include <nucleus/proton/Version.hh>
+# include <nucleus/neutron/fwd.hh>
+# include <nucleus/neutron/Genre.hh>
+# include <nucleus/neutron/Offset.hh>
+# include <nucleus/neutron/Permissions.hh>
+
+# include <elle/idiom/Open.hh>
 
 namespace etoile
 {
   namespace miscellaneous
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class describes an object's meta data.
@@ -47,7 +38,7 @@ namespace etoile
       //
       // method
       //
-      elle::Status      Create(const nucleus::Object&);
+      elle::Status      Create(const nucleus::neutron::Object&);
 
       //
       // interfaces
@@ -60,43 +51,40 @@ namespace etoile
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
-
       //
       // attributes
       //
-      nucleus::Genre            genre;
+      nucleus::neutron::Genre genre;
 
       struct
       {
-        elle::utility::Time              creation;
-        elle::utility::Time              modification;
-      }                         stamps;
+        elle::utility::Time creation;
+        elle::utility::Time modification;
+      } stamps;
 
-      nucleus::Offset           size;
-
-      struct
-      {
-        elle::cryptography::PublicKey         owner;
-        elle::cryptography::PublicKey         author;
-      }                         keys;
+      nucleus::neutron::Offset size;
 
       struct
       {
-        nucleus::Permissions    owner;
-      }                         permissions;
+        elle::cryptography::PublicKey owner;
+        elle::cryptography::PublicKey author;
+      } keys;
 
       struct
       {
-        nucleus::Version        data;
-        nucleus::Version        meta;
-      }                         versions;
+        nucleus::neutron::Permissions owner;
+      } permissions;
+
+      struct
+      {
+        nucleus::proton::Version data;
+        nucleus::proton::Version meta;
+      } versions;
     };
 
   }
 }
 
+# include <etoile/miscellaneous/Abstract.hxx>
+
 #endif
-#include <etoile/miscellaneous/Abstract.hxx>

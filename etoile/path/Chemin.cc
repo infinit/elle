@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [tue jun 14 22:25:57 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <etoile/path/Chemin.hh>
 
 namespace etoile
@@ -48,7 +34,7 @@ namespace etoile
     ///
     elle::Status        Chemin::Create(const Route&             route,
                                        const Venue&             venue,
-                                       const nucleus::Size      size)
+                                       const nucleus::neutron::Size size)
     {
       // clear the route because the chemin may have been used for
       // something else before.
@@ -64,7 +50,7 @@ namespace etoile
       //
       {
         Route::Scoutor  scoutor;
-        nucleus::Size   i;
+        nucleus::neutron::Size i;
 
         // go through the route.
         for (scoutor = route.elements.begin(), i = 0;
@@ -81,7 +67,7 @@ namespace etoile
       //
       {
         Venue::Scoutor  scoutor;
-        nucleus::Size   i;
+        nucleus::neutron::Size i;
 
         // go through the venue.
         for (scoutor = venue.elements.begin(), i = 0;
@@ -117,7 +103,7 @@ namespace etoile
     ///
     /// this method generates a Location based on the route and venue.
     ///
-    elle::Status        Chemin::Locate(nucleus::Location&       location) const
+    elle::Status        Chemin::Locate(nucleus::proton::Location& location) const
     {
       // check the size of the venue.
       if (this->venue.elements.size() == 0)
@@ -197,36 +183,6 @@ namespace etoile
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the object.
-    ///
-    //elle::Status        Chemin::Serialize(elle::Archive&        archive) const
-    //{
-    //  // serialize the attributes.
-    //  if (archive.Serialize(this->route,
-    //                        this->venue) == elle::Status::Error)
-    //    escape("unable to serialize the attribtues");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the object.
-    /////
-    //elle::Status        Chemin::Extract(elle::Archive&  archive)
-    //{
-    //  // extract the attributes.
-    //  if (archive.Extract(this->route,
-    //                      this->venue) == elle::Status::Error)
-    //    escape("unable to extract the attributes");
-
-    //  return elle::Status::Ok;
-    //}
 
   }
 }

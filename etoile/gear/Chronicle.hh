@@ -7,6 +7,7 @@ namespace etoile
 {
   namespace gear
   {
+
     ///
     /// a chronicle represents a sequence of operations.
     ///

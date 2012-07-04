@@ -1,48 +1,14 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [mon jun 20 12:45:10 2011]
-//
-
 #ifndef ETOILE_AUTOMATON_OBJECT_HH
-#define ETOILE_AUTOMATON_OBJECT_HH
+# define ETOILE_AUTOMATON_OBJECT_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
-
-#include <etoile/miscellaneous/Abstract.hh>
+# include <elle/types.hh>
+# include <etoile/miscellaneous/fwd.hh>
+# include <etoile/gear/fwd.hh>
 
 namespace etoile
 {
-  namespace gear
-  {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    ///
-    /// this class needs to be forwarded declared in order to prevent
-    /// conflits.
-    ///
-    class Object;
-
-  }
-
   namespace automaton
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class provides object-related automata.
@@ -69,11 +35,5 @@ namespace etoile
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/gear/Object.hh>
 
 #endif

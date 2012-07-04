@@ -1,22 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [tue sep  1 01:08:05 2009]
-//
-
 #ifndef ETOILE_DEPOT_DEPOT_HH
-#define ETOILE_DEPOT_DEPOT_HH
+# define ETOILE_DEPOT_DEPOT_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
+# include <elle/types.hh>
+# include <nucleus/proton/fwd.hh>
 
 namespace etoile
 {
@@ -41,14 +27,14 @@ namespace etoile
       //
       // methods
       //
-      static elle::Status       Origin(nucleus::Address&);
+      static elle::Status       Origin(nucleus::proton::Address&);
 
-      static elle::Status       Push(const nucleus::Address&,
-                                     const nucleus::Block&);
-      static elle::Status       Pull(const nucleus::Address&,
-                                     const nucleus::Version&,
-                                     nucleus::Block&);
-      static elle::Status       Wipe(const nucleus::Address&);
+      static elle::Status       Push(const nucleus::proton::Address&,
+                                     const nucleus::proton::Block&);
+      static elle::Status       Pull(const nucleus::proton::Address&,
+                                     const nucleus::proton::Version&,
+                                     nucleus::proton::Block&);
+      static elle::Status       Wipe(const nucleus::proton::Address&);
     };
 
   }

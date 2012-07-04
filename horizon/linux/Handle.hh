@@ -16,7 +16,8 @@
 //
 
 #include <elle/types.hh>
-#include <etoile/Etoile.hh>
+#include <etoile/gear/Identifier.hh>
+#include <nucleus/neutron/Permissions.hh>
 
 namespace horizon
 {
@@ -53,7 +54,7 @@ namespace horizon
              const etoile::gear::Identifier&);
       Handle(const Operation,
              const etoile::gear::Identifier&,
-             const nucleus::Permissions&);
+             const nucleus::neutron::Permissions&);
 
       //
       // attributes
@@ -63,7 +64,7 @@ namespace horizon
 
       union
       {
-        nucleus::Permissions    permissions;
+        nucleus::neutron::Permissions    permissions;
       };
     };
 

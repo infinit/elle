@@ -4,8 +4,8 @@
 # include <elle/types.hh>
 # include <elle/radix/Object.hh>
 
-# include <etoile/path/Length.hh>
-# include <etoile/path/Slice.hh>
+# include <etoile/path/fwd.hh>
+
 # include <elle/idiom/Open.hh>
 
 namespace etoile
@@ -51,10 +51,6 @@ namespace etoile
 
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;
-
-      // archivable
-      //elle::Status              Serialize(elle::Archive&) const;
-      //elle::Status              Extract(elle::Archive&);
 
       //
       // attributes

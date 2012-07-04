@@ -1,35 +1,18 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [wed nov  2 09:11:57 2011]
-//
-
 #ifndef ETOILE_PORTAL_WRAPPER_HH
-#define ETOILE_PORTAL_WRAPPER_HH
+# define ETOILE_PORTAL_WRAPPER_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
+# include <nucleus/neutron/fwd.hh>
 
-#include <etoile/path/Slab.hh>
+# include <etoile/path/fwd.hh>
 
-#include <etoile/gear/Identifier.hh>
+# include <etoile/gear/fwd.hh>
 
 namespace etoile
 {
   namespace portal
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class contains wrappers for the purpose of translating pointers
@@ -50,32 +33,35 @@ namespace etoile
       struct Access
       {
         static elle::Status     Lookup(const gear::Identifier&,
-                                       const nucleus::Subject&,
-                                       nucleus::Record&);
+                                       const nucleus::neutron::Subject&,
+                                       nucleus::neutron::Record&);
         static elle::Status     Consult(const gear::Identifier&,
-                                        const nucleus::Index&,
-                                        const nucleus::Size&,
-                                        nucleus::Range<nucleus::Record>&);
+                                        const nucleus::neutron::Index&,
+                                        const nucleus::neutron::Size&,
+                                        nucleus::neutron::Range<
+                                          nucleus::neutron::Record>&);
       };
 
       struct Attributes
       {
         static elle::Status     Get(const gear::Identifier&,
                                     const elle::String&,
-                                    nucleus::Trait&);
+                                    nucleus::neutron::Trait&);
         static elle::Status     Fetch(const gear::Identifier&,
-                                      nucleus::Range<nucleus::Trait>&);
+                                      nucleus::neutron::Range<
+                                        nucleus::neutron::Trait>&);
       };
 
       struct Directory
       {
         static elle::Status     Lookup(const gear::Identifier&,
                                        const path::Slab&,
-                                       nucleus::Entry&);
+                                       nucleus::neutron::Entry&);
         static elle::Status     Consult(const gear::Identifier&,
-                                        const nucleus::Index&,
-                                        const nucleus::Size&,
-                                        nucleus::Range<nucleus::Entry>&);
+                                        const nucleus::neutron::Index&,
+                                        const nucleus::neutron::Size&,
+                                        nucleus::neutron::Range<
+                                          nucleus::neutron::Entry>&);
       };
     };
 

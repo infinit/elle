@@ -1,20 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [mon jun 20 14:13:45 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <etoile/automaton/Author.hh>
 #include <etoile/automaton/Rights.hh>
 #include <etoile/automaton/Access.hh>
+#include <etoile/gear/Object.hh>
+
+#include <nucleus/neutron/Author.hh>
+#include <nucleus/neutron/Role.hh>
+#include <nucleus/neutron/Index.hh>
 
 #include <agent/Agent.hh>
 
@@ -34,7 +25,7 @@ namespace etoile
     elle::Status        Author::Forge(gear::Object&             context)
     {
       // if an author exists, return.
-      if (context.author != nucleus::Author::Null)
+      if (context.author != nucleus::neutron::Author::Null)
         return elle::Status::Ok;
 
       // determine the rights.
@@ -44,7 +35,7 @@ namespace etoile
       // build the author object according to the subject's role.
       switch (context.rights.role)
         {
-        case nucleus::RoleOwner:
+        case nucleus::neutron::RoleOwner:
           {
             // create an owner author.
             if (context.author.Create() == elle::Status::Error)
@@ -52,9 +43,9 @@ namespace etoile
 
             break;
           }
-        case nucleus::RoleLord:
+        case nucleus::neutron::RoleLord:
           {
-            nucleus::Index      index;
+            nucleus::neutron::Index      index;
 
             // open the access.
             if (Access::Open(context) == elle::Status::Error)

@@ -1,29 +1,20 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [mon apr  5 15:13:38 2010]
-//
-
 #ifndef ETOILE_AUTOMATON_CONTENTS_HXX
-#define ETOILE_AUTOMATON_CONTENTS_HXX
+# define ETOILE_AUTOMATON_CONTENTS_HXX
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <nucleus/proton/Version.hh>
+# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/State.hh>
+# include <nucleus/proton/Contents.hh>
+# include <nucleus/neutron/Permissions.hh>
+# include <nucleus/neutron/Size.hh>
 
-#include <nucleus/Nucleus.hh>
+# include <etoile/automaton/Rights.hh>
+# include <etoile/automaton/Author.hh>
+# include <etoile/automaton/Access.hh>
 
-#include <etoile/automaton/Rights.hh>
-#include <etoile/automaton/Author.hh>
-#include <etoile/automaton/Access.hh>
+# include <etoile/depot/Depot.hh>
 
-#include <etoile/depot/Depot.hh>
-
-#include <hole/Hole.hh>
+# include <hole/Hole.hh>
 
 namespace etoile
 {
@@ -43,14 +34,14 @@ namespace etoile
         return elle::Status::Ok;
 
       // otherwise create a new contents according to the context's type.
-      context.contents = new nucleus::Contents<typename T::C>;
+      context.contents = new nucleus::proton::Contents<typename T::C>;
 
       // check if there exists a contents. if so, load the block.
-      if (context.object.data.contents != nucleus::Address::Null)
+      if (context.object.data.contents != nucleus::proton::Address::Null)
         {
           // load the block.
           if (depot::Depot::Pull(context.object.data.contents,
-                                 nucleus::Version::Any,
+                                 nucleus::proton::Version::Any,
                                  *context.contents) == elle::Status::Error)
             escape("unable to load the contents");
 
@@ -59,8 +50,8 @@ namespace etoile
             escape("unable to determine the user's rights");
 
           // if the user has the permission to read, decrypt the content.
-          if ((context.rights.permissions & nucleus::PermissionRead) ==
-              nucleus::PermissionRead)
+          if ((context.rights.permissions & nucleus::neutron::PermissionRead) ==
+              nucleus::neutron::PermissionRead)
             {
               // decrypt the contents i.e the contents.
               if (context.contents->Decrypt(context.rights.key) ==
@@ -86,7 +77,7 @@ namespace etoile
                           T&                                    context)
     {
       // if a block is referenced by the object, mark it as needing removal.
-      if (context.object.data.contents != nucleus::Address::Null)
+      if (context.object.data.contents != nucleus::proton::Address::Null)
         {
           // mark the content block for removal.
           if (context.transcript.Wipe(context.object.data.contents) ==
@@ -108,7 +99,7 @@ namespace etoile
                           T&                                    context)
     {
       elle::cryptography::SecretKey   key;
-      nucleus::Size     size;
+      nucleus::neutron::Size     size;
 
       //
       // first, check if the block has been modified i.e exists and is dirty.
@@ -121,7 +112,7 @@ namespace etoile
           return elle::Status::Ok;
 
         // if the contents has not changed, do nothing.
-        if (context.contents->state == nucleus::StateClean)
+        if (context.contents->state == nucleus::proton::StateClean)
           return elle::Status::Ok;
       }
 
@@ -166,7 +157,7 @@ namespace etoile
           // update the object with the null contents address.
           if (context.object.Update(
                 context.author,
-                nucleus::Address::Null,
+                nucleus::proton::Address::Null,
                 0,
                 context.object.meta.access,
                 context.object.meta.owner.token) == elle::Status::Error)
@@ -197,7 +188,7 @@ namespace etoile
           // the history support is not activated for this network.
           //
 
-          nucleus::Address      address;
+          nucleus::proton::Address address;
 
           // does the network support the history?
           if (hole::Hole::Descriptor.history == false)
@@ -220,7 +211,7 @@ namespace etoile
             escape("unable to bind the contents");
 
           // set the content as consistent.
-          context.contents->state = nucleus::StateConsistent;
+          context.contents->state = nucleus::proton::StateConsistent;
 
           // update the object.
           if (context.object.Update(

@@ -1,23 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [fri jul 29 12:54:19 2011]
-//
-
 #ifndef ETOILE_GEAR_SCOPE_HXX
-#define ETOILE_GEAR_SCOPE_HXX
+# define ETOILE_GEAR_SCOPE_HXX
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <etoile/gear/Context.hh>
 
-#include <etoile/journal/Journal.hh>
-
-#include <Infinit.hh>
+# include <elle/idiom/Open.hh>
 
 namespace etoile
 {

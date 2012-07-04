@@ -1,32 +1,18 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       access
-//
-// license       infinit
-//
-// author        julien quintard   [tue nov  1 12:55:11 2011]
-//
-
 #ifndef ACCESS_ACCESS_HH
-#define ACCESS_ACCESS_HH
+# define ACCESS_ACCESS_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/network/fwd.hh>
 
-#include <Infinit.hh>
-#include <elle/types.hh>
-#include <lune/Lune.hh>
-#include <etoile/Etoile.hh>
-#include <hole/Hole.hh>
+# include <etoile/path/fwd.hh>
+
+# include <nucleus/neutron/fwd.hh>
+# include <nucleus/neutron/Permissions.hh>
+
+# include <Infinit.hh>
 
 namespace satellite
 {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
   ///
   /// this class implements the access satellite.
@@ -56,13 +42,13 @@ namespace satellite
     Display(nucleus::neutron::Record const&);
 
     static elle::Status         Lookup(const etoile::path::Way&,
-                                       const nucleus::Subject&);
+                                       const nucleus::neutron::Subject&);
     static elle::Status         Consult(const etoile::path::Way&);
     static elle::Status         Grant(const etoile::path::Way&,
-                                      const nucleus::Subject&,
-                                      const nucleus::Permissions);
+                                      const nucleus::neutron::Subject&,
+                                      const nucleus::neutron::Permissions);
     static elle::Status         Revoke(const etoile::path::Way&,
-                                       const nucleus::Subject&);
+                                       const nucleus::neutron::Subject&);
 
     //
     // static attributes

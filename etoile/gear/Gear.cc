@@ -1,18 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [tue jun 14 16:41:06 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <etoile/gear/Gear.hh>
+#include <etoile/gear/Actor.hh>
+#include <etoile/gear/Scope.hh>
+
+#include <elle/standalone/Report.hh>
+#include <elle/idiom/Open.hh>
 
 namespace etoile
 {

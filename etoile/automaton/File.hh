@@ -1,46 +1,14 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 14 18:57:08 2009]
-//
-
 #ifndef ETOILE_AUTOMATON_FILE_HH
-#define ETOILE_AUTOMATON_FILE_HH
+# define ETOILE_AUTOMATON_FILE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
+# include <elle/types.hh>
+# include <nucleus/neutron/fwd.hh>
+# include <etoile/gear/fwd.hh>
 
 namespace etoile
 {
-  namespace gear
-  {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    ///
-    /// this class needs to be forwarded declared in order to prevent
-    /// conflits.
-    ///
-    class File;
-
-  }
-
   namespace automaton
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class provides functionalities for managing directories.
@@ -55,14 +23,14 @@ namespace etoile
       static elle::Status       Load(gear::File&);
 
       static elle::Status       Write(gear::File&,
-                                      const nucleus::Offset&,
+                                      const nucleus::neutron::Offset&,
                                       const elle::standalone::Region&);
       static elle::Status       Read(gear::File&,
-                                     const nucleus::Offset&,
-                                     const nucleus::Size&,
+                                     const nucleus::neutron::Offset&,
+                                     const nucleus::neutron::Size&,
                                      elle::standalone::Region&);
       static elle::Status       Adjust(gear::File&,
-                                       const nucleus::Size&);
+                                       const nucleus::neutron::Size&);
 
       static elle::Status       Discard(gear::File&);
       static elle::Status       Destroy(gear::File&);
@@ -71,11 +39,5 @@ namespace etoile
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/gear/File.hh>
 
 #endif

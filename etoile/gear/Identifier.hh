@@ -11,10 +11,6 @@ namespace etoile
   namespace gear
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// this class can be used to uniquely identify actors whose role is
     /// to act on scopes.
@@ -53,10 +49,6 @@ namespace etoile
       declare(Identifier);
       elle::Boolean             operator==(const Identifier&) const;
       elle::Boolean             operator<(const Identifier&) const;
-
-      // archivable
-      //elle::Status              Serialize(elle::Archive&) const;
-      //elle::Status              Extract(elle::Archive&);
 
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;

@@ -1,48 +1,14 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 14 18:57:08 2009]
-//
-
 #ifndef ETOILE_AUTOMATON_LINK_HH
-#define ETOILE_AUTOMATON_LINK_HH
+# define ETOILE_AUTOMATON_LINK_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
-
-#include <etoile/path/Way.hh>
+# include <elle/types.hh>
+# include <etoile/path/fwd.hh>
+# include <etoile/gear/fwd.hh>
 
 namespace etoile
 {
-  namespace gear
-  {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    ///
-    /// this class needs to be forwarded declared in order to prevent
-    /// conflits.
-    ///
-    class Link;
-
-  }
-
   namespace automaton
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class provides functionalities for managing directories.
@@ -68,11 +34,5 @@ namespace etoile
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/gear/Link.hh>
 
 #endif

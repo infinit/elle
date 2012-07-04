@@ -1,15 +1,21 @@
 #include <satellites/dictionary/Dictionary.hh>
 
 #include <Infinit.hh>
+
 #include <elle/Elle.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/cryptography/PublicKey.hh>
 #include <elle/io/Unique.hh>
+#include <elle/concurrency/Program.hh>
+
 #include <lune/Lune.hh>
 #include <lune/Dictionary.hh>
 #include <lune/Identity.hh>
 #include <lune/Map.hh>
+
+#include <nucleus/Nucleus.hh>
 #include <nucleus/proton/Address.hh>
+
 #include <etoile/Etoile.hh>
 
 namespace satellite
@@ -81,7 +87,7 @@ namespace satellite
         }
       case Dictionary::TypeGroup:
         {
-          nucleus::Address      address;
+          nucleus::proton::Address address;
 
           // restore the address from the identifier.
           if (address.Restore(identifier) == elle::Status::Error)
@@ -238,14 +244,14 @@ namespace satellite
         }
       case Dictionary::TypeGroup:
         {
-          lune::Map<nucleus::Address>::Scoutor scoutor;
+          lune::Map<nucleus::proton::Address>::Scoutor scoutor;
 
           // go through the group dictionary.
           for (scoutor = dictionary.groups.container.begin();
                scoutor != dictionary.groups.container.end();
                scoutor++)
             {
-              lune::Map<nucleus::Address>::Entry* entry = *scoutor;
+              lune::Map<nucleus::proton::Address>::Entry* entry = *scoutor;
 
               std::cout << entry->name << " :: "
                         // XXX << entry->value
@@ -321,7 +327,7 @@ namespace satellite
         }
       case Dictionary::TypeGroup:
         {
-          nucleus::Address*     address;
+          nucleus::proton::Address* address;
           elle::io::Unique          unique;
 
           // retrieve the entry.

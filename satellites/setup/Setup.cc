@@ -1,11 +1,18 @@
 #include <satellites/setup/Setup.hh>
+
 #include <elle/Elle.hh>
 #include <elle/io/Directory.hh>
 #include <elle/utility/Parser.hh>
+#include <elle/concurrency/Program.hh>
+
 #include <Infinit.hh>
+
 #include <lune/Lune.hh>
-#include <etoile/Etoile.hh>
 #include <lune/Configuration.hh>
+
+#include <etoile/Etoile.hh>
+
+#include <nucleus/Nucleus.hh>
 
 namespace satellite
 {

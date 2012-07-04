@@ -1,10 +1,10 @@
+#include <etoile/gear/Identifier.hh>
+
+#include <elle/standalone/Log.hh>
+#include <elle/standalone/Report.hh>
+
 #include <iostream>
 #include <sstream>
-
-# include <elle/standalone/Log.hh>
-# include <elle/standalone/Report.hh>
-
-#include <etoile/gear/Identifier.hh>
 
 namespace etoile
 {
@@ -91,34 +91,6 @@ namespace etoile
     /// this macro-function call generates the object.
     ///
     embed(Identifier, _());
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the identifier.
-    ///
-    //elle::Status        Identifier::Serialize(elle::Archive&    archive) const
-    //{
-    //  // serialize the attributes.
-    //  if (archive.Serialize(this->value) == elle::Status::Error)
-    //    escape("unable to serialize the identifier attributes");
-
-    //  return elle::Status::Ok;
-    //};
-
-    /////
-    ///// this method extracts the identifier.
-    /////
-    //elle::Status        Identifier::Extract(elle::Archive&      archive)
-    //{
-    //  // extract the attributes.
-    //  if (archive.Extract(this->value) == elle::Status::Error)
-    //    escape("unable to extract the identifier attributes");
-
-    //  return elle::Status::Ok;
-    //};
 
 //
 // ---------- dumpable --------------------------------------------------------

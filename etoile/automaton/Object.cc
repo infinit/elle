@@ -1,21 +1,12 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [mon jun 20 12:47:31 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <etoile/automaton/Object.hh>
 #include <etoile/automaton/Access.hh>
-
+#include <etoile/gear/Object.hh>
+#include <etoile/miscellaneous/Abstract.hh>
 #include <etoile/depot/Depot.hh>
+
+#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/State.hh>
+#include <nucleus/neutron/Access.hh>
 
 #include <agent/Agent.hh>
 
@@ -136,11 +127,11 @@ namespace etoile
         escape("unable to close the access");
 
       // if the object has been modified i.e is dirty.
-      if (context.object.state == nucleus::StateDirty)
+      if (context.object.state == nucleus::proton::StateDirty)
         {
           // seal the object, depending on the presence of a referenced
           // access block.
-          if (context.object.meta.access != nucleus::Address::Null)
+          if (context.object.meta.access != nucleus::proton::Address::Null)
             {
               // make sure the access block is loaded.
               if (Access::Open(context) == elle::Status::Error)
@@ -157,7 +148,7 @@ namespace etoile
               // seal the object alone i.e without passing an access block.
               if (context.object.Seal(
                     agent::Agent::Identity.pair.k,
-                    nucleus::Access::Null) == elle::Status::Error)
+                    nucleus::neutron::Access::Null) == elle::Status::Error)
                 escape("unable to seal the object");
             }
 

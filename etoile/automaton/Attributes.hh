@@ -1,24 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [mon feb  1 19:22:40 2010]
-//
-
 #ifndef ETOILE_AUTOMATON_ATTRIBUTES_HH
-#define ETOILE_AUTOMATON_ATTRIBUTES_HH
+# define ETOILE_AUTOMATON_ATTRIBUTES_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
-
-#include <etoile/gear/Object.hh>
+# include <elle/types.hh>
+# include <nucleus/neutron/fwd.hh>
+# include <etoile/gear/fwd.hh>
 
 namespace etoile
 {
@@ -44,9 +29,10 @@ namespace etoile
                                     const elle::String&);
       static elle::Status       Get(gear::Object&,
                                     const elle::String&,
-                                    nucleus::Trait*&);
+                                    nucleus::neutron::Trait*&);
       static elle::Status       Fetch(gear::Object&,
-                                      nucleus::Range<nucleus::Trait>&);
+                                      nucleus::neutron::Range<
+                                        nucleus::neutron::Trait>&);
       static elle::Status       Omit(gear::Object&,
                                      const elle::String&);
     };

@@ -1,33 +1,16 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar 31 19:23:49 2010]
-//
-
 #ifndef ETOILE_WALL_ATTRIBUTES_HH
-#define ETOILE_WALL_ATTRIBUTES_HH
+# define ETOILE_WALL_ATTRIBUTES_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
+# include <nucleus/neutron/fwd.hh>
 
-#include <etoile/gear/Identifier.hh>
+# include <etoile/gear/fwd.hh>
 
 namespace etoile
 {
   namespace wall
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class provides functionalities for controlling the attributes
@@ -44,9 +27,10 @@ namespace etoile
                                     const elle::String&);
       static elle::Status       Get(const gear::Identifier&,
                                     const elle::String&,
-                                    nucleus::Trait*&);
+                                    nucleus::neutron::Trait*&);
       static elle::Status       Fetch(const gear::Identifier&,
-                                      nucleus::Range<nucleus::Trait>&);
+                                      nucleus::neutron::Range<
+                                        nucleus::neutron::Trait>&);
       static elle::Status       Omit(const gear::Identifier&,
                                      const elle::String&);
     };

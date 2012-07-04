@@ -1,18 +1,23 @@
-
-#include <boost/lexical_cast.hpp>
-
 #include <etoile/path/Path.hh>
-
+#include <etoile/path/Venue.hh>
+#include <etoile/path/Route.hh>
+#include <etoile/path/Chemin.hh>
 #include <etoile/gear/Identifier.hh>
-
 #include <etoile/wall/Directory.hh>
-
 #include <etoile/depot/Depot.hh>
-
 #include <etoile/shrub/Shrub.hh>
 
-#include <agent/Agent.hh>
+#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/Address.hh>
+#include <nucleus/neutron/Entry.hh>
+
 #include <hole/Hole.hh>
+
+#include <Infinit.hh>
+
+#include <elle/idiom/Close.hh>
+# include <boost/lexical_cast.hpp>
+#include <elle/idiom/Open.hh>
 
 namespace etoile
 {
@@ -61,8 +66,8 @@ namespace etoile
     elle::Status        Path::Resolve(const Route&              route,
                                       Venue&                    venue)
     {
-      nucleus::Address  address;
-      nucleus::Version  version;
+      nucleus::proton::Address address;
+      nucleus::proton::Version version;
       Route::Scoutor    scoutor;
 
       // first ask the shrub i.e path cache to resolve as much as it can.
@@ -111,7 +116,7 @@ namespace etoile
           Chemin                chemin;
           Slice                 slice;
           gear::Identifier      identifier;
-          nucleus::Entry*       entry;
+          nucleus::neutron::Entry* entry;
 
           // extract the slice/version from the current slab.
           if (Path::Parse(*scoutor,
@@ -186,11 +191,11 @@ namespace etoile
     ///
     elle::Status        Path::Parse(const Slab&                 slab,
                                     Slice&                      slice,
-                                    nucleus::Version&           version)
+                                    nucleus::proton::Version& version)
     {
       Length                    length;
       size_t                    start;
-      nucleus::Version::Type    n;
+      nucleus::proton::Version::Type n;
 
       // if the history mechanism is not supported by the network or
       // has not been activated through the user's configuration, return.
@@ -201,7 +206,7 @@ namespace etoile
           slice = slab;
 
           // and set the version as being the latest possible.
-          version = nucleus::Version::Last;
+          version = nucleus::proton::Version::Last;
         }
       else
         {
@@ -235,7 +240,7 @@ namespace etoile
 
               try
                 {
-                  n = boost::lexical_cast<nucleus::Version::Type>(
+                  n = boost::lexical_cast<nucleus::proton::Version::Type>(
                       elle::String(slab, start + 1, length - (start + 1))
                   );
                 }
@@ -258,7 +263,7 @@ namespace etoile
               slice = slab;
 
               // and set the version as being the latest possible.
-              version = nucleus::Version::Last;
+              version = nucleus::proton::Version::Last;
             }
         }
 

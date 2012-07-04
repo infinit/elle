@@ -1,13 +1,14 @@
-#include <iostream>
-#include <sstream>
-
+#include <elle/system/System.hh>
 #include <elle/standalone/Log.hh>
 #include <elle/standalone/Report.hh>
-#include <elle/system/System.hh>
 
 #include <elle/utility/Unicode.hh>
 
 #include <etoile/path/Way.hh>
+
+#include <elle/idiom/Close.hh>
+# include <iostream>
+# include <sstream>
 #include <elle/idiom/Open.hh>
 
 namespace etoile
@@ -166,34 +167,6 @@ namespace etoile
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the object.
-    ///
-    //elle::Status        Way::Serialize(elle::Archive&   archive) const
-    //{
-    //  // serialize the target.
-    //  if (archive.Serialize(this->path) == elle::Status::Error)
-    //    escape("unable to serialize the path");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the object.
-    /////
-    //elle::Status        Way::Extract(elle::Archive&     archive)
-    //{
-    //  // extract the target.
-    //  if (archive.Extract(this->path) == elle::Status::Error)
-    //    escape("unable to extract the path");
-
-    //  return elle::Status::Ok;
-    //}
 
   }
 }

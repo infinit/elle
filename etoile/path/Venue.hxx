@@ -6,8 +6,6 @@
 # include <elle/serialize/VectorSerializer.hxx>
 # include <nucleus/proton/Location.hh>
 
-# include <etoile/path/Venue.hh>
-
 ELLE_SERIALIZE_SIMPLE(etoile::path::Venue,
                       archive,
                       value,

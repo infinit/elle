@@ -1,34 +1,16 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [thu jun 16 09:55:55 2011]
-//
-
 #ifndef ETOILE_GEAR_CONTEXT_HH
-#define ETOILE_GEAR_CONTEXT_HH
+# define ETOILE_GEAR_CONTEXT_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <nucleus/proton/Transcript.hh>
 
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
-
-#include <etoile/gear/Nature.hh>
-#include <etoile/gear/Operation.hh>
+# include <etoile/gear/Nature.hh>
+# include <etoile/gear/Operation.hh>
 
 namespace etoile
 {
   namespace gear
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// an context contains the information related to a set of blocks
@@ -80,10 +62,6 @@ namespace etoile
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
-
       //
       // attributes
       //
@@ -92,7 +70,7 @@ namespace etoile
       State                     state;
       Operation                 operation;
 
-      nucleus::Transcript       transcript;
+      nucleus::proton::Transcript transcript;
     };
 
   }

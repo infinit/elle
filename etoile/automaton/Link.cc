@@ -1,9 +1,9 @@
-#include <nucleus/neutron/Reference.hh>
-
 #include <etoile/automaton/Link.hh>
 #include <etoile/automaton/Object.hh>
 #include <etoile/automaton/Contents.hh>
 #include <etoile/automaton/Rights.hh>
+#include <etoile/gear/Link.hh>
+#include <etoile/path/Way.hh>
 
 #include <agent/Agent.hh>
 
@@ -22,11 +22,11 @@ namespace etoile
     elle::Status        Link::Create(
                           gear::Link&                           context)
     {
-      nucleus::Address  address;
+      nucleus::proton::Address address;
 
       // create the link.
       if (context.object.Create(
-            nucleus::GenreLink,
+            nucleus::neutron::GenreLink,
             agent::Agent::Identity.pair.K) == elle::Status::Error)
         escape("unable to create the link object");
 
@@ -60,7 +60,7 @@ namespace etoile
         escape("unable to fetch the object");
 
       // check that the object is a link.
-      if (context.object.meta.genre != nucleus::GenreLink)
+      if (context.object.meta.genre != nucleus::neutron::GenreLink)
         escape("this object does not seem to be a link");
 
       // set the context's state.
@@ -76,15 +76,15 @@ namespace etoile
                           gear::Link&                           context,
                           const path::Way&                      way)
     {
-      nucleus::Size     size;
+      nucleus::neutron::Size size;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // check if the current user has the right the bind the link.
-      if ((context.rights.permissions & nucleus::PermissionWrite) !=
-          nucleus::PermissionWrite)
+      if ((context.rights.permissions & nucleus::neutron::PermissionWrite) !=
+          nucleus::neutron::PermissionWrite)
         escape("the user does not seem to have the permission to bind "
                "this link");
 
@@ -133,8 +133,8 @@ namespace etoile
         escape("unable to determine the rights");
 
       // check if the current user has the right the resolve the link..
-      if ((context.rights.permissions & nucleus::PermissionRead) !=
-          nucleus::PermissionRead)
+      if ((context.rights.permissions & nucleus::neutron::PermissionRead) !=
+          nucleus::neutron::PermissionRead)
         escape("the user does not seem to have the permission to resolve "
                "this link");
 
@@ -180,7 +180,7 @@ namespace etoile
         escape("unable to determine the rights");
 
       // check if the current user is the object owner.
-      if (context.rights.role != nucleus::RoleOwner)
+      if (context.rights.role != nucleus::neutron::RoleOwner)
         escape("the user does not seem to have the permission to destroy "
                "this link");
 

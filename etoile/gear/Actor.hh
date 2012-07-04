@@ -1,19 +1,18 @@
 #ifndef ETOILE_GEAR_ACTOR_HH
 # define ETOILE_GEAR_ACTOR_HH
 
-# include <map>
-
 # include <elle/types.hh>
 
+# include <etoile/gear/fwd.hh>
 # include <etoile/gear/Identifier.hh>
 # include <etoile/gear/Operation.hh>
+
+# include <map>
 
 namespace etoile
 {
   namespace gear
   {
-
-    class Scope;
 
     ///
     /// an actor represents an application operating on an object for
@@ -102,11 +101,5 @@ namespace etoile
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/gear/Scope.hh>
 
 #endif

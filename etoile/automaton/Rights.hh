@@ -1,32 +1,14 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [mon jun 20 14:00:01 2011]
-//
-
 #ifndef ETOILE_AUTOMATON_RIGHTS_HH
-#define ETOILE_AUTOMATON_RIGHTS_HH
+# define ETOILE_AUTOMATON_RIGHTS_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
-
-#include <etoile/gear/Object.hh>
+# include <elle/types.hh>
+# include <etoile/gear/fwd.hh>
+# include <nucleus/neutron/fwd.hh>
 
 namespace etoile
 {
   namespace automaton
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class provides automata for computing the user's rights
@@ -41,7 +23,7 @@ namespace etoile
       static elle::Status       Determine(gear::Object&);
       static elle::Status       Recompute(gear::Object&);
       static elle::Status       Update(gear::Object&,
-                                       const nucleus::Permissions&);
+                                       const nucleus::neutron::Permissions&);
 
       static elle::Status       Operate(gear::Object&,
                                         const gear::Operation&);

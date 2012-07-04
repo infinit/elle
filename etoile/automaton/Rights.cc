@@ -1,16 +1,22 @@
-#include <elle/log.hh>
-
 #include <etoile/automaton/Rights.hh>
 #include <etoile/automaton/Access.hh>
+#include <etoile/gear/Object.hh>
+
+#include <nucleus/neutron/Role.hh>
+#include <nucleus/neutron/Token.hh>
+#include <nucleus/neutron/Record.hh>
+#include <nucleus/neutron/Permissions.hh>
 
 #include <agent/Agent.hh>
+
+#include <elle/log.hh>
+
+ELLE_LOG_TRACE_COMPONENT("etoile.automaton.Rights");
 
 namespace etoile
 {
   namespace automaton
   {
-
-    ELLE_LOG_TRACE_COMPONENT("etoile.automaton.Rights");
 
     ///
     /// this method determines the rights the current user has over the
@@ -22,7 +28,7 @@ namespace etoile
     elle::Status        Rights::Determine(
                           gear::Object&                         context)
     {
-      if (context.rights.role != nucleus::RoleUnknown)
+      if (context.rights.role != nucleus::neutron::RoleUnknown)
         {
           ELLE_LOG_TRACE("Rights have already been determined !")
           return elle::Status::Ok;
@@ -37,13 +43,13 @@ namespace etoile
           //
 
           // set the role.
-          context.rights.role = nucleus::RoleOwner;
+          context.rights.role = nucleus::neutron::RoleOwner;
 
           // set the permissions.
           context.rights.permissions = context.object.meta.owner.permissions;
 
           // if a token is present, decrypt it.
-          if (context.object.meta.owner.token != nucleus::Token::Null)
+          if (context.object.meta.owner.token != nucleus::neutron::Token::Null)
             {
               // extract the secret key from the token.
               if (context.object.meta.owner.token.Extract(
@@ -75,7 +81,7 @@ namespace etoile
               // in this case, the subject is referenced in the ACL, hence
               // is considered a lord.
               //
-              nucleus::Record*  record;
+              nucleus::neutron::Record* record;
 
               // retrieve the record associated with this subject.
               if (context.access->Lookup(agent::Agent::Subject,
@@ -83,13 +89,13 @@ namespace etoile
                 escape("unable to retrieve the access record");
 
               // set the role.
-              context.rights.role = nucleus::RoleLord;
+              context.rights.role = nucleus::neutron::RoleLord;
 
               // set the permissions according to the access record.
               context.rights.permissions = record->permissions;
 
               // if a token is present, decrypt it.
-              if (record->token != nucleus::Token::Null)
+              if (record->token != nucleus::neutron::Token::Null)
                 {
                   // extract the secret key from the token.
                   if (record->token.Extract(
@@ -111,10 +117,10 @@ namespace etoile
               //
 
               // set the role.
-              context.rights.role = nucleus::RoleVassal;
+              context.rights.role = nucleus::neutron::RoleVassal;
 
               // set the permissions.
-              context.rights.permissions = nucleus::PermissionNone;
+              context.rights.permissions = nucleus::neutron::PermissionNone;
               ELLE_LOG_TRACE("Rights default to Vassal role and permissions");
             }
         }
@@ -131,7 +137,7 @@ namespace etoile
     {
       // reset the role in order to make sure the Determine() method
       // will carry one.
-      context.rights.role = nucleus::RoleUnknown;
+      context.rights.role = nucleus::neutron::RoleUnknown;
 
       // call Determine().
       if (Rights::Determine(context) == elle::Status::Error)
@@ -148,7 +154,7 @@ namespace etoile
     ///
     elle::Status        Rights::Update(
                           gear::Object&                         context,
-                          const nucleus::Permissions&           permissions)
+                          const nucleus::neutron::Permissions& permissions)
     {
       // update the permission.
       context.rights.permissions = permissions;
@@ -210,7 +216,7 @@ namespace etoile
               escape("unable to determine the rights");
 
             // check if the current user has the given role.
-            if (context.rights.role != nucleus::RoleOwner)
+            if (context.rights.role != nucleus::neutron::RoleOwner)
               escape("the user does not seem to have the permission to "
                      "perform the requested operation");
 

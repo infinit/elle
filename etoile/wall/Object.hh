@@ -1,36 +1,16 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 14 15:36:23 2009]
-//
-
 #ifndef ETOILE_WALL_OBJECT_HH
-#define ETOILE_WALL_OBJECT_HH
+# define ETOILE_WALL_OBJECT_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-
-#include <etoile/path/Chemin.hh>
-
-#include <etoile/gear/Identifier.hh>
-
-#include <etoile/miscellaneous/Abstract.hh>
+# include <etoile/path/fwd.hh>
+# include <etoile/gear/fwd.hh>
+# include <etoile/miscellaneous/fwd.hh>
 
 namespace etoile
 {
   namespace wall
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class provides general-purpose methods for manipulating objects.

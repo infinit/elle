@@ -5,14 +5,12 @@
 
 # include <nucleus/proton/Address.hh>
 
+# include <elle/idiom/Open.hh>
+
 namespace nucleus
 {
   namespace neutron
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a directory i.e catalog entry which is

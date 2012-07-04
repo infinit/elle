@@ -2,12 +2,11 @@
 
 #include <etoile/automaton/Access.hh>
 #include <etoile/automaton/Rights.hh>
-
 #include <etoile/depot/Depot.hh>
+#include <etoile/gear/Object.hh>
 
 #include <agent/Agent.hh>
 #include <hole/Hole.hh>
-
 
 namespace etoile
 {

@@ -1,6 +1,3 @@
-#include <elle/print.hh>
-
-#include <nucleus/neutron/Catalog.hh>
 #include <nucleus/neutron/Range.hh>
 #include <nucleus/neutron/Entry.hh>
 
@@ -8,8 +5,11 @@
 #include <etoile/automaton/Object.hh>
 #include <etoile/automaton/Contents.hh>
 #include <etoile/automaton/Rights.hh>
+#include <etoile/gear/Directory.hh>
 
 #include <agent/Agent.hh>
+
+#include <elle/print.hh>
 
 namespace etoile
 {
@@ -26,11 +26,11 @@ namespace etoile
     elle::Status        Directory::Create(
                           gear::Directory&                      context)
     {
-      nucleus::Address  address;
+      nucleus::proton::Address address;
 
       // create the directory.
       if (context.object.Create(
-            nucleus::GenreDirectory,
+            nucleus::neutron::GenreDirectory,
             agent::Agent::Identity.pair.K) == elle::Status::Error)
         escape("unable to create the directory object");
 
@@ -64,7 +64,7 @@ namespace etoile
         escape("unable to fetch the object");
 
       // check that the object is a directory.
-      if (context.object.meta.genre != nucleus::GenreDirectory)
+      if (context.object.meta.genre != nucleus::neutron::GenreDirectory)
         escape("this object does not seem to be a directory");
 
       // set the context's state.
@@ -79,17 +79,17 @@ namespace etoile
     elle::Status        Directory::Add(
                           gear::Directory&                      context,
                           const path::Slice&                    name,
-                          const nucleus::Address&               address)
+                          const nucleus::proton::Address& address)
     {
-      nucleus::Size     size;
+      nucleus::neutron::Size size;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // check if the current user has the right the write the catalog.
-      if ((context.rights.permissions & nucleus::PermissionWrite) !=
-          nucleus::PermissionWrite)
+      if ((context.rights.permissions & nucleus::neutron::PermissionWrite) !=
+          nucleus::neutron::PermissionWrite)
         escape("the user does not seem to have the permission to write "
                "this directory");
 

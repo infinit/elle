@@ -1,14 +1,12 @@
 #include <elle/concurrency/Scheduler.hh>
 #include <elle/utility/Duration.hh>
-
 #include <elle/container/timeline/Bucket.hh>
 #include <elle/container/timeline/Timeline.hh>
-#include <elle/concurrency/Callback.hh>
 
 #include <etoile/shrub/Shrub.hh>
+#include <etoile/path/Route.hh>
+#include <etoile/path/Venue.hh>
 
-#include <nucleus/Nucleus.hh>
-#include <lune/Lune.hh>
 #include <Infinit.hh>
 
 namespace etoile

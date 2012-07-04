@@ -1,19 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [mon jun 20 16:26:27 2011]
-//
-
 #ifndef ETOILE_AUTOMATON_CONTENTS_HH
-#define ETOILE_AUTOMATON_CONTENTS_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
+# define ETOILE_AUTOMATON_CONTENTS_HH
 
 #include <elle/types.hh>
 
@@ -21,10 +7,6 @@ namespace etoile
 {
   namespace automaton
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class provides a small set of automata for opening, closing
@@ -47,10 +29,6 @@ namespace etoile
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <etoile/automaton/Contents.hxx>
 

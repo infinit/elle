@@ -16,7 +16,11 @@
 //
 
 #include <elle/types.hh>
-#include <etoile/Etoile.hh>
+#include <elle/standalone/Report.hh>
+
+#include <etoile/wall/Object.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace horizon
 {

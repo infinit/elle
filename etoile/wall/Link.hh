@@ -1,36 +1,15 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 14 15:36:23 2009]
-//
-
 #ifndef ETOILE_WALL_LINK_HH
-#define ETOILE_WALL_LINK_HH
+# define ETOILE_WALL_LINK_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
-
-#include <etoile/path/Chemin.hh>
-#include <etoile/path/Way.hh>
-
-#include <etoile/gear/Identifier.hh>
+# include <etoile/path/fwd.hh>
+# include <etoile/gear/fwd.hh>
 
 namespace etoile
 {
   namespace wall
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class provides functionalities for managing links.

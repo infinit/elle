@@ -1,10 +1,9 @@
-#include <elle/log.hh>
-
-#include <elle/system/System.hh>
-
 #include <etoile/wall/Path.hh>
-
 #include <etoile/path/Path.hh>
+#include <etoile/path/Way.hh>
+#include <etoile/path/Chemin.hh>
+
+#include <elle/log.hh>
 
 #include <Infinit.hh>
 

@@ -2,10 +2,9 @@
 # define ETOILE_AUTOMATON_ACCESS_HH
 
 # include <elle/types.hh>
-# include <elle/Elle.hh>
-# include <nucleus/Nucleus.hh>
-
-# include <etoile/gear/Object.hh>
+# include <elle/cryptography/fwd.hh>
+# include <nucleus/neutron/fwd.hh>
+# include <etoile/gear/fwd.hh>
 
 namespace etoile
 {
@@ -30,17 +29,18 @@ namespace etoile
       static elle::Status       Open(gear::Object&);
 
       static elle::Status       Grant(gear::Object&,
-                                      const nucleus::Subject&,
-                                      const nucleus::Permissions&);
+                                      const nucleus::neutron::Subject&,
+                                      const nucleus::neutron::Permissions&);
       static elle::Status       Lookup(gear::Object&,
-                                       const nucleus::Subject&,
-                                       nucleus::Record*&);
+                                       const nucleus::neutron::Subject&,
+                                       nucleus::neutron::Record*&);
       static elle::Status       Consult(gear::Object&,
-                                        const nucleus::Index&,
-                                        const nucleus::Size&,
-                                        nucleus::Range<nucleus::Record>&);
+                                        const nucleus::neutron::Index&,
+                                        const nucleus::neutron::Size&,
+                                        nucleus::neutron::Range<
+                                          nucleus::neutron::Record>&);
       static elle::Status       Revoke(gear::Object&,
-                                       const nucleus::Subject&);
+                                       const nucleus::neutron::Subject&);
 
       static elle::Status       Upgrade(gear::Object&,
                                         elle::cryptography::SecretKey const&);
@@ -50,7 +50,7 @@ namespace etoile
       static elle::Status       Close(gear::Object&);
 
       static elle::Status       Audit(gear::Object&,
-                                      const nucleus::Subject&);
+                                      const nucleus::neutron::Subject&);
       static elle::Status       Regulate(gear::Object&);
     };
 

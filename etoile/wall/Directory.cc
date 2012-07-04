@@ -1,25 +1,23 @@
-#include <elle/log.hh>
-
-#include <elle/concurrency/Scheduler.hh>
-
 #include <etoile/wall/Directory.hh>
-
 #include <etoile/gear/Identifier.hh>
-#include <etoile/gear/Nature.hh>
 #include <etoile/gear/Scope.hh>
 #include <etoile/gear/Directory.hh>
-#include <etoile/gear/Gear.hh>
 #include <etoile/gear/Operation.hh>
 #include <etoile/gear/Guard.hh>
-
 #include <etoile/automaton/Directory.hh>
 #include <etoile/automaton/Rights.hh>
-
 #include <etoile/journal/Journal.hh>
-
 #include <etoile/path/Path.hh>
-
 #include <etoile/shrub/Shrub.hh>
+
+#include <nucleus/proton/Address.hh>
+#include <nucleus/neutron/Index.hh>
+#include <nucleus/neutron/Size.hh>
+#include <nucleus/neutron/Range.hh>
+#include <nucleus/neutron/Entry.hh>
+
+#include <elle/log.hh>
+#include <elle/concurrency/Scheduler.hh>
 
 #include <Infinit.hh>
 
@@ -171,7 +169,7 @@ namespace etoile
       gear::Scope*      scope;
       gear::Directory*  directory;
       gear::Object*     object;
-      nucleus::Address  address;
+      nucleus::proton::Address address;
 
       ELLE_LOG_TRACE("Add()");
 
@@ -227,7 +225,7 @@ namespace etoile
     elle::Status        Directory::Lookup(
                           const gear::Identifier&               identifier,
                           const path::Slab&                     name,
-                          nucleus::Entry*&                      entry)
+                          nucleus::neutron::Entry*& entry)
     {
       gear::Actor*      actor;
       gear::Scope*      scope;
@@ -269,9 +267,10 @@ namespace etoile
     ///
     elle::Status        Directory::Consult(
                           const gear::Identifier&               identifier,
-                          const nucleus::Offset&                offset,
-                          const nucleus::Offset&                size,
-                          nucleus::Range<nucleus::Entry>&       range)
+                          const nucleus::neutron::Offset& offset,
+                          const nucleus::neutron::Offset& size,
+                          nucleus::neutron::Range<
+                            nucleus::neutron::Entry>& range)
     {
       gear::Actor*      actor;
       gear::Scope*      scope;

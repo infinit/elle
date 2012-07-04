@@ -1,33 +1,14 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [Mon 06 Feb 2012 03:55:00 PM CET]
-//
-
 #ifndef ETOILE_GEAR_GUARD_HH
-#define ETOILE_GEAR_GUARD_HH
+# define ETOILE_GEAR_GUARD_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-
-#include <etoile/gear/Scope.hh>
-#include <etoile/gear/Actor.hh>
+# include <etoile/gear/fwd.hh>
 
 namespace etoile
 {
   namespace gear
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class enables one to easily manipulate scopes and actor so

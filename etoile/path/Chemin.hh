@@ -1,22 +1,22 @@
 #ifndef ETOILE_PATH_CHEMIN_HH
 # define ETOILE_PATH_CHEMIN_HH
 
-# include <limits>
-
 # include <elle/types.hh>
-# include <nucleus/Nucleus.hh>
+
+# include <nucleus/proton/fwd.hh>
+# include <nucleus/neutron/Size.hh>
 
 # include <etoile/path/Route.hh>
 # include <etoile/path/Venue.hh>
+
+# include <elle/idiom/Close.hh>
+#  include <limits>
+# include <elle/idiom/Open.hh>
 
 namespace etoile
 {
   namespace path
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class contains both a logical and physical path referred to
@@ -44,12 +44,13 @@ namespace etoile
       //
       elle::Status              Create(const Route&,
                                        const Venue&,
-                                       const nucleus::Size =
-                                         std::numeric_limits<nucleus::Size>::max());
+                                       const nucleus::neutron::Size =
+                                         std::numeric_limits<
+                                           nucleus::neutron::Size>::max());
 
       elle::Status              Derives(const Chemin&) const;
 
-      elle::Status              Locate(nucleus::Location&) const;
+      elle::Status              Locate(nucleus::proton::Location&) const;
 
       //
       // interfaces
@@ -63,10 +64,6 @@ namespace etoile
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      //elle::Status              Serialize(elle::Archive&) const;
-      //elle::Status              Extract(elle::Archive&);
-
       //
       // attributes
       //
@@ -77,5 +74,6 @@ namespace etoile
   }
 }
 
+# include <etoile/path/Chemin.hxx>
+
 #endif
-#include <etoile/path/Chemin.hxx>

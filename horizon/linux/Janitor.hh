@@ -16,7 +16,6 @@
 //
 
 #include <elle/types.hh>
-#include <etoile/Etoile.hh>
 
 namespace horizon
 {

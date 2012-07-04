@@ -1,11 +1,14 @@
 #include <elle/cryptography/PublicKey.hh>
 #include <elle/cryptography/KeyPair.hh>
+#include <elle/concurrency/Program.hh>
 
 #include <elle/Elle.hh>
 #include <elle/io/Console.hh>
 #include <elle/io/Unique.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/serialize/TupleSerializer.hxx>
+
+#include <nucleus/Nucleus.hh>
 
 #include <satellites/authority/Authority.hh>
 
@@ -171,10 +174,6 @@ namespace satellite
     // initialize the operation.
     operation = Authority::OperationUnknown;
 
-    // initialize the Etoile library.
-    if (etoile::Etoile::Initialize() == elle::Status::Error)
-      escape("unable to initialize Etoile");
-
     // allocate a new parser.
     Infinit::Parser = new elle::utility::Parser(argc, argv);
 
@@ -304,11 +303,6 @@ namespace satellite
     // delete the parser.
     delete Infinit::Parser;
     Infinit::Parser = nullptr;
-
-
-    // clean the Etoile.
-    if (etoile::Etoile::Clean() == elle::Status::Error)
-      escape("unable to clean Etoile");
 
     // clean Infinit.
     if (Infinit::Clean() == elle::Status::Error)

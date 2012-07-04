@@ -1,20 +1,15 @@
-#include <elle/log.hh>
-
-#include <elle/concurrency/Scheduler.hh>
-
 #include <etoile/wall/Link.hh>
-
 #include <etoile/gear/Identifier.hh>
-#include <etoile/gear/Nature.hh>
 #include <etoile/gear/Scope.hh>
-#include <etoile/gear/Guard.hh>
 #include <etoile/gear/Link.hh>
-#include <etoile/gear/Gear.hh>
-
+#include <etoile/gear/Operation.hh>
+#include <etoile/gear/Guard.hh>
 #include <etoile/automaton/Link.hh>
 #include <etoile/automaton/Rights.hh>
-
 #include <etoile/journal/Journal.hh>
+
+#include <elle/log.hh>
+#include <elle/concurrency/Scheduler.hh>
 
 #include <Infinit.hh>
 

@@ -4,6 +4,7 @@
 #include <etoile/automaton/Object.hh>
 #include <etoile/automaton/Contents.hh>
 #include <etoile/automaton/Rights.hh>
+#include <etoile/gear/File.hh>
 
 #include <agent/Agent.hh>
 
@@ -22,11 +23,11 @@ namespace etoile
     elle::Status        File::Create(
                           gear::File&                           context)
     {
-      nucleus::Address  address;
+      nucleus::proton::Address address;
 
       // create the file.
       if (context.object.Create(
-            nucleus::GenreFile,
+            nucleus::neutron::GenreFile,
             agent::Agent::Identity.pair.K) == elle::Status::Error)
         escape("unable to create the file object");
 
@@ -61,7 +62,7 @@ namespace etoile
         escape("unable to fetch the object");
 
       // check that the object is a file.
-      if (context.object.meta.genre != nucleus::GenreFile)
+      if (context.object.meta.genre != nucleus::neutron::GenreFile)
         escape("this object does not seem to be a file");
 
       // set the context's state.
@@ -75,18 +76,18 @@ namespace etoile
     ///
     elle::Status        File::Write(
                           gear::File&                           context,
-                          const nucleus::Offset&                offset,
-                          const elle::standalone::Region&                   region)
+                          const nucleus::neutron::Offset& offset,
+                          const elle::standalone::Region& region)
     {
-      nucleus::Size     size;
+      nucleus::neutron::Size size;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // check if the current user has the right the write the data.
-      if ((context.rights.permissions & nucleus::PermissionWrite) !=
-          nucleus::PermissionWrite)
+      if ((context.rights.permissions & nucleus::neutron::PermissionWrite) !=
+          nucleus::neutron::PermissionWrite)
         escape("the user does not seem to have the permission to write "
                "this file");
 
@@ -129,8 +130,8 @@ namespace etoile
     ///
     elle::Status        File::Read(
                           gear::File&                           context,
-                          const nucleus::Offset&                offset,
-                          const nucleus::Size&                  size,
+                          const nucleus::neutron::Offset& offset,
+                          const nucleus::neutron::Size& size,
                           elle::standalone::Region&                         region)
     {
       // determine the rights.
@@ -138,8 +139,8 @@ namespace etoile
         escape("unable to determine the rights");
 
       // check if the current user has the right the read the data.
-      if ((context.rights.permissions & nucleus::PermissionRead) !=
-          nucleus::PermissionRead)
+      if ((context.rights.permissions & nucleus::neutron::PermissionRead) !=
+          nucleus::neutron::PermissionRead)
         escape("the user does not seem to have the permission to read "
                "this file");
 
@@ -167,17 +168,17 @@ namespace etoile
     ///
     elle::Status        File::Adjust(
                           gear::File&                           context,
-                          const nucleus::Size&                  length)
+                          const nucleus::neutron::Size& length)
     {
-      nucleus::Size     size;
+      nucleus::neutron::Size size;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // check if the current user has the right the adjust the file.
-      if ((context.rights.permissions & nucleus::PermissionWrite) !=
-          nucleus::PermissionWrite)
+      if ((context.rights.permissions & nucleus::neutron::PermissionWrite) !=
+          nucleus::neutron::PermissionWrite)
         escape("the user does not seem to have the permission to adjust "
                "this file");
 
@@ -239,7 +240,7 @@ namespace etoile
         escape("unable to determine the rights");
 
       // check if the current user is the object owner.
-      if (context.rights.role != nucleus::RoleOwner)
+      if (context.rights.role != nucleus::neutron::RoleOwner)
         escape("the user does not seem to have the permission to destroy "
                "this file");
 

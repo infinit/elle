@@ -1,36 +1,17 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 14 15:36:23 2009]
-//
-
 #ifndef ETOILE_WALL_DIRECTORY_HH
-#define ETOILE_WALL_DIRECTORY_HH
+# define ETOILE_WALL_DIRECTORY_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
+# include <nucleus/neutron/fwd.hh>
 
-#include <etoile/path/Chemin.hh>
-#include <etoile/path/Slab.hh>
-
-#include <etoile/gear/Identifier.hh>
+# include <etoile/path/fwd.hh>
+# include <etoile/gear/fwd.hh>
 
 namespace etoile
 {
   namespace wall
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class provides an interface for manipulating directories.
@@ -52,11 +33,12 @@ namespace etoile
                                     const gear::Identifier&);
       static elle::Status       Lookup(const gear::Identifier&,
                                        const path::Slab&,
-                                       nucleus::Entry*&);
+                                       nucleus::neutron::Entry*&);
       static elle::Status       Consult(const gear::Identifier&,
-                                        const nucleus::Index&,
-                                        const nucleus::Size&,
-                                        nucleus::Range<nucleus::Entry>&);
+                                        const nucleus::neutron::Index&,
+                                        const nucleus::neutron::Size&,
+                                        nucleus::neutron::Range<
+                                          nucleus::neutron::Entry>&);
       static elle::Status       Rename(const gear::Identifier&,
                                        const path::Slab&,
                                        const path::Slab&);

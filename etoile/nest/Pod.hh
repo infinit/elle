@@ -16,10 +16,9 @@
 //
 
 #include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
-
-#include <XXX/Placement.hh>
-#include <XXX/Handle.hh>
+#include <nucleus/Nucleus.hh> // XXX fwd.hh
+#include <XXX/Placement.hh> // XXX fwd.hh
+#include <XXX/Handle.hh> // XXX fwd.hh
 
 namespace etoile
 {

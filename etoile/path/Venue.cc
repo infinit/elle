@@ -1,18 +1,4 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [sat aug  8 17:51:22 2009]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/path/Venue.hh>
+# include <etoile/path/Venue.hh>
 
 namespace etoile
 {
@@ -46,7 +32,7 @@ namespace etoile
     ///
     /// this method records the location.
     ///
-    elle::Status        Venue::Record(const nucleus::Location&  location)
+    elle::Status        Venue::Record(const nucleus::proton::Location& location)
     {
       // store the location in the container.
       this->elements.push_back(location);
@@ -57,10 +43,10 @@ namespace etoile
     ///
     /// this method records the next step of the venue.
     ///
-    elle::Status        Venue::Record(const nucleus::Address&   address,
-                                      const nucleus::Version&   version)
+    elle::Status        Venue::Record(const nucleus::proton::Address& address,
+                                      const nucleus::proton::Version& version)
     {
-      nucleus::Location location;
+      nucleus::proton::Location location;
 
       // create the location.
       if (location.Create(address, version) == elle::Status::Error)
@@ -169,66 +155,6 @@ namespace etoile
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the object.
-    ///
-    //elle::Status        Venue::Serialize(elle::Archive&         archive) const
-    //{
-    //  Venue::Scoutor    scoutor;
-    //  elle::Natural32   size;
-
-    //  // retrieve the container size.
-    //  size = this->elements.size();
-
-    //  // serialize the size.
-    //  if (archive.Serialize(size) == elle::Status::Error)
-    //    escape("unable to serialize the size");
-
-    //  // for every element.
-    //  for (scoutor = this->elements.begin();
-    //       scoutor != this->elements.end();
-    //       scoutor++)
-    //    {
-    //      // serialize the location.
-    //      if (archive.Serialize(*scoutor) == elle::Status::Error)
-    //        escape("unable to serialize the location");
-    //    }
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the object.
-    /////
-    //elle::Status        Venue::Extract(elle::Archive&           archive)
-    //{
-    //  elle::Natural32   size;
-    //  elle::Natural32   i;
-
-    //  // extract the size.
-    //  if (archive.Extract(size) == elle::Status::Error)
-    //    escape("unable to extract the size");
-
-    //  // for every element.
-    //  for (i = 0; i < size; i++)
-    //    {
-    //      nucleus::Location     location;
-
-    //      // extract the location.
-    //      if (archive.Extract(location) == elle::Status::Error)
-    //        escape("unable to extract the location");
-
-    //      // store the location in the elements.
-    //      this->elements.push_back(location);
-    //    }
-
-    //  return elle::Status::Ok;
-    //}
 
   }
 }

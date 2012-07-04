@@ -38,7 +38,7 @@ namespace horizon
     ///
     Handle::Handle(const Operation                              operation,
                    const etoile::gear::Identifier&              identifier,
-                   const nucleus::Permissions&                  permissions):
+                   const nucleus::neutron::Permissions& permissions):
       operation(operation),
       identifier(identifier),
       permissions(permissions)

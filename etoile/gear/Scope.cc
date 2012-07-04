@@ -1,16 +1,11 @@
 #include <elle/concurrency/Scheduler.hh>
 
 #include <etoile/gear/Scope.hh>
-#include <etoile/gear/Gear.hh>
 #include <etoile/gear/Directory.hh>
 #include <etoile/gear/File.hh>
 #include <etoile/gear/Link.hh>
 #include <etoile/gear/Object.hh>
-
-#include <etoile/automaton/Object.hh>
-#include <etoile/automaton/File.hh>
-#include <etoile/automaton/Directory.hh>
-#include <etoile/automaton/Link.hh>
+#include <etoile/gear/Chronicle.hh>
 
 #include <Infinit.hh>
 

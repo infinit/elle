@@ -2,6 +2,7 @@
 
 #include <elle/Elle.hh>
 #include <elle/utility/Parser.hh>
+#include <elle/concurrency/Program.hh>
 
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>

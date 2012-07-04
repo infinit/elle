@@ -1,12 +1,19 @@
-#include <elle/log.hh>
-
 #include <etoile/portal/Wrapper.hh>
 
 #include <etoile/wall/Access.hh>
 #include <etoile/wall/Attributes.hh>
 #include <etoile/wall/Directory.hh>
 
-#include <Infinit.hh>
+#include <nucleus/neutron/Index.hh>
+#include <nucleus/neutron/Subject.hh>
+#include <nucleus/neutron/Record.hh>
+#include <nucleus/neutron/Range.hh>
+#include <nucleus/neutron/Size.hh>
+#include <nucleus/neutron/Trait.hh>
+#include <nucleus/neutron/Entry.hh>
+
+#include <elle/log.hh>
+#include <elle/idiom/Open.hh>
 
 ELLE_LOG_TRACE_COMPONENT("etoile.portal.Wrapper");
 
@@ -24,11 +31,11 @@ namespace etoile
     /// translating the pointer-to-record into a local copy.
     ///
     elle::Status        Wrapper::Access::Lookup(
-                          const gear::Identifier&               identifier,
-                          const nucleus::Subject&               subject,
-                          nucleus::Record&                      record)
+                          const gear::Identifier& identifier,
+                          const nucleus::neutron::Subject& subject,
+                          nucleus::neutron::Record& record)
     {
-      nucleus::Record*  r;
+      nucleus::neutron::Record* r;
 
       ELLE_LOG_TRACE("Access::Lookup()");
 
@@ -42,7 +49,7 @@ namespace etoile
       if (r != NULL)
         record = *r;
       else
-        record = nucleus::Record::Null;
+        record = nucleus::neutron::Record::Null;
 
       return elle::Status::Ok;
     }
@@ -53,11 +60,12 @@ namespace etoile
     ///
     elle::Status        Wrapper::Access::Consult(
                           const gear::Identifier&               identifier,
-                          const nucleus::Index&                 index,
-                          const nucleus::Size&                  size,
-                          nucleus::Range<nucleus::Record>&      range)
+                          const nucleus::neutron::Index& index,
+                          const nucleus::neutron::Size& size,
+                          nucleus::neutron::Range<
+                            nucleus::neutron::Record>& range)
     {
-      nucleus::Range<nucleus::Record>   r;
+      nucleus::neutron::Range<nucleus::neutron::Record> r;
 
       ELLE_LOG_TRACE("Access::Consult()");
 
@@ -85,9 +93,9 @@ namespace etoile
     elle::Status        Wrapper::Attributes::Get(
                           const gear::Identifier&               identifier,
                           const elle::String&                   name,
-                          nucleus::Trait&                       trait)
+                          nucleus::neutron::Trait& trait)
     {
-      nucleus::Trait*   t;
+      nucleus::neutron::Trait* t;
 
       ELLE_LOG_TRACE("Attributes::Get()");
 
@@ -101,7 +109,7 @@ namespace etoile
       if (t != NULL)
         trait = *t;
       else
-        trait = nucleus::Trait::Null;
+        trait = nucleus::neutron::Trait::Null;
 
       return elle::Status::Ok;
     }
@@ -112,9 +120,10 @@ namespace etoile
     ///
     elle::Status        Wrapper::Attributes::Fetch(
                           const gear::Identifier&               identifier,
-                          nucleus::Range<nucleus::Trait>&       range)
+                          nucleus::neutron::Range<
+                            nucleus::neutron::Trait>& range)
     {
-      nucleus::Range<nucleus::Trait>    r;
+      nucleus::neutron::Range<nucleus::neutron::Trait> r;
 
       ELLE_LOG_TRACE("Attributes::Fetch()");
 
@@ -140,9 +149,9 @@ namespace etoile
     elle::Status        Wrapper::Directory::Lookup(
                           const gear::Identifier&               identifier,
                           const path::Slab&                     slab,
-                          nucleus::Entry&                       entry)
+                          nucleus::neutron::Entry& entry)
     {
-      nucleus::Entry*   e;
+      nucleus::neutron::Entry* e;
 
       ELLE_LOG_TRACE("Directory::Lookup()");
 
@@ -156,7 +165,7 @@ namespace etoile
       if (e != NULL)
         entry = *e;
       else
-        entry = nucleus::Entry::Null;
+        entry = nucleus::neutron::Entry::Null;
 
       return elle::Status::Ok;
     }
@@ -167,11 +176,12 @@ namespace etoile
     ///
     elle::Status        Wrapper::Directory::Consult(
                           const gear::Identifier&               identifier,
-                          const nucleus::Index&                 index,
-                          const nucleus::Size&                  size,
-                          nucleus::Range<nucleus::Entry>&       range)
+                          const nucleus::neutron::Index& index,
+                          const nucleus::neutron::Size& size,
+                          nucleus::neutron::Range<
+                            nucleus::neutron::Entry>& range)
     {
-      nucleus::Range<nucleus::Entry>    r;
+      nucleus::neutron::Range<nucleus::neutron::Entry> r;
 
       ELLE_LOG_TRACE("Directory::Consult()");
 

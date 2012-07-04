@@ -1,35 +1,38 @@
 #include <elle/log.hh>
-
 #include <elle/cryptography/Random.hh>
 #include <elle/network/Network.hh>
 #include <elle/network/Procedure.hh>
 #include <elle/standalone/Morgue.hh>
-
-# include <reactor/thread.hh>
-# include <reactor/network/tcp-server.hh>
-
-#include <elle/network/Bundle.hh>
-#include <elle/network/Header.hh>
 #include <elle/standalone/Report.hh>
-#include <elle/utility/Buffer.hh>
+
+#include <reactor/network/tcp-server.hh>
+#include <reactor/thread.hh>
 
 #include <nucleus/neutron/Trait.hh>
 #include <nucleus/neutron/Range.hh>
 #include <nucleus/neutron/Record.hh>
 #include <nucleus/neutron/Entry.hh>
 
+#include <etoile/portal/Portal.hh>
+#include <etoile/portal/Wrapper.hh>
 #include <etoile/path/Way.hh>
 #include <etoile/path/Chemin.hh>
+#include <etoile/path/Path.hh>
 #include <etoile/gear/Identifier.hh>
 #include <etoile/miscellaneous/Abstract.hh>
+#include <etoile/portal/Manifest.hh>
 
-#include <etoile/portal/Portal.hh>
-
-#include <etoile/wall/Wall.hh>
-
-#include <etoile/Etoile.hh>
+#include <etoile/wall/Object.hh>
+#include <etoile/wall/File.hh>
+#include <etoile/wall/Directory.hh>
+#include <etoile/wall/Link.hh>
+#include <etoile/wall/Access.hh>
+#include <etoile/wall/Attributes.hh>
+#include <etoile/wall/Path.hh>
 
 #include <Infinit.hh>
+
+#include <elle/idiom/Open.hh>
 
 ELLE_LOG_TRACE_COMPONENT("etoile.portal.Portal");
 
@@ -55,6 +58,12 @@ namespace etoile
     // XXX
     reactor::network::TCPServer* Portal::server = nullptr;
     reactor::Thread* Portal::acceptor = nullptr;
+
+    ///
+    /// this variable contains the phrase enabling applications to
+    /// request operations on Etoile.
+    ///
+    lune::Phrase Portal::phrase;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -522,7 +531,7 @@ namespace etoile
                  e.what());
         }
 
-      //
+      // XXX[improve]
       // generate a phrase randomly which will be used by applications to
       // connect to Etoile and trigger specific actions.
       //
@@ -536,11 +545,11 @@ namespace etoile
           if (elle::cryptography::Random::Generate(pass) == elle::Status::Error)
             escape("unable to generate a random string");
 
-          if (Etoile::Phrase.Create(Portal::port,
+          if (Portal::phrase.Create(Portal::port,
                                     pass) == elle::Status::Error)
             escape("unable to create the phrase");
 
-          if (Etoile::Phrase.Store(Infinit::Network) == elle::Status::Error)
+          if (Portal::phrase.Store(Infinit::Network) == elle::Status::Error)
             escape("unable to store the phrase");
         }
 
@@ -554,10 +563,11 @@ namespace etoile
     {
       Portal::Scoutor scoutor;
 
+      // XXX[improve]
       // delete the phrase.
       if (!Infinit::Network.empty())
         {
-          if (Etoile::Phrase.Erase(Infinit::Network) == elle::Status::Error)
+          if (Portal::phrase.Erase(Infinit::Network) == elle::Status::Error)
             escape("unable to erase the phrase");
         }
 
@@ -727,7 +737,7 @@ namespace etoile
         escape("unable to retrieve the application");
 
       // check that the given phrase is the same as etoile's.
-      if (Etoile::Phrase.pass != pass)
+      if (Portal::phrase.pass != pass)
         escape("the given pass is invalid");
 
       // set the application as being authenticated.

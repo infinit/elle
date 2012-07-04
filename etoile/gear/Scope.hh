@@ -3,9 +3,7 @@
 
 #include <elle/types.hh>
 
-# include <etoile/gear/Context.hh>
-# include <etoile/gear/Chronicle.hh>
-# include <etoile/gear/Nature.hh>
+# include <etoile/gear/fwd.hh>
 # include <etoile/gear/Actor.hh>
 # include <etoile/gear/Operation.hh>
 
@@ -17,10 +15,6 @@ namespace etoile
 {
   namespace gear
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a scope on which to operate in order to
@@ -174,10 +168,6 @@ namespace etoile
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <etoile/gear/Scope.hxx>
 

@@ -1,16 +1,17 @@
-#include <elle/log.hh>
-
-#include <elle/concurrency/Scheduler.hh>
 #include <etoile/wall/Attributes.hh>
-
 #include <etoile/gear/Identifier.hh>
 #include <etoile/gear/Scope.hh>
 #include <etoile/gear/Object.hh>
 #include <etoile/gear/Gear.hh>
-
 #include <etoile/automaton/Attributes.hh>
 
+#include <nucleus/neutron/Trait.hh>
+#include <nucleus/neutron/Range.hh>
+
 #include <Infinit.hh>
+
+#include <elle/concurrency/Scheduler.hh>
+#include <elle/log.hh>
 
 ELLE_LOG_TRACE_COMPONENT("etoile.wall.Attributes");
 
@@ -75,7 +76,7 @@ namespace etoile
     elle::Status        Attributes::Get(
                           const gear::Identifier&               identifier,
                           const elle::String&                   name,
-                          nucleus::Trait*&                      trait)
+                          nucleus::neutron::Trait*& trait)
     {
       gear::Actor*      actor;
       gear::Scope*      scope;
@@ -116,7 +117,8 @@ namespace etoile
     ///
     elle::Status        Attributes::Fetch(
                           const gear::Identifier&               identifier,
-                          nucleus::Range<nucleus::Trait>&       range)
+                          nucleus::neutron::Range<
+                            nucleus::neutron::Trait>& range)
     {
       gear::Actor*      actor;
       gear::Scope*      scope;

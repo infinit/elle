@@ -1,94 +1,92 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [tue feb 14 19:32:41 2012]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <etoile/gear/Guard.hh>
+#include <etoile/gear/Actor.hh>
+#include <etoile/gear/Scope.hh>
 
-using namespace etoile::gear;
+#include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
+#include <elle/idiom/Open.hh>
+
+namespace etoile
+{
+  namespace gear
+  {
 
 //
 // ---------- constructors & destructors --------------------------------------
 //
 
-///
-/// default constructor.
-///
-Guard::Guard(Scope*                                             scope,
-             Actor*                                             actor):
-  _scope(scope),
-  _actor(actor),
-  _track(true)
-{
-}
-
-///
-/// another constructor.
-///
-Guard::Guard(Actor*                                             actor):
-  _scope(nullptr),
-  _actor(actor),
-  _track(true)
-{
-}
-
-///
-/// destructor.
-///
-Guard::~Guard()
-{
-  if (this->_track == true)
+    ///
+    /// default constructor.
+    ///
+    Guard::Guard(Scope*                                             scope,
+                 Actor*                                             actor):
+      _scope(scope),
+      _actor(actor),
+      _track(true)
     {
-      if (this->_actor != nullptr)
-        delete this->_actor;
+    }
 
-      if (this->_scope != nullptr)
+    ///
+    /// another constructor.
+    ///
+    Guard::Guard(Actor*                                             actor):
+      _scope(nullptr),
+      _actor(actor),
+      _track(true)
+    {
+    }
+
+    ///
+    /// destructor.
+    ///
+    Guard::~Guard()
+    {
+      if (this->_track == true)
         {
-          if (Scope::Annihilate(this->_scope) == elle::Status::Error)
-            log("unable to annihilate the scope");
+          if (this->_actor != nullptr)
+            delete this->_actor;
+
+          if (this->_scope != nullptr)
+            {
+              if (Scope::Annihilate(this->_scope) == elle::Status::Error)
+                log("unable to annihilate the scope");
+            }
         }
     }
-}
 
 //
 // ---------- methods ---------------------------------------------------------
 //
 
-///
-/// this method releases the scope guarding.
-///
-elle::Status            Guard::Release()
-{
-  this->_track = false;
+    ///
+    /// this method releases the scope guarding.
+    ///
+    elle::Status            Guard::Release()
+    {
+      this->_track = false;
 
-  return (elle::Status::Ok);
-}
+      return (elle::Status::Ok);
+    }
 
 //
 // ---------- getters & setters -----------------------------------------------
 //
 
-Actor*                  Guard::actor()
-{
-  return (this->_actor);
-}
+    Actor*                  Guard::actor()
+    {
+      return (this->_actor);
+    }
 
-elle::Void              Guard::actor(Actor*                     actor)
-{
-  //
-  // delete the previous actor, if different.
-  //
-  if (this->_actor != actor)
-    delete this->_actor;
+    elle::Void              Guard::actor(Actor*                     actor)
+    {
+      //
+      // delete the previous actor, if different.
+      //
+      if (this->_actor != actor)
+        delete this->_actor;
 
-  this->_actor = actor;
+      this->_actor = actor;
+    }
+
+  }
 }

@@ -1,26 +1,15 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug  7 22:37:18 2009]
-//
-
 #ifndef ETOILE_PATH_ROUTE_HH
-#define ETOILE_PATH_ROUTE_HH
+# define ETOILE_PATH_ROUTE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/types.hh>
+# include <etoile/path/fwd.hh>
+# include <etoile/path/Slab.hh>
 
-#include <etoile/path/Slab.hh>
-#include <etoile/path/Way.hh>
-
-#include <vector>
+# include <elle/idiom/Close.hh>
+#  include <vector>
+# include <elle/idiom/Open.hh>
 
 namespace etoile
 {
@@ -91,10 +80,6 @@ namespace etoile
       // dumpable
       elle::Status              Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      //elle::Status              Serialize(elle::Archive&) const;
-      //elle::Status              Extract(elle::Archive&);
-
       //
       // attributes
       //
@@ -104,5 +89,6 @@ namespace etoile
   }
 }
 
+# include <etoile/path/Route.hxx>
+
 #endif
-#include <etoile/path/Route.hxx>

@@ -1,25 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug  7 22:37:18 2009]
-//
-
 #ifndef ETOILE_PATH_PATH_HH
-#define ETOILE_PATH_PATH_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
+# define ETOILE_PATH_PATH_HH
 
 #include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
+#include <nucleus/proton/fwd.hh>
 
-#include <etoile/path/Route.hh>
-#include <etoile/path/Venue.hh>
+#include <etoile/path/fwd.hh>
 
 namespace etoile
 {
@@ -28,10 +13,6 @@ namespace etoile
   ///
   namespace path
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class is the entry point to path resolution.
@@ -49,22 +30,10 @@ namespace etoile
                                         Venue&);
       static elle::Status       Parse(const Slab&,
                                       Slice&,
-                                      nucleus::Version&);
+                                      nucleus::proton::Version&);
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/path/Chemin.hh>
-#include <etoile/path/Length.hh>
-#include <etoile/path/Route.hh>
-#include <etoile/path/Slab.hh>
-#include <etoile/path/Slice.hh>
-#include <etoile/path/Venue.hh>
-#include <etoile/path/Way.hh>
 
 #endif

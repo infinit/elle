@@ -2,7 +2,8 @@
 # define ETOILE_PORTAL_APPLICATION_HH
 
 # include <elle/types.hh>
-# include <elle/network/TCPSocket.hh>
+# include <elle/radix/Object.hh>
+# include <elle/network/fwd.hh>
 
 namespace etoile
 {
@@ -55,9 +56,6 @@ namespace etoile
       //
       // callbacks
       //
-      elle::Status      Disconnected();
-      // XXX: const string&
-      elle::Status      Error(elle::String);
       elle::Status      Abort();
 
       //
@@ -73,7 +71,7 @@ namespace etoile
       State                     state;
       Processing                processing;
 
-      elle::network::TCPSocket*        socket;
+      elle::network::TCPSocket* socket;
     };
 
   }

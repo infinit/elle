@@ -1,7 +1,16 @@
-#include <limits>
-
 #include <etoile/automaton/Attributes.hh>
 #include <etoile/automaton/Rights.hh>
+#include <etoile/gear/Object.hh>
+
+#include <nucleus/neutron/Role.hh>
+#include <nucleus/neutron/Size.hh>
+#include <nucleus/neutron/Index.hh>
+#include <nucleus/neutron/Range.hh>
+#include <nucleus/neutron/Trait.hh>
+
+#include <elle/idiom/Close.hh>
+# include <limits>
+#include <elle/idiom/Open.hh>
 
 namespace etoile
 {
@@ -26,7 +35,7 @@ namespace etoile
         escape("unable to determine the rights");
 
       // verify that the user can modify the attributes.
-      if (context.rights.role != nucleus::RoleOwner)
+      if (context.rights.role != nucleus::neutron::RoleOwner)
         escape("the user does not seem to have the permission to update "
                "this object's attributes");
 
@@ -41,10 +50,10 @@ namespace etoile
         }
       else
         {
-          nucleus::Trait*       trait;
+          nucleus::neutron::Trait* trait;
 
           // allocate a new trait.
-          trait = new nucleus::Trait(name, value);
+          trait = new nucleus::neutron::Trait(name, value);
 
           // add the trait to the attributes.
           if (context.object.meta.attributes.Add(trait) == elle::Status::Error)
@@ -73,7 +82,7 @@ namespace etoile
     elle::Status        Attributes::Get(
                           gear::Object&                         context,
                           const elle::String&                   name,
-                          nucleus::Trait*&                      trait)
+                          nucleus::neutron::Trait*& trait)
     {
 
       // lookup in the attributes object.
@@ -89,13 +98,14 @@ namespace etoile
     ///
     elle::Status        Attributes::Fetch(
                           gear::Object&                         context,
-                          nucleus::Range<nucleus::Trait>&       range)
+                          nucleus::neutron::Range<
+                            nucleus::neutron::Trait>& range)
     {
 
       // consult the attributes.
       if (context.object.meta.attributes.Consult(
-            std::numeric_limits<nucleus::Index>::min(),
-            std::numeric_limits<nucleus::Size>::max(),
+            std::numeric_limits<nucleus::neutron::Index>::min(),
+            std::numeric_limits<nucleus::neutron::Size>::max(),
             range) == elle::Status::Error)
         escape("unable to fetch the attributes");
 
@@ -114,7 +124,7 @@ namespace etoile
         escape("unable to determine the rights");
 
       // verify that the user can modify the attributes.
-      if (context.rights.role != nucleus::RoleOwner)
+      if (context.rights.role != nucleus::neutron::RoleOwner)
         escape("the user does not seem to have the permission to update "
                "this object's attributes");
 

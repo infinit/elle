@@ -1,14 +1,19 @@
-#include <elle/log.hh>
-
-#include <elle/concurrency/Scheduler.hh>
-
 #include <etoile/wall/Access.hh>
 #include <etoile/gear/Identifier.hh>
 #include <etoile/gear/Scope.hh>
 #include <etoile/gear/Object.hh>
 #include <etoile/gear/Gear.hh>
-
 #include <etoile/automaton/Access.hh>
+
+#include <nucleus/neutron/Subject.hh>
+#include <nucleus/neutron/Record.hh>
+#include <nucleus/neutron/Index.hh>
+#include <nucleus/neutron/Size.hh>
+#include <nucleus/neutron/Range.hh>
+#include <nucleus/neutron/Permissions.hh>
+
+#include <elle/concurrency/Scheduler.hh>
+#include <elle/log.hh>
 
 #include <Infinit.hh>
 
@@ -33,8 +38,8 @@ namespace etoile
     ///
     elle::Status        Access::Lookup(
                           const gear::Identifier&               identifier,
-                          const nucleus::Subject&               subject,
-                          nucleus::Record*&                     record)
+                          const nucleus::neutron::Subject& subject,
+                          nucleus::neutron::Record*& record)
     {
       gear::Actor*      actor;
       gear::Scope*      scope;
@@ -75,9 +80,10 @@ namespace etoile
     ///
     elle::Status        Access::Consult(
                           const gear::Identifier&               identifier,
-                          const nucleus::Index&                 index,
-                          const nucleus::Size&                  size,
-                          nucleus::Range<nucleus::Record>&      range)
+                          const nucleus::neutron::Index& index,
+                          const nucleus::neutron::Size& size,
+                          nucleus::neutron::Range<
+                            nucleus::neutron::Record>& range)
     {
       gear::Actor*      actor;
       gear::Scope*      scope;
@@ -115,8 +121,8 @@ namespace etoile
     ///
     elle::Status        Access::Grant(
                           const gear::Identifier&               identifier,
-                          const nucleus::Subject&               subject,
-                          const nucleus::Permissions&           permissions)
+                          const nucleus::neutron::Subject& subject,
+                          const nucleus::neutron::Permissions& permissions)
     {
       gear::Actor*      actor;
       gear::Scope*      scope;
@@ -157,7 +163,7 @@ namespace etoile
     ///
     elle::Status        Access::Revoke(
                           const gear::Identifier&               identifier,
-                          const nucleus::Subject&               subject)
+                          const nucleus::neutron::Subject& subject)
     {
       gear::Actor*      actor;
       gear::Scope*      scope;

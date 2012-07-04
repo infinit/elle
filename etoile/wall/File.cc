@@ -1,19 +1,18 @@
-#include <elle/log.hh>
-
-#include <elle/concurrency/Scheduler.hh>
 #include <etoile/wall/File.hh>
-
 #include <etoile/gear/Identifier.hh>
-#include <etoile/gear/Nature.hh>
 #include <etoile/gear/Scope.hh>
 #include <etoile/gear/File.hh>
-#include <etoile/gear/Gear.hh>
+#include <etoile/gear/Operation.hh>
 #include <etoile/gear/Guard.hh>
-
 #include <etoile/automaton/File.hh>
 #include <etoile/automaton/Rights.hh>
-
 #include <etoile/journal/Journal.hh>
+
+#include <nucleus/neutron/Offset.hh>
+#include <nucleus/neutron/Size.hh>
+
+#include <elle/log.hh>
+#include <elle/concurrency/Scheduler.hh>
 
 #include <Infinit.hh>
 
@@ -158,7 +157,7 @@ namespace etoile
     ///
     elle::Status        File::Write(
                           const gear::Identifier&               identifier,
-                          const nucleus::Offset&                offset,
+                          const nucleus::neutron::Offset& offset,
                           const elle::standalone::Region&                   region)
     {
       gear::Actor*      actor;
@@ -199,8 +198,8 @@ namespace etoile
     ///
     elle::Status        File::Read(
                           const gear::Identifier&               identifier,
-                          const nucleus::Offset&                offset,
-                          const nucleus::Size&                  size,
+                          const nucleus::neutron::Offset& offset,
+                          const nucleus::neutron::Size& size,
                           elle::standalone::Region&                         region)
     {
       gear::Actor*      actor;
@@ -239,7 +238,7 @@ namespace etoile
     ///
     elle::Status        File::Adjust(
                           const gear::Identifier&               identifier,
-                          const nucleus::Size&                  size)
+                          const nucleus::neutron::Size& size)
     {
       gear::Actor*      actor;
       gear::Scope*      scope;

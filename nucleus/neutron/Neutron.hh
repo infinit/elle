@@ -48,6 +48,5 @@ namespace nucleus
 #include <nucleus/neutron/Subject.hh>
 #include <nucleus/neutron/Token.hh>
 #include <nucleus/neutron/Trait.hh>
-#include <nucleus/neutron/User.hh>
 
 #endif

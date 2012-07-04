@@ -1,11 +1,11 @@
-#include <elle/standalone/Morgue.hh>
-
 #include <etoile/journal/Journal.hh>
-
-#include <nucleus/Nucleus.hh>
-
 #include <etoile/depot/Depot.hh>
+#include <etoile/gear/Scope.hh>
 
+#include <nucleus/proton/Transcript.hh>
+#include <nucleus/proton/Action.hh>
+
+#include <elle/standalone/Morgue.hh>
 #include <elle/concurrency/Scheduler.hh>
 
 #include <Infinit.hh>
@@ -51,7 +51,7 @@ namespace etoile
 
     elle::Status        Journal::_Record(gear::Scope*            scope)
     {
-      nucleus::Transcript::Scoutor      scoutor;
+      nucleus::proton::Transcript::Scoutor      scoutor;
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -69,12 +69,12 @@ namespace etoile
            scoutor != scope->context->transcript.container.end();
            scoutor++)
         {
-          nucleus::Action*              action = *scoutor;
+          nucleus::proton::Action* action = *scoutor;
 
           // perform the action.
           switch (action->type)
             {
-            case nucleus::Action::TypePush:
+            case nucleus::proton::Action::TypePush:
               {
                 // store the block in the depot.
                 if (depot::Depot::Push(action->address,
@@ -83,7 +83,7 @@ namespace etoile
 
                 break;
               }
-            case nucleus::Action::TypeWipe:
+            case nucleus::proton::Action::TypeWipe:
               {
                 // wipe the block from the depot.
                 if (depot::Depot::Wipe(action->address) == elle::Status::Error)
@@ -91,7 +91,7 @@ namespace etoile
 
                 break;
               }
-            case nucleus::Action::TypeUnknown:
+            case nucleus::proton::Action::TypeUnknown:
               {
                 escape("unknown action type");
               }
@@ -119,14 +119,14 @@ namespace etoile
                                      nucleus::proton::Block& out_block)
     {
       BOOST_FOREACH(gear::Scope* scope, Journal::_scopes)
-        BOOST_FOREACH(nucleus::Action* action, scope->context->transcript.container)
+        BOOST_FOREACH(nucleus::proton::Action* action, scope->context->transcript.container)
           {
             if (address != action->address)
               continue;
 
             if (version == nucleus::proton::Version::Any)
               {
-                if (action->type == nucleus::Action::TypeWipe)
+                if (action->type == nucleus::proton::Action::TypeWipe)
                   {
                     throw std::runtime_error("Block scheduled for deletion");
                   }
@@ -137,11 +137,11 @@ namespace etoile
               {
                 switch (address.family)
                   {
-                  case nucleus::FamilyContentHashBlock:
+                  case nucleus::proton::FamilyContentHashBlock:
                     throw std::runtime_error("version should be any for an immutable block");
-                  case nucleus::FamilyPublicKeyBlock:
-                  case nucleus::FamilyOwnerKeyBlock:
-                  case nucleus::FamilyImprintBlock:
+                  case nucleus::proton::FamilyPublicKeyBlock:
+                  case nucleus::proton::FamilyOwnerKeyBlock:
+                  case nucleus::proton::FamilyImprintBlock:
                     out_block = *action->block;
                     return true;
                   default:

@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [sat aug 22 02:14:09 2009]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <etoile/gear/File.hh>
 #include <etoile/gear/Nature.hh>
 
@@ -75,63 +61,6 @@ namespace etoile
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the file.
-    ///
-    //elle::Status        File::Serialize(elle::Archive&          archive) const
-    //{
-    //  // serialize the contents.
-    //  if (this->contents == NULL)
-    //    {
-    //      // serialize the contents.
-    //      if (archive.Serialize(*this->contents) == elle::Status::Error)
-    //        escape("unable to serialize the contents");
-    //    }
-    //  else
-    //    {
-    //      // serialize 'none'.
-    //      if (archive.Serialize(elle::none) == elle::Status::Error)
-    //        escape("unable to serialize 'none'");
-    //    }
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the file.
-    /////
-    //elle::Status        File::Extract(elle::Archive&            archive)
-    //{
-    //  elle::Archive::Type       type;
-
-    //  // fetch the next element's type.
-    //  if (archive.Fetch(type) == elle::Status::Error)
-    //    escape("unable to fetch the next element's type");
-
-    //  // extract the access.
-    //  if (type == elle::Archive::TypeNull)
-    //    {
-    //      // extract 'none'.
-    //      if (archive.Extract(elle::none) == elle::Status::Error)
-    //        escape("unable to extract 'none'");
-    //    }
-    //  else
-    //    {
-    //      // allocate an contents.
-    //      this->contents = new nucleus::Contents<typename File::C>;
-
-    //      // extract the contents.
-    //      if (archive.Extract(*this->contents) == elle::Status::Error)
-    //        escape("unable to extract the contents");
-    //    }
-
-    //  return elle::Status::Ok;
-    //}
 
   }
 }

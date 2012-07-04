@@ -7,7 +7,19 @@
 #include <horizon/linux/Crib.hh>
 
 #include <agent/Agent.hh>
-#include <etoile/Etoile.hh>
+
+#include <etoile/gear/Identifier.hh>
+#include <etoile/path/Way.hh>
+#include <etoile/path/Slab.hh>
+#include <etoile/path/Chemin.hh>
+#include <etoile/wall/Object.hh>
+#include <etoile/wall/File.hh>
+#include <etoile/wall/Directory.hh>
+#include <etoile/wall/Link.hh>
+#include <etoile/wall/Attributes.hh>
+#include <etoile/wall/Access.hh>
+#include <etoile/wall/Path.hh>
+#include <etoile/miscellaneous/Abstract.hh>
 
 ELLE_LOG_TRACE_COMPONENT("Infinit.Horizon.Crux");
 

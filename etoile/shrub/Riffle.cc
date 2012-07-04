@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [mon aug  8 13:03:14 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <etoile/shrub/Riffle.hh>
 #include <etoile/shrub/Shrub.hh>
 
@@ -43,7 +29,7 @@ namespace etoile
     /// the parent riffle.
     ///
     elle::Status        Riffle::Create(const path::Slab&        slab,
-                                       const nucleus::Location& location,
+                                       const nucleus::proton::Location& location,
                                        Riffle*                  parent)
     {
 
@@ -85,7 +71,7 @@ namespace etoile
     /// this method updates the riffle with the given slab/location tuple.
     ///
     elle::Status        Riffle::Update(const path::Slab&        slab,
-                                       const nucleus::Location& location)
+                                       const nucleus::proton::Location& location)
     {
       auto it = this->children.find(slab);
 

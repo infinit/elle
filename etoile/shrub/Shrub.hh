@@ -5,9 +5,7 @@
 # include <elle/container/timeline/Timeline.hh>
 # include <etoile/shrub/Riffle.hh>
 
-# include <etoile/path/Slab.hh>
-# include <etoile/path/Route.hh>
-# include <etoile/path/Venue.hh>
+# include <etoile/path/fwd.hh>
 
 namespace etoile
 {

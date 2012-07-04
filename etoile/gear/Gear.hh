@@ -1,26 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [fri jun  3 10:58:40 2011]
-//
-
 #ifndef ETOILE_GEAR_GEAR_HH
-#define ETOILE_GEAR_GEAR_HH
+# define ETOILE_GEAR_GEAR_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/gear/Identifier.hh>
-#include <etoile/gear/Scope.hh>
-
-#include <elle/idiom/Close.hh>
-# include <map>
-#include <elle/idiom/Open.hh>
+# include <elle/types.hh>
 
 namespace etoile
 {
@@ -30,10 +11,6 @@ namespace etoile
   ///
   namespace gear
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents the gear module.
@@ -50,22 +27,5 @@ namespace etoile
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/gear/Actor.hh>
-#include <etoile/gear/Chronicle.hh>
-#include <etoile/gear/Context.hh>
-#include <etoile/gear/Directory.hh>
-#include <etoile/gear/File.hh>
-#include <etoile/gear/Identifier.hh>
-#include <etoile/gear/Link.hh>
-#include <etoile/gear/Nature.hh>
-#include <etoile/gear/Object.hh>
-#include <etoile/gear/Operation.hh>
-#include <etoile/gear/Scope.hh>
-#include <etoile/gear/Transaction.hh>
 
 #endif

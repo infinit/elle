@@ -1,18 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar 31 16:21:17 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <etoile/miscellaneous/Abstract.hh>
+#include <nucleus/neutron/Object.hh>
+#include <nucleus/neutron/Role.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace etoile
 {
@@ -46,7 +36,7 @@ namespace etoile
     ///
     /// this method generates the abstract according to the given object.
     ///
-    elle::Status        Abstract::Create(const nucleus::Object& object)
+    elle::Status        Abstract::Create(const nucleus::neutron::Object& object)
     {
       // set the genre.
       this->genre = object.meta.genre;
@@ -67,7 +57,7 @@ namespace etoile
       // set the author depending on the mode.
       switch (object.author.role)
         {
-        case nucleus::RoleOwner:
+        case nucleus::neutron::RoleOwner:
           {
             this->keys.author = object.owner.K;
 
@@ -225,50 +215,6 @@ namespace etoile
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the abstract.
-    ///
-    //elle::Status        Abstract::Serialize(elle::Archive&      archive) const
-    //{
-    //  // serialize the attributes.
-    //  if (archive.Serialize(this->genre,
-    //                        this->stamps.creation,
-    //                        this->stamps.modification,
-    //                        this->size,
-    //                        this->keys.owner,
-    //                        this->keys.author,
-    //                        this->permissions.owner,
-    //                        this->versions.meta,
-    //                        this->versions.data) == elle::Status::Error)
-    //    escape("unable to serialize the attributes");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the abstract.
-    /////
-    //elle::Status        Abstract::Extract(elle::Archive&        archive)
-    //{
-    //  // extract the attributes.
-    //  if (archive.Extract(this->genre,
-    //                      this->stamps.creation,
-    //                      this->stamps.modification,
-    //                      this->size,
-    //                      this->keys.owner,
-    //                      this->keys.author,
-    //                      this->permissions.owner,
-    //                      this->versions.meta,
-    //                      this->versions.data) == elle::Status::Error)
-    //    escape("unable to extract the attributes");
-
-    //  return elle::Status::Ok;
-    //}
 
   }
 }

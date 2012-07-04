@@ -1,22 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [mon oct 17 09:56:52 2011]
-//
-
 #ifndef ETOILE_NEST_NEST_HH
-#define ETOILE_NEST_NEST_HH
+# define ETOILE_NEST_NEST_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <nucleus/Nucleus.hh>
-#include <XXX/Handle.hh>
+#include <nucleus/Nucleus.hh> // XXX fwd.hh
+#include <XXX/Handle.hh> // XXX fwd.hh
 
 #include <etoile/nest/Pod.hh>
 

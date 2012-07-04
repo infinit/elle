@@ -1,22 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 14 12:56:07 2009]
-//
-
 #ifndef ETOILE_WALL_WALL_HH
-#define ETOILE_WALL_WALL_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
+# define ETOILE_WALL_WALL_HH
 
 #include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
 
 namespace etoile
 {
@@ -26,22 +11,7 @@ namespace etoile
   ///
   namespace wall
   {
-
-    // nothing
-
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/wall/Access.hh>
-#include <etoile/wall/Attributes.hh>
-#include <etoile/wall/Directory.hh>
-#include <etoile/wall/File.hh>
-#include <etoile/wall/Link.hh>
-#include <etoile/wall/Object.hh>
-#include <etoile/wall/Path.hh>
 
 #endif

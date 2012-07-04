@@ -1,42 +1,23 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 14 23:13:51 2009]
-//
-
 #ifndef ETOILE_GEAR_DIRECTORY_HH
-#define ETOILE_GEAR_DIRECTORY_HH
+# define ETOILE_GEAR_DIRECTORY_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/concurrency/Callback.hh>
 
-#include <elle/types.hh>
-#include <elle/concurrency/Callback.hh>
+# include <nucleus/proton/fwd.hh>
+# include <nucleus/neutron/Catalog.hh>
 
-#include <nucleus/Nucleus.hh>
+# include <etoile/gear/Object.hh>
+# include <etoile/gear/Nature.hh>
 
-#include <etoile/gear/Object.hh>
-#include <etoile/gear/Nature.hh>
+# include <etoile/automaton/Directory.hh>
 
-#include <etoile/path/Slice.hh>
-
-#include <etoile/automaton/Directory.hh>
-
-#include <etoile/wall/Directory.hh>
+# include <etoile/wall/Directory.hh>
 
 namespace etoile
 {
   namespace gear
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a directory-specific context.
@@ -66,7 +47,7 @@ namespace etoile
                   >
                 >                               S;
 
-      typedef nucleus::Catalog                  C;
+      typedef nucleus::neutron::Catalog C;
 
       //
       // constructors & destructors
@@ -81,14 +62,10 @@ namespace etoile
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
-
       //
       // attributes
       //
-      nucleus::Contents<C>*     contents;
+      nucleus::proton::Contents<C>*     contents;
     };
 
   }

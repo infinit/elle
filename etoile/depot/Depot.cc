@@ -1,18 +1,8 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [tue sep  1 01:11:07 2009]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <etoile/depot/Depot.hh>
+
+#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Block.hh>
+#include <nucleus/proton/Version.hh>
 
 #include <hole/Hole.hh>
 
@@ -26,7 +16,7 @@ namespace etoile
 //
 
     /// this method returns the address of the network's root block.
-    elle::Status        Depot::Origin(nucleus::Address&         address)
+    elle::Status        Depot::Origin(nucleus::proton::Address& address)
     {
       // call the Hole.
       if (hole::Hole::Origin(address) == elle::Status::Error)
@@ -38,8 +28,8 @@ namespace etoile
     ///
     /// this method stores the given block in the underlying storage layer.
     ///
-    elle::Status        Depot::Push(const nucleus::Address&     address,
-                                    const nucleus::Block&       block)
+    elle::Status        Depot::Push(const nucleus::proton::Address& address,
+                                    const nucleus::proton::Block& block)
     {
       // call the Hole.
       if (hole::Hole::Push(address, block) == elle::Status::Error)
@@ -51,9 +41,9 @@ namespace etoile
     ///
     /// this method retrives a block from the underlying storage layer.
     ///
-    elle::Status        Depot::Pull(const nucleus::Address&     address,
-                                    const nucleus::Version&     version,
-                                    nucleus::Block&             block)
+    elle::Status        Depot::Pull(const nucleus::proton::Address& address,
+                                    const nucleus::proton::Version& version,
+                                    nucleus::proton::Block& block)
     {
       // call the Hole.
       if (hole::Hole::Pull(address, version, block) == elle::Status::Error)
@@ -65,7 +55,7 @@ namespace etoile
     ///
     /// this method permanently removes a block from the storage layer.
     ///
-    elle::Status        Depot::Wipe(const nucleus::Address&     address)
+    elle::Status        Depot::Wipe(const nucleus::proton::Address& address)
     {
       // call the Hole.
       if (hole::Hole::Wipe(address) == elle::Status::Error)

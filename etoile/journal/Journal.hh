@@ -3,23 +3,14 @@
 
 # include <elle/types.hh>
 
+# include <etoile/gear/fwd.hh>
+
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/Version.hh>
 # include <nucleus/proton/Block.hh>
 
 namespace etoile
 {
-  namespace gear
-  {
-
-    ///
-    /// this class needs to be forward-declared in order to prevent
-    /// conflicts.
-    ///
-    class Scope;
-
-  }
-
   ///
   /// this namespace contains everything related to the journal which
   /// is responsible for recording and triggering the storage layer operations.
@@ -49,7 +40,5 @@ namespace etoile
 
   }
 }
-
-#include <etoile/gear/Scope.hh>
 
 #endif

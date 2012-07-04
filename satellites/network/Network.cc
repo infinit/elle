@@ -1,19 +1,28 @@
 #include <satellites/network/Network.hh>
 
 #include <Infinit.hh>
-#include <elle/Elle.hh>
-#include <lune/Lune.hh>
+
 #include <etoile/Etoile.hh>
+
 #include <hole/Hole.hh>
+
+#include <elle/Elle.hh>
 #include <elle/io/Console.hh>
 #include <elle/io/Directory.hh>
 #include <elle/io/Piece.hh>
 #include <elle/utility/Parser.hh>
+#include <elle/concurrency/Program.hh>
+
+#include <lune/Lune.hh>
 #include <lune/Authority.hh>
 #include <lune/Descriptor.hh>
 #include <lune/Identity.hh>
+
 #include <nucleus/proton/Network.hh>
 #include <nucleus/proton/Address.hh>
+#include <nucleus/neutron/Object.hh>
+#include <nucleus/neutron/Genre.hh>
+#include <nucleus/neutron/Access.hh>
 
 namespace satellite
 {
@@ -43,9 +52,9 @@ namespace satellite
     lune::Authority     authority;
     lune::Descriptor    descriptor;
     lune::Identity      identity;
-    nucleus::Object     directory;
-    nucleus::Network    network;
-    nucleus::Address    address;
+    nucleus::neutron::Object directory;
+    nucleus::proton::Network    network;
+    nucleus::proton::Address    address;
 
     //
     // test the arguments.
@@ -129,7 +138,7 @@ namespace satellite
       network.Dump();
 
       // create directory object, setting the user's as the administrator.
-      if (directory.Create(nucleus::GenreDirectory,
+      if (directory.Create(nucleus::neutron::GenreDirectory,
                            identity.pair.K) == elle::Status::Error)
         escape("unable to create the object directory");
 
@@ -137,7 +146,7 @@ namespace satellite
 
       // seal the directory.
       if (directory.Seal(identity.pair.k,
-                         nucleus::Access::Null) == elle::Status::Error)
+                         nucleus::neutron::Access::Null) == elle::Status::Error)
         escape("unable to seal the object");
 
       directory.Dump();

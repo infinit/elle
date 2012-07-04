@@ -1,32 +1,12 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [mon oct 31 16:02:06 2011]
-//
-
 #ifndef ETOILE_PORTAL_MANIFEST_HH
-#define ETOILE_PORTAL_MANIFEST_HH
+# define ETOILE_PORTAL_MANIFEST_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
-#include <elle/Manifest.hh>
-#include <nucleus/Nucleus.hh>
-#include <lune/Lune.hh>
-
-#include <etoile/path/Chemin.hh>
-#include <etoile/path/Slab.hh>
-#include <etoile/path/Way.hh>
-
-#include <etoile/gear/Identifier.hh>
-
-#include <etoile/miscellaneous/Abstract.hh>
+# include <elle/types.hh>
+# include <elle/Manifest.hh>
+# include <etoile/path/fwd.hh>
+# include <etoile/gear/fwd.hh>
+# include <etoile/miscellaneous/fwd.hh>
+# include <nucleus/neutron/fwd.hh>
 
 //
 // ---------- constants -------------------------------------------------------
@@ -197,17 +177,17 @@ message(etoile::portal::TagFileLoad,
         parameters(etoile::path::Chemin&));
 message(etoile::portal::TagFileWrite,
         parameters(etoile::gear::Identifier&,
-                   nucleus::Offset&,
+                   nucleus::neutron::Offset&,
                    elle::standalone::Region&));
 message(etoile::portal::TagFileRead,
         parameters(etoile::gear::Identifier&,
-                   nucleus::Offset&,
-                   nucleus::Size&));
+                   nucleus::neutron::Offset&,
+                   nucleus::neutron::Size&));
 message(etoile::portal::TagFileRegion,
         parameters(elle::standalone::Region&));
 message(etoile::portal::TagFileAdjust,
         parameters(etoile::gear::Identifier&,
-                   nucleus::Size&));
+                   nucleus::neutron::Size&));
 message(etoile::portal::TagFileDiscard,
         parameters(etoile::gear::Identifier&));
 message(etoile::portal::TagFileStore,
@@ -228,13 +208,14 @@ message(etoile::portal::TagDirectoryLookup,
         parameters(etoile::gear::Identifier&,
                    etoile::path::Slab&));
 message(etoile::portal::TagDirectoryEntry,
-        parameters(nucleus::Entry&));
+        parameters(nucleus::neutron::Entry&));
 message(etoile::portal::TagDirectoryConsult,
         parameters(etoile::gear::Identifier&,
-                   nucleus::Index&,
-                   nucleus::Size&));
+                   nucleus::neutron::Index&,
+                   nucleus::neutron::Size&));
 message(etoile::portal::TagDirectoryRange,
-        parameters(nucleus::Range<nucleus::Entry>&));
+        parameters(nucleus::neutron::Range<
+                     nucleus::neutron::Entry>&));
 message(etoile::portal::TagDirectoryRename,
         parameters(etoile::gear::Identifier&,
                    etoile::path::Slab&,
@@ -271,22 +252,23 @@ message(etoile::portal::TagLinkDestroy,
 // access
 message(etoile::portal::TagAccessLookup,
         parameters(etoile::gear::Identifier&,
-                   nucleus::Subject&));
+                   nucleus::neutron::Subject&));
 message(etoile::portal::TagAccessRecord,
-        parameters(nucleus::Record&));
+        parameters(nucleus::neutron::Record&));
 message(etoile::portal::TagAccessConsult,
         parameters(etoile::gear::Identifier&,
-                   nucleus::Index&,
-                   nucleus::Size&));
+                   nucleus::neutron::Index&,
+                   nucleus::neutron::Size&));
 message(etoile::portal::TagAccessRange,
-        parameters(nucleus::Range<nucleus::Record>&));
+        parameters(nucleus::neutron::Range<
+                     nucleus::neutron::Record>&));
 message(etoile::portal::TagAccessGrant,
         parameters(etoile::gear::Identifier&,
-                   nucleus::Subject&,
-                   nucleus::Permissions&));
+                   nucleus::neutron::Subject&,
+                   nucleus::neutron::Permissions&));
 message(etoile::portal::TagAccessRevoke,
         parameters(etoile::gear::Identifier&,
-                   nucleus::Subject&));
+                   nucleus::neutron::Subject&));
 
 // attributes
 message(etoile::portal::TagAttributesSet,
@@ -297,11 +279,12 @@ message(etoile::portal::TagAttributesGet,
         parameters(etoile::gear::Identifier&,
                    elle::String&));
 message(etoile::portal::TagAttributesTrait,
-        parameters(nucleus::Trait&));
+        parameters(nucleus::neutron::Trait&));
 message(etoile::portal::TagAttributesFetch,
         parameters(etoile::gear::Identifier&));
 message(etoile::portal::TagAttributesRange,
-        parameters(nucleus::Range<nucleus::Trait>&));
+        parameters(nucleus::neutron::Range<
+                     nucleus::neutron::Trait>&));
 message(etoile::portal::TagAttributesOmit,
         parameters(etoile::gear::Identifier&,
                    elle::String&));

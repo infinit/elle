@@ -5,8 +5,6 @@
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
-# include <etoile/path/Way.hh>
-
 ELLE_SERIALIZE_SIMPLE(etoile::path::Way,
                       archive,
                       value,

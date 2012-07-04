@@ -1,5 +1,7 @@
 #include <Infinit.hh>
+
 #include <elle/standalone/Morgue.hh>
+#include <elle/network/TCPSocket.hh>
 
 #include <etoile/portal/Application.hh>
 #include <etoile/portal/Portal.hh>
