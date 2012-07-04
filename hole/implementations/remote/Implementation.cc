@@ -1,10 +1,11 @@
-
-#include <elle/network/Locus.hh>
-
-#include <elle/utility/Time.hh>
-
 #include <hole/implementations/remote/Implementation.hh>
 #include <hole/implementations/remote/Remote.hh>
+#include <hole/implementations/remote/Machine.hh>
+#include <hole/implementations/remote/Client.hh>
+
+#include <elle/standalone/Report.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace hole
 {
@@ -20,7 +21,7 @@ namespace hole
       ///
       /// default constructor.
       ///
-      Implementation::Implementation(const nucleus::Network&    network):
+      Implementation::Implementation(const nucleus::proton::Network& network):
         Holeable(network)
       {
       }
@@ -55,8 +56,8 @@ namespace hole
       /// this method stores an immutable block.
       ///
       elle::Status      Implementation::Put(
-                          const nucleus::Address&               address,
-                          const nucleus::ImmutableBlock&         block)
+                          const nucleus::proton::Address& address,
+                          const nucleus::proton::ImmutableBlock& block)
       {
         // check if the machine is a client.
         if (Remote::Computer->role != Machine::RoleClient)
@@ -73,8 +74,8 @@ namespace hole
       /// this method stores a mutable block.
       ///
       elle::Status      Implementation::Put(
-                          const nucleus::Address&               address,
-                          const nucleus::MutableBlock&          block)
+                          const nucleus::proton::Address& address,
+                          const nucleus::proton::MutableBlock& block)
       {
         // check if the machine is a client.
         if (Remote::Computer->role != Machine::RoleClient)
@@ -91,8 +92,8 @@ namespace hole
       /// this method retrieves an immutable block.
       ///
       elle::Status      Implementation::Get(
-                          const nucleus::Address&               address,
-                          nucleus::ImmutableBlock&              block)
+                          const nucleus::proton::Address& address,
+                          nucleus::proton::ImmutableBlock& block)
       {
         // check if the machine is a client.
         if (Remote::Computer->role != Machine::RoleClient)
@@ -109,9 +110,9 @@ namespace hole
       /// this method retrieves a mutable block.
       ///
       elle::Status      Implementation::Get(
-                          const nucleus::Address&               address,
-                          const nucleus::Version&               version,
-                          nucleus::MutableBlock&                block)
+                          const nucleus::proton::Address& address,
+                          const nucleus::proton::Version& version,
+                          nucleus::proton::MutableBlock& block)
       {
         // check if the machine is a client.
         if (Remote::Computer->role != Machine::RoleClient)
@@ -130,7 +131,7 @@ namespace hole
       /// this method removes a block.
       ///
       elle::Status      Implementation::Kill(
-                          const nucleus::Address&               address)
+                          const nucleus::proton::Address& address)
       {
         // check if the machine is a client.
         if (Remote::Computer->role != Machine::RoleClient)

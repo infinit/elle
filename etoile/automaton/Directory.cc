@@ -98,7 +98,8 @@ namespace etoile
         escape("unable to open the contents");
 
       // allocate a new directory entry.
-      std::unique_ptr<nucleus::Entry> entry(new nucleus::Entry(name, address));
+      std::unique_ptr<nucleus::neutron::Entry> entry(
+        new nucleus::neutron::Entry(name, address));
 
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
@@ -139,15 +140,15 @@ namespace etoile
     elle::Status        Directory::Lookup(
                           gear::Directory&                      context,
                           const path::Slice&                    name,
-                          nucleus::Entry*&                      entry)
+                          nucleus::neutron::Entry*& entry)
     {
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
-      if ((context.rights.permissions & nucleus::PermissionRead) !=
-          nucleus::PermissionRead)
+      if ((context.rights.permissions & nucleus::neutron::PermissionRead) !=
+          nucleus::neutron::PermissionRead)
         escape("%s", (
             "the user does not seem to have the permission to read "
             "this directory (permissions=" +
@@ -179,17 +180,18 @@ namespace etoile
     ///
     elle::Status        Directory::Consult(
                           gear::Directory&                      context,
-                          const nucleus::Index&                 index,
-                          const nucleus::Size&                  size,
-                          nucleus::Range<nucleus::Entry>&       range)
+                          const nucleus::neutron::Index& index,
+                          const nucleus::neutron::Size& size,
+                          nucleus::neutron::Range<
+                            nucleus::neutron::Entry>& range)
     {
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
-      if ((context.rights.permissions & nucleus::PermissionRead) !=
-          nucleus::PermissionRead)
+      if ((context.rights.permissions & nucleus::neutron::PermissionRead) !=
+          nucleus::neutron::PermissionRead)
         escape("the user does not seem to have the permission to read "
                "this directory");
 
@@ -220,15 +222,15 @@ namespace etoile
                           const path::Slice&                    from,
                           const path::Slice&                    to)
     {
-      nucleus::Size     size;
+      nucleus::neutron::Size size;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
-      if ((context.rights.permissions & nucleus::PermissionWrite) !=
-          nucleus::PermissionWrite)
+      if ((context.rights.permissions & nucleus::neutron::PermissionWrite) !=
+          nucleus::neutron::PermissionWrite)
         escape("the user does not seem to have the permission to write "
                "this directory");
 
@@ -273,15 +275,15 @@ namespace etoile
                           gear::Directory&                      context,
                           const path::Slice&                    name)
     {
-      nucleus::Size     size;
+      nucleus::neutron::Size size;
 
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
-      if ((context.rights.permissions & nucleus::PermissionWrite) !=
-          nucleus::PermissionWrite)
+      if ((context.rights.permissions & nucleus::neutron::PermissionWrite) !=
+          nucleus::neutron::PermissionWrite)
         escape("the user does not seem to have the permission to write "
                "this directory");
 
@@ -343,7 +345,7 @@ namespace etoile
         escape("unable to determine the rights");
 
       // check if the current user is the object owner.
-      if (context.rights.role != nucleus::RoleOwner)
+      if (context.rights.role != nucleus::neutron::RoleOwner)
         escape("the user does not seem to have the permission to destroy "
                "this directory");
 

@@ -1,8 +1,8 @@
+#include <hole/implementations/slug/Cluster.hh>
+#include <hole/implementations/slug/Neighbourhood.hh>
 
 #include <elle/network/Locus.hh>
 #include <elle/utility/Time.hh>
-
-#include <hole/implementations/slug/Cluster.hh>
 
 namespace hole
 {
@@ -57,69 +57,6 @@ namespace hole
       /// this macro-function call generates the object.
       ///
       embed(Cluster, _());
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-
-      ///
-      /// XXX
-      ///
-      //elle::Status      Cluster::Serialize(elle::Archive&       archive) const
-      //{
-      //  Cluster::Scoutor        scoutor;
-      //  elle::Natural32         size;
-
-      //  // retrieve the size of the container.
-      //  size = this->container.size();
-
-      //  // serialize the number of entries.
-      //  if (archive.Serialize(size) == elle::Status::Error)
-      //    escape("unable to serialize the size");
-
-      //  // go through the container.
-      //  for (scoutor = this->container.begin();
-      //       scoutor != this->container.end();
-      //       scoutor++)
-      //    {
-      //      elle::network::Locus         locus = *scoutor;
-
-      //      // serialize the locus.
-      //      if (archive.Serialize(locus) == elle::Status::Error)
-      //        escape("unable to serialize the locus");
-      //    }
-
-      //  return elle::Status::Ok;
-      //}
-
-      /////
-      ///// XXX
-      /////
-      //elle::Status      Cluster::Extract(elle::Archive&         archive)
-      //{
-      //  elle::Natural32 size;
-      //  elle::Natural32 i;
-
-      //  // extract the number of entries.
-      //  if (archive.Extract(size) == elle::Status::Error)
-      //    escape("unable to extract the size");
-
-      //  // go through the entries.
-      //  for (i = 0; i < size; i++)
-      //    {
-      //      elle::network::Locus locus;
-
-      //      // extract the locus.
-      //      if (archive.Extract(locus) == elle::Status::Error)
-      //        escape("unable to extract the locus");
-
-      //      // record the locus.
-      //      this->container.push_back(locus);
-      //    }
-
-      //  return elle::Status::Ok;
-      //}
 
 //
 // ---------- dumpable --------------------------------------------------------

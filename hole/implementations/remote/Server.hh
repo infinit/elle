@@ -1,16 +1,17 @@
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_SERVER_HH
 # define HOLE_IMPLEMENTATIONS_REMOTE_SERVER_HH
 
-# include <reactor/network/tcp-server.hh>
-
 # include <elle/types.hh>
+# include <elle/radix/Entity.hh>
 
-# include <nucleus/Nucleus.hh>
-# include <nucleus/Derivable.hh>
+# include <reactor/fwd.hh>
+# include <reactor/network/fwd.hh>
 
-# include <lune/fwd.hh>
+# include <nucleus/fwd.hh>
 
 # include <hole/implementations/remote/Customer.hh>
+
+# include <lune/fwd.hh>
 
 namespace hole
 {
@@ -18,10 +19,6 @@ namespace hole
   {
     namespace remote
     {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
       ///
       /// this class represents the server which waits for clients to
@@ -60,26 +57,26 @@ namespace hole
         elle::Status            Locate(elle::network::TCPSocket*,
                                        Iterator* = NULL);
 
-        elle::Status            Put(const nucleus::Address&,
-                                    const nucleus::ImmutableBlock&);
-        elle::Status            Put(const nucleus::Address&,
-                                    const nucleus::MutableBlock&);
-        elle::Status            Get(const nucleus::Address&,
-                                    nucleus::ImmutableBlock&);
-        elle::Status            Get(const nucleus::Address&,
-                                    const nucleus::Version&,
-                                    nucleus::MutableBlock&);
-        elle::Status            Kill(const nucleus::Address&);
+        elle::Status            Put(const nucleus::proton::Address&,
+                                    const nucleus::proton::ImmutableBlock&);
+        elle::Status            Put(const nucleus::proton::Address&,
+                                    const nucleus::proton::MutableBlock&);
+        elle::Status            Get(const nucleus::proton::Address&,
+                                    nucleus::proton::ImmutableBlock&);
+        elle::Status            Get(const nucleus::proton::Address&,
+                                    const nucleus::proton::Version&,
+                                    nucleus::proton::MutableBlock&);
+        elle::Status            Kill(const nucleus::proton::Address&);
 
         elle::Status            Challenge(const lune::Passport&);
 
         elle::Status            Sweep(Customer*);
 
-        elle::Status            Push(const nucleus::Address&,
+        elle::Status            Push(const nucleus::proton::Address&,
                                      nucleus::Derivable const&);
-        elle::Status            Pull(const nucleus::Address&,
-                                     const nucleus::Version&);
-        elle::Status            Wipe(const nucleus::Address&);
+        elle::Status            Pull(const nucleus::proton::Address&,
+                                     const nucleus::proton::Version&);
+        elle::Status            Wipe(const nucleus::proton::Address&);
 
         //
         // interfaces

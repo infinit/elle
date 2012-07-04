@@ -1,21 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [tue apr 13 16:05:04 2010]
-//
-
 #ifndef HOLE_IMPLEMENTATIONS_LOCAL_LOCAL_HH
-#define HOLE_IMPLEMENTATIONS_LOCAL_LOCAL_HH
+# define HOLE_IMPLEMENTATIONS_LOCAL_LOCAL_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <hole/implementations/local/Machine.hh>
+# include <hole/implementations/local/fwd.hh>
 
 namespace hole
 {
@@ -29,10 +15,6 @@ namespace hole
     ///
     namespace local
     {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
       ///
       /// this class controls the local implementation.
@@ -49,11 +31,5 @@ namespace hole
     }
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <hole/implementations/local/Implementation.hh>
 
 #endif

@@ -1,18 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [thu may 12 10:20:19 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <hole/Holeable.hh>
+
+#include <nucleus/proton/Network.hh>
+
+#include <elle/standalone/Report.hh>
+#include <elle/idiom/Open.hh>
 
 namespace hole
 {
@@ -24,7 +15,7 @@ namespace hole
   ///
   /// default constructor.
   ///
-  Holeable::Holeable(const nucleus::Network&                    network):
+  Holeable::Holeable(const nucleus::proton::Network& network):
     network(network)
   {
   }

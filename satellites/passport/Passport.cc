@@ -8,6 +8,8 @@
 #include <elle/utility/Parser.hh>
 #include <elle/concurrency/Program.hh>
 
+#include <nucleus/Nucleus.hh>
+
 #include <etoile/Etoile.hh>
 
 #include <hole/Hole.hh>

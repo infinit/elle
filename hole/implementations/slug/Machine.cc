@@ -23,7 +23,9 @@
 #include <elle/standalone/Morgue.hh>
 
 #include <elle/network/TCPSocket.hh>
+
 #include <hole/Hole.hh>
+#include <hole/Holeable.hh>
 #include <hole/implementations/slug/Machine.hh>
 #include <hole/implementations/slug/Manifest.hh>
 

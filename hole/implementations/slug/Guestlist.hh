@@ -1,23 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [mon nov  7 12:36:26 2011]
-//
-
 #ifndef HOLE_IMPLEMENTATIONS_SLUG_GUESTLIST_HH
-#define HOLE_IMPLEMENTATIONS_SLUG_GUESTLIST_HH
+# define HOLE_IMPLEMENTATIONS_SLUG_GUESTLIST_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/radix/Entity.hh>
+# include <elle/network/TCPSocket.hh>
 
-#include <elle/types.hh>
-
-#include <hole/implementations/slug/Host.hh>
+# include <hole/implementations/slug/Host.hh>
 
 namespace hole
 {

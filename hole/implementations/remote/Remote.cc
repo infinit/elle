@@ -1,10 +1,4 @@
-
-#include <elle/network/Locus.hh>
-#include <elle/utility/Time.hh>
-
 #include <hole/implementations/remote/Remote.hh>
-
-#include <hole/Hole.hh>
 
 namespace hole
 {

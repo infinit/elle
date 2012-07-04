@@ -1,22 +1,11 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [wed may 11 14:55:32 2011]
-//
-
 #ifndef HOLE_HOLEABLE_HH
-#define HOLE_HOLEABLE_HH
+# define HOLE_HOLEABLE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/radix/Entity.hh>
 
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
+# include <nucleus/proton/fwd.hh>
+# include <nucleus/proton/Network.hh>
 
 namespace hole
 {
@@ -31,7 +20,7 @@ namespace hole
     //
     // constructors & destructors
     //
-    Holeable(const nucleus::Network&);
+    Holeable(const nucleus::proton::Network&);
     virtual ~Holeable();
 
     //
@@ -40,16 +29,16 @@ namespace hole
     virtual void                Join() = 0;
     virtual elle::Status        Leave() = 0;
 
-    virtual elle::Status        Put(const nucleus::Address&,
-                                    const nucleus::ImmutableBlock&) = 0;
-    virtual elle::Status        Put(const nucleus::Address&,
-                                    const nucleus::MutableBlock&) = 0;
-    virtual elle::Status        Get(const nucleus::Address&,
-                                    nucleus::ImmutableBlock&) = 0;
-    virtual elle::Status        Get(const nucleus::Address&,
-                                    const nucleus::Version&,
-                                    nucleus::MutableBlock&) = 0;
-    virtual elle::Status        Kill(const nucleus::Address&) = 0;
+    virtual elle::Status        Put(const nucleus::proton::Address&,
+                                    const nucleus::proton::ImmutableBlock&) = 0;
+    virtual elle::Status        Put(const nucleus::proton::Address&,
+                                    const nucleus::proton::MutableBlock&) = 0;
+    virtual elle::Status        Get(const nucleus::proton::Address&,
+                                    nucleus::proton::ImmutableBlock&) = 0;
+    virtual elle::Status        Get(const nucleus::proton::Address&,
+                                    const nucleus::proton::Version&,
+                                    nucleus::proton::MutableBlock&) = 0;
+    virtual elle::Status        Kill(const nucleus::proton::Address&) = 0;
 
     //
     // interfaces
@@ -61,7 +50,7 @@ namespace hole
     //
     // attributes
     //
-    nucleus::Network            network;
+    nucleus::proton::Network            network;
   };
 
 }

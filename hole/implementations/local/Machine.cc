@@ -1,8 +1,9 @@
+#include <hole/implementations/local/Machine.hh>
+#include <hole/Holeable.hh>
+#include <hole/Hole.hh>
+
 #include <elle/log.hh>
 #include <elle/utility/Time.hh>
-
-#include <hole/implementations/local/Machine.hh>
-#include <hole/Hole.hh>
 
 #include <Infinit.hh>
 

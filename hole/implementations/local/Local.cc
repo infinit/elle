@@ -1,7 +1,6 @@
+#include <hole/implementations/local/Local.hh>
 
 #include <elle/utility/Time.hh>
-
-#include <hole/implementations/local/Local.hh>
 
 #include <Infinit.hh>
 

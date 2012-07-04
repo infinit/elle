@@ -1,6 +1,3 @@
-
-#include <elle/standalone/Log.hh>
-
 #include <hole/Label.hh>
 
 #include <elle/idiom/Open.hh>

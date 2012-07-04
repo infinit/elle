@@ -4,4 +4,11 @@
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/neutron/fwd.hh>
 
+namespace nucleus
+{
+
+  class Derivable;
+
+}
+
 #endif

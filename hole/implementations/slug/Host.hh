@@ -2,14 +2,9 @@
 # define HOLE_IMPLEMENTATIONS_SLUG_HOST_HH
 
 # include <elle/types.hh>
-
 # include <elle/network/fwd.hh>
-# include <elle/concurrency/fwd.hh>
-# include <elle/concurrency/Signal.hh>
 # include <elle/network/Locus.hh>
-
-
-# include <hole/Label.hh>
+# include <elle/concurrency/Signal.hh>
 
 namespace hole
 {

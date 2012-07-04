@@ -18,11 +18,14 @@
 #include <lune/Descriptor.hh>
 #include <lune/Identity.hh>
 
+#include <nucleus/Nucleus.hh>
 #include <nucleus/proton/Network.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Genre.hh>
 #include <nucleus/neutron/Access.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace satellite
 {

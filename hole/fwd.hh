@@ -6,6 +6,7 @@ namespace hole
 
   class Model;
   class Label;
+  class Holeable;
 
 }
 
