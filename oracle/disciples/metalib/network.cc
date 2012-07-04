@@ -28,18 +28,19 @@
 #include "network.hh"
 
 
-static elle::io::Unique generate_network_descriptor(elle::String const& id,
-                                                elle::String const& name,
-                                                elle::String const& model_name,
-                                                elle::io::Unique const& root_address,
-                                                elle::String const& authority_file,
-                                                elle::String const& authority_password)
+static elle::io::Unique
+generate_network_descriptor(elle::String const& id,
+                            elle::String const& name,
+                            elle::String const& model_name,
+                            elle::io::Unique const& root_address,
+                            elle::String const& authority_file,
+                            elle::String const& authority_password)
 {
-  lune::Descriptor    descriptor;
-  hole::Model         model;
-  nucleus::Address    address;
-  lune::Authority     authority;
-  elle::io::Path          authority_path;
+  lune::Descriptor descriptor;
+  hole::Model model;
+  nucleus::proton::Address address;
+  lune::Authority authority;
+  elle::io::Path authority_path;
 
   if (authority_path.Create(authority_file) == elle::Status::Error)
     throw std::runtime_error("unable to create authority path");
@@ -125,8 +126,8 @@ static bool check_root_block_signature(elle::io::Unique const& root_block,
                                        elle::io::Unique const& root_address,
                                        elle::io::Unique const& public_key)
 {
-  nucleus::Object       directory;
-  nucleus::Address      address;
+  nucleus::neutron::Object directory;
+  nucleus::proton::Address address;
   elle::cryptography::PublicKey       K;
 
   std::cerr << "GOT pub key: " << public_key << "\n"
