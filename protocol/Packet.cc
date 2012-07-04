@@ -9,7 +9,7 @@ namespace infinit
 {
   namespace protocol
   {
-    class Packet::StreamBuffer: public elle::StreamBuffer
+    class Packet::StreamBuffer: public elle::StreamBuffer, public boost::noncopyable
     {
     public:
       enum class Mode
@@ -23,7 +23,36 @@ namespace infinit
         : _mode(Mode::fresh)
         , _packet(p)
         , _size(0)
+        , _data(0)
       {}
+
+      StreamBuffer(Packet& p, StreamBuffer&& source)
+        : _mode(source._mode)
+        , _packet(p)
+        , _size(source._size)
+        , _data(0)
+      {
+        // FIXME: we might be able to doge all this by making
+        // elle::StreamBuffer movable and copying the {g,p}ptr() at
+        // construction time.
+        switch (source._mode)
+          {
+            case Mode::fresh:
+              _data = source._data;
+              break;
+            case Mode::write:
+              // FIXME
+              std::abort();
+              break;
+            case Mode::eof:
+              _data = source.gptr();
+              _mode = Mode::fresh;
+              break;
+            default:
+              // FIXME: unreachable
+              std::abort();
+          }
+      }
 
       virtual elle::Buffer write_buffer()
       {
@@ -52,9 +81,14 @@ namespace infinit
             case Mode::eof:
               return elle::Buffer(0, 0);
             case Mode::fresh:
-              assert(_packet._data);
               _mode = Mode::eof;
-              return elle::Buffer(_packet._data, _packet._data_size);
+              if (_data)
+                return elle::Buffer(_data, _packet._data_size - (_data - _packet._data));
+              else
+                {
+                  assert(_packet._data);
+                  return elle::Buffer(_packet._data, _packet._data_size);
+                }
             case Mode::write:
               std::abort();
           }
@@ -64,6 +98,7 @@ namespace infinit
       Mode _mode;
       Packet& _packet;
       elle::Size _size;
+      Packet::Byte* _data;
     };
 
     /*-------------.
@@ -71,13 +106,13 @@ namespace infinit
     `-------------*/
 
     Packet::Packet()
-      : elle::IOStream(new StreamBuffer(*this))
+      : elle::IOStream(_streambuffer = new StreamBuffer(*this))
       , _data(0)
       , _data_size(0)
     {}
 
     Packet::Packet(Packet&& source)
-      : elle::IOStream(new StreamBuffer(*this))
+      : elle::IOStream(_streambuffer = new StreamBuffer(*this, std::move(*source._streambuffer)))
       , _data(source._data)
       , _data_size(source._data_size)
     {
@@ -105,7 +140,7 @@ namespace infinit
     `--------*/
 
     Packet::Packet(elle::Size data_size)
-      : elle::IOStream(new StreamBuffer(*this))
+      : elle::IOStream(_streambuffer = new StreamBuffer(*this))
       , _data(new Byte[data_size])
       , _data_size(data_size)
     {}

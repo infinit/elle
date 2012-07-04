@@ -53,6 +53,7 @@ namespace infinit
     private:
       // Streambuffer for the stream API.
       class StreamBuffer;
+      StreamBuffer* _streambuffer;
       // Let the streambuffer edit _data and _data_size.
       friend class StreamBuffer;
       // Create a Packet with pre-allocated data.
