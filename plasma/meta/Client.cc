@@ -264,7 +264,9 @@ namespace plasma
       ip::tcp::resolver resolver(_impl->io_service);
       ip::tcp::resolver::query query(_impl->server, elle::sprint(_impl->port));
       ip::tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-      boost::asio::connect(socket, endpoint_iterator);
+      //XXX which way is better ?
+      //boost::asio::connect(socket, endpoint_iterator);
+      socket.connect(*endpoint_iterator);
 
       {
         boost::asio::streambuf request;
