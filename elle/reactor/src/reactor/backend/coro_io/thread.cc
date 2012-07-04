@@ -1,8 +1,8 @@
 #include <reactor/backend/thread.hh>
 #include <reactor/backend/coro_io/libcoroutine/coroutine.hh>
 #include <reactor/backend/coro_io/thread.hh>
+#include <reactor/backtrace.hh>
 #include <reactor/debug.hh>
-
 
 namespace reactor
 {
@@ -153,7 +153,8 @@ namespace reactor
         }
         catch (const std::exception& e)
         {
-          std::cerr << "Thread " << name() << " killed by exception: "
+          std::cerr << "Thread " << name()
+                    << " killed by exception" << demangle(typeid(e).name()) << ": "
                     << e.what() << "." << std::endl;
           std::abort();
         }
