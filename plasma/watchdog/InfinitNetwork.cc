@@ -105,8 +105,8 @@ void InfinitNetwork::_create_network_root_block()
       throw std::runtime_error("Couldn't create the root block.");
     }
 
-  elle::Unique              rootBlock;
-  elle::Unique              rootAddress;
+  elle::io::Unique              rootBlock;
+  elle::io::Unique              rootAddress;
 
   directory.Save(rootBlock);
   address.Save(rootAddress);

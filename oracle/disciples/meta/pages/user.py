@@ -101,7 +101,7 @@ class User(Page):
     _validators = {
         'email': web.form.regexp(r".*@.*", "must be a valid email address"),
         'fullname': web.form.regexp(r".{3,90}$", 'fullname must be between 3 and 90 characters'),
-        'password': web.form.regexp(r".{0,20}$", 'password must be between 3 and 20 characters'), #XXX min password size
+        'password': web.form.regexp(r".{64,64}$", 'password must be between 3 and 20 characters'), #XXX min password size
     }
 
     def _register(self):
@@ -147,6 +147,7 @@ class User(Page):
             identity=identity,
             public_key=public_key,
             networks=[],
+            devices=[],
             accounts=[
                 {'type':'email', 'id': user['email']}
             ]
@@ -164,7 +165,6 @@ class User(Page):
         }
         network_id = database.networks.save(network);
         user = database.users.find_one({'_id': user_id})
-        print "save network:", network_id, "for user", user_id
         user['networks'].append(network_id)
         user = database.users.save(user)
         return self.success()

@@ -1,12 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       oracle/disciples/metalib
-//
-// license       infinit
-//
-// author        Raphael Londeix   [Mon 20 Feb 2012 03:17:55 PM CET]
-//
 
 #include <elle/cryptography/KeyPair.hh>
 #include <elle/io/Path.hh>
@@ -40,7 +31,7 @@ static lune::Identity create_identity(elle::String const& id,
 {
   elle::cryptography::KeyPair       pair;
   lune::Authority                   authority;
-  elle::Path                        authority_path;
+  elle::io::Path                    authority_path;
   lune::Identity                    identity;
 
   // check the argument.

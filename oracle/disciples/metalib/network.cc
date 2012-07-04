@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       oracle/disciples/metalib
-//
-// license       infinit
-//
-// author        Raphaël Londeix   [Thu 01 Mar 2012 03:02:04 PM CET]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 
 #include "elle/cryptography/KeyPair.hh"
 #include "elle/io/Path.hh"
@@ -42,10 +28,10 @@
 #include "network.hh"
 
 
-static elle::Unique generate_network_descriptor(elle::String const& id,
+static elle::io::Unique generate_network_descriptor(elle::String const& id,
                                                 elle::String const& name,
                                                 elle::String const& model_name,
-                                                elle::Unique const& root_address,
+                                                elle::io::Unique const& root_address,
                                                 elle::String const& authority_file,
                                                 elle::String const& authority_password)
 {
@@ -53,7 +39,7 @@ static elle::Unique generate_network_descriptor(elle::String const& id,
   hole::Model         model;
   nucleus::Address    address;
   lune::Authority     authority;
-  elle::Path          authority_path;
+  elle::io::Path          authority_path;
 
   if (authority_path.Create(authority_file) == elle::Status::Error)
     throw std::runtime_error("unable to create authority path");
@@ -80,7 +66,7 @@ static elle::Unique generate_network_descriptor(elle::String const& id,
   if (descriptor.Seal(authority) != elle::Status::Ok)
     throw std::runtime_error("Unable to seal the network descriptor");
 
-  elle::Unique unique;
+  elle::io::Unique unique;
   if (descriptor.Save(unique) != elle::Status::Ok)
     throw std::runtime_error("Unable to save the network descriptor");
 
@@ -108,7 +94,7 @@ extern "C" PyObject* metalib_generate_network_descriptor(PyObject* self, PyObjec
 
   try
     {
-      elle::Unique descriptor = generate_network_descriptor(
+      elle::io::Unique descriptor = generate_network_descriptor(
           network_id, network_name, network_model, root_address,
           authority_file, authority_password
       );
@@ -135,9 +121,9 @@ extern "C" PyObject* metalib_generate_network_descriptor(PyObject* self, PyObjec
 }
 
 
-static bool check_root_block_signature(elle::Unique const& root_block,
-                                       elle::Unique const& root_address,
-                                       elle::Unique const& public_key)
+static bool check_root_block_signature(elle::io::Unique const& root_block,
+                                       elle::io::Unique const& root_address,
+                                       elle::io::Unique const& public_key)
 {
   nucleus::Object       directory;
   nucleus::Address      address;

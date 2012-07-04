@@ -9,6 +9,7 @@
 
 #include <lune/Identity.hh>
 #include <lune/Passport.hh>
+#include <elle/idiom/Close.hh>
 
 using namespace plasma::updater;
 
@@ -178,7 +179,7 @@ void IdentityUpdater::_OnDeviceUpdated(meta::UpdateDeviceResponse const& res)
 std::string IdentityUpdater::_DecryptIdentity(std::string const& password,
                                               std::string const& identityString)
 {
-  elle::Unique        id;
+  elle::io::Unique        id;
   lune::Identity      identity;
 
   if (identity.Restore(identityString)  == elle::Status::Error ||

@@ -2,7 +2,6 @@
 
 #include <elle/io/Console.hh>
 #include <elle/standalone/Report.hh>
-#include <elle/idiom/Open.hh>
 
 #include <lune/Lune.hh>
 

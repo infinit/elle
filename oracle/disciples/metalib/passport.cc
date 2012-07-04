@@ -25,7 +25,7 @@ static lune::Passport create_passport(elle::String const& id,
                                       elle::String const& authority_password)
 {
   lune::Authority     authority;
-  elle::Path          authority_path;
+  elle::io::Path      authority_path;
   lune::Passport      passport;
 
   if (authority_path.Create(authority_file) == elle::Status::Error)
