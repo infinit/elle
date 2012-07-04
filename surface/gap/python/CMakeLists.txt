@@ -1,8 +1,13 @@
-
-include_directories("/usr/include/python3.2mu")
-set(PYTHON3_LIBRARIES "python3.2mu")
-
+find_package(Python3Libs)
 find_package(Boost COMPONENTS python3 REQUIRED)
+
+#include_directories("/usr/include/python3.2mu")
+#set(PYTHON3_LIBRARIES "python3.2mu")
+
+message(STATUS "Python3 libraries: ${PYTHON3_LIBRARIES}")
+message(STATUS "Python3 include directory: ${PYTHON3_INCLUDE_DIR}")
+
+include_directories("${PYTHON3_INCLUDE_DIR}")
 
 add_definitions(-fPIC)
 file(GLOB gap_srcs ../*.cc)

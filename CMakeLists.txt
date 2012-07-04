@@ -1,4 +1,12 @@
+cmake_minimum_required(VERSION 2.8)
+
+# follow symlink when copying
+cmake_policy(SET CMP0009 NEW)
+
 project(Infinit C CXX)
+
+
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake/Modules")
 
 set(INFINIT_VERSION_MAJOR "0")
 set(INFINIT_VERSION_MINOR "1")
@@ -8,16 +16,17 @@ set(INFINIT_VERSION "${INFINIT_VERSION_MAJOR}.${INFINIT_VERSION_MINOR}")
 # configurations
 #
 if(APPLE)
-  set(INFINIT_MACOSX true)
+  set(INFINIT_MACOSX TRUE)
 elseif(WIN32)
-  set(INFINIT_WINDOWS true)
+  set(INFINIT_WINDOWS TRUE)
 elseiF(UNIX)
-  set(INFINIT_LINUX true)
+  set(INFINIT_LINUX TRUE)
 endif()
 
 message("--- building infinit-${INFINIT_VERSION} for ${INFINIT_PLATFORM}")
 
-set(INFINIT_LIBRARIES_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/platforms/${INFINIT_PLATFORM}/work")
+set(INFINIT_LIBRARIES_PREFIX
+	"${CMAKE_CURRENT_SOURCE_DIR}/dependencies/platforms/${INFINIT_PLATFORM}/work")
 
 set(INFINIT_OPENSSL_STATIC_LIBRARIES
   ${INFINIT_LIBRARIES_PREFIX}/lib/libssl${CMAKE_STATIC_LIBRARY_SUFFIX}
@@ -58,11 +67,6 @@ set(INFINIT_QJSON_SHARED_LIBRARIES
 )
 
 
-#set(Boost_USE_STATIC_LIBS TRUE)
-#find_package(Boost COMPONENTS system thread signals REQUIRED)
-#find_package(Threads)
-#include_directories(${Boost_INCLUDE_DIR})
-
 set(INFINIT_EXTERNAL_LIBRARIES
   ${INFINIT_OPENSSL_STATIC_LIBRARIES}
   ${INFINIT_OPENSSL_SHARED_LIBRARIES}
@@ -102,10 +106,6 @@ find_package(Boost COMPONENTS system thread signals filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 message("-- Boost libraries: ${Boost_LIBRARIES}")
 
-cmake_minimum_required(VERSION 2.6)
-
-# follow symlink when copying
-cmake_policy(SET CMP0009 NEW)
 
 
 find_package(Qt4 4.6.0 REQUIRED QtCore QtNetwork)
