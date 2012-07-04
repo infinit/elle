@@ -81,6 +81,6 @@ int Application::exec()
 
 
   this->_server->start(watchdogId);
-  return this->exec();
+  return this->QCoreApplication::exec();
 }
 

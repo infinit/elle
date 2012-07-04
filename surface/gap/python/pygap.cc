@@ -6,9 +6,17 @@
 static boost::python::object
 _get_networks(gap_State* state)
 {
-  boost::python::list networks;
-
-  return networks;
+  boost::python::list networks_;
+  char** networks = gap_networks(state);
+  if (networks != nullptr)
+    {
+      for (char** ptr = networks; *ptr != nullptr; ++ptr)
+        {
+          networks_.append(boost::python::str(std::string(*ptr)));
+        }
+        gap_networks_free(networks);
+    }
+  return networks_;
 }
 
 BOOST_PYTHON_MODULE(_gap)
@@ -45,6 +53,8 @@ BOOST_PYTHON_MODULE(_gap)
 
   py::def("set_device_name", &gap_set_device_name);
 
-  py::def("get_networks", &_get_networks);
+  py::def("networks", &_get_networks);
+
+  py::def("create_network", &gap_create_network);
 }
 

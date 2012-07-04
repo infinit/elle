@@ -14,6 +14,7 @@
 #include <QString>
 #include <QByteArray>
 #include <QLocalSocket>
+#include <QProcess>
 
 #include <elle/log.hh>
 #include <elle/network/Host.hh>
@@ -77,7 +78,7 @@ namespace surface
         {
           struct passwd *pw = ::getpwuid(::getuid());
           if (pw == nullptr || pw->pw_dir == nullptr)
-            throw std::runtime_error("Cannot get current user");
+            throw Exception(gap_internal_error, "Cannot get current user");
           boost::filesystem::path homedir(pw->pw_dir);
           homedir /= ".config/infinit";
           this->_infinit_home = homedir.string();
@@ -103,7 +104,7 @@ namespace surface
     {
       if (this->_networks_dirty)
         this->_reload_networks();
-      throw std::runtime_error("Cannot find any network for path '" + path_string + "'");
+      throw Exception(gap_error, "Cannot find any network for path '" + path_string + "'");
     }
 
     void State::_reload_networks()
@@ -121,7 +122,7 @@ namespace surface
       char wtg_id[4096];
       file.read(wtg_id, 4096);
       if (!file.eof())
-        throw std::runtime_error("Watchdog id is too long!");
+        throw Exception(gap_internal_error, "Watchdog id is too long!");
       return std::string(wtg_id, file.gcount());
     }
 
@@ -138,7 +139,7 @@ namespace surface
           "}\n").toAscii();
           conn.write(json_cmd);
           if (!conn.waitForBytesWritten(2000))
-              throw std::runtime_error("Couldn't send the command '" + cmd + "'");
+              Exception(gap_internal_error, "Couldn't send the command '" + cmd + "'");
         }
       else
         throw Exception(gap_internal_error, "Couldn't connect to the watchdog");
@@ -279,14 +280,138 @@ namespace surface
         throw Exception(gap_internal_error, "Cannot save the passport");
     }
 
-    std::map<std::string, Network*> const& State::networks() const
+
+    void State::create_network(std::string const& name)
+    {
+      this->_api->create_network(name);
+    }
+
+    std::map<std::string, Network*> const& State::networks()
     {
       if (this->_networks_dirty)
         {
           auto res = this->_api->networks();
+          for (auto const& network_id: res.networks)
+            {
+              this->_networks[network_id] = nullptr; //XXX
+            }
         }
       return this->_networks;
     }
+
+    void State::stop_watchdog()
+    {
+      QString id(_watchdog_id().c_str());
+      if (!id.size())
+        return;
+
+      // Stop old watchdog
+      {
+        QLocalSocket conn;
+        conn.connectToServer(WATCHDOG_SERVER_NAME);
+        if (conn.waitForConnected(2000))
+          {
+            QByteArray cmd = QString("{"
+                  "\"command\":\"stop\","
+                  "\"_id\": \"" + id + "\""
+            "}\n").toAscii();
+            conn.write(cmd);
+            if (!conn.waitForBytesWritten(2000))
+                throw std::runtime_error("Couldn't stop the old watchdog instance");
+          }
+        else
+          {
+            elle::log::warn("Couldn't connect to the old watchdog instance");
+            return;
+          }
+      }
+
+      // Waiting for the old server to be stopped
+      {
+        int tries = 1;
+        do {
+            QLocalSocket conn;
+            conn.connectToServer(WATCHDOG_SERVER_NAME);
+            if (!conn.waitForConnected(2000))
+              break;
+            elle::log::debug("Waiting for the old watchdog to be stopped (", tries, ')');
+            ::sleep(1);
+        } while (++tries < 10);
+
+        if (tries >= 10)
+          elle::log::warn("The old watchdog instance does not stop !");
+      }
+    }
+
+    void State::launch_watchdog()
+    {
+      std::string old_watchdog_id;
+      try
+        {
+          old_watchdog_id = this->_watchdog_id();
+          this->stop_watchdog();
+        }
+      catch (std::exception const& err)
+        {
+          elle::log::warn("Couldn't stop the watchdog:", err.what());
+        }
+
+      fs::path watchdog_binary(_infinit_home);
+      watchdog_binary /= "bin/8watchdog";
+      elle::log::info("Launching binary:", watchdog_binary.string());
+      QProcess p;
+      if (p.execute(watchdog_binary.string().c_str()) < 0)
+        throw Exception(gap_internal_error, "Cannot start the watchdog !");
+
+      // Connect to the new watchdog instance
+      QLocalSocket conn;
+      int tries = 0;
+      while (tries++ < 5)
+        {
+          conn.connectToServer(WATCHDOG_SERVER_NAME);
+          elle::log::debug("Trying to connect to the new watchdog");
+          if (conn.waitForConnected(2000))
+            break;
+          elle::log::debug("Retrying to connect (", tries, ")");
+          ::sleep(1);
+        }
+      if (!conn.isValid())
+        throw Exception(gap_internal_error, "Couldn't connect to the new watchdog instance");
+
+      elle::log::debug("Connected to the watchdog");
+
+      // Getting the new watchdog id
+      // When connected, the watchdog id file should exists
+      std::string new_watchdog_id;
+      tries = 0;
+      do {
+          if (tries > 0) ::sleep(1);
+          try { new_watchdog_id = this->_watchdog_id(); }
+          catch (std::exception const&) {}
+          if (new_watchdog_id.size() && old_watchdog_id != new_watchdog_id)
+            {
+              elle::log::debug("Found new watchdog id:", new_watchdog_id);
+              break;
+            }
+      } while (++tries < 10);
+
+      if (tries == 10)
+        throw Exception(gap_internal_error, "Couldn't open infinit watchdog id file");
+
+      // calling watchdog run command (which gives the meta token)
+      QString token(this->_api->token().c_str());
+      //QString identity(this->_identityUpdater.identity().c_str());
+      //QByteArray cmd = QString("{"
+      //    "\"command\":"  "\"run\""                       ","
+      //    "\"_id\":"      "\"" + newWatchdogId + "\""     ","
+      //    "\"token\":"    "\"" + token + "\""             ","
+      //    "\"identity\":" "\"" + identity + "\""
+      //    "}\n").toAscii();
+      //conn.write(cmd);
+      //if (!conn.waitForBytesWritten(2000))
+      //  throw std::runtime_error("Couldn't run the watchdog");
+    }
+
   }
 }
 

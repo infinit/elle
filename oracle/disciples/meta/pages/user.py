@@ -152,19 +152,4 @@ class User(Page):
                 {'type':'email', 'id': user['email']}
             ]
         )
-
-        network = {
-            'name': "private",
-            'model': 'slug',
-            'owner': user_id,
-            'users': [],
-            'devices': [],
-            'descriptor': None,
-            'root_block': None,
-            'root_address': None,
-        }
-        network_id = database.networks.save(network);
-        user = database.users.find_one({'_id': user_id})
-        user['networks'].append(network_id)
-        user = database.users.save(user)
         return self.success()

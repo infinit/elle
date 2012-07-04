@@ -173,21 +173,57 @@ extern "C"
       gap_Status ret = gap_ok;
       try
         {
-          __TO_CPP(state)->networks();
+          auto const& networks_map = __TO_CPP(state)->networks();
+
+          // compute total size needed
+          size_t total_size = 0;
+          for (auto const& network_pair: networks_map)
+            total_size += network_pair.first.size() + 1 + sizeof(char*);
+          total_size += sizeof(char*);
+
+          void* ptr = malloc(total_size);
+          if (ptr == nullptr)
+            return nullptr;
+
+          // the memory area contains an array of c string pointers, and
+          // strings themselves are stored right after that.
+          char** networks = reinterpret_cast<char**>(ptr);
+          char* network_str = reinterpret_cast<char*>(networks + (networks_map.size() + 1));
+          for (auto const& network_pair: networks_map)
+            {
+              char const* str = network_pair.first.c_str();
+              size_t size = network_pair.first.size();
+
+              memcpy(network_str, str, size);
+              network_str[size] = '\0';
+              *networks = network_str;
+              networks++;
+              network_str += size + 1;
+            }
+          *networks = nullptr; // guard
+
+          return reinterpret_cast<char**>(ptr); // original start pointer
         }
       CATCH_ALL(networks);
 
-
-      if (ret != gap_ok)
-        return nullptr;
-      char** networks = nullptr;
-
-      return networks;
+      (void) ret;
+      return nullptr;
     }
 
     void gap_networks_free(char** networks)
     {
       ::free(networks);
+    }
+
+    gap_Status gap_create_network(gap_State* state,
+                                  char const* name)
+    {
+      __WRAP_CPP(state, create_network, name);
+    }
+
+    gap_Status gap_launch_watchdog(gap_State* state)
+    {
+      __WRAP_CPP(state, launch_watchdog);
     }
 
 } // ! extern "C"

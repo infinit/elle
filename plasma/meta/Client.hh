@@ -61,6 +61,11 @@ namespace plasma
       std::string             passport;
     };
 
+    struct CreateNetworkResponse : Response
+    {
+      std::string             created_network_id;
+    };
+
     struct UpdateNetworkResponse : Response
     {
       std::string             updated_network_id;
@@ -137,8 +142,11 @@ namespace plasma
                                          short port);
       NetworksResponse networks();
 
+      CreateNetworkResponse create_network(std::string const& name);
+
     public:
       void token(std::string const& tok);
+      std::string const& token() const;
 
     private:
       template<typename T>

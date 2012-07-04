@@ -70,6 +70,12 @@ extern "C" {
     /// Release the pointer returned by gap_networks,
     void gap_networks_free(char** networks);
 
+    /// Create a new network.
+    gap_Status gap_create_network(gap_State* state,
+                                  char const* name);
+
+
+    gap_Status gap_launch_watchdog(gap_State* state);
 
 # ifdef __cplusplus
 } // ! extern "C"
