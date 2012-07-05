@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 # -*- encoding: utf-8 -*-
 
+
+"""
+Infinit launcher for linux.
+"""
+
 import cmd
 import os, sys
 import getpass
 import argparse
 
-parser = argparse.ArgumentParser(description="Launcher for infinit")
+parser = argparse.ArgumentParser(description="Infinit launcher")
 
 parser.add_argument(
     '--register',
@@ -37,7 +42,15 @@ parser.add_argument(
     action="store_true",
 )
 
-shell_intro = """
+MANIFEST_URI = "http://download.infinit.im/linux64/manifest.xml"
+
+INFINIT_DEFAULT_HOME = os.path.join(
+    os.path.expanduser('~'), '.config', 'infinit'
+)
+
+INFINIT_HOME = os.environ.get('INFINIT_HOME', INFINIT_DEFAULT_HOME)
+
+SHELL_INTRO = """
 Welcome to the infinit shell (type help for a list of commands).
 """
 
@@ -49,11 +62,13 @@ class InfinitShell(cmd.Cmd):
         super(InfinitShell, self).__init__()
 
     def do_networks(self, args):
+        """Print networks."""
         networks = self._state.networks()
         for network in networks:
             print(network)
 
     def do_create_network(self, args):
+        """Create a new network."""
         name = args.strip()
         if not name:
             print("You have to specify a name")
@@ -71,7 +86,6 @@ def start_shell(state, args):
     shell.cmdloop(shell_intro)
 
 def register(state):
-    print("Registering to infinit")
     fullname = input("Enter your fullname: ").strip()
     email = input("email: ").strip()
     while True:
@@ -93,24 +107,63 @@ def register(state):
     state.register(fullname, email, password, dev_name)
 
 def login(state):
-    print("Authentication required (if you don't have an account, try -r)")
     email = input("email: ").strip()
     password = getpass.getpass("password: ")
     state.login(email, password)
 
-MANIFEST_URI = "http://download.infinit.im/linux64/manifest.xml"
-
 def update_binaries():
+    # Prepare directories
+    if not os.path.exists(INFINIT_HOME):
+        if INFINIT_HOME == INFINIT_DEFAULT_HOME:
+            os.makedirs(INFINIT_HOME)
+        else:
+            raise Exception("The specified home directory does not exists !")
+
+    for dir_ in ['bin', 'lib', 'python']:
+        path = os.path.join(INFINIT_HOME, dir_)
+        if not os.path.exists(path):
+            os.makedirs(path)
+
     from urllib.request import urlopen
-    manifest = urlopen(MANIFEST_URI).read()
     import xml.etree.cElementTree as et
-    root = et.fromstring(manifest)
+    import hashlib
+
+    # Download manifest.
+    with urlopen(MANIFEST_URI) as req:
+        root = et.fromstring(req.read())
+
+    # Extract xml.
     binaries = []
     for el in root:
         binaries.append(dict(el.items()))
 
-    from pprint import pprint as pp
-    pp(binaries)
+    total_size = int(dict(root.items())['size'])
+
+    # Update binaries.
+    for binary in binaries:
+        url = "http://download.infinit.im/linux64/%s" % binary['path']
+        dst_path = os.path.join(INFINIT_HOME, binary['path'])
+
+        # Check if the binary is up to date.
+        if os.path.exists(dst_path):
+            md5 = hashlib.md5()
+            with open(dst_path, 'rb') as dst:
+                print("Check %s" % binary['path'])
+                data = dst.read(4096)
+                while data:
+                    md5.update(data)
+                    data = dst.read(4096)
+            if md5.hexdigest() == binary['md5sum']:
+                continue
+
+        # Otherwise we download it.
+        with open(dst_path, 'wb') as dst:
+            with urlopen(url) as src:
+                print("Downloading %s" % binary['path'])
+                data = src.read(4096)
+                while data:
+                    dst.write(data)
+                    data = src.read(4096)
 
 
 def main(state):
@@ -120,8 +173,10 @@ def main(state):
         update_binaries()
 
     if args.register:
+        print("Registering to infinit:")
         register(state)
     else:
+        print("Authentication required (if you don't have an account, try -r)")
         login(state)
 
     if not os.path.exists(args.watchdog_bin):

@@ -111,7 +111,7 @@ namespace satellite
                                       elle::String("127.0.0.1"),
                                       phrase.port);
 
-    Access::socket = new elle::network::TCPSocket(socket);
+    Access::socket = new elle::network::TCPSocket(socket, true);
 
     // authenticate.
     if (Access::socket->Call(
@@ -173,7 +173,7 @@ namespace satellite
 
   _error:
     // release the object.
-    Access::socket->Send(
+    Access::socket->send(
       elle::network::Inputs<etoile::portal::TagObjectDiscard>(
         identifier));
 
@@ -241,7 +241,7 @@ namespace satellite
 
   _error:
     // release the object.
-    Access::socket->Send(
+    Access::socket->send(
       elle::network::Inputs<etoile::portal::TagObjectDiscard>(
         identifier));
 
@@ -298,7 +298,7 @@ namespace satellite
 
   _error:
     // release the object.
-    Access::socket->Send(
+    Access::socket->send(
       elle::network::Inputs<etoile::portal::TagObjectDiscard>(
         identifier));
 
@@ -355,7 +355,7 @@ namespace satellite
 
   _error:
     // release the object.
-    Access::socket->Send(
+    Access::socket->send(
       elle::network::Inputs<etoile::portal::TagObjectDiscard>(
         identifier));
 

@@ -129,7 +129,7 @@ namespace hole
 
             ELLE_LOG_TRACE_SCOPE("accept");
 
-            auto customer = new Customer(new elle::network::TCPSocket(socket));
+            auto customer = new Customer(new elle::network::TCPSocket(socket, false));
 
             // set the state.
             // FIXME: this status should be handled by customer itself
@@ -468,11 +468,8 @@ namespace hole
 // ---------- callbacks -------------------------------------------------------
 //
 
-      ///
-      /// this callback is triggered whenever the client initiate the
-      /// authentication challenge.
-      ///
-      elle::Status      Server::Challenge(const lune::Passport& passport)
+      elle::Status
+      Server::Challenge(const lune::Passport& passport)
       {
         Customer*       customer;
 
@@ -497,13 +494,8 @@ namespace hole
           }
         else
           {
-            // set the state as authenticated.
             customer->state = Customer::StateAuthenticated;
-
-            // reply with the authenticated message.
-            if (customer->socket->Reply(
-                  elle::network::Inputs<TagAuthenticated>()) == elle::Status::Error)
-              escape("unable to reply to the client");
+            customer->socket->reply(elle::network::Inputs<TagAuthenticated>());
           }
 
         return elle::Status::Ok;
@@ -582,10 +574,8 @@ namespace hole
             }
           }
 
-        // acknowledge.
-        if (customer->socket->Reply(
-              elle::network::Inputs<elle::TagOk>()) == elle::Status::Error)
-          escape("unable to acknowledge");
+        // Acknowledge.
+        customer->socket->reply(elle::network::Inputs<elle::TagOk>());
 
         return elle::Status::Ok;
       }
@@ -660,10 +650,8 @@ namespace hole
 
         nucleus::Derivable derivable(address.component, *block);
 
-        // return the block.
-        if (customer->socket->Reply(
-              elle::network::Inputs<TagBlock>(derivable)) == elle::Status::Error)
-          escape("unable to return the block");
+        // Return the block.
+        customer->socket->reply(elle::network::Inputs<TagBlock>(derivable));
 
         return elle::Status::Ok;
       }
@@ -691,9 +679,7 @@ namespace hole
           escape("unable to erase the block");
 
         // acknowledge.
-        if (customer->socket->Reply(
-              elle::network::Inputs<elle::TagOk>()) == elle::Status::Error)
-          escape("unable to acknowledge");
+        customer->socket->reply(elle::network::Inputs<elle::TagOk>());
 
         return elle::Status::Ok;
       }

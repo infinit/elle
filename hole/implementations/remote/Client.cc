@@ -89,17 +89,9 @@ namespace hole
           this->state = Client::StateConnected;
         }
 
-        //
-        // authenticate to the server.
-        //
+        // Authenticate to the server.
         ELLE_LOG_TRACE("Authenticate to the server")
-          {
-            // send the passport.
-            if (this->socket->Send(
-                  elle::network::Inputs<TagChallenge>(Hole::Passport)) ==
-                elle::Status::Error)
-              escape("unable to send the challenge");
-          }
+          this->socket->send(elle::network::Inputs<TagChallenge>(Hole::Passport));
 
         return elle::Status::Ok;
       }

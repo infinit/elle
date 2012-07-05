@@ -1,6 +1,9 @@
 add_library(protocol
+  Channel.cc
+  ChanneledStream.cc
   Packet.cc
-  PacketStream.cc
+  Serializer.cc
+  Stream.cc
 )
 
 add_definitions(-fPIC)

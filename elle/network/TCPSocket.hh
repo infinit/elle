@@ -1,15 +1,13 @@
 #ifndef ELLE_NETWORK_TCPSOCKET_HH
 # define ELLE_NETWORK_TCPSOCKET_HH
 
-# include <elle/types.hh>
-
-# include <elle/concurrency/Event.hh>
-
 # include <elle/network/fwd.hh>
 
 # include <reactor/network/tcp-socket.hh>
 # include <reactor/mutex.hh>
 # include <reactor/thread.hh>
+
+# include <protocol/fwd.hh>
 
 namespace elle
 {
@@ -31,56 +29,49 @@ namespace elle
     | Construction |
     `-------------*/
     public:
-      TCPSocket(reactor::network::Socket* socket);
+      TCPSocket(reactor::network::Socket* socket, bool master);
       ~TCPSocket();
 
-    /*--------.
-    | Sending |
-    `--------*/
-    public:
-      void Write(const Packet& packet);
-
-    /*----------.
-    | Reception |
-    `----------*/
-    public:
-      Parcel* Read();
-    private:
-      unsigned char*    _buffer;
-      int               _buffer_size;
-      int               _buffer_capacity;
-
-      //
     public:
       void Disconnect();
 
       template <typename I>
-      Status            Send(const I,
-                             const concurrency::Event& =
-                               concurrency::Event::Null);
+      void send(const I, infinit::protocol::Stream& channel);
+      template <typename I>
+      void send(const I);
       template <typename O>
-      Status            Receive(concurrency::Event&, O);
+      Status receive(infinit::protocol::Stream& channel, O);
       template <typename I,
                 typename O>
       Status            Call(const I,
                              O);
       template <typename I>
-      Status            Reply(const I);
+      void reply(I const);
+
     /*--------.
     | Details |
     `--------*/
 
     private:
-      void Dispatch();
+      void _dispatch_channels();
+      void _dispatch_default_channel();
+      void _dispatch_packet(infinit::protocol::Packet packet,
+                            infinit::protocol::Stream& channel);
+      Parcel* _read_parcel(infinit::protocol::Packet& packet);
+
       reactor::network::Socket* _socket;
-      reactor::Mutex _socket_write_lock;
-      reactor::Thread* _dispatcher;
+      infinit::protocol::Stream* _stream;
+      infinit::protocol::ChanneledStream* _channels;
+      reactor::Mutex _stream_write_lock;
+      reactor::Thread* _dispatcher_channels;
+      reactor::Thread* _dispatcher_default;
     };
 
     class Context
     {
     public:
-      Parcel* parcel;
+      //Parcel* parcel;
+      infinit::protocol::Stream* channel;
       TCPSocket* socket;
       std::string host;
     };

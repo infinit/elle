@@ -279,18 +279,7 @@ namespace hole
                     Host*               host = scoutor->second;
 
                     // send the block to the host.
-                    if (host->socket->Send(
-                          elle::network::Inputs<TagPush>(address, derivable)) ==
-                        elle::Status::Error)
-                      {
-                        // XXX
-                        ELLE_LOG_TRACE("unable to to push the immutable block");
-                        address.Dump();
-                        block.Dump();
-                        host->locus.Dump();
-                        show();
-                        assert(false);
-                      }
+                    host->socket->send(elle::network::Inputs<TagPush>(address, derivable));
 
                     // ignore the error messages and continue with the
                     // next neighbour.
@@ -411,18 +400,7 @@ namespace hole
                     Host*               host = scoutor->second;
 
                     // send the block to the host.
-                    if (host->socket->Send(
-                          elle::network::Inputs<TagPush>(address, derivable)) ==
-                        elle::Status::Error)
-                      {
-                        // XXX
-                        ELLE_LOG_TRACE("unable to to push the mutable block");
-                        address.Dump();
-                        block.Dump();
-                        host->locus.Dump();
-                        show();
-                        assert(false);
-                      }
+                    host->socket->send(elle::network::Inputs<TagPush>(address, derivable));
 
                     // ignore the error messages and continue with the
                     // next neighbour.
@@ -1060,18 +1038,8 @@ namespace hole
                   {
                     Host*               host = scoutor->second;
 
-                    // send the request to the host.
-                    // XXX do not check the success!
-                    if (host->socket->Send(
-                          elle::network::Inputs<TagWipe>(address)) ==
-                        elle::Status::Error)
-                      {
-                        // XXX
-                        ELLE_LOG_TRACE("unable to wipe the block");
-                        address.Dump();
-                        show();
-                        assert(false);
-                      }
+                    // Send the request to the host.
+                    host->socket->send(elle::network::Inputs<TagWipe>(address));
 
                     // ignore the error messages and continue with the
                     // next neighbour.
@@ -1131,7 +1099,7 @@ namespace hole
         while (true)
           {
             reactor::network::TCPSocket* socket = _server->accept();
-            auto connection = new elle::network::TCPSocket(socket);
+            auto connection = new elle::network::TCPSocket(socket, false);
 
             ELLE_LOG_TRACE("_accept");
 
@@ -1160,11 +1128,8 @@ namespace hole
 
                   // also authenticate to this host now that it is
                   // considered a potentiel peer.
-                  if (h->socket->Send(
-                        elle::network::Inputs<TagAuthenticate>(
-                          Hole::Passport,
-                          this->port)) == elle::Status::Error)
-                    throw std::runtime_error("unable to send a message");
+                  h->socket->send (elle::network::Inputs<TagAuthenticate>
+                                   (Hole::Passport, this->port));
 
                   break;
                 }
@@ -1235,18 +1200,12 @@ namespace hole
             if (host->Authenticated() == elle::Status::Error)
               escape("unable to set the host as authenticated");
 
-            // reply.
-            if (host->socket->Reply(
-                  elle::network::Inputs<TagAuthenticated>(
-                    cluster)) == elle::Status::Error)
-              escape("unable to reply to the caller");
+            host->socket->reply(elle::network::Inputs<TagAuthenticated>
+                                (cluster));
 
             // also authenticate to this host.
-            if (host->socket->Send(
-                  elle::network::Inputs<TagAuthenticate>(
-                    Hole::Passport,
-                    this->port)) == elle::Status::Error)
-              escape("unable to send a message");
+            host->socket->send(elle::network::Inputs<TagAuthenticate>
+                               (Hole::Passport, this->port));
           }
         else
           {
@@ -1686,9 +1645,7 @@ namespace hole
         nucleus::Derivable derivable(address.component, *block);
 
         // return the block.
-        if (host->socket->Reply(
-              elle::network::Inputs<TagBlock>(derivable)) == elle::Status::Error)
-          escape("unable to return the block");
+        host->socket->reply(elle::network::Inputs<TagBlock>(derivable));
 
         return elle::Status::Ok;
       }

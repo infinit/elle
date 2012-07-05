@@ -15,9 +15,7 @@ namespace elle
   IOStream::IOStream(StreamBuffer* buffer)
     : std::iostream(_buffer = buffer)
   {
-    exceptions(std::iostream::failbit
-              | std::iostream::badbit
-              | std::iostream::eofbit);
+    exceptions(std::iostream::badbit);
   }
 
   IOStream::~IOStream()

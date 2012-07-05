@@ -9,7 +9,6 @@ namespace elle
    * to represent C-style buffers as one entity, with some useful
    * shortcuts and facilities.  It has no intelligence or memory
    * managment whatsoever, and shouldn't have any.
-   * XXX Why not using elle::utility::WeakBuffer ??
    */
   class Buffer
   {

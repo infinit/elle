@@ -17,6 +17,8 @@
 
 namespace horizon
 {
+//XXX
+#undef linux
   namespace linux
   {
 
