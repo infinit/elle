@@ -1,10 +1,6 @@
 #ifndef ELLE_CRYPTOGRAPHY_CLEAR_HH
 # define ELLE_CRYPTOGRAPHY_CLEAR_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/cryptography/Plain.hh>
 
 namespace elle

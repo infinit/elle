@@ -1,7 +1,3 @@
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/cryptography/Cryptography.hh>
 #include <elle/cryptography/Random.hh>
 #include <elle/cryptography/KeyPair.hh>
