@@ -1,10 +1,6 @@
 #ifndef ELLE_CRYPTOGRAPHY_CODE_HH
 # define ELLE_CRYPTOGRAPHY_CODE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
 # include <elle/types.hh>
 
 # include <elle/standalone/Region.hh>

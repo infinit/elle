@@ -16,10 +16,6 @@ namespace horizon
   namespace linux
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// this class contains everything related to FUSE.
     ///

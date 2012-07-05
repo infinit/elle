@@ -13,10 +13,6 @@ namespace hole
     namespace local
     {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
       ///
       /// this class represents the current host.
       ///

@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       horizon
-//
-// license       infinit
-//
-// author        julien quintard   [tue may 31 10:31:35 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <horizon/windows/Windows.hh>
 #include <horizon/Horizon.hh>
 

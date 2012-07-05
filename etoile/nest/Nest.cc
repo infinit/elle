@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [sun mar 11 19:19:01 2012]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <etoile/nest/Nest.hh>
 
 #include <Infinit.hh>

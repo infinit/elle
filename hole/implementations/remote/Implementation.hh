@@ -14,10 +14,6 @@ namespace hole
     namespace remote
     {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
       ///
       /// the remote hole implementation.
       ///

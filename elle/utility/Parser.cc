@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed apr 28 11:25:27 2010]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <elle/utility/Parser.hh>
 
 #include <elle/standalone/Report.hh>

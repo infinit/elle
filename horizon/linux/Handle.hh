@@ -12,10 +12,6 @@ namespace horizon
   namespace linux
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// this class represents a handle which is passed between the FUSE
     /// upcalls through the _info->fh_ attribute.

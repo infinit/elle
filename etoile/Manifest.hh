@@ -1,27 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [mon oct 31 16:11:03 2011]
-//
-
 #ifndef ETOILE_MANIFEST_HH
-#define ETOILE_MANIFEST_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
+# define ETOILE_MANIFEST_HH
 
 #include <elle/types.hh>
 
 #include <etoile/portal/Manifest.hh>
-
-//
-// ---------- constants -------------------------------------------------------
-//
 
 namespace etoile
 {
@@ -38,10 +20,6 @@ namespace etoile
   const elle::Natural32         Tags = 0;
 
 }
-
-//
-// ---------- range -----------------------------------------------------------
-//
 
 ///
 /// this macro-function call reserves a range of tags.

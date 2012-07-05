@@ -1,26 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [sun nov 29 20:23:37 2009]
-//
-
 #ifndef ELLE_NETWORK_CODE_HH
-#define ELLE_NETWORK_CODE_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
+# define ELLE_NETWORK_CODE_HH
 
 #include <elle/types.hh>
 
 namespace elle
 {
-
-
   namespace network
   {
 
