@@ -22,10 +22,6 @@ namespace elle
   namespace network
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// this class enables one to register the procedures associated with
     /// message tags so that whenever such a message is received, the

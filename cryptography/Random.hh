@@ -10,10 +10,6 @@ namespace elle
   namespace cryptography
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// this class provides functionalities for generating random values.
     ///

@@ -10,10 +10,6 @@ namespace elle
   namespace utility
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// this class defines durations of time which can then be used
     /// with the Time class to go forward and backward in time for instance.
