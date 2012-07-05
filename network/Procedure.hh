@@ -6,11 +6,14 @@
 # include <elle/radix/Set.hh>
 
 # include <elle/network/fwd.hh>
+# include <elle/network/Locus.hh>
 # include <elle/network/Message.hh>
 
 # include <elle/concurrency/Callback.hh>
 
 # include <elle/Manifest.hh>
+
+# include <protocol/Channel.hh>
 
 namespace elle
 {
@@ -81,7 +84,7 @@ namespace elle
       //
       // methods
       //
-      Status            Skeleton(TCPSocket*, Locus&, Parcel&) const;
+      Status            Skeleton(TCPSocket*, Locus&, infinit::protocol::Stream&, Parcel&) const;
 
       //
       // interfaces

@@ -1,13 +1,18 @@
 #ifndef ELLE_NETWORK_NETWORK_HH
 # define ELLE_NETWORK_NETWORK_HH
 
-#include <elle/types.hh>
+# include <elle/types.hh>
 
-#include <elle/network/fwd.hh>
-#include <elle/network/Tag.hh>
-#include <elle/network/Parcel.hh>
+# include <elle/network/Message.hh>
+# include <elle/network/Parcel.hh>
+# include <elle/network/Procedure.hh>
+# include <elle/network/Tag.hh>
+# include <elle/network/fwd.hh>
+# include <elle/radix/Entity.hh>
+# include <elle/radix/Trait.hh>
+# include <elle/utility/Buffer.hh>
 
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -37,7 +42,7 @@ namespace elle
       //
       // types
       //
-      typedef boost::function<elle::Status (TCPSocket*, Locus&, Parcel&)>
+      typedef boost::function<elle::Status (TCPSocket*, Locus&, infinit::protocol::Stream&, Parcel&)>
       Function;
       typedef std::map<const Tag, Function> Container;
       typedef typename Container::iterator              Iterator;

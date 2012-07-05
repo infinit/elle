@@ -27,28 +27,14 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Header::Header():
-      tag(TagUnknown),
-      size(0)
-    {
-    }
+    Header::Header()
+      : tag(TagUnknown)
+    {}
 
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-    ///
-    /// this method initialises the tag and size.
-    ///
-    Status              Header::Create(const concurrency::Event& event,
-                                       const Tag                tag,
-                                       const Natural32          size)
+    Status
+    Header::Create(const Tag tag)
     {
-      // set the attributes.
-      this->event = event;
       this->tag = tag;
-      this->size = size;
-
       return Status::Ok;
     }
 
@@ -74,17 +60,9 @@ namespace elle
 
       std::cout << alignment << "[Header] " << std::endl;
 
-      // dump the event.
-      if (this->event.Dump(margin + 2) == Status::Error)
-        escape("unable to dump the event");
-
       // dump the tag.
       std::cout << alignment << io::Dumpable::Shift
                 << "[Tag] " << this->tag << std::endl;
-
-      // dump the size.
-      std::cout << alignment << io::Dumpable::Shift
-                << "[Size] " << this->size << std::endl;
 
       return Status::Ok;
     }

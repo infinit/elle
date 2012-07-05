@@ -7,12 +7,12 @@ namespace reactor
 {
   class Signal: public Waitable
   {
-    public:
-      typedef Signal Self;
-      typedef Waitable Super;
-      Signal(const std::string& name = std::string());
-      bool signal();
-      bool signal_one();
+  public:
+    typedef Signal Self;
+    typedef Waitable Super;
+    Signal(const std::string& name = std::string());
+    bool signal();
+    bool signal_one();
   };
 
   template <typename V>
