@@ -4,10 +4,6 @@
 # include <cassert>
 
 # include <elle/serialize/ArchiveSerializer.hxx>
-# include <nucleus/proton/Address.hh>
-# include <nucleus/proton/Version.hh>
-
-# include <nucleus/proton/Location.hh>
 
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::Location,
                       archive,

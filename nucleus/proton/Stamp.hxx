@@ -3,10 +3,7 @@
 
 # include <cassert>
 
-# include <elle/cryptography/Signature.hh>
-# include <nucleus/proton/Location.hh>
-
-# include <nucleus/proton/Stamp.hh>
+# include <elle/serialize/ArchiveSerializer.hxx>
 
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::Stamp,
                       archive,

@@ -1,4 +1,4 @@
-#ifndef  NUCLEUS_NEUTRON_AUTHOR_HH
+#ifndef NUCLEUS_NEUTRON_AUTHOR_HH
 # define NUCLEUS_NEUTRON_AUTHOR_HH
 
 # include <elle/types.hh>
@@ -13,10 +13,6 @@ namespace nucleus
 {
   namespace neutron
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents the last user to have modified an object i.e
@@ -53,10 +49,6 @@ namespace nucleus
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
-
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
 
       //
       // attributes

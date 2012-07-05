@@ -5,6 +5,19 @@
 #include <etoile/depot/Depot.hh>
 #include <etoile/gear/Object.hh>
 
+#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/State.hh>
+#include <nucleus/neutron/Access.hh>
+#include <nucleus/neutron/Permissions.hh>
+#include <nucleus/neutron/Subject.hh>
+#include <nucleus/neutron/Role.hh>
+#include <nucleus/neutron/Record.hh>
+#include <nucleus/neutron/Index.hh>
+#include <nucleus/neutron/Size.hh>
+#include <nucleus/neutron/Range.hh>
+#include <nucleus/neutron/Token.hh>
+
 #include <agent/Agent.hh>
 #include <hole/Hole.hh>
 

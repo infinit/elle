@@ -1,24 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 21 22:37:24 2009]
-//
-
 #ifndef NUCLEUS_PROTON_STATE_HH
-#define NUCLEUS_PROTON_STATE_HH
+# define NUCLEUS_PROTON_STATE_HH
 
 namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- enumerations ----------------------------------------------------
-//
 
     ///
     /// this enumeration is used to specify the state of an in-memory block.

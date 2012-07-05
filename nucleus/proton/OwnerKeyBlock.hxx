@@ -3,12 +3,6 @@
 
 # include <cassert>
 
-# include <elle/cryptography/PublicKey.hh>
-# include <elle/cryptography/Signature.hh>
-# include <elle/utility/Time.hh>
-
-# include <nucleus/proton/MutableBlock.hh>
-
 # include <nucleus/proton/OwnerKeyBlock.hh>
 
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::OwnerKeyBlock,

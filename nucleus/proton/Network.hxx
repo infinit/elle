@@ -3,9 +3,6 @@
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
-# include <nucleus/proton/Network.hh>
-
-
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::Network,
                       archive,
                       value,

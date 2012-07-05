@@ -1,22 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [wed aug 31 13:52:28 2011]
-//
-
 #ifndef HOLE_IMPLEMENTATIONS_LOCAL_MACHINE_HH
-#define HOLE_IMPLEMENTATIONS_LOCAL_MACHINE_HH
+# define HOLE_IMPLEMENTATIONS_LOCAL_MACHINE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/radix/Entity.hh>
 
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
+# include <nucleus/proton/fwd.hh>
 
 namespace hole
 {
@@ -43,16 +31,16 @@ namespace hole
         //
         // methods
         //
-        elle::Status            Put(const nucleus::Address&,
-                                    const nucleus::ImmutableBlock&);
-        elle::Status            Put(const nucleus::Address&,
-                                    const nucleus::MutableBlock&);
-        elle::Status            Get(const nucleus::Address&,
-                                    nucleus::ImmutableBlock&);
-        elle::Status            Get(const nucleus::Address&,
-                                    const nucleus::Version&,
-                                    nucleus::MutableBlock&);
-        elle::Status            Kill(const nucleus::Address&);
+        elle::Status            Put(const nucleus::proton::Address&,
+                                    const nucleus::proton::ImmutableBlock&);
+        elle::Status            Put(const nucleus::proton::Address&,
+                                    const nucleus::proton::MutableBlock&);
+        elle::Status            Get(const nucleus::proton::Address&,
+                                    nucleus::proton::ImmutableBlock&);
+        elle::Status            Get(const nucleus::proton::Address&,
+                                    const nucleus::proton::Version&,
+                                    nucleus::proton::MutableBlock&);
+        elle::Status            Kill(const nucleus::proton::Address&);
 
         //
         // interfaces

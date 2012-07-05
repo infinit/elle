@@ -1,32 +1,16 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       horizon
-//
-// license       infinit
-//
-// author        julien quintard   [tue sep 27 15:59:12 2011]
-//
-
 #ifndef HORIZON_MACOSX_HANDLE_HH
-#define HORIZON_MACOSX_HANDLE_HH
+# define HORIZON_MACOSX_HANDLE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-#include <etoile/gear/Identifier.hh>
-#include <nucleus/neutron/Permissions.hh>
+# include <etoile/gear/Identifier.hh>
+
+# include <nucleus/neutron/Permissions.hh>
 
 namespace horizon
 {
   namespace macosx
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a handle which is passed between the FUSE

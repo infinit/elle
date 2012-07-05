@@ -1,34 +1,18 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       horizon
-//
-// license       infinit
-//
-// author        julien quintard   [fri feb 17 17:43:30 2012]
-//
-
 #ifndef HORIZON_LINUX_CRIB_HH
-#define HORIZON_LINUX_CRIB_HH
+# define HORIZON_LINUX_CRIB_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
-#include <lune/Lune.hh>
+# include <horizon/linux/Handle.hh>
 
-#include <horizon/linux/Handle.hh>
+# include <elle/idiom/Close.hh>
+#  include <map>
+# include <elle/idiom/Open.hh>
 
 namespace horizon
 {
   namespace linux
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class holds the relations between created files' way and handle.

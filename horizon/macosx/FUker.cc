@@ -6,8 +6,10 @@
 #include <elle/concurrency/Scheduler.hh>
 #include <elle/concurrency/Callback.hh>
 
-#include <reactor/scheduler.hh>
-#include <reactor/thread.hh>
+#include <elle/idiom/Close.hh>
+# include <reactor/scheduler.hh>
+# include <reactor/thread.hh>
+#include <elle/idiom/Open.hh>
 
 #include <hole/Hole.hh>
 

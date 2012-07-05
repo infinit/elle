@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [tue feb 17 12:39:45 2009]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <nucleus/neutron/Reference.hh>
 
 #include <nucleus/proton/Contents.hh>

@@ -3,14 +3,11 @@
 
 # include <cassert>
 
-# include <elle/cryptography/PublicKey.hh>
 # include <elle/serialize/ArchiveSerializer.hxx>
 # include <elle/serialize/Pointer.hh>
-# include <elle/print.hh>
 
+# include <elle/cryptography/PublicKey.hh>
 # include <nucleus/proton/Address.hh>
-# include <nucleus/neutron/Subject.hh>
-
 
 ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Subject,
                       archive,

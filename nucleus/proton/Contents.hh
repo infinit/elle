@@ -1,29 +1,16 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [mon aug 10 12:07:15 2009]
-//
-
 #ifndef NUCLEUS_PROTON_CONTENTS_HH
-#define NUCLEUS_PROTON_CONTENTS_HH
+# define NUCLEUS_PROTON_CONTENTS_HH
 
-#include <elle/cryptography/SecretKey.hh>
-#include <nucleus/proton/ContentHashBlock.hh>
+# include <elle/cryptography/fwd.hh>
 
-#include <elle/idiom/Open.hh>
+# include <nucleus/proton/ContentHashBlock.hh>
+
+# include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class abstracts the data, catalog or reference by embedding
@@ -81,10 +68,6 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
-
       //
       // attributes
       //
@@ -95,10 +78,6 @@ namespace nucleus
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <nucleus/proton/Contents.hxx>
 

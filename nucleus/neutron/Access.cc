@@ -1,12 +1,10 @@
-
-#include <elle/utility/Buffer.hh>
+#include <nucleus/neutron/Access.hh>
+#include <nucleus/neutron/Index.hh>
+#include <nucleus/neutron/Size.hh>
 #include <nucleus/neutron/Subject.hh>
 
-#include <nucleus/neutron/Access.hh>
-#include <nucleus/neutron/Access.hh>
-
-#include <nucleus/proton/Address.hh>
-
+#include <elle/utility/Buffer.hh>
+#include <elle/cryptography/Digest.hh>
 #include <elle/idiom/Open.hh>
 
 namespace nucleus
@@ -358,46 +356,6 @@ namespace nucleus
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the access object.
-    ///
-    //elle::Status        Access::Serialize(elle::Archive&        archive) const
-    //{
-    //  // call the parent class.
-    //  if (proton::ContentHashBlock::Serialize(archive) == elle::Status::Error)
-    //    escape("unable to serialize the underlying CHB");
-
-    //  // serialize the range.
-    //  if (archive.Serialize(this->range) == elle::Status::Error)
-    //    escape("unable to serialize the range");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the access object.
-    /////
-    //elle::Status        Access::Extract(elle::Archive&          archive)
-    //{
-    //  // call the parent class.
-    //  if (proton::ContentHashBlock::Extract(archive) == elle::Status::Error)
-    //    escape("unable to extract the underlying CHB");
-
-    //  // compare the component.
-    //  if (this->component != ComponentAccess)
-    //    escape("the archive does not seem to contain an access");
-
-    //  // extract the range.
-    //  if (archive.Extract(this->range) == elle::Status::Error)
-    //    escape("unable to extract the range");
-
-    //  return elle::Status::Ok;
-    //}
 
   }
 }

@@ -11,10 +11,6 @@ namespace etoile
   namespace automaton
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// this class provides a set of automata for manipulating the
     /// access control list embedded in the Access block referenced by

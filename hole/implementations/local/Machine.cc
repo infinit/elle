@@ -2,8 +2,14 @@
 #include <hole/Holeable.hh>
 #include <hole/Hole.hh>
 
+#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/ImmutableBlock.hh>
+#include <nucleus/proton/MutableBlock.hh>
+#include <nucleus/proton/Version.hh>
+#include <nucleus/neutron/Object.hh>
+#include <nucleus/neutron/Access.hh>
+
 #include <elle/log.hh>
-#include <elle/utility/Time.hh>
 
 #include <Infinit.hh>
 
@@ -22,8 +28,8 @@ namespace hole
       ///
       /// this method stores an immutable block.
       ///
-      elle::Status      Machine::Put(const nucleus::Address&    address,
-                                     const nucleus::ImmutableBlock& block)
+      elle::Status      Machine::Put(const nucleus::proton::Address& address,
+                                     const nucleus::proton::ImmutableBlock& block)
       {
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -45,8 +51,8 @@ namespace hole
       ///
       /// this method stores a mutable block.
       ///
-      elle::Status      Machine::Put(const nucleus::Address&    address,
-                                     const nucleus::MutableBlock& block)
+      elle::Status      Machine::Put(const nucleus::proton::Address& address,
+                                     const nucleus::proton::MutableBlock& block)
       {
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -58,17 +64,17 @@ namespace hole
         // being validated.
         switch (address.component)
           {
-          case nucleus::ComponentObject:
+          case nucleus::neutron::ComponentObject:
             {
-              const nucleus::Object*    object =
-                static_cast<const nucleus::Object*>(&block);
-              assert(dynamic_cast<const nucleus::Object*>(&block) != nullptr);
+              const nucleus::neutron::Object* object =
+                static_cast<const nucleus::neutron::Object*>(&block);
+              assert(dynamic_cast<const nucleus::neutron::Object*>(&block) != nullptr);
 
               // validate the object according to the presence of
               // a referenced access block.
-              if (object->meta.access != nucleus::Address::Null)
+              if (object->meta.access != nucleus::proton::Address::Null)
                 {
-                  nucleus::Access       access;
+                  nucleus::neutron::Access access;
                   ELLE_LOG_TRACE(
                       "Put nucleus::Object MutableBlock %p"
                       " with a referenced access block",
@@ -76,7 +82,7 @@ namespace hole
                   ) {
                       // load the access block.
                       if (Hole::Pull(object->meta.access,
-                                     nucleus::Version::Last,
+                                     nucleus::proton::Version::Last,
                                      access) == elle::Status::Error)
                         escape("unable to load the access block");
 
@@ -95,7 +101,7 @@ namespace hole
                       // validate the object.
                       if (object->Validate(
                             address,
-                            nucleus::Access::Null) == elle::Status::Error)
+                            nucleus::neutron::Access::Null) == elle::Status::Error)
                         escape("unable to validate the object");
                   }
                 }
@@ -113,7 +119,7 @@ namespace hole
 
               break;
             }
-          case nucleus::ComponentUnknown:
+          case nucleus::neutron::ComponentUnknown:
             {
               escape("unknown component '%u'",
                      address.component);
@@ -135,8 +141,8 @@ namespace hole
       ///
       /// this method retrieves an immutable block.
       ///
-      elle::Status      Machine::Get(const nucleus::Address&    address,
-                                     nucleus::ImmutableBlock&   block)
+      elle::Status      Machine::Get(const nucleus::proton::Address& address,
+                                     nucleus::proton::ImmutableBlock& block)
       {
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -162,9 +168,9 @@ namespace hole
       ///
       /// this method retrieves a mutable block.
       ///
-      elle::Status      Machine::Get(const nucleus::Address&    address,
-                                     const nucleus::Version&    version,
-                                     nucleus::MutableBlock&     block)
+      elle::Status      Machine::Get(const nucleus::proton::Address& address,
+                                     const nucleus::proton::Version& version,
+                                     nucleus::proton::MutableBlock& block)
       {
         // debug.
         if (Infinit::Configuration.hole.debug == true)
@@ -186,20 +192,20 @@ namespace hole
         // being validated.
         switch (address.component)
           {
-          case nucleus::ComponentObject:
+          case nucleus::neutron::ComponentObject:
             {
-              const nucleus::Object*    object =
-                static_cast<const nucleus::Object*>(&block);
+              const nucleus::neutron::Object* object =
+                static_cast<const nucleus::neutron::Object*>(&block);
 
               // validate the object according to the presence of
               // a referenced access block.
-              if (object->meta.access != nucleus::Address::Null)
+              if (object->meta.access != nucleus::proton::Address::Null)
                 {
-                  nucleus::Access       access;
+                  nucleus::neutron::Access access;
 
                   // load the access block.
                   if (Hole::Pull(object->meta.access,
-                                 nucleus::Version::Last,
+                                 nucleus::proton::Version::Last,
                                  access) == elle::Status::Error)
                     escape("unable to load the access block");
 
@@ -212,7 +218,7 @@ namespace hole
                   // validate the object.
                   if (object->Validate(
                         address,
-                        nucleus::Access::Null) == elle::Status::Error)
+                        nucleus::neutron::Access::Null) == elle::Status::Error)
                     escape("unable to validate the object");
                 }
 
@@ -226,7 +232,7 @@ namespace hole
 
               break;
             }
-          case nucleus::ComponentUnknown:
+          case nucleus::neutron::ComponentUnknown:
             {
               escape("unknown component '%u'",
                      address.component);
@@ -239,10 +245,8 @@ namespace hole
       ///
       /// this method removes a block.
       ///
-      elle::Status      Machine::Kill(const nucleus::Address&   address)
+      elle::Status      Machine::Kill(const nucleus::proton::Address& address)
       {
-        //nucleus::Block  block;
-
         // debug.
         if (Infinit::Configuration.hole.debug == true)
           printf("[hole] implementations::local::Kill()\n");
@@ -251,22 +255,24 @@ namespace hole
         // the addres indicates.
         switch (address.family)
           {
-          case nucleus::FamilyContentHashBlock:
+          case nucleus::proton::FamilyContentHashBlock:
             {
               // erase the immutable block.
-              if (nucleus::ImmutableBlock::Erase(Hole::Implementation->network,
-                           address) == elle::Status::Error)
+              if (nucleus::proton::ImmutableBlock::Erase(
+                    Hole::Implementation->network,
+                    address) == elle::Status::Error)
                 escape("unable to erase the block");
 
               break;
             }
-          case nucleus::FamilyPublicKeyBlock:
-          case nucleus::FamilyOwnerKeyBlock:
-          case nucleus::FamilyImprintBlock:
+          case nucleus::proton::FamilyPublicKeyBlock:
+          case nucleus::proton::FamilyOwnerKeyBlock:
+          case nucleus::proton::FamilyImprintBlock:
             {
               // retrieve the mutable block.
-              if (nucleus::MutableBlock::Erase(Hole::Implementation->network,
-                           address) == elle::Status::Error)
+              if (nucleus::proton::MutableBlock::Erase(
+                    Hole::Implementation->network,
+                    address) == elle::Status::Error)
                 escape("unable to erase the block");
 
               break;

@@ -2,6 +2,7 @@
 # define NUCLEUS_PROTON_CONTENTS_HXX
 
 # include <elle/cryptography/Cipher.hh>
+# include <elle/cryptography/SecretKey.hh>
 
 # include <nucleus/neutron/Data.hh>
 # include <nucleus/neutron/Catalog.hh>
@@ -206,71 +207,17 @@ namespace nucleus
       return elle::Status::Ok;
     }
 
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the contents by serializing the object,
-    /// creating the cipher attribute corresponding to the block in its
-    /// encrypted form.
-    ///
-    //template <typename T>
-    //elle::Status        Contents<T>::Serialize(elle::Archive&   archive) const
-    //{
-    //  // check if the block's ciphered version is ready.
-    //  if (this->cipher == NULL)
-    //    escape("unable to serialize an unciphered content");
-
-    //  // call the parent class.
-    //  if (proton::ContentHashBlock::Serialize(archive) == elle::Status::Error)
-    //    escape("unable to serialize the underlying CHB");
-
-    //  // just serialize the cipher in the archive.
-    //  if (archive.Serialize(*this->cipher) == elle::Status::Error)
-    //    escape("unable to serialize the cipher");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the contents by extracting a cipher i.e the
-    ///// block in its encrypted form.
-    /////
-    //template <typename T>
-    //elle::Status        Contents<T>::Extract(elle::Archive&     archive)
-    //{
-    //  // call the parent class.
-    //  if (proton::ContentHashBlock::Extract(archive) == elle::Status::Error)
-    //    escape("unable to extract the underlying CHB");
-
-    //  /* XXX[to remove]
-    //  // compare the component.
-    //  if (this->component != ContentsMap<T>::Component)
-    //    escape("the archive does not seem to contain a content");
-    //  */
-
-    //  // allocate a new cipher.
-    //  this->cipher = new elle::cryptography::Cipher;
-
-    //  // extract the cipher from the archive.
-    //  if (archive.Extract(*this->cipher) == elle::Status::Error)
-    //    escape("unable to serialize the cipher");
-
-    //  return elle::Status::Ok;
-    //}
-
   }
 }
+
+//
+// ---------- serialize -------------------------------------------------------
+//
 
 # include <cassert>
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 # include <elle/serialize/Pointer.hh>
-# include <elle/cryptography/Cipher.hh>
-# include <nucleus/proton/ContentHashBlock.hh>
-
-# include <nucleus/proton/Contents.hh>
 
 ELLE_SERIALIZE_SIMPLE_T1(nucleus::proton::Contents, ar, value, version)
 {

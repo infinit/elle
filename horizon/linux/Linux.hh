@@ -1,29 +1,14 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       horizon
-//
-// license       infinit
-//
-// author        julien quintard   [tue may 31 10:32:37 2011]
-//
-
 #ifndef HORIZON_LINUX_LINUX_HH
-#define HORIZON_LINUX_LINUX_HH
+# define HORIZON_LINUX_LINUX_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <Infinit.hh>
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
-#include <lune/Dictionary.hh>
+# include <lune/Dictionary.hh>
 
-#include <elle/idiom/Close.hh>
-# include <sys/types.h>
-# include <pwd.h>
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  include <sys/types.h>
+#  include <pwd.h>
+# include <elle/idiom/Open.hh>
 
 namespace horizon
 {
@@ -33,10 +18,6 @@ namespace horizon
   ///
   namespace linux
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class contains the general-purpose information related to the
@@ -65,17 +46,5 @@ namespace horizon
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <horizon/linux/Crib.hh>
-#include <horizon/linux/Crux.hh>
-#include <horizon/linux/Event.hh>
-#include <horizon/linux/FUSE.hh>
-#include <horizon/linux/FUker.hh>
-#include <horizon/linux/Handle.hh>
-#include <horizon/linux/Janitor.hh>
 
 #endif

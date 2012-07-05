@@ -7,8 +7,6 @@
 # include <elle/cryptography/Digest.hh>
 # include <nucleus/proton/Version.hh>
 
-# include <nucleus/proton/Base.hh>
-
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::Base,
                       archive,
                       value,

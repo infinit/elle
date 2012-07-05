@@ -14,6 +14,11 @@
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
 #include <nucleus/proton/Version.hh>
+#include <nucleus/proton/ImmutableBlock.hh>
+#include <nucleus/proton/MutableBlock.hh>
+#include <nucleus/neutron/Object.hh>
+#include <nucleus/neutron/Access.hh>
+#include <nucleus/Derivable.hh>
 
 #include <elle/network/Network.hh>
 #include <elle/network/Inputs.hh>

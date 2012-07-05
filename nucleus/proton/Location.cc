@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [wed jun 15 20:17:21 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <nucleus/proton/Location.hh>
 
 namespace nucleus
@@ -105,36 +91,6 @@ namespace nucleus
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the location attributes.
-    ///
-    //elle::Status        Location::Serialize(elle::Archive&      archive) const
-    //{
-    //  // serialize the attributes.
-    //  if (archive.Serialize(this->address,
-    //                        this->version) == elle::Status::Error)
-    //    escape("unable to serialize the location's attributes");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the attributes.
-    /////
-    //elle::Status        Location::Extract(elle::Archive&        archive)
-    //{
-    //  // extracts the attributes.
-    //  if (archive.Extract(this->address,
-    //                      this->version) == elle::Status::Error)
-    //    escape("unable to extract the location's attributes");
-
-    //  return elle::Status::Ok;
-    //}
 
   }
 }

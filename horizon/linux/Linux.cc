@@ -1,24 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       horizon
-//
-// license       infinit
-//
-// author        julien quintard   [tue may 31 10:31:35 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <horizon/linux/Linux.hh>
 #include <horizon/linux/Crux.hh>
-#include <horizon/Horizon.hh>
+#include <horizon/linux/FUSE.hh>
 
-#include <elle/types.hh>
-#include <agent/Agent.hh>
 #include <Infinit.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace horizon
 {

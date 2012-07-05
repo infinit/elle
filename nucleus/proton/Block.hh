@@ -3,12 +3,12 @@
 
 # include <elle/serialize/BufferArchive.hh>
 # include <elle/concept/Serializable.hh>
+# include <elle/concept/Fileable.hh>
 
-# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Network.hh>
 # include <nucleus/proton/Family.hh>
 # include <nucleus/proton/State.hh>
-
 # include <nucleus/neutron/Component.hh>
 
 // XXX remove this when design allows Serializable contract to be enforced

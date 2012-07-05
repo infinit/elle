@@ -1,4 +1,4 @@
-#ifndef  NUCLEUS_PROTON_NETWORK_HH
+#ifndef NUCLEUS_PROTON_NETWORK_HH
 # define NUCLEUS_PROTON_NETWORK_HH
 
 # include <elle/types.hh>
@@ -49,16 +49,11 @@ namespace nucleus
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
-
-      //// archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
     };
 
   }
 }
 
-# include <elle/idiom/Close.hh>
+#include <nucleus/proton/Network.hxx>
 
 #endif
-#include <nucleus/proton/Network.hxx>

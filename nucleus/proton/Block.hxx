@@ -5,8 +5,6 @@
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
-# include <nucleus/proton/Block.hh>
-
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::Block,
                       archive,
                       value,

@@ -4,6 +4,8 @@
 #include <elle/utility/Parser.hh>
 #include <elle/concurrency/Program.hh>
 
+#include <nucleus/Nucleus.hh>
+
 #include <lune/Lune.hh>
 
 #include <etoile/Etoile.hh>
@@ -29,7 +31,7 @@ namespace satellite
   ///
   /// this variable contains the address of the current object.
   ///
-  nucleus::Address              Shell::Address;
+  nucleus::proton::Address Shell::Address;
 
   ///
   /// the shell commands.

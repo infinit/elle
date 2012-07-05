@@ -6,6 +6,8 @@
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Network.hh>
+#include <nucleus/proton/ImmutableBlock.hh>
+#include <nucleus/proton/MutableBlock.hh>
 
 #include <Infinit.hh>
 

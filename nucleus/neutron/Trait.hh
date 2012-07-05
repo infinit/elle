@@ -1,20 +1,13 @@
 #ifndef NUCLEUS_NEUTRON_TRAIT_HH
-#define NUCLEUS_NEUTRON_TRAIT_HH
+# define NUCLEUS_NEUTRON_TRAIT_HH
 
-#include <elle/types.hh>
-
-#include <nucleus/neutron/Subject.hh>
-#include <nucleus/neutron/Permissions.hh>
-#include <nucleus/neutron/Token.hh>
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
 namespace nucleus
 {
   namespace neutron
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents an attribute entry i.e a trait.

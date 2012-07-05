@@ -9,6 +9,8 @@
 #include <nucleus/proton/ImmutableBlock.hh>
 #include <nucleus/proton/MutableBlock.hh>
 
+#include <elle/idiom/Open.hh>
+
 namespace hole
 {
   namespace implementations

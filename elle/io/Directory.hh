@@ -14,10 +14,6 @@ namespace elle
   namespace io
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// this class abstracts the local directory operations.
     ///

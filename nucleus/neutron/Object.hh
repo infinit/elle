@@ -4,19 +4,19 @@
 # include <elle/types.hh>
 # include <elle/utility/Time.hh>
 # include <elle/concept/Serializable.hh>
+# include <elle/serialize/BufferArchive.hh>
 
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/ImprintBlock.hh>
 # include <nucleus/proton/Version.hh>
-
+# include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Genre.hh>
 # include <nucleus/neutron/Author.hh>
 # include <nucleus/neutron/Size.hh>
 # include <nucleus/neutron/Permissions.hh>
 # include <nucleus/neutron/Token.hh>
 # include <nucleus/neutron/Attributes.hh>
-# include <nucleus/neutron/Access.hh>
-# include <nucleus/neutron/Role.hh>
+# include <nucleus/neutron/Record.hh>
 
 namespace nucleus
 {

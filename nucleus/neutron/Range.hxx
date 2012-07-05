@@ -1,8 +1,12 @@
 #ifndef NUCLEUS_NEUTRON_RANGE_HXX
 # define NUCLEUS_NEUTRON_RANGE_HXX
 
+# include <nucleus/neutron/Size.hh>
+
 # include <elle/standalone/Log.hh>
-# include <nucleus/neutron/Index.hh>
+# include <elle/standalone/Report.hh>
+
+# include <elle/idiom/Open.hh>
 
 namespace nucleus
 {

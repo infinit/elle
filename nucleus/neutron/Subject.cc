@@ -1,8 +1,7 @@
-
-#include <algorithm>
-
 #include <nucleus/neutron/Subject.hh>
 
+#include <elle/idiom/Close.hh>
+# include <algorithm>
 #include <elle/idiom/Open.hh>
 
 namespace nucleus

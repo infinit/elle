@@ -3,11 +3,9 @@
 
 # include <elle/types.hh>
 
+# include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Block.hh>
-# include <nucleus/proton/Address.hh>
-# include <nucleus/proton/Network.hh>
 # include <nucleus/proton/Family.hh>
-
 # include <nucleus/neutron/Component.hh>
 
 namespace nucleus

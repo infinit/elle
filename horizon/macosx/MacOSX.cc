@@ -1,23 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       horizon
-//
-// license       infinit
-//
-// author        julien quintard   [tue may 31 10:31:35 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <horizon/macosx/MacOSX.hh>
 #include <horizon/macosx/Crux.hh>
-#include <horizon/Horizon.hh>
+#include <horizon/macosx/FUSE.hh>
 
-#include <elle/types.hh>
-#include <agent/Agent.hh>
+#include <Infinit.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace horizon
 {

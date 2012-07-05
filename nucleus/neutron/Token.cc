@@ -1,12 +1,9 @@
+#include <nucleus/neutron/Token.hh>
 
 #include <elle/cryptography/SecretKey.hh>
-
 #include <elle/cryptography/Code.hh>
-#include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/PublicKey.hh>
 #include <elle/cryptography/PrivateKey.hh>
-
-#include <nucleus/neutron/Token.hh>
 
 #include <elle/idiom/Open.hh>
 

@@ -3,7 +3,9 @@
 
 # include <elle/types.hh>
 
-# include <reactor/signal.hh>
+# include <elle/idiom/Close.hh>
+#  include <reactor/signal.hh>
+# include <elle/idiom/Open.hh>
 
 // XXX
 namespace reactor
@@ -15,9 +17,6 @@ namespace elle
 {
   namespace concurrency
   {
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents the running program.

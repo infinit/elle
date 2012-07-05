@@ -1,8 +1,9 @@
+#include <nucleus/proton/ContentHashBlock.hh>
+#include <nucleus/proton/Family.hh>
+#include <nucleus/proton/Address.hh>
 
-# include <nucleus/proton/ContentHashBlock.hh>
-# include <nucleus/proton/Family.hh>
-
-# include <lune/Lune.hh>
+#include <elle/standalone/Report.hh>
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -111,39 +112,6 @@ namespace nucleus
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the block object.
-    ///
-    //elle::Status        ContentHashBlock::Serialize(elle::Archive& archive)
-    //  const
-    //{
-    //  // serialize the parent class.
-    //  if (ImmutableBlock::Serialize(archive) == elle::Status::Error)
-    //    escape("unable to serialize the underlying block");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the block object.
-    /////
-    //elle::Status        ContentHashBlock::Extract(elle::Archive& archive)
-    //{
-    //  // extract the parent class.
-    //  if (ImmutableBlock::Extract(archive) == elle::Status::Error)
-    //    escape("unable to extract the underlying block");
-
-    //  // check the family.
-    //  if (this->family != FamilyContentHashBlock)
-    //    escape("invalid family");
-
-    //  return elle::Status::Ok;
-    //}
 
   }
 }

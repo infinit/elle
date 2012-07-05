@@ -4,9 +4,6 @@
 # include <cassert>
 
 # include <elle/serialize/ArchiveSerializer.hxx>
-# include <nucleus/neutron/Entry.hh>
-
-# include <nucleus/neutron/Catalog.hh>
 
 ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Catalog,
                       archive,

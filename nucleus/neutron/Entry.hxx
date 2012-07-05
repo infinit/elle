@@ -5,8 +5,6 @@
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
-# include <nucleus/neutron/Entry.hh>
-
 ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Entry,
                       archive,
                       value,

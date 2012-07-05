@@ -1,47 +1,18 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [mon jul 27 10:19:21 2009]
-//
-
 #ifndef NUCLEUS_NEUTRON_CATALOG_HH
-#define NUCLEUS_NEUTRON_CATALOG_HH
+# define NUCLEUS_NEUTRON_CATALOG_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-
-#include <nucleus/neutron/Offset.hh>
-#include <nucleus/neutron/Range.hh>
-#include <nucleus/neutron/Entry.hh>
-#include <nucleus/neutron/Component.hh>
+# include <nucleus/proton/fwd.hh>
+# include <nucleus/neutron/fwd.hh>
+# include <nucleus/neutron/Range.hh>
+# include <nucleus/neutron/Entry.hh>
+# include <nucleus/neutron/Component.hh>
 
 namespace nucleus
 {
-  namespace proton
-  {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    template <typename T>
-    class Contents;
-
-  }
-
   namespace neutron
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents the content of a directory and is composed
@@ -74,7 +45,6 @@ namespace nucleus
       //
       // methods
       //
-
       elle::Status      Create();
 
       elle::Status      Add(Entry*);
@@ -96,10 +66,6 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
-
       //
       // attributes
       //
@@ -111,5 +77,6 @@ namespace nucleus
   }
 }
 
-#endif
 #include <nucleus/neutron/Catalog.hxx>
+
+#endif

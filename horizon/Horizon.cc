@@ -1,18 +1,16 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       horizon
-//
-// license       infinit
-//
-// author        julien quintard   [thu dec 22 16:44:01 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <horizon/Horizon.hh>
+
+#include <elle/system/Platform.hh>
+
+#if defined(INFINIT_LINUX)
+# include <horizon/linux/Linux.hh>
+#elif defined(INFINIT_MACOSX)
+# include <horizon/macosx/MacOSX.hh>
+#elif defined(INFINIT_WINDOWS)
+# include <horizon/windows/Windows.hh>
+#else
+# error "unsupported platform"
+#endif
 
 namespace horizon
 {
@@ -77,6 +75,7 @@ namespace horizon
 #else
 # error "unsupported platform"
 #endif
+
     return elle::Status::Ok;
   }
 

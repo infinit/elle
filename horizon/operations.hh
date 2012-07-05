@@ -10,7 +10,7 @@
   ((listxattr, (const char*)(char*)(size_t)))                           \
   ((removexattr, (const char*)(const char*)))
 # else
-#  define INFINIT_FUSE_COMMANDS_XATTR                                    \
+#  define INFINIT_FUSE_COMMANDS_XATTR                                   \
   ((setxattr, (const char*)(const char*)(const char*)(size_t)(int)))    \
   ((getxattr, (const char*)(const char*)(char*) (size_t)))              \
   ((listxattr, (const char*)(char*)(size_t)))                           \
@@ -21,7 +21,7 @@
 #endif
 
 #if defined(HAVE_STATFS)
-# define INFINIT_FUSE_COMMANDS_STATFS                   \
+# define INFINIT_FUSE_COMMANDS_STATFS                                   \
     ((statfs, (const char*)(struct ::statvfs*)))
 #else
 # define INFINIT_FUSE_COMMANDS_STATFS

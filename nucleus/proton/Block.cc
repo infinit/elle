@@ -1,7 +1,6 @@
 #include <elle/standalone/Log.hh>
 
 #include <nucleus/proton/Block.hh>
-#include <nucleus/proton/Block.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -105,41 +104,6 @@ namespace nucleus
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method archives the block attributes.
-    ///
-    //elle::Status        Block::Serialize(elle::Archive& archive) const
-    //{
-    //  // serialize the attributes.
-    //  if (archive.Serialize(
-    //        this->network,
-    //        static_cast<elle::Natural8>(this->family),
-    //        static_cast<elle::Natural8>(this->component)) == elle::Status::Error)
-    //    escape("unable to serialize the block's attributes");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the attributes.
-    /////
-    //elle::Status        Block::Extract(elle::Archive&           archive)
-    //{
-    //  // extracts the attributes.
-    //  if (archive.Extract(
-    //        this->network,
-    //        reinterpret_cast<elle::Natural8&>(this->family),
-    //        reinterpret_cast<elle::Natural8&>(this->component)) ==
-    //      elle::Status::Error)
-    //    escape("unable to extract the block's attributes");
-
-    //  return elle::Status::Ok;
-    //}
 
   }
 }

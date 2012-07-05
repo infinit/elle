@@ -3,8 +3,6 @@
 
 # include <nucleus/proton/Block.hh>
 
-# include <nucleus/proton/ImmutableBlock.hh>
-
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::ImmutableBlock,
                       archive,
                       value,

@@ -4,29 +4,13 @@
 # include <elle/types.hh>
 # include <elle/radix/Object.hh>
 
-# include <nucleus/neutron/Offset.hh>
-# include <nucleus/neutron/Size.hh>
+# include <nucleus/proton/fwd.hh>
+# include <nucleus/neutron/fwd.hh>
 
 namespace nucleus
 {
-  namespace proton
-  {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    template <typename T>
-    class Contents;
-
-  }
-
   namespace neutron
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a link-specific content.

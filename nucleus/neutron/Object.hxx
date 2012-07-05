@@ -1,23 +1,10 @@
-#ifndef  NUCLEUS_NEUTRON_OBJECT_HXX
+#ifndef NUCLEUS_NEUTRON_OBJECT_HXX
 # define NUCLEUS_NEUTRON_OBJECT_HXX
 
 # include <cassert>
 # include <stdexcept>
 
-# include <elle/cryptography/Signature.hh>
-
-# include <elle/utility/Time.hh>
-
-# include <nucleus/proton/Address.hh>
-# include <nucleus/proton/ImprintBlock.hh>
-# include <nucleus/proton/Version.hh>
-
-# include <nucleus/neutron/Access.hh>
-# include <nucleus/neutron/Author.hh>
-# include <nucleus/neutron/Attributes.hh>
-# include <nucleus/neutron/Token.hh>
-
-# include <nucleus/neutron/Object.hh>
+# include <elle/serialize/ArchiveSerializer.hxx>
 
 namespace nucleus
 {

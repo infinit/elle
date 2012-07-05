@@ -1,33 +1,16 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [wed jun 15 20:11:00 2011]
-//
-
 #ifndef NUCLEUS_PROTON_LOCATION_HH
-#define NUCLEUS_PROTON_LOCATION_HH
+# define NUCLEUS_PROTON_LOCATION_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/types.hh>
-
-#include <nucleus/proton/Address.hh>
-#include <nucleus/proton/Version.hh>
+# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/Version.hh>
 
 namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a storage location both in space and time.
@@ -66,10 +49,6 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
-
       //
       // attributes
       //
@@ -80,5 +59,6 @@ namespace nucleus
   }
 }
 
-#endif
 #include <nucleus/proton/Location.hxx>
+
+#endif

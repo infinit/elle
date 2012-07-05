@@ -2,6 +2,7 @@
 #include <etoile/gear/Nature.hh>
 
 #include <nucleus/neutron/Role.hh>
+#include <nucleus/neutron/Access.hh>
 
 #include <elle/idiom/Open.hh>
 

@@ -1,9 +1,8 @@
-
-#include <elle/standalone/Log.hh>
-
 #include <nucleus/proton/Base.hh>
 #include <nucleus/proton/MutableBlock.hh>
-#include <nucleus/proton/MutableBlock.hh>
+
+#include <elle/standalone/Log.hh>
+#include <elle/cryptography/OneWay.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -121,36 +120,6 @@ namespace nucleus
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the base.
-    ///
-    //elle::Status        Base::Serialize(elle::Archive&          archive) const
-    //{
-    //  // serialize the attributes.
-    //  if (archive.Serialize(this->version,
-    //                        this->digest) == elle::Status::Error)
-    //    escape("unable to serialize the attributes");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the base.
-    /////
-    //elle::Status        Base::Extract(elle::Archive&            archive)
-    //{
-    //  // extract the attributes.
-    //  if (archive.Extract(this->version,
-    //                      this->digest) == elle::Status::Error)
-    //    escape("unable to extract the attributes");
-
-    //  return elle::Status::Ok;
-    //}
 
   }
 }

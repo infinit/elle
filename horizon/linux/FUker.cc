@@ -6,12 +6,14 @@
 #include <elle/concurrency/Scheduler.hh>
 #include <elle/concurrency/Callback.hh>
 
+#include <elle/idiom/Close.hh>
+# include <reactor/scheduler.hh>
+# include <reactor/thread.hh>
+#include <elle/idiom/Open.hh>
+
 #include <hole/Hole.hh>
 
 #include <Infinit.hh>
-
-#include <reactor/scheduler.hh>
-#include <reactor/thread.hh>
 
 #include <elle/idiom/Close.hh>
 # include <boost/function.hpp>
@@ -20,7 +22,6 @@
 # include <boost/preprocessor/seq/for_each_i.hpp>
 # include <boost/preprocessor/seq/pop_front.hpp>
 # include <pthread.h>
-# include <sys/mount.h>
 # include <sys/param.h>
 # include <sys/statfs.h>
 # include <fuse/fuse_lowlevel.h>

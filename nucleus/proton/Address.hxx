@@ -1,12 +1,14 @@
 #ifndef NUCLEUS_PROTON_ADDRESS_HXX
 # define NUCLEUS_PROTON_ADDRESS_HXX
 
-# include <tuple>
-
 # include <elle/cryptography/OneWay.hxx>
+
 # include <elle/serialize/TupleSerializer.hxx>
 
 # include <nucleus/proton/Address.hh>
+
+# include <elle/idiom/Close.hh>
+#  include <tuple>
 # include <elle/idiom/Open.hh>
 
 namespace nucleus
@@ -53,6 +55,10 @@ namespace nucleus
 
   }
 }
+
+//
+// ---------- serialize -------------------------------------------------------
+//
 
 # include <elle/idiom/Close.hh>
 #  include <cassert>

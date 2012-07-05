@@ -1,12 +1,12 @@
-#ifndef  NUCLEUS_NEUTRON_ATTRIBUTES_HH
+#ifndef NUCLEUS_NEUTRON_ATTRIBUTES_HH
 # define NUCLEUS_NEUTRON_ATTRIBUTES_HH
 
 # include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-# include <nucleus/neutron/Trait.hh>
-# include <nucleus/neutron/Index.hh>
-# include <nucleus/neutron/Size.hh>
+# include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Range.hh>
+# include <nucleus/neutron/Trait.hh>
 
 # include <elle/idiom/Open.hh>
 
@@ -48,10 +48,6 @@ namespace nucleus
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
-
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
 
       //
       // attributes

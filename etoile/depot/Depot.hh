@@ -14,10 +14,6 @@ namespace etoile
   namespace depot
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// this class abstracts the storage layer.
     ///

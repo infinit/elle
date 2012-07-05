@@ -1,7 +1,7 @@
-#include <nucleus/proton/Location.hh>
 #include <nucleus/proton/Stamp.hh>
 
 #include <elle/serialize/TupleSerializer.hxx>
+#include <elle/cryptography/PrivateKey.hh>
 
 #include <Infinit.hh>
 
@@ -117,38 +117,6 @@ namespace nucleus
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the stamp.
-    ///
-    //elle::Status        Stamp::Serialize(elle::Archive&         archive) const
-    //{
-    //  // serialize the attributes.
-    //  if (archive.Serialize(this->master,
-    //                        this->slave,
-    //                        this->signature) == elle::Status::Error)
-    //    escape("unable to serialize the attributes");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the stamp.
-    /////
-    //elle::Status        Stamp::Extract(elle::Archive&           archive)
-    //{
-    //  // extract the attributes.
-    //  if (archive.Extract(this->master,
-    //                      this->slave,
-    //                      this->signature) == elle::Status::Error)
-    //    escape("unable to extract the attributes");
-
-    //  return elle::Status::Ok;
-    //}
 
   }
 }

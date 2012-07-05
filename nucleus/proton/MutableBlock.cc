@@ -1,21 +1,23 @@
-#include <elle/log.hh>
-
-#include <boost/lexical_cast.hpp>
-
-#include <elle/cryptography/Digest.hh>
 #include <nucleus/proton/MutableBlock.hh>
 #include <nucleus/proton/History.hh>
+#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Network.hh>
+#include <nucleus/Nucleus.hh>
 
-#include <elle/radix/Variables.hh>
+#include <elle/log.hh>
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
-#include <nucleus/proton/MutableBlock.hh>
-#include <nucleus/proton/History.hh>
-
 #include <lune/Lune.hh>
+
 #include <hole/Hole.hh>
+
 #include <Infinit.hh>
+
+#include <elle/idiom/Close.hh>
+# include <boost/lexical_cast.hpp>
+#include <elle/idiom/Open.hh>
 
 ELLE_LOG_TRACE_COMPONENT("nucleus.proton.MutableBlock");
 
@@ -83,42 +85,6 @@ namespace nucleus
     }
 
 //
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method archives the block attributes.
-    ///
-    //elle::Status        MutableBlock::Serialize(elle::Archive&  archive) const
-    //{
-    //  // serialize the parent class.
-    //  if (Block::Serialize(archive) == elle::Status::Error)
-    //    escape("unable to serialize the underlying block");
-
-    //  // serialize the attributes.
-    //  if (archive.Serialize(this->version) == elle::Status::Error)
-    //    escape("unable to serialize the attributess");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the attributes.
-    /////
-    //elle::Status        MutableBlock::Extract(elle::Archive&    archive)
-    //{
-    //  // extract the parent class.
-    //  if (Block::Extract(archive) == elle::Status::Error)
-    //    escape("unable to extract the underlying block");
-
-    //  // extracts the attributes.
-    //  if (archive.Extract(this->version) == elle::Status::Error)
-    //    escape("unable to extract the attributes");
-
-    //  return elle::Status::Ok;
-    //}
-
-//
 // ---------- fileable --------------------------------------------------------
 //
 
@@ -136,12 +102,7 @@ namespace nucleus
       if (address.digest->Save(unique) == elle::Status::Error)
         escape("unable to convert the address in its hexadecimal form");
 
-      ELLE_LOG_TRACE("Load mutable block from address %s", unique);
-
-      // debug.
-      if (Infinit::Configuration.nucleus.debug == true)
-        printf("[nucleus] proton::MutableBlock::Load(%s)\n",
-               unique.c_str());
+      ELLE_LOG_TRACE("Load(%s)", unique);
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::MutableBlock) ==
@@ -162,18 +123,6 @@ namespace nucleus
 
           if (this->Load(path) == elle::Status::Error)
             escape("unable to load block");
-
-          //// read the file's content.
-          //if (elle::io::File::Read(path, region) == elle::Status::Error)
-          //  escape("unable to read the file's content");
-
-          //// wrap the region into an archive.
-          //if (archive.Wrap(region) == elle::Status::Error)
-          //  escape("unable to prepare the archive");
-
-          //// extract from the archive.
-          //if (archive.Extract(*this) == elle::Status::Error)
-          //  escape("unable to extract the archive");
         }
       else
         {
@@ -247,12 +196,7 @@ namespace nucleus
       if (address.digest->Save(unique) == elle::Status::Error)
         escape("unable to convert the address in its hexadecimal form");
 
-      ELLE_LOG_TRACE("Store mutable block from address %s", unique);
-
-      // debug.
-      if (Infinit::Configuration.nucleus.debug == true)
-        printf("[nucleus] proton::MutableBlock::Store(%s)\n",
-               unique.c_str());
+      ELLE_LOG_TRACE("Store(%s)", unique);
 
       // create the shelter path.
       if (file.Create(lune::Lune::Network::Shelter::MutableBlock) ==
@@ -282,9 +226,9 @@ namespace nucleus
           // does the block already exist.
           if (block.Exist(network,
                           address,
-                          nucleus::Version::Last) == elle::Status::True)
+                          nucleus::proton::Version::Last) == elle::Status::True)
             {
-              nucleus::MutableBlock*      current;
+              nucleus::proton::MutableBlock* current;
 
               // build a block according to the component.
               if (nucleus::Nucleus::Factory.Build(
@@ -292,7 +236,7 @@ namespace nucleus
                     current) == elle::Status::Error)
                 escape("unable to build the block");
 
-              std::unique_ptr<nucleus::MutableBlock> guard(current);
+              std::unique_ptr<nucleus::proton::MutableBlock> guard(current);
 
               ELLE_LOG_TRACE("the mutable block seems to exist "
                              "locally, make sure it derives the "
@@ -302,7 +246,7 @@ namespace nucleus
                   if (current->Load(
                         network,
                         address,
-                        nucleus::Version::Last) == elle::Status::Error)
+                        nucleus::proton::Version::Last) == elle::Status::Error)
                     escape("unable to load the current version");
 
                   // does the given block derive the current version.
@@ -323,10 +267,10 @@ namespace nucleus
           // file of the form [identifier]#@.blk contains the number
           // of the latest version of the mutable block.
           //
-          elle::String          number;
-          elle::io::Path            link;
-          elle::standalone::Region          region;
-          nucleus::History      history;
+          elle::String number;
+          elle::io::Path link;
+          elle::standalone::Region region;
+          nucleus::proton::History history;
 
           try
             {
@@ -410,15 +354,11 @@ namespace nucleus
       elle::io::Unique      unique;
       elle::io::Path        path;
 
-
       // turn the block's address into a hexadecimal string.
       if (address.digest->Save(unique) == elle::Status::Error)
         escape("unable to convert the address in its hexadecimal form");
 
-      // debug.
-      if (Infinit::Configuration.nucleus.debug == true)
-        printf("[nucleus] proton::MutableBlock::Erase(%s)\n",
-               unique.c_str());
+      ELLE_LOG_TRACE("Erase(%s)", unique);
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::MutableBlock) ==
@@ -466,7 +406,7 @@ namespace nucleus
           // go through the versions.
           for (i = 0; i < size; i++)
             {
-              nucleus::Version  version;
+              nucleus::proton::Version version;
               elle::String      number;
               elle::io::Path        file;
 
@@ -532,14 +472,11 @@ namespace nucleus
       elle::io::Path                path;
       elle::String              unique;
 
+      ELLE_LOG_TRACE("Exist(%s)", unique);
+
       // first, turn the block's address into a hexadecimal string.
       if (address.digest->Save(unique) == elle::Status::Error)
         flee("unable to convert the address in its hexadecimal form");
-
-      // debug.
-      if (Infinit::Configuration.nucleus.debug == true)
-        printf("[nucleus] proton::MutableBlock::Exist(%s)\n",
-               unique.c_str());
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::MutableBlock) ==
