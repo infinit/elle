@@ -1,33 +1,13 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [thu mar  4 17:35:00 2010]
-//
-
 #ifndef ELLE_MANIFEST_HH
-#define ELLE_MANIFEST_HH
+# define ELLE_MANIFEST_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-#include <elle/types.hh>
+# include <elle/standalone/fwd.hh>
 
-#include <elle/standalone/Report.hh>
-
-#include <elle/radix/Parameters.hh>
-#include <elle/radix/Trait.hh>
-
-#include <elle/network/Tag.hh>
-#include <elle/network/Range.hh>
-#include <elle/network/Message.hh>
-#include <elle/network/Bundle.hh>
-#include <elle/network/fwd.hh>
+# include <elle/network/Tag.hh>
+# include <elle/network/Range.hh>
+# include <elle/network/Message.hh>
 
 namespace elle
 {

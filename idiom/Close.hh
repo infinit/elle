@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar 10 20:18:19 2010]
-//
-
-//
-// ---------- undefinitions ---------------------------------------------------
-//
-
 ///
 /// the statements below undefine the macros used by the Elle library
 /// most likely because they may conflict with other libraries for instance.
