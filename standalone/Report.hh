@@ -77,12 +77,6 @@ namespace elle
       typedef Container::const_iterator         Scoutor;
 
       //
-      // static methods
-      //
-      static Status     Initialize();
-      static Status     Clean();
-
-      //
       // static attributes
       //
       static reactor::LocalStorage<Report> report;
