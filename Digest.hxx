@@ -3,8 +3,6 @@
 
 # include <cassert>
 
-# include <elle/cryptography/Digest.hh>
-
 ELLE_SERIALIZE_SIMPLE(elle::cryptography::Digest,
                       archive,
                       value,

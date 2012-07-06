@@ -5,8 +5,6 @@
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
-# include <elle/cryptography/Seed.hh>
-
 ELLE_SERIALIZE_SIMPLE(elle::cryptography::Seed,
                       archive,
                       value,

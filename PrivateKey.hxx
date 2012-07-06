@@ -91,8 +91,6 @@ namespace elle
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
-# include <elle/cryptography/PrivateKey.hh>
-
 ELLE_SERIALIZE_SPLIT(elle::cryptography::PrivateKey)
 
 ELLE_SERIALIZE_SPLIT_SAVE(elle::cryptography::PrivateKey,
