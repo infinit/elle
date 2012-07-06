@@ -196,6 +196,7 @@ namespace hole
             {
               const nucleus::neutron::Object* object =
                 static_cast<const nucleus::neutron::Object*>(&block);
+              assert(dynamic_cast<const nucleus::neutron::Object*>(&block) != nullptr);
 
               // validate the object according to the presence of
               // a referenced access block.

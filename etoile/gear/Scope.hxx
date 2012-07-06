@@ -29,9 +29,8 @@ namespace etoile
         }
 
       // return the context by dynamically casting it.
-      if ((context = dynamic_cast<T*>(this->context)) == NULL)
-        escape("invalid context nature: scope's(%u) target(%u)",
-               this->context->nature, T::N);
+      context = static_cast<T*>(this->context);
+      assert(dynamic_cast<T*>(this->context) != nullptr);
 
       return elle::Status::Ok;
     }

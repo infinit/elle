@@ -222,8 +222,7 @@ namespace nucleus
 ELLE_SERIALIZE_SIMPLE_T1(nucleus::proton::Contents, ar, value, version)
 {
   assert(version == 0);
-  typedef nucleus::proton::ContentHashBlock   Super;
-  ar & static_cast<Super&>(value);
+  ar & static_cast<nucleus::proton::ContentHashBlock&>(value);
   ar & elle::serialize::alive_pointer(value.cipher);
 }
 

@@ -246,6 +246,8 @@ namespace hole
 
           // cast to an immutable block.
           ib = static_cast<const nucleus::proton::ImmutableBlock*>(&block);
+          assert(dynamic_cast<const nucleus::proton::ImmutableBlock*>(
+                   &block) != nullptr);
 
           // store the immutable block.
           if (Hole::Implementation->Put(address, *ib) == elle::Status::Error)
@@ -261,6 +263,8 @@ namespace hole
 
           // cast to a mutable block.
           mb = static_cast<const nucleus::proton::MutableBlock*>(&block);
+          assert(dynamic_cast<const nucleus::proton::MutableBlock*>(
+                   &block) != nullptr);
 
           // store the mutable block.
           if (Hole::Implementation->Put(address, *mb) == elle::Status::Error)
@@ -295,6 +299,8 @@ namespace hole
 
           // cast to an immutable block.
           ib = static_cast<nucleus::proton::ImmutableBlock*>(&block);
+          assert(dynamic_cast<const nucleus::proton::ImmutableBlock*>(
+                   &block) != nullptr);
 
           // retrieve the immutable block.
           if (Hole::Implementation->Get(address, *ib) == elle::Status::Error)
@@ -310,6 +316,8 @@ namespace hole
 
           // cast to a mutable block.
           mb = static_cast<nucleus::proton::MutableBlock*>(&block);
+          assert(dynamic_cast<const nucleus::proton::MutableBlock*>(
+                   &block) != nullptr);
 
           // retrieve the mutable block.
           if (Hole::Implementation->Get(address, version,

@@ -335,6 +335,8 @@ namespace hole
                     {
                       const nucleus::neutron::Object* object =
                         static_cast<const nucleus::neutron::Object*>(&block);
+                      assert(dynamic_cast<const nucleus::neutron::Object*>(
+                               &block) != nullptr);
 
                       // validate the object according to the presence of
                       // a referenced access block.
@@ -480,12 +482,13 @@ namespace hole
                         {
                           auto const& b =
                             static_cast<nucleus::proton::ImmutableBlock const&>(derivable.block());
+
                           // validate the block.
                           if (b.Validate(address) == elle::Status::Ok)
                             {
                               // finally, store it locally.
                               if (b.Store(Hole::Implementation->network,
-                                           address) == elle::Status::Ok)
+                                          address) == elle::Status::Ok)
                                 break;
                             }
                           else
@@ -590,6 +593,8 @@ namespace hole
                           auto const& mb =
                             static_cast<nucleus::proton::MutableBlock const&>(
                                 derivable.block());
+                          assert(dynamic_cast<nucleus::proton::MutableBlock const*>(
+                                   &(derivable.block())) != nullptr);
 
                           // validate the block, depending on its component.
                           //
@@ -601,6 +606,8 @@ namespace hole
                               {
                                 nucleus::neutron::Object const& object =
                                   static_cast<nucleus::neutron::Object const&>(mb);
+                                assert(dynamic_cast<nucleus::neutron::Object const*>(
+                                         &mb) != nullptr);
 
                                 // validate the object according to the
                                 // presence of a referenced access block.
@@ -700,6 +707,8 @@ namespace hole
                           {
                             const nucleus::neutron::Object* object =
                               static_cast<const nucleus::neutron::Object*>(&block);
+                            assert(dynamic_cast<const nucleus::neutron::Object*>(
+                                     &block) != nullptr);
 
                             // validate the object according to the presence of
                             // a referenced access block.
@@ -779,6 +788,9 @@ namespace hole
                               auto const& mb=
                                 static_cast<nucleus::proton::MutableBlock const&>(
                                     derivable.block());
+                              assert(dynamic_cast<nucleus::proton::MutableBlock const*>(
+                                       &(derivable.block())) != nullptr);
+
                               // validate the block, depending on its
                               // component.
                               //
@@ -791,6 +803,8 @@ namespace hole
                                     nucleus::neutron::Object const&  object =
                                       static_cast<nucleus::neutron::Object const&>(
                                         derivable.block());
+                                    assert(dynamic_cast<nucleus::neutron::Object const*>(
+                                             &(derivable.block())) != nullptr);
 
                                     // validate the object according to the
                                     // presence of a referenced access block.
@@ -906,6 +920,8 @@ namespace hole
                             const nucleus::neutron::Object* object =
                               static_cast<const nucleus::neutron::Object*>(
                                 &block);
+                            assert(dynamic_cast<const nucleus::neutron::Object*>(
+                                     &block) != nullptr);
 
                             // validate the object according to the presence of
                             // a referenced access block.
@@ -1333,8 +1349,7 @@ namespace hole
 
         ELLE_LOG_TRACE("Push");
 
-        auto const& block =
-          static_cast<nucleus::Derivable const&>(derivable).block();
+        auto const& block = derivable.block();
 
         // retrieve the host from the guestlist.
         if (this->guestlist.Retrieve(
@@ -1354,7 +1369,9 @@ namespace hole
             {
               nucleus::proton::ImmutableBlock const& ib =
                   static_cast<nucleus::proton::ImmutableBlock const&>(block);
-              assert(dynamic_cast<nucleus::proton::ImmutableBlock const*>(&block));
+              assert(dynamic_cast<nucleus::proton::ImmutableBlock const*>(
+                       &block));
+
               ELLE_LOG_TRACE("pushing immutable block");
 
               //
@@ -1380,7 +1397,8 @@ namespace hole
             {
               nucleus::proton::MutableBlock const& mb =
                   static_cast<nucleus::proton::MutableBlock const&>(block);
-              assert(dynamic_cast<nucleus::proton::MutableBlock const*>(&block));
+              assert(dynamic_cast<nucleus::proton::MutableBlock const*>(
+                       &block));
 
               ELLE_LOG_TRACE("pushing mutable block");
 
@@ -1398,6 +1416,8 @@ namespace hole
                     {
                       const nucleus::neutron::Object* object =
                         static_cast<const nucleus::neutron::Object*>(&mb);
+                      assert(dynamic_cast<const nucleus::neutron::Object*>(
+                               &mb) != nullptr);
 
                       ELLE_LOG_TRACE("validating the object mutable block");
 
@@ -1541,6 +1561,8 @@ namespace hole
 
               // cast to an immutable block.
               ib = static_cast<nucleus::proton::ImmutableBlock*>(block);
+              assert(dynamic_cast<nucleus::proton::ImmutableBlock*>(
+                       block) != nullptr);
 
               // does the block exist.
               if (ib->Exist(Hole::Implementation->network,
@@ -1568,6 +1590,8 @@ namespace hole
 
               // cast to a mutable block.
               mb = static_cast<nucleus::proton::MutableBlock*>(block);
+              assert(dynamic_cast<nucleus::proton::MutableBlock*>(
+                       block) != nullptr);
 
               // does the block exist.
               if (mb->Exist(Hole::Implementation->network,
@@ -1588,6 +1612,8 @@ namespace hole
                       {
                         const nucleus::neutron::Object* object =
                           static_cast<const nucleus::neutron::Object*>(mb);
+                        assert(dynamic_cast<const nucleus::neutron::Object*>(
+                                 mb) != nullptr);
 
                         // validate the object according to the presence of
                         // a referenced access block.
