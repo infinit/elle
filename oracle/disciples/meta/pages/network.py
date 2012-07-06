@@ -86,7 +86,6 @@ class Network(Page):
             for device_id in network['devices']:
                 device = database.byId(database.devices, device_id)
                 if device:
-                    print("ADD DEVICE:", device)
                     res['nodes'].extend([
                         device['local_address']['ip'] + ':' + str(device['local_address']['port']),
                         device['extern_address']['ip'] + ':' + str(device['extern_address']['port']),
