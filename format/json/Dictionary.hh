@@ -43,6 +43,9 @@ namespace elle { namespace format { namespace json {
         _map.clear();
       }
 
+      /// Set or update key/value pairs from other.
+      void update(Dictionary const& other);
+
       ///
       /// Returns a JSON Object indexed by a string.
       /// The operator[] will throw a KeyError exception when the key
