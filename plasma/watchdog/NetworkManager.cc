@@ -2,6 +2,8 @@
 #include <set>
 #include <stdexcept>
 
+#include <elle/log.hh>
+
 #include "InfinitNetwork.hh"
 #include "Manager.hh"
 #include "NetworkManager.hh"
@@ -21,6 +23,7 @@ void NetworkManager::stop()
 
 void NetworkManager::update_networks()
 {
+  elle::log::debug("Updating networks");
   using namespace std::placeholders;
   this->_manager.meta().Networks(
       std::bind(&NetworkManager::_on_networks_update, this, _1)
@@ -30,6 +33,7 @@ void NetworkManager::_on_networks_update(meta::NetworksResponse const& response)
 {
   std::set<std::string> visited;
 
+  elle::log::debug("Got network list");
   // apply to the networks
     {
       auto it =  response.networks.begin(),
@@ -63,6 +67,7 @@ void NetworkManager::_on_networks_update(meta::NetworksResponse const& response)
 
 void NetworkManager::_on_network_update(meta::NetworkResponse const& r)
 {
+  elle::log::debug("Updating network", r._id);
   auto it = this->_networks.find(r._id);
   if (it == this->_networks.end())
     {

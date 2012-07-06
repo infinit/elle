@@ -80,7 +80,7 @@ char const* const _metalib_doc =
   "User friendly interface for infinit files\n"
 ;
 
-PyMODINIT_FUNC initmetalib(void)
+PyMODINIT_FUNC init_metalib(void)
 {
   if (elle::Elle::Initialize() == elle::Status::Error)
     {

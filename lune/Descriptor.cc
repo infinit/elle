@@ -5,6 +5,7 @@
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 #include <elle/cryptography/PrivateKey.hh>
+#include <elle/standalone/Log.hh>
 
 #include <nucleus/proton/Address.hh>
 

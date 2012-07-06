@@ -75,7 +75,10 @@ extern "C" {
                                   char const* name);
 
 
-    gap_Status gap_launch_watchdog(gap_State* state);
+    /// Launch the watchdog binary. If the given path is NULL, then the default
+    /// binary path will be used.
+    gap_Status gap_launch_watchdog(gap_State* state,
+                                   char const* watchdog_path);
 
 # ifdef __cplusplus
 } // ! extern "C"

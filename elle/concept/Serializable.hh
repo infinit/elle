@@ -45,6 +45,7 @@ namespace elle
       template<__ECS_DEFAULT_ARCHIVE_TPL(Archive)>
       struct _Serializable
       {
+      public:
         typedef Archive<elle::serialize::ArchiveMode::Input>  InputArchive;
         typedef typename InputArchive::StreamType             InputStream;
         typedef Archive<elle::serialize::ArchiveMode::Output> OutputArchive;
@@ -55,8 +56,8 @@ namespace elle
         virtual void serialize(OutputArchive& archive) const = 0;
         virtual void deserialize(InputArchive& archive) = 0;
 
-        virtual void serialize(OutputStream& out) const = 0;
-        virtual void deserialize(InputStream& in) = 0;
+        virtual void serialize(OutputStream& out, OutputArchive* = nullptr) const = 0;
+        virtual void deserialize(InputStream& in, InputArchive* = nullptr) = 0;
       };
 
       // wrapper to ensure virtual inheritance
@@ -69,17 +70,13 @@ namespace elle
 
     template<typename T, __ECS_DEFAULT_ARCHIVE_TPL(Archive)>
     struct Serializable
-      : virtual contract::Serializable<Archive>
+      : public virtual contract::_Serializable<Archive>
     {
-      // in / out archive types.
-      typedef
-        typename contract::Serializable<Archive>::InputArchive  InputArchive;
-      typedef
-        typename contract::Serializable<Archive>::InputStream   InputStream;
-      typedef
-        typename contract::Serializable<Archive>::OutputArchive OutputArchive;
-      typedef
-        typename contract::Serializable<Archive>::OutputStream  OutputStream;
+    public:
+      typedef Archive<elle::serialize::ArchiveMode::Input>  InputArchive;
+      typedef typename InputArchive::StreamType             InputStream;
+      typedef Archive<elle::serialize::ArchiveMode::Output> OutputArchive;
+      typedef typename OutputArchive::StreamType            OutputStream;
 
       // implem methods
       virtual void serialize(OutputArchive& archive) const
@@ -87,9 +84,9 @@ namespace elle
       virtual void deserialize(InputArchive& archive)
         { archive >> static_cast<T&>(*this); }
 
-      virtual void serialize(OutputStream& out) const
+      virtual void serialize(OutputStream& out, OutputArchive* = nullptr) const
         { OutputArchive(out, static_cast<T const&>(*this)); }
-      virtual void deserialize(InputStream& in)
+      virtual void deserialize(InputStream& in, InputArchive* = nullptr)
         { InputArchive(in) >> static_cast<T&>(*this); }
     };
 
@@ -148,7 +145,7 @@ namespace elle
     ELLE_LOG_TRACE_SCOPE((#action " %p using type %s"),                       \
                          ptr, ELLE_PRETTY_OBJECT_TYPE(ptr))                   \
 
-// dump a virtual serialize method into a serializable class
+// dump a virtual serialize methods into a serializable class
 # define __ECS_SERIALIZE(cls, ...)                                            \
  virtual void serialize(__ECS_OARCHIVE(cls, ##__VA_ARGS__)& ar) const         \
   {                                                                           \
@@ -156,7 +153,8 @@ namespace elle
     __ECS_LOG_ACTION(serialize, this);                                        \
     return this->Implem::serialize(ar);                                       \
   }                                                                           \
- virtual void serialize(__ECS_OSTREAM(cls, ##__VA_ARGS__)& out) const         \
+ virtual void serialize(__ECS_OSTREAM(cls, ##__VA_ARGS__)& out,               \
+                        __ECS_OARCHIVE(cls, ##__VA_ARGS__)* = nullptr) const  \
   {                                                                           \
     typedef elle::concept::Serializable<cls, ##__VA_ARGS__> Implem;           \
     __ECS_LOG_ACTION(serialize, this);                                        \
@@ -164,7 +162,7 @@ namespace elle
   }                                                                           \
   /**/
 
-// dump a virtual deserialize method into a serializable class
+// dump a virtual deserialize methods into a serializable class
 # define __ECS_DESERIALIZE(cls, ...)                                          \
   virtual void deserialize(__ECS_IARCHIVE(cls, ##__VA_ARGS__)& ar)            \
   {                                                                           \
@@ -172,7 +170,8 @@ namespace elle
     __ECS_LOG_ACTION(deserialize, this);                                      \
     return this->Implem::deserialize(ar);                                     \
   }                                                                           \
-  virtual void deserialize(__ECS_ISTREAM(cls, ##__VA_ARGS__)& in)             \
+  virtual void deserialize(__ECS_ISTREAM(cls, ##__VA_ARGS__)& in,             \
+                           __ECS_IARCHIVE(cls, ##__VA_ARGS__)* = nullptr)     \
   {                                                                           \
     typedef elle::concept::Serializable<cls, ##__VA_ARGS__> Implem;           \
     __ECS_LOG_ACTION(deserialize, this);                                      \

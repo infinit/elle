@@ -182,7 +182,7 @@ fi
 
 if [[ $LINUX64 = ON ]] ; then
     BUILDDIRS="$BUILDDIRS build/linux64"
-    (CC="${DISTCC}gcc" CXX="${DISTCC}g++" \
+    (CC="${CC}" CXX="${CXX}" \
         CFLAGS="${CFLAGS} -m64" CXXFLAGS="${CXXFLAGS} -m64" \
         BUILDDIR=build/linux64 gen_build_dir)
 fi

@@ -4,6 +4,7 @@
 #include <elle/cryptography/Cipher.hh>
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/serialize/TupleSerializer.hxx>
+#include <elle/standalone/Log.hh>
 #include <elle/io/File.hh>
 
 #include <lune/Authority.hh>

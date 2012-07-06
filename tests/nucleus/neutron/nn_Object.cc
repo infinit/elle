@@ -34,6 +34,10 @@ int main()
   elle::print("INITIAL BLOCK:");
   blk.Dump();
 
+  std::string unique;
+  static_cast<elle::concept::Uniquable<> const&>(blk).Save(unique);
+  elle::print("unique string:", unique);
+
   elle::utility::Buffer buf;
   buf.Writer() << blk;
 

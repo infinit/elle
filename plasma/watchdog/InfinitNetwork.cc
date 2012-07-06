@@ -97,6 +97,7 @@ void InfinitNetwork::_create_network_root_block()
   auto genreDirectory = nucleus::neutron::GenreDirectory;
   auto access         = nucleus::neutron::Access::Null;
 
+  std::cerr << "IDenITY = " << this->_manager.identity() << std::endl;
   if (identity.Restore(this->_manager.identity())             == e ||
       directory.Create(genreDirectory, identity.pair.K)       == e ||
       directory.Seal(identity.pair.k, access)                 == e ||
@@ -109,7 +110,9 @@ void InfinitNetwork::_create_network_root_block()
   elle::io::Unique              rootAddress;
 
   directory.Save(rootBlock);
+  std::cerr << "root block string = " << rootBlock << std::endl;
   address.Save(rootAddress);
+  std::cerr << "root address string = " << rootAddress << std::endl;
 
   this->_manager.meta().UpdateNetwork(
       this->_description._id,

@@ -32,7 +32,7 @@ void LocalServer::start(std::string const& watchdogId)
   // Trying to create a listening socket
   if (!this->listen(WATCHDOG_SERVER_NAME))
     {
-      std::cerr << "{WTG} Warning: Server name already used (maybe previous crash)\n";
+      elle::log::warn("Server name already used (maybe previous crash)");
 
       // We try to remove the server instance first
       if (!QLocalServer::removeServer(WATCHDOG_SERVER_NAME))

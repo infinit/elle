@@ -119,7 +119,10 @@ namespace {
 
         // XXX fine grained network errors
         if (this->errback != nullptr)
-          this->errback(MetaClient::Error::ConnectionFailure, "Network error: " + ss.str());
+          this->errback(MetaClient::Error::ConnectionFailure,
+                        "Network error: " + ss.str());
+        else
+          elle::log::warn("Unhandled network error:", ss.str());
       }
     };
 

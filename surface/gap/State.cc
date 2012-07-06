@@ -16,6 +16,7 @@
 #include <QLocalSocket>
 #include <QProcess>
 
+#include <elle/format/json/all.hh>
 #include <elle/log.hh>
 #include <elle/network/Host.hh>
 #include <elle/serialize/HexadecimalArchive.hh>
@@ -122,23 +123,30 @@ namespace surface
       file.read(wtg_id, 4096);
       if (!file.eof())
         throw Exception(gap_internal_error, "Watchdog id is too long!");
-      return std::string(wtg_id, file.gcount());
+      std::string id(wtg_id, file.gcount());
+      file.close();
+      return id;
     }
 
-    void State::_send_watchdog_cmd(std::string const& cmd)
+    void
+    State::_send_watchdog_cmd(std::string const& cmd,
+                              elle::format::json::Dictionary const* kwargs)
     {
-      QString id = this->_watchdog_id().c_str();
       QLocalSocket conn;
       conn.connectToServer(WATCHDOG_SERVER_NAME);
       if (conn.waitForConnected(2000))
         {
-          QByteArray json_cmd = QString("{"
-                "\"command\":\"" + QString(cmd.c_str()) + "\","
-                "\"_id\": \"" + id + "\""
-          "}\n").toAscii();
-          conn.write(json_cmd);
+          json::Dictionary req;
+          req["_id"] = this->_watchdog_id();
+          req["command"] = cmd;
+          if (kwargs != nullptr)
+            req.update(*kwargs);
+          elle::log::debug("Send watchdog command:", req.repr());
+          conn.write(req.repr().c_str());
+          conn.write("\n");
           if (!conn.waitForBytesWritten(2000))
               Exception(gap_internal_error, "Couldn't send the command '" + cmd + "'");
+          elle::log::debug("Command sent");
         }
       else
         throw Exception(gap_internal_error, "Couldn't connect to the watchdog");
@@ -300,31 +308,7 @@ namespace surface
 
     void State::stop_watchdog()
     {
-      QString id(_watchdog_id().c_str());
-      if (!id.size())
-        return;
-
-      // Stop old watchdog
-      {
-        QLocalSocket conn;
-        conn.connectToServer(WATCHDOG_SERVER_NAME);
-        if (conn.waitForConnected(2000))
-          {
-            QByteArray cmd = QString("{"
-                  "\"command\":\"stop\","
-                  "\"_id\": \"" + id + "\""
-            "}\n").toAscii();
-            conn.write(cmd);
-            if (!conn.waitForBytesWritten(2000))
-                throw std::runtime_error("Couldn't stop the old watchdog instance");
-          }
-        else
-          {
-            elle::log::warn("Couldn't connect to the old watchdog instance");
-            return;
-          }
-      }
-
+      this->_send_watchdog_cmd("stop");
       // Waiting for the old server to be stopped
       {
         int tries = 1;
@@ -342,7 +326,7 @@ namespace surface
       }
     }
 
-    void State::launch_watchdog()
+    void State::launch_watchdog(std::string const& watchdog_path)
     {
       std::string old_watchdog_id;
       try
@@ -355,11 +339,16 @@ namespace surface
           elle::log::warn("Couldn't stop the watchdog:", err.what());
         }
 
-      fs::path watchdog_binary(_infinit_home);
-      watchdog_binary /= "bin/8watchdog";
-      elle::log::info("Launching binary:", watchdog_binary.string());
+      std::string watchdog_binary;
+      if (watchdog_path.size())
+        watchdog_binary = watchdog_path;
+      else
+        watchdog_binary =
+          fs::path(_infinit_home).append("bin/8watchdog", fs::path::codecvt()).string();
+
+      elle::log::info("Launching binary:", watchdog_binary);
       QProcess p;
-      if (p.execute(watchdog_binary.string().c_str()) < 0)
+      if (p.execute(watchdog_binary.c_str()) < 0)
         throw Exception(gap_internal_error, "Cannot start the watchdog !");
 
       // Connect to the new watchdog instance
@@ -386,7 +375,10 @@ namespace surface
       do {
           if (tries > 0) ::sleep(1);
           try { new_watchdog_id = this->_watchdog_id(); }
-          catch (std::exception const&) {}
+          catch (std::exception const& err)
+            {
+              elle::log::warn("Cannot read the new watchdog id:", err.what());
+            }
           if (new_watchdog_id.size() && old_watchdog_id != new_watchdog_id)
             {
               elle::log::debug("Found new watchdog id:", new_watchdog_id);
@@ -398,17 +390,12 @@ namespace surface
         throw Exception(gap_internal_error, "Couldn't open infinit watchdog id file");
 
       // calling watchdog run command (which gives the meta token)
-      QString token(this->_api->token().c_str());
-      //QString identity(this->_identityUpdater.identity().c_str());
-      //QByteArray cmd = QString("{"
-      //    "\"command\":"  "\"run\""                       ","
-      //    "\"_id\":"      "\"" + newWatchdogId + "\""     ","
-      //    "\"token\":"    "\"" + token + "\""             ","
-      //    "\"identity\":" "\"" + identity + "\""
-      //    "}\n").toAscii();
-      //conn.write(cmd);
-      //if (!conn.waitForBytesWritten(2000))
-      //  throw std::runtime_error("Couldn't run the watchdog");
+        {
+          json::Dictionary args;
+          args["token"] = this->_api->token();
+          args["identity"] = this->_api->identity();
+          this->_send_watchdog_cmd("run", &args);
+        }
     }
 
   }

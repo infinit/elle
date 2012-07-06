@@ -28,8 +28,8 @@
 # define __NPB_DUMP_METHODS(oa, ia, os, is)                                   \
 virtual void serialize(oa&) const { throw false; }                            \
 virtual void deserialize(ia&) { throw false; }                                \
-virtual void serialize(os&) const { throw false; }                            \
-virtual void deserialize(is&) { throw false; }                                \
+virtual void serialize(os&, oa* = nullptr) const { throw false; }             \
+virtual void deserialize(is&, ia* = nullptr) { throw false; }                 \
   /**/
 
 

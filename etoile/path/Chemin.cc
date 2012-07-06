@@ -1,4 +1,5 @@
 #include <etoile/path/Chemin.hh>
+#include <elle/standalone/Log.hh>
 
 namespace etoile
 {

@@ -1,3 +1,4 @@
+# include <elle/standalone/Log.hh>
 
 # include <nucleus/proton/ContentHashBlock.hh>
 # include <nucleus/proton/Family.hh>

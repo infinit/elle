@@ -13,7 +13,7 @@
 
 # include <Python.h>
 
-# define METALIB_MOD_NAME "metalib"
+# define METALIB_MOD_NAME "_metalib"
 
 extern PyObject* metalib_MetaError;
 

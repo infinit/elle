@@ -38,7 +38,7 @@ namespace elle
     ///
     template<__ECU_DEFAULT_ARCHIVE_TPL(Archive)>
     struct Uniquable :
-      virtual contract::_Serializable<Archive>
+      contract::Serializable<Archive>
     {
     public:
       ///

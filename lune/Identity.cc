@@ -5,6 +5,7 @@
 #include <elle/cryptography/KeyPair.hh>
 #include <elle/cryptography/Cipher.hh>
 #include <elle/cryptography/SecretKey.hh>
+#include <elle/standalone/Log.hh>
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 #include <elle/serialize/TupleSerializer.hxx>

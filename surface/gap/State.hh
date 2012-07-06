@@ -4,6 +4,8 @@
 # include <string>
 # include <map>
 
+# include <elle/format/json/fwd.hh>
+
 # include <plasma/meta/Client.hh>
 
 # include "gap.h"
@@ -48,7 +50,7 @@ namespace surface
                                 std::string const& password);
       void create_network(std::string const& name);
       void stop_watchdog();
-      void launch_watchdog();
+      void launch_watchdog(std::string const& watchdog_path);
 
     /// properties
     public:
@@ -56,7 +58,8 @@ namespace surface
 
     private:
       std::string _watchdog_id() const;
-      void _send_watchdog_cmd(std::string const& cmd);
+      void _send_watchdog_cmd(std::string const& cmd,
+                              elle::format::json::Dictionary const* = nullptr);
       void _reload_networks();
     };
 
