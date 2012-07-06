@@ -113,6 +113,20 @@ FOREACH(_CURRENT_VERSION ${_Python_VERSIONS})
     ENDFOREACH(dir)
   ENDIF(Python_FRAMEWORKS AND NOT PYTHON_INCLUDE_DIR)
 
+  # XXX hack to bypass the cached var
+  FIND_PATH(_PYTHON_INCLUDE_DIR_${_CURRENT_VERSION_NO_DOTS}
+    NAMES Python.h
+    PATHS
+      "/usr/include/python${_CURRENT_VERSION}"
+  )
+  if(_PYTHON_INCLUDE_DIR_${_CURRENT_VERSION_NO_DOTS})
+    set(PYTHON_INCLUDE_DIR
+        "${_PYTHON_INCLUDE_DIR_${_CURRENT_VERSION_NO_DOTS}}"
+        CACHE PATH
+        "Path to where Python.h is found" FORCE
+    )
+  endif()
+
   FIND_PATH(PYTHON_INCLUDE_DIR
     NAMES Python.h
     PATHS

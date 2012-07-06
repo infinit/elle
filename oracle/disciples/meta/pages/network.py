@@ -86,10 +86,12 @@ class Network(Page):
             for device_id in network['devices']:
                 device = database.byId(database.devices, device_id)
                 if device:
-                    res['nodes'].extend([
-                        device['local_address']['ip'] + ':' + str(device['local_address']['port']),
-                        device['extern_address']['ip'] + ':' + str(device['extern_address']['port']),
-                    ])
+                    for addr_kind in ['local_address', 'extern_address']:
+                        addr = device[addr_kind]
+                        if addr['port']:
+                            res['nodes'].append(
+                                addr['ip'] + ':' + str(addr['port']),
+                            )
                 else:
                     print "No more device_id", device['_id']
 
