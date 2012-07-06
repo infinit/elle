@@ -162,8 +162,8 @@ namespace elle
       // open the file.
       fd = ::CreateFile(path.str().c_str(), GENERIC_READ,
                         FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                        NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,
-                        NULL);
+                        nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,
+                        nullptr);
 
       if (fd == INVALID_HANDLE_VALUE)
         escape("failed to open %s", path.str().c_str());
@@ -177,7 +177,7 @@ namespace elle
                                     data.contents + roffset,
                                     data.capacity - roffset,
                                     &rbytes,
-                                    NULL);
+                                    nullptr);
 
           if (!succeed)
             {
@@ -215,8 +215,8 @@ namespace elle
       // open the file.
       fd = ::CreateFile(path.str().c_str(), GENERIC_WRITE,
                         FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                        NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL,
-                        NULL);
+                        nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL,
+                        nullptr);
 
       if (fd == INVALID_HANDLE_VALUE)
         escape("failed to open %s", path.str().c_str());
@@ -228,7 +228,7 @@ namespace elle
           BOOL          succeed;
 
           succeed = ::WriteFile(fd, data.contents + woffset,
-                                data.size - woffset, &wbytes, NULL);
+                                data.size - woffset, &wbytes, nullptr);
 
           if (!succeed)
             {

@@ -79,9 +79,9 @@ Coro *Coro_new(void)
 	self->allocatedStackSize = 0;
 
 #ifdef USE_FIBERS
-	self->fiber = NULL;
+	self->fiber = nullptr;
 #else
-	self->stack = NULL;
+	self->stack = nullptr;
 #endif
 	return self;
 }
@@ -92,7 +92,7 @@ void Coro_allocStackIfNeeded(Coro *self)
 	if (self->stack && self->requestedStackSize < self->allocatedStackSize)
 	{
 		io_free(self->stack);
-		self->stack = NULL;
+		self->stack = nullptr;
 		self->requestedStackSize = 0;
 	}
 
@@ -346,7 +346,7 @@ void Coro_setup(Coro *self, void *arg)
 	ucp->uc_stack.ss_sp    = Coro_stack(self) + Coro_stackSize(self) - 8;
 	ucp->uc_stack.ss_size  = Coro_stackSize(self);
 	ucp->uc_stack.ss_flags = 0;
-	ucp->uc_link = NULL;
+	ucp->uc_link = nullptr;
 
 	makecontext(ucp, (makecontext_func)Coro_StartWithArg, 1, arg); }
 
@@ -365,7 +365,7 @@ void Coro_setup(Coro *self, void *arg)
 	ucp->uc_stack.ss_size  = Coro_stackSize(self);
 #if !defined(__APPLE__)
 	ucp->uc_stack.ss_flags = 0;
-	ucp->uc_link = NULL;
+	ucp->uc_link = nullptr;
 #endif
 
 #if defined(__x86_64__)

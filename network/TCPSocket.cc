@@ -140,12 +140,6 @@ namespace elle
       Parcel* parcel = new Parcel;
       ELLE_LOG_TRACE("%s: got packet, read parcel.", *this)
         {
-          // unsigned char* copy = (unsigned char*)malloc(packet.size());
-          // packet.read((char*)copy, packet.size());
-
-          // elle::utility::Buffer buffer(copy, packet.size());
-          // auto reader = buffer.Reader();
-
           serialize::InputBinaryArchive input(packet);
 
           // Extract the header.

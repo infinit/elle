@@ -15,7 +15,7 @@ namespace elle
     ///
     /// this variable contains the address of the current morgue.
     ///
-    Morgue*                             Morgue::Current = NULL;
+    Morgue*                             Morgue::Current = nullptr;
 
     ///
     /// this constants defines the morgue's frequency in milliseconds i.e
@@ -44,7 +44,7 @@ namespace elle
     Status              Morgue::Clean()
     {
       // delete the morgue.
-      if (Morgue::Current != NULL)
+      if (Morgue::Current != nullptr)
         delete Morgue::Current;
 
       return Status::Ok;
@@ -56,7 +56,7 @@ namespace elle
     Status              Morgue::Instance(Morgue*&               morgue)
     {
       // verify the morgue's presence.
-      if (Morgue::Current == NULL)
+      if (Morgue::Current == nullptr)
         return Status::False;
 
       morgue = Morgue::Current;

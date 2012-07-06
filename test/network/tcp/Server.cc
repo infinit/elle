@@ -27,7 +27,7 @@ namespace elle
     /// default constructor.
     ///
     Server::Server():
-      socket(NULL)
+      socket(nullptr)
     {
     }
 
@@ -37,7 +37,7 @@ namespace elle
     Server::~Server()
     {
       // if present, delete the socket.
-      if (this->socket != NULL)
+      if (this->socket != nullptr)
         delete this->socket;
     }
 
@@ -86,7 +86,7 @@ namespace elle
       String            response;
 
       // if there is already a client, exit.
-      if (this->socket != NULL)
+      if (this->socket != nullptr)
         escape("there is already a client connected");
 
       // add the socket.

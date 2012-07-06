@@ -19,7 +19,7 @@ namespace elle
       // release the resources.
       this->~Region();
 
-      if (object == NULL)
+      if (object == nullptr)
         {
           // initialize the object with default values.
           new (this) T;

@@ -38,11 +38,11 @@ namespace elle
     Parcel::~Parcel()
     {
       // release the header.
-      if (this->header != NULL)
+      if (this->header != nullptr)
         delete this->header;
 
       // release the data.
-      if (this->data != NULL)
+      if (this->data != nullptr)
         delete this->data;
     }
 
@@ -60,14 +60,14 @@ namespace elle
       std::cout << alignment << "[Parcel] " << std::hex << this << std::endl;
 
       // dump the header.
-      if (this->header != NULL)
+      if (this->header != nullptr)
         {
           if (this->header->Dump(margin + 2) == Status::Error)
             escape("unable to dump the header");
         }
 
       // dump the data.
-      if (this->data != NULL)
+      if (this->data != nullptr)
         {
           std::cout << alignment << io::Dumpable::Shift << "[Data]" << std::endl;
 

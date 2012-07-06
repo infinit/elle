@@ -1,5 +1,5 @@
-#ifndef ELLE_FORMAT_JSON_NULL_HH
-# define ELLE_FORMAT_JSON_NULL_HH
+#ifndef ELLE_FORMAT_JSON_nullptr_HH
+# define ELLE_FORMAT_JSON_nullptr_HH
 
 # include "Object.hh"
 
@@ -23,6 +23,6 @@ namespace elle { namespace format { namespace json {
 
 }}} // !namespace elle::format::json
 
-#endif /* ! NULL_HH */
+#endif /* ! nullptr_HH */
 
 
