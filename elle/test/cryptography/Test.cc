@@ -1,6 +1,7 @@
 #include <elle/Elle.hh>
-#include <elle/cryptography/SecretKey.hh>
+#include <elle/cryptography/Cipher.hh>
 #include <elle/cryptography/PublicKey.hh>
+#include <elle/cryptography/SecretKey.hh>
 
 #include <elle/standalone/Region.hh>
 #include <elle/utility/Buffer.hh>

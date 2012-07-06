@@ -9,7 +9,7 @@
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Object.hh>
 
-#define CHECK(call) if (call != elle::Status::Ok) { show(); assert(false); } else
+#define CHECK(call) if (call != elle::Status::Ok) { assert(false); } else
 
 int main()
 {

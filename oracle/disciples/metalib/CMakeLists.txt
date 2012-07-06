@@ -1,7 +1,8 @@
 
+SET(PythonLibs_FIND_VERSION 2)
 find_package(PythonLibs)
 
-message(STATUS "Python include dir: ${PYTHON_INCLUDE_DIR}")
+message(STATUS "Python2 include directory: ${PYTHON_INCLUDE_DIR}")
 include_directories(${PYTHON_INCLUDE_DIR})
 
 file(GLOB metalib_srcs *.cc)

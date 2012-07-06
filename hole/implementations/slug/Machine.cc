@@ -211,7 +211,7 @@ namespace hole
                 }
               catch (std::exception const& err)
                 {
-                  log("Cannot update device port: %s", err.what()); // XXX[to improve]
+                  elle::log::warn("Cannot update device port:", err.what()); // XXX[to improve]
                 }
             }
           new reactor::Thread(elle::concurrency::scheduler(),

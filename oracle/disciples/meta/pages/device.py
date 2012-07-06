@@ -98,12 +98,12 @@ class Device(Page):
 
         to_save['local_address'] = {
             'ip': device['local_ip'],
-            'port': device.get('local_port', 0),
+            'port': int(device.get('local_port', 0)),
         }
 
         to_save['extern_address'] = {
             'ip': web.ctx.env['REMOTE_ADDR'],
-            'port': device.get('extern_port', to_save['local_address']['port']),
+            'port': int(device.get('extern_port', to_save['local_address']['port'])),
         }
 
         id = database.devices.insert(to_save)
