@@ -196,7 +196,12 @@ class MountPoint:
                 f.write(' '.join(self._addresses))
 
         # manual, infinit_cmd block
-        self.__infinit_cmd = ['%s/8infinit' % BUILD, '-n', self._network.name, '-m', self._mount_dir]
+        self.__infinit_cmd = [
+            '%s/8infinit' % BUILD,
+            '-n', self._network.name,
+            '-m', self._mount_dir,
+            '-u', self._network.user_name,
+        ]
         self.__infinit = subprocess.Popen(self.__infinit_cmd, stdin = subprocess.PIPE)
         self.__infinit_alive = True
         self.__infinit.stdin.write(b'\n')
@@ -257,7 +262,7 @@ class MountPoint:
 
 class NetworkPool:
 
-    def __init__(self, network, size, start_port=8122):
+    def __init__(self, network, size, start_port=8222):
         self._network = network
         self._size = size
         self.mount_points = []
