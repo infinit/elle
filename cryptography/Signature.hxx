@@ -3,8 +3,6 @@
 
 # include <cassert>
 
-# include <elle/cryptography/Signature.hh>
-
 ELLE_SERIALIZE_SIMPLE(elle::cryptography::Signature,
                       archive,
                       value,

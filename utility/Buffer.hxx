@@ -5,8 +5,6 @@
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
-# include <elle/utility/Buffer.hh>
-
 ELLE_SERIALIZE_SPLIT(elle::utility::Buffer)
 
 ELLE_SERIALIZE_SPLIT_LOAD(elle::utility::Buffer,

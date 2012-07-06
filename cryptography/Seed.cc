@@ -116,11 +116,7 @@ namespace elle
       if (this == &element)
         return true;
 
-      // compare the internal region.
-      if (this->region != element.region)
-        return false;
-
-      return true;
+      return (this->region == element.region);
     }
 
     ///

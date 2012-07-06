@@ -76,7 +76,7 @@ namespace elle
                name.c_str());
 
       // if no argument has been provided, return an error.
-      if (option->value == NULL)
+      if (option->value == nullptr)
         escape("the option '%s' has not been provided with an argument",
                name.c_str());
 
@@ -114,7 +114,7 @@ namespace elle
         escape("the option '%s' has not been activated", name.c_str());
 
       // if no argument has been provided, return an error.
-      if (option->value == NULL)
+      if (option->value == nullptr)
         escape("the option '%s' has not been provided with an argument",
                name.c_str());
 

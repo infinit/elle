@@ -47,7 +47,7 @@ namespace elle
         /// Enable for instance tests to override the random data source,
         /// so as to use /dev/urandom and avoid /dev/random enthropy
         /// starvation.
-        if ((source = getenv("INFINIT_RANDOM_SOURCE")) == NULL)
+        if ((source = getenv("INFINIT_RANDOM_SOURCE")) == nullptr)
           source = "/dev/random";
 
         if ((fd = ::open(source, O_RDONLY)) == -1)
@@ -130,7 +130,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       return Status::Ok;
     }
@@ -143,7 +143,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       return Status::Ok;
     }
@@ -156,7 +156,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       return Status::Ok;
     }
@@ -169,7 +169,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       return Status::Ok;
     }
@@ -182,7 +182,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       return Status::Ok;
     }
@@ -195,7 +195,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       return Status::Ok;
     }
@@ -208,7 +208,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       return Status::Ok;
     }
@@ -221,7 +221,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       return Status::Ok;
     }
@@ -234,7 +234,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       return Status::Ok;
     }
@@ -247,7 +247,7 @@ namespace elle
       // generate a random integer.
       if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                        sizeof (value)) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       return Status::Ok;
     }
@@ -260,7 +260,7 @@ namespace elle
     {
       // generate a random BN.
       if (::BN_rand(&value, length, -1, 0) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       return Status::Ok;
     }

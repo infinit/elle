@@ -20,10 +20,6 @@ namespace elle
   namespace network
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// the Procedure class enables the programmer to associate a callback
     /// with a message whose tag is I.

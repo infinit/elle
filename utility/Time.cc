@@ -129,10 +129,7 @@ namespace elle
     ///
     Boolean             Time::operator==(const Time&            element) const
     {
-      if (this->nanoseconds != element.nanoseconds)
-        return false;
-
-      return true;
+      return (this->nanoseconds == element.nanoseconds);
     }
 
     ///

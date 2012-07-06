@@ -149,7 +149,7 @@ namespace elle
     ///
     /// this operator allocates memory.
     ///
-    /// note that since new operators cannot return NULL, all the errors
+    /// note that since new operators cannot return nullptr, all the errors
     /// handling is skipped.
     ///
     void*               Meta::operator new(size_t               size)
@@ -193,7 +193,7 @@ namespace elle
     ///
     /// this operator allocates memory for an array.
     ///
-    /// note that since new operators cannot return NULL, all the errors
+    /// note that since new operators cannot return nullptr, all the errors
     /// handling is skipped.
     ///
     void*               Meta::operator new[](size_t             size)

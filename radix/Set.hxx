@@ -1,15 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       elle
-//
-// license       infinit
-//
-// author        julien quintard   [fri jul 15 14:51:42 2011]
-//
-
 #ifndef ELLE_RADIX_SET_HXX
-#define ELLE_RADIX_SET_HXX
+# define ELLE_RADIX_SET_HXX
 
 namespace elle
 {

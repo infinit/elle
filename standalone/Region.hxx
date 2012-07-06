@@ -19,7 +19,7 @@ namespace elle
       // release the resources.
       this->~Region();
 
-      if (object == NULL)
+      if (object == nullptr)
         {
           // initialize the object with default values.
           new (this) T;
@@ -41,8 +41,6 @@ namespace elle
 //
 
 # include <elle/utility/Buffer.hh>
-
-# include <elle/standalone/Region.hh>
 
 ELLE_SERIALIZE_SPLIT(elle::standalone::Region)
 
