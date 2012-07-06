@@ -1,19 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       comet
-//
-// license       infinit
-//
-// author        julien quintard   [fri mar 18 16:18:11 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #ifndef COMET_COMET_HH
-#define COMET_COMET_HH
+# define COMET_COMET_HH
 
 ///
 /// this namespace contains slightly modified OpenSSL functions.
@@ -28,14 +14,7 @@
 ///
 namespace comet
 {
-
-  // nothing
-
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <comet/BN.hh>
 #include <comet/RAND.hh>

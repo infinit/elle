@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       comet
-//
-// license       infinit
-//
-// author        julien quintard   [fri mar 18 16:38:24 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <comet/BN.hh>
 
 #include <openssl/rand.h>
@@ -25,10 +11,6 @@
 
 namespace comet
 {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
 
 #ifndef EIGHT_BIT
 #define NUMPRIMES 2048
@@ -299,10 +281,6 @@ static const prime_t primes[NUMPRIMES]=
         17789,17791,17807,17827,17837,17839,17851,17863,
 #endif
         };
-
-//
-// ---------- functions -------------------------------------------------------
-//
 
   static int bnrand(int pseudorand, BIGNUM *rnd, int bits, int top, int bottom)
   {
