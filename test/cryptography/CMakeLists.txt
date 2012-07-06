@@ -5,4 +5,5 @@ target_link_libraries(
 	${QT_QTNETWORK_LIBRARIES}
 	${QT_QTCORE_LIBRARIES}
 	${Boost_LIBRARIES}
+	pthread
 )
