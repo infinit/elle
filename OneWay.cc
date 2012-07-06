@@ -30,7 +30,7 @@ namespace elle
       ::EVP_MD_CTX_init(&context);
 
       // initialise the digest.
-      if (::EVP_DigestInit_ex(&context, Algorithm, NULL) <= 0 ||
+      if (::EVP_DigestInit_ex(&context, Algorithm, nullptr) <= 0 ||
       // update the digest with the given data.
           ::EVP_DigestUpdate(&context,
                              plain.contents,
@@ -41,7 +41,7 @@ namespace elle
                                static_cast<unsigned int*>(&size)) <= 0)
         {
           (void) ::EVP_MD_CTX_cleanup(&context); // no matter if we can cleanup the context
-          escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+          escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
         }
 
       // set the size.
@@ -49,7 +49,7 @@ namespace elle
 
       // clean the context.
       if (::EVP_MD_CTX_cleanup(&context) <= 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       return Status::Ok;
     }

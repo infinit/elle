@@ -40,7 +40,7 @@ namespace elle
     ///
     /// the default value for the key generation context.
     ///
-    ::EVP_PKEY_CTX*             KeyPair::Contexts::Generate = NULL;
+    ::EVP_PKEY_CTX*             KeyPair::Contexts::Generate = nullptr;
 
     ///
     /// this defines a null key pair.
@@ -74,7 +74,7 @@ namespace elle
     {
       // create the context for the RSA algorithm.
       if ((KeyPair::Contexts::Generate = ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA,
-                                                               NULL)) == NULL)
+                                                               nullptr)) == nullptr)
         escape("unable to create the context");
 
       // initialise the context for key generation.
@@ -183,23 +183,23 @@ namespace elle
       } scope;
 
       // create an EVP key.
-      if ((scope.key = ::EVP_PKEY_new()) == NULL)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+      if ((scope.key = ::EVP_PKEY_new()) == nullptr)
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // create a new RSA key.
-      if ((scope.rsa = ::RSA_new()) == NULL)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+      if ((scope.rsa = ::RSA_new()) == nullptr)
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // rotate the RSA key.
       if (comet::RSA_rotate(scope.rsa,
                             ::BN_num_bits(this->K.key()->pkey.rsa->n),
                             seed.region.contents,
                             seed.region.size) <= 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // assign the RSA key to the EVP's.
       if (::EVP_PKEY_assign_RSA(scope.key, scope.rsa) <= 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // stop tracking.
       scope.rsa = nullptr;

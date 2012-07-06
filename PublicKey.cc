@@ -394,8 +394,10 @@ namespace elle
       else
         {
           // compare the internal numbers.
-          if ((::BN_cmp(this->_key->pkey.rsa->n, element._key->pkey.rsa->n) != 0) ||
-              (::BN_cmp(this->_key->pkey.rsa->e, element._key->pkey.rsa->e) != 0))
+          if ((::BN_cmp(this->_key->pkey.rsa->n,
+                        element._key->pkey.rsa->n) != 0) ||
+              (::BN_cmp(this->_key->pkey.rsa->e,
+                        element._key->pkey.rsa->e) != 0))
             return false;
         }
 

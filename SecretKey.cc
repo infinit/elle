@@ -141,10 +141,10 @@ namespace elle
       // initialise the ciphering process.
       if (::EVP_EncryptInit_ex(&scope.context,
                                SecretKey::Algorithms::Cipher,
-                               NULL,
+                               nullptr,
                                key,
                                iv) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // retreive the cipher-specific block size.
       capacity = ::EVP_CIPHER_CTX_block_size(&scope.context);
@@ -176,7 +176,7 @@ namespace elle
                               &size,
                               in.Contents(),
                               in.Size()) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // update the cipher size.
       cipher.region.size += size;
@@ -185,7 +185,7 @@ namespace elle
       if (::EVP_EncryptFinal_ex(&scope.context,
                                 cipher.region.contents + cipher.region.size,
                                 &size) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // update the cipher size.
       cipher.region.size += size;
@@ -238,10 +238,10 @@ namespace elle
       // initialise the ciphering process.
       if (::EVP_DecryptInit_ex(&scope.context,
                                SecretKey::Algorithms::Cipher,
-                               NULL,
+                               nullptr,
                                key,
                                iv) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // retreive the cipher-specific block size.
       capacity = ::EVP_CIPHER_CTX_block_size(&scope.context);
@@ -262,7 +262,7 @@ namespace elle
                               cipher.region.size -
                               (sizeof (SecretKey::Magic) - 1 +
                                sizeof (salt))) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // update the clear size.
       out.Size(out.Size() + size);
@@ -271,7 +271,7 @@ namespace elle
       if (::EVP_DecryptFinal_ex(&scope.context,
                                 out.MutableContents() + size,
                                 &size) == 0)
-        escape("%s", ::ERR_error_string(ERR_get_error(), NULL));
+        escape("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // update the clear size.
       out.Size(out.Size() + size);
