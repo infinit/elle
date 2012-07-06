@@ -1,16 +1,14 @@
+#include <nucleus/proton/History.hh>
+#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Network.hh>
 
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
-#include <elle/serialize/HexadecimalArchive.hh>
-
-#include <elle/utility/Buffer.hh>
-#include <elle/utility/Buffer.hh>
-
-#include <nucleus/proton/History.hh>
-
 #include <lune/Lune.hh>
 
+#include <elle/utility/Buffer.hh>
+#include <elle/standalone/Report.hh>
 #include <elle/idiom/Open.hh>
 
 namespace nucleus
@@ -149,69 +147,10 @@ namespace nucleus
     }
 
 //
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the history object.
-    ///
-    //elle::Status        History::Serialize(elle::Archive&       archive) const
-    //{
-    //  Version::Type     size;
-    //  Version::Type     i;
-
-    //  // retrieve the size.
-    //  size = this->container.size();
-
-    //  // serialize the size.
-    //  if (archive.Serialize(size) == elle::Status::Error)
-    //    escape("unable to serialize the history's size");
-
-    //  // go through the container.
-    //  for (i = 0; i < this->container.size(); i++)
-    //    {
-    //      // serialize the version;
-    //      if (archive.Serialize(this->container[i]) == elle::Status::Error)
-    //        escape("unable to serialize the version");
-    //    }
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the history object.
-    /////
-    //elle::Status        History::Extract(elle::Archive&         archive)
-    //{
-    //  Version::Type     size;
-    //  Version::Type     i;
-
-    //  // extract the size.
-    //  if (archive.Extract(size) == elle::Status::Error)
-    //    escape("unable to extract the history's size");
-
-    //  // go through the archive.
-    //  for (i = 0; i < size; i++)
-    //    {
-    //      Version       version;
-
-    //      // extract the version;
-    //      if (archive.Extract(version) == elle::Status::Error)
-    //        escape("unable to extract the version");
-
-    //      // register the version.
-    //      if (this->Register(version) == elle::Status::Error)
-    //        escape("unable to register the version");
-    //    }
-
-    //  return elle::Status::Ok;
-    //}
-
-//
 // ---------- fileable --------------------------------------------------------
 //
 
-// XXX Factoriser ça avec nucleus/proton/ImmutableBlock
+// XXX Factoriser ca avec nucleus/proton/ImmutableBlock
 # define STRINGIFY_ADDRESS(address, unique)                                   \
     do {                                                                      \
       try                                                                     \
@@ -231,6 +170,7 @@ namespace nucleus
     namespace
       {
 
+        // XXX[why this function if there is a macro-function?]
         elle::Status StringifyAddress(Address const& address,
                                       elle::String unique)
         {
@@ -251,7 +191,6 @@ namespace nucleus
       elle::String      unique;
 
       STRINGIFY_ADDRESS(address, unique);
-
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::History) ==

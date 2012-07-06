@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       comet
-//
-// license       infinit
-//
-// author        julien quintard   [tue mar 22 12:42:17 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <comet/RAND.hh>
 
 #include <openssl/evp.h>
@@ -25,10 +11,6 @@
 namespace comet
 {
 
-//
-// ---------- macros ----------------------------------------------------------
-//
-
 #define MD_DIGEST_LENGTH        SHA_DIGEST_LENGTH
 
 #define MD_Update(a,b,c)        EVP_DigestUpdate(a,b,c)
@@ -39,10 +21,6 @@ namespace comet
 #define ENTROPY_NEEDED          32  /* require 256 bits = 32 bytes of randomness */
 
 #define STATE_SIZE              1023
-
-//
-// ---------- definitions -----------------------------------------------------
-//
 
   static unsigned int crypto_lock_rand = 0; /* may be set only when a thread
                                              * holds CRYPTO_LOCK_RAND
@@ -56,10 +34,6 @@ namespace comet
   static long md_count[2]={0,0};
   static double entropy=0;
   static int initialized=0;
-
-//
-// ---------- functions -------------------------------------------------------
-//
 
   void RAND_cleanup(void)
   {

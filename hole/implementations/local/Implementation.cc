@@ -1,6 +1,15 @@
 #include <hole/implementations/local/Implementation.hh>
 #include <hole/implementations/local/Local.hh>
+#include <hole/implementations/local/Machine.hh>
 #include <hole/Hole.hh>
+
+#include <nucleus/proton/Network.hh>
+#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/ImmutableBlock.hh>
+#include <nucleus/proton/MutableBlock.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace hole
 {
@@ -16,7 +25,7 @@ namespace hole
       ///
       /// default constructor.
       ///
-      Implementation::Implementation(const nucleus::Network&    network):
+      Implementation::Implementation(const nucleus::proton::Network& network):
         Holeable(network)
       {
       }
@@ -55,8 +64,8 @@ namespace hole
       /// this method stores an immutable block.
       ///
       elle::Status      Implementation::Put(
-                          const nucleus::Address&               address,
-                          const nucleus::ImmutableBlock&         block)
+                          const nucleus::proton::Address& address,
+                          const nucleus::proton::ImmutableBlock& block)
       {
         // forward the request to the machine.
         if (Local::Computer->Put(address, block) == elle::Status::Error)
@@ -69,8 +78,8 @@ namespace hole
       /// this method stores a mutable block.
       ///
       elle::Status      Implementation::Put(
-                          const nucleus::Address&               address,
-                          const nucleus::MutableBlock&          block)
+                          const nucleus::proton::Address& address,
+                          const nucleus::proton::MutableBlock& block)
       {
         // forward the request to the machine.
         if (Local::Computer->Put(address, block) == elle::Status::Error)
@@ -83,8 +92,8 @@ namespace hole
       /// this method retrieves an immutable block.
       ///
       elle::Status      Implementation::Get(
-                          const nucleus::Address&               address,
-                          nucleus::ImmutableBlock&              block)
+                          const nucleus::proton::Address& address,
+                          nucleus::proton::ImmutableBlock& block)
       {
         // forward the request to the machine.
         if (Local::Computer->Get(address, block) == elle::Status::Error)
@@ -97,9 +106,9 @@ namespace hole
       /// this method retrieves a mutable block.
       ///
       elle::Status      Implementation::Get(
-                          const nucleus::Address&               address,
-                          const nucleus::Version&               version,
-                          nucleus::MutableBlock&                block)
+                          const nucleus::proton::Address& address,
+                          const nucleus::proton::Version& version,
+                          nucleus::proton::MutableBlock& block)
       {
         // forward the request to the machine.
         if (Local::Computer->Get(address,
@@ -114,7 +123,7 @@ namespace hole
       /// this method removes a block.
       ///
       elle::Status      Implementation::Kill(
-                          const nucleus::Address&               address)
+                          const nucleus::proton::Address& address)
       {
         // forward the request to the machine.
         if (Local::Computer->Kill(address) == elle::Status::Error)

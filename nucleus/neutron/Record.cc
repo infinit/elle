@@ -1,5 +1,5 @@
-
 #include <nucleus/neutron/Record.hh>
+
 #include <elle/idiom/Open.hh>
 
 namespace nucleus

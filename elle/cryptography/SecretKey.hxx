@@ -69,8 +69,6 @@ namespace elle
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
-# include <elle/cryptography/SecretKey.hh>
-
 ELLE_SERIALIZE_SIMPLE(elle::cryptography::SecretKey,
                       archive,
                       value,

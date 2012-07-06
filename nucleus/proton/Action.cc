@@ -1,4 +1,5 @@
 #include <nucleus/proton/Action.hh>
+#include <nucleus/proton/Block.hh>
 
 #include <elle/idiom/Open.hh>
 

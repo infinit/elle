@@ -64,7 +64,7 @@ namespace elle
       /// re-setting them to their default values.
       ///
       template <typename T>
-      Status            Recycle(const T* = NULL);
+      Status            Recycle(const T* = nullptr);
 
       ///
       /// this method returns the size of the object.

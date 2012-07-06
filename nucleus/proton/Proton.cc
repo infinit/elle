@@ -1,20 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri sep 16 14:00:34 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <nucleus/proton/Proton.hh>
-
-#include <hole/Hole.hh>
+#include <nucleus/proton/Address.hh>
 
 namespace nucleus
 {

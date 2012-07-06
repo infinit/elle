@@ -136,10 +136,10 @@ namespace satellite
                path, fi);
 
       if ((d =
-           static_cast<Crux::Handle*>(::malloc(sizeof(Crux::Handle)))) == NULL)
+           static_cast<Crux::Handle*>(::malloc(sizeof(Crux::Handle)))) == nullptr)
         return -ENOMEM;
 
-      if ((d->dp = ::opendir(way.c_str())) == NULL)
+      if ((d->dp = ::opendir(way.c_str())) == nullptr)
         {
           res = -errno;
           free(d);
@@ -147,7 +147,7 @@ namespace satellite
         }
 
       d->offset = 0;
-      d->entry = NULL;
+      d->entry = nullptr;
 
       fi->fh = reinterpret_cast<unsigned long>(d);
 
@@ -181,7 +181,7 @@ namespace satellite
         {
           ::seekdir(d->dp, offset);
 
-          d->entry = NULL;
+          d->entry = nullptr;
           d->offset = offset;
         }
 
@@ -192,7 +192,7 @@ namespace satellite
 
           if (!d->entry)
             {
-              if ((d->entry = ::readdir(d->dp)) == NULL)
+              if ((d->entry = ::readdir(d->dp)) == nullptr)
                 break;
             }
 
@@ -206,7 +206,7 @@ namespace satellite
           if (filler(buf, d->entry->d_name, &st, nextoff))
             break;
 
-          d->entry = NULL;
+          d->entry = nullptr;
           d->offset = nextoff;
         }
 

@@ -8,8 +8,6 @@
 # include <elle/cryptography/Signature.hh>
 # include <elle/cryptography/KeyPair.hh>
 
-# include <lune/Identity.hh>
-
 ELLE_SERIALIZE_SIMPLE(lune::Identity,
                       archive,
                       value,

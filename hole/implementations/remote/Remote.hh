@@ -1,25 +1,9 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [fri may 20 19:31:08 2011]
-//
-
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_REMOTE_HH
-#define HOLE_IMPLEMENTATIONS_REMOTE_REMOTE_HH
+# define HOLE_IMPLEMENTATIONS_REMOTE_REMOTE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
 
-#include <elle/types.hh>
-
-#include <hole/implementations/remote/Client.hh>
-#include <hole/implementations/remote/Server.hh>
-#include <hole/implementations/remote/Machine.hh>
+# include <hole/implementations/remote/fwd.hh>
 
 namespace hole
 {
@@ -43,10 +27,6 @@ namespace hole
     namespace remote
     {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
       ///
       /// this class controls the remote implementation.
       ///
@@ -62,13 +42,5 @@ namespace hole
     }
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <hole/implementations/remote/Customer.hh>
-#include <hole/implementations/remote/Implementation.hh>
-#include <hole/implementations/remote/Manifest.hh>
 
 #endif

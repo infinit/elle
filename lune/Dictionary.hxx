@@ -7,8 +7,6 @@
 # include <nucleus/proton/Address.hh>
 # include <lune/Map.hh>
 
-# include <lune/Dictionary.hh>
-
 ELLE_SERIALIZE_SIMPLE(lune::Dictionary,
                       archive,
                       value,

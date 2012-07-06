@@ -5,8 +5,6 @@
 
 # include <elle/serialize/Pointer.hh>
 
-# include <nucleus/neutron/Token.hh>
-
 ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Token,
                       archive,
                       value,

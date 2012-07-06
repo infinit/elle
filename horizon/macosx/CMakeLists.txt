@@ -9,7 +9,6 @@ ADD_DEFINITIONS(-D__FreeBSD__=10 -D_FILE_OFFSET_BITS=64 -D_DARWIN_USE_64_BIT_INO
 ADD_LIBRARY(macosx
   Crib.cc
   Crux.cc
-  Event.cc
   FUker.cc
   FUSE.cc
   Handle.cc

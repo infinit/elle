@@ -1,24 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [wed aug 31 00:52:52 2011]
-//
-
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_MACHINE_HH
-#define HOLE_IMPLEMENTATIONS_REMOTE_MACHINE_HH
+# define HOLE_IMPLEMENTATIONS_REMOTE_MACHINE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/radix/Entity.hh>
 
-#include <elle/types.hh>
-
-#include <hole/implementations/remote/Client.hh>
-#include <hole/implementations/remote/Server.hh>
+# include <hole/implementations/remote/fwd.hh>
 
 namespace hole
 {
@@ -26,10 +12,6 @@ namespace hole
   {
     namespace remote
     {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
       ///
       /// this class represents the current host.

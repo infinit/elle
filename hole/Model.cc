@@ -1,12 +1,12 @@
-#include <iostream>
-#include <algorithm>
-#include <string>
-
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Log.hh>
 
 #include <hole/Model.hh>
 
+#include <elle/idiom/Close.hh>
+# include <iostream>
+# include <algorithm>
+# include <string>
 #include <elle/idiom/Open.hh>
 
 namespace hole
@@ -151,11 +151,7 @@ namespace hole
       if (this == &element)
         return true;
 
-      // check the attributes.
-      if (this->type != element.type)
-        return false;
-
-      return true;
+      return (this->type == element.type);
     }
 
     ///
@@ -179,35 +175,5 @@ namespace hole
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the model object.
-    ///
-    //elle::Status        Model::Serialize(elle::Archive& archive) const
-    //{
-    //  // serialize the internal digest.
-    //  if (archive.Serialize(static_cast<elle::Natural8>(this->type)) ==
-    //      elle::Status::Error)
-    //    escape("unable to serialize the attributes");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the model object.
-    /////
-    //elle::Status        Model::Extract(elle::Archive&           archive)
-    //{
-    //  // extract the internal digest.
-    //  if (archive.Extract(reinterpret_cast<elle::Natural8&>(this->type)) ==
-    //      elle::Status::Error)
-    //    escape("unable to extract the attributes");
-
-    //  return elle::Status::Ok;
-    //}
 
 }

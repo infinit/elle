@@ -1,13 +1,13 @@
 #ifndef ELLE_CONCURRENCY_SIGNAL_HH
 # define ELLE_CONCURRENCY_SIGNAL_HH
 
-# include <map>
-
 # include <elle/types.hh>
 
 # include <elle/radix/Parameters.hh>
 # include <elle/radix/Object.hh>
 # include <elle/radix/Entity.hh>
+
+# include <map>
 
 // XXX[this file should be removed in favor for reactor's signal mechanism]
 

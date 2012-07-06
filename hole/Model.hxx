@@ -5,8 +5,6 @@
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
-# include <hole/Model.hh>
-
 ELLE_SERIALIZE_SIMPLE(hole::Model,
                       archive,
                       value,

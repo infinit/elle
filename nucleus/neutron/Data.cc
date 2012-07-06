@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [tue aug  4 13:28:39 2009]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <nucleus/neutron/Data.hh>
 
 #include <nucleus/proton/Contents.hh>
@@ -159,34 +145,6 @@ namespace nucleus
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the block object.
-    ///
-    //elle::Status        Data::Serialize(elle::Archive&          archive) const
-    //{
-    //  // serialize the internal region.
-    //  if (archive.Serialize(this->region) == elle::Status::Error)
-    //    escape("unable to serialize the internal region");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the block object.
-    /////
-    //elle::Status        Data::Extract(elle::Archive&            archive)
-    //{
-    //  // extract the region.
-    //  if (archive.Extract(this->region) == elle::Status::Error)
-    //    escape("unable to extract the region");
-
-    //  return elle::Status::Ok;
-    //}
 
   }
 }

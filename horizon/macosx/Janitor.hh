@@ -1,19 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       horizon
-//
-// license       infinit
-//
-// author        julien quintard   [wed sep  7 12:37:56 2011]
-//
-
 #ifndef HORIZON_MACOSX_JANITOR_HH
-#define HORIZON_MACOSX_JANITOR_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
+# define HORIZON_MACOSX_JANITOR_HH
 
 #include <elle/types.hh>
 
@@ -21,10 +7,6 @@ namespace horizon
 {
   namespace macosx
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// the janitor is responsible for discarding the identifiers it is
@@ -51,10 +33,6 @@ namespace horizon
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <horizon/macosx/Janitor.hxx>
 

@@ -1,19 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [mon aug 10 14:14:40 2009]
-//
-
 #ifndef NUCLEUS_NEUTRON_GENRE_HH
-#define NUCLEUS_NEUTRON_GENRE_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
+# define NUCLEUS_NEUTRON_GENRE_HH
 
 #include <elle/types.hh>
 

@@ -2,11 +2,9 @@
 # define HOLE_IMPLEMENTATIONS_REMOTE_CUSTOMER_HH
 
 # include <elle/types.hh>
-
 # include <elle/radix/Entity.hh>
-# include <elle/concurrency/Signal.hh>
-# include <elle/concurrency/fwd.hh>
 
+# include <elle/concurrency/Signal.hh>
 # include <elle/network/fwd.hh>
 
 namespace hole
@@ -15,10 +13,6 @@ namespace hole
   {
     namespace remote
     {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
       ///
       /// this class represents a client being connected to the server
@@ -49,15 +43,6 @@ namespace hole
         //
         Customer(elle::network::TCPSocket* socket);
         ~Customer();
-
-        //
-        // callbacks
-        //
-        elle::Status            Disconnected();
-        // XXX: const string&
-        elle::Status            Error(elle::String);
-
-        elle::Status            Abort();
 
         //
         // interfaces

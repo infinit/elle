@@ -21,7 +21,7 @@ namespace elle
     ///
     /// this global variable represent the log for the current program.
     ///
-    Log*                Log::Current = NULL;
+    Log*                Log::Current = nullptr;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -43,7 +43,7 @@ namespace elle
     Status              Log::Clean()
     {
       // if the log exists, delete it.
-      if (Log::Current != NULL)
+      if (Log::Current != nullptr)
         delete Log::Current;
 
       return Status::Ok;
@@ -69,7 +69,7 @@ namespace elle
     Status              Log::Instance(Log*&                     log)
     {
       // verify the log's presence.
-      if (Log::Current == NULL)
+      if (Log::Current == nullptr)
         return Status::False;
 
       log = Log::Current;

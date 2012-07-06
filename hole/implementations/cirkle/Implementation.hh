@@ -16,7 +16,8 @@
 //
 
 #include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
+
+#include <nucleus/proton/fwd.hh>
 
 #include <hole/Holeable.hh>
 
@@ -41,7 +42,7 @@ namespace hole
         //
         // constructors & destructors
         //
-        Implementation(const nucleus::Network&);
+        Implementation(const nucleus::proton::Network&);
 
         //
         // interfaces
@@ -51,16 +52,16 @@ namespace hole
         elle::Status            Join();
         elle::Status            Leave();
 
-        elle::Status            Put(const nucleus::Address&,
-                                    const nucleus::ImmutableBlock&);
-        elle::Status            Put(const nucleus::Address&,
-                                    const nucleus::MutableBlock&);
-        elle::Status            Get(const nucleus::Address&,
-                                    nucleus::ImmutableBlock&);
-        elle::Status            Get(const nucleus::Address&,
-                                    const nucleus::Version&,
-                                    nucleus::MutableBlock&);
-        elle::Status            Kill(const nucleus::Address&);
+        elle::Status            Put(const nucleus::proton::Address&,
+                                    const nucleus::proton::ImmutableBlock&);
+        elle::Status            Put(const nucleus::proton::Address&,
+                                    const nucleus::proton::MutableBlock&);
+        elle::Status            Get(const nucleus::proton::Address&,
+                                    nucleus::proton::ImmutableBlock&);
+        elle::Status            Get(const nucleus::proton::Address&,
+                                    const nucleus::proton::Version&,
+                                    nucleus::proton::MutableBlock&);
+        elle::Status            Kill(const nucleus::proton::Address&);
 
         // dumpable
         elle::Status            Dump(const elle::Natural32 = 0) const;

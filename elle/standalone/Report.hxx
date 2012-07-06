@@ -19,7 +19,7 @@ namespace elle
       // release the resources.
       this->~Report();
 
-      if (object == NULL)
+      if (object == nullptr)
         {
           // initialize the object with default values.
           new (this) T;

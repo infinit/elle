@@ -20,7 +20,7 @@ namespace etoile
     Directory::Directory():
       Object(NatureDirectory),
 
-      contents(NULL)
+      contents(nullptr)
     {
     }
 
@@ -30,7 +30,7 @@ namespace etoile
     Directory::~Directory()
     {
       // release the contents.
-      if (this->contents != NULL)
+      if (this->contents != nullptr)
         delete this->contents;
     }
 
@@ -52,7 +52,7 @@ namespace etoile
         escape("unable to dump the inherited object");
 
       // dump the contents.
-      if (this->contents != NULL)
+      if (this->contents != nullptr)
         {
           if (this->contents->Dump(margin + 4) == elle::Status::Error)
             escape("unable to dump the contents");

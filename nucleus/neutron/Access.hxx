@@ -1,8 +1,6 @@
 #ifndef NUCLEUS_NEUTRON_ACCESS_HXX
 # define NUCLEUS_NEUTRON_ACCESS_HXX
 
-# include <elle/idiom/Open.hh>
-
 namespace nucleus
 {
   namespace neutron
@@ -42,15 +40,13 @@ namespace nucleus
   }
 }
 
-#include <elle/idiom/Close.hh>
+//
+// ---------- serialize -------------------------------------------------------
+//
 
 # include <cassert>
 
 # include <elle/serialize/ArchiveSerializer.hxx>
-# include <nucleus/neutron/Range.hh>
-# include <nucleus/neutron/Record.hh>
-# include <nucleus/proton/ContentHashBlock.hh>
-
 
 ELLE_SERIALIZE_SIMPLE(nucleus::neutron::Access,
                       archive,

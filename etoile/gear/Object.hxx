@@ -10,8 +10,6 @@
 # include <nucleus/neutron/Object.hh>
 # include <nucleus/proton/Location.hh>
 
-# include <etoile/gear/Object.hh>
-
 ELLE_SERIALIZE_SIMPLE(etoile::gear::Object,
                       archive,
                       value,

@@ -32,7 +32,7 @@ namespace etoile
     Application::Application()
       : state(StateDisconnected)
       , processing(ProcessingOff)
-      , socket(NULL)
+      , socket(nullptr)
     {}
 
     ///
@@ -41,7 +41,7 @@ namespace etoile
     Application::~Application()
     {
       // delete the socket, if present.
-      if (this->socket != NULL)
+      if (this->socket != nullptr)
         delete this->socket;
     }
 

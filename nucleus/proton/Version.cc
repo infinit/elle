@@ -1,10 +1,11 @@
-
-#include <limits>
+#include <nucleus/proton/Version.hh>
 
 #include <elle/standalone/Log.hh>
 #include <elle/standalone/Report.hh>
 
-#include <nucleus/proton/Version.hh>
+#include <elle/idiom/Close.hh>
+# include <limits>
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -85,11 +86,7 @@ namespace nucleus
       if (this == &element)
         return true;
 
-      // compare the numbers.
-      if (this->number != element.number)
-        return false;
-
-      return true;
+      return (this->number == element.number);
     }
 
     ///
@@ -163,34 +160,6 @@ namespace nucleus
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the version attributes.
-    ///
-    //elle::Status        Version::Serialize(elle::Archive&       archive) const
-    //{
-    //  // serialize the attributes.
-    //  if (archive.Serialize(this->number) == elle::Status::Error)
-    //    escape("unable to serialize the version's attributes");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the attributes.
-    /////
-    //elle::Status        Version::Extract(elle::Archive&         archive)
-    //{
-    //  // extracts the attributes.
-    //  if (archive.Extract(this->number) == elle::Status::Error)
-    //    escape("unable to extract the version's attributes");
-
-    //  return elle::Status::Ok;
-    //}
 
   }
 }

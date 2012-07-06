@@ -1,5 +1,7 @@
 #include <nucleus/neutron/Trait.hh>
 
+#include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 #include <elle/idiom/Open.hh>
 
 namespace nucleus

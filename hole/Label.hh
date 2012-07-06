@@ -10,10 +10,6 @@
 namespace hole
 {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
   ///
   /// this class represents the identifier of a node.
   ///
@@ -67,10 +63,6 @@ namespace hole
   };
 
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 # include <hole/Label.hxx>
 

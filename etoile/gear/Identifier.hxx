@@ -5,8 +5,6 @@
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
-# include <etoile/gear/Identifier.hh>
-
 ELLE_SERIALIZE_SIMPLE(etoile::gear::Identifier,
                       archive,
                       value,

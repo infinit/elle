@@ -4,11 +4,6 @@
 # include <cassert>
 
 # include <elle/serialize/ArchiveSerializer.hxx>
-# include <elle/utility/Time.hh>
-# include <elle/cryptography/PublicKey.hh>
-# include <nucleus/proton/MutableBlock.hh>
-
-# include <nucleus/proton/ImprintBlock.hh>
 
 namespace nucleus
 {

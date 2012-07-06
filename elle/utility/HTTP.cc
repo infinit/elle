@@ -56,7 +56,7 @@ namespace elle
       long              r;
 
       // initialize curl.
-      if ((curl = ::curl_easy_init()) == NULL)
+      if ((curl = ::curl_easy_init()) == nullptr)
         goto _error;
 
       // set the agent.
@@ -129,7 +129,7 @@ namespace elle
       long              r;
 
       // initialize curl.
-      if ((curl = ::curl_easy_init()) == NULL)
+      if ((curl = ::curl_easy_init()) == nullptr)
         goto _error;
 
       // set the agent.
@@ -186,8 +186,8 @@ namespace elle
         ::curl_slist*   headerlist;
 
         // append the content-type to the header list.
-        if ((headerlist = ::curl_slist_append(NULL,
-                                              header.c_str())) == NULL)
+        if ((headerlist = ::curl_slist_append(nullptr,
+                                              header.c_str())) == nullptr)
           goto _error;
 
         // set the list as representing the header.
@@ -243,7 +243,7 @@ namespace elle
       long              r;
 
       // initialize curl.
-      if ((curl = ::curl_easy_init()) == NULL)
+      if ((curl = ::curl_easy_init()) == nullptr)
         goto _error;
 
       // set the agent.
@@ -318,8 +318,8 @@ namespace elle
         ::curl_slist*   headerlist;
 
         // append the content-type to the header list.
-        if ((headerlist = ::curl_slist_append(NULL,
-                                              header.c_str())) == NULL)
+        if ((headerlist = ::curl_slist_append(nullptr,
+                                              header.c_str())) == nullptr)
           goto _error;
 
         // set the list as representing the header.
@@ -370,7 +370,7 @@ namespace elle
       long              r;
 
       // initialize curl.
-      if ((curl = ::curl_easy_init()) == NULL)
+      if ((curl = ::curl_easy_init()) == nullptr)
         goto _error;
 
       // set the agent.

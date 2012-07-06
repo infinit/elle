@@ -21,6 +21,17 @@
 #include <etoile/wall/Path.hh>
 #include <etoile/miscellaneous/Abstract.hh>
 
+#include <nucleus/neutron/Entry.hh>
+#include <nucleus/neutron/Record.hh>
+#include <nucleus/neutron/Permissions.hh>
+#include <nucleus/neutron/Genre.hh>
+#include <nucleus/neutron/Size.hh>
+#include <nucleus/neutron/Index.hh>
+#include <nucleus/neutron/Offset.hh>
+#include <nucleus/neutron/Trait.hh>
+#include <nucleus/neutron/Subject.hh>
+#include <nucleus/neutron/Range.hh>
+
 ELLE_LOG_TRACE_COMPONENT("Infinit.Horizon.Crux");
 
 namespace horizon
@@ -42,7 +53,7 @@ namespace horizon
 
     /// The number of directory entries to fetch from etoile when
     /// performing a Readdir().
-    const nucleus::Size                 Crux::Range = 128;
+    const nucleus::neutron::Size Crux::Range = 128;
 
     /// General-purpose information on the file system object
     /// identified by _path_.
@@ -130,7 +141,7 @@ namespace horizon
           struct ::passwd*      passwd;
 
           // Retrieve the passwd structure associated with this name.
-          if ((passwd = ::getpwnam(name->c_str())) != NULL)
+          if ((passwd = ::getpwnam(name->c_str())) != nullptr)
             {
               // Set the uid to the local user's.
               stat->st_uid = passwd->pw_uid;
@@ -168,7 +179,7 @@ namespace horizon
       stat->st_nlink = 1;
 
       // Convert the times into time_t structures.
-      stat->st_atime = time(NULL);
+      stat->st_atime = time(nullptr);
 
       if (abstract.stamps.creation.Get(stat->st_ctime) ==
           elle::Status::Error)
@@ -183,41 +194,45 @@ namespace horizon
       // Set the mode and permissions.
       switch (abstract.genre)
         {
-        case nucleus::GenreDirectory:
+        case nucleus::neutron::GenreDirectory:
           {
             // Set the object as being a directory.
             stat->st_mode = S_IFDIR;
 
             // If the user has the read permission, allow her to
             // access and read the directory.
-            if ((abstract.permissions.owner & nucleus::PermissionRead) ==
-                nucleus::PermissionRead)
+            if ((abstract.permissions.owner &
+                 nucleus::neutron::PermissionRead) ==
+                nucleus::neutron::PermissionRead)
               stat->st_mode |= S_IRUSR | S_IXUSR;
 
             // If the user has the write permission, allow her to
             // modify the directory content.
-            if ((abstract.permissions.owner & nucleus::PermissionWrite) ==
-                nucleus::PermissionWrite)
+            if ((abstract.permissions.owner &
+                 nucleus::neutron::PermissionWrite) ==
+                nucleus::neutron::PermissionWrite)
               stat->st_mode |= S_IWUSR;
 
             break;
           }
-        case nucleus::GenreFile:
+        case nucleus::neutron::GenreFile:
           {
-            nucleus::Trait*     trait;
+            nucleus::neutron::Trait* trait;
 
             stat->st_mode = S_IFREG;
 
             // If the user has the read permission, allow her to read
             // the file.
-            if ((abstract.permissions.owner & nucleus::PermissionRead) ==
-                nucleus::PermissionRead)
+            if ((abstract.permissions.owner &
+                 nucleus::neutron::PermissionRead) ==
+                nucleus::neutron::PermissionRead)
               stat->st_mode |= S_IRUSR;
 
             // If the user has the write permission, allow her to
             // modify the file content.
-            if ((abstract.permissions.owner & nucleus::PermissionWrite) ==
-                nucleus::PermissionWrite)
+            if ((abstract.permissions.owner &
+                 nucleus::neutron::PermissionWrite) ==
+                nucleus::neutron::PermissionWrite)
               stat->st_mode |= S_IWUSR;
 
             // Retrieve the attribute.
@@ -228,7 +243,7 @@ namespace horizon
                     -EPERM);
 
             // Check the trait.
-            if ((trait != NULL) &&
+            if ((trait != nullptr) &&
                 (trait->value == "true"))
               {
                 // Active the exec bit.
@@ -237,20 +252,22 @@ namespace horizon
 
             break;
           }
-        case nucleus::GenreLink:
+        case nucleus::neutron::GenreLink:
           {
             stat->st_mode = S_IFLNK;
 
             // If the user has the read permission, allow her to read
             // and search the linked object.
-            if ((abstract.permissions.owner & nucleus::PermissionRead) ==
-                nucleus::PermissionRead)
+            if ((abstract.permissions.owner &
+                 nucleus::neutron::PermissionRead) ==
+                nucleus::neutron::PermissionRead)
               stat->st_mode |= S_IRUSR | S_IXUSR;
 
             // If the user has the write permission, allow her to
             // modify the link.
-            if ((abstract.permissions.owner & nucleus::PermissionWrite) ==
-                nucleus::PermissionWrite)
+            if ((abstract.permissions.owner &
+                 nucleus::neutron::PermissionWrite) ==
+                nucleus::neutron::PermissionWrite)
               stat->st_mode |= S_IWUSR;
 
             break;
@@ -316,7 +333,7 @@ namespace horizon
     {
       Handle*           handle;
       off_t             next;
-      nucleus::Record*  record;
+      nucleus::neutron::Record* record;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, %p, %p, %d, %p)",
                      __FUNCTION__, path, buffer, filler, static_cast<elle::Natural64>(offset), info);
@@ -333,18 +350,18 @@ namespace horizon
               -EPERM);
 
       // Check the record.
-      if (!((record != NULL) &&
-            ((record->permissions & nucleus::PermissionRead) ==
-             nucleus::PermissionRead)))
+      if (!((record != nullptr) &&
+            ((record->permissions & nucleus::neutron::PermissionRead) ==
+             nucleus::neutron::PermissionRead)))
         error("the subject does not have the right to read the "
               "directory entries",
               -EACCES);
 
       // Fill the . and .. entries.
       if (offset == 0)
-        filler(buffer, ".", NULL, 1);
+        filler(buffer, ".", nullptr, 1);
       if (offset <= 1)
-        filler(buffer, "..", NULL, 2);
+        filler(buffer, "..", nullptr, 2);
 
       // Compute the offset of the next entry.
       if (offset < 2)
@@ -359,13 +376,13 @@ namespace horizon
 
       while (true)
         {
-          nucleus::Range<nucleus::Entry>                range;
-          nucleus::Range<nucleus::Entry>::Scoutor       scoutor;
+          nucleus::neutron::Range<nucleus::neutron::Entry> range;
+          nucleus::neutron::Range<nucleus::neutron::Entry>::Scoutor scoutor;
 
           // Read the directory entries.
           if (etoile::wall::Directory::Consult(
                 handle->identifier,
-                static_cast<nucleus::Index>(offset),
+                static_cast<nucleus::neutron::Index>(offset),
                 Crux::Range,
                 range) == elle::Status::Error)
             error("unable to retrieve some directory entries",
@@ -376,10 +393,10 @@ namespace horizon
                scoutor != range.container.end();
                scoutor++)
             {
-              nucleus::Entry*   entry = *scoutor;
+              nucleus::neutron::Entry* entry = *scoutor;
 
               // Fill the buffer with filler().
-              if (filler(buffer, entry->name.c_str(), NULL, next) == 1)
+              if (filler(buffer, entry->name.c_str(), nullptr, next) == 1)
                 return (0);
 
               // Compute the offset of the next entry.
@@ -423,13 +440,14 @@ namespace horizon
     int                 Crux::Mkdir(const char*                 path,
                                     mode_t                      mode)
     {
-      nucleus::Permissions      permissions = nucleus::PermissionNone;
+      nucleus::neutron::Permissions permissions =
+        nucleus::neutron::PermissionNone;
       etoile::path::Slab        name;
       etoile::path::Way         way(etoile::path::Way(path), name);
       etoile::path::Chemin      chemin;
       etoile::gear::Identifier  directory;
       etoile::gear::Identifier  subdirectory;
-      nucleus::Record*          record;
+      nucleus::neutron::Record* record;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mode);
 
@@ -453,9 +471,9 @@ namespace horizon
               directory);
 
       // Check the record.
-      if (!((record != NULL) &&
-            ((record->permissions & nucleus::PermissionWrite) ==
-             nucleus::PermissionWrite)))
+      if (!((record != nullptr) &&
+            ((record->permissions & nucleus::neutron::PermissionWrite) ==
+             nucleus::neutron::PermissionWrite)))
         error("the subject does not have the right to create a "
               "subdirectory in this directory",
               -EACCES,
@@ -469,10 +487,10 @@ namespace horizon
 
       // Compute the permissions.
       if (mode & S_IRUSR)
-        permissions |= nucleus::PermissionRead;
+        permissions |= nucleus::neutron::PermissionRead;
 
       if (mode & S_IWUSR)
-        permissions |= nucleus::PermissionWrite;
+        permissions |= nucleus::neutron::PermissionWrite;
 
       // Set the owner permissions.
       if (etoile::wall::Access::Grant(subdirectory,
@@ -514,8 +532,8 @@ namespace horizon
       etoile::gear::Identifier          directory;
       etoile::gear::Identifier          subdirectory;
       etoile::miscellaneous::Abstract   abstract;
-      nucleus::Record*                  record;
-      nucleus::Subject                  subject;
+      nucleus::neutron::Record* record;
+      nucleus::neutron::Subject subject;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s)", __FUNCTION__, path);
 
@@ -539,9 +557,9 @@ namespace horizon
               directory);
 
       // Check the record.
-      if (!((record != NULL) &&
-            ((record->permissions & nucleus::PermissionWrite) ==
-             nucleus::PermissionWrite)))
+      if (!((record != nullptr) &&
+            ((record->permissions & nucleus::neutron::PermissionWrite) ==
+             nucleus::neutron::PermissionWrite)))
         error("the subject does not have the right to remove "
               "a subdirectory from this directory",
               -EACCES,
@@ -610,7 +628,7 @@ namespace horizon
       etoile::miscellaneous::Abstract   abstract;
       etoile::path::Way                 way(path);
       etoile::path::Chemin              chemin;
-      nucleus::Record*                  record;
+      nucleus::neutron::Record* record;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mask);
 
@@ -640,7 +658,7 @@ namespace horizon
               identifier);
 
       // Check the record.
-      if (record == NULL)
+      if (record == nullptr)
         goto _access;
 
       // Check if the permissions match the mask for execution.
@@ -648,19 +666,19 @@ namespace horizon
         {
           switch (abstract.genre)
             {
-            case nucleus::GenreDirectory:
+            case nucleus::neutron::GenreDirectory:
               {
                 // Check if the user has the read permission meaning
                 // the exec bit
-                if ((record->permissions & nucleus::PermissionRead) !=
-                    nucleus::PermissionRead)
+                if ((record->permissions & nucleus::neutron::PermissionRead) !=
+                    nucleus::neutron::PermissionRead)
                   goto _access;
 
                 break;
               }
-            case nucleus::GenreFile:
+            case nucleus::neutron::GenreFile:
               {
-                nucleus::Trait* trait;
+                nucleus::neutron::Trait* trait;
 
                 // Get the perm::exec attribute
                 if (etoile::wall::Attributes::Get(identifier,
@@ -671,15 +689,15 @@ namespace horizon
                         identifier);
 
                 // Check the trait.
-                if (!((trait != NULL) &&
+                if (!((trait != nullptr) &&
                       (trait->value == "true")))
                   goto _access;
 
                 break;
               }
-            case nucleus::GenreLink:
+            case nucleus::neutron::GenreLink:
               {
-                nucleus::Trait* trait;
+                nucleus::neutron::Trait* trait;
 
                 // Get the perm::exec attribute
                 if (etoile::wall::Attributes::Get(identifier,
@@ -690,7 +708,7 @@ namespace horizon
                         identifier);
 
                 // Check the trait.
-                if (!((trait != NULL) &&
+                if (!((trait != nullptr) &&
                       (trait->value == "true")))
                   goto _access;
 
@@ -702,16 +720,16 @@ namespace horizon
       // Check if the permissions match the mask for reading.
       if (mask & R_OK)
         {
-          if ((record->permissions & nucleus::PermissionRead) !=
-              nucleus::PermissionRead)
+          if ((record->permissions & nucleus::neutron::PermissionRead) !=
+              nucleus::neutron::PermissionRead)
             goto _access;
         }
 
       // Check if the permissions match the mask for writing.
       if (mask & W_OK)
         {
-          if ((record->permissions & nucleus::PermissionWrite) !=
-              nucleus::PermissionWrite)
+          if ((record->permissions & nucleus::neutron::PermissionWrite) !=
+              nucleus::neutron::PermissionWrite)
             goto _access;
         }
 
@@ -739,12 +757,13 @@ namespace horizon
     int                 Crux::Chmod(const char*                 path,
                                     mode_t                      mode)
     {
-      nucleus::Permissions              permissions = nucleus::PermissionNone;
+      nucleus::neutron::Permissions permissions =
+        nucleus::neutron::PermissionNone;
       etoile::gear::Identifier          identifier;
       etoile::path::Way                 way(path);
       etoile::path::Chemin              chemin;
       etoile::miscellaneous::Abstract   abstract;
-      nucleus::Subject                  subject;
+      nucleus::neutron::Subject subject;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, 0%o)", __FUNCTION__, path, mode);
 
@@ -767,10 +786,10 @@ namespace horizon
 
       // Compute the permissions.
       if (mode & S_IRUSR)
-        permissions |= nucleus::PermissionRead;
+        permissions |= nucleus::neutron::PermissionRead;
 
       if (mode & S_IWUSR)
-        permissions |= nucleus::PermissionWrite;
+        permissions |= nucleus::neutron::PermissionWrite;
 
       // Resolve the path.
       if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -851,7 +870,7 @@ namespace horizon
           // on the file genre.
           switch (abstract.genre)
             {
-            case nucleus::GenreFile:
+            case nucleus::neutron::GenreFile:
               {
                 // Set the perm::exec attribute
                 if (etoile::wall::Attributes::Set(identifier,
@@ -863,8 +882,8 @@ namespace horizon
 
                 break;
               }
-            case nucleus::GenreDirectory:
-            case nucleus::GenreLink:
+            case nucleus::neutron::GenreDirectory:
+            case nucleus::neutron::GenreLink:
               {
                 // Nothing to do for the other genres.
 
@@ -907,7 +926,7 @@ namespace horizon
       etoile::path::Way                 way(path);
       etoile::path::Chemin              chemin;
       etoile::miscellaneous::Abstract   abstract;
-      nucleus::Subject                  subject;
+      nucleus::neutron::Subject subject;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, %s, %p, %d, 0x%x)", __FUNCTION__, path, name, value, size, flags);
 
@@ -968,7 +987,7 @@ namespace horizon
       etoile::gear::Identifier  identifier;
       etoile::path::Way         way(path);
       etoile::path::Chemin      chemin;
-      nucleus::Trait*           trait;
+      nucleus::neutron::Trait* trait;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, %s, %p, %d)", __FUNCTION__, path, name, value, size);
 
@@ -996,7 +1015,7 @@ namespace horizon
               -EPERM);
 
       // Test if a trait has been found.
-      if (trait == NULL)
+      if (trait == nullptr)
         return (-ENOATTR);
 
       // If the size is null, it means that this call must be
@@ -1024,8 +1043,8 @@ namespace horizon
       etoile::gear::Identifier                  identifier;
       etoile::path::Way                         way(path);
       etoile::path::Chemin                      chemin;
-      nucleus::Range<nucleus::Trait>            range;
-      nucleus::Range<nucleus::Trait>::Scoutor   scoutor;
+      nucleus::neutron::Range<nucleus::neutron::Trait> range;
+      nucleus::neutron::Range<nucleus::neutron::Trait>::Scoutor scoutor;
       size_t                                    offset;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, %p, %d)", __FUNCTION__, path, list, size);
@@ -1060,7 +1079,7 @@ namespace horizon
                scoutor != range.container.end();
                scoutor++)
             {
-              nucleus::Trait*   trait = *scoutor;
+              nucleus::neutron::Trait* trait = *scoutor;
 
               // Compute the size.
               size = size + trait->name.length() + 1;
@@ -1076,7 +1095,7 @@ namespace horizon
                scoutor != range.container.end();
                scoutor++)
             {
-              nucleus::Trait*   trait = *scoutor;
+              nucleus::neutron::Trait* trait = *scoutor;
 
               // Concatenate the name.
               ::strcpy(list + offset,
@@ -1098,7 +1117,7 @@ namespace horizon
       etoile::path::Way                 way(path);
       etoile::path::Chemin              chemin;
       etoile::miscellaneous::Abstract   abstract;
-      nucleus::Subject                  subject;
+      nucleus::neutron::Subject subject;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, path, name);
 
@@ -1159,7 +1178,7 @@ namespace horizon
       etoile::path::Way         from(etoile::path::Way(source), name);
       etoile::path::Way         to(target);
       etoile::path::Chemin      chemin;
-      nucleus::Record*          record;
+      nucleus::neutron::Record* record;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, %s)", __FUNCTION__, target, source);
 
@@ -1183,9 +1202,9 @@ namespace horizon
               directory);
 
       // Check the record.
-      if (!((record != NULL) &&
-            ((record->permissions & nucleus::PermissionWrite) ==
-             nucleus::PermissionWrite)))
+      if (!((record != nullptr) &&
+            ((record->permissions & nucleus::neutron::PermissionWrite) ==
+             nucleus::neutron::PermissionWrite)))
         error("the subject does not have the right to create a link in "
               "this directory",
               -EACCES,
@@ -1235,7 +1254,7 @@ namespace horizon
       etoile::path::Way         way(path);
       etoile::path::Chemin      chemin;
       etoile::path::Way         target;
-      nucleus::Record*          record;
+      nucleus::neutron::Record* record;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, %p, %d)", __FUNCTION__, path, buffer, static_cast<elle::Natural64>(size));
 
@@ -1258,9 +1277,9 @@ namespace horizon
               identifier);
 
       // Check the record.
-      if (!((record != NULL) &&
-            ((record->permissions & nucleus::PermissionRead) ==
-             nucleus::PermissionRead)))
+      if (!((record != nullptr) &&
+            ((record->permissions & nucleus::neutron::PermissionRead) ==
+             nucleus::neutron::PermissionRead)))
         error("the subject does not have the right to read this link",
               -EACCES,
               identifier);
@@ -1292,13 +1311,14 @@ namespace horizon
                                      mode_t                     mode,
                                      struct ::fuse_file_info*   info)
     {
-      nucleus::Permissions      permissions = nucleus::PermissionNone;
+      nucleus::neutron::Permissions permissions =
+        nucleus::neutron::PermissionNone;
       etoile::path::Slab        name;
       etoile::path::Way         way(etoile::path::Way(path), name);
       etoile::path::Chemin      chemin;
       etoile::gear::Identifier  directory;
       etoile::gear::Identifier  file;
-      nucleus::Record*          record;
+      nucleus::neutron::Record* record;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, 0%o, %p)", __FUNCTION__, path, mode, info);
 
@@ -1322,9 +1342,9 @@ namespace horizon
               directory);
 
       // Check the record.
-      if (!((record != NULL) &&
-            ((record->permissions & nucleus::PermissionWrite) ==
-             nucleus::PermissionWrite)))
+      if (!((record != nullptr) &&
+            ((record->permissions & nucleus::neutron::PermissionWrite) ==
+             nucleus::neutron::PermissionWrite)))
         error("the subject does not have the right to create a file in "
               "this directory",
               -EACCES,
@@ -1337,7 +1357,8 @@ namespace horizon
               directory);
 
       // Set default permissions: read and write.
-      permissions = nucleus::PermissionRead | nucleus::PermissionWrite;
+      permissions =
+        nucleus::neutron::PermissionRead | nucleus::neutron::PermissionWrite;
 
       // Set the owner permissions.
       if (etoile::wall::Access::Grant(file,
@@ -1398,13 +1419,13 @@ namespace horizon
 
       // Compute the future permissions as the current ones are
       // temporary.
-      permissions = nucleus::PermissionNone;
+      permissions = nucleus::neutron::PermissionNone;
 
       if (mode & S_IRUSR)
-        permissions |= nucleus::PermissionRead;
+        permissions |= nucleus::neutron::PermissionRead;
 
       if (mode & S_IWUSR)
-        permissions |= nucleus::PermissionWrite;
+        permissions |= nucleus::neutron::PermissionWrite;
 
       // Store the identifier in the file handle.
       info->fh =
@@ -1458,7 +1479,7 @@ namespace horizon
     {
       Handle*           handle;
       elle::standalone::Region      region;
-      nucleus::Record*  record;
+      nucleus::neutron::Record* record;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, %p, %d, %d, %p)",
                      __FUNCTION__, path, buffer, static_cast<elle::Natural64>(size), static_cast<elle::Natural64>(offset), info);
@@ -1474,9 +1495,9 @@ namespace horizon
               -EPERM);
 
       // Check the record.
-      if (!((record != NULL) &&
-            ((record->permissions & nucleus::PermissionWrite) ==
-             nucleus::PermissionWrite)))
+      if (!((record != nullptr) &&
+            ((record->permissions & nucleus::neutron::PermissionWrite) ==
+             nucleus::neutron::PermissionWrite)))
         error("the subject does not have the right to update this file",
               -EACCES);
 
@@ -1487,9 +1508,10 @@ namespace horizon
               -EPERM);
 
       // Write the file.
-      if (etoile::wall::File::Write(handle->identifier,
-                                    static_cast<nucleus::Offset>(offset),
-                                    region) == elle::Status::Error)
+      if (etoile::wall::File::Write(
+            handle->identifier,
+            static_cast<nucleus::neutron::Offset>(offset),
+            region) == elle::Status::Error)
         error("unable to write the file",
               -EPERM);
 
@@ -1505,7 +1527,7 @@ namespace horizon
     {
       Handle*           handle;
       elle::standalone::Region      region;
-      nucleus::Record*  record;
+      nucleus::neutron::Record* record;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, %p, %d, %d, %p)",
                      __FUNCTION__, path, buffer, static_cast<elle::Natural64>(size), static_cast<elle::Natural64>(offset), info);
@@ -1521,17 +1543,18 @@ namespace horizon
               -EPERM);
 
       // Check the record.
-      if (!((record != NULL) &&
-            ((record->permissions & nucleus::PermissionRead) ==
-             nucleus::PermissionRead)))
+      if (!((record != nullptr) &&
+            ((record->permissions & nucleus::neutron::PermissionRead) ==
+             nucleus::neutron::PermissionRead)))
         error("the subject does not have the right to read this file",
               -EACCES);
 
       // Read the file.
-      if (etoile::wall::File::Read(handle->identifier,
-                                   static_cast<nucleus::Offset>(offset),
-                                   static_cast<nucleus::Size>(size),
-                                   region) == elle::Status::Error)
+      if (etoile::wall::File::Read(
+            handle->identifier,
+            static_cast<nucleus::neutron::Offset>(offset),
+            static_cast<nucleus::neutron::Size>(size),
+            region) == elle::Status::Error)
         error("unable to read the file",
               -EPERM);
 
@@ -1590,7 +1613,7 @@ namespace horizon
                                         struct ::fuse_file_info* info)
     {
       Handle*           handle;
-      nucleus::Record*  record;
+      nucleus::neutron::Record* record;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s, %d, %p)", __FUNCTION__, path, static_cast<elle::Natural64>(size), info);
 
@@ -1605,9 +1628,9 @@ namespace horizon
               -EPERM);
 
       // Check the record.
-      if (!((record != NULL) &&
-            ((record->permissions & nucleus::PermissionWrite) ==
-             nucleus::PermissionWrite)))
+      if (!((record != nullptr) &&
+            ((record->permissions & nucleus::neutron::PermissionWrite) ==
+             nucleus::neutron::PermissionWrite)))
         error("the subject does not have the right to modify the size of "
               "this file",
               -EACCES);
@@ -1706,8 +1729,8 @@ namespace horizon
           // since the source and target directory are identical.
           etoile::path::Chemin          chemin;
           etoile::gear::Identifier      directory;
-          nucleus::Entry*               entry;
-          nucleus::Record*              record;
+          nucleus::neutron::Entry* entry;
+          nucleus::neutron::Record* record;
 
           // Resolve the path.
           if (etoile::wall::Path::Resolve(from, chemin) == elle::Status::Error)
@@ -1729,9 +1752,9 @@ namespace horizon
                   directory);
 
           // Check the record.
-          if (!((record != NULL) &&
-                ((record->permissions & nucleus::PermissionWrite) ==
-                 nucleus::PermissionWrite)))
+          if (!((record != nullptr) &&
+                ((record->permissions & nucleus::neutron::PermissionWrite) ==
+                 nucleus::neutron::PermissionWrite)))
             error("the subject does not have the right to rename this "
                   "directory entry",
                   -EACCES,
@@ -1747,7 +1770,7 @@ namespace horizon
 
           // Check if an entry actually exist for the target name
           // meaning that an object is about to get overwritten.
-          if (entry != NULL)
+          if (entry != nullptr)
             {
               // In this case, the target object must be destroyed.
               int               result;
@@ -1790,8 +1813,8 @@ namespace horizon
             etoile::gear::Identifier    from;
             etoile::gear::Identifier    to;
           }                             identifier;
-          nucleus::Entry*               entry;
-          nucleus::Record*              record;
+          nucleus::neutron::Entry* entry;
+          nucleus::neutron::Record* record;
 
           // Resolve the path.
           if (etoile::wall::Path::Resolve(way, chemin) == elle::Status::Error)
@@ -1829,9 +1852,9 @@ namespace horizon
                   identifier.object, identifier.to);
 
           // Check the record.
-          if (!((record != NULL) &&
-                ((record->permissions & nucleus::PermissionWrite) ==
-                 nucleus::PermissionWrite)))
+          if (!((record != nullptr) &&
+                ((record->permissions & nucleus::neutron::PermissionWrite) ==
+                 nucleus::neutron::PermissionWrite)))
             error("the subject does not have the right to rename this "
                   "directory entry",
                   -EACCES,
@@ -1860,9 +1883,9 @@ namespace horizon
                   identifier.object, identifier.to, identifier.from);
 
           // Check the record.
-          if (!((record != NULL) &&
-                ((record->permissions & nucleus::PermissionWrite) ==
-                 nucleus::PermissionWrite)))
+          if (!((record != nullptr) &&
+                ((record->permissions & nucleus::neutron::PermissionWrite) ==
+                 nucleus::neutron::PermissionWrite)))
             error("the subject does not have the right to rename this "
                   "directory entry",
                   -EACCES,
@@ -1878,7 +1901,7 @@ namespace horizon
 
           // Check if an entry actually exist for the target name
           // meaning that an object is about to get overwritten.
-          if (entry != NULL)
+          if (entry != nullptr)
             {
               // In this case, the target object must be destroyed.
               int               result;
@@ -1948,8 +1971,8 @@ namespace horizon
       etoile::gear::Identifier          directory;
       etoile::gear::Identifier          identifier;
       etoile::miscellaneous::Abstract   abstract;
-      nucleus::Record*                  record;
-      nucleus::Subject                  subject;
+      nucleus::neutron::Record* record;
+      nucleus::neutron::Subject subject;
 
       ELLE_LOG_TRACE_SCOPE("%s(%s)", __FUNCTION__, path);
 
@@ -2007,9 +2030,9 @@ namespace horizon
               identifier, directory);
 
       // Check the record.
-      if (!((record != NULL) &&
-            ((record->permissions & nucleus::PermissionWrite) ==
-             nucleus::PermissionWrite)))
+      if (!((record != nullptr) &&
+            ((record->permissions & nucleus::neutron::PermissionWrite) ==
+             nucleus::neutron::PermissionWrite)))
         error("the subject does not have the right to remove an entry from "
               "this directory",
               -EACCES,
@@ -2018,7 +2041,7 @@ namespace horizon
       // Remove the object according to its type: file or link.
       switch (abstract.genre)
         {
-        case nucleus::GenreFile:
+        case nucleus::neutron::GenreFile:
           {
             // Destroy the file.
             if (etoile::wall::File::Destroy(identifier) == elle::Status::Error)
@@ -2028,7 +2051,7 @@ namespace horizon
 
             break;
           }
-        case nucleus::GenreLink:
+        case nucleus::neutron::GenreLink:
           {
             // Destroy the link.
             if (etoile::wall::Link::Destroy(identifier) == elle::Status::Error)
@@ -2038,7 +2061,7 @@ namespace horizon
 
             break;
           }
-        case nucleus::GenreDirectory:
+        case nucleus::neutron::GenreDirectory:
           {
             error("meaningless operation: unlink on a directory object",
                   -EPERM);

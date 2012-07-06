@@ -6,6 +6,7 @@
 #include <nucleus/neutron/Author.hh>
 #include <nucleus/neutron/Role.hh>
 #include <nucleus/neutron/Index.hh>
+#include <nucleus/neutron/Access.hh>
 
 #include <agent/Agent.hh>
 

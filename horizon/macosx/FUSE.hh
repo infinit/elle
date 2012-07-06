@@ -1,48 +1,21 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       horizon
-//
-// license       infinit
-//
-// author        julien quintard   [fri jul 31 22:11:24 2009]
-//
-
 #ifndef HORIZON_MACOSX_FUSE_HH
-#define HORIZON_MACOSX_FUSE_HH
+# define HORIZON_MACOSX_FUSE_HH
 
-//
-// ---------- macros ----------------------------------------------------------
-//
+# ifndef FUSE_USE_VERSION
+#  define FUSE_USE_VERSION               26
+# endif
 
-#ifndef FUSE_USE_VERSION
-# define FUSE_USE_VERSION               26
-#endif
+# include <elle/types.hh>
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <Infinit.hh>
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
-#include <lune/Lune.hh>
-
-#include <horizon/macosx/FUker.hh>
-
-#include <elle/idiom/Close.hh>
-# define _GNU_SOURCE
-# include <fuse/fuse.h>
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  define _GNU_SOURCE
+#  include <fuse/fuse.h>
+# include <elle/idiom/Open.hh>
 
 namespace horizon
 {
   namespace macosx
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class contains everything related to FUSE.

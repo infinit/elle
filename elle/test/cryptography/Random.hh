@@ -54,7 +54,7 @@ namespace elle
         Natural32       i;
 
         // allocate a buffer.
-        if ((buffer = (Byte*)::malloc(size)) == NULL)
+        if ((buffer = (Byte*)::malloc(size)) == nullptr)
           escape("unable to allocate memory");
 
         // randomize the buffer contents.

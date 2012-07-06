@@ -5,6 +5,19 @@
 #include <etoile/depot/Depot.hh>
 #include <etoile/gear/Object.hh>
 
+#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Version.hh>
+#include <nucleus/proton/State.hh>
+#include <nucleus/neutron/Access.hh>
+#include <nucleus/neutron/Permissions.hh>
+#include <nucleus/neutron/Subject.hh>
+#include <nucleus/neutron/Role.hh>
+#include <nucleus/neutron/Record.hh>
+#include <nucleus/neutron/Index.hh>
+#include <nucleus/neutron/Size.hh>
+#include <nucleus/neutron/Range.hh>
+#include <nucleus/neutron/Token.hh>
+
 #include <agent/Agent.hh>
 #include <hole/Hole.hh>
 
@@ -25,18 +38,18 @@ namespace etoile
                           gear::Object&                         context)
     {
       // check if the access has already been opened.
-      if (context.access != NULL)
+      if (context.access != nullptr)
         return elle::Status::Ok;
 
       // allocate an access block.
-      context.access = new nucleus::Access;
+      context.access = new nucleus::neutron::Access;
 
       // if an access block is referenced in the object.
-      if (context.object.meta.access != nucleus::Address::Null)
+      if (context.object.meta.access != nucleus::proton::Address::Null)
         {
           // retrieve the access block.
           if (depot::Depot::Pull(context.object.meta.access,
-                                 nucleus::Version::Any,
+                                 nucleus::proton::Version::Any,
                                  *context.access) == elle::Status::Error)
             escape("unable to load the access block");
         }
@@ -54,15 +67,15 @@ namespace etoile
     ///
     elle::Status        Access::Grant(
                           gear::Object&                         context,
-                          const nucleus::Subject&               subject,
-                          const nucleus::Permissions&           permissions)
+                          const nucleus::neutron::Subject& subject,
+                          const nucleus::neutron::Permissions& permissions)
     {
       // determine the rights over the object.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // verify that the user can modify the accesses.
-      if (context.rights.role != nucleus::RoleOwner)
+      if (context.rights.role != nucleus::neutron::RoleOwner)
         escape("the user does not seem to have the permission to modify "
                "the access permissions");
 
@@ -93,7 +106,7 @@ namespace etoile
           if (context.access->Exist(subject) == elle::Status::True)
             {
               // update the access block according to the given permissions.
-              if (permissions == nucleus::PermissionNone)
+              if (permissions == nucleus::neutron::PermissionNone)
                 {
                   //
                   // in this case, the subject is being removed all his
@@ -128,7 +141,8 @@ namespace etoile
           else
             {
               // allocate a new record.
-              std::unique_ptr<nucleus::Record> record{new nucleus::Record};
+              std::unique_ptr<nucleus::neutron::Record>
+                record{new nucleus::neutron::Record};
 
               // create the new record.
               if (record->Update(subject,
@@ -180,8 +194,8 @@ namespace etoile
     ///
     elle::Status        Access::Lookup(
                           gear::Object&                         context,
-                          const nucleus::Subject&               subject,
-                          nucleus::Record*&                     record)
+                          const nucleus::neutron::Subject& subject,
+                          nucleus::neutron::Record*& record)
     {
       // try to make the best of this call.
       if (agent::Agent::Subject == subject)
@@ -250,9 +264,10 @@ namespace etoile
     ///
     elle::Status        Access::Consult(
                           gear::Object&                         context,
-                          const nucleus::Index&                 index,
-                          const nucleus::Size&                  size,
-                          nucleus::Range<nucleus::Record>&      range)
+                          const nucleus::neutron::Index& index,
+                          const nucleus::neutron::Size& size,
+                          nucleus::neutron::Range<
+                            nucleus::neutron::Record>& range)
     {
       // open the access.
       if (Access::Open(context) == elle::Status::Error)
@@ -263,8 +278,8 @@ namespace etoile
       if (index == 0)
         {
           // create the record.
-          auto record = std::unique_ptr<nucleus::Record>(
-              new nucleus::Record(context.object.meta.owner.record)
+          auto record = std::unique_ptr<nucleus::neutron::Record>(
+            new nucleus::neutron::Record(context.object.meta.owner.record)
           );
 
           // add the record to the range.
@@ -300,14 +315,14 @@ namespace etoile
     ///
     elle::Status        Access::Revoke(
                           gear::Object&                         context,
-                          const nucleus::Subject&               subject)
+                          const nucleus::neutron::Subject& subject)
     {
       // determine the rights over the object.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
 
       // verify that the user can modify the accesses.
-      if (context.rights.role != nucleus::RoleOwner)
+      if (context.rights.role != nucleus::neutron::RoleOwner)
         escape("the user does not seem to have the permission to revoke "
                "access permissions");
 
@@ -321,7 +336,7 @@ namespace etoile
           // update the permissions.
           if (context.object.Administrate(
                 context.object.meta.attributes,
-                nucleus::PermissionNone) == elle::Status::Error)
+                nucleus::neutron::PermissionNone) == elle::Status::Error)
             escape("unable to administrate the object");
         }
       else
@@ -359,7 +374,7 @@ namespace etoile
         {
           // update the context rights.
           if (Rights::Update(context,
-                             nucleus::PermissionNone) == elle::Status::Error)
+                             nucleus::neutron::PermissionNone) == elle::Status::Error)
             escape("unable to update the rigths");
         }
 
@@ -382,7 +397,7 @@ namespace etoile
                           gear::Object&                         context,
                           elle::cryptography::SecretKey const&                key)
     {
-      nucleus::Token    token;
+      nucleus::neutron::Token token;
 
       // open the access.
       if (Access::Open(context) == elle::Status::Error)
@@ -419,8 +434,8 @@ namespace etoile
         escape("unable to determine the rights");
 
       // finally, if the user has the permission to read, update its rights.
-      if ((context.rights.permissions & nucleus::PermissionRead) ==
-          nucleus::PermissionRead)
+      if ((context.rights.permissions & nucleus::neutron::PermissionRead) ==
+          nucleus::neutron::PermissionRead)
         {
           // recompute the rights with the new key.
           if (Rights::Recompute(context) == elle::Status::Error)
@@ -459,7 +474,7 @@ namespace etoile
             context.object.data.contents,
             context.object.data.size,
             context.object.meta.access,
-            nucleus::Token::Null) == elle::Status::Error)
+            nucleus::neutron::Token::Null) == elle::Status::Error)
         escape("unable to update the object");
 
       // determine the rights over the object.
@@ -467,8 +482,8 @@ namespace etoile
         escape("unable to determine the rights");
 
       // finally, if the user has the permission to read, update its rights.
-      if ((context.rights.permissions & nucleus::PermissionRead) ==
-          nucleus::PermissionRead)
+      if ((context.rights.permissions & nucleus::neutron::PermissionRead) ==
+          nucleus::neutron::PermissionRead)
         {
           // recompute the rights.
           if (Rights::Recompute(context) == elle::Status::Error)
@@ -489,7 +504,7 @@ namespace etoile
                           gear::Object&                         context)
     {
       // if the block is present.
-      if (context.object.meta.access != nucleus::Address::Null)
+      if (context.object.meta.access != nucleus::proton::Address::Null)
         {
           // mark the access block for removal.
           if (context.transcript.Wipe(context.object.meta.access) ==
@@ -511,18 +526,18 @@ namespace etoile
     elle::Status        Access::Close(
                           gear::Object&                         context)
     {
-      nucleus::Size     size;
+      nucleus::neutron::Size size;
 
       //
       // first, check if the block has been modified i.e exists and is dirty.
       //
       {
         // if there is no loaded access, then there is nothing to do.
-        if (context.access == NULL)
+        if (context.access == nullptr)
           return elle::Status::Ok;
 
         // if the access has not changed, do nothing.
-        if (context.access->state == nucleus::StateClean)
+        if (context.access->state == nucleus::proton::StateClean)
           return elle::Status::Ok;
       }
 
@@ -567,13 +582,13 @@ namespace etoile
                 context.object.author,
                 context.object.data.contents,
                 context.object.data.size,
-                nucleus::Address::Null,
+                nucleus::proton::Address::Null,
                 context.object.meta.owner.token) == elle::Status::Error)
             escape("unable to update the object");
         }
       else
         {
-          nucleus::Address      address;
+          nucleus::proton::Address address;
 
           //
           // otherwise, compute the address of the new access block and
@@ -598,7 +613,7 @@ namespace etoile
             escape("unable to bind the access");
 
           // set the state as consistent.
-          context.access->state = nucleus::StateConsistent;
+          context.access->state = nucleus::proton::StateConsistent;
 
           // finally, update the object with the new access address.
           if (context.object.Update(
@@ -635,12 +650,12 @@ namespace etoile
     /// inconsistent.
     ///
     elle::Status        Access::Audit(gear::Object&             context,
-                                      const nucleus::Subject&   subject)
+                                      const nucleus::neutron::Subject& subject)
     {
       // depending on the current author's role.
       switch (context.object.author.role)
         {
-        case nucleus::RoleOwner:
+        case nucleus::neutron::RoleOwner:
           {
             //
             // nothing to do in this case: the owner is changing the
@@ -651,7 +666,7 @@ namespace etoile
 
             break;
           }
-        case nucleus::RoleLord:
+        case nucleus::neutron::RoleLord:
           {
             //
             // in this case however, the author is a lord.
@@ -672,7 +687,7 @@ namespace etoile
             // could very well have been removed.
             if (context.access->Exist(subject) == elle::Status::True)
               {
-                nucleus::Record*        record;
+                nucleus::neutron::Record*        record;
 
                 // retrieve the access record.
                 if (context.access->Lookup(subject,
@@ -683,8 +698,8 @@ namespace etoile
                 // write permission.
                 //
                 // if he has, nothing has to be done.
-                if ((record->permissions & nucleus::PermissionWrite) ==
-                    nucleus::PermissionWrite)
+                if ((record->permissions & nucleus::neutron::PermissionWrite) ==
+                    nucleus::neutron::PermissionWrite)
                   break;
               }
 
@@ -696,7 +711,7 @@ namespace etoile
 
             break;
           }
-        case nucleus::RoleVassal:
+        case nucleus::neutron::RoleVassal:
           {
             // XXX to implement.
 
@@ -717,7 +732,7 @@ namespace etoile
     ///
     elle::Status        Access::Regulate(gear::Object&          context)
     {
-      nucleus::Author   author;
+      nucleus::neutron::Author author;
 
       // build a new author, representing the object's owner.
       if (author.Create() == elle::Status::Error)

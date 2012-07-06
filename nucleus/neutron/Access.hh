@@ -3,13 +3,12 @@
 
 # include <elle/types.hh>
 # include <elle/concept/Serializable.hh>
+# include <elle/serialize/BufferArchive.hh>
 
 # include <nucleus/proton/ContentHashBlock.hh>
 
-# include <nucleus/neutron/Index.hh>
-# include <nucleus/neutron/Size.hh>
+# include <nucleus/neutron/fwd.hh>
 # include <nucleus/neutron/Range.hh>
-# include <nucleus/neutron/Subject.hh>
 # include <nucleus/neutron/Record.hh>
 
 # include <elle/idiom/Open.hh>
@@ -74,10 +73,6 @@ namespace nucleus
       // fileable
       ELLE_CONCEPT_SERIALIZABLE_METHODS(Access);
       ELLE_CONCEPT_SERIALIZABLE_METHODS(Access, elle::serialize::BufferArchive);
-
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
 
       //
       // attributes

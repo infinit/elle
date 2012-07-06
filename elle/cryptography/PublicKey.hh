@@ -26,10 +26,6 @@ namespace elle
   namespace cryptography
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// this class represents a public key.
     ///

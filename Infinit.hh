@@ -7,10 +7,6 @@
 #include <lune/Authority.hh>
 #include <lune/Configuration.hh>
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
 class Infinit
 {
 public:

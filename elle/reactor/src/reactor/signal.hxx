@@ -1,8 +1,6 @@
 #ifndef INFINIT_REACTOR_SIGNAL_HXX
 # define INFINIT_REACTOR_SIGNAL_HXX
 
-#include <reactor/signal.hh>
-
 namespace reactor
 {
   template <typename V>

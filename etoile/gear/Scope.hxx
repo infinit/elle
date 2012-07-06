@@ -22,16 +22,15 @@ namespace etoile
     elle::Status        Scope::Use(T*&                          context)
     {
       // first, if the scope's context is null, allocate one.
-      if (this->context == NULL)
+      if (this->context == nullptr)
         {
           // allocate a context according to the nature.
           this->context = new T;
         }
 
       // return the context by dynamically casting it.
-      if ((context = dynamic_cast<T*>(this->context)) == NULL)
-        escape("invalid context nature: scope's(%u) target(%u)",
-               this->context->nature, T::N);
+      context = static_cast<T*>(this->context);
+      assert(dynamic_cast<T*>(this->context) != nullptr);
 
       return elle::Status::Ok;
     }

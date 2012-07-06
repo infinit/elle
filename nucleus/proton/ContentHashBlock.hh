@@ -1,10 +1,10 @@
-#ifndef  NUCLEUS_PROTON_CONTENTHASHBLOCK_HH
+#ifndef NUCLEUS_PROTON_CONTENTHASHBLOCK_HH
 # define NUCLEUS_PROTON_CONTENTHASHBLOCK_HH
 
 # include <elle/types.hh>
 # include <elle/concept/Fileable.hh>
 
-# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/ImmutableBlock.hh>
 
 # include <nucleus/neutron/Component.hh>
@@ -25,7 +25,7 @@ namespace nucleus
     ///
     class ContentHashBlock
       : public ImmutableBlock
-      //, public elle::concept::Fileable<ContentHashBlock>
+    // XXX , public elle::concept::Fileable<ContentHashBlock>
     {
     public:
       //
@@ -52,10 +52,7 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      //ELLE_CONCEPT_FILEABLE_METHODS(ContentHashBlock);
-      //// archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
+      // XXX ELLE_CONCEPT_FILEABLE_METHODS(ContentHashBlock);
     };
 
   }

@@ -2,6 +2,7 @@
 # define NUCLEUS_NEUTRON_ENTRY_HH
 
 # include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
 # include <nucleus/proton/Address.hh>
 

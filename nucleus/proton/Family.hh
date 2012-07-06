@@ -6,10 +6,6 @@ namespace nucleus
   namespace proton
   {
 
-//
-// ---------- enumerations ----------------------------------------------------
-//
-
     ///
     /// this enumeration defines the block's physical family.
     ///

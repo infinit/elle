@@ -1,38 +1,19 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar 31 23:32:06 2010]
-//
-
 #ifndef NUCLEUS_NEUTRON_RANGE_HH
-#define NUCLEUS_NEUTRON_RANGE_HH
+# define NUCLEUS_NEUTRON_RANGE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/types.hh>
+# include <nucleus/neutron/fwd.hh>
 
-#include <nucleus/neutron/Subject.hh>
-#include <nucleus/neutron/Record.hh>
-#include <nucleus/neutron/Size.hh>
-
-#include <elle/idiom/Close.hh>
-# include <list>
-#include <elle/idiom/Open.hh>
+# include <elle/idiom/Close.hh>
+#  include <list>
+# include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
   namespace neutron
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a set of something.
@@ -106,10 +87,6 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
-
       //
       // attributes
       //
@@ -120,10 +97,6 @@ namespace nucleus
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <nucleus/neutron/Range.hxx>
 

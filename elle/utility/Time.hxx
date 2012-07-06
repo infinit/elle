@@ -5,8 +5,6 @@
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
-# include <elle/utility/Time.hh>
-
 ELLE_SERIALIZE_SIMPLE(elle::utility::Time,
                       archive,
                       value,

@@ -1,8 +1,6 @@
+#include <hole/implementations/remote/Customer.hh>
 
 #include <elle/network/TCPSocket.hh>
-
-#include <hole/implementations/remote/Customer.hh>
-#include <hole/implementations/remote/Remote.hh>
 
 #include <Infinit.hh>
 
@@ -41,73 +39,8 @@ namespace hole
       Customer::~Customer()
       {
         // delete the socket.
-        if (this->socket != NULL)
+        if (this->socket != nullptr)
           delete this->socket;
-      }
-
-//
-// ---------- callbacks -------------------------------------------------------
-//
-
-      ///
-      /// this callback is triggered whenever the customer is considered
-      /// disconnected.
-      ///
-      elle::Status      Customer::Disconnected()
-      {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Customer::Disconnected()\n");
-
-        // set the customer's state as dead.
-        this->state = Customer::StateDead;
-
-        // emit the signal.
-        if (this->signal.dead.Emit(this) == elle::Status::Error)
-          escape("unable to emit the signal");
-
-        return elle::Status::Ok;
-      }
-
-      ///
-      /// this callback is triggered whenever an error occurs on the
-      /// customer's socket.
-      ///
-      elle::Status      Customer::Error(elle::String     error)
-      {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Customer::Error()\n");
-
-        // log the error.
-        log("%s", error.c_str());
-
-        // disconnect the socket, though that may be unecessary.
-        this->socket->Disconnect();
-
-        return elle::Status::Ok;
-      }
-
-      ///
-      /// this callback is triggered once the authentication timer times out.
-      ///
-      /// if the customer has not been authenticated, it is destroyed.
-      ///
-      elle::Status      Customer::Abort()
-      {
-        // debug.
-        if (Infinit::Configuration.hole.debug == true)
-          printf("[hole] implementations::remote::Customer::Abort()\n");
-
-        // check if the customer has been authenticated.
-        if (this->state != Customer::StateAuthenticated)
-          {
-            // emit the signal.
-            if (this->signal.dead.Emit(this) == elle::Status::Error)
-              escape("unable to emit the signal");
-          }
-
-        return elle::Status::Ok;
       }
 
 //

@@ -1,33 +1,16 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [fri jun 24 14:45:52 2011]
-//
-
 #ifndef NUCLEUS_PROTON_ACTION_HH
-#define NUCLEUS_PROTON_ACTION_HH
+# define NUCLEUS_PROTON_ACTION_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/types.hh>
-
-#include <nucleus/proton/Address.hh>
-#include <nucleus/proton/Block.hh>
+# include <nucleus/proton/fwd.hh>
+# include <nucleus/proton/Address.hh>
 
 namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class defines an action related to the blocks being either

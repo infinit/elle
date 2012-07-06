@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       diary
-//
-// license       infinit
-//
-// author        julien quintard   [tue jun 28 22:17:27 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <satellites/diary/unix/Record.hh>
 #include <satellites/diary/unix/Upcall.hh>
 
@@ -50,7 +36,7 @@ namespace satellite
     /// this variable contains the address of the memoirs which is
     /// being recorded.
     ///
-    Memoirs*                            Record::Reference = NULL;
+    Memoirs*                            Record::Reference = nullptr;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -1510,7 +1496,7 @@ namespace satellite
 #endif
 
       // reset the memoirs pointer.
-      Record::Reference = NULL;
+      Record::Reference = nullptr;
 
       return elle::Status::Ok;
     }

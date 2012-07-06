@@ -1,10 +1,7 @@
 #ifndef  NUCLEUS_PROTON_MUTABLE_BLOCK__HXX
 # define NUCLEUS_PROTON_MUTABLE_BLOCK__HXX
 
-# include <nucleus/proton/Block.hh>
-# include <nucleus/proton/Version.hh>
-
-# include <nucleus/proton/MutableBlock.hh>
+# include <elle/serialize/ArchiveSerializer.hxx>
 
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::MutableBlock,
                       archive,

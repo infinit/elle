@@ -6,8 +6,6 @@
 # include <etoile/path/Route.hh>
 # include <etoile/path/Venue.hh>
 
-# include <etoile/path/Chemin.hh>
-
 ELLE_SERIALIZE_SIMPLE(etoile::path::Chemin,
                       archive,
                       value,

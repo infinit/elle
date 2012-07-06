@@ -1,12 +1,12 @@
 #ifndef NUCLEUS_PROTON_ADDRESS_HXX
 # define NUCLEUS_PROTON_ADDRESS_HXX
 
-# include <tuple>
+# include <elle/cryptography/OneWay.hh>
 
-# include <elle/cryptography/OneWay.hxx>
 # include <elle/serialize/TupleSerializer.hxx>
 
-# include <nucleus/proton/Address.hh>
+# include <elle/idiom/Close.hh>
+#  include <tuple>
 # include <elle/idiom/Open.hh>
 
 namespace nucleus
@@ -33,7 +33,7 @@ namespace nucleus
       this->component = component;
 
       // release the previous digest.
-      if (this->digest != NULL)
+      if (this->digest != nullptr)
         delete this->digest;
 
       // allocate the digest object.
@@ -54,13 +54,15 @@ namespace nucleus
   }
 }
 
+//
+// ---------- serialize -------------------------------------------------------
+//
+
 # include <elle/idiom/Close.hh>
 #  include <cassert>
 # include <elle/idiom/Open.hh>
 
 # include <elle/cryptography/Digest.hh>
-
-# include <nucleus/proton/Address.hh>
 
 ELLE_SERIALIZE_SPLIT(nucleus::proton::Address);
 

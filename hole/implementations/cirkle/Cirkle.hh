@@ -17,7 +17,7 @@
 
 #include <elle/types.hh>
 
-#include <hole/implementations/cirkle/Machine.hh>
+#include <hole/implementations/cirkle/fwd.hh>
 
 namespace hole
 {

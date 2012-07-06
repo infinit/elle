@@ -1,23 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       horizon
-//
-// license       infinit
-//
-// author        julien quintard   [tue may 31 10:31:35 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <horizon/macosx/MacOSX.hh>
 #include <horizon/macosx/Crux.hh>
-#include <horizon/Horizon.hh>
+#include <horizon/macosx/FUSE.hh>
 
-#include <elle/types.hh>
-#include <agent/Agent.hh>
+#include <Infinit.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace horizon
 {
@@ -62,9 +49,9 @@ namespace horizon
         struct ::passwd*        passwd;
 
         // retrieve the passwd structure related to the user 'somebody'.
-        // if NULL, try to fallback to 'nobody'.
-        if ((passwd = ::getpwnam("somebody")) == NULL &&
-            (passwd = ::getpwnam("nobody")) == NULL)
+        // if nullptr, try to fallback to 'nobody'.
+        if ((passwd = ::getpwnam("somebody")) == nullptr &&
+            (passwd = ::getpwnam("nobody")) == nullptr)
           escape("it seems that the user 'somebody' does not exist");
 
         // set the uid and gid.

@@ -1,10 +1,4 @@
-
-#include <elle/network/Locus.hh>
-#include <elle/utility/Time.hh>
-
 #include <hole/implementations/remote/Remote.hh>
-
-#include <hole/Hole.hh>
 
 namespace hole
 {
@@ -26,7 +20,7 @@ namespace hole
       /// this global variable makes the machine i.e the current host
       /// accessible from every instance of the implementation.
       ///
-      Machine*                          Remote::Computer = NULL;
+      Machine*                          Remote::Computer = nullptr;
 
     }
   }

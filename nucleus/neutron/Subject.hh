@@ -2,10 +2,10 @@
 # define NUCLEUS_NEUTRON_SUBJECT_HH
 
 # include <elle/types.hh>
+# include <elle/radix/Object.hh>
+# include <elle/cryptography/fwd.hh>
 
-# include <elle/cryptography/PublicKey.hh>
-
-# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/fwd.hh>
 
 namespace nucleus
 {

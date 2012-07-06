@@ -1,21 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       horizon
-//
-// license       infinit
-//
-// author        julien quintard   [thu dec 22 16:09:39 2011]
-//
-
 #ifndef HORIZON_HORIZON_HH
-#define HORIZON_HORIZON_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/system/Platform.hh>
+# define HORIZON_HORIZON_HH
 
 #include <elle/types.hh>
 
@@ -25,10 +9,6 @@
 ///
 namespace horizon
 {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
   ///
   /// this class contains general-purpose methods for initializing and
@@ -45,19 +25,5 @@ namespace horizon
   };
 
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#if defined(INFINIT_LINUX)
-# include <horizon/linux/Linux.hh>
-#elif defined(INFINIT_MACOSX)
-# include <horizon/macosx/MacOSX.hh>
-#elif defined(INFINIT_WINDOWS)
-# include <horizon/windows/Windows.hh>
-#else
-# error "unsupported platform"
-#endif
 
 #endif

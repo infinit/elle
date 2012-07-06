@@ -6,8 +6,6 @@
 # include <elle/serialize/VectorSerializer.hxx>
 # include <elle/network/Locus.hh>
 
-# include <lune/Set.hh>
-
 ELLE_SERIALIZE_SIMPLE(lune::Set,
                       archive,
                       value,

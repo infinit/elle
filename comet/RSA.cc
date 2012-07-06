@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       comet
-//
-// license       infinit
-//
-// author        julien quintard   [fri mar 18 16:20:57 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <comet/RSA.hh>
 #include <comet/RAND.hh>
 #include <comet/BN.hh>
@@ -27,10 +13,6 @@
 namespace comet
 {
 
-//
-// ---------- definitions -----------------------------------------------------
-//
-
   RAND_METHOD specific =
     {
       RAND_seed,
@@ -40,10 +22,6 @@ namespace comet
       RAND_pseudorand,
       RAND_status
     };
-
-//
-// ---------- functions -------------------------------------------------------
-//
 
   int RSA_rotate(RSA *rsa, int bits, const unsigned char *seed, size_t length)
   {

@@ -1,30 +1,15 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [fri aug 12 15:18:12 2011]
-//
-
 #ifndef HOLE_IMPLEMENTATIONS_SLUG_MANIFEST_HH
-#define HOLE_IMPLEMENTATIONS_SLUG_MANIFEST_HH
+# define HOLE_IMPLEMENTATIONS_SLUG_MANIFEST_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/Manifest.hh>
 
-#include <elle/types.hh>
-#include <elle/Manifest.hh>
+# include <lune/fwd.hh>
 
-#include <lune/Lune.hh>
+# include <nucleus/fwd.hh>
 
-#include <nucleus/Derivable.hh>
-
-#include <hole/implementations/slug/Cluster.hh>
-#include <hole/implementations/slug/Bank.hh>
-#include <hole/implementations/remote/Manifest.hh>
+# include <hole/implementations/slug/fwd.hh>
+# include <hole/implementations/remote/Manifest.hh>
 
 //
 // ---------- constants -------------------------------------------------------
@@ -114,14 +99,14 @@ message(hole::implementations::slug::TagBank,
         parameters(hole::implementations::slug::Bank&))
 
 message(hole::implementations::slug::TagPush,
-        parameters(nucleus::Address&,
+        parameters(nucleus::proton::Address&,
                    nucleus::Derivable&));
 message(hole::implementations::slug::TagPull,
-        parameters(nucleus::Address&,
-                   nucleus::Version&));
+        parameters(nucleus::proton::Address&,
+                   nucleus::proton::Version&));
 message(hole::implementations::slug::TagBlock,
         parameters(nucleus::Derivable&));
 message(hole::implementations::slug::TagWipe,
-        parameters(nucleus::Address&));
+        parameters(nucleus::proton::Address&));
 
 #endif

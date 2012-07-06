@@ -4,11 +4,6 @@
 # include <cassert>
 
 # include <elle/serialize/ArchiveSerializer.hxx>
-# include <elle/cryptography/PublicKey.hh>
-
-# include <nucleus/proton/Family.hh>
-# include <nucleus/proton/MutableBlock.hh>
-# include <nucleus/proton/PublicKeyBlock.hh>
 
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::PublicKeyBlock,
                       archive,

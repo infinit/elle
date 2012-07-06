@@ -1,11 +1,19 @@
-#include <boost/format.hpp>
+#include <hole/Hole.hh>
+#include <hole/Holeable.hh>
+#include <hole/implementations/local/Implementation.hh>
+#include <hole/implementations/remote/Implementation.hh>
+#include <hole/implementations/slug/Implementation.hh>
 
 #include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Network.hh>
+#include <nucleus/proton/ImmutableBlock.hh>
+#include <nucleus/proton/MutableBlock.hh>
 
-#include <hole/Hole.hh>
 #include <Infinit.hh>
 
-using reactor::Exception;
+#include <elle/idiom/Close.hh>
+# include <boost/format.hpp>
+#include <elle/idiom/Open.hh>
 
 namespace hole
 {
@@ -37,7 +45,7 @@ namespace hole
   ///
   /// this variable holds the hole implementation.
   ///
-  Holeable*                     Hole::Implementation = NULL;
+  Holeable*                     Hole::Implementation = nullptr;
 
   ///
   /// XXX
@@ -58,11 +66,11 @@ namespace hole
   void
   Hole::Initialize()
   {
-    nucleus::Network    network;
+    nucleus::proton::Network network;
 
     // disable the meta logging.
     if (elle::radix::Meta::Disable() == elle::Status::Error)
-      throw Exception(elle::concurrency::scheduler(),
+      throw reactor::Exception(elle::concurrency::scheduler(),
                       "unable to disable the meta logging");
 
     //
@@ -71,17 +79,17 @@ namespace hole
     {
       // does the network exist.
       if (Hole::Descriptor.Exist(Infinit::Network) == elle::Status::False)
-        throw Exception(elle::concurrency::scheduler(),
+        throw reactor::Exception(elle::concurrency::scheduler(),
                         "this network does not seem to exist");
 
       // load the descriptor.
       if (Hole::Descriptor.Load(Infinit::Network) == elle::Status::Error)
-        throw Exception(elle::concurrency::scheduler(),
+        throw reactor::Exception(elle::concurrency::scheduler(),
                         "unable to load the descriptor");
 
       // validate the descriptor.
       if (Hole::Descriptor.Validate(Infinit::Authority) == elle::Status::Error)
-        throw Exception(elle::concurrency::scheduler(),
+        throw reactor::Exception(elle::concurrency::scheduler(),
                         "unable to validate the descriptor");
     }
 
@@ -101,28 +109,28 @@ namespace hole
     {
       // does the network exist.
       if (Hole::Passport.Exist() == elle::Status::False)
-        throw Exception(elle::concurrency::scheduler(),
+        throw reactor::Exception(elle::concurrency::scheduler(),
                         "the device passport does not seem to exist");
 
       // load the passport.
       if (Hole::Passport.Load() == elle::Status::Error)
-        throw Exception(elle::concurrency::scheduler(),
+        throw reactor::Exception(elle::concurrency::scheduler(),
                         "unable to load the passport");
 
       // validate the passport.
       if (Hole::Passport.Validate(Infinit::Authority) == elle::Status::Error)
-        throw Exception(elle::concurrency::scheduler(),
+        throw reactor::Exception(elle::concurrency::scheduler(),
                         "unable to validate the passport");
     }
 
     // enable the meta logging.
     if (elle::radix::Meta::Enable() == elle::Status::Error)
-      throw Exception(elle::concurrency::scheduler(),
+      throw reactor::Exception(elle::concurrency::scheduler(),
                       "unable to enable the meta logging");
 
     // create the network instance.
     if (network.Create(Infinit::Network) == elle::Status::Error)
-      throw Exception(elle::concurrency::scheduler(),
+      throw reactor::Exception(elle::concurrency::scheduler(),
                       "unable to create the network instance");
 
     // create the holeable depending on the model.
@@ -165,7 +173,7 @@ namespace hole
         default:
         {
           static boost::format fmt("unknown or not-yet-supported model '%u'");
-          throw Exception(elle::concurrency::scheduler(),
+          throw reactor::Exception(elle::concurrency::scheduler(),
                           str(fmt % Hole::Descriptor.model.type));
         }
       }
@@ -212,7 +220,7 @@ namespace hole
   ///
   /// this method returns the address of the root block i.e the origin.
   ///
-  elle::Status          Hole::Origin(nucleus::Address&          address)
+  elle::Status          Hole::Origin(nucleus::proton::Address& address)
   {
     // return the address.
     address = Hole::Descriptor.root;
@@ -223,8 +231,8 @@ namespace hole
   ///
   /// this method stores the given block.
   ///
-  elle::Status          Hole::Push(const nucleus::Address&      address,
-                                   const nucleus::Block&        block)
+  elle::Status          Hole::Push(const nucleus::proton::Address& address,
+                                   const nucleus::proton::Block& block)
   {
     // XXX check the block's footprint which should not exceed Extent
 
@@ -232,12 +240,14 @@ namespace hole
     // the address indicates.
     switch (address.family)
       {
-      case nucleus::FamilyContentHashBlock:
+      case nucleus::proton::FamilyContentHashBlock:
         {
-          const nucleus::ImmutableBlock*        ib;
+          const nucleus::proton::ImmutableBlock*        ib;
 
           // cast to an immutable block.
-          ib = static_cast<const nucleus::ImmutableBlock*>(&block);
+          ib = static_cast<const nucleus::proton::ImmutableBlock*>(&block);
+          assert(dynamic_cast<const nucleus::proton::ImmutableBlock*>(
+                   &block) != nullptr);
 
           // store the immutable block.
           if (Hole::Implementation->Put(address, *ib) == elle::Status::Error)
@@ -245,14 +255,16 @@ namespace hole
 
           break;
         }
-      case nucleus::FamilyPublicKeyBlock:
-      case nucleus::FamilyOwnerKeyBlock:
-      case nucleus::FamilyImprintBlock:
+      case nucleus::proton::FamilyPublicKeyBlock:
+      case nucleus::proton::FamilyOwnerKeyBlock:
+      case nucleus::proton::FamilyImprintBlock:
         {
-          const nucleus::MutableBlock*          mb;
+          const nucleus::proton::MutableBlock*          mb;
 
           // cast to a mutable block.
-          mb = static_cast<const nucleus::MutableBlock*>(&block);
+          mb = static_cast<const nucleus::proton::MutableBlock*>(&block);
+          assert(dynamic_cast<const nucleus::proton::MutableBlock*>(
+                   &block) != nullptr);
 
           // store the mutable block.
           if (Hole::Implementation->Put(address, *mb) == elle::Status::Error)
@@ -273,20 +285,22 @@ namespace hole
   ///
   /// this method returns the block associated with the given address.
   ///
-  elle::Status          Hole::Pull(const nucleus::Address&      address,
-                                   const nucleus::Version&      version,
-                                   nucleus::Block&              block)
+  elle::Status          Hole::Pull(const nucleus::proton::Address&      address,
+                                   const nucleus::proton::Version&      version,
+                                   nucleus::proton::Block&              block)
   {
     // forward the request depending on the nature of the block which
     // the addres indicates.
     switch (address.family)
       {
-      case nucleus::FamilyContentHashBlock:
+      case nucleus::proton::FamilyContentHashBlock:
         {
-          nucleus::ImmutableBlock*      ib;
+          nucleus::proton::ImmutableBlock*      ib;
 
           // cast to an immutable block.
-          ib = static_cast<nucleus::ImmutableBlock*>(&block);
+          ib = static_cast<nucleus::proton::ImmutableBlock*>(&block);
+          assert(dynamic_cast<const nucleus::proton::ImmutableBlock*>(
+                   &block) != nullptr);
 
           // retrieve the immutable block.
           if (Hole::Implementation->Get(address, *ib) == elle::Status::Error)
@@ -294,14 +308,16 @@ namespace hole
 
           break;
         }
-      case nucleus::FamilyPublicKeyBlock:
-      case nucleus::FamilyOwnerKeyBlock:
-      case nucleus::FamilyImprintBlock:
+      case nucleus::proton::FamilyPublicKeyBlock:
+      case nucleus::proton::FamilyOwnerKeyBlock:
+      case nucleus::proton::FamilyImprintBlock:
         {
-          nucleus::MutableBlock*        mb;
+          nucleus::proton::MutableBlock*        mb;
 
           // cast to a mutable block.
-          mb = static_cast<nucleus::MutableBlock*>(&block);
+          mb = static_cast<nucleus::proton::MutableBlock*>(&block);
+          assert(dynamic_cast<const nucleus::proton::MutableBlock*>(
+                   &block) != nullptr);
 
           // retrieve the mutable block.
           if (Hole::Implementation->Get(address, version,
@@ -323,7 +339,7 @@ namespace hole
   ///
   /// this method removes the block associated with the given address.
   ///
-  elle::Status          Hole::Wipe(const nucleus::Address&      address)
+  elle::Status          Hole::Wipe(const nucleus::proton::Address&      address)
   {
     // forward the kill request to the implementation.
     if (Hole::Implementation->Kill(address) == elle::Status::Error)

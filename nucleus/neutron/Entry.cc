@@ -1,7 +1,3 @@
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <nucleus/neutron/Entry.hh>
 
 namespace nucleus

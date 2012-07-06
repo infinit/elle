@@ -5,8 +5,6 @@
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
-# include <elle/network/Locus.hh>
-
 ELLE_SERIALIZE_SIMPLE(elle::network::Locus,
                       archive,
                       value,

@@ -2,7 +2,7 @@
 # define NUCLEUS_PROTON_HH
 
 # include <elle/types.hh>
-# include <elle/cryptography/PrivateKey.hh>
+# include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/Signature.hh>
 
 # include <nucleus/proton/Location.hh>
@@ -13,10 +13,6 @@ namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a stamp issued by the oracle.
@@ -58,10 +54,6 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
-
       //
       // attributes
       //
@@ -75,5 +67,6 @@ namespace nucleus
   }
 }
 
-#endif
 #include <nucleus/proton/Stamp.hxx>
+
+#endif

@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar 11 16:55:36 2009]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <nucleus/neutron/Catalog.hh>
 
 #include <nucleus/proton/Contents.hh>
@@ -231,34 +217,6 @@ namespace nucleus
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the catalog object.
-    ///
-    //elle::Status        Catalog::Serialize(elle::Archive&       archive) const
-    //{
-    //  // serialize the range.
-    //  if (archive.Serialize(this->range) == elle::Status::Error)
-    //    escape("unable to serialize the range");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the catalog object.
-    /////
-    //elle::Status        Catalog::Extract(elle::Archive&         archive)
-    //{
-    //  // extract the range.
-    //  if (archive.Extract(this->range) == elle::Status::Error)
-    //    escape("unable to extract the range");
-
-    //  return elle::Status::Ok;
-    //}
 
   }
 }

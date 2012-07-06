@@ -6,8 +6,6 @@
 # include <elle/cryptography/SecretKey.hh>
 # include <nucleus/proton/Address.hh>
 
-# include <XXX/Handle.hh>
-
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::Handle,
                       archive,
                       value,

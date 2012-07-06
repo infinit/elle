@@ -42,8 +42,8 @@ namespace hole
       Neighbour::Neighbour():
         state(StateUnauthenticated),
         port(0),
-        gate(NULL),
-        timer(NULL)
+        gate(nullptr),
+        timer(nullptr)
       {
       }
 
@@ -53,11 +53,11 @@ namespace hole
       Neighbour::~Neighbour()
       {
         // delete the gate, if present.
-        if (this->gate != NULL)
+        if (this->gate != nullptr)
           delete this->gate;
 
         // delete the timer, if present.
-        if (this->timer != NULL)
+        if (this->timer != nullptr)
           delete this->timer;
       }
 
@@ -161,7 +161,7 @@ namespace hole
             delete this->timer;
 
             // reset the locus.
-            this->timer = NULL;
+            this->timer = nullptr;
           }
         else
           {
@@ -261,7 +261,7 @@ namespace hole
                   << "[Port] " << std::dec << this->port << std::endl;
 
         // dump the gate, if present.
-        if (this->gate != NULL)
+        if (this->gate != nullptr)
           {
             if (this->gate->Dump(margin + 2) == elle::Status::Error)
               escape("unable to dump the gate");

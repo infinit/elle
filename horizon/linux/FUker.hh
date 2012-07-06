@@ -12,7 +12,7 @@
 #  if defined(HAVE_SETXATTR)
 #   include <attr/xattr.h>
 #  endif
-# include <pthread.h>
+#  include <pthread.h>
 # include <elle/idiom/Open.hh>
 
 namespace horizon

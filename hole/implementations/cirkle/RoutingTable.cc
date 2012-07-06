@@ -119,7 +119,7 @@ namespace hole
         // try to locate the neighbour.
         if ((i = this->container.find(label)) != this->container.end())
           {
-            if (iterator != NULL)
+            if (iterator != nullptr)
               *iterator = i;
 
             return elle::Status::True;

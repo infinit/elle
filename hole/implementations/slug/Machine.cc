@@ -1,34 +1,33 @@
+#include <hole/Hole.hh>
+#include <hole/Holeable.hh>
+#include <hole/implementations/slug/Cluster.hh>
+#include <hole/implementations/slug/Machine.hh>
+#include <hole/implementations/slug/Manifest.hh>
+
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
 
 #include <agent/Agent.hh>
-
-#include <elle/utility/Buffer.hh>
-#include <elle/network/Header.hh>
-#include <elle/network/Bundle.hh>
-#include <elle/standalone/Report.hh>
 
 #include <lune/Passport.hh>
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
 #include <nucleus/proton/Version.hh>
-
-#include <hole/implementations/slug/Cluster.hh>
+#include <nucleus/proton/ImmutableBlock.hh>
+#include <nucleus/proton/MutableBlock.hh>
+#include <nucleus/neutron/Object.hh>
+#include <nucleus/neutron/Access.hh>
+#include <nucleus/Derivable.hh>
 
 #include <elle/network/Network.hh>
 #include <elle/network/Inputs.hh>
 #include <elle/network/Outputs.hh>
-
+#include <elle/standalone/Report.hh>
 #include <elle/standalone/Morgue.hh>
-
 #include <elle/network/TCPSocket.hh>
-#include <hole/Hole.hh>
-#include <hole/implementations/slug/Machine.hh>
-#include <hole/implementations/slug/Manifest.hh>
 
 #include <Infinit.hh>
-
 
 #include <plasma/meta/Client.hh>
 
@@ -227,8 +226,8 @@ namespace hole
       ///
       /// this method stores an immutable block.
       ///
-      elle::Status      Machine::Put(const nucleus::Address&    address,
-                                     const nucleus::ImmutableBlock& block)
+      elle::Status      Machine::Put(const nucleus::proton::Address& address,
+                                     const nucleus::proton::ImmutableBlock& block)
       {
         ELLE_LOG_TRACE("Put[Immutable]");
 
@@ -304,8 +303,8 @@ namespace hole
       ///
       /// this method stores a mutable block.
       ///
-      elle::Status      Machine::Put(const nucleus::Address&    address,
-                                     const nucleus::MutableBlock& block)
+      elle::Status      Machine::Put(const nucleus::proton::Address& address,
+                                     const nucleus::proton::MutableBlock& block)
       {
         ELLE_LOG_TRACE("Put[Mutable]");
 
@@ -332,20 +331,22 @@ namespace hole
                 // block for being validated.
                 switch (address.component)
                   {
-                  case nucleus::ComponentObject:
+                  case nucleus::neutron::ComponentObject:
                     {
-                      const nucleus::Object*    object =
-                        static_cast<const nucleus::Object*>(&block);
+                      const nucleus::neutron::Object* object =
+                        static_cast<const nucleus::neutron::Object*>(&block);
+                      assert(dynamic_cast<const nucleus::neutron::Object*>(
+                               &block) != nullptr);
 
                       // validate the object according to the presence of
                       // a referenced access block.
-                      if (object->meta.access != nucleus::Address::Null)
+                      if (object->meta.access != nucleus::proton::Address::Null)
                         {
-                          nucleus::Access       access;
+                          nucleus::neutron::Access access;
 
                           // load the access block.
                           if (Hole::Pull(object->meta.access,
-                                         nucleus::Version::Last,
+                                         nucleus::proton::Version::Last,
                                          access) == elle::Status::Error)
                             escape("unable to load the access block");
 
@@ -359,7 +360,7 @@ namespace hole
                           // validate the object.
                           if (object->Validate(
                                 address,
-                                nucleus::Access::Null) == elle::Status::Error)
+                                nucleus::neutron::Access::Null) == elle::Status::Error)
                             escape("unable to validate the object");
                         }
 
@@ -373,7 +374,7 @@ namespace hole
 
                       break;
                     }
-                  case nucleus::ComponentUnknown:
+                  case nucleus::neutron::ComponentUnknown:
                     {
                       escape("unknown component '%u'",
                              address.component);
@@ -425,8 +426,8 @@ namespace hole
       ///
       /// this method retrieves an immutable block.
       ///
-      elle::Status      Machine::Get(const nucleus::Address&    address,
-                                     nucleus::ImmutableBlock&   block)
+      elle::Status      Machine::Get(const nucleus::proton::Address& address,
+                                     nucleus::proton::ImmutableBlock& block)
       {
         ELLE_LOG_TRACE("Get[Immutable]");
 
@@ -475,18 +476,19 @@ namespace hole
                       Host*                     host = scoutor->second;
                       if (host->socket->Call(
                             elle::network::Inputs<TagPull>(address,
-                                                  nucleus::Version::Any),
+                                                           nucleus::proton::Version::Any),
                             elle::network::Outputs<TagBlock>(derivable)) ==
                           elle::Status::Ok)
                         {
                           auto const& b =
                             static_cast<nucleus::proton::ImmutableBlock const&>(derivable.block());
+
                           // validate the block.
                           if (b.Validate(address) == elle::Status::Ok)
                             {
                               // finally, store it locally.
                               if (b.Store(Hole::Implementation->network,
-                                           address) == elle::Status::Ok)
+                                          address) == elle::Status::Ok)
                                 break;
                             }
                           else
@@ -544,12 +546,10 @@ namespace hole
       ///
       /// this method retrieves a mutable block.
       ///
-      elle::Status      Machine::Get(const nucleus::Address&    address,
-                                     const nucleus::Version&    version,
-                                     nucleus::MutableBlock&     block)
+      elle::Status      Machine::Get(const nucleus::proton::Address& address,
+                                     const nucleus::proton::Version& version,
+                                     nucleus::proton::MutableBlock& block)
       {
-        //nucleus::Derivable<nucleus::Block>      derivable(block);
-
         ELLE_LOG_TRACE("Get[Mutable]");
 
         // depending on the machine's state.
@@ -571,7 +571,7 @@ namespace hole
               // present yet so the current machine may have missed some
               // versions when disconnected.
               //
-              if (version == nucleus::Version::Last)
+              if (version == nucleus::proton::Version::Last)
                 {
                   Neighbourhood::Scoutor        scoutor;
 
@@ -582,7 +582,7 @@ namespace hole
                     {
                       Host*                     host = scoutor->second;
 
-                      nucleus::Derivable        derivable;
+                      nucleus::Derivable derivable;
 
                       // request the host.
                       if (host->socket->Call(
@@ -593,6 +593,8 @@ namespace hole
                           auto const& mb =
                             static_cast<nucleus::proton::MutableBlock const&>(
                                 derivable.block());
+                          assert(dynamic_cast<nucleus::proton::MutableBlock const*>(
+                                   &(derivable.block())) != nullptr);
 
                           // validate the block, depending on its component.
                           //
@@ -600,22 +602,24 @@ namespace hole
                           // additional block for being validated.
                           switch (address.component)
                             {
-                            case nucleus::ComponentObject:
+                            case nucleus::neutron::ComponentObject:
                               {
-                                nucleus::Object const&  object =
-                                  static_cast<nucleus::Object const&>(mb);
+                                nucleus::neutron::Object const& object =
+                                  static_cast<nucleus::neutron::Object const&>(mb);
+                                assert(dynamic_cast<nucleus::neutron::Object const*>(
+                                         &mb) != nullptr);
 
                                 // validate the object according to the
                                 // presence of a referenced access block.
                                 if (object.meta.access !=
-                                    nucleus::Address::Null)
+                                    nucleus::proton::Address::Null)
                                   {
-                                    nucleus::Access     access;
+                                    nucleus::neutron::Access access;
 
                                     // load the access block.
                                     if (Hole::Pull(
                                           object.meta.access,
-                                          nucleus::Version::Last,
+                                          nucleus::proton::Version::Last,
                                           access) == elle::Status::Error)
                                       escape("unable to load the access "
                                              "block");
@@ -631,7 +635,7 @@ namespace hole
                                     // validate the object.
                                     if (object.Validate(
                                           address,
-                                          nucleus::Access::Null) ==
+                                          nucleus::neutron::Access::Null) ==
                                         elle::Status::Error)
                                       escape("unable to validate the object");
                                   }
@@ -647,7 +651,7 @@ namespace hole
 
                                 break;
                               }
-                            case nucleus::ComponentUnknown:
+                            case nucleus::neutron::ComponentUnknown:
                               {
                                 escape("unknown component '%u'",
                                        address.component);
@@ -699,20 +703,22 @@ namespace hole
                       // block for being validated.
                       switch (address.component)
                         {
-                        case nucleus::ComponentObject:
+                        case nucleus::neutron::ComponentObject:
                           {
-                            const nucleus::Object*  object =
-                              static_cast<const nucleus::Object*>(&block);
+                            const nucleus::neutron::Object* object =
+                              static_cast<const nucleus::neutron::Object*>(&block);
+                            assert(dynamic_cast<const nucleus::neutron::Object*>(
+                                     &block) != nullptr);
 
                             // validate the object according to the presence of
                             // a referenced access block.
-                            if (object->meta.access != nucleus::Address::Null)
+                            if (object->meta.access != nucleus::proton::Address::Null)
                               {
-                                nucleus::Access     access;
+                                nucleus::neutron::Access access;
 
                                 // load the access block.
                                 if (Hole::Pull(object->meta.access,
-                                               nucleus::Version::Last,
+                                               nucleus::proton::Version::Last,
                                                access) == elle::Status::Error)
                                   escape("unable to load the access block");
 
@@ -727,7 +733,7 @@ namespace hole
                                 // validate the object.
                                 if (object->Validate(
                                       address,
-                                      nucleus::Access::Null) ==
+                                      nucleus::neutron::Access::Null) ==
                                     elle::Status::Error)
                                   escape("unable to validate the object");
                               }
@@ -742,7 +748,7 @@ namespace hole
 
                             break;
                           }
-                        case nucleus::ComponentUnknown:
+                        case nucleus::neutron::ComponentUnknown:
                           {
                             escape("unknown component '%u'",
                                    address.component);
@@ -771,7 +777,7 @@ namespace hole
                            scoutor++)
                         {
                           Host*                     host = scoutor->second;
-                          nucleus::Derivable        derivable;
+                          nucleus::Derivable derivable;
 
                           // request the host.
                           if (host->socket->Call(
@@ -780,8 +786,11 @@ namespace hole
                               elle::Status::Ok)
                             {
                               auto const& mb=
-                                static_cast<nucleus::MutableBlock const&>(
+                                static_cast<nucleus::proton::MutableBlock const&>(
                                     derivable.block());
+                              assert(dynamic_cast<nucleus::proton::MutableBlock const*>(
+                                       &(derivable.block())) != nullptr);
+
                               // validate the block, depending on its
                               // component.
                               //
@@ -789,22 +798,25 @@ namespace hole
                               // additional block for being validated.
                               switch (address.component)
                                 {
-                                case nucleus::ComponentObject:
+                                case nucleus::neutron::ComponentObject:
                                   {
-                                    nucleus::Object const&  object =
-                                      static_cast<nucleus::Object const&>(derivable.block());
+                                    nucleus::neutron::Object const&  object =
+                                      static_cast<nucleus::neutron::Object const&>(
+                                        derivable.block());
+                                    assert(dynamic_cast<nucleus::neutron::Object const*>(
+                                             &(derivable.block())) != nullptr);
 
                                     // validate the object according to the
                                     // presence of a referenced access block.
                                     if (object.meta.access !=
-                                        nucleus::Address::Null)
+                                        nucleus::proton::Address::Null)
                                       {
-                                        nucleus::Access     access;
+                                        nucleus::neutron::Access access;
 
                                         // load the access block.
                                         if (Hole::Pull(
                                               object.meta.access,
-                                              nucleus::Version::Last,
+                                              nucleus::proton::Version::Last,
                                               access) == elle::Status::Error)
                                           escape("unable to load the access "
                                                  "block");
@@ -821,7 +833,7 @@ namespace hole
                                         // validate the object.
                                         if (object.Validate(
                                               address,
-                                              nucleus::Access::Null) ==
+                                              nucleus::neutron::Access::Null) ==
                                             elle::Status::Error)
                                           escape("unable to validate the "
                                                  "object");
@@ -839,7 +851,7 @@ namespace hole
 
                                     break;
                                   }
-                                case nucleus::ComponentUnknown:
+                                case nucleus::neutron::ComponentUnknown:
                                   {
                                     escape("unknown component '%u'",
                                            address.component);
@@ -903,20 +915,24 @@ namespace hole
                       // block for being validated.
                       switch (address.component)
                         {
-                        case nucleus::ComponentObject:
+                        case nucleus::neutron::ComponentObject:
                           {
-                            const nucleus::Object*  object =
-                              static_cast<const nucleus::Object*>(&block);
+                            const nucleus::neutron::Object* object =
+                              static_cast<const nucleus::neutron::Object*>(
+                                &block);
+                            assert(dynamic_cast<const nucleus::neutron::Object*>(
+                                     &block) != nullptr);
 
                             // validate the object according to the presence of
                             // a referenced access block.
-                            if (object->meta.access != nucleus::Address::Null)
+                            if (object->meta.access !=
+                                nucleus::proton::Address::Null)
                               {
-                                nucleus::Access     access;
+                                nucleus::neutron::Access access;
 
                                 // load the access block.
                                 if (Hole::Pull(object->meta.access,
-                                               nucleus::Version::Last,
+                                               nucleus::proton::Version::Last,
                                                access) == elle::Status::Error)
                                   escape("unable to load the access block");
 
@@ -931,7 +947,7 @@ namespace hole
                                 // validate the object.
                                 if (object->Validate(
                                       address,
-                                      nucleus::Access::Null) ==
+                                      nucleus::neutron::Access::Null) ==
                                     elle::Status::Error)
                                   escape("unable to validate the object");
                               }
@@ -946,7 +962,7 @@ namespace hole
 
                             break;
                           }
-                        case nucleus::ComponentUnknown:
+                        case nucleus::neutron::ComponentUnknown:
                           {
                             escape("unknown component '%u'",
                                    address.component);
@@ -971,7 +987,7 @@ namespace hole
       ///
       /// this method removes a block.
       ///
-      elle::Status      Machine::Kill(const nucleus::Address&   address)
+      elle::Status      Machine::Kill(const nucleus::proton::Address& address)
       {
         ELLE_LOG_TRACE("Kill");
 
@@ -996,22 +1012,22 @@ namespace hole
                 // the addres indicates.
                 switch (address.family)
                   {
-                  case nucleus::FamilyContentHashBlock:
+                  case nucleus::proton::FamilyContentHashBlock:
                     {
                       // erase the immutable block.
-                      if (nucleus::ImmutableBlock::Erase(
+                      if (nucleus::proton::ImmutableBlock::Erase(
                             Hole::Implementation->network,
                             address) == elle::Status::Error)
                         escape("unable to erase the block");
 
                       break;
                     }
-                  case nucleus::FamilyPublicKeyBlock:
-                  case nucleus::FamilyOwnerKeyBlock:
-                  case nucleus::FamilyImprintBlock:
+                  case nucleus::proton::FamilyPublicKeyBlock:
+                  case nucleus::proton::FamilyOwnerKeyBlock:
+                  case nucleus::proton::FamilyImprintBlock:
                     {
                       // retrieve the mutable block.
-                      if (nucleus::MutableBlock::Erase(
+                      if (nucleus::proton::MutableBlock::Erase(
                             Hole::Implementation->network,
                             address) == elle::Status::Error)
                         escape("unable to erase the block");
@@ -1326,14 +1342,14 @@ namespace hole
       ///
       /// this method stores the given block.
       ///
-      elle::Status      Machine::Push(const nucleus::Address&   address,
+      elle::Status      Machine::Push(const nucleus::proton::Address& address,
                                       const nucleus::Derivable& derivable)
       {
         Host*           host;
 
         ELLE_LOG_TRACE("Push");
-        auto const& block =
-          static_cast<nucleus::Derivable const&>(derivable).block();
+
+        auto const& block = derivable.block();
 
         // retrieve the host from the guestlist.
         if (this->guestlist.Retrieve(
@@ -1349,11 +1365,13 @@ namespace hole
         // the address indicates.
         switch (address.family)
           {
-          case nucleus::FamilyContentHashBlock:
+          case nucleus::proton::FamilyContentHashBlock:
             {
-              nucleus::ImmutableBlock const& ib =
-                  static_cast<nucleus::ImmutableBlock const&>(block);
-              assert(dynamic_cast<nucleus::ImmutableBlock const*>(&block));
+              nucleus::proton::ImmutableBlock const& ib =
+                  static_cast<nucleus::proton::ImmutableBlock const&>(block);
+              assert(dynamic_cast<nucleus::proton::ImmutableBlock const*>(
+                       &block));
+
               ELLE_LOG_TRACE("pushing immutable block");
 
               //
@@ -1373,13 +1391,14 @@ namespace hole
 
               break;
             }
-          case nucleus::FamilyPublicKeyBlock:
-          case nucleus::FamilyOwnerKeyBlock:
-          case nucleus::FamilyImprintBlock:
+          case nucleus::proton::FamilyPublicKeyBlock:
+          case nucleus::proton::FamilyOwnerKeyBlock:
+          case nucleus::proton::FamilyImprintBlock:
             {
-              nucleus::MutableBlock const& mb =
-                  static_cast<nucleus::MutableBlock const&>(block);
-              assert(dynamic_cast<nucleus::MutableBlock const*>(&block));
+              nucleus::proton::MutableBlock const& mb =
+                  static_cast<nucleus::proton::MutableBlock const&>(block);
+              assert(dynamic_cast<nucleus::proton::MutableBlock const*>(
+                       &block));
 
               ELLE_LOG_TRACE("pushing mutable block");
 
@@ -1393,24 +1412,26 @@ namespace hole
                 // block for being validated.
                 switch (address.component)
                   {
-                  case nucleus::ComponentObject:
+                  case nucleus::neutron::ComponentObject:
                     {
-                      const nucleus::Object*    object =
-                        static_cast<const nucleus::Object*>(&mb);
+                      const nucleus::neutron::Object* object =
+                        static_cast<const nucleus::neutron::Object*>(&mb);
+                      assert(dynamic_cast<const nucleus::neutron::Object*>(
+                               &mb) != nullptr);
 
                       ELLE_LOG_TRACE("validating the object mutable block");
 
                       // validate the object according to the presence of
                       // a referenced access block.
-                      if (object->meta.access != nucleus::Address::Null)
+                      if (object->meta.access != nucleus::proton::Address::Null)
                         {
-                          nucleus::Access       access;
+                          nucleus::neutron::Access access;
 
                           ELLE_LOG_TRACE("retrieving the access block");
 
                           // load the access block.
                           if (Hole::Pull(object->meta.access,
-                                         nucleus::Version::Last,
+                                         nucleus::proton::Version::Last,
                                          access) == elle::Status::Error)
                             escape("unable to load the access block");
 
@@ -1424,7 +1445,7 @@ namespace hole
                           // validate the object.
                           if (object->Validate(
                                 address,
-                                nucleus::Access::Null) == elle::Status::Error)
+                                nucleus::neutron::Access::Null) == elle::Status::Error)
                             escape("unable to validate the object");
                         }
 
@@ -1440,7 +1461,7 @@ namespace hole
 
                       break;
                     }
-                  case nucleus::ComponentUnknown:
+                  case nucleus::neutron::ComponentUnknown:
                     {
                       escape("unknown component '%u'",
                              address.component);
@@ -1450,26 +1471,26 @@ namespace hole
                 // does the block already exist.
                 if (mb.Exist(Hole::Implementation->network,
                               address,
-                              nucleus::Version::Last) == elle::Status::True)
+                              nucleus::proton::Version::Last) == elle::Status::True)
                   {
-                    nucleus::MutableBlock*      current;
+                    nucleus::proton::MutableBlock* current;
 
                     ELLE_LOG_TRACE("the mutable block seems to exist "
                                    "locally, make sure it derives the "
                                    "current version");
 
                     // build a block according to the component.
-                    if (nucleus::Nucleus::Factory.Build(address.component,
-                                                        current) ==
-                        elle::Status::Error)
+                    if (nucleus::Nucleus::Factory.Build(
+                          address.component,
+                          current) == elle::Status::Error)
                       escape("unable to build the block");
 
-                    std::unique_ptr<nucleus::MutableBlock> guard(current);
+                    std::unique_ptr<nucleus::proton::MutableBlock> guard(current);
 
                     // load the latest version.
                     if (current->Load(Hole::Implementation->network,
                                       address,
-                                      nucleus::Version::Last) ==
+                                      nucleus::proton::Version::Last) ==
                         elle::Status::Error)
                       escape("unable to load the current version");
 
@@ -1503,11 +1524,11 @@ namespace hole
       ///
       /// this method returns the block associated with the given address.
       ///
-      elle::Status      Machine::Pull(const nucleus::Address&   address,
-                                      const nucleus::Version&   version)
+      elle::Status      Machine::Pull(const nucleus::proton::Address& address,
+                                      const nucleus::proton::Version& version)
       {
         Host*           host;
-        nucleus::Block* block;
+        nucleus::proton::Block* block;
 
         ELLE_LOG_TRACE("Pull");
 
@@ -1526,20 +1547,22 @@ namespace hole
                                             block) == elle::Status::Error)
           escape("unable to build the block");
 
-        std::unique_ptr<nucleus::Block> guard(block);
+        std::unique_ptr<nucleus::proton::Block> guard(block);
 
         // forward the request depending on the nature of the block which
         // the addres indicates.
         switch (address.family)
           {
-          case nucleus::FamilyContentHashBlock:
+          case nucleus::proton::FamilyContentHashBlock:
             {
-              nucleus::ImmutableBlock*  ib;
+              nucleus::proton::ImmutableBlock* ib;
 
               ELLE_LOG_TRACE("pulling immutable block");
 
               // cast to an immutable block.
-              ib = static_cast<nucleus::ImmutableBlock*>(block);
+              ib = static_cast<nucleus::proton::ImmutableBlock*>(block);
+              assert(dynamic_cast<nucleus::proton::ImmutableBlock*>(
+                       block) != nullptr);
 
               // does the block exist.
               if (ib->Exist(Hole::Implementation->network,
@@ -1557,16 +1580,18 @@ namespace hole
 
               break;
             }
-          case nucleus::FamilyPublicKeyBlock:
-          case nucleus::FamilyOwnerKeyBlock:
-          case nucleus::FamilyImprintBlock:
+          case nucleus::proton::FamilyPublicKeyBlock:
+          case nucleus::proton::FamilyOwnerKeyBlock:
+          case nucleus::proton::FamilyImprintBlock:
             {
-              nucleus::MutableBlock*    mb;
+              nucleus::proton::MutableBlock* mb;
 
               ELLE_LOG_TRACE("pulling mutable block");
 
               // cast to a mutable block.
-              mb = static_cast<nucleus::MutableBlock*>(block);
+              mb = static_cast<nucleus::proton::MutableBlock*>(block);
+              assert(dynamic_cast<nucleus::proton::MutableBlock*>(
+                       block) != nullptr);
 
               // does the block exist.
               if (mb->Exist(Hole::Implementation->network,
@@ -1583,20 +1608,23 @@ namespace hole
                   // block for being validated.
                   switch (address.component)
                     {
-                    case nucleus::ComponentObject:
+                    case nucleus::neutron::ComponentObject:
                       {
-                        const nucleus::Object*  object =
-                          static_cast<const nucleus::Object*>(mb);
+                        const nucleus::neutron::Object* object =
+                          static_cast<const nucleus::neutron::Object*>(mb);
+                        assert(dynamic_cast<const nucleus::neutron::Object*>(
+                                 mb) != nullptr);
 
                         // validate the object according to the presence of
                         // a referenced access block.
-                        if (object->meta.access != nucleus::Address::Null)
+                        if (object->meta.access !=
+                            nucleus::proton::Address::Null)
                           {
-                            nucleus::Access     access;
+                            nucleus::neutron::Access access;
 
                             // load the access block.
                             if (Hole::Pull(object->meta.access,
-                                           nucleus::Version::Last,
+                                           nucleus::proton::Version::Last,
                                            access) == elle::Status::Error)
                               escape("unable to load the access block");
 
@@ -1610,7 +1638,7 @@ namespace hole
                             // validate the object.
                             if (object->Validate(
                                   address,
-                                  nucleus::Access::Null) == elle::Status::Error)
+                                  nucleus::neutron::Access::Null) == elle::Status::Error)
                               escape("unable to validate the object");
                           }
 
@@ -1624,7 +1652,7 @@ namespace hole
 
                         break;
                       }
-                    case nucleus::ComponentUnknown:
+                    case nucleus::neutron::ComponentUnknown:
                       {
                         escape("unknown component '%u'",
                                address.component);
@@ -1651,7 +1679,7 @@ namespace hole
       ///
       /// this method removes the block associated with the given address.
       ///
-      elle::Status      Machine::Wipe(const nucleus::Address&   address)
+      elle::Status      Machine::Wipe(const nucleus::proton::Address& address)
       {
         Host*           host;
 
@@ -1675,22 +1703,24 @@ namespace hole
           // the addres indicates.
           switch (address.family)
             {
-            case nucleus::FamilyContentHashBlock:
+            case nucleus::proton::FamilyContentHashBlock:
               {
                 // erase the immutable block.
-                if (nucleus::ImmutableBlock::Erase(Hole::Implementation->network,
-                             address) == elle::Status::Error)
+                if (nucleus::proton::ImmutableBlock::Erase(
+                      Hole::Implementation->network,
+                      address) == elle::Status::Error)
                   escape("unable to erase the block");
 
                 break;
               }
-            case nucleus::FamilyPublicKeyBlock:
-            case nucleus::FamilyOwnerKeyBlock:
-            case nucleus::FamilyImprintBlock:
+            case nucleus::proton::FamilyPublicKeyBlock:
+            case nucleus::proton::FamilyOwnerKeyBlock:
+            case nucleus::proton::FamilyImprintBlock:
               {
                 // retrieve the mutable block.
-                if (nucleus::MutableBlock::Erase(Hole::Implementation->network,
-                             address) == elle::Status::Error)
+                if (nucleus::proton::MutableBlock::Erase(
+                      Hole::Implementation->network,
+                      address) == elle::Status::Error)
                   escape("unable to erase the block");
 
                 break;

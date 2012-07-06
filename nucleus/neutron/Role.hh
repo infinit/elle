@@ -1,21 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [sun apr  4 14:38:46 2010]
-//
-
 #ifndef NUCLEUS_NEUTRON_ROLE_HH
-#define NUCLEUS_NEUTRON_ROLE_HH
+# define NUCLEUS_NEUTRON_ROLE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
+# include <elle/types.hh>
 
 namespace nucleus
 {

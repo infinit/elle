@@ -1,15 +1,13 @@
-#include <elle/log.hh>
+#include <nucleus/proton/ImmutableBlock.hh>
+#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Network.hh>
 
+#include <elle/log.hh>
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
-#include <elle/utility/Buffer.hh>
-
-#include <elle/serialize/HexadecimalArchive.hh>
-
-#include <nucleus/proton/ImmutableBlock.hh>
-
 #include <lune/Lune.hh>
+
 #include <Infinit.hh>
 
 namespace nucleus
@@ -61,12 +59,7 @@ namespace nucleus
       if (address.digest->Save(unique) == elle::Status::Error)
         escape("unable to convert the address in its hexadecimal form");
 
-      ELLE_LOG_TRACE("Load immutable block from address %s", unique);
-
-      // debug.
-      if (Infinit::Configuration.nucleus.debug == true)
-        printf("[nucleus] proton::ImmutableBlock::Load(%s)\n",
-               unique.c_str());
+      ELLE_LOG_TRACE("Load(%s)", unique);
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::ImmutableBlock) ==
@@ -93,12 +86,7 @@ namespace nucleus
       if (address.digest->Save(unique) == elle::Status::Error)
         escape("unable to convert the address in its hexadecimal form");
 
-      ELLE_LOG_TRACE("Store immutable block from address %s", unique);
-
-      // debug.
-      if (Infinit::Configuration.nucleus.debug == true)
-        printf("[nucleus] proton::ImmutableBlock::Store(%s)\n",
-               unique.c_str());
+      ELLE_LOG_TRACE("Store(%s)", unique);
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::ImmutableBlock) ==
@@ -125,12 +113,7 @@ namespace nucleus
       if (address.digest->Save(unique) == elle::Status::Error)
         escape("unable to convert the address in its hexadecimal form");
 
-      ELLE_LOG_TRACE("Erase immutable block from address %s", unique);
-
-      // debug.
-      if (Infinit::Configuration.nucleus.debug == true)
-        printf("[nucleus] proton::ImmutableBlock::Erase(%s)\n",
-               unique.c_str());
+      ELLE_LOG_TRACE("Erase(%s)", unique);
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::ImmutableBlock) ==
@@ -165,12 +148,7 @@ namespace nucleus
       if (address.digest->Save(unique) == elle::Status::Error)
         escape("unable to convert the address in its hexadecimal form");
 
-      ELLE_LOG_TRACE("Check existence immutable block from address %s", unique);
-
-      // debug.
-      if (Infinit::Configuration.nucleus.debug == true)
-        printf("[nucleus] proton::ImmutableBlock::Exist(%s)\n",
-               unique.c_str());
+      ELLE_LOG_TRACE("Exist(%s)", unique);
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::ImmutableBlock) ==

@@ -52,7 +52,7 @@ namespace etoile
       //
       elle::Status              Create(const path::Slab&,
                                        const nucleus::proton::Location&,
-                                       Riffle* = NULL);
+                                       Riffle* = nullptr);
 
       elle::Status              Resolve(const path::Slab&,
                                         Riffle*&);

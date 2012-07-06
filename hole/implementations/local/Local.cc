@@ -1,7 +1,6 @@
+#include <hole/implementations/local/Local.hh>
 
 #include <elle/utility/Time.hh>
-
-#include <hole/implementations/local/Local.hh>
 
 #include <Infinit.hh>
 
@@ -26,7 +25,7 @@ namespace hole
       /// local implementation to retrieve the machine i.e the current
       /// host.
       ///
-      Machine*                          Local::Computer = NULL;
+      Machine*                          Local::Computer = nullptr;
 
     }
   }

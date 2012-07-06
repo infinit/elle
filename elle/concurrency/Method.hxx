@@ -119,7 +119,7 @@ namespace elle
       //
       // note that the Clone method must be called because at this point,
       // this constructor does not know the type of the _method_'s wrap.
-      if (method.shell != NULL)
+      if (method.shell != nullptr)
         method.shell->Clone(reinterpret_cast<Object*&>(this->shell));
     }
 
@@ -131,7 +131,7 @@ namespace elle
     Method< R, radix::Parameters<T...> >::~Method()
     {
       // delete the shell, if present.
-      if (this->shell != NULL)
+      if (this->shell != nullptr)
         delete this->shell;
     }
 

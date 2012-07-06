@@ -10,10 +10,6 @@
 namespace etoile
 {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
   ///
   /// this class controls Etoile.
   ///

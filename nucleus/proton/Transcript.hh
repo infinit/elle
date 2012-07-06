@@ -1,22 +1,20 @@
 #ifndef NUCLEUS_PROTON_TRANSCRIPT_HH
 # define NUCLEUS_PROTON_TRANSCRIPT_HH
 
-# include <vector>
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-#include <elle/types.hh>
+# include <nucleus/proton/fwd.hh>
+# include <nucleus/proton/Action.hh>
 
-#include <nucleus/proton/Action.hh>
-#include <nucleus/proton/Address.hh>
-#include <nucleus/proton/Block.hh>
+# include <elle/idiom/Close.hh>
+#  include <vector>
+# include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a set of actions to be performed on the

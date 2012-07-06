@@ -6,8 +6,6 @@
 # include <elle/serialize/VectorSerializer.hxx>
 # include <nucleus/proton/Version.hh>
 
-# include <nucleus/proton/History.hh>
-
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::History,
                       archive,
                       value,

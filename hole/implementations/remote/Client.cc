@@ -1,15 +1,10 @@
+#include <hole/implementations/remote/Client.hh>
+#include <hole/implementations/remote/Manifest.hh>
+
 #include <elle/log.hh>
-
 #include <elle/standalone/Report.hh>
-#include <elle/network/Bundle.hh>
-#include <elle/utility/Buffer.hh>
-#include <elle/network/Header.hh>
-
-#include <elle/concurrency/Program.hh>
 #include <elle/network/Locus.hh>
-#include <elle/network/Range.hh>
 #include <elle/network/TCPSocket.hh>
-#include <elle/utility/Time.hh>
 #include <elle/network/Network.hh>
 #include <elle/network/Inputs.hh>
 #include <elle/network/Outputs.hh>
@@ -19,10 +14,8 @@
 #include <nucleus/Derivable.hh>
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Version.hh>
-#include <nucleus/proton/Block.hh>
-
-#include <hole/implementations/remote/Client.hh>
-#include <hole/implementations/remote/Manifest.hh>
+#include <nucleus/proton/ImmutableBlock.hh>
+#include <nucleus/proton/MutableBlock.hh>
 
 #include <hole/Hole.hh>
 
@@ -44,10 +37,10 @@ namespace hole
       ///
       /// default constructor.
       ///
-      Client::Client(const elle::network::Locus&                         locus):
+      Client::Client(const elle::network::Locus& locus):
         state(Client::StateUnknown),
         locus(locus),
-        socket(NULL)
+        socket(nullptr)
       {
       }
 
@@ -57,7 +50,7 @@ namespace hole
       Client::~Client()
       {
         // delete the socket.
-        if (this->socket != NULL)
+        if (this->socket != nullptr)
         {
           delete this->socket;
           this->socket = 0;
@@ -93,7 +86,7 @@ namespace hole
           auto socket = new reactor::network::TCPSocket
             (elle::concurrency::scheduler(), hostname, this->locus.port);
           this->socket = new elle::network::TCPSocket(socket, true);
-          Connected();
+          this->state = Client::StateConnected;
         }
 
         // Authenticate to the server.
@@ -106,16 +99,18 @@ namespace hole
       ///
       /// this method stores an immutable block.
       ///
-      elle::Status      Client::Put(const nucleus::Address&     address,
-                                    const nucleus::ImmutableBlock& block)
+      elle::Status      Client::Put(const nucleus::proton::Address& address,
+                                    const nucleus::proton::ImmutableBlock& block)
       {
         nucleus::Derivable derivable(
-            address.component, block, nucleus::Derivable::Kind::output);
+          address.component,
+          block,
+          nucleus::Derivable::Kind::output);
 
         ELLE_LOG_TRACE_SCOPE("Put[Immutable]");
 
         // check that the client is connected.
-        if (this->socket == NULL)
+        if (this->socket == nullptr)
           escape("the client seems to have been disconnected");
 
         // transfer to the remote.
@@ -130,15 +125,15 @@ namespace hole
       ///
       /// this method stores a mutable block.
       ///
-      elle::Status      Client::Put(const nucleus::Address&     address,
-                                    const nucleus::MutableBlock& block)
+      elle::Status      Client::Put(const nucleus::proton::Address& address,
+                                    const nucleus::proton::MutableBlock& block)
       {
         nucleus::Derivable derivable(address.component, block);
 
         ELLE_LOG_TRACE_SCOPE("Put[Mutable]");
 
         // check that the client is connected.
-        if (this->socket == NULL)
+        if (this->socket == nullptr)
           escape("the client seems to have been disconnected");
 
         // transfer to the remote.
@@ -153,22 +148,24 @@ namespace hole
       ///
       /// this method retrieves an immutable block.
       ///
-      elle::Status      Client::Get(const nucleus::Address&     address,
-                                    nucleus::ImmutableBlock&    block)
+      elle::Status      Client::Get(const nucleus::proton::Address& address,
+                                    nucleus::proton::ImmutableBlock&  block)
       {
         nucleus::Derivable derivable(
-            address.component, block, nucleus::Derivable::Kind::output);
+          address.component,
+          block,
+          nucleus::Derivable::Kind::output);
 
         ELLE_LOG_TRACE_SCOPE("Get[Immutable]");
 
         // check that the client is connected.
-        if (this->socket == NULL)
+        if (this->socket == nullptr)
           escape("the client seems to have been disconnected");
 
         // transfer to the remote.
         if (this->socket->Call(
               elle::network::Inputs<TagPull>(address,
-                                    nucleus::Version::Any),
+                                    nucleus::proton::Version::Any),
               elle::network::Outputs<TagBlock>(derivable)) == elle::Status::Error)
           escape("unable to transfer the request");
 
@@ -178,17 +175,19 @@ namespace hole
       ///
       /// this method retrieves a mutable block.
       ///
-      elle::Status      Client::Get(const nucleus::Address&     address,
-                                    const nucleus::Version&     version,
-                                    nucleus::MutableBlock&      block)
+      elle::Status      Client::Get(const nucleus::proton::Address& address,
+                                    const nucleus::proton::Version& version,
+                                    nucleus::proton::MutableBlock& block)
       {
         nucleus::Derivable derivable(
-            address.component, block, nucleus::Derivable::Kind::output);
+          address.component,
+          block,
+          nucleus::Derivable::Kind::output);
 
         ELLE_LOG_TRACE_SCOPE("Get[Mutable]");
 
         // check that the client is connected.
-        if (this->socket == NULL)
+        if (this->socket == nullptr)
           escape("the client seems to have been disconnected");
 
         // transfer to the remote.
@@ -203,12 +202,12 @@ namespace hole
       ///
       /// this method removes a block.
       ///
-      elle::Status      Client::Kill(const nucleus::Address&    address)
+      elle::Status      Client::Kill(const nucleus::proton::Address& address)
       {
         ELLE_LOG_TRACE_SCOPE("Kill");
 
         // check that the client is connected.
-        if (this->socket == NULL)
+        if (this->socket == nullptr)
           escape("the client seems to have been disconnected");
 
         // transfer to the remote.
@@ -223,62 +222,6 @@ namespace hole
 //
 // ---------- callbacks -------------------------------------------------------
 //
-
-      ///
-      /// this callback is triggered whenever the socket is considered
-      /// connected.
-      ///
-      elle::Status      Client::Connected()
-      {
-        ELLE_LOG_TRACE_SCOPE("Connected");
-
-        // set the client as connected.
-        this->state = Client::StateConnected;
-
-        return elle::Status::Ok;
-      }
-
-      ///
-      /// this callback is triggered whenever the socket is considered
-      /// disconnected.
-      ///
-      elle::Status      Client::Disconnected()
-      {
-        ELLE_LOG_TRACE_SCOPE("Disconnected");
-
-        // exit if the connection was shut down.
-        if ((this->state == Client::StateConnected) ||
-            (this->state == Client::StateAuthenticated))
-          {
-            // report the cause.
-            report("the connection with the server has been shut down");
-
-            // show the report.
-            show();
-
-            elle::concurrency::Program::Exit();
-          }
-
-        return elle::Status::Ok;
-      }
-
-      ///
-      /// this callback is triggered whenever an error occurs on the socket.
-      ///
-      elle::Status      Client::Error(elle::String)
-      {
-        ELLE_LOG_TRACE_SCOPE("Error");
-
-        // disconnect the socket, though that may be unecessary.
-
-        // XXX: This this call is asynchronous (sigh), we might have
-        // been destroyed, so check if the socket hasn't been
-        // deleted. Don't touch anything else in this, also.
-        if (this->socket)
-          this->socket->Disconnect();
-
-        return elle::Status::Ok;
-      }
 
       ///
       /// this callback is triggered when the Authenticated message is

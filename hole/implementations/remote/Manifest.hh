@@ -1,10 +1,11 @@
-#ifndef  HOLE_IMPLEMENTATIONS_REMOTE_MANIFEST_HH
+#ifndef HOLE_IMPLEMENTATIONS_REMOTE_MANIFEST_HH
 # define HOLE_IMPLEMENTATIONS_REMOTE_MANIFEST_HH
 
 # include <elle/types.hh>
-# include <nucleus/Nucleus.hh>
-# include <nucleus/Derivable.hh>
-# include <lune/Lune.hh>
+
+# include <nucleus/fwd.hh>
+
+# include <lune/fwd.hh>
 
 # include <etoile/Manifest.hh>
 
@@ -84,13 +85,13 @@ message(hole::implementations::remote::TagAuthenticated,
         parameters());
 
 message(hole::implementations::remote::TagPush,
-        parameters(nucleus::Address&, nucleus::Derivable&));
+        parameters(nucleus::proton::Address&, nucleus::Derivable&));
 message(hole::implementations::remote::TagPull,
-        parameters(nucleus::Address&,
-                   nucleus::Version&));
+        parameters(nucleus::proton::Address&,
+                   nucleus::proton::Version&));
 message(hole::implementations::remote::TagBlock,
         parameters(nucleus::Derivable&));
 message(hole::implementations::remote::TagWipe,
-        parameters(nucleus::Address&));
+        parameters(nucleus::proton::Address&));
 
 #endif
