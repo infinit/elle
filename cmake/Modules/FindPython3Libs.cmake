@@ -29,7 +29,7 @@ INCLUDE(CMakeFindFrameworks)
 
 FOREACH(_CURRENT_VERSION 3.2 3.1 3.0)
   IF(_CURRENT_VERSION GREATER 3.1)
-      SET(_32FLAGS "m" "u" "mu" "")
+      SET(_32FLAGS "m;u;mu;")
   ELSE()
       SET(_32FLAGS "")
   ENDIF()
@@ -103,7 +103,7 @@ FOREACH(_CURRENT_VERSION 3.2 3.1 3.0)
       )
 
       # For backward compatibility, set PYTHON_INCLUDE_PATH, but make it internal.
-      SET(PYTHON_INCLUDE_PATH "${PYTHON_INCLUDE_DIR}" CACHE INTERNAL 
+      SET(PYTHON_INCLUDE_PATH "${PYTHON_INCLUDE_DIR}" CACHE INTERNAL
         "Path to where Python.h is found (deprecated)")
   ENDFOREACH(_COMPILATION_FLAGS)
 ENDFOREACH(_CURRENT_VERSION)
@@ -128,7 +128,7 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(Python3Libs DEFAULT_MSG PYTHON3_LIBRARIES PYTH
 
 
 # PYTHON_ADD_MODULE(<name> src1 src2 ... srcN) is used to build modules for python.
-# PYTHON_WRITE_MODULES_HEADER(<filename>) writes a header file you can include 
+# PYTHON_WRITE_MODULES_HEADER(<filename>) writes a header file you can include
 # in your sources to initialize the static python modules
 
 GET_PROPERTY(_TARGET_SUPPORTS_SHARED_LIBS
@@ -168,7 +168,7 @@ FUNCTION(PYTHON3_WRITE_MODULES_HEADER _filename)
 
   SET(_filenameTmp "${_filename}.in")
   FILE(WRITE ${_filenameTmp} "/*Created by cmake, do not edit, changes will be lost*/\n")
-  FILE(APPEND ${_filenameTmp} 
+  FILE(APPEND ${_filenameTmp}
 "#ifndef ${_nameUpper}
 #define ${_nameUpper}
 
@@ -184,7 +184,7 @@ extern \"C\" {
     FILE(APPEND ${_filenameTmp} "extern void init${PYTHON_MODULE_PREFIX}${_currentModule}(void);\n\n")
   ENDFOREACH(_currentModule ${PY_STATIC_MODULES_LIST})
 
-  FILE(APPEND ${_filenameTmp} 
+  FILE(APPEND ${_filenameTmp}
 "#ifdef __cplusplus
 }
 #endif /* __cplusplus */
@@ -202,7 +202,7 @@ extern \"C\" {
   ENDFOREACH(_currentModule ${PY_STATIC_MODULES_LIST})
   FILE(APPEND ${_filenameTmp} "}\n\n")
   FILE(APPEND ${_filenameTmp} "#ifndef EXCLUDE_LOAD_ALL_FUNCTION\nvoid CMakeLoadAllPythonModules(void)\n{\n  ${_name}_LoadAllPythonModules();\n}\n#endif\n\n#endif\n")
-  
+
 # with CONFIGURE_FILE() cmake complains that you may not use a file created using FILE(WRITE) as input file for CONFIGURE_FILE()
   EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_filenameTmp}" "${_filename}" OUTPUT_QUIET ERROR_QUIET)
 
