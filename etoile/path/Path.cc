@@ -152,7 +152,7 @@ namespace etoile
 
           // set the address; the version is already set i.e it has
           // been extracted from the slab.
-          if (entry != NULL)
+          if (entry != nullptr)
             address = entry->address;
 
           // discard the directory.
@@ -165,7 +165,7 @@ namespace etoile
           // lookup has succeded. however, the entry's content cannot be
           // accessed as it has potentially been released with the context
           // through the call to Discard().
-          if (entry == NULL)
+          if (entry == nullptr)
             escape("unable to locate the directory entry '%s'",
                    slice.c_str());
 

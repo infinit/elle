@@ -20,7 +20,7 @@ namespace hole
       ///
       /// XXX
       ///
-      Machine*                          Slug::Computer = NULL;
+      Machine*                          Slug::Computer = nullptr;
 
     }
   }

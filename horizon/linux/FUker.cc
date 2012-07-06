@@ -202,7 +202,7 @@ namespace horizon
              sizeof (operations),
              &mountpoint,
              &multithreaded,
-             NULL)) == NULL)
+             nullptr)) == nullptr)
         goto _error;
 
       if (multithreaded)
@@ -224,7 +224,7 @@ namespace horizon
       // now that FUSE has stopped, make sure the program is exiting.
       elle::concurrency::Program::Exit();
 
-      return NULL;
+      return nullptr;
 
     _error:
       // log the error.
@@ -233,7 +233,7 @@ namespace horizon
       // now that FUSE has stopped, make sure the program is exiting.
       elle::concurrency::Program::Exit();
 
-      return (NULL);
+      return (nullptr);
     }
 
     ///
@@ -242,7 +242,7 @@ namespace horizon
     elle::Status        FUker::Run()
     {
       // create the FUSE-specific thread.
-      if (::pthread_create(&FUker::Thread, NULL, &FUker::Setup, NULL) != 0)
+      if (::pthread_create(&FUker::Thread, nullptr, &FUker::Setup, nullptr) != 0)
         escape("unable to create the FUSE-specific thread");
 
       // XXX[race conditions exist here:
@@ -250,7 +250,7 @@ namespace horizon
       //        is entered.
       //     2) using the FUker::FUSE pointer to know if FUSE has been cleaned
       //        is a bad idea since teardown() could have been called, still
-      //        the pointer would not be NULL. there does not seem to be much
+      //        the pointer would not be nullptr. there does not seem to be much
       //        to do since we do not control FUSE internal loop and logic.]
 
       return elle::Status::Ok;
@@ -307,7 +307,7 @@ namespace horizon
           ::statfs(Infinit::Mountpoint.c_str(), &stfs);
 
           // finally, wait for the FUSE-specific thread to exit.
-          if (::pthread_join(FUker::Thread, NULL) != 0)
+          if (::pthread_join(FUker::Thread, nullptr) != 0)
             log("%s", ::strerror(errno));
         }
 

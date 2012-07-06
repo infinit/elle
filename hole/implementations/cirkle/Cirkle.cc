@@ -35,7 +35,7 @@ namespace hole
       ///
       /// XXX
       ///
-      Machine*                          Cirkle::Computer = NULL;
+      Machine*                          Cirkle::Computer = nullptr;
 
     }
   }

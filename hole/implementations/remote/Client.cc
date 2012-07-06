@@ -40,7 +40,7 @@ namespace hole
       Client::Client(const elle::network::Locus& locus):
         state(Client::StateUnknown),
         locus(locus),
-        socket(NULL)
+        socket(nullptr)
       {
       }
 
@@ -50,7 +50,7 @@ namespace hole
       Client::~Client()
       {
         // delete the socket.
-        if (this->socket != NULL)
+        if (this->socket != nullptr)
         {
           delete this->socket;
           this->socket = 0;
@@ -110,7 +110,7 @@ namespace hole
         ELLE_LOG_TRACE_SCOPE("Put[Immutable]");
 
         // check that the client is connected.
-        if (this->socket == NULL)
+        if (this->socket == nullptr)
           escape("the client seems to have been disconnected");
 
         // transfer to the remote.
@@ -133,7 +133,7 @@ namespace hole
         ELLE_LOG_TRACE_SCOPE("Put[Mutable]");
 
         // check that the client is connected.
-        if (this->socket == NULL)
+        if (this->socket == nullptr)
           escape("the client seems to have been disconnected");
 
         // transfer to the remote.
@@ -159,7 +159,7 @@ namespace hole
         ELLE_LOG_TRACE_SCOPE("Get[Immutable]");
 
         // check that the client is connected.
-        if (this->socket == NULL)
+        if (this->socket == nullptr)
           escape("the client seems to have been disconnected");
 
         // transfer to the remote.
@@ -187,7 +187,7 @@ namespace hole
         ELLE_LOG_TRACE_SCOPE("Get[Mutable]");
 
         // check that the client is connected.
-        if (this->socket == NULL)
+        if (this->socket == nullptr)
           escape("the client seems to have been disconnected");
 
         // transfer to the remote.
@@ -207,7 +207,7 @@ namespace hole
         ELLE_LOG_TRACE_SCOPE("Kill");
 
         // check that the client is connected.
-        if (this->socket == NULL)
+        if (this->socket == nullptr)
           escape("the client seems to have been disconnected");
 
         // transfer to the remote.

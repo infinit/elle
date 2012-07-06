@@ -22,7 +22,7 @@ namespace hole
   elle::Status          Label::Create(const T&                  parameter)
   {
     // release the previous digest.
-    if (this->digest != NULL)
+    if (this->digest != nullptr)
       delete this->digest;
 
     // allocate the digest object.

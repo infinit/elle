@@ -13,10 +13,10 @@ namespace lune
   /// default argument.
   ///
   template <typename T>
-  elle::String*                 Map<T>::Trash::Name = NULL;
+  elle::String*                 Map<T>::Trash::Name = nullptr;
 
   template <typename T>
-  T*                            Map<T>::Trash::Value = NULL;
+  T*                            Map<T>::Trash::Value = nullptr;
 
 //
 // ---------- constructors & destructors --------------------------------------

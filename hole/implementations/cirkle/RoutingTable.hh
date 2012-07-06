@@ -46,7 +46,7 @@ namespace hole
                                          Neighbour*&);
         elle::Status            Remove(const Label&);
         elle::Status            Locate(const Label&,
-                                       Iterator* = NULL);
+                                       Iterator* = nullptr);
 
         //
         // interfaces

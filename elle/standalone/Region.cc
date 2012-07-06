@@ -33,7 +33,7 @@ namespace elle
     Region::Region():
       type(Region::TypeUnknown),
       options(Region::OptionNone),
-      contents(NULL),
+      contents(nullptr),
       size(0),
       capacity(0)
     {
@@ -58,7 +58,7 @@ namespace elle
     Region::Region(const Region&                                region):
       type(region.type),
       options(region.options),
-      contents(NULL),
+      contents(nullptr),
       size(0),
       capacity(0)
     {
@@ -93,7 +93,7 @@ namespace elle
     Region::~Region()
     {
       // release resources.
-      if ((this->contents != NULL) &&
+      if ((this->contents != nullptr) &&
           (this->type == Region::TypeBuffer) &&
           ((this->options & Region::OptionDetach) == 0))
         ::free(this->contents);
@@ -166,7 +166,7 @@ namespace elle
       // XXX leak when realloc fails
       // allocate memory.
       if ((this->contents =
-           static_cast<Byte*>(::realloc(this->contents, capacity))) == NULL)
+           static_cast<Byte*>(::realloc(this->contents, capacity))) == nullptr)
         escape("%s", ::strerror(errno));
 
       // update the capacity. note that the size should be updated
@@ -193,7 +193,7 @@ namespace elle
       // XXX leak when realloc fails
       // allocate the required memory.
       if ((this->contents =
-           static_cast<Byte*>(::realloc(this->contents, size))) == NULL)
+           static_cast<Byte*>(::realloc(this->contents, size))) == nullptr)
         escape("%s", ::strerror(errno));
 
       // copy the data.
@@ -246,7 +246,7 @@ namespace elle
           // XXX this->contents set to nullptr, but old pointer not freed.
           if ((this->contents =
                static_cast<Byte*>(::realloc(this->contents,
-                                            this->capacity))) == NULL)
+                                            this->capacity))) == nullptr)
             escape("%s", ::strerror(errno));
 
 #ifdef REGION_CLEAR
@@ -438,8 +438,10 @@ namespace elle
       if (this->size != element.size)
         return false;
 
-      // XXX null pointers ?!
       // check the content.
+      if (this->size == 0)
+        return true;
+
       if (::memcmp(this->contents, element.contents, element.size) == 0)
         return true;
 

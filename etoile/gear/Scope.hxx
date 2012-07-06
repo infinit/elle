@@ -22,7 +22,7 @@ namespace etoile
     elle::Status        Scope::Use(T*&                          context)
     {
       // first, if the scope's context is null, allocate one.
-      if (this->context == NULL)
+      if (this->context == nullptr)
         {
           // allocate a context according to the nature.
           this->context = new T;

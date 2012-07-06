@@ -57,8 +57,8 @@ namespace nucleus
     Contents<T>::Contents():
       proton::ContentHashBlock(ContentsMap<T>::Component),
 
-      content(NULL),
-      cipher(NULL)
+      content(nullptr),
+      cipher(nullptr)
     {
     }
 
@@ -69,11 +69,11 @@ namespace nucleus
     Contents<T>::~Contents()
     {
       // release the block, if present.
-      if (this->content != NULL)
+      if (this->content != nullptr)
         delete this->content;
 
       // release the cipher, if present.
-      if (this->cipher != NULL)
+      if (this->cipher != nullptr)
         delete this->cipher;
     }
 
@@ -89,7 +89,7 @@ namespace nucleus
     elle::Status Contents<T>::Encrypt(elle::cryptography::SecretKey const& key)
     {
       // if there is no block, this operation cannot be performed.
-      if (this->content == NULL)
+      if (this->content == nullptr)
         escape("unable to encrypt a non-existing block");
 
       // if the block already exist, delete it.
@@ -114,11 +114,11 @@ namespace nucleus
     elle::Status Contents<T>::Decrypt(elle::cryptography::SecretKey const& key)
     {
       // if there is no cipher, this operation cannot be performed.
-      if (this->cipher == NULL)
+      if (this->cipher == nullptr)
         escape("unable to decrypt a non-existing cipher");
 
       // if the block already exist, delete it.
-      if (this->content != NULL)
+      if (this->content != nullptr)
         delete this->content;
 
       // allocate a new block.
@@ -175,7 +175,7 @@ namespace nucleus
         escape("unable to dump the underlying block");
 
       // if present, dump the content.
-      if (this->content != NULL)
+      if (this->content != nullptr)
         {
           std::cout << alignment << elle::io::Dumpable::Shift
                     << "[Content]" << std::endl;
@@ -190,7 +190,7 @@ namespace nucleus
         }
 
       // if present, dump the cipher.
-      if (this->cipher != NULL)
+      if (this->cipher != nullptr)
         {
           std::cout << alignment << elle::io::Dumpable::Shift
                     << "[Cipher]" << std::endl;

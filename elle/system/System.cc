@@ -50,7 +50,7 @@ namespace elle
       System::Path::Current =
         ::QDir::current().canonicalPath().toStdString();
 
-      if (::getenv("INFINIT_HOME") == NULL)
+      if (::getenv("INFINIT_HOME") == nullptr)
         {
           System::Path::Home =
             ::QDir::home().canonicalPath().toStdString();

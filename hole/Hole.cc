@@ -45,7 +45,7 @@ namespace hole
   ///
   /// this variable holds the hole implementation.
   ///
-  Holeable*                     Hole::Implementation = NULL;
+  Holeable*                     Hole::Implementation = nullptr;
 
   ///
   /// XXX

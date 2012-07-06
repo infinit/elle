@@ -110,7 +110,7 @@ namespace nucleus
       Index                     i;
 
       // set the record to null.
-      record = NULL;
+      record = nullptr;
 
       // go through the range.
       for (scoutor = this->range.container.begin(), i = 0;
@@ -325,11 +325,7 @@ namespace nucleus
       if (this == &element)
         return true;
 
-      // compare the ranges.
-      if (this->range != element.range)
-        return false;
-
-      return true;
+      return (this->range == element.range);
     }
 
     ///

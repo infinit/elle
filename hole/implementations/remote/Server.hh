@@ -55,7 +55,7 @@ namespace hole
         elle::Status            Retrieve(elle::network::TCPSocket*,
                                          Customer*&);
         elle::Status            Locate(elle::network::TCPSocket*,
-                                       Iterator* = NULL);
+                                       Iterator* = nullptr);
 
         elle::Status            Put(const nucleus::proton::Address&,
                                     const nucleus::proton::ImmutableBlock&);

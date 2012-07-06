@@ -41,7 +41,7 @@ namespace satellite
       { "help", Shell::Help },
       { "quit", Shell::Quit },
       { "dump", Shell::Dump },
-      { NULL, NULL }
+      { nullptr, nullptr }
     };
 
 //
@@ -210,12 +210,12 @@ namespace satellite
     hole::Hole::Initialize();
 
     // wait for and trigger commands.
-    while ((line = ::readline("$> ")) != NULL)
+    while ((line = ::readline("$> ")) != nullptr)
       {
         elle::Natural32 i;
 
         // look for the command.
-        for (i = 0; Commands[i].name != NULL; i++)
+        for (i = 0; Commands[i].name != nullptr; i++)
           {
             // trigger the command.
             if (elle::String(Commands[i].name) == elle::String(line))
@@ -228,7 +228,7 @@ namespace satellite
           }
 
         // no command found.
-        if (Commands[i].name == NULL)
+        if (Commands[i].name == nullptr)
           std::cerr << "Unknown command '" << line << "'" << std::endl;
       }
 

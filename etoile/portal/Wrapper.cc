@@ -46,7 +46,7 @@ namespace etoile
         escape("unable to lookup the given subject");
 
       // construct the record depending on the value of _r_.
-      if (r != NULL)
+      if (r != nullptr)
         record = *r;
       else
         record = nucleus::neutron::Record::Null;
@@ -106,7 +106,7 @@ namespace etoile
         escape("unable to get the attribute");
 
       // construct the trait depending on the value of _t_.
-      if (t != NULL)
+      if (t != nullptr)
         trait = *t;
       else
         trait = nucleus::neutron::Trait::Null;
@@ -162,7 +162,7 @@ namespace etoile
         escape("unable to lookup the entry");
 
       // construct the entry depending on the value of _e_.
-      if (e != NULL)
+      if (e != nullptr)
         entry = *e;
       else
         entry = nucleus::neutron::Entry::Null;

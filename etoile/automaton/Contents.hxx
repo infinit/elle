@@ -30,7 +30,7 @@ namespace etoile
                           T&                                    context)
     {
       // if the contents is already opened, return.
-      if (context.contents != NULL)
+      if (context.contents != nullptr)
         return elle::Status::Ok;
 
       // otherwise create a new contents according to the context's type.
@@ -107,8 +107,8 @@ namespace etoile
       {
         // if there is no loaded contents or accessible content, then there
         // is nothing to do.
-        if (!((context.contents != NULL) &&
-              (context.contents->content != NULL)))
+        if (!((context.contents != nullptr) &&
+              (context.contents->content != nullptr)))
           return elle::Status::Ok;
 
         // if the contents has not changed, do nothing.

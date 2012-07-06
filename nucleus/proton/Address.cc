@@ -76,7 +76,7 @@ namespace nucleus
     Address::Address():
       family(FamilyUnknown),
       component(neutron::ComponentUnknown),
-      digest(NULL)
+      digest(nullptr)
     {
     }
 
@@ -91,13 +91,13 @@ namespace nucleus
       this->component = address.component;
 
       // copy the digest, if present.
-      if (address.digest != NULL)
+      if (address.digest != nullptr)
         {
           this->digest = new elle::cryptography::Digest(*address.digest);
         }
       else
         {
-          this->digest = NULL;
+          this->digest = nullptr;
         }
     }
 
@@ -107,7 +107,7 @@ namespace nucleus
     Address::~Address()
     {
       // release the resources.
-      if (this->digest != NULL)
+      if (this->digest != nullptr)
         delete this->digest;
     }
 
@@ -143,8 +143,8 @@ namespace nucleus
       if (this == &element)
         return true;
 
-      // if both are NULL or equal return true, false otherwise
-      if ((this->digest == NULL) || (element.digest == NULL))
+      // if both are nullptr or equal return true, false otherwise
+      if ((this->digest == nullptr) || (element.digest == nullptr))
         {
           if (this->digest != element.digest)
             return false;
@@ -168,11 +168,11 @@ namespace nucleus
         return false;
 
       // test for a null digest.
-      if ((this->digest == NULL) && (element.digest == NULL))
+      if ((this->digest == nullptr) && (element.digest == nullptr))
         return false;
-      else if (this->digest == NULL)
+      else if (this->digest == nullptr)
         return true;
-      else if (element.digest == NULL)
+      else if (element.digest == nullptr)
         return false;
 
       // compare the digests.

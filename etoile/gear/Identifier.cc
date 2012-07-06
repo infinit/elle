@@ -72,11 +72,7 @@ namespace etoile
       if (this == &element)
         return true;
 
-      // compare the identifier.
-      if (this->value != element.value)
-        return false;
-
-      return true;
+      return (this->value == element.value);
     }
 
     ///

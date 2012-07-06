@@ -69,7 +69,7 @@ namespace etoile
     Way::Way(const wchar_t *                                    u16_str):
       path()
     {
-      char *    str      = NULL;
+      char *    str      = nullptr;
       ssize_t   str_size = 0;
 
       // convert the wchar string.
@@ -140,11 +140,7 @@ namespace etoile
       if (this == &element)
         return true;
 
-      // compare the attributes..
-      if (this->path != element.path)
-        return false;
-
-      return true;
+      return (this->path == element.path);
     }
 
     ///

@@ -36,7 +36,7 @@ namespace elle
       kind(kind),
 
       state(Parser::StateDeactivated),
-      value(NULL)
+      value(nullptr)
     {
     }
 
@@ -70,7 +70,7 @@ namespace elle
                 << "[State] " << this->state << std::endl;
 
       // dump the value, if present.
-      if (this->value != NULL)
+      if (this->value != nullptr)
         {
           std::cout << alignment << io::Dumpable::Shift
                     << "[Value] " << *this->value << std::endl;
@@ -95,7 +95,7 @@ namespace elle
                    Character**                                  argv):
       argc(argc),
       argv(argv),
-      longs(NULL)
+      longs(nullptr)
     {
     }
 
@@ -107,14 +107,14 @@ namespace elle
       Natural32         i;
 
       // release the longs structure.
-      if (this->longs != NULL)
+      if (this->longs != nullptr)
         ::free(this->longs);
 
       // go through the options.
       for (i = 0; i < this->options.size(); i++)
         {
           // delete the value, if present.
-          if (this->options[i]->value != NULL)
+          if (this->options[i]->value != nullptr)
             delete this->options[i]->value;
 
           // delete the option.
@@ -238,7 +238,7 @@ namespace elle
 
       // check if the shorts and longs structure has been generated, if
       // not do it.
-      if (this->longs == NULL)
+      if (this->longs == nullptr)
         {
           Natural32     i;
 
@@ -281,7 +281,7 @@ namespace elle
           if ((this->longs =
                  static_cast<struct ::option*>(
                    ::malloc((this->options.size() + 1) *
-                            sizeof (struct ::option)))) == NULL)
+                            sizeof (struct ::option)))) == nullptr)
             escape("unable to allocate memory");
 
           // initialize the structure with zeros, especially since the
@@ -322,9 +322,9 @@ namespace elle
                   }
                 }
 
-              // finally set the flag to NULL and the val to the equivalent
+              // finally set the flag to nullptr and the val to the equivalent
               // short option.
-              this->longs[i].flag = NULL;
+              this->longs[i].flag = nullptr;
               this->longs[i].val = this->options[i]->character;
             }
         }
@@ -335,7 +335,7 @@ namespace elle
                                                  this->argv,
                                                  this->shorts.c_str(),
                                                  this->longs,
-                                                 NULL))) != -1)
+                                                 nullptr))) != -1)
         {
           Parser::Option*       option;
 
@@ -370,7 +370,7 @@ namespace elle
             case Parser::KindNone:
               {
                 // if an argument is present, return an error.
-                if (optarg != NULL)
+                if (optarg != nullptr)
                   escape("this option is not supposed to take an argument");
 
                 break;
@@ -378,7 +378,7 @@ namespace elle
             case Parser::KindOptional:
               {
                 // allocate and set the value, if present.
-                if (optarg != NULL)
+                if (optarg != nullptr)
                   option->value = new String(::optarg);
 
                 break;
@@ -386,7 +386,7 @@ namespace elle
             case Parser::KindRequired:
               {
                 // if no argument is provided, return an error.
-                if (optarg == NULL)
+                if (optarg == nullptr)
                   escape("this option is supposed to take an argument");
 
                 // allocate and set the value
@@ -436,7 +436,7 @@ namespace elle
         escape("this option has not been activated");
 
       // return true if an argument has been provided.
-      if (option->value != NULL)
+      if (option->value != nullptr)
         return Status::True;
 
       return Status::False;

@@ -151,11 +151,7 @@ namespace hole
       if (this == &element)
         return true;
 
-      // check the attributes.
-      if (this->type != element.type)
-        return false;
-
-      return true;
+      return (this->type == element.type);
     }
 
     ///

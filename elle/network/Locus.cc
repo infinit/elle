@@ -55,7 +55,7 @@ namespace elle
       // create the port.
       this->port =
         static_cast<Port>(::strtoul(string.substr(separator + 1).c_str(),
-                                    NULL, 0));
+                                    nullptr, 0));
 
       return Status::Ok;
     }

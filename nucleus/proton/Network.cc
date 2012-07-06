@@ -58,11 +58,7 @@ namespace nucleus
       if (this == &element)
         return true;
 
-      // compare the names.
-      if (this->name != element.name)
-        return false;
-
-      return true;
+      return (this->name == element.name);
     }
 
     ///

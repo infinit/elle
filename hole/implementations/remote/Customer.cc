@@ -39,7 +39,7 @@ namespace hole
       Customer::~Customer()
       {
         // delete the socket.
-        if (this->socket != NULL)
+        if (this->socket != nullptr)
           delete this->socket;
       }
 

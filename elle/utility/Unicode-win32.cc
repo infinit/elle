@@ -19,7 +19,7 @@ namespace elle
                                          0,       // dwFlags
                                          input,
                                          input_size,
-                                         NULL,
+                                         nullptr,
                                          0);
 
       if (*output_size <= 0)
@@ -52,10 +52,10 @@ namespace elle
                                          0,          // dwFlags
                                          input,
                                          input_size, // cchWideChar
-                                         NULL,       // lpMultiByteStr
+                                         nullptr,       // lpMultiByteStr
                                          0,          // cbMultiByte
-                                         NULL,       // lpDefaultChar
-                                         NULL);      // lpUsedDefaultChar
+                                         nullptr,       // lpDefaultChar
+                                         nullptr);      // lpUsedDefaultChar
 
       if (*output_size <= 0)
         escape("failed to convert from UTF-16 to UTF-8\n");
@@ -70,8 +70,8 @@ namespace elle
                                         input_size,   // cchWideChar
                                         *output,      // lpMultiByteStr
                                         *output_size, // cbMultiByte
-                                        NULL,         // lpDefaultChar
-                                        NULL);        // lpUsedDefaultChar
+                                        nullptr,         // lpDefaultChar
+                                        nullptr);        // lpUsedDefaultChar
       (*output)[*output_size] = '\0';
 
       if (nchars != *output_size)

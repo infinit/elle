@@ -86,11 +86,7 @@ namespace nucleus
       if (this == &element)
         return true;
 
-      // compare the numbers.
-      if (this->number != element.number)
-        return false;
-
-      return true;
+      return (this->number == element.number);
     }
 
     ///

@@ -135,7 +135,7 @@ namespace nucleus
       Range<T>::Scoutor scoutor;
 
       // initialize the pointer to null.
-      item = NULL;
+      item = nullptr;
 
       // try to locate the item.
       if (this->Locate(symbol, scoutor) == false)

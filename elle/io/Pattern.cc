@@ -30,11 +30,7 @@ namespace elle
       if (this == &element)
         return true;
 
-      // compare the internal.
-      if (this->string != element.string)
-        return false;
-
-      return true;
+      return (this->string == element.string);
     }
 
     ///

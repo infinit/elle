@@ -38,7 +38,7 @@ namespace etoile
                           gear::Object&                         context)
     {
       // check if the access has already been opened.
-      if (context.access != NULL)
+      if (context.access != nullptr)
         return elle::Status::Ok;
 
       // allocate an access block.
@@ -533,7 +533,7 @@ namespace etoile
       //
       {
         // if there is no loaded access, then there is nothing to do.
-        if (context.access == NULL)
+        if (context.access == nullptr)
           return elle::Status::Ok;
 
         // if the access has not changed, do nothing.

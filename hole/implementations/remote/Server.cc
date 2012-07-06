@@ -226,7 +226,7 @@ namespace hole
         // try to locate the customer.
         if ((i = this->container.find(socket)) != this->container.end())
           {
-            if (iterator != NULL)
+            if (iterator != nullptr)
               *iterator = i;
 
             return elle::Status::True;

@@ -141,11 +141,7 @@ namespace nucleus
       if (this == &element)
         return true;
 
-      // compare the ranges.
-      if (this->range != element.range)
-        return false;
-
-      return true;
+      return (this->range == element.range);
     }
 
     ///

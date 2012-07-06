@@ -141,7 +141,7 @@ namespace horizon
           struct ::passwd*      passwd;
 
           // Retrieve the passwd structure associated with this name.
-          if ((passwd = ::getpwnam(name->c_str())) != NULL)
+          if ((passwd = ::getpwnam(name->c_str())) != nullptr)
             {
               // Set the uid to the local user's.
               stat->st_uid = passwd->pw_uid;
@@ -179,7 +179,7 @@ namespace horizon
       stat->st_nlink = 1;
 
       // Convert the times into time_t structures.
-      stat->st_atime = time(NULL);
+      stat->st_atime = time(nullptr);
 
       if (abstract.stamps.creation.Get(stat->st_ctime) ==
           elle::Status::Error)
@@ -243,7 +243,7 @@ namespace horizon
                     -EPERM);
 
             // Check the trait.
-            if ((trait != NULL) &&
+            if ((trait != nullptr) &&
                 (trait->value == "true"))
               {
                 // Active the exec bit.
@@ -350,7 +350,7 @@ namespace horizon
               -EPERM);
 
       // Check the record.
-      if (!((record != NULL) &&
+      if (!((record != nullptr) &&
             ((record->permissions & nucleus::neutron::PermissionRead) ==
              nucleus::neutron::PermissionRead)))
         error("the subject does not have the right to read the "
@@ -359,9 +359,9 @@ namespace horizon
 
       // Fill the . and .. entries.
       if (offset == 0)
-        filler(buffer, ".", NULL, 1);
+        filler(buffer, ".", nullptr, 1);
       if (offset <= 1)
-        filler(buffer, "..", NULL, 2);
+        filler(buffer, "..", nullptr, 2);
 
       // Compute the offset of the next entry.
       if (offset < 2)
@@ -396,7 +396,7 @@ namespace horizon
               nucleus::neutron::Entry* entry = *scoutor;
 
               // Fill the buffer with filler().
-              if (filler(buffer, entry->name.c_str(), NULL, next) == 1)
+              if (filler(buffer, entry->name.c_str(), nullptr, next) == 1)
                 return (0);
 
               // Compute the offset of the next entry.
@@ -471,7 +471,7 @@ namespace horizon
               directory);
 
       // Check the record.
-      if (!((record != NULL) &&
+      if (!((record != nullptr) &&
             ((record->permissions & nucleus::neutron::PermissionWrite) ==
              nucleus::neutron::PermissionWrite)))
         error("the subject does not have the right to create a "
@@ -557,7 +557,7 @@ namespace horizon
               directory);
 
       // Check the record.
-      if (!((record != NULL) &&
+      if (!((record != nullptr) &&
             ((record->permissions & nucleus::neutron::PermissionWrite) ==
              nucleus::neutron::PermissionWrite)))
         error("the subject does not have the right to remove "
@@ -658,7 +658,7 @@ namespace horizon
               identifier);
 
       // Check the record.
-      if (record == NULL)
+      if (record == nullptr)
         goto _access;
 
       // Check if the permissions match the mask for execution.
@@ -689,7 +689,7 @@ namespace horizon
                         identifier);
 
                 // Check the trait.
-                if (!((trait != NULL) &&
+                if (!((trait != nullptr) &&
                       (trait->value == "true")))
                   goto _access;
 
@@ -708,7 +708,7 @@ namespace horizon
                         identifier);
 
                 // Check the trait.
-                if (!((trait != NULL) &&
+                if (!((trait != nullptr) &&
                       (trait->value == "true")))
                   goto _access;
 
@@ -1015,7 +1015,7 @@ namespace horizon
               -EPERM);
 
       // Test if a trait has been found.
-      if (trait == NULL)
+      if (trait == nullptr)
         return (-ENOATTR);
 
       // If the size is null, it means that this call must be
@@ -1202,7 +1202,7 @@ namespace horizon
               directory);
 
       // Check the record.
-      if (!((record != NULL) &&
+      if (!((record != nullptr) &&
             ((record->permissions & nucleus::neutron::PermissionWrite) ==
              nucleus::neutron::PermissionWrite)))
         error("the subject does not have the right to create a link in "
@@ -1277,7 +1277,7 @@ namespace horizon
               identifier);
 
       // Check the record.
-      if (!((record != NULL) &&
+      if (!((record != nullptr) &&
             ((record->permissions & nucleus::neutron::PermissionRead) ==
              nucleus::neutron::PermissionRead)))
         error("the subject does not have the right to read this link",
@@ -1342,7 +1342,7 @@ namespace horizon
               directory);
 
       // Check the record.
-      if (!((record != NULL) &&
+      if (!((record != nullptr) &&
             ((record->permissions & nucleus::neutron::PermissionWrite) ==
              nucleus::neutron::PermissionWrite)))
         error("the subject does not have the right to create a file in "
@@ -1495,7 +1495,7 @@ namespace horizon
               -EPERM);
 
       // Check the record.
-      if (!((record != NULL) &&
+      if (!((record != nullptr) &&
             ((record->permissions & nucleus::neutron::PermissionWrite) ==
              nucleus::neutron::PermissionWrite)))
         error("the subject does not have the right to update this file",
@@ -1543,7 +1543,7 @@ namespace horizon
               -EPERM);
 
       // Check the record.
-      if (!((record != NULL) &&
+      if (!((record != nullptr) &&
             ((record->permissions & nucleus::neutron::PermissionRead) ==
              nucleus::neutron::PermissionRead)))
         error("the subject does not have the right to read this file",
@@ -1628,7 +1628,7 @@ namespace horizon
               -EPERM);
 
       // Check the record.
-      if (!((record != NULL) &&
+      if (!((record != nullptr) &&
             ((record->permissions & nucleus::neutron::PermissionWrite) ==
              nucleus::neutron::PermissionWrite)))
         error("the subject does not have the right to modify the size of "
@@ -1752,7 +1752,7 @@ namespace horizon
                   directory);
 
           // Check the record.
-          if (!((record != NULL) &&
+          if (!((record != nullptr) &&
                 ((record->permissions & nucleus::neutron::PermissionWrite) ==
                  nucleus::neutron::PermissionWrite)))
             error("the subject does not have the right to rename this "
@@ -1770,7 +1770,7 @@ namespace horizon
 
           // Check if an entry actually exist for the target name
           // meaning that an object is about to get overwritten.
-          if (entry != NULL)
+          if (entry != nullptr)
             {
               // In this case, the target object must be destroyed.
               int               result;
@@ -1852,7 +1852,7 @@ namespace horizon
                   identifier.object, identifier.to);
 
           // Check the record.
-          if (!((record != NULL) &&
+          if (!((record != nullptr) &&
                 ((record->permissions & nucleus::neutron::PermissionWrite) ==
                  nucleus::neutron::PermissionWrite)))
             error("the subject does not have the right to rename this "
@@ -1883,7 +1883,7 @@ namespace horizon
                   identifier.object, identifier.to, identifier.from);
 
           // Check the record.
-          if (!((record != NULL) &&
+          if (!((record != nullptr) &&
                 ((record->permissions & nucleus::neutron::PermissionWrite) ==
                  nucleus::neutron::PermissionWrite)))
             error("the subject does not have the right to rename this "
@@ -1901,7 +1901,7 @@ namespace horizon
 
           // Check if an entry actually exist for the target name
           // meaning that an object is about to get overwritten.
-          if (entry != NULL)
+          if (entry != nullptr)
             {
               // In this case, the target object must be destroyed.
               int               result;
@@ -2030,7 +2030,7 @@ namespace horizon
               identifier, directory);
 
       // Check the record.
-      if (!((record != NULL) &&
+      if (!((record != nullptr) &&
             ((record->permissions & nucleus::neutron::PermissionWrite) ==
              nucleus::neutron::PermissionWrite)))
         error("the subject does not have the right to remove an entry from "

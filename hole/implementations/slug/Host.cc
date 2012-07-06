@@ -64,7 +64,7 @@ namespace hole
       Host::~Host()
       {
         // delete the socket, if present.
-        if (this->socket != NULL)
+        if (this->socket != nullptr)
           delete this->socket;
       }
 

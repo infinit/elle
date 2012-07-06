@@ -25,7 +25,7 @@ namespace hole
       /// local implementation to retrieve the machine i.e the current
       /// host.
       ///
-      Machine*                          Local::Computer = NULL;
+      Machine*                          Local::Computer = nullptr;
 
     }
   }

@@ -90,7 +90,7 @@ namespace nucleus
     ///
     Subject::Subject():
       type(Subject::TypeUnknown),
-      user(NULL)
+      user(nullptr)
     {
     }
 

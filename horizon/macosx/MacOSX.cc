@@ -49,9 +49,9 @@ namespace horizon
         struct ::passwd*        passwd;
 
         // retrieve the passwd structure related to the user 'somebody'.
-        // if NULL, try to fallback to 'nobody'.
-        if ((passwd = ::getpwnam("somebody")) == NULL &&
-            (passwd = ::getpwnam("nobody")) == NULL)
+        // if nullptr, try to fallback to 'nobody'.
+        if ((passwd = ::getpwnam("somebody")) == nullptr &&
+            (passwd = ::getpwnam("nobody")) == nullptr)
           escape("it seems that the user 'somebody' does not exist");
 
         // set the uid and gid.
