@@ -7,8 +7,6 @@
 # include <nucleus/proton/Address.hxx>
 # include <hole/Model.hh>
 
-# include <lune/Descriptor.hh>
-
 ELLE_SERIALIZE_SIMPLE(lune::Descriptor,
                       archive,
                       value,

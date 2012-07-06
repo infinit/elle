@@ -85,7 +85,7 @@ namespace hole
           this->locus.host.Convert(hostname);
           auto socket = new reactor::network::TCPSocket
             (elle::concurrency::scheduler(), hostname, this->locus.port);
-          this->socket = new elle::network::TCPSocket(socket);
+          this->socket = new elle::network::TCPSocket(socket, true);
           this->state = Client::StateConnected;
         }
 

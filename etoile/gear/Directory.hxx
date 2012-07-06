@@ -8,8 +8,6 @@
 # include <nucleus/proton/Contents.hh>
 # include <nucleus/neutron/Catalog.hh>
 
-# include <etoile/gear/Directory.hh>
-
 ELLE_SERIALIZE_SIMPLE(etoile::gear::Directory,
                       archive,
                       value,

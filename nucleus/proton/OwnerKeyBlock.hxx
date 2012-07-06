@@ -3,8 +3,6 @@
 
 # include <cassert>
 
-# include <nucleus/proton/OwnerKeyBlock.hh>
-
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::OwnerKeyBlock,
                       archive,
                       value,

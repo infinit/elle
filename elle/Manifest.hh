@@ -5,9 +5,12 @@
 
 # include <elle/standalone/fwd.hh>
 
+# include <elle/radix/Trait.hh>
+
 # include <elle/network/Tag.hh>
 # include <elle/network/Range.hh>
 # include <elle/network/Message.hh>
+# include <elle/network/Bundle.hh>
 
 namespace elle
 {

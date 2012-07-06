@@ -6,8 +6,6 @@
 # include <elle/cryptography/PublicKey.hh>
 # include <elle/utility/Time.hh>
 
-# include <etoile/miscellaneous/Abstract.hh>
-
 ELLE_SERIALIZE_SIMPLE(etoile::miscellaneous::Abstract,
                       archive,
                       value,

@@ -49,8 +49,6 @@ namespace hole
 # include <elle/serialize/Pointer.hh>
 # include <elle/cryptography/Digest.hh>
 
-# include <hole/Label.hh>
-
 ELLE_SERIALIZE_SIMPLE(hole::Label,
                       archive,
                       value,

@@ -96,8 +96,6 @@ namespace satellite
 
 # include <elle/utility/Buffer.hh>
 
-# include <satellites/diary/unix/Upcall.hh>
-
 ELLE_SERIALIZE_SIMPLE(satellite::unix::Upcall,
                       archive,
                       value,

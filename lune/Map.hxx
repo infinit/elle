@@ -217,8 +217,6 @@ namespace lune
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
-# include <lune/Map.hh>
-
 ELLE_SERIALIZE_SPLIT_T1(lune::Map);
 
 ELLE_SERIALIZE_SPLIT_T1_SAVE(lune::Map,

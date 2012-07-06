@@ -6,8 +6,6 @@
 # include <elle/cryptography/Signature.hh>
 # include <hole/Label.hh>
 
-# include <lune/Passport.hh>
-
 ELLE_SERIALIZE_SIMPLE(lune::Passport,
                       archive,
                       value,

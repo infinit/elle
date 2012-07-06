@@ -1,11 +1,9 @@
 #ifndef NUCLEUS_PROTON_ADDRESS_HXX
 # define NUCLEUS_PROTON_ADDRESS_HXX
 
-# include <elle/cryptography/OneWay.hxx>
+# include <elle/cryptography/OneWay.hh>
 
 # include <elle/serialize/TupleSerializer.hxx>
-
-# include <nucleus/proton/Address.hh>
 
 # include <elle/idiom/Close.hh>
 #  include <tuple>
@@ -65,8 +63,6 @@ namespace nucleus
 # include <elle/idiom/Open.hh>
 
 # include <elle/cryptography/Digest.hh>
-
-# include <nucleus/proton/Address.hh>
 
 ELLE_SERIALIZE_SPLIT(nucleus::proton::Address);
 
