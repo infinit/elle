@@ -46,11 +46,6 @@ namespace etoile
 //
 
     ///
-    /// the port on which the portal listens for incoming connections.
-    ///
-    elle::network::Port Portal::port = 12348; // XXX[to randomize]
-
-    ///
     /// the container holding the connected applications.
     ///
     Portal::Container Portal::applications;
@@ -74,6 +69,8 @@ namespace etoile
     ///
     elle::Status        Portal::Initialize()
     {
+      elle::network::Port port;
+
       ELLE_LOG_TRACE("register the messages");
 
       // register the messages.
@@ -520,10 +517,11 @@ namespace etoile
                                 "Portal Server accept",
                                 boost::bind(&Portal::accept));
 
-          ELLE_LOG_TRACE("listen");
-
           // finally, listen for incoming connections.
-          Portal::server->listen(Portal::port);
+          Portal::server->listen();
+          port = Portal::server->local_endpoint().port();
+
+          ELLE_LOG_TRACE("listening on %u", port);
         }
       catch (std::runtime_error& e)
         {
@@ -531,27 +529,23 @@ namespace etoile
                  e.what());
         }
 
-      // XXX[improve]
       // generate a phrase randomly which will be used by applications to
       // connect to Etoile and trigger specific actions.
       //
       // generate a random string, create a phrase with it along with
       // the socket used by portal so that applications have everything
       // to connect to and authenticate to portal.
-      if (!Infinit::Network.empty())
-        {
-          elle::String pass;
+      elle::String pass;
 
-          if (elle::cryptography::Random::Generate(pass) == elle::Status::Error)
-            escape("unable to generate a random string");
+      if (elle::cryptography::Random::Generate(pass) == elle::Status::Error)
+        escape("unable to generate a random string");
 
-          if (Portal::phrase.Create(Portal::port,
-                                    pass) == elle::Status::Error)
-            escape("unable to create the phrase");
+      if (Portal::phrase.Create(port,
+                                pass) == elle::Status::Error)
+        escape("unable to create the phrase");
 
-          if (Portal::phrase.Store(Infinit::Network) == elle::Status::Error)
-            escape("unable to store the phrase");
-        }
+      if (Portal::phrase.Store(Infinit::Network) == elle::Status::Error)
+        escape("unable to store the phrase");
 
       return elle::Status::Ok;
     }
@@ -563,13 +557,8 @@ namespace etoile
     {
       Portal::Scoutor scoutor;
 
-      // XXX[improve]
-      // delete the phrase.
-      if (!Infinit::Network.empty())
-        {
-          if (Portal::phrase.Erase(Infinit::Network) == elle::Status::Error)
-            escape("unable to erase the phrase");
-        }
+      if (Portal::phrase.Erase(Infinit::Network) == elle::Status::Error)
+        escape("unable to erase the phrase");
 
       // delete the acceptor.
       Portal::acceptor->terminate_now();
@@ -665,10 +654,6 @@ namespace etoile
       Portal::Scoutor   scoutor;
 
       std::cout << alignment << "[Portal]" << std::endl;
-
-      // dump the line.
-      std::cout << alignment << elle::io::Dumpable::Shift
-                << "[Port] " << Portal::port << std::endl;
 
       // dump the applications.
       std::cout << alignment << elle::io::Dumpable::Shift
