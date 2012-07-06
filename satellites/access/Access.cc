@@ -111,7 +111,7 @@ namespace satellite
                                       elle::String("127.0.0.1"),
                                       phrase.port);
 
-    Access::socket = new elle::network::TCPSocket(socket, true);
+    Access::socket = new elle::network::TCPSocket(socket, false);
 
     // authenticate.
     if (Access::socket->Call(
@@ -173,9 +173,12 @@ namespace satellite
 
   _error:
     // release the object.
-    Access::socket->send(
-      elle::network::Inputs<etoile::portal::TagObjectDiscard>(
-        identifier));
+    if (Access::socket != nullptr)
+      {
+        Access::socket->send(
+          elle::network::Inputs<etoile::portal::TagObjectDiscard>(
+            identifier));
+      }
 
     // expose the potential errors.
     expose();
@@ -241,9 +244,12 @@ namespace satellite
 
   _error:
     // release the object.
-    Access::socket->send(
-      elle::network::Inputs<etoile::portal::TagObjectDiscard>(
-        identifier));
+    if (Access::socket != nullptr)
+      {
+        Access::socket->send(
+          elle::network::Inputs<etoile::portal::TagObjectDiscard>(
+            identifier));
+      }
 
     // expose the potential errors.
     expose();
@@ -298,9 +304,12 @@ namespace satellite
 
   _error:
     // release the object.
-    Access::socket->send(
-      elle::network::Inputs<etoile::portal::TagObjectDiscard>(
-        identifier));
+    if (Access::socket != nullptr)
+      {
+        Access::socket->send(
+          elle::network::Inputs<etoile::portal::TagObjectDiscard>(
+            identifier));
+      }
 
     // expose the potential errors.
     expose();
@@ -355,9 +364,12 @@ namespace satellite
 
   _error:
     // release the object.
-    Access::socket->send(
-      elle::network::Inputs<etoile::portal::TagObjectDiscard>(
-        identifier));
+    if (Access::socket != nullptr)
+      {
+        Access::socket->send(
+          elle::network::Inputs<etoile::portal::TagObjectDiscard>(
+            identifier));
+      }
 
     // expose the potential errors.
     expose();

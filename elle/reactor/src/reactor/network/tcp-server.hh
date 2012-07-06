@@ -19,11 +19,11 @@ namespace reactor
       | Listening |
       `----------*/
       public:
-        void listen(int port);
+        void listen(int port = 0);
         void listen(const EndPoint& end_point);
 
       public:
-        /// Retreive the locally bound endpoint
+        /// Retrieve the locally bound endpoint
         EndPoint local_endpoint() const;
 
       /*----------.
