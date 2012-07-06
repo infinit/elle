@@ -91,8 +91,6 @@ namespace elle
 
 # include <elle/cryptography/LargeSerializer.hxx>
 
-# include <elle/cryptography/PublicKey.hh>
-
 ELLE_SERIALIZE_SPLIT(elle::cryptography::PublicKey)
 
 // XXX ya moyen de faire bcp plus simple, cf BN_new

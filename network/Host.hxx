@@ -5,8 +5,6 @@
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
-# include <elle/network/Host.hh>
-
 ELLE_SERIALIZE_SPLIT(::QHostAddress);
 
 ELLE_SERIALIZE_SPLIT_LOAD(::QHostAddress,

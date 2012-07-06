@@ -42,8 +42,6 @@ namespace elle
 
 # include <elle/utility/Buffer.hh>
 
-# include <elle/standalone/Region.hh>
-
 ELLE_SERIALIZE_SPLIT(elle::standalone::Region)
 
 ELLE_SERIALIZE_SPLIT_SAVE(elle::standalone::Region,

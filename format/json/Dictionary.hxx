@@ -1,8 +1,6 @@
 #ifndef ELLE_FORMAT_JSON_DICT_HXX
 # define ELLE_FORMAT_JSON_DICT_HXX
 
-# include "Dictionary.hh"
-
 # include "Object.hxx"
 
 namespace elle { namespace format { namespace json {
