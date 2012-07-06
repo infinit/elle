@@ -74,6 +74,7 @@ ADD_LIBRARY(elle
   utility/Parser.cc
   utility/Settings.cc
   utility/Time.cc
+  utility/getenv.cc
 
   format/ini/Section.cc
   format/ini/File.cc
