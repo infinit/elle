@@ -1,13 +1,17 @@
-#include <boost/format.hpp>
+#include <hole/implementations/remote/Machine.hh>
+#include <hole/implementations/remote/Client.hh>
+#include <hole/implementations/remote/Server.hh>
+#include <hole/Hole.hh>
 
 #include <reactor/network/exception.hh>
 
 #include <elle/log.hh>
 
-ELLE_LOG_TRACE_COMPONENT("Infinit.Hole.Remote.Machine");
+#include <elle/idiom/Close.hh>
+# include <boost/format.hpp>
+#include <elle/idiom/Open.hh>
 
-#include <hole/implementations/remote/Machine.hh>
-#include <hole/Hole.hh>
+ELLE_LOG_TRACE_COMPONENT("Infinit.Hole.Remote.Machine");
 
 namespace hole
 {

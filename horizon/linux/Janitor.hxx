@@ -1,19 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       horizon
-//
-// license       infinit
-//
-// author        julien quintard   [wed sep  7 12:43:43 2011]
-//
-
 #ifndef HORIZON_LINUX_JANITOR_HXX
-#define HORIZON_LINUX_JANITOR_HXX
-
-//
-// ---------- includes --------------------------------------------------------
-//
+# define HORIZON_LINUX_JANITOR_HXX
 
 #include <elle/types.hh>
 #include <elle/standalone/Report.hh>

@@ -6,7 +6,7 @@
 # include <elle/format/json/fwd.hh>
 
 # include <elle/serialize/BaseArchive.hh>
-# include <elle/serialize/fwd.hh> // Check if forward declarations match definitions
+# include <elle/serialize/fwd.hh>
 
 namespace elle { namespace serialize {
 

@@ -1,24 +1,7 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       horizon
-//
-// license       infinit
-//
-// author        julien quintard   [tue may 31 10:32:37 2011]
-//
-
 #ifndef HORIZON_WINDOWS_WINDOWS_HH
-#define HORIZON_WINDOWS_WINDOWS_HH
+# define HORIZON_WINDOWS_WINDOWS_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <Infinit.hh>
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
-#include <lune/Lune.hh>
+# include <elle/types.hh>
 
 namespace horizon
 {
@@ -28,10 +11,6 @@ namespace horizon
   ///
   namespace windows
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class contains the general-purpose information related to the
@@ -55,11 +34,5 @@ namespace horizon
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-// XXX
 
 #endif

@@ -86,7 +86,12 @@ class Network(Page):
             for device_id in network['devices']:
                 device = database.byId(database.devices, device_id)
                 if device:
-                    res['nodes'].append(device['ip'] + ':' + str(device['port']))
+                    for addr_kind in ['local_address', 'extern_address']:
+                        addr = device[addr_kind]
+                        if addr['port']:
+                            res['nodes'].append(
+                                addr['ip'] + ':' + str(addr['port']),
+                            )
                 else:
                     print "No more device_id", device['_id']
 
@@ -150,11 +155,11 @@ class Network(Page):
         })
 
     def _update(self, network):
-        print "UPDATE"
+        print "UPDATE", network
         id = database.ObjectId(network['_id'])
-        if id not in self.user['networks']:
+        if str(id) not in self.user['networks']:
             print "user %s has no network %s in his networks" % (self.user['_id'], id), self.user['networks']
-            raise web.Forbidden("The network '"+id+"' does not belong to you")
+            raise web.Forbidden("The network '"+str(id)+"' does not belong to you")
         to_save = database.networks.find_one({'_id': id})
         if 'name' in network:
             name = network['name'].strip()
@@ -181,7 +186,7 @@ class Network(Page):
                 is_valid = metalib.check_root_block_signature(
                     root_block,
                     root_address,
-                    self.user['identity_pub']
+                    self.user['public_key']
                 )
                 if not is_valid:
                     return self.error("The root block was not properly signed")
@@ -197,6 +202,7 @@ class Network(Page):
                     conf.INFINIT_AUTHORITY_PATH,
                     conf.INFINIT_AUTHORITY_PASSWORD,
                 )
+                print("Generated descriptor !")
             except Exception, err:
                 traceback.print_exc()
                 return self.error("Unexpected error: " + str(err))

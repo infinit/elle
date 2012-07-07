@@ -29,6 +29,7 @@ namespace elle
                                  this, ELLE_PRETTY_OBJECT_TYPE(this));
             typedef contract::_Serializable<Archive> interface_t;
             assert(dynamic_cast<interface_t const*>(this) != nullptr);
+            assert(dynamic_cast<interface_t const*>(this) == static_cast<interface_t const*>(this));
             static_cast<interface_t const*>(this)->serialize(ss);
           }
         catch (std::exception const& err)
@@ -52,6 +53,7 @@ namespace elle
                                  this, ELLE_PRETTY_OBJECT_TYPE(this));
             typedef contract::_Serializable<Archive> interface_t;
             assert(dynamic_cast<interface_t*>(this) != nullptr);
+            assert(dynamic_cast<interface_t const*>(this) == static_cast<interface_t const*>(this));
             static_cast<interface_t*>(this)->deserialize(ss);
           }
         catch (std::exception const& err)

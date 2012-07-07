@@ -4,8 +4,6 @@
 # include <boost/foreach.hpp>
 
 # include "Object.hxx"
-# include "Array.hh"
-
 
 namespace elle { namespace format { namespace json {
 

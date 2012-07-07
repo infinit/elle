@@ -122,7 +122,7 @@ namespace etoile
       elle::Status      Create();
 
       elle::Status      Locate(Actor*,
-                               A::Iterator* = NULL);
+                               A::Iterator* = nullptr);
 
       elle::Status      Attach(Actor*);
       elle::Status      Detach(Actor*);

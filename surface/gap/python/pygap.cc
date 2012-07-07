@@ -19,6 +19,15 @@ _get_networks(gap_State* state)
   return networks_;
 }
 
+static gap_Status
+_launch_watchdog(gap_State* state, std::string const& name)
+{
+  if (name.size())
+    return gap_launch_watchdog(state, name.c_str());
+  else
+    return gap_launch_watchdog(state, nullptr);
+}
+
 BOOST_PYTHON_MODULE(_gap)
 {
   namespace py = boost::python;
@@ -56,5 +65,7 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("networks", &_get_networks);
 
   py::def("create_network", &gap_create_network);
+
+  py::def("launch_watchdog", &_launch_watchdog);
 }
 

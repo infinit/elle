@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       horizon
-//
-// license       infinit
-//
-// author        julien quintard   [tue sep 27 16:47:36 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <horizon/linux/Handle.hh>
 
 namespace horizon

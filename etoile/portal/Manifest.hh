@@ -3,6 +3,8 @@
 
 # include <elle/types.hh>
 # include <elle/Manifest.hh>
+# include <elle/standalone/fwd.hh>
+# include <elle/network/Range.hh>
 # include <etoile/path/fwd.hh>
 # include <etoile/gear/fwd.hh>
 # include <etoile/miscellaneous/fwd.hh>

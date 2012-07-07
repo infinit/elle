@@ -1,5 +1,9 @@
 find_package(Python3Libs)
-find_package(Boost COMPONENTS python3 REQUIRED)
+
+#XXX on gentoo boost python package has python version suffix
+#find_package(Boost COMPONENTS python3 REQUIRED)
+find_package(Boost QUIET COMPONENTS python3 python-3.2)
+
 
 #include_directories("/usr/include/python3.2mu")
 #set(PYTHON3_LIBRARIES "python3.2mu")

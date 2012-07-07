@@ -21,7 +21,7 @@ namespace satellite
     /// this variable contains the address of the memoirs which is
     /// being replayed.
     ///
-    Memoirs*                            Replay::Reference = NULL;
+    Memoirs*                            Replay::Reference = nullptr;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -257,7 +257,7 @@ namespace satellite
       DIR_ENUM_INFO* pinfo = (DIR_ENUM_INFO*)buf;
       struct stat attr;
 
-      if(NULL == buf) return 1;
+      if(nullptr == buf) return 1;
 
       if (pinfo->CheckDirEmpty) {
         if ((strcmp(name, ".") && strcmp(name, ".."))) {
@@ -269,7 +269,7 @@ namespace satellite
 
       ASSERT(CBFS_NTC_DIRECTORY_ENUM == NodeType(pinfo));
 
-      if (stbuf != NULL)
+      if (stbuf != nullptr)
         attr = *stbuf;
 
       pinfo->dirlist.insert(DIRSTAT::value_type(name, attr));
@@ -1757,7 +1757,7 @@ namespace satellite
 #endif
 
       // reset the memoirs pointer.
-      Replay::Reference = NULL;
+      Replay::Reference = nullptr;
 
       // clean the live system.
       if (Live::Clean() == elle::Status::Error)

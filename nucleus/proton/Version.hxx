@@ -3,8 +3,6 @@
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
-# include <nucleus/proton/Version.hh>
-
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::Version,
                       archive,
                       value,

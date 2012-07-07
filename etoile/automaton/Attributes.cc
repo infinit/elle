@@ -29,7 +29,6 @@ namespace etoile
                           const elle::String&                   name,
                           const elle::String&                   value)
     {
-
       // determine the rights over the object.
       if (Rights::Determine(context) == elle::Status::Error)
         escape("unable to determine the rights");
@@ -84,7 +83,6 @@ namespace etoile
                           const elle::String&                   name,
                           nucleus::neutron::Trait*& trait)
     {
-
       // lookup in the attributes object.
       if (context.object.meta.attributes.Lookup(name,
                                                 trait) == elle::Status::Error)
@@ -101,7 +99,6 @@ namespace etoile
                           nucleus::neutron::Range<
                             nucleus::neutron::Trait>& range)
     {
-
       // consult the attributes.
       if (context.object.meta.attributes.Consult(
             std::numeric_limits<nucleus::neutron::Index>::min(),

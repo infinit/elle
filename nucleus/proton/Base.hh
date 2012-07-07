@@ -4,6 +4,7 @@
 # include <elle/types.hh>
 # include <elle/cryptography/Digest.hh>
 
+# include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Version.hh>
 
 # include <elle/idiom/Open.hh>
@@ -12,19 +13,6 @@ namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    ///
-    /// this makes sure the MutableBlock type is declared.
-    ///
-    class MutableBlock;
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// a base references a precise version of a mutable block.
@@ -61,10 +49,6 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
-
       //
       // attributes
       //
@@ -75,5 +59,6 @@ namespace nucleus
   }
 }
 
-#endif
 #include <nucleus/proton/Base.hxx>
+
+#endif

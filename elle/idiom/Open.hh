@@ -1,15 +1,7 @@
-//
-// ---------- macro-functions -------------------------------------------------
-//
-
 ///
 /// these macro functions are used to make using the Elle library
 /// functionalities easier.
 ///
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 ///
 /// first includes Close.hh in order to undeclare everything.

@@ -23,18 +23,17 @@ namespace elle
       Status Fileable<Archive>::Load(elle::io::Path const& path)
       {
         ELLE_LOG_TRACE_COMPONENT("elle.concept");
-        ELLE_LOG_TRACE("Loading %p to from file %s", this, path.str())
+        ELLE_LOG_TRACE("Loading %p from file %s", this, path.str())
         {
-
           ELLE_LOG_TRACE("Open file %s in read mode", path.str());
           std::ifstream in(path.str(), std::ios_base::in | std::ios_base::binary);
+          ELLE_LOG_TRACE("File opened: %s", path.str());
           if (!in.good())
             {
               escape("Cannot open in file '%s'", path.str().c_str());
               // XXX
               //throw std::runtime_error("Cannot read '"+  path.str().c_str() +"'");
             }
-
           try
             {
               ELLE_LOG_TRACE("Deserializing %p from file", this)

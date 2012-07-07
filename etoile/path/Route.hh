@@ -16,10 +16,6 @@ namespace etoile
   namespace path
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// a route is a sequence of slabs forming a path, each slab representing
     /// the name of subdirectory down to the target object along with their

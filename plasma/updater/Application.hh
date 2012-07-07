@@ -42,10 +42,10 @@ namespace plasma {
       QString   _readWatchdogId();
 
     private Q_SLOTS:
-      void _StartUpdate();
-      void _CancelUpdate();
-      void _OnReleaseUpdated(bool);
-      void _OnIdentityUpdated(bool success);
+      void      _StartUpdate();
+      void      _CancelUpdate();
+      void      _OnReleaseUpdated(bool);
+      void      _OnIdentityUpdated(bool success);
     };
 
   }

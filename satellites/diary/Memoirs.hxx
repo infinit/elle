@@ -3,8 +3,6 @@
 
 # include <elle/utility/Buffer.hh>
 
-# include "Memoirs.hh"
-
 ELLE_SERIALIZE_SIMPLE(satellite::Memoirs,
                       archive,
                       memoirs,

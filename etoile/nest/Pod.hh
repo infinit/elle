@@ -1,19 +1,5 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       etoile
-//
-// license       infinit
-//
-// author        julien quintard   [wed mar 14 15:34:46 2012]
-//
-
 #ifndef ETOILE_NEST_POD_HH
 #define ETOILE_NEST_POD_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
 
 #include <elle/types.hh>
 #include <nucleus/Nucleus.hh> // XXX fwd.hh
@@ -24,10 +10,6 @@ namespace etoile
 {
   namespace nest
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// XXX

@@ -1,22 +1,13 @@
-PROJECT(Linux CXX)
+include(CheckFunctionExists)
 
-INCLUDE(CheckFunctionExists)
+check_function_exists(setxattr HAVE_SETXATTR)
 
-CHECK_FUNCTION_EXISTS(setxattr HAVE_SETXATTR)
+add_definitions(-D_FILE_OFFSET_BITS=64)
 
-ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
+file(GLOB linux_srcs *.cc)
 
-ADD_LIBRARY(linux
-  Crib.cc
-  Crux.cc
-  Event.cc
-  FUker.cc
-  FUSE.cc
-  Handle.cc
-  Janitor.cc
-  Linux.cc
+add_library(linux ${linux_srcs})
 
-  ${linux_MOCS}
+target_link_libraries(linux
+	etoile fuse pthread ${Boost_LIBRARIES}
 )
-
-TARGET_LINK_LIBRARIES(linux etoile fuse pthread ${Boost_LIBRARIES})

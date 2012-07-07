@@ -6,10 +6,24 @@
 Infinit launcher for linux.
 """
 
-import cmd
-import os, sys
-import getpass
 import argparse
+import cmd
+import getpass
+import os
+import stat
+import sys
+
+INFINIT_DEFAULT_HOME = os.path.join(
+    os.path.expanduser('~'), '.config', 'infinit'
+)
+
+INFINIT_HOME = os.environ.get('INFINIT_HOME', INFINIT_DEFAULT_HOME)
+
+MANIFEST_URI = "http://download.infinit.im/linux64/manifest.xml"
+
+SHELL_INTRO = """
+Welcome to the infinit shell (type help for a list of commands).
+"""
 
 parser = argparse.ArgumentParser(description="Infinit launcher")
 
@@ -31,8 +45,7 @@ parser.add_argument(
     '--watchdog-bin',
     help="Specify the watchdog binary",
     default=os.path.join(
-        os.path.abspath(os.path.dirname(__file__)),
-        '8watchdog'
+        INFINIT_HOME, 'bin', '8watchdog',
     )
 )
 
@@ -42,17 +55,6 @@ parser.add_argument(
     action="store_true",
 )
 
-MANIFEST_URI = "http://download.infinit.im/linux64/manifest.xml"
-
-INFINIT_DEFAULT_HOME = os.path.join(
-    os.path.expanduser('~'), '.config', 'infinit'
-)
-
-INFINIT_HOME = os.environ.get('INFINIT_HOME', INFINIT_DEFAULT_HOME)
-
-SHELL_INTRO = """
-Welcome to the infinit shell (type help for a list of commands).
-"""
 
 class InfinitShell(cmd.Cmd):
     def __init__(self, state, args):
@@ -75,6 +77,10 @@ class InfinitShell(cmd.Cmd):
             return
         self._state.create_network(name)
 
+    def do_start(self, args):
+        """Mount all infinit networks."""
+        self._state.launch_watchdog(self._args.watchdog_bin)
+
     def default(self, line):
         if line == 'EOF':
             print()
@@ -83,7 +89,7 @@ class InfinitShell(cmd.Cmd):
 
 def start_shell(state, args):
     shell = InfinitShell(state, args)
-    shell.cmdloop(shell_intro)
+    shell.cmdloop(SHELL_INTRO)
 
 def register(state):
     fullname = input("Enter your fullname: ").strip()
@@ -164,6 +170,7 @@ def update_binaries():
                 while data:
                     dst.write(data)
                     data = src.read(4096)
+        os.chmod(dst_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IEXEC)
 
 
 def main(state):

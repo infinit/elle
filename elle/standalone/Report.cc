@@ -13,27 +13,6 @@ namespace elle
 #include <elle/idiom/Open.hh>
 
 //
-// ---------- static methods --------------------------------------------------
-//
-
-    ///
-    /// this method initializes the report by allocating a default
-    /// report object.
-    ///
-    Status              Report::Initialize()
-    {
-      return Status::Ok;
-    }
-
-    ///
-    /// this method cleans the report system.
-    ///
-    Status              Report::Clean()
-    {
-      return Status::Ok;
-    }
-
-//
 // ---------- constructors & destructors --------------------------------------
 //
 

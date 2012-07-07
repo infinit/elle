@@ -5,6 +5,7 @@
 #include <elle/cryptography/KeyPair.hh>
 #include <elle/cryptography/Cipher.hh>
 #include <elle/cryptography/SecretKey.hh>
+#include <elle/standalone/Log.hh>
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 #include <elle/serialize/TupleSerializer.hxx>
@@ -29,7 +30,7 @@ namespace lune
   /// default constructor.
   ///
   Identity::Identity():
-    cipher(NULL)
+    cipher(nullptr)
   {
   }
 
@@ -39,7 +40,7 @@ namespace lune
   Identity::~Identity()
   {
     // release the cipher.
-    if (this->cipher != NULL)
+    if (this->cipher != nullptr)
       delete this->cipher;
   }
 
@@ -98,7 +99,7 @@ namespace lune
     elle::cryptography::SecretKey     key;
 
     // check the cipher.
-    if (this->cipher == NULL)
+    if (this->cipher == nullptr)
       escape("unable to decrypt an unencrypted identity");
 
     // create a secret key with this pass.
@@ -137,7 +138,7 @@ namespace lune
   elle::Status          Identity::Seal(const Authority&         authority)
   {
     // check the cipher.
-    if (this->cipher == NULL)
+    if (this->cipher == nullptr)
       escape("unable to seal an unencrypted identity");
 
     // sign the pair with the authority.
@@ -155,7 +156,7 @@ namespace lune
     const
   {
     // check the cipher.
-    if (this->cipher == NULL)
+    if (this->cipher == nullptr)
       escape("unable to verify an unencrypted identity");
 
     // verify the signature.
@@ -207,7 +208,7 @@ namespace lune
       escape("unable to dump the signature");
 
     // dump the cipher.
-    if (this->cipher != NULL)
+    if (this->cipher != nullptr)
       {
         if (this->cipher->Dump(margin + 2) == elle::Status::Error)
           escape("unable to dump the cipher");

@@ -1,6 +1,8 @@
 #ifndef LUNE_MAP_HXX
 # define LUNE_MAP_HXX
 
+# include <elle/standalone/Log.hh>
+
 namespace lune
 {
 
@@ -13,10 +15,10 @@ namespace lune
   /// default argument.
   ///
   template <typename T>
-  elle::String*                 Map<T>::Trash::Name = NULL;
+  elle::String*                 Map<T>::Trash::Name = nullptr;
 
   template <typename T>
-  T*                            Map<T>::Trash::Value = NULL;
+  T*                            Map<T>::Trash::Value = nullptr;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -216,8 +218,6 @@ namespace lune
 # include <cassert>
 
 # include <elle/serialize/ArchiveSerializer.hxx>
-
-# include <lune/Map.hh>
 
 ELLE_SERIALIZE_SPLIT_T1(lune::Map);
 

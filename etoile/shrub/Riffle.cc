@@ -16,7 +16,7 @@ namespace etoile
     /// default constructor.
     ///
     Riffle::Riffle():
-      parent(NULL)
+      parent(nullptr)
     {
     }
 
@@ -55,7 +55,7 @@ namespace etoile
 
 
       // initialize the pointer.
-      riffle = NULL;
+      riffle = nullptr;
 
       // look up the element in the current riffle ... stop if not present.
       if ((scoutor = this->children.find(slab)) == this->children.end())

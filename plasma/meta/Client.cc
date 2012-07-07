@@ -97,6 +97,7 @@ namespace plasma
       std::string server;
       short port;
       std::string token;
+      std::string identity;
     };
 
     // - Ctor & dtor ----------------------------------------------------------
@@ -125,7 +126,10 @@ namespace plasma
       }};
       auto res = this->_post<LoginResponse>("/user/login", request);
       if (res.success)
-        _impl->token = res.token;
+        {
+          _impl->token = res.token;
+          _impl->identity = res.identity;
+        }
       return res;
     }
 
@@ -200,6 +204,12 @@ namespace plasma
     Client::token() const
     {
       return _impl->token;
+    }
+
+    std::string const&
+    Client::identity() const
+    {
+      return _impl->identity;
     }
 
     // - Generic http POST and GET --------------------------------------------

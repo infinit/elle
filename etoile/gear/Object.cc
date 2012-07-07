@@ -2,6 +2,7 @@
 #include <etoile/gear/Nature.hh>
 
 #include <nucleus/neutron/Role.hh>
+#include <nucleus/neutron/Access.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -20,7 +21,7 @@ namespace etoile
     Object::Object():
       Context(NatureObject),
 
-      access(NULL)
+      access(nullptr)
     {
       // initialize the rights structure.
       this->rights.role = nucleus::neutron::RoleUnknown;
@@ -33,7 +34,7 @@ namespace etoile
     Object::Object(const Nature                                 nature):
       Context(nature),
 
-      access(NULL)
+      access(nullptr)
     {
       // initialize the rights structure.
       this->rights.role = nucleus::neutron::RoleUnknown;
@@ -46,7 +47,7 @@ namespace etoile
     Object::~Object()
     {
       // delete the access.
-      if (this->access != NULL)
+      if (this->access != nullptr)
         delete this->access;
     }
 
@@ -76,7 +77,7 @@ namespace etoile
         escape("unable to dump the object");
 
       // dump the access, if present.
-      if (this->access != NULL)
+      if (this->access != nullptr)
         {
           // dump the access block.
           if (this->access->Dump(margin + 2) == elle::Status::Error)

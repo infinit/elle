@@ -12,6 +12,7 @@
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
+#include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Object.hh>
 #include <nucleus/neutron/Trait.hh>
 

@@ -10,10 +10,6 @@ namespace etoile
   namespace automaton
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// this class provides functionalities for manipulating an
     /// object's attributes.

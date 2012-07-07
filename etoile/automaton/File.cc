@@ -97,7 +97,7 @@ namespace etoile
 
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
-      if (context.contents->content == NULL)
+      if (context.contents->content == nullptr)
         escape("the user does not seem to be able to operate on this "
                "file");
 
@@ -150,7 +150,7 @@ namespace etoile
 
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
-      if (context.contents->content == NULL)
+      if (context.contents->content == nullptr)
         escape("the user does not seem to be able to operate on this "
                "file");
 
@@ -188,7 +188,7 @@ namespace etoile
 
       // check that the content exists: the subject may have lost the
       // read permission between the previous check and the Contents::Open().
-      if (context.contents->content == NULL)
+      if (context.contents->content == nullptr)
         escape("the user does not seem to be able to operate on this "
                "file");
 

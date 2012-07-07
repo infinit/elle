@@ -1054,8 +1054,6 @@ namespace nucleus
 # include <XXX/Nodule.hh>
 # include <XXX/Inlet.hh>
 
-# include <XXX/Seam.hh>
-
 namespace elle
 {
   namespace serialize

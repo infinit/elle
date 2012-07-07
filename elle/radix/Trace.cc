@@ -90,7 +90,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift << "[Stack] " << std::endl;
 
       // transform the frames into human-kind-of-readable strings.
-      if ((symbols = ::backtrace_symbols(this->frames, this->size)) == NULL)
+      if ((symbols = ::backtrace_symbols(this->frames, this->size)) == nullptr)
         escape("unable to resolve the frame frames into symbols");
 
       // go through the symbols.
@@ -141,13 +141,13 @@ namespace elle
             }
 
           // initialize the symbol.
-          symbol = NULL;
+          symbol = nullptr;
 
           // try to demangle the name.
           symbol = abi::__cxa_demangle(line.substr(first + 1,
                                                    last - 1 - first).c_str(),
-                                       NULL,
-                                       NULL,
+                                       nullptr,
+                                       nullptr,
                                        &status);
 
           // look at the result of the demangling process.
@@ -157,7 +157,7 @@ namespace elle
             case -3:
               {
                 // release the symbol, if set.
-                if (symbol != NULL)
+                if (symbol != nullptr)
                   ::free(symbol);
 
                 // release the symbols array.
@@ -369,11 +369,11 @@ namespace elle
       std::cout << alignment << "[Traces]" << std::endl;
 
       // open the directory.
-      if ((dp = ::opendir(Trace::Location)) == NULL)
+      if ((dp = ::opendir(Trace::Location)) == nullptr)
         escape("unable to open the directory");
 
       // go through the entries.
-      while ((entry = ::readdir(dp)) != NULL)
+      while ((entry = ::readdir(dp)) != nullptr)
         {
           Character     path[Trace::Length +
                              1 +

@@ -91,37 +91,37 @@ class Device(Page):
         if not name:
             return self.error("You have to provide a valid device name")
 
-        device.update({
+        to_save = {
             'name': name,
             'owner': self.user['_id'],
-        })
+        }
 
-        device['local_address'] = {
+        to_save['local_address'] = {
             'ip': device['local_ip'],
-            'port': device.get('local_port', 0),
+            'port': int(device.get('local_port', 0)),
         }
 
-        device['extern_address'] = {
-            'ip': web.ctx.env.get('HTTP_REFERER'),
-            'port': device.get('extern_port', device['local_address']['port']),
+        to_save['extern_address'] = {
+            'ip': web.ctx.env['REMOTE_ADDR'],
+            'port': int(device.get('extern_port', to_save['local_address']['port'])),
         }
 
-        id = database.devices.insert(device)
+        id = database.devices.insert(to_save)
         assert id is not None
 
-        device['passport'] = metalib.generate_passport(
+        to_save['passport'] = metalib.generate_passport(
             id,
             conf.INFINIT_AUTHORITY_PATH,
             conf.INFINIT_AUTHORITY_PASSWORD
         )
-        database.devices.save(device)
+        database.devices.save(to_save)
 
         # XXX check unique device ?
         self.user.setdefault('devices', []).append(str(id))
         database.users.save(self.user)
         return self.success({
             'created_device_id': str(id),
-            'passport': device['passport']
+            'passport': to_save['passport']
         })
 
     def _update(self, device):

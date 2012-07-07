@@ -21,7 +21,7 @@ namespace etoile
     ///
     /// this container represents the root of the hierarchical data container.
     ///
-    Riffle*                             Shrub::Riffles = NULL;
+    Riffle*                             Shrub::Riffles = nullptr;
 
     ///
     /// this queue maintains the freshness timestamps related to the riffles.
@@ -62,7 +62,7 @@ namespace etoile
         return elle::Status::Ok;
 
       // delete the shrub content, if present.
-      if (Shrub::Riffles != NULL)
+      if (Shrub::Riffles != nullptr)
         {
           // flush the riffle.
           if (Shrub::Riffles->Flush() == elle::Status::Error)
@@ -122,7 +122,7 @@ namespace etoile
           riffle = bucket->container.front();
 
           // depending on the riffle's parent.
-          if (riffle->parent != NULL)
+          if (riffle->parent != nullptr)
             {
               // destroy the entry in the parent riffle.
               if (riffle->parent->Destroy(riffle->slab) == elle::Status::Error)
@@ -150,7 +150,7 @@ namespace etoile
               delete Shrub::Riffles;
 
               // reset the pointer.
-              Shrub::Riffles = NULL;
+              Shrub::Riffles = nullptr;
             }
         }
 
@@ -177,7 +177,7 @@ namespace etoile
         return elle::Status::Ok;
 
       // make sure this root riffle is present.
-      if (Shrub::Riffles == NULL)
+      if (Shrub::Riffles == nullptr)
         return elle::Status::Ok;
 
       // resolve the root directory by recording its location.
@@ -202,7 +202,7 @@ namespace etoile
           if (riffle->timestamp < threshold)
             {
               // depending on the riffle's parent.
-              if (riffle->parent != NULL)
+              if (riffle->parent != nullptr)
                 {
                   // destroy this riffle.
                   if (riffle->parent->Destroy(riffle->slab) ==
@@ -228,7 +228,7 @@ namespace etoile
                   delete Shrub::Riffles;
 
                   // reset the pointer.
-                  Shrub::Riffles = NULL;
+                  Shrub::Riffles = nullptr;
                 }
 
               break;
@@ -243,7 +243,7 @@ namespace etoile
             escape("unable to resolve the route");
 
           // check the pointer.
-          if (riffle == NULL)
+          if (riffle == nullptr)
             break;
 
           // add the location to the venue.
@@ -284,7 +284,7 @@ namespace etoile
       }
 
       // make sure the root riffle is present, if not create it.
-      if (Shrub::Riffles == NULL)
+      if (Shrub::Riffles == nullptr)
         {
           // allocate a new root riffle.
           std::unique_ptr<Riffle> riffle(new Riffle);
@@ -327,7 +327,7 @@ namespace etoile
             escape("unable to resolve the route");
 
           // check the pointer.
-          if (riffle == NULL)
+          if (riffle == nullptr)
             break;
         }
 
@@ -347,7 +347,7 @@ namespace etoile
         return elle::Status::Ok;
 
       // make sure the root riffle is present.
-      if (Shrub::Riffles == NULL)
+      if (Shrub::Riffles == nullptr)
         return elle::Status::Ok;
 
       // for every element of the route/venue.
@@ -364,7 +364,7 @@ namespace etoile
             escape("unable to resolve the route");
 
           // check the pointer.
-          if (riffle == NULL)
+          if (riffle == nullptr)
             return elle::Status::Ok;
         }
 
@@ -375,7 +375,7 @@ namespace etoile
 
       // destroy the riffle by removing it from its parent. should this parent
       // not exist---i.e for the root riffle---reset the root pointer.
-      if (riffle->parent != NULL)
+      if (riffle->parent != nullptr)
         {
           // destroy the entry in the parent riffle.
           if (riffle->parent->Destroy(riffle->slab) == elle::Status::Error)
@@ -400,7 +400,7 @@ namespace etoile
           delete Shrub::Riffles;
 
           // reset the pointer.
-          Shrub::Riffles = NULL;
+          Shrub::Riffles = nullptr;
         }
 
       return elle::Status::Ok;
@@ -416,7 +416,7 @@ namespace etoile
       std::cout << alignment << "[Shrub]" << std::endl;
 
       // make sure this root riffle is present.
-      if (Shrub::Riffles != NULL)
+      if (Shrub::Riffles != nullptr)
         {
           std::cout << alignment << elle::io::Dumpable::Shift
                     << "[Riffles]" << std::endl;
@@ -488,7 +488,7 @@ namespace etoile
             break;
 
           // depending on the riffle's parent.
-          if (riffle->parent != NULL)
+          if (riffle->parent != nullptr)
             {
               // destroy this riffle.
               if (riffle->parent->Destroy(riffle->slab) == elle::Status::Error)
@@ -513,7 +513,7 @@ namespace etoile
               delete Shrub::Riffles;
 
               // reset the pointer.
-              Shrub::Riffles = NULL;
+              Shrub::Riffles = nullptr;
             }
         }
 

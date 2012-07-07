@@ -8,8 +8,6 @@
 # include <nucleus/neutron/Data.hh>
 # include <nucleus/proton/Contents.hh>
 
-# include <etoile/gear/File.hh>
-
 ELLE_SERIALIZE_SIMPLE(etoile::gear::File,
                       archive,
                       value,

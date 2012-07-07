@@ -100,7 +100,7 @@ namespace elle
 
       // object-like
       template <typename T>
-      Status            Recycle(const T* = NULL);
+      Status            Recycle(const T* = nullptr);
 
       virtual Status    Imprint(Natural32&) const;
       virtual Status    Clone(Region*&) const;

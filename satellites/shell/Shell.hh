@@ -2,7 +2,8 @@
 # define SHELL_SHELL_HH
 
 # include <elle/types.hh>
-# include <nucleus/Nucleus.hh>
+
+# include <nucleus/proton/Address.hh>
 
 # include <elle/idiom/Close.hh>
 #  include <readline/readline.h>
@@ -41,7 +42,7 @@ namespace satellite
     //
     // attributes
     //
-    static nucleus::Address     Address;
+    static nucleus::proton::Address Address;
   };
 
 }

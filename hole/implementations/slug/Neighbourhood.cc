@@ -1,7 +1,6 @@
+#include <hole/implementations/slug/Neighbourhood.hh>
 
 #include <elle/network/Locus.hh>
-
-#include <hole/implementations/slug/Neighbourhood.hh>
 
 namespace hole
 {

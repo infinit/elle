@@ -5,6 +5,7 @@
 #include <nucleus/proton/Transcript.hh>
 #include <nucleus/proton/Action.hh>
 
+#include <elle/standalone/Log.hh>
 #include <elle/standalone/Morgue.hh>
 #include <elle/concurrency/Scheduler.hh>
 

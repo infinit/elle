@@ -299,8 +299,6 @@ namespace nucleus
 
 # include <XXX/Handle.hh>
 
-# include <XXX/Nodule.hh>
-
 ELLE_SERIALIZE_SIMPLE(XXX::Nodule,
                       archive,
                       value,

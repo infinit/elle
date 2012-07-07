@@ -122,8 +122,6 @@ namespace nucleus
 
 # include <XXX/Handle.hh>
 
-# include <XXX/Inlet.hh>
-
 ELLE_SERIALIZE_SIMPLE_T2(XXX::Inlet,
                          archive,
                          value,

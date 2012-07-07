@@ -1,46 +1,17 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       nucleus
-//
-// license       infinit
-//
-// author        julien quintard   [tue aug  4 06:54:28 2009]
-//
-
 #ifndef NUCLEUS_NEUTRON_DATA_HH
-#define NUCLEUS_NEUTRON_DATA_HH
+# define NUCLEUS_NEUTRON_DATA_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
+# include <elle/standalone/Region.hh>
 
-#include <elle/types.hh>
-#include <elle/radix/Object.hh>
-#include <elle/standalone/Region.hh>
-
-#include <nucleus/neutron/Offset.hh>
+# include <nucleus/proton/fwd.hh>
+# include <nucleus/neutron/fwd.hh>
 
 namespace nucleus
 {
-  namespace proton
-  {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    template <typename T>
-    class Contents;
-
-  }
-
   namespace neutron
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a file's content.
@@ -61,7 +32,6 @@ namespace nucleus
       //
       // methods
       //
-
       elle::Status      Create();
 
       elle::Status      Write(const Offset&,
@@ -80,10 +50,6 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
-
       //
       // attributes
       //
@@ -95,5 +61,6 @@ namespace nucleus
   }
 }
 
-#endif
 #include <nucleus/neutron/Data.hxx>
+
+#endif

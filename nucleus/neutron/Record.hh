@@ -1,11 +1,12 @@
 #ifndef NUCLEUS_NEUTRON_RECORD_HH
-#define NUCLEUS_NEUTRON_RECORD_HH
+# define NUCLEUS_NEUTRON_RECORD_HH
 
-#include <elle/types.hh>
+# include <elle/types.hh>
+# include <elle/radix/Object.hh>
 
-#include <nucleus/neutron/Subject.hh>
-#include <nucleus/neutron/Permissions.hh>
-#include <nucleus/neutron/Token.hh>
+# include <nucleus/neutron/Subject.hh>
+# include <nucleus/neutron/Permissions.hh>
+# include <nucleus/neutron/Token.hh>
 
 namespace nucleus
 {

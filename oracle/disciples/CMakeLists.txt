@@ -22,4 +22,3 @@ file(
 	production-creosus-server.sh
   DESTINATION .
 )
-

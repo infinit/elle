@@ -3,12 +3,12 @@
 
 # include <elle/serialize/BufferArchive.hh>
 # include <elle/concept/Serializable.hh>
+# include <elle/concept/Fileable.hh>
 
-# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Network.hh>
 # include <nucleus/proton/Family.hh>
 # include <nucleus/proton/State.hh>
-
 # include <nucleus/neutron/Component.hh>
 
 // XXX remove this when design allows Serializable contract to be enforced
@@ -28,8 +28,8 @@
 # define __NPB_DUMP_METHODS(oa, ia, os, is)                                   \
 virtual void serialize(oa&) const { throw false; }                            \
 virtual void deserialize(ia&) { throw false; }                                \
-virtual void serialize(os&) const { throw false; }                            \
-virtual void deserialize(is&) { throw false; }                                \
+virtual void serialize(os&, oa* = nullptr) const { throw false; }             \
+virtual void deserialize(is&, ia* = nullptr) { throw false; }                 \
   /**/
 
 

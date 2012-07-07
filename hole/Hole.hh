@@ -3,24 +3,20 @@
 
 # include <elle/types.hh>
 # include <elle/concurrency/Signal.hh>
-# include <nucleus/Nucleus.hh>
+
+# include <nucleus/proton/fwd.hh>
 
 # include <lune/Descriptor.hh>
 # include <lune/Set.hh>
 # include <lune/Passport.hh>
 
-# include <hole/Holeable.hh>
+# include <hole/fwd.hh>
 
 ///
 /// this namespace is used by the hole storage abstraction.
 ///
 namespace hole
 {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
-
   ///
   /// this class represents the abstract Hole component.
   ///
@@ -44,13 +40,13 @@ namespace hole
 
     static elle::Status         Ready();
 
-    static elle::Status         Origin(nucleus::Address&);
-    static elle::Status         Push(const nucleus::Address&,
-                                     const nucleus::Block&);
-    static elle::Status         Pull(const nucleus::Address&,
-                                     const nucleus::Version&,
-                                     nucleus::Block&);
-    static elle::Status         Wipe(const nucleus::Address&);
+    static elle::Status         Origin(nucleus::proton::Address&);
+    static elle::Status         Push(const nucleus::proton::Address&,
+                                     const nucleus::proton::Block&);
+    static elle::Status         Pull(const nucleus::proton::Address&,
+                                     const nucleus::proton::Version&,
+                                     nucleus::proton::Block&);
+    static elle::Status         Wipe(const nucleus::proton::Address&);
 
     //
     // static attributes
@@ -70,15 +66,5 @@ namespace hole
   };
 
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <hole/Label.hh>
-#include <hole/Model.hh>
-#include <hole/Manifest.hh>
-
-#include <hole/implementations/Implementations.hh>
 
 #endif

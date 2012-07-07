@@ -147,6 +147,7 @@ namespace plasma
     public:
       void token(std::string const& tok);
       std::string const& token() const;
+      std::string const& identity() const;
 
     private:
       template<typename T>

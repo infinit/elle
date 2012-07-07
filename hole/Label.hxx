@@ -22,7 +22,7 @@ namespace hole
   elle::Status          Label::Create(const T&                  parameter)
   {
     // release the previous digest.
-    if (this->digest != NULL)
+    if (this->digest != nullptr)
       delete this->digest;
 
     // allocate the digest object.
@@ -48,8 +48,6 @@ namespace hole
 
 # include <elle/serialize/Pointer.hh>
 # include <elle/cryptography/Digest.hh>
-
-# include <hole/Label.hh>
 
 ELLE_SERIALIZE_SIMPLE(hole::Label,
                       archive,

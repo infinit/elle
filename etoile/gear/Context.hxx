@@ -5,8 +5,6 @@
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
-# include <etoile/gear/Context.hh>
-
 ELLE_SERIALIZE_SIMPLE(etoile::gear::Context,
                       archive,
                       value,

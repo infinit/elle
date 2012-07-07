@@ -1,12 +1,13 @@
-#ifndef  NUCLEUS_PROTON_OWNERKEYBLOCK_HH
+#ifndef NUCLEUS_PROTON_OWNERKEYBLOCK_HH
 # define NUCLEUS_PROTON_OWNERKEYBLOCK_HH
 
 # include <elle/types.hh>
 # include <elle/utility/Time.hh>
+# include <elle/cryptography/PublicKey.hh>
+# include <elle/cryptography/Signature.hh>
 
-# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/MutableBlock.hh>
-
 # include <nucleus/neutron/Component.hh>
 # include <nucleus/neutron/Subject.hh>
 
@@ -16,10 +17,6 @@ namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a mutable block which is statically linked
@@ -32,7 +29,7 @@ namespace nucleus
     ///
     class OwnerKeyBlock
       : public MutableBlock
-      //, public elle::concept::Fileable<OwnerKeyBlock>
+    // XXX , public elle::concept::Fileable<OwnerKeyBlock>
     {
     public:
       //
@@ -59,11 +56,7 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      //ELLE_CONCEPT_FILEABLE_METHODS(OwnerKeyBlock);
-
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
+      // XXX ELLE_CONCEPT_FILEABLE_METHODS(OwnerKeyBlock);
 
       //
       // attributes

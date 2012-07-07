@@ -4,6 +4,7 @@
 #include <elle/cryptography/Cipher.hh>
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/serialize/TupleSerializer.hxx>
+#include <elle/standalone/Log.hh>
 #include <elle/io/File.hh>
 
 #include <lune/Authority.hh>
@@ -29,8 +30,8 @@ namespace lune
   /// default constructor.
   ///
   Authority::Authority():
-    k(NULL),
-    cipher(NULL)
+    k(nullptr),
+    cipher(nullptr)
   {
   }
 
@@ -40,11 +41,11 @@ namespace lune
   Authority::~Authority()
   {
     // release the private key, if present.
-    if (this->k != NULL)
+    if (this->k != nullptr)
       delete this->k;
 
     // release the cipher.
-    if (this->cipher != NULL)
+    if (this->cipher != nullptr)
       delete this->cipher;
   }
 
@@ -140,7 +141,7 @@ namespace lune
     elle::cryptography::SecretKey     key;
 
     // check the cipher.
-    if (this->cipher == NULL)
+    if (this->cipher == nullptr)
       escape("unable to decrypt an unencrypted authority");
 
     // create a secret key with this pass.
@@ -216,7 +217,7 @@ namespace lune
       escape("unable to dump the public key");
 
     // if present...
-    if (this->k != NULL)
+    if (this->k != nullptr)
       {
         // ...dump the private key.
         if (this->k->Dump(margin + 2) == elle::Status::Error)
@@ -224,7 +225,7 @@ namespace lune
       }
 
     // dump the cipher.
-    if (this->cipher != NULL)
+    if (this->cipher != nullptr)
       {
         if (this->cipher->Dump(margin + 2) == elle::Status::Error)
           escape("unable to dump the cipher");

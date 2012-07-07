@@ -2374,13 +2374,11 @@ namespace elle
   }
 }
 
-#endif
-#ifndef  ELLE_RADIX_ARGUMENTS__HXX
-# define ELLE_RADIX_ARGUMENTS__HXX
+//
+// ---------- serialize -------------------------------------------------------
+//
 
 # include <elle/serialize/ArchiveSerializer.hxx>
-
-# include <elle/radix/Arguments.hh>
 
 namespace elle
 {

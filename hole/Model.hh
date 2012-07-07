@@ -9,10 +9,6 @@
 namespace hole
 {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
   ///
   /// this class defines the model of a network i.e its implementation.
   ///
@@ -82,10 +78,6 @@ namespace hole
     // dumpable
     elle::Status        Dump(const elle::Natural32 = 0) const;
 
-    // archivable
-    //elle::Status        Serialize(elle::Archive&) const;
-    //elle::Status        Extract(elle::Archive&);
-
     //
     // attributes
     //
@@ -94,7 +86,6 @@ namespace hole
 
 }
 
-# include <elle/idiom/Close.hh>
+#include <hole/Model.hxx>
 
 #endif
-#include <hole/Model.hxx>

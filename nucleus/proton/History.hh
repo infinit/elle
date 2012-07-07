@@ -3,8 +3,9 @@
 
 # include <elle/concept/Fileable.hh>
 # include <elle/concept/Serializable.hh>
-# include <nucleus/Nucleus.hh>
+# include <elle/radix/Object.hh>
 
+# include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Version.hh>
 
 # include <elle/idiom/Close.hh>

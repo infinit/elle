@@ -1,23 +1,17 @@
-#ifndef  NUCLEUS_PROTON_MUTABLEBLOCK_HH
+#ifndef NUCLEUS_PROTON_MUTABLEBLOCK_HH
 # define NUCLEUS_PROTON_MUTABLEBLOCK_HH
 
+# include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Block.hh>
-# include <nucleus/proton/Address.hh>
-# include <nucleus/proton/Network.hh>
 # include <nucleus/proton/Family.hh>
 # include <nucleus/proton/Version.hh>
 # include <nucleus/proton/Base.hh>
-
 # include <nucleus/neutron/Component.hh>
 
 namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class abstracts the notion of mutable block, this difference
@@ -65,7 +59,7 @@ namespace nucleus
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      //ELLE_CONCEPT_FILEABLE_METHODS(MutableBlock);
+      // XXX ELLE_CONCEPT_FILEABLE_METHODS(MutableBlock);
 
       using Block::Load;
       using Block::Store;

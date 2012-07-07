@@ -1,4 +1,3 @@
-
 #include <nucleus/proton/Transcript.hh>
 
 #include <elle/idiom/Open.hh>

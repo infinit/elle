@@ -5,7 +5,6 @@
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
-# include <nucleus/Derivable.hh>
 # include <nucleus/Nucleus.hh>
 
 namespace elle

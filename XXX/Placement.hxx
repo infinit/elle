@@ -5,8 +5,6 @@
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
-# include <XXX/Placement.hh>
-
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::Placement,
                       archive,
                       value,

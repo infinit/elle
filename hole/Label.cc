@@ -1,6 +1,3 @@
-
-#include <elle/standalone/Log.hh>
-
 #include <hole/Label.hh>
 
 #include <elle/idiom/Open.hh>
@@ -25,7 +22,7 @@ namespace hole
   /// this method initializes the object.
   ///
   Label::Label():
-    digest(NULL)
+    digest(nullptr)
   {
   }
 
@@ -36,13 +33,13 @@ namespace hole
     Object(label)
   {
     // copy the digest, if present.
-    if (label.digest != NULL)
+    if (label.digest != nullptr)
       {
         this->digest = new elle::cryptography::Digest(*label.digest);
       }
     else
       {
-        this->digest = NULL;
+        this->digest = nullptr;
       }
   }
 
@@ -52,7 +49,7 @@ namespace hole
   Label::~Label()
   {
     // release the resources.
-    if (this->digest != NULL)
+    if (this->digest != nullptr)
       delete this->digest;
   }
 
@@ -69,8 +66,8 @@ namespace hole
     if (this == &element)
       return true;
 
-    // if both are NULL or equal return true, false otherwise
-    if ((this->digest == NULL) || (element.digest == NULL))
+    // if both are nullptr or equal return true, false otherwise
+    if ((this->digest == nullptr) || (element.digest == nullptr))
       {
         if (this->digest != element.digest)
           return false;
@@ -94,11 +91,11 @@ namespace hole
       return false;
 
     // test for a null digest.
-    if ((this->digest == NULL) && (element.digest == NULL))
+    if ((this->digest == nullptr) && (element.digest == nullptr))
       return false;
-    else if (this->digest == NULL)
+    else if (this->digest == nullptr)
       return true;
-    else if (element.digest == NULL)
+    else if (element.digest == nullptr)
       return false;
 
     // compare the digests.

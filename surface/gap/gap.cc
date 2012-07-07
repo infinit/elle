@@ -24,13 +24,19 @@ extern "C"
         if (err.code == plasma::meta::Error::network_error)                   \
           ret = gap_network_error;                                            \
         else                                                                  \
-          ret = gap_error;                                                    \
+          ret = gap_internal_error;                                           \
+    }                                                                         \
+    catch (surface::gap::Exception const& err)                                \
+    {                                                                         \
+      elle::log::error(#_func_ " error:", err.what());                        \
+      ret = err.code;                                                         \
     }                                                                         \
     catch (std::exception const& err)                                         \
     {                                                                         \
         elle::log::error(#_func_ " error:", err.what());                      \
-        ret = gap_error;                                                      \
+        ret = gap_internal_error;                                             \
     }                                                                         \
+  /**/
 
 // automate cpp wrapping
 # define __WRAP_CPP_RET(_state_, _func_, ...)                                 \
@@ -221,9 +227,13 @@ extern "C"
       __WRAP_CPP(state, create_network, name);
     }
 
-    gap_Status gap_launch_watchdog(gap_State* state)
+    gap_Status gap_launch_watchdog(gap_State* state,
+                                   char const* watchdog_path)
     {
-      __WRAP_CPP(state, launch_watchdog);
+      static char const* nil_path = "";
+      if (watchdog_path == nullptr)
+        watchdog_path = nil_path;
+      __WRAP_CPP(state, launch_watchdog, watchdog_path);
     }
 
 } // ! extern "C"

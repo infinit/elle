@@ -1,24 +1,10 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       hole
-//
-// license       infinit
-//
-// author        julien quintard   [thu aug 25 10:56:32 2011]
-//
-
 #ifndef HOLE_IMPLEMENTATIONS_SLUG_NEIGHBOURHOOD_HH
-#define HOLE_IMPLEMENTATIONS_SLUG_NEIGHBOURHOOD_HH
+# define HOLE_IMPLEMENTATIONS_SLUG_NEIGHBOURHOOD_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
+# include <elle/types.hh>
+# include <elle/radix/Entity.hh>
 
-#include <elle/types.hh>
-
-#include <hole/Label.hh>
-#include <hole/implementations/slug/Host.hh>
+# include <hole/implementations/slug/Host.hh>
 
 namespace hole
 {
@@ -26,10 +12,6 @@ namespace hole
   {
     namespace slug
     {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
       ///
       /// XXX

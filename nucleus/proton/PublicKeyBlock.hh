@@ -1,21 +1,17 @@
-#ifndef  NUCLEUS_PROTON_PUBLICKEYBLOCK_HH
+#ifndef NUCLEUS_PROTON_PUBLICKEYBLOCK_HH
 # define NUCLEUS_PROTON_PUBLICKEYBLOCK_HH
 
 # include <elle/types.hh>
+# include <elle/cryptography/PublicKey.hh>
 
-# include <nucleus/proton/Address.hh>
+# include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/MutableBlock.hh>
-
 # include <nucleus/neutron/Component.hh>
 
 namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class represents a public key block i.e a mutable block.
@@ -29,8 +25,7 @@ namespace nucleus
     ///
     class PublicKeyBlock
       : public MutableBlock
-    // XXX
-      //, public elle::concept::Fileable<PublicKeyBlock>
+    // XXX, public elle::concept::Fileable<PublicKeyBlock>
     {
     public:
       //
@@ -58,9 +53,6 @@ namespace nucleus
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
-
-      // XXX
-      //ELLE_CONCEPT_FILEABLE_METHODS(PublicKeyBlock);
 
       //
       // attributes

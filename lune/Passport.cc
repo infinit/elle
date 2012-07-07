@@ -2,6 +2,7 @@
 
 #include <elle/io/File.hh>
 #include <elle/serialize/TupleSerializer.hxx>
+#include <elle/standalone/Log.hh>
 #include <elle/cryptography/PrivateKey.hh>
 
 #include <lune/Passport.hh>

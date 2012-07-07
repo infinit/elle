@@ -3,7 +3,7 @@
 """
 Forward imports of metalib
 """
-import metalib as _meta
+import _metalib
 
 def check_root_block_signature(root_block, root_address, public_key):
     """Check wether or not the root block is valid.
@@ -13,7 +13,7 @@ def check_root_block_signature(root_block, root_address, public_key):
         :rtype: Boolean
         :return: Wether or not the root_block is valid
     """
-    return _meta.check_root_block_signature(root_block, root_address, public_key)
+    return _metalib.check_root_block_signature(root_block, root_address, public_key)
 
 def generate_identity(id, login, password, authority_file, authority_password):
     """Generate an identity.
@@ -26,7 +26,7 @@ def generate_identity(id, login, password, authority_file, authority_password):
         :rtype: A tuple of two string
         :return: a pair of strings: the whole identity and the public part of the identity
     """
-    identity, identity_pub = _meta.generate_identity(
+    identity, identity_pub = _metalib.generate_identity(
         id, login, password, authority_file, authority_password
     )
     return (identity, identity_pub)
@@ -44,7 +44,7 @@ def generate_network_descriptor(network_id, network_name, model, root_address, a
         :rtype: String
         :return: base64 encoded network descriptor
     """
-    return _meta.generate_network_descriptor(
+    return _metalib.generate_network_descriptor(
         network_id, network_name, model, root_address, authority_file, authority_password
     )
 
@@ -56,5 +56,5 @@ def generate_passport(device_id, authority_file, authority_password):
         :rtype: String
         :return: The hex encoded passport
     """
-    return _meta.generate_passport(str(device_id), authority_file, authority_password)
+    return _metalib.generate_passport(str(device_id), authority_file, authority_password)
 

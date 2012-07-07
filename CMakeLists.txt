@@ -153,6 +153,7 @@ set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
 
 add_subdirectory(comet)
 add_subdirectory(elle)
+add_subdirectory(common)
 add_subdirectory(nucleus)
 add_subdirectory(protocol)
 add_subdirectory(etoile)

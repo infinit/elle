@@ -1,7 +1,7 @@
 #ifndef NUCLEUS_PROTON_ADDRESS_HH
 # define NUCLEUS_PROTON_ADDRESS_HH
 
-# include <elle/cryptography/Digest.hh>
+# include <elle/cryptography/fwd.hh>
 # include <elle/concept/Serializable.hh>
 # include <elle/concept/Fileable.hh>
 # include <elle/concept/Uniquable.hh>
@@ -16,10 +16,6 @@ namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- class -----------------------------------------------------------
-//
 
     ///
     /// this class is one of the most fundamental of the nucleus library
@@ -100,12 +96,6 @@ namespace nucleus
   }
 }
 
-//
-// ---------- templates -------------------------------------------------------
-//
-
 #include <nucleus/proton/Address.hxx>
-
-#include <elle/idiom/Open.hh>
 
 #endif

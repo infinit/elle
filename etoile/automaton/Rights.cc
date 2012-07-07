@@ -6,6 +6,7 @@
 #include <nucleus/neutron/Token.hh>
 #include <nucleus/neutron/Record.hh>
 #include <nucleus/neutron/Permissions.hh>
+#include <nucleus/neutron/Access.hh>
 
 #include <agent/Agent.hh>
 

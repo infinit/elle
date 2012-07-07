@@ -838,6 +838,7 @@ namespace etoile
               {
                 gear::Object*           context =
                   static_cast<gear::Object*>(this->context);
+                assert(dynamic_cast<gear::Object*>(this->context) != nullptr);
 
                 // depending on the closing operation...
                 switch (this->context->operation)
@@ -882,6 +883,7 @@ namespace etoile
               {
                 gear::File*             context =
                   static_cast<gear::File*>(this->context);
+                assert(dynamic_cast<gear::File*>(this->context) != nullptr);
 
                 // depending on the closing operation...
                 switch (this->context->operation)
@@ -926,6 +928,8 @@ namespace etoile
               {
                 gear::Directory*        context =
                   static_cast<gear::Directory*>(this->context);
+                assert(dynamic_cast<gear::Directory*>(
+                         this->context) != nullptr);
 
                 // depending on the closing operation...
                 switch (this->context->operation)
@@ -970,6 +974,7 @@ namespace etoile
               {
                 gear::Link*             context =
                   static_cast<gear::Link*>(this->context);
+                assert(dynamic_cast<gear::Link*>(this->context) != nullptr);
 
                 // depending on the closing operation...
                 switch (this->context->operation)

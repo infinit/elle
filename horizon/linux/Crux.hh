@@ -1,46 +1,26 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       horizon
-//
-// license       infinit
-//
-// author        julien quintard   [wed jun  1 09:19:13 2011]
-//
-
 #ifndef HORIZON_LINUX_CRUX_HH
-#define HORIZON_LINUX_CRUX_HH
+# define HORIZON_LINUX_CRUX_HH
 
-//
-// ---------- macros ----------------------------------------------------------
-//
-
-#ifndef FUSE_USE_VERSION
-# define FUSE_USE_VERSION               26
-#endif
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/types.hh>
-#include <nucleus/Nucleus.hh>
-
-#include <elle/idiom/Close.hh>
-# include <fuse.h>
-# if defined(HAVE_SETXATTR)
-#  include <attr/xattr.h>
+# ifndef FUSE_USE_VERSION
+#  define FUSE_USE_VERSION               26
 # endif
-#include <elle/idiom/Open.hh>
+
+# include <elle/types.hh>
+# include <elle/system/Platform.hh>
+
+# include <nucleus/neutron/Size.hh>
+
+# include <elle/idiom/Close.hh>
+#  include <fuse.h>
+#  if defined(HAVE_SETXATTR)
+#   include <attr/xattr.h>
+#  endif
+# include <elle/idiom/Open.hh>
 
 namespace horizon
 {
   namespace linux
   {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
 
     ///
     /// this class contains the implementation of the FUSE upcalls.
@@ -51,7 +31,7 @@ namespace horizon
       //
       // constants
       //
-      static const nucleus::Size                Range;
+      static const nucleus::neutron::Size                Range;
 
       //
       // callbacks

@@ -67,7 +67,6 @@ namespace etoile
       //
       // static attributes
       //
-      static elle::network::Port port;
       static Container applications;
       static reactor::network::TCPServer* server;
       static reactor::Thread* acceptor;

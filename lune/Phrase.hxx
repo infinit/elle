@@ -5,8 +5,6 @@
 
 # include <elle/serialize/ArchiveSerializer.hxx>
 
-# include <lune/Phrase.hh>
-
 ELLE_SERIALIZE_SIMPLE(lune::Phrase,
                       archive,
                       value,

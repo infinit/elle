@@ -77,12 +77,6 @@ namespace elle
       typedef Container::const_iterator         Scoutor;
 
       //
-      // static methods
-      //
-      static Status     Initialize();
-      static Status     Clean();
-
-      //
       // static attributes
       //
       static reactor::LocalStorage<Report> report;
@@ -113,7 +107,7 @@ namespace elle
 
       // object-like
       template <typename T>
-      Status            Recycle(const T* = NULL);
+      Status            Recycle(const T* = nullptr);
 
       virtual Status    Imprint(Natural32&) const;
       virtual Status    Clone(Report*&) const;

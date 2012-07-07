@@ -1,11 +1,9 @@
-
-#include <nucleus/proton/Block.hh>
+#include <nucleus/proton/ImprintBlock.hh>
+#include <nucleus/proton/Address.hh>
 
 #include <elle/cryptography/Random.hh>
 #include <elle/cryptography/PublicKey.hh>
-#include <elle/utility/Time.hh>
-#include <nucleus/proton/Network.hh>
-#include <nucleus/proton/ImprintBlock.hh>
+
 #include <nucleus/proton/Family.hh>
 
 #include <elle/idiom/Open.hh>

@@ -9,7 +9,7 @@
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Object.hh>
 
-#define CHECK(call) if (call != elle::Status::Ok) { show(); assert(false); } else
+#define CHECK(call) if (call != elle::Status::Ok) { assert(false); } else
 
 int main()
 {
@@ -33,6 +33,10 @@ int main()
 
   elle::print("INITIAL BLOCK:");
   blk.Dump();
+
+  std::string unique;
+  static_cast<elle::concept::Uniquable<> const&>(blk).Save(unique);
+  elle::print("unique string:", unique);
 
   elle::utility::Buffer buf;
   buf.Writer() << blk;
