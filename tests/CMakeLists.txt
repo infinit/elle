@@ -1,4 +1,3 @@
-
 enable_testing(true)
 
 macro(simple_test test_name args regex srcs)
@@ -12,8 +11,6 @@ endmacro(simple_test)
 ###############################################################################
 # testing whether or testing system works
 simple_test(testing_tests "" "Tests are working.\n" "")
-
-
 
 add_subdirectory(elle)
 add_subdirectory(nucleus)

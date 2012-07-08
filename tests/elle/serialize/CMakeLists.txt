@@ -1,4 +1,3 @@
-
 simple_test(all_archives "" "tests done." "")
 
 simple_test(BinaryArchive "" "tests done." "")
@@ -6,3 +5,4 @@ simple_test(JSONArchive "" "tests done." "")
 simple_test(Base64Archive "" "tests done." "")
 simple_test(BufferArchive "" "tests done." "")
 simple_test(Pointer "" "tests done." "")
+simple_test(footprint "" "tests done." "")
