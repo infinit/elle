@@ -1,8 +1,11 @@
 /*
  * In this file, every class in the module gets forward declared so as
  * to speed up the compilation process.
- * pointer or reference must be forward declared in order to speed
+ * Pointers and references must be forward declared in order to speed
  * up the compilation process.
+ *
+ * Note that all files which do not describe a class must be named in
+ * lowercase: fwd.hh, all.hh, log.hh etc.
  */
 
 #ifndef PACKAGE_MODULE_FWD_HH
