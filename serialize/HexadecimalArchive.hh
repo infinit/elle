@@ -3,9 +3,8 @@
 
 # include <cassert>
 
-# include "BaseArchive.hxx"
-
-# include "HexadecimalArchive.fwd.hh"
+# include <elle/serialize/fwd.hh>
+# include <elle/serialize/BaseArchive.hxx>
 
 namespace elle { namespace serialize {
 
