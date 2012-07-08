@@ -89,9 +89,6 @@ namespace elle
     ///
     embed(Event, _());
 
-//
-// ---------- archivable ------------------------------------------------------
-//
     void
     Event::XXX_OLD_Extract()
     {
