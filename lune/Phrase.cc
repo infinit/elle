@@ -1,10 +1,10 @@
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
+#include <elle/io/Pattern.hh>
 #include <elle/standalone/Log.hh>
 #include <elle/standalone/Region.hh>
 
 #include <lune/Phrase.hh>
-#include <lune/Lune.hh>
 
 namespace lune
 {
@@ -79,97 +79,6 @@ namespace lune
               << "[Pass] " << this->pass << std::endl;
 
     return elle::Status::Ok;
-  }
-
-//
-// ---------- fileable --------------------------------------------------------
-//
-
-  ///
-  /// this method loads the phrase.
-  ///
-  elle::Status          Phrase::Load(const elle::String&        network)
-  {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::Network::Phrase) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::io::Piece("%NETWORK%", network)) == elle::Status::Error)
-      escape("unable to complete the path");
-
-    if (this->Load(path) == elle::Status::Error)
-      escape("unable to decode the object");
-
-    return elle::Status::Ok;
-  }
-
-  ///
-  /// this method stores the phrase.
-  ///
-  elle::Status          Phrase::Store(const elle::String&       network) const
-  {
-    elle::io::Path          path;
-    elle::standalone::Region        region;
-    elle::String        string;
-
-    // create the path.
-    if (path.Create(Lune::Network::Phrase) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::io::Piece("%NETWORK%", network)) == elle::Status::Error)
-      escape("unable to complete the path");
-
-    if (this->Store(path) == elle::Status::Error)
-      escape("unable to store the object");
-    return elle::Status::Ok;
-  }
-
-  ///
-  /// this method erases the phrase.
-  ///
-  elle::Status          Phrase::Erase(const elle::String&       network) const
-  {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::Network::Phrase) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::io::Piece("%NETWORK%", network)) == elle::Status::Error)
-      escape("unable to complete the path");
-
-    // erase the file.
-    if (elle::io::File::Erase(path) == elle::Status::Error)
-      escape("unable to erase the file");
-
-    return elle::Status::Ok;
-  }
-
-  ///
-  /// this method tests the phrase.
-  ///
-  elle::Status          Phrase::Exist(const elle::String&       network) const
-  {
-    elle::io::Path          path;
-
-    // create the path.
-    if (path.Create(Lune::Network::Phrase) == elle::Status::Error)
-      escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::io::Piece("%NETWORK%", network)) == elle::Status::Error)
-      escape("unable to complete the path");
-
-    // test the file.
-    if (elle::io::File::Exist(path) == elle::Status::False)
-      return elle::Status::False;
-
-    return elle::Status::True;
   }
 
 }

@@ -45,7 +45,7 @@ namespace elle
         escape("the file does not seem to exist");
 
       // retrieve information.
-      if (::stat(path.str().c_str(), &status) == -1)
+      if (::stat(path.string().c_str(), &status) == -1)
         escape("%s", ::strerror(errno));
 
       // prepare the data.
@@ -53,9 +53,9 @@ namespace elle
         escape("unable to prepare the region");
 
       // open the file.
-      if ((fd = ::open(path.str().c_str(), O_RDONLY)) == -1)
+      if ((fd = ::open(path.string().c_str(), O_RDONLY)) == -1)
         escape("failed to open %s: %s",
-               path.str().c_str(), ::strerror(errno));
+               path.string().c_str(), ::strerror(errno));
 
       // read the file's content.
       while (roffset < data.capacity)
@@ -103,7 +103,7 @@ namespace elle
         escape("unable to dig the chain of directories");
 
       // open the file.
-      if ((fd = ::open(path.str().c_str(),
+      if ((fd = ::open(path.string().c_str(),
                        O_CREAT | O_TRUNC | O_WRONLY,
                        0600)) == -1)
         escape("%s", ::strerror(errno));
@@ -152,7 +152,7 @@ namespace elle
         escape("the file does not seem to exist");
 
       // retrieve information.
-      if (::stat(path.str().c_str(), &status) == -1)
+      if (::stat(path.string().c_str(), &status) == -1)
         escape(::strerror(errno));
 
       // prepare the data.
@@ -160,13 +160,13 @@ namespace elle
         escape("unable to prepare the region");
 
       // open the file.
-      fd = ::CreateFile(path.str().c_str(), GENERIC_READ,
+      fd = ::CreateFile(path.string().c_str(), GENERIC_READ,
                         FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
                         nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,
                         nullptr);
 
       if (fd == INVALID_HANDLE_VALUE)
-        escape("failed to open %s", path.str().c_str());
+        escape("failed to open %s", path.string().c_str());
 
       // read the file's content.
       while (roffset < data.capacity)
@@ -213,13 +213,13 @@ namespace elle
         escape("unable to dig the chain of directories");
 
       // open the file.
-      fd = ::CreateFile(path.str().c_str(), GENERIC_WRITE,
+      fd = ::CreateFile(path.string().c_str(), GENERIC_WRITE,
                         FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
                         nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL,
                         nullptr);
 
       if (fd == INVALID_HANDLE_VALUE)
-        escape("failed to open %s", path.str().c_str());
+        escape("failed to open %s", path.string().c_str());
 
       // write the text to the file.
       while (woffset < data.size)
@@ -262,7 +262,7 @@ namespace elle
         escape("the file does not seem to exist");
 
       // unlink the file.
-      ::unlink(path.str().c_str());
+      ::unlink(path.string().c_str());
 
       return Status::Ok;
     }
@@ -275,7 +275,7 @@ namespace elle
       struct ::stat             stat;
 
       // does the path points to something.
-      if (::stat(path.str().c_str(), &stat) != 0)
+      if (::stat(path.string().c_str(), &stat) != 0)
         return Status::False;
 
       // does the path points to a regular file.
@@ -291,8 +291,8 @@ namespace elle
     ///
     Status              File::Dig(const Path&                   path)
     {
-      String            target(path.str());
-      char *            tmp_str = ::strdup(path.str().c_str());
+      String            target(path.string());
+      char *            tmp_str = ::strdup(path.string().c_str());
       String            directory(::dirname(tmp_str));
       std::stringstream stream(directory);
       String            item;
@@ -305,12 +305,12 @@ namespace elle
       while (std::getline(stream, item, system::System::Path::Separator))
         {
           // update the intermediate chemin.
-          if (chemin.str().empty() && item.empty())
-            chemin.str() = system::System::Path::Separator;
+          if (chemin.string().empty() && item.empty())
+            chemin.string() = system::System::Path::Separator;
           else
             {
-              chemin.str().append(item);
-              chemin.str().append(1, system::System::Path::Separator);
+              chemin.string().append(item);
+              chemin.string().append(1, system::System::Path::Separator);
             }
 
           // retrieve information on the path. should this operation fail

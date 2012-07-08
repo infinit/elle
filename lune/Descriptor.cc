@@ -198,7 +198,7 @@ namespace lune
       escape("unable to complete the path");
 
     if (this->Load(path) == elle::Status::Error)
-      escape("unable to load '%s'", path.str().c_str());
+      escape("unable to load '%s'", path.string().c_str());
 
     return elle::Status::Ok;
   }
@@ -221,7 +221,7 @@ namespace lune
       escape("unable to complete the path");
 
     if (this->Store(path) == elle::Status::Error)
-      escape("unable to store '%s'", path.str().c_str());
+      escape("unable to store '%s'", path.string().c_str());
 
     return elle::Status::Ok;
   }

@@ -10,6 +10,23 @@ namespace elle
   namespace io
   {
 
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    Pattern::Pattern()
+    {
+    }
+
+    Pattern::Pattern(elle::String const& string):
+      string(string)
+    {
+    }
+
+//
+// ---------- methods ---------------------------------------------------------
+//
+
     ///
     /// this method creates a pattern.
     ///

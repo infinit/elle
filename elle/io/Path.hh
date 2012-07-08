@@ -25,19 +25,32 @@ namespace elle
     {
     public:
       //
+      // constructors & destructors
+      //
+      Path();
+      template <typename T>
+      Path(Pattern const& pattern,
+           T const& piece);
+      template <typename T,
+                typename... TT>
+      Path(Pattern const& pattern,
+           T const& piece,
+           TT const&... pieces);
+
+      //
       // methods
       //
       Status            Create(const String&);
       Status            Create(const Pattern&);
 
       template <typename T>
-      Status            Complete(T);
+      Status            Complete(T const&);
       template <typename T,
                 typename... TT>
-      Status            Complete(T,
-                                 TT...);
-      Status            Complete(const String&,
-                                 const String&);
+      Status            Complete(T const&,
+                                 TT const&...);
+      Status            Complete(String const&,
+                                 String const&);
 
       //
       // interfaces
@@ -50,16 +63,14 @@ namespace elle
       // dumpable
       Status            Dump(const Natural32 = 0) const;
 
-      // archivable: nothing
-
     private:
       String            _string;
 
     public:
       // XXX
-      std::string const& str() const
+      std::string const& string() const
       { return this->_string; }
-      std::string& str()
+      std::string& string()
       { return this->_string; }
     };
 

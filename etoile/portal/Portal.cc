@@ -4,6 +4,8 @@
 #include <elle/network/Procedure.hh>
 #include <elle/standalone/Morgue.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/io/Piece.hh>
+#include <elle/io/Path.hh>
 
 #include <reactor/network/tcp-server.hh>
 #include <reactor/thread.hh>
@@ -29,6 +31,8 @@
 #include <etoile/wall/Access.hh>
 #include <etoile/wall/Attributes.hh>
 #include <etoile/wall/Path.hh>
+
+#include <lune/Lune.hh>
 
 #include <Infinit.hh>
 
@@ -544,7 +548,10 @@ namespace etoile
                                 pass) == elle::Status::Error)
         escape("unable to create the phrase");
 
-      if (Portal::phrase.Store(Infinit::Network) == elle::Status::Error)
+      if (Portal::phrase.Store(
+            elle::io::Path(lune::Lune::Network::Phrase,
+                           elle::io::Piece("%NETWORK%", Infinit::Network),
+                           elle::io::Piece("%NAME%", "portal"))) == elle::Status::Error)
         escape("unable to store the phrase");
 
       return elle::Status::Ok;
@@ -557,7 +564,10 @@ namespace etoile
     {
       Portal::Scoutor scoutor;
 
-      if (Portal::phrase.Erase(Infinit::Network) == elle::Status::Error)
+      if (Portal::phrase.Erase(
+            elle::io::Path(lune::Lune::Network::Phrase,
+                           elle::io::Piece("%NETWORK%", Infinit::Network),
+                           elle::io::Piece("%NAME%", "portal"))) == elle::Status::Error)
         escape("unable to erase the phrase");
 
       // delete the acceptor.
