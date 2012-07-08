@@ -12,6 +12,14 @@ namespace elle
   {
 
 //
+// ---------- constructors & destructors --------------------------------------
+//
+
+    Path::Path()
+    {
+    }
+
+//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -40,8 +48,8 @@ namespace elle
     ///
     /// this function resolves the given name/value tuple.
     ///
-    Status              Path::Complete(const String&            name,
-                                       const String&            value)
+    Status              Path::Complete(String const&            name,
+                                       String const&            value)
     {
       String::size_type position;
 
@@ -68,7 +76,7 @@ namespace elle
       if (this == &element)
         return true;
 
-      return (this->_string == element.str());
+      return (this->_string == element.string());
     }
 
     ///

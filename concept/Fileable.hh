@@ -36,6 +36,7 @@
 ///   {};
 /// ---------------------------------------------------------------------------
 
+# include <elle/types.hh>
 # include <elle/io/fwd.hh>
 # include <elle/concept/Serializable.hh>
 
@@ -46,7 +47,9 @@
 
 # define ELLE_CONCEPT_FILEABLE_METHODS(...)                                   \
   using elle::concept::Fileable<__VA_ARGS__>::Store;                          \
-  using elle::concept::Fileable<__VA_ARGS__>::Load                            \
+  using elle::concept::Fileable<__VA_ARGS__>::Load;                           \
+  using elle::concept::Fileable<__VA_ARGS__>::Erase;                          \
+  using elle::concept::Fileable<__VA_ARGS__>::Exists;                         \
   /**/
 
 namespace elle
@@ -54,15 +57,17 @@ namespace elle
   namespace concept
   {
 
-    template<__ECS_DEFAULT_ARCHIVE_TPL(Archive)>
+    template <__ECS_DEFAULT_ARCHIVE_TPL(Archive)>
     struct Fileable
       : virtual contract::_Serializable<Archive>
     {
       Status Load(elle::io::Path const& path);
       Status Store(elle::io::Path const& path) const;
+      Status Erase(elle::io::Path const& path) const;
+      Boolean Exists(elle::io::Path const& path) const;
     };
 
-    template<typename T, __ECS_DEFAULT_ARCHIVE_TPL(Archive)>
+    template <typename T, __ECS_DEFAULT_ARCHIVE_TPL(Archive)>
     struct MakeFileable
       : Serializable<T, Archive>
       , Fileable<Archive>
