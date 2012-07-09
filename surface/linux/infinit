@@ -81,6 +81,9 @@ class InfinitShell(cmd.Cmd):
         """Mount all infinit networks."""
         self._state.launch_watchdog(self._args.watchdog_bin)
 
+    def do_stop(self, args):
+        self._state.stop_watchdog()
+
     def default(self, line):
         if line == 'EOF':
             print()

@@ -236,4 +236,9 @@ extern "C"
       __WRAP_CPP(state, launch_watchdog, watchdog_path);
     }
 
+    gap_Status gap_stop_watchdog(gap_State* state)
+    {
+      __WRAP_CPP(state, stop_watchdog);
+    }
+
 } // ! extern "C"

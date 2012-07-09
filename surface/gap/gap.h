@@ -80,6 +80,9 @@ extern "C" {
     gap_Status gap_launch_watchdog(gap_State* state,
                                    char const* watchdog_path);
 
+    /// Stop the watchdog process.
+    gap_Status gap_stop_watchdog(gap_State* state);
+
 # ifdef __cplusplus
 } // ! extern "C"
 # endif

@@ -61,8 +61,11 @@ class State:
     def networks(self):
         return _gap.networks(self._state)
 
-    def launch_watchdog(self, binary):
+    def launch_watchdog(self, binary=""):
         return _gap.launch_watchdog(self._state, binary);
+
+    def stop_watchdog(self):
+        return _gap.stop_watchdog(self._state)
 
 if __name__ == "__main__":
     import doctest

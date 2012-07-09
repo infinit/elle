@@ -67,5 +67,7 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("create_network", &gap_create_network);
 
   py::def("launch_watchdog", &_launch_watchdog);
+
+  py::def("stop_watchdog", &gap_stop_watchdog);
 }
 
