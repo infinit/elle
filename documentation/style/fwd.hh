@@ -12,7 +12,7 @@
 # define PACKAGE_MODULE_FWD_HH
 
 /*
- * first files defining type aliases (i.e typedefs) are included.
+ * First files defining type aliases (i.e typedefs) are included.
  */
 # include <package/module/SimpleType.hh>
 
