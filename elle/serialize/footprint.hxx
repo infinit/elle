@@ -46,12 +46,10 @@ namespace elle
     template <typename Archive = OutputBinaryArchive, typename T>
     size_t footprint(T const& value)
     {
-      // XXX[ugly: we sould not be forced to allocate an instace so
-      //     as to pass it to the IOStream!!!]
-      detail::CounterStreamBuffer* streambuf =
-        new detail::CounterStreamBuffer;
-      elle::IOStream out(streambuf);
-      Archive(out, value);
+      auto streambuf = new detail::CounterStreamBuffer;
+      elle::IOStream out{streambuf};
+      Archive{out, value};
+      out.flush();
       return streambuf->counter;
     }
 
