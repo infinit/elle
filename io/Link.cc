@@ -48,14 +48,14 @@ namespace elle
 
       // create the link.
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
-      if (::symlink(target.str().c_str(), link.str().c_str()))
-        escape("symlink failed: %s -> %s: %s", link.str().c_str(),
-               target.str().c_str(), ::strerror(errno));
+      if (::symlink(target.string().c_str(), link.string().c_str()))
+        escape("symlink failed: %s -> %s: %s", link.string().c_str(),
+               target.string().c_str(), ::strerror(errno));
 #elif defined(INFINIT_WINDOWS)
-      if (!QFile::link(QString::fromStdString(link.str()),
-                       QString::fromStdString(target.str())))
-        escape("symlink failed: %s -> %s", link.str().c_str(),
-               target.str().c_str());
+      if (!QFile::link(QString::fromStdString(link.string()),
+                       QString::fromStdString(target.string())))
+        escape("symlink failed: %s -> %s", link.string().c_str(),
+               target.string().c_str());
 #else
 # error "unsupported platform"
 #endif
@@ -73,7 +73,7 @@ namespace elle
         escape("the link does not seem to exist");
 
       // unlink the link.
-      ::unlink(path.str().c_str());
+      ::unlink(path.string().c_str());
 
       return Status::Ok;
     }
@@ -87,7 +87,7 @@ namespace elle
 
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // does the path points to something.
-      if (::lstat(path.str().c_str(), &stat) != 0)
+      if (::lstat(path.string().c_str(), &stat) != 0)
         return Status::False;
 
       // does the path points to a regular file.
@@ -95,7 +95,7 @@ namespace elle
         return Status::False;
 #elif defined(INFINIT_WINDOWS)
       // does the path points to something.
-      if (::stat(path.str().c_str(), &stat) != 0)
+      if (::stat(path.string().c_str(), &stat) != 0)
         return Status::False;
 #else
 # error "unsupported platform"
@@ -110,8 +110,8 @@ namespace elle
     ///
     Status              Link::Dig(const Path&                   path)
     {
-      String            target(path.str());
-      char *            tmp_str = ::strdup(path.str().c_str());
+      String            target(path.string());
+      char *            tmp_str = ::strdup(path.string().c_str());
       String            directory(::dirname(tmp_str));
       std::stringstream stream(directory);
       String            item;
@@ -124,12 +124,12 @@ namespace elle
       while (std::getline(stream, item, system::System::Path::Separator))
         {
           // update the intermediate chemin.
-          if (chemin.str().empty() && item.empty())
-            chemin.str() = system::System::Path::Separator;
+          if (chemin.string().empty() && item.empty())
+            chemin.string() = system::System::Path::Separator;
           else
             {
-              chemin.str().append(item);
-              chemin.str().append(1, system::System::Path::Separator);
+              chemin.string().append(item);
+              chemin.string().append(1, system::System::Path::Separator);
             }
 
           // retrieve information on the path. should this operation fail

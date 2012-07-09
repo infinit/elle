@@ -58,6 +58,7 @@ namespace elle {
       {
         Unknown,
 
+        // XXX[to remove: use Boolean instead]
         False = false,
         True = true,
 

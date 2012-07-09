@@ -22,7 +22,7 @@ namespace elle
       static Status Hash(Plain const&       plain,
                          Digest&            digest);
 
-      /// Hashes an archivable object.
+      /// Hashes an serializable object.
       template <typename T>
       static Status Hash(T const&           value,
                          Digest&            digest);

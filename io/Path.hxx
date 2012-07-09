@@ -14,11 +14,40 @@ namespace elle
 // ---------- variadic templates ----------------------------------------------
 //
 
+    template <typename T>
+    Path::Path(Pattern const& pattern,
+               T const& piece)
+    {
+      if (this->Create(pattern) == Status::Error)
+        throw std::runtime_error("unable to create the path based "
+                                 "on a pattern");
+
+      if (this->Complete(piece) == Status::Error)
+        throw std::runtime_error("unable to complete the path");
+    }
+
+    template <typename T,
+              typename... TT>
+    Path::Path(Pattern const& pattern,
+               T const& piece,
+               TT const&... pieces)
+    {
+      if (this->Create(pattern) == Status::Error)
+        throw std::runtime_error("unable to create the path based "
+                                 "on a pattern");
+
+      if (this->Complete(piece) == Status::Error)
+        throw std::runtime_error("unable to complete the path");
+
+      if (this->Complete(pieces...) == Status::Error)
+        throw std::runtime_error("unable to complete the path");
+    }
+
     ///
     /// this template resolves a single piece of the path's pattern.
     ///
     template <typename T>
-    Status              Path::Complete(T                        piece)
+    Status              Path::Complete(T const& piece)
     {
       // resolve the piece.
       if (this->Complete(piece.name, piece.value) == Status::Error)
@@ -32,8 +61,8 @@ namespace elle
     ///
     template <typename T,
               typename... TT>
-    Status              Path::Complete(T                        piece,
-                                       TT...                    pieces)
+    Status              Path::Complete(T const& piece,
+                                       TT const&... pieces)
     {
       // resolve the given piece.
       if (this->Complete(piece) == Status::Error)

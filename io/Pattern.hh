@@ -24,6 +24,12 @@ namespace elle
     {
     public:
       //
+      // constructors & destructors
+      //
+      Pattern();
+      Pattern(elle::String const& string);
+
+      //
       // methods
       //
       Status            Create(const String&);

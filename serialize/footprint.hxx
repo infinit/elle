@@ -5,7 +5,7 @@
 
 # include <elle/IOStream.hh>
 
-# include "BinaryArchive.hh"
+# include <elle/serialize/BinaryArchive.hh>
 
 namespace elle
 {
@@ -14,7 +14,8 @@ namespace elle
 
     namespace detail
     {
-      struct CounterStreamBuffer : elle::StreamBuffer
+      struct CounterStreamBuffer:
+        public elle::StreamBuffer
       {
         size_t counter;
         char _buf[512];
@@ -42,18 +43,19 @@ namespace elle
       };
     }
 
-    template<typename Archive = OutputBinaryArchive, typename T>
+    template <typename Archive = OutputBinaryArchive, typename T>
     size_t footprint(T const& value)
     {
-      detail::CounterStreamBuffer streambuf
-
-      elle::IOStream out(&streambuf);
+      // XXX[ugly: we sould not be forced to allocate an instace so
+      //     as to pass it to the IOStream!!!]
+      detail::CounterStreamBuffer* streambuf =
+        new detail::CounterStreamBuffer;
+      elle::IOStream out(streambuf);
       Archive(out, value);
-      return streambuf.counter;
+      return streambuf->counter;
     }
 
   }
 }
 
 #endif
-
