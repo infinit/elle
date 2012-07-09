@@ -13,10 +13,6 @@ namespace satellite
   namespace unix
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
     ///
     /// this class represents a FUSE upcall which contains the operation
     /// code, the inputs and outputs arguments along with the returned value.
@@ -77,10 +73,6 @@ namespace satellite
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;
 
-      // archivable
-      //elle::Status      Serialize(elle::Archive&) const;
-      //elle::Status      Extract(elle::Archive&);
-
       //
       // attributes
       //
@@ -94,10 +86,6 @@ namespace satellite
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
 
 #include <satellites/diary/unix/Upcall.hxx>
 

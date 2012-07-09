@@ -7,6 +7,8 @@
 #include <elle/utility/Parser.hh>
 #include <elle/standalone/Report.hh>
 #include <elle/concurrency/Program.hh>
+#include <elle/io/Piece.hh>
+#include <elle/io/Path.hh>
 
 #include <etoile/gear/Identifier.hh>
 #include <etoile/path/Way.hh>
@@ -102,13 +104,16 @@ namespace satellite
     lune::Phrase        phrase;
 
     // load the phrase.
-    if (phrase.Load(Infinit::Network) == elle::Status::Error)
+    if (phrase.Load(
+          elle::io::Path(lune::Lune::Network::Phrase,
+                         elle::io::Piece("%NETWORK%", Infinit::Network),
+                         elle::io::Piece("%NAME%", "portal"))) == elle::Status::Error)
       escape("unable to load the phrase");
 
     // connect to the server.
     reactor::network::TCPSocket* socket =
       new reactor::network::TCPSocket(elle::concurrency::scheduler(),
-                                      elle::String("127.0.0.1"),
+                                      elle::String("localhost"),
                                       phrase.port);
 
     Access::socket = new elle::network::TCPSocket(socket, false);

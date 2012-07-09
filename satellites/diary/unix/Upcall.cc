@@ -1,17 +1,3 @@
-//
-// ---------- header ----------------------------------------------------------
-//
-// project       diary
-//
-// license       infinit
-//
-// author        julien quintard   [tue jun 28 15:02:54 2011]
-//
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
 #include <satellites/diary/unix/Upcall.hh>
 
 namespace satellite
@@ -87,45 +73,6 @@ namespace satellite
 
       return elle::Status::Ok;
     }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the diary object.
-    ///
-    //elle::Status        Upcall::Serialize(elle::Archive&        archive) const
-    //{
-    //  // serialize the attributes.
-    //  if (archive.Serialize(static_cast<elle::Natural32>(this->operation),
-    //                        this->inputs,
-    //                        this->outputs,
-    //                        this->result) == elle::Status::Error)
-    //    escape("unable to serialize the attributes");
-
-    //  return elle::Status::Ok;
-    //}
-
-    /////
-    ///// this method extracts the diary object.
-    /////
-    //elle::Status        Upcall::Extract(elle::Archive&          archive)
-    //{
-    //  elle::Natural32   operation;
-
-    //  // extract the attributes.
-    //  if (archive.Extract(operation,
-    //                      this->inputs,
-    //                      this->outputs,
-    //                      this->result) == elle::Status::Error)
-    //    escape("unable to extract the attributes");
-
-    //  // set the operation.
-    //  this->operation = static_cast<Upcall::Operation>(operation);
-
-    //  return elle::Status::Ok;
-    //}
 
   }
 }

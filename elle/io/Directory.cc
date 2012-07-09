@@ -93,7 +93,7 @@ namespace // usefull classes
 
   public:
     _Directory(elle::io::Path const& path) :
-      _dir(::opendir(path.str().c_str()))
+      _dir(::opendir(path.string().c_str()))
     {}
     ~_Directory()
     {
@@ -121,8 +121,8 @@ namespace elle
     ///
     Status              Directory::Create(const Path&           path)
     {
-      if (!QDir().mkpath(QString::fromStdString(path.str())))
-        escape("failed to mkpath: %s", path.str().c_str());
+      if (!QDir().mkpath(QString::fromStdString(path.string())))
+        escape("failed to mkpath: %s", path.string().c_str());
 
       return Status::Ok;
 
@@ -162,7 +162,7 @@ namespace elle
         escape("the directory does not seem to exist");
 
       // remove the directory.
-      ::rmdir(path.str().c_str());
+      ::rmdir(path.string().c_str());
 
       return Status::Ok;
     }
@@ -175,7 +175,7 @@ namespace elle
       struct ::stat             stat;
 
       // does the path points to something.
-      if (::stat(path.str().c_str(), &stat) != 0)
+      if (::stat(path.string().c_str(), &stat) != 0)
         return Status::False;
 
       // does the path points to a directory.
@@ -191,7 +191,8 @@ namespace elle
     ///
     Status              Directory::Dig(const Path&                      path)
     {
-      String            directory(::dirname(const_cast<char*>(path.str().c_str())));
+      String            directory(::dirname(
+                                    const_cast<char*>(path.string().c_str())));
 
       if (!QDir().mkpath(QString::fromStdString(directory)))
         escape("failed to mkpath: %s", directory.c_str());
@@ -261,15 +262,15 @@ namespace elle
             continue;
 
           // create the target path.
-          String path_str(path.str() + system::System::Path::Separator + *it);
+          String path_str(path.string() + system::System::Path::Separator + *it);
           if (target.Create(path_str) == Status::Error)
             escape("unable to create the target path");
 
           // stat the entry as entry->d_type is not standard
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
-          if (::lstat(target.str().c_str(), &stat) == -1)
+          if (::lstat(target.string().c_str(), &stat) == -1)
 #elif defined(INFINIT_WINDOWS)
-          if (::stat(target.str().c_str(), &stat) == -1)
+          if (::stat(target.string().c_str(), &stat) == -1)
 #else
 # error "unsupported platform"
 #endif

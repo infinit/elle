@@ -20,7 +20,7 @@ namespace elle
     ///
     /// this class represents a memory area.
     ///
-    /// note that this class is *not* archivable in order to prevent
+    /// note that this class is *not* serializable in order to prevent
     /// conflicts, hence cannot derive the Object class.
     ///
     /// therefore the operators must be manually defined for this class

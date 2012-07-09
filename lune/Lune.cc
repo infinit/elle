@@ -318,7 +318,7 @@ namespace lune
             elle::system::System::Path::Separator +
             "%NETWORK%" +
             elle::system::System::Path::Separator +
-            "%NETWORK%" +
+            "%NAME%" +
             Phrase::Extension) == elle::Status::Error)
         escape("unable to create the pattern");
 
@@ -461,7 +461,7 @@ namespace lune
         escape("unable to complete the path");
 
       // setup the log.
-      if (elle::standalone::Log::Setup(path.str()) == elle::Status::Error)
+      if (elle::standalone::Log::Setup(path.string()) == elle::Status::Error)
         escape("unable to set up the log system");
     }
 

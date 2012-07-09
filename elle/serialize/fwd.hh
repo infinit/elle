@@ -57,6 +57,6 @@ namespace elle
 /// -----------------
 ///
 #define ELLE_SERIALIZE_FRIEND_FOR(T)                      \
-  friend struct ::elle::serialize::ArchiveSerializer<T>   \
+  friend struct elle::serialize::ArchiveSerializer<T>     \
 
 #endif

@@ -12,7 +12,7 @@
 # include <boost/call_traits.hpp>
 
 
-# include "fwd.hh"
+# include <elle/serialize/fwd.hh>
 # include "ArchiveMode.hh"
 # include "ArchivableClass.hh"
 # include "StoreClassVersion.hh"

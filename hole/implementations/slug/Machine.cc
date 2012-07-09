@@ -47,13 +47,6 @@ namespace hole
 //
 
       ///
-      /// XXX
-      ///
-      /// XXX corresponds to 's' i.e 19 and 'l' i.e 12 in the alphabet.
-      ///
-      const elle::Natural16             Machine::Default::Port = 1912;
-
-      ///
       /// XXX 3 seconds
       ///
       const reactor::Duration Machine::Timeout = boost::posix_time::seconds(3);
@@ -192,28 +185,25 @@ namespace hole
           if (host.Create(elle::network::Host::TypeAny) == elle::Status::Error)
             escape("unable to create the host");
 
-          // create the listening locus.
-          if (locus.Create(host, this->port) == elle::Status::Error)
-            escape("unable to create the locus");
+          _server->listen(this->port);
+          this->port = _server->local_endpoint().port();
 
-          _server->listen(locus.port);
-          short port = _server->local_endpoint().port();
-            {
-              // XXX should be done with a signal
-              plasma::meta::Client client("127.0.0.1", 23456);
-              lune::Passport passport;
-              if (passport.Load() != elle::Status::Ok)
-                escape("Cannot load passport");
-              try
-                {
-                  client.token(agent::Agent::meta_token);
-                  client.update_device(passport.id, nullptr, nullptr, port);
-                }
-              catch (std::exception const& err)
-                {
-                  elle::log::warn("Cannot update device port:", err.what()); // XXX[to improve]
-                }
-            }
+          {
+            // XXX should be done with a signal
+            plasma::meta::Client client("127.0.0.1", 23456);
+            lune::Passport passport;
+            if (passport.Load() != elle::Status::Ok)
+              escape("Cannot load passport");
+            try
+              {
+                client.token(agent::Agent::meta_token);
+                client.update_device(passport.id, nullptr, nullptr, port);
+              }
+            catch (std::exception const& err)
+              {
+                elle::log::warn("Cannot update device port:", err.what()); // XXX[to improve]
+              }
+          }
           new reactor::Thread(elle::concurrency::scheduler(),
                               "Slug accept",
                               boost::bind(&Machine::_accept, this),
@@ -1144,8 +1134,9 @@ namespace hole
 
                   // also authenticate to this host now that it is
                   // considered a potentiel peer.
-                  h->socket->send (elle::network::Inputs<TagAuthenticate>
-                                   (Hole::Passport, this->port));
+                  h->socket->send(
+                    elle::network::Inputs<TagAuthenticate>(
+                      Hole::Passport, this->port));
 
                   break;
                 }
@@ -1220,8 +1211,9 @@ namespace hole
                                 (cluster));
 
             // also authenticate to this host.
-            host->socket->send(elle::network::Inputs<TagAuthenticate>
-                               (Hole::Passport, this->port));
+            host->socket->send(
+              elle::network::Inputs<TagAuthenticate>(
+                Hole::Passport, this->port));
           }
         else
           {

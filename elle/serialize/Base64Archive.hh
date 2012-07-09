@@ -11,9 +11,8 @@
 
 # include <cassert>
 
-# include "BaseArchive.hxx"
-
-# include "Base64Archive.fwd.hh"
+# include <elle/serialize/fwd.hh>
+# include <elle/serialize/BaseArchive.hxx>
 
 namespace elle { namespace serialize {
 

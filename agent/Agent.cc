@@ -61,7 +61,7 @@ namespace agent
       // XXX to be improved with security in mind
       elle::io::Path home;
       home.Create(lune::Lune::Home);
-      boost::filesystem::path path{home.str()};
+      boost::filesystem::path path{home.string()};
       path /= "identity.wtg";
 
       std::ifstream identity_file(path.string());

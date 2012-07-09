@@ -34,11 +34,6 @@ namespace hole
         //
         // constants
         //
-        struct Default
-        {
-          static const elle::Natural16  Port;
-        };
-
         static const reactor::Duration  Timeout;
 
         //

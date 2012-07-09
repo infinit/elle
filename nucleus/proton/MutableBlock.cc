@@ -176,7 +176,7 @@ namespace nucleus
             escape("unable to complete the path");
 
           if (this->Load(path) == elle::Status::Error)
-            escape("unable to load '%s'", path.str().c_str());
+            escape("unable to load '%s'", path.string().c_str());
         }
 
       return elle::Status::Ok;
@@ -257,7 +257,7 @@ namespace nucleus
             }
 
           if (this->Store(file) == elle::Status::Error)
-            escape("Cannot store into %s", file.str().c_str());
+            escape("Cannot store into %s", file.string().c_str());
         }
       else
         {
