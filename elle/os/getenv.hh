@@ -1,5 +1,5 @@
-#ifndef  ELLE_UTILITY_GETENV_HH
-# define ELLE_UTILITY_GETENV_HH
+#ifndef  ELLE_OS_GETENV_HH
+# define ELLE_OS_GETENV_HH
 
 # include <string>
 
@@ -9,7 +9,7 @@
 
 namespace elle
 {
-  namespace utility
+  namespace os
   {
     /// Returns the associated environment value or throw when the key is not
     /// found.

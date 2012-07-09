@@ -2,7 +2,7 @@
 #include <sys/types.h>
 #include <pwd.h>
 
-#include <elle/utility/getenv.hh>
+#include <elle/os/getenv.hh>
 
 #include <common/common.hh>
 
@@ -15,12 +15,12 @@ namespace
     if (pw != nullptr && pw->pw_dir != nullptr)
       return std::string{pw->pw_dir};
     else
-      return elle::utility::getenv("HOME", "/tmp");
+      return elle::os::getenv("HOME", "/tmp");
   }
 
   std::string _infinit_home()
   {
-    return elle::utility::getenv(
+    return elle::os::getenv(
         "INFINIT_HOME",
         common::home_directory() + "/" + COMMON_DEFAULT_INFINIT_HOME
     );
