@@ -35,18 +35,24 @@ namespace package
     CodingStandard*
     CodingStandard::generate()
     {
-      CodingStandard* coding_standard = new CodingStandard;
+      /*
+       * Pointers must always be initialized with 'nullptr'. Note that
+       * the old C macro NULL must never be used.
+       */
+      CodingStandard* coding_standard = nullptr;
+
+      coding_standard = new CodingStandard;
 
       /*
-       * every block of logically related operations must be commented so
+       * Every block of logically related operations must be commented so
        * as to explain what is being done.
        */
       //
-      // comment describing the following operations.
+      // Comment describing the following operations.
       //
 
       /*
-       * note that the identation is always composed of two characters
+       * Note that the identation is always composed of two characters
        * even for the brackets following a for (...) or if (...):
        *
        *   for (...)
@@ -56,7 +62,7 @@ namespace package
        */
       for (; iterator != end; ++iterator)
         {
-          // something important is done here.
+          // Something important is done here.
         }
 
       return (coding_standard);
@@ -116,7 +122,7 @@ namespace package
                   Natural32 const right)
     {
       /*
-       * one must declare one local variable per line and never use
+       * One must declare one local variable per line and never use
        * delcarations such as:
        *
        *   auto iterator = list.begin(),
