@@ -5,7 +5,7 @@
 
 namespace elle
 {
-  namespace utility
+  namespace os
   {
 
     std::string getenv(std::string const& key)

@@ -66,6 +66,8 @@ ADD_LIBRARY(elle
   network/Locus.cc
   network/TCPSocket.cc
 
+  os/getenv.cc
+
   utility/Buffer.cc
   utility/BufferStream.cc
   utility/Duration.cc
@@ -74,7 +76,6 @@ ADD_LIBRARY(elle
   utility/Parser.cc
   utility/Settings.cc
   utility/Time.cc
-  utility/getenv.cc
 
   format/ini/Section.cc
   format/ini/File.cc
