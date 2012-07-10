@@ -46,6 +46,7 @@ namespace plasma
       NetworkManager*     _network_manager;
       MetaClient          _meta;
       std::string         _identity;
+      std::string         _user;
 
     public:
       /// ctor & dtor
@@ -53,13 +54,20 @@ namespace plasma
       ~Manager();
 
       /// properties
+      MetaClient& meta()                                { return this->_meta; }
+
+      NetworkManager& network_manager()     { return *this->_network_manager; }
+
       void token(QByteArray const& token);
       void token(QString const& token)        { this->token(token.toAscii()); }
-      MetaClient& meta()                                { return this->_meta; }
-      NetworkManager& network_manager()     { return *this->_network_manager; }
+
       std::string const& identity() const           { return this->_identity; }
       void identity(std::string const& id)            { this->_identity = id; }
       void identity(QString const& id)  { this->_identity = id.toStdString(); }
+
+      void user(std::string const& user)                { this->_user = user; }
+      void user(QString const& user)      { this->_user = user.toStdString(); }
+      std::string const& user() const                   { return this->_user; }
 
       /// Called from the LocalServer to add a new connection
       Client& register_connection(ConnectionPtr& conn);

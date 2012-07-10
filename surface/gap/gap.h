@@ -70,10 +70,8 @@ extern "C" {
                                   char const* name);
 
 
-    /// Launch the watchdog binary. If the given path is NULL, then the default
-    /// binary path will be used.
-    gap_Status gap_launch_watchdog(gap_State* state,
-                                   char const* watchdog_path);
+    /// Launch the watchdog binary.
+    gap_Status gap_launch_watchdog(gap_State* state);
 
     /// Stop the watchdog process.
     gap_Status gap_stop_watchdog(gap_State* state);

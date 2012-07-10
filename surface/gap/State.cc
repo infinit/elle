@@ -329,7 +329,7 @@ namespace surface
       }
     }
 
-    void State::launch_watchdog(std::string const& watchdog_path)
+    void State::launch_watchdog()
     {
       std::string old_watchdog_id;
       try
@@ -342,12 +342,7 @@ namespace surface
           elle::log::warn("Couldn't stop the watchdog:", err.what());
         }
 
-      std::string watchdog_binary;
-      if (watchdog_path.size())
-        watchdog_binary = watchdog_path;
-      else
-        watchdog_binary =
-          fs::path(common::infinit_home()).append("bin/8watchdog", fs::path::codecvt()).string();
+      std::string watchdog_binary = common::binary_path("8watchdog");
 
       elle::log::info("Launching binary:", watchdog_binary);
       QProcess p;
@@ -397,6 +392,7 @@ namespace surface
           json::Dictionary args;
           args["token"] = this->_api->token();
           args["identity"] = this->_api->identity();
+          args["user"] = this->_api->email();
           this->_send_watchdog_cmd("run", &args);
         }
     }
@@ -436,9 +432,7 @@ namespace surface
 
       Network* network = it->second;
 
-      fs::path access_path{common::infinit_home()};
-      access_path /= "bin";
-      access_path /= "8access";
+      std::string const& access_binary = common::binary_path("8access");
 
       QStringList arguments;
       arguments << "--user" << _api->email().c_str()
@@ -457,7 +451,7 @@ namespace surface
           "XXX: setting executable permissions not yet implemented");
 
       QProcess p;
-      if (p.execute(access_path.string().c_str(), arguments) < 0)
+      if (p.execute(access_binary.c_str(), arguments) < 0)
         throw Exception(gap_internal_error, "Cannot start the watchdog !");
     }
 

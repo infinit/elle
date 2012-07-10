@@ -35,18 +35,11 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '--new-network',
-    '-n',
-    help="Create a new network",
-    action="store_true"
-)
-
-parser.add_argument(
-    '--watchdog-bin',
-    help="Specify the watchdog binary",
-    default=os.path.join(
-        INFINIT_HOME, 'bin', '8watchdog',
-    )
+    'action',
+    choices=['start', 'stop', 'restart', 'shell'],
+    default='start',
+    nargs='?',
+    help="Action done once logged in",
 )
 
 parser.add_argument(
@@ -54,7 +47,6 @@ parser.add_argument(
     help="Skip the update process",
     action="store_true",
 )
-
 
 class InfinitShell(cmd.Cmd):
     def __init__(self, state, args):
@@ -77,9 +69,12 @@ class InfinitShell(cmd.Cmd):
             return
         self._state.create_network(name)
 
+    def do_refresh_networks(self, args):
+        self._state.refresh_networks()
+
     def do_start(self, args):
         """Mount all infinit networks."""
-        self._state.launch_watchdog(self._args.watchdog_bin)
+        self._state.launch_watchdog()
 
     def do_stop(self, args):
         self._state.stop_watchdog()
@@ -92,7 +87,11 @@ class InfinitShell(cmd.Cmd):
 
 def start_shell(state, args):
     shell = InfinitShell(state, args)
-    shell.cmdloop(SHELL_INTRO)
+
+    if args.action == 'shell':
+        shell.cmdloop(SHELL_INTRO)
+    else:
+        getattr(shell, 'do_' + args.action)('')
 
 def register(state):
     fullname = input("Enter your fullname: ").strip()
@@ -188,10 +187,6 @@ def main(state):
     else:
         print("Authentication required (if you don't have an account, try -r)")
         login(state)
-
-    if not os.path.exists(args.watchdog_bin):
-        print("Cannot find the watchdog binary, please specify it with --watchdog-bin")
-        return
 
     start_shell(state, args)
 

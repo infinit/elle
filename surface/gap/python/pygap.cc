@@ -19,15 +19,6 @@ _get_networks(gap_State* state)
   return networks_;
 }
 
-static gap_Status
-_launch_watchdog(gap_State* state, std::string const& name)
-{
-  if (name.size())
-    return gap_launch_watchdog(state, name.c_str());
-  else
-    return gap_launch_watchdog(state, nullptr);
-}
-
 BOOST_PYTHON_MODULE(_gap)
 {
   namespace py = boost::python;
@@ -40,6 +31,7 @@ BOOST_PYTHON_MODULE(_gap)
     .value("gap_api_error", gap_api_error)
     .export_values()
   ;
+
   py::def("new", &gap_new,
           py::return_value_policy<py::return_opaque_pointer>());
 
@@ -64,8 +56,17 @@ BOOST_PYTHON_MODULE(_gap)
 
   py::def("create_network", &gap_create_network);
 
-  py::def("launch_watchdog", &_launch_watchdog);
+  py::def("launch_watchdog", &gap_launch_watchdog);
 
   py::def("stop_watchdog", &gap_stop_watchdog);
+
+  py::enum_<gap_Permission>("Permission")
+    .value("gap_read", gap_read)
+    .value("gap_write", gap_write)
+    .value("gap_exec", gap_exec)
+    .export_values()
+  ;
+
+  py::def("set_permissions", &gap_set_permissions);
 }
 

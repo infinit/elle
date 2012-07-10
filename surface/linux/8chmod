@@ -55,10 +55,19 @@ def main(main, args):
     path = os.path.abspath(args.path)
     print("args.path:", path)
     print("args.user:", args.user)
-    print("r:", args.r)
-    print("w:", args.w)
-    print("x:", args.x)
-    pass
+
+    # XXX should be set according to current permissions of the targetted user.
+    # if args.r == 1 or (args.r == 0 && current_permissions.r == 1):
+    #   ...
+    permissions = 0
+    if args.r >= 0:
+        permissions |= state.read_perm
+    if args.w >= 0:
+        permissions |= state.write_perm
+    if args.x > 0:
+        permissions |= state.exec_perm
+
+    state.set_permissions(args.user, path, permissions)
 
 if __name__ == '__main__':
     args = parser.parse_args()

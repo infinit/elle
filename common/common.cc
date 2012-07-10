@@ -32,8 +32,9 @@ namespace
   std::string _built_binary_relative_path(std::string const& name)
   {
     static std::unordered_map<std::string, std::string> paths{
-      {"8infinit",  "8infinit"},
       {"8access",   "satellites/8access"},
+      {"8infinit",  "8infinit"},
+      {"8watchdog", "plasma/watchdog/8watchdog"},
     };
     auto it = paths.find(name);
     if (it == paths.end())

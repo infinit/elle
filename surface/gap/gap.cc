@@ -211,13 +211,9 @@ extern "C"
       __WRAP_CPP(state, create_network, name);
     }
 
-    gap_Status gap_launch_watchdog(gap_State* state,
-                                   char const* watchdog_path)
+    gap_Status gap_launch_watchdog(gap_State* state)
     {
-      static char const* nil_path = "";
-      if (watchdog_path == nullptr)
-        watchdog_path = nil_path;
-      __WRAP_CPP(state, launch_watchdog, watchdog_path);
+      __WRAP_CPP(state, launch_watchdog);
     }
 
     gap_Status gap_stop_watchdog(gap_State* state)

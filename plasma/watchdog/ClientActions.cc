@@ -1,7 +1,10 @@
-#include <iostream>
+#include <fstream>
 
-#include <elle/log.hh>
 #include <elle/format/json.hh>
+#include <elle/log.hh>
+#include <elle/os/path.hh>
+
+#include <common/common.hh>
 
 #include "Client.hh"
 #include "ClientActions.hh"
@@ -65,10 +68,35 @@ void ClientActions::_on_run(Connection& conn,
   CHECK_ID(args);
   QString token = args["token"].toString();
   QString identity = args["identity"].toString();
+  QString user = args["user"].toString();
   if (token.size() > 0 && identity.size() > 0)
     {
       this->_manager.token(token);
       this->_manager.identity(identity);
+      this->_manager.user(user);
+
+      std::ofstream identity_infos{
+          elle::os::path::join(common::infinit_home(), "identity.wtg")
+      };
+
+      if (!identity_infos.good())
+        {
+          elle::log::fatal("Cannot open identity file");
+          std::abort();
+        }
+
+      identity_infos << token.toStdString() << "\n"
+                     << identity.toStdString() << "\n"
+                     << user.toStdString() << "\n"
+                     ;
+
+      if (!identity_infos.good())
+        {
+          elle::log::fatal("Cannot write identity file");
+          std::abort();
+        }
+      identity_infos.close();
+
       this->_manager.refresh_networks();
       UNREGISTER(run);
       REGISTER_ALL();

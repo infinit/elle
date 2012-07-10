@@ -61,7 +61,7 @@ namespace surface
     ///
     public:
       void stop_watchdog();
-      void launch_watchdog(std::string const& watchdog_path);
+      void launch_watchdog();
 
     ///
     /// Update (or create) local device.
