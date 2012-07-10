@@ -67,6 +67,7 @@ ADD_LIBRARY(elle
   network/TCPSocket.cc
 
   os/getenv.cc
+  os/path.cc
 
   utility/Buffer.cc
   utility/BufferStream.cc

@@ -55,3 +55,10 @@ void Connection::_on_ready_read()
       this->_cmdback(line);
     }
 }
+
+void Connection::send_data(QByteArray const& data)
+{
+  // XXX async needed here
+  if (this->_socket->write(data) != data.size())
+    throw std::runtime_error("Not written !");
+}

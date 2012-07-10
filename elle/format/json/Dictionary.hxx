@@ -105,6 +105,13 @@ namespace elle { namespace format { namespace json {
               return _value->Load(val);
             }
 
+          template<typename T>
+            inline T as() const
+            {
+              if (_value == nullptr)
+                throw Dictionary::KeyError(_key);
+              return _value->as<T>();
+            }
 
           operator Object const&() const
             {

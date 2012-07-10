@@ -31,14 +31,9 @@ extern "C" {
     /// Notify the watchdog that networks has changed.
     gap_Status gap_refresh_networks(gap_State* state);
 
-    /// Retreive a network id from a path. Do not store or free the returned
-    /// pointer. Just copy the string if you plan to use it later.
-    /// Returns NULL on failure.
-    char const* gap_path_to_network(gap_State* state,
-                                    char const* path);
-
     /// Generate a hash for the password.
-    /// NOTE: You are responsible to free the returned pointer with gap_hash_free.
+    /// NOTE: You are responsible to free the returned pointer with
+    /// gap_hash_free.
     char* gap_hash_password(gap_State* state,
                             char const* email,
                             char const* password);
@@ -82,6 +77,20 @@ extern "C" {
 
     /// Stop the watchdog process.
     gap_Status gap_stop_watchdog(gap_State* state);
+
+    enum gap_Permission
+    {
+      gap_none  = 0,
+      gap_read  = 1,
+      gap_write = 2,
+      gap_exec  = 4,
+    };
+
+    /// Change file permissions for a user.
+    gap_Status gap_set_permissions(gap_State* state,
+                                   char const* user_id,
+                                   char const* absolute_path,
+                                   int permissions);
 
 # ifdef __cplusplus
 } // ! extern "C"

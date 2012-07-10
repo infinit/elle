@@ -54,8 +54,6 @@ BOOST_PYTHON_MODULE(_gap)
 
   py::def("refresh_networks", &gap_refresh_networks);
 
-  py::def("path_to_network", &gap_path_to_network);
-
   py::def("login", &gap_login);
 
   py::def("register", &gap_register);

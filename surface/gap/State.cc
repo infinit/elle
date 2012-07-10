@@ -16,7 +16,9 @@
 #include <QLocalSocket>
 #include <QProcess>
 
-#include <elle/format/json/all.hh>
+#include <common/common.hh>
+
+#include <elle/format/json.hh>
 #include <elle/log.hh>
 #include <elle/network/Host.hh>
 #include <elle/serialize/HexadecimalArchive.hh>
@@ -59,30 +61,14 @@ namespace surface
       }
     }
 
-    // - Network --------------------------------------------------------------
-
-    struct Network
-    {
-      std::string name;
-    };
-
     // - State ----------------------------------------------------------------
 
     State::State()
-      : _infinit_home(getenv("INFINIT_HOME"))
+      : _api(new plasma::meta::Client("127.0.0.1", 12345))
+      , _files_infos()
       , _networks()
       , _networks_dirty(true)
-      , _api(new plasma::meta::Client("127.0.0.1", 12345))
     {
-      if (this->_infinit_home.empty())
-        {
-          struct passwd *pw = ::getpwuid(::getuid());
-          if (pw == nullptr || pw->pw_dir == nullptr)
-            throw Exception(gap_internal_error, "Cannot get current user");
-          boost::filesystem::path homedir(pw->pw_dir);
-          homedir /= ".config/infinit";
-          this->_infinit_home = homedir.string();
-        }
     }
 
     State::~State()
@@ -100,20 +86,13 @@ namespace surface
       this->_networks_dirty = true;
     }
 
-    std::string const& State::path_to_network(std::string const& path_string)
-    {
-      if (this->_networks_dirty)
-        this->_reload_networks();
-      throw Exception(gap_error, "Cannot find any network for path '" + path_string + "'");
-    }
-
     void State::_reload_networks()
     {
     }
 
     std::string State::_watchdog_id() const // XXX should be cached
     {
-      boost::filesystem::path wtg_id_path(this->_infinit_home);
+      boost::filesystem::path wtg_id_path(common::infinit_home());
       wtg_id_path /= "infinit.wtg";
       std::ifstream file(wtg_id_path.string());
       if (!file.good())
@@ -130,7 +109,8 @@ namespace surface
 
     void
     State::_send_watchdog_cmd(std::string const& cmd,
-                              elle::format::json::Dictionary const* kwargs)
+                              elle::format::json::Dictionary const* kwargs,
+                              elle::format::json::Dictionary* response)
     {
       QLocalSocket conn;
       conn.connectToServer(WATCHDOG_SERVER_NAME);
@@ -145,8 +125,25 @@ namespace surface
           conn.write(req.repr().c_str());
           conn.write("\n");
           if (!conn.waitForBytesWritten(2000))
-              Exception(gap_internal_error, "Couldn't send the command '" + cmd + "'");
+              throw Exception(gap_internal_error,
+                              "Couldn't send the command '" + cmd + "'");
           elle::log::debug("Command sent");
+
+          if (response != nullptr)
+            {
+              if (!conn.waitForReadyRead(2000))
+                throw Exception(gap_internal_error,
+                              "Couldn't read response of '" + cmd + "' command");
+              QByteArray response_data = conn.readLine();
+              std::stringstream ss{
+                  std::string{
+                      response_data.data(),
+                      static_cast<size_t>(response_data.size()),
+                  },
+              };
+              auto ptr = json::Parser<>{}.Parse(ss);
+              response->update(dynamic_cast<json::Dictionary const&>(*ptr));
+            }
         }
       else
         throw Exception(gap_internal_error, "Couldn't connect to the watchdog");
@@ -248,7 +245,7 @@ namespace surface
       std::string local_address = detail::get_local_address();
       elle::log::debug("Registering new device", name, "for host:", local_address);
 
-      fs::path passport_path(_infinit_home);
+      fs::path passport_path(common::infinit_home());
       passport_path /=  "infinit.ppt";
 
       std::string passport_string;
@@ -291,6 +288,7 @@ namespace surface
     void State::create_network(std::string const& name)
     {
       this->_api->create_network(name);
+      this->_networks_dirty = true;
     }
 
     std::map<std::string, Network*> const& State::networks()
@@ -300,8 +298,13 @@ namespace surface
           auto res = this->_api->networks();
           for (auto const& network_id: res.networks)
             {
-              this->_networks[network_id] = nullptr; //XXX
+              if (this->_networks.find(network_id) == this->_networks.end())
+                {
+                  this->_networks[network_id] =
+                    new Network{this->_api->network(network_id)};
+                }
             }
+          this->_networks_dirty = false;
         }
       return this->_networks;
     }
@@ -344,7 +347,7 @@ namespace surface
         watchdog_binary = watchdog_path;
       else
         watchdog_binary =
-          fs::path(_infinit_home).append("bin/8watchdog", fs::path::codecvt()).string();
+          fs::path(common::infinit_home()).append("bin/8watchdog", fs::path::codecvt()).string();
 
       elle::log::info("Launching binary:", watchdog_binary);
       QProcess p;
@@ -397,6 +400,68 @@ namespace surface
           this->_send_watchdog_cmd("run", &args);
         }
     }
+
+    /// - File level ----------------------------------------------------------
+
+    FileInfos const& State::file_infos(std::string const& abspath)
+    {
+      auto it = this->_files_infos.find(abspath);
+      if (it != this->_files_infos.end())
+        return *(it->second);
+
+      json::Dictionary request, response;
+      request["absolute_path"] = abspath;
+      this->_send_watchdog_cmd("file_infos", &request, &response);
+
+      std::unique_ptr<FileInfos> infos{new FileInfos{
+          response["mount_point"].as<std::string>(),
+          response["network_id"].as<std::string>(),
+          response["absolute_path"].as<std::string>(),
+          response["relative_path"].as<std::string>(),
+      }};
+
+      this->_files_infos[abspath] = infos.get();
+      return *(infos.release());
+    }
+
+    void State::set_permissions(std::string const& user_id,
+                                std::string const& abspath,
+                                int permissions)
+    {
+      FileInfos const& infos = this->file_infos(abspath);
+      auto it = this->networks().find(infos.network_id);
+
+      if (it == this->networks().end())
+        throw Exception(gap_error, "Wrong network id");
+
+      Network* network = it->second;
+
+      fs::path access_path{common::infinit_home()};
+      access_path /= "bin";
+      access_path /= "8access";
+
+      QStringList arguments;
+      arguments << "--user" << _api->email().c_str()
+                << "--type" << "user"
+                << "--grant" << user_id.c_str()
+                << "--network" << network->name.c_str()
+                << "--path" << infos.relative_path.c_str();
+
+      if (permissions & gap_read)
+        arguments << "--read";
+      if (permissions & gap_write)
+        arguments << "--write";
+
+      if (permissions & gap_exec)
+        elle::log::warn(
+          "XXX: setting executable permissions not yet implemented");
+
+      QProcess p;
+      if (p.execute(access_path.string().c_str(), arguments) < 0)
+        throw Exception(gap_internal_error, "Cannot start the watchdog !");
+    }
+
+
 
   }
 }

@@ -140,6 +140,9 @@ namespace plasma
                                          std::string const* name,
                                          std::string const* local_address,
                                          short port);
+
+      NetworkResponse network(std::string const& _id);
+
       NetworksResponse networks();
 
       CreateNetworkResponse create_network(std::string const& name);
@@ -148,6 +151,7 @@ namespace plasma
       void token(std::string const& tok);
       std::string const& token() const;
       std::string const& identity() const;
+      std::string const& email() const;
 
     private:
       template<typename T>

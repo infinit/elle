@@ -97,22 +97,6 @@ extern "C"
       __WRAP_CPP(state, refresh_networks);
     }
 
-    char const* gap_path_to_network(gap_State* state, char const* path)
-    {
-      assert(state != nullptr);
-      assert(path != nullptr);
-      try
-        {
-          std::string const& network = __TO_CPP(state)->path_to_network(path);
-          return network.c_str();
-        }
-      catch (std::exception const& err)
-        {
-          elle::log::warn("Cannot convert path", path, "to network:", err.what());
-        }
-      return nullptr;
-    };
-
     char* gap_hash_password(gap_State* state,
                             char const* email,
                             char const* password)
@@ -241,4 +225,13 @@ extern "C"
       __WRAP_CPP(state, stop_watchdog);
     }
 
+    gap_Status gap_set_permissions(gap_State* state,
+                                   char const* user_id,
+                                   char const* absolute_path,
+                                   int permissions)
+    {
+      assert(user_id != nullptr);
+      assert(absolute_path != nullptr);
+      __WRAP_CPP(state, set_permissions, user_id, absolute_path, permissions);
+    }
 } // ! extern "C"

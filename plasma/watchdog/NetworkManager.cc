@@ -29,6 +29,12 @@ void NetworkManager::update_networks()
       std::bind(&NetworkManager::_on_networks_update, this, _1)
   );
 }
+
+NetworkManager::NetworkMap const& NetworkManager::networks() const
+{
+  return this->_networks;
+}
+
 void NetworkManager::_on_networks_update(meta::NetworksResponse const& response)
 {
   std::set<std::string> visited;
@@ -83,3 +89,5 @@ void NetworkManager::_on_network_update(meta::NetworkResponse const& r)
   else
     it->second->update(r);
 }
+
+

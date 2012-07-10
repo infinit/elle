@@ -38,6 +38,8 @@ namespace plasma
       void update_networks();
       void stop();
 
+      NetworkMap const& networks() const;
+
     private:
       void _on_networks_update(meta::NetworksResponse const& response);
       void _on_network_update(meta::NetworkResponse const& response);

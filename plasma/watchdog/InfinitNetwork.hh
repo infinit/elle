@@ -27,11 +27,15 @@ namespace plasma
       QProcess                _process;
       QDir                    _infinitHome;
       QDir                    _home;
+      QDir                    _mount_point;
 
     public:
       InfinitNetwork(Manager& manager, meta::NetworkResponse const& response);
       ~InfinitNetwork();
       void update(meta::NetworkResponse const& response);
+
+      std::string mount_point() const;
+      std::string const& id() const;
 
     private:
       void _prepare_directory();
