@@ -163,6 +163,10 @@ add_subdirectory(horizon)
 add_subdirectory(hole)
 add_subdirectory(satellites)
 add_subdirectory(plasma)
+
+# XXX[temporarily here so as to bypass surface's compilation failure]
+add_subdirectory(tests)
+
 add_subdirectory(surface)
 
 if("${INFINIT_PLATFORM}" MATCHES "linux*")
@@ -190,19 +194,5 @@ target_link_libraries(8infinit
   elle etoile nucleus lune agent  hole metal horizon nucleus protocol
 )
 
-# XXX
-#ADD_EXECUTABLE(XXX
-#  XXX/Porcupine.cc
-#  XXX/XXX.cc
-#  XXX/Handle.cc
-#  XXX/Placement.cc
-#)
-#TARGET_LINK_LIBRARIES(XXX infinit elle etoile nucleus lune infinit)
-# XXX
-
 # configuration
 configure_file("${CMAKE_SOURCE_DIR}/config.hh.cmake" "${CMAKE_SOURCE_DIR}/config.hh")
-
-# tests
-add_subdirectory(tests)
-

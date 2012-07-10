@@ -23,7 +23,8 @@ int main()
 
   std::cout << "[size] " << size << std::endl;
 
-  // XXX assert(size == XXX);
+  // the key pair footprint should be around 756 bytes.
+  assert(size <= 777);
 
   std::cout << "tests done.\n";
   return 0;
