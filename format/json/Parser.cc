@@ -146,11 +146,10 @@ bool Parser<T>::_ReadJSONString(StreamType& in,   ObjectPtr& out)
           c = in.get();
           switch (c)
           {
-          case '\\':  res.push_back('\\');  break;
-          case '"':   res.push_back('"');   break;
           case 'n':   res.push_back('\n');  break;
           case 't':   res.push_back('\t');  break;
           case 'r':   res.push_back('\r');  break;
+          default:    res.push_back(c);     break;
           }
         }
       else if (c == '"')

@@ -36,6 +36,14 @@ namespace elle
         return fs::exists(fs::path{path});
       }
 
+      std::string absolute(std::string const& path, bool canonical)
+      {
+        if (canonical)
+          return fs::canonical(path).string();
+        else
+          return fs::absolute(path).string();
+      }
+
     }
   }
 }
