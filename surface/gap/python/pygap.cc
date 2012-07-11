@@ -29,6 +29,7 @@ BOOST_PYTHON_MODULE(_gap)
     .value("gap_network_error", gap_network_error)
     .value("gap_internal_error", gap_internal_error)
     .value("gap_api_error", gap_api_error)
+    .value("gap_no_device_error", gap_no_device_error)
     .export_values()
   ;
 
@@ -49,6 +50,8 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("login", &gap_login);
 
   py::def("register", &gap_register);
+
+  py::def("device_status", &gap_device_status);
 
   py::def("set_device_name", &gap_set_device_name);
 

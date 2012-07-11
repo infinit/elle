@@ -113,6 +113,21 @@ namespace elle { namespace format { namespace json {
               return _value->as<T>();
             }
 
+# define __JSON_DICTPROXY_AS(type)                                            \
+          if (_value == nullptr) throw Dictionary::KeyError(_key);            \
+          return dynamic_cast<type>(*_value)                                  \
+          /**/
+
+          Array&      as_array()      { __JSON_DICTPROXY_AS(Array&); }
+          Bool&       as_bool()       { __JSON_DICTPROXY_AS(Bool&); }
+          Dictionary& as_dictionary() { __JSON_DICTPROXY_AS(Dictionary&); }
+          Float&      as_float()      { __JSON_DICTPROXY_AS(Float&); }
+          Integer&    as_integer()    { __JSON_DICTPROXY_AS(Integer&); }
+          Null&       as_null()       { __JSON_DICTPROXY_AS(Null&); }
+          String&     as_string()     { __JSON_DICTPROXY_AS(String&); }
+
+# undef __JSON_DICTPROXY_AS
+
           operator Object const&() const
             {
               if (_value == nullptr)

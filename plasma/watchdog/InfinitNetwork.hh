@@ -31,6 +31,7 @@ namespace plasma
       InfinitNetwork(Manager& manager, meta::NetworkResponse const& response);
       ~InfinitNetwork();
       void update(meta::NetworkResponse const& response);
+      void stop();
 
       std::string mount_point() const;
       std::string const& id() const;

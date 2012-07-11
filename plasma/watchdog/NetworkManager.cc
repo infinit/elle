@@ -18,7 +18,8 @@ NetworkManager::NetworkManager(Manager& manager):
 
 void NetworkManager::stop()
 {
-  this->_networks.clear();
+  for (auto& pair : this->_networks)
+      pair.second->stop();
 }
 
 void NetworkManager::update_networks()

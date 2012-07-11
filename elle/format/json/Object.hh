@@ -66,6 +66,22 @@ namespace elle { namespace format { namespace json {
       /// @throws std::bad_cast
       template<typename T> T as() const;
 
+      inline Array&      as_array();
+      inline Bool&       as_bool();
+      inline Dictionary& as_dictionary();
+      inline Float&      as_float();
+      inline Integer&    as_integer();
+      inline Null&       as_null();
+      inline String&     as_string();
+
+      inline Array const&      as_array() const;
+      inline Bool const&       as_bool() const;
+      inline Dictionary const& as_dictionary() const;
+      inline Float const&      as_float() const;
+      inline Integer const&    as_integer() const;
+      inline Null const&       as_null() const;
+      inline String const&     as_string() const;
+
       /// Same as Load(), but instead of throwing an exception,
       /// it returns false when conversion cannot be done.
       template<typename T> bool TryLoad(T& out) const;

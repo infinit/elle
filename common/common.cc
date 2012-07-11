@@ -32,7 +32,7 @@ namespace
   std::string _built_binary_relative_path(std::string const& name)
   {
     static std::unordered_map<std::string, std::string> paths{
-      {"8access",   "satellites/8access"},
+      {"8access",   "satellites/access/8access"},
       {"8infinit",  "8infinit"},
       {"8watchdog", "plasma/watchdog/8watchdog"},
     };
@@ -79,6 +79,13 @@ namespace common
       throw std::runtime_error("Cannot find any binary at '" + path + "'");
 
     return (binaries[name] = path);
+  }
+
+  std::string const& passport_path()
+  {
+    static std::string const path = elle::os::path::join(infinit_home(),
+                                                         "infinit.ppt");
+    return path;
   }
 
 }

@@ -79,6 +79,14 @@ class InfinitShell(cmd.Cmd):
     def do_stop(self, args):
         self._state.stop_watchdog()
 
+    def do_create_device(self, args=""):
+        """Create local device with specified name or your host name"""
+        dev_name = args.strip()
+        if not dev_name:
+            import socket
+            dev_name = socket.gethostname().strip()
+        self._state.set_device_name(dev_name)
+
     def default(self, line):
         if line == 'EOF':
             print()
@@ -87,6 +95,17 @@ class InfinitShell(cmd.Cmd):
 
 def start_shell(state, args):
     shell = InfinitShell(state, args)
+
+    if not state.has_device:
+        if args.action == 'shell':
+            print("No local device found, try 'create_device' command")
+        else:
+            import socket
+            default_dev_name = socket.gethostname().strip()
+            dev_name = input("Computer name (defaults to '%s'): " % default_dev_name).strip()
+            if not dev_name:
+                dev_name = default_dev_name
+            shell.do_create_device(dev_name)
 
     if args.action == 'shell':
         shell.cmdloop(SHELL_INTRO)
@@ -106,11 +125,6 @@ def register(state):
         else:
             break
 
-    import socket
-    default_dev_name = socket.gethostname().strip()
-    dev_name = input("Computer name (defaults to '%s'): " % default_dev_name).strip()
-    if not dev_name:
-        dev_name = default_dev_name
 
     state.register(fullname, email, password, dev_name)
 

@@ -24,6 +24,8 @@ namespace common
   /// valid binary.
   std::string const& binary_path(std::string const& name, bool ensure = true);
 
+  /// Returns the path to the passport file.
+  std::string const& passport_path();
 }
 
 #endif

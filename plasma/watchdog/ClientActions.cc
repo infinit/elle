@@ -46,7 +46,7 @@ using namespace plasma::watchdog;
 # define REGISTER_ALL()                                                       \
   do {                                                                        \
       REGISTER(refresh_networks);                                             \
-      REGISTER(file_infos);                                                   \
+      REGISTER(status);                                                       \
   } while (false)                                                             \
   /**/
 
@@ -124,36 +124,25 @@ void ClientActions::_on_refresh_networks(Connection& conn,
 }
 
 
-void ClientActions::_on_file_infos(Connection& conn,
-                                   Client& client,
-                                   QVariantMap const& args)
+void ClientActions::_on_status(Connection& conn,
+                               Client& client,
+                               QVariantMap const& args)
 {
+  namespace json = elle::format::json;
+
   CHECK_ID(args);
-  std::string abspath = args["absolute_path"].toString().toStdString();
-  InfinitNetwork* network = nullptr;
-  std::string relpath;
+
+  json::Array networks;
   for (auto& pair : this->_manager.network_manager().networks())
     {
-      std::string mount_point = pair.second->mount_point();
-      // XXX should rewritten using boost::filesystem
-      if (abspath.substr(0, mount_point.size()) == mount_point)
-        {
-          network = pair.second.get();
-          relpath = "./" + abspath.substr(mount_point.size());
-          break;
-        }
+      json::Dictionary network;
+      network["_id"] = pair.first;
+      network["mount_point"] = pair.second->mount_point();
+      networks.push_back(network);
     }
 
-  if (network == nullptr)
-    {
-      elle::log::error("Cannot find network for '" + abspath + "' path");
-      return;
-    }
-
-  elle::format::json::Dictionary response;
-  response["network_id"] = network->id();
-  response["mount_point"] = network->mount_point();
-  response["absolute_path"] = abspath;
-  response["relative_path"] = relpath;
+  json::Dictionary response;
+  response["networks"] = networks;
+  elle::log::debug("Response =", response.repr());
   conn.send_data((response.repr() + "\n").c_str());
 }

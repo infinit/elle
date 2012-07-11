@@ -83,18 +83,21 @@ namespace plasma
       ///
       /// Retreive file infos
       ///  Q : {
-      ///       "command": "file_infos",
+      ///       "command": "status",
       ///       "_id": "watchdog id",
-      ///       "absolute_path": "absolute path to the file",
       ///  }
       ///
       ///  R : {
-      ///       "relative_path": "relative path in the network",
-      ///       "network_id": "the network id",
+      ///       "networks": [
+      ///           {
+      ///               "network_id": "the network id",
+      ///               "mount_point": "/path/to/mount/point",
+      ///           },
+      ///       ],
       ///  }
-      void _on_file_infos(Connection& conn,
-                       Client& client,
-                       QVariantMap const& args);
+      void _on_status(Connection& conn,
+                      Client& client,
+                      QVariantMap const& args);
 
     };
 

@@ -13,6 +13,7 @@ extern "C" {
       gap_network_error = -2,
       gap_internal_error = -3,
       gap_api_error = -4,
+      gap_no_device_error = -5,
     };
 
     /// gap_State is an opaque structure used in every calls.
@@ -53,6 +54,9 @@ extern "C" {
                             char const* email,
                             char const* hash_password,
                             char const* device_name);
+
+    /// Returns the local device status.
+    gap_Status gap_device_status(gap_State* state);
 
     /// Update the local device name.
     gap_Status gap_set_device_name(gap_State* state,

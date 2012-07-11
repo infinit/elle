@@ -37,6 +37,10 @@ namespace elle { namespace format { namespace json {
       return result;
     }
 
+    Object& Array::operator[] (size_t index) const
+    {
+      return *_value.at(index);
+    }
 }}}
 
 #endif

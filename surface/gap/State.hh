@@ -64,9 +64,10 @@ namespace surface
       void launch_watchdog();
 
     ///
-    /// Update (or create) local device.
+    /// Manage local device.
     ///
     public:
+      bool has_device() const;
       void update_device(std::string const& name,
                          bool force_create = false);
     ///

@@ -10,7 +10,7 @@ Connection::Connection(QLocalSocketPtr&& socket) :
   QObject(),
   _socket(std::move(socket))
 {
-  this->_socket->setParent(this);
+  //this->_socket->setParent(this);
 }
 
 Connection::~Connection()

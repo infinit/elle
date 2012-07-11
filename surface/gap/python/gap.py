@@ -31,6 +31,7 @@ class State:
             'stop_watchdog',
             'networks',
             'set_permissions',
+            'set_device_name',
         ]
 
         def make_method(m):
@@ -50,6 +51,13 @@ class State:
     def meta_status(self):
         try:
             return self._call('meta_status') == _gap.gap_ok
+        except:
+            return False
+
+    @property
+    def has_device(self):
+        try:
+            return self._call('device_status') == _gap.gap_ok
         except:
             return False
 

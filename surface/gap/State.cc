@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 
 #include <openssl/sha.h>
@@ -16,12 +17,13 @@
 #include <QLocalSocket>
 #include <QProcess>
 
-#include <common/common.hh>
-
 #include <elle/format/json.hh>
 #include <elle/log.hh>
 #include <elle/network/Host.hh>
+#include <elle/os/path.hh>
 #include <elle/serialize/HexadecimalArchive.hh>
+
+#include <common/common.hh>
 
 #include <lune/Dictionary.hh>
 #include <lune/Identity.hh>
@@ -69,6 +71,16 @@ namespace surface
       , _networks()
       , _networks_dirty(true)
     {
+      std::ifstream identity_file{
+          elle::os::path::join(common::infinit_home(), "identity.wtg")
+      };
+
+      if (identity_file.good())
+        {
+          std::string token;
+          std::getline(identity_file, token);
+          this->_api->token(token);
+        }
     }
 
     State::~State()
@@ -240,17 +252,19 @@ namespace surface
         }
     }
 
+    bool State::has_device() const
+    {
+      return fs::exists(common::passport_path());
+    }
+
     void State::update_device(std::string const& name, bool force_create)
     {
       std::string local_address = detail::get_local_address();
       elle::log::debug("Registering new device", name, "for host:", local_address);
 
-      fs::path passport_path(common::infinit_home());
-      passport_path /=  "infinit.ppt";
-
       std::string passport_string;
 
-      if (force_create || !fs::exists(passport_path))
+      if (force_create || !this->has_device())
         {
           auto res = this->_api->create_device(name, local_address, 0);
           if (!res.success)
@@ -315,22 +329,34 @@ namespace surface
       // Waiting for the old server to be stopped
       {
         int tries = 1;
+        int sleep_time = 2;
         do {
-            QLocalSocket conn;
-            conn.connectToServer(WATCHDOG_SERVER_NAME);
-            if (!conn.waitForConnected(2000))
-              break;
-            elle::log::debug("Waiting for the old watchdog to be stopped (", tries, ')');
-            ::sleep(1);
+              {
+                QLocalSocket conn;
+                conn.connectToServer(WATCHDOG_SERVER_NAME);
+                if (!conn.waitForConnected(2000))
+                  break;
+                conn.disconnectFromServer();
+                conn.waitForDisconnected();
+              }
+            elle::log::debug("Waiting", sleep_time,
+                             "secs for the old watchdog to be stopped (", tries, " / 10 )");
+            ::sleep(sleep_time);
+            sleep_time += 2;
         } while (++tries < 10);
 
         if (tries >= 10)
-          elle::log::warn("The old watchdog instance does not stop !");
+          throw Exception(gap_internal_error,
+                          "The old watchdog instance does not stop !");
       }
     }
 
     void State::launch_watchdog()
     {
+      if (!fs::exists(common::passport_path()))
+        throw Exception(gap_no_device_error,
+                        "Cannot start infinit without any local device");
+
       std::string old_watchdog_id;
       try
         {
@@ -399,22 +425,41 @@ namespace surface
 
     /// - File level ----------------------------------------------------------
 
-    FileInfos const& State::file_infos(std::string const& abspath)
+    FileInfos const& State::file_infos(std::string const& path)
     {
+      std::string abspath = elle::os::path::absolute(path, true);
+      elle::log::debug("Get file infos of", abspath);
       auto it = this->_files_infos.find(abspath);
       if (it != this->_files_infos.end())
         return *(it->second);
 
       json::Dictionary request, response;
-      request["absolute_path"] = abspath;
-      this->_send_watchdog_cmd("file_infos", &request, &response);
+      this->_send_watchdog_cmd("status", nullptr, &response);
 
-      std::unique_ptr<FileInfos> infos{new FileInfos{
-          response["mount_point"].as<std::string>(),
-          response["network_id"].as<std::string>(),
-          response["absolute_path"].as<std::string>(),
-          response["relative_path"].as<std::string>(),
-      }};
+      auto& networks = response["networks"].as_array();
+
+      std::unique_ptr<FileInfos> infos;
+
+      for (size_t i = 0; i < networks.size(); ++i)
+      {
+        auto& network = networks[i].as_dictionary();
+        std::string mount_point = network["mount_point"].as_string();
+        std::string network_id = network["_id"].as_string();
+        if (boost::algorithm::starts_with(abspath, mount_point))
+          {
+            infos.reset(new FileInfos{
+                mount_point,
+                network_id,
+                abspath,
+                abspath.substr(mount_point.size() + 1),
+            });
+            break;
+          }
+      }
+
+      if (infos.get() == nullptr)
+        throw Exception(gap_error,
+                        "Cannot find network for path '" + abspath + "'");
 
       this->_files_infos[abspath] = infos.get();
       return *(infos.release());
@@ -437,9 +482,10 @@ namespace surface
       QStringList arguments;
       arguments << "--user" << _api->email().c_str()
                 << "--type" << "user"
-                << "--grant" << user_id.c_str()
+                << "--grant"
                 << "--network" << network->name.c_str()
-                << "--path" << infos.relative_path.c_str();
+                << "--path" << infos.relative_path.c_str()
+                << "--identifier" << "XXXPUBLICKEY";
 
       if (permissions & gap_read)
         arguments << "--read";

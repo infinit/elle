@@ -53,8 +53,10 @@ InfinitNetwork::InfinitNetwork(Manager& manager,
 
 InfinitNetwork::~InfinitNetwork()
 {
-  this->_process.close();
-  this->_process.waitForFinished();
+  if (this->_process.state() != QProcess::NotRunning)
+    {
+      elle::log::warn("Network ", this->_description.name, "not terminated !");
+    }
 }
 
 std::string InfinitNetwork::mount_point() const
@@ -72,6 +74,14 @@ void InfinitNetwork::update(meta::NetworkResponse const& response)
   LOG("Updating network:", response._id);
   this->_description = response;
   this->_update();
+}
+
+void InfinitNetwork::stop()
+{
+  elle::log::debug("Shutting down network", this->_description.name);
+  this->_process.terminate();
+  this->_process.waitForFinished();
+  elle::log::debug("Done!");
 }
 
 void InfinitNetwork::_update()

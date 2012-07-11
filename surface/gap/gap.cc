@@ -149,6 +149,27 @@ extern "C"
       return ret;
     }
 
+    gap_Status gap_device_status(gap_State* state)
+    {
+      try
+        {
+          if (__TO_CPP(state)->has_device())
+            return gap_ok;
+          else
+            return gap_no_device_error;
+        }
+      catch (surface::gap::Exception const& err)
+        {
+          elle::log::error("Couldn't check the device:", err.what());
+          return err.code;
+        }
+      catch (std::exception const& err)
+        {
+          elle::log::error("Couldn't check the device:", err.what());
+        }
+      return gap_internal_error;
+    }
+
     gap_Status gap_set_device_name(gap_State* state,
                                    char const* name)
     {
