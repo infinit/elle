@@ -50,23 +50,11 @@ namespace surface
       , code(code)
     {}
 
-    // - Utilities ------------------------------------------------------------
-
-    namespace
-    {
-      std::string getenv(char const* var)
-      {
-        char const* res = ::getenv(var);
-        if (res == nullptr)
-          return "";
-        return res;
-      }
-    }
-
     // - State ----------------------------------------------------------------
 
     State::State()
       : _api(new plasma::meta::Client("127.0.0.1", 12345))
+      , _users()
       , _files_infos()
       , _networks()
       , _networks_dirty(true)
@@ -161,7 +149,23 @@ namespace surface
         throw Exception(gap_internal_error, "Couldn't connect to the watchdog");
     }
 
-    // XXX no hash occurs
+    User const& State::user(std::string const& id)
+    {
+      auto it = this->_users.find(id);
+      if (it != this->_users.end())
+        return *(it->second);
+
+      auto response = this->_api->user(id);
+      std::unique_ptr<User> user{new User{
+          response._id,
+          "email here ?",
+          response.public_key,
+      }};
+
+      this->_users[response._id] = user.get();
+      return *(user.release());
+    }
+
     std::string State::hash_password(std::string const& email,
                                      std::string const& password)
     {
@@ -485,7 +489,7 @@ namespace surface
                 << "--grant"
                 << "--network" << network->name.c_str()
                 << "--path" << infos.relative_path.c_str()
-                << "--identifier" << "XXXPUBLICKEY";
+                << "--identifier" << this->user(user_id).public_key.c_str();
 
       if (permissions & gap_read)
         arguments << "--read";

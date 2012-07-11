@@ -32,6 +32,12 @@ namespace plasma
     struct RegisterResponse : Response
     {};
 
+    struct UserResponse : Response
+    {
+      std::string _id;
+      std::string public_key;
+    };
+
     struct NetworksResponse : Response
     {
       std::list<std::string> networks;
@@ -131,6 +137,8 @@ namespace plasma
       RegisterResponse register_(std::string const& email,
                                  std::string const& fullname,
                                  std::string const& password);
+
+      UserResponse user(std::string const& id);
 
       CreateDeviceResponse create_device(std::string const& name,
                                          std::string const& local_address,

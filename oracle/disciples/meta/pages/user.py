@@ -11,7 +11,7 @@ import json
 class User(Page):
     """
     Get self infos
-        GET /
+        GET /self
             -> {
                 'fullname': "My Name",
                 'email': "My email",
@@ -22,6 +22,12 @@ class User(Page):
                 'accounts': [
                     {'type':'account type', 'id':'unique account identifier'}
                 ]
+            }
+
+    Get public informations of an user by id
+        GET /user/id
+            -> {
+                'public_key': "public key in base64",
             }
 
     Register a new user
@@ -55,7 +61,7 @@ class User(Page):
             return self._me()
         elif action == 'logout':
             return self._logout()
-        raise Exception("Unknown action: %s" % str(action))
+        return self._user_public(action)
 
     def POST(self, action):
         if action == 'register':
@@ -82,6 +88,15 @@ class User(Page):
             'identity': self.user['identity'],
             'public_key': self.user['public_key'],
             'accounts': self.user['accounts'],
+        })
+
+    def _user_public(self, _id):
+        user = database.byId(database.users, _id)
+        if not user:
+            return self.error("Couldn't find user for id '%s'" % str(_id))
+        return self.success({
+            '_id': _id,
+            'public_key': user['public_key'],
         })
 
     def _login(self):

@@ -23,6 +23,13 @@ namespace surface
       std::string relative_path;
     };
 
+    struct User
+    {
+      std::string _id;
+      std::string email;
+      std::string public_key;
+    };
+
     typedef ::plasma::meta::NetworkResponse Network;
 
     class Exception
@@ -47,6 +54,8 @@ namespace surface
     ///
     /// Login & register
     ///
+    private:
+      std::map<std::string, User*> _users;
     public:
       void login(std::string const& email,
                  std::string const& password);
@@ -55,6 +64,7 @@ namespace surface
       void register_(std::string const& fullname,
                      std::string const& email,
                      std::string const& password);
+      User const& user(std::string const& id);
 
     ///
     /// Launch and stop infinit instances

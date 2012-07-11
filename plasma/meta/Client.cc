@@ -55,6 +55,12 @@ SERIALIZE_RESPONSE(plasma::meta::LoginResponse, ar, res)
 
 SERIALIZE_RESPONSE(plasma::meta::RegisterResponse, ar, res) {}
 
+SERIALIZE_RESPONSE(plasma::meta::UserResponse, ar, res)
+{
+  ar & named("_id", res._id);
+  ar & named("public_key", res.public_key);
+}
+
 SERIALIZE_RESPONSE(plasma::meta::CreateDeviceResponse, ar, res)
 {
   ar & named("created_device_id", res.created_device_id);
@@ -157,6 +163,14 @@ namespace plasma
         {"password", password},
       }};
       return this->_post<RegisterResponse>("/user/register", request);
+    }
+
+    UserResponse
+    Client::user(std::string const& id)
+    {
+      if (id.size() == 0)
+        throw std::runtime_error("Wrong id");
+      return this->_get<UserResponse>("/user/" + id);
     }
 
     CreateDeviceResponse
