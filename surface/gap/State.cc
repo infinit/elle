@@ -491,11 +491,12 @@ namespace surface
                 << "--path" << infos.relative_path.c_str()
                 << "--identifier" << this->user(user_id).public_key.c_str()
                 ;
-
       if (permissions & gap_read)
         arguments << "--read";
       if (permissions & gap_write)
         arguments << "--write";
+
+      elle::log::debug("LAUNCH:", access_binary, arguments.join(" ").toStdString());
 
       if (permissions & gap_exec)
         elle::log::warn(
