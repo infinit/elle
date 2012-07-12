@@ -35,6 +35,7 @@ namespace plasma
     struct UserResponse : Response
     {
       std::string _id;
+      std::string email;
       std::string public_key;
     };
 

@@ -24,9 +24,11 @@ class User(Page):
                 ]
             }
 
-    Get public informations of an user by id
-        GET /user/id
+    Get public informations of an user by id or email
+        GET /user/id_or_email
             -> {
+                '_id': "id",
+                'email': "email",
                 'public_key': "public key in base64",
             }
 
@@ -90,12 +92,16 @@ class User(Page):
             'accounts': self.user['accounts'],
         })
 
-    def _user_public(self, _id):
-        user = database.byId(database.users, _id)
+    def _user_public(self, id_or_email):
+        if '@' in id_or_email:
+            user = database.users.find_one({'email': id_or_email})
+        else:
+            user = database.byId(database.users, id_or_email)
         if not user:
             return self.error("Couldn't find user for id '%s'" % str(_id))
         return self.success({
-            '_id': _id,
+            '_id': user['_id'],
+            'email': user['email'],
             'public_key': user['public_key'],
         })
 

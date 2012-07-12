@@ -58,6 +58,7 @@ SERIALIZE_RESPONSE(plasma::meta::RegisterResponse, ar, res) {}
 SERIALIZE_RESPONSE(plasma::meta::UserResponse, ar, res)
 {
   ar & named("_id", res._id);
+  ar & named("email", res.email);
   ar & named("public_key", res.public_key);
 }
 
