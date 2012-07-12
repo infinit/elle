@@ -124,8 +124,11 @@ def register(state):
             print("Password too short")
         else:
             break
-
-
+    import socket
+    default_dev_name = socket.gethostname().strip()
+    dev_name = input("Computer name (defaults to '%s'): " % default_dev_name).strip()
+    if not dev_name:
+        dev_name = default_dev_name
     state.register(fullname, email, password, dev_name)
 
 def login(state):

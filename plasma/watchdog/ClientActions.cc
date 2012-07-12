@@ -138,6 +138,7 @@ void ClientActions::_on_status(Connection& conn,
       json::Dictionary network;
       network["_id"] = pair.first;
       network["mount_point"] = pair.second->mount_point();
+      network["user"] = this->_manager.user();
       networks.push_back(network);
     }
 

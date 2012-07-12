@@ -80,7 +80,7 @@ void InfinitNetwork::stop()
 {
   elle::log::debug("Shutting down network", this->_description.name);
   this->_process.terminate();
-  this->_process.waitForFinished();
+  //this->_process.waitForFinished();
   elle::log::debug("Done!");
 }
 

@@ -86,6 +86,7 @@ void NetworkManager::_on_network_update(meta::NetworkResponse const& r)
       );
       if (res.second == false)
         throw std::runtime_error("Out of memory");
+      res.first->second->update(r);
     }
   else
     it->second->update(r);

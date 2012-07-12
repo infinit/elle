@@ -158,7 +158,7 @@ namespace surface
       auto response = this->_api->user(id);
       std::unique_ptr<User> user{new User{
           response._id,
-          "email here ?",
+          response.email,
           response.public_key,
       }};
 
@@ -188,6 +188,7 @@ namespace surface
 
     void State::login(std::string const& email, std::string const& password)
     {
+      this->_api->token("");
       auto res = this->_api->login(email, password);
 
       if (!res.success)
@@ -341,7 +342,6 @@ namespace surface
                 if (!conn.waitForConnected(2000))
                   break;
                 conn.disconnectFromServer();
-                conn.waitForDisconnected();
               }
             elle::log::debug("Waiting", sleep_time,
                              "secs for the old watchdog to be stopped (", tries, " / 10 )");
@@ -489,7 +489,8 @@ namespace surface
                 << "--grant"
                 << "--network" << network->name.c_str()
                 << "--path" << infos.relative_path.c_str()
-                << "--identifier" << this->user(user_id).public_key.c_str();
+                << "--identifier" << this->user(user_id).public_key.c_str()
+                ;
 
       if (permissions & gap_read)
         arguments << "--read";
