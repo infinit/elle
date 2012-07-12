@@ -113,7 +113,7 @@ namespace satellite
     // connect to the server.
     reactor::network::TCPSocket* socket =
       new reactor::network::TCPSocket(elle::concurrency::scheduler(),
-                                      elle::String("localhost"),
+                                      elle::String("127.0.0.1"),
                                       phrase.port);
 
     Access::socket = new elle::network::TCPSocket(socket, false);
