@@ -1,8 +1,6 @@
 #include <etoile/gear/Directory.hh>
 #include <etoile/gear/Nature.hh>
 
-#include <etoile/depot/Depot.hh>
-
 #include <agent/Agent.hh>
 
 namespace etoile

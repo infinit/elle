@@ -60,19 +60,24 @@ namespace etoile
           // In this case, the object is manually loaded in order to determine
           // the genre.
           nucleus::proton::Location location;
-          nucleus::neutron::Object object;
+          std::unique_ptr<nucleus::neutron::Object> object;
 
           if (chemin.Locate(location) == elle::Status::Error)
             escape("unable to locate the object");
 
-          if (depot::Depot::Pull(location.address,
-                                 location.version,
-                                 object) == elle::Status::Error)
-            escape("unable to retrieve the object block");
+          try
+            {
+              object = depot::Depot::pull_object(location.address,
+                                                 location.version);
+            }
+          catch (std::runtime_error& e)
+            {
+              escape("unable to retrieve the object block: %s", e.what());
+            }
 
           // Depending on the object's genre, a context is allocated
           // for the scope.
-          switch (object.meta.genre)
+          switch (object.get()->meta.genre)
             {
             case nucleus::neutron::GenreFile:
               {
@@ -105,7 +110,7 @@ namespace etoile
               {
                 // XXX
                 printf("[XXX] UNABLE TO ALLOCATE THE PROPER CONTEXT\n");
-                object.Dump();
+                object.get()->Dump();
 
                 escape("unable to allocate the proper context");
               }

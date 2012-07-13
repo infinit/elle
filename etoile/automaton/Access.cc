@@ -49,10 +49,17 @@ namespace etoile
       if (context.object->meta.access != nucleus::Address::Null)
         {
           // retrieve the access block.
-          if (depot::Depot::Pull(context.object->meta.access,
-                                 nucleus::Version::Any,
-                                 *context.access) == elle::Status::Error)
-            escape("unable to load the access block");
+          try
+            {
+              // XXX[the context should make use of unique_ptr instead
+              //     of releasing here.]
+              context.access = depot::Depot::pull_access(
+                                 context.object->meta.access).release();
+            }
+          catch (std::runtime_error& e)
+            {
+              escape("unable to retrieve the access block: %s", e.what());
+            }
         }
       else
         {

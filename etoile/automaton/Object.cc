@@ -30,14 +30,18 @@ namespace etoile
       if (context.state != gear::Context::StateUnknown)
         return elle::Status::Ok;
 
-      // retrieve the object block.
-      if (depot::Depot::Pull(context.location.address,
-                             context.location.version,
-                             context.object) == elle::Status::Error)
-        escape("unable to retrieve the object block");
-
-      // XXX[static_cast + assert(dynamic_cast) the Pull's result into
-      //     nucleus::neutron::Object*]
+      try
+        {
+          // XXX[the context should make use of unique_ptr instead
+          //     of releasing here.]
+          context.object = depot::Depot::pull_object(
+                             context.location.address,
+                             context.location.version).release();
+        }
+      catch (std::runtime_error& e)
+        {
+          escape("unable to retrieve the contents block: %s", e.what());
+        }
 
       // compute the base in order to seal the block's original state.
       if (context.object->base.Create(*context.object) == elle::Status::Error)

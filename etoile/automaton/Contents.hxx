@@ -41,10 +41,17 @@ namespace etoile
       if (context.object->data.contents != nucleus::proton::Address::Null)
         {
           // load the block.
-          if (depot::Depot::Pull(context.object->data.contents,
-                                 nucleus::proton::Version::Any,
-                                 *context.contents) == elle::Status::Error)
-            escape("unable to load the contents");
+          try
+            {
+              // XXX[the context should make use of unique_ptr instead
+              //     of releasing here.]
+              context.contents = depot::Depot::pull<T>(
+                                  context.object->data.contents).release();
+            }
+          catch (std::runtime_error& e)
+            {
+              escape("unable to retrieve the contents block: %s", e.what());
+            }
 
           // determine the rights the current user has on this object.
           if (Rights::Determine(context) == elle::Status::Error)
