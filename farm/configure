@@ -8,5 +8,11 @@ DIR_SOURCE=$(realpath "$DIR_SOURCE")
 
 mkdir -p "$DIR_BUILD"
 cd "$DIR_BUILD"
-CXXFLAGS="-std=gnu++0x -D_LARGE_FILE -D_FILE_OFFSET_BITS=64 -W -Wall -Wundef -Wpointer-arith -Wabi -Wcast-align -Wno-empty-body"
-cmake "-GUnix Makefiles" -DCMAKE_CXX_FLAGS="$CXXFLAGS" -DINFINIT_PLATFORM=linux64 . "$DIR_SOURCE"
+CXX=g++-4.7.1
+CXXFLAGS="-std=c++11 -D_LARGE_FILE -D_FILE_OFFSET_BITS=64 -Wall -Wextra -Wundef -Wpointer-arith -Wabi -Wcast-align -Wno-empty-body"
+cmake "-GUnix Makefiles"                    \
+	-DCMAKE_CXX_FLAGS="$CXXFLAGS"           \
+	-DCMAKE_CXX_COMPILER="$CXX"             \
+	-DINFINIT_PLATFORM=linux64              \
+	.                                       \
+	"$DIR_SOURCE"
