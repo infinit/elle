@@ -53,15 +53,13 @@ namespace surface
     // - State ----------------------------------------------------------------
 
     State::State()
-      : _api(new plasma::meta::Client("127.0.0.1", 12345))
+      : _api(new plasma::meta::Client{common::meta_host(), common::meta_port()})
       , _users()
       , _files_infos()
       , _networks()
       , _networks_dirty(true)
     {
-      std::ifstream identity_file{
-          elle::os::path::join(common::infinit_home(), "identity.wtg")
-      };
+      std::ifstream identity_file{common::watchdog_identity_path()};
 
       if (identity_file.good())
         {
@@ -488,7 +486,7 @@ namespace surface
                 << "--type" << "user"
                 << "--grant"
                 << "--network" << network->name.c_str()
-                << "--path" << infos.relative_path.c_str()
+                << "--path" << ("/" + infos.relative_path).c_str()
                 << "--identifier" << this->user(user_id).public_key.c_str()
                 ;
       if (permissions & gap_read)
