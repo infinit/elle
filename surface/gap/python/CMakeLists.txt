@@ -1,12 +1,12 @@
 find_package(Python3Libs)
 
-#XXX on gentoo boost python package has python version suffix
 #find_package(Boost COMPONENTS python3 REQUIRED)
-find_package(Boost QUIET COMPONENTS python3 python-3.2)
+find_package(Boost COMPONENTS python3)
 
-
-#include_directories("/usr/include/python3.2mu")
-#set(PYTHON3_LIBRARIES "python3.2mu")
+if (NOT Boost_PYTHON3_LIBRARY)
+	#XXX on gentoo boost python package has complete python version suffix
+	find_package(Boost COMPONENTS python-3.2)
+endif()
 
 message(STATUS "Python3 libraries: ${PYTHON3_LIBRARIES}")
 message(STATUS "Python3 include directory: ${PYTHON3_INCLUDE_DIR}")
@@ -24,7 +24,6 @@ target_link_libraries(_gap
     ${INFINIT_OPENSSL_SHARED_LIBRARIES}
 	${Boost_LIBRARIES}
 	${PYTHON3_LIBRARIES}
-	${Boost_PYTHON3_LIBRARY}
 )
 set_target_properties(_gap PROPERTIES PREFIX "")
 
