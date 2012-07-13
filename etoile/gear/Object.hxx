@@ -18,7 +18,7 @@ ELLE_SERIALIZE_SIMPLE(etoile::gear::Object,
   assert(version == 0);
 
   archive & value.location;
-  archive & value.object;
+  archive & elle::serialize::alive_pointer(value.object);
   archive & elle::serialize::pointer(value.access);
   archive & value.rights.role;
   archive & value.rights.permissions;

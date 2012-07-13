@@ -28,14 +28,16 @@ namespace etoile
     {
       nucleus::proton::Address address;
 
+      context.object = new nucleus::neutron::Object;
+
       // create the directory.
-      if (context.object.Create(
+      if (context.object->Create(
             nucleus::neutron::GenreDirectory,
             agent::Agent::Identity.pair.K) == elle::Status::Error)
         escape("unable to create the directory object");
 
       // bind the object to its address i.e this will never changed.
-      if (context.object.Bind(address) == elle::Status::Error)
+      if (context.object->Bind(address) == elle::Status::Error)
         escape("unable to bind the object");
 
       // create the context's location with an initial version number.
@@ -64,7 +66,7 @@ namespace etoile
         escape("unable to fetch the object");
 
       // check that the object is a directory.
-      if (context.object.meta.genre != nucleus::neutron::GenreDirectory)
+      if (context.object->meta.genre != nucleus::neutron::GenreDirectory)
         escape("this object does not seem to be a directory");
 
       // set the context's state.
@@ -119,12 +121,12 @@ namespace etoile
         escape("unable to retrieve the contents's size");
 
       // update the object.
-      if (context.object.Update(
-            context.object.author,
-            context.object.data.contents,
+      if (context.object->Update(
+            context.object->author,
+            context.object->data.contents,
             size,
-            context.object.meta.access,
-            context.object.meta.owner.token) == elle::Status::Error)
+            context.object->meta.access,
+            context.object->meta.owner.token) == elle::Status::Error)
         escape("unable to update the object");
 
       // set the context's state.
@@ -254,12 +256,12 @@ namespace etoile
 
       // update the object though renaming an entry may not impact
       // the object's data size.
-      if (context.object.Update(
-            context.object.author,
-            context.object.data.contents,
+      if (context.object->Update(
+            context.object->author,
+            context.object->data.contents,
             size,
-            context.object.meta.access,
-            context.object.meta.owner.token) == elle::Status::Error)
+            context.object->meta.access,
+            context.object->meta.owner.token) == elle::Status::Error)
         escape("unable to update the object");
 
       // set the context's state.
@@ -306,12 +308,12 @@ namespace etoile
         escape("unable to retrieve the contents's size");
 
       // update the object.
-      if (context.object.Update(
-            context.object.author,
-            context.object.data.contents,
+      if (context.object->Update(
+            context.object->author,
+            context.object->data.contents,
             size,
-            context.object.meta.access,
-            context.object.meta.owner.token) == elle::Status::Error)
+            context.object->meta.access,
+            context.object->meta.owner.token) == elle::Status::Error)
         escape("unable to update the object");
 
       // set the context's state.

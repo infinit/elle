@@ -36,8 +36,11 @@ namespace etoile
                              context.object) == elle::Status::Error)
         escape("unable to retrieve the object block");
 
+      // XXX[static_cast + assert(dynamic_cast) the Pull's result into
+      //     nucleus::neutron::Object*]
+
       // compute the base in order to seal the block's original state.
-      if (context.object.base.Create(context.object) == elle::Status::Error)
+      if (context.object->base.Create(*context.object) == elle::Status::Error)
         escape("unable to compute the base");
 
       // set the context's state.
@@ -55,7 +58,7 @@ namespace etoile
                           miscellaneous::Abstract&              abstract)
     {
       // generate the abstract based on the object.
-      if (abstract.Create(context.object) == elle::Status::Error)
+      if (abstract.Create(*context.object) == elle::Status::Error)
         escape("unable to generate the abstract");
 
       return elle::Status::Ok;
@@ -127,18 +130,18 @@ namespace etoile
         escape("unable to close the access");
 
       // if the object has been modified i.e is dirty.
-      if (context.object.state == nucleus::proton::StateDirty)
+      if (context.object->state == nucleus::proton::StateDirty)
         {
           // seal the object, depending on the presence of a referenced
           // access block.
-          if (context.object.meta.access != nucleus::proton::Address::Null)
+          if (context.object->meta.access != nucleus::proton::Address::Null)
             {
               // make sure the access block is loaded.
               if (Access::Open(context) == elle::Status::Error)
                 escape("unable to open the access");
 
               // seal the object alone with the access block.
-              if (context.object.Seal(
+              if (context.object->Seal(
                     agent::Agent::Identity.pair.k,
                     *context.access) == elle::Status::Error)
                 escape("unable to seal the object");
@@ -146,7 +149,7 @@ namespace etoile
           else
             {
               // seal the object alone i.e without passing an access block.
-              if (context.object.Seal(
+              if (context.object->Seal(
                     agent::Agent::Identity.pair.k,
                     nucleus::neutron::Access::Null) == elle::Status::Error)
                 escape("unable to seal the object");
@@ -154,7 +157,7 @@ namespace etoile
 
           // mark the block as needing to be stored.
           if (context.transcript.Push(context.location.address,
-                                      &context.object) == elle::Status::Error)
+                                      context.object) == elle::Status::Error)
             escape("unable to record the object for storing");
         }
 

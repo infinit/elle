@@ -36,7 +36,7 @@ namespace etoile
         }
 
       // determine the rights according to the subject.
-      if (agent::Agent::Subject == context.object.owner.subject)
+      if (agent::Agent::Subject == context.object->owner.subject)
         {
           //
           // if the user is the object's owner, retrieve the user's
@@ -47,20 +47,20 @@ namespace etoile
           context.rights.role = nucleus::neutron::RoleOwner;
 
           // set the permissions.
-          context.rights.permissions = context.object.meta.owner.permissions;
+          context.rights.permissions = context.object->meta.owner.permissions;
 
           // if a token is present, decrypt it.
-          if (context.object.meta.owner.token != nucleus::neutron::Token::Null)
+          if (context.object->meta.owner.token != nucleus::neutron::Token::Null)
             {
               // extract the secret key from the token.
-              if (context.object.meta.owner.token.Extract(
+              if (context.object->meta.owner.token.Extract(
                     agent::Agent::Identity.pair.k,
                     context.rights.key) == elle::Status::Error)
                 escape("unable to extract the secret key from the token");
             }
 
           // set the record for ease purpose. XXX I see what you did there
-          context.rights.record = context.object.meta.owner.record;
+          context.rights.record = context.object->meta.owner.record;
           ELLE_LOG_TRACE("Rights have been determined according to the subject record.");
         }
       else

@@ -35,12 +35,13 @@ namespace etoile
 
       // otherwise create a new contents according to the context's type.
       context.contents = new nucleus::proton::Contents<typename T::C>;
+      printf("XXX: no new required\n");
 
       // check if there exists a contents. if so, load the block.
-      if (context.object.data.contents != nucleus::proton::Address::Null)
+      if (context.object->data.contents != nucleus::proton::Address::Null)
         {
           // load the block.
-          if (depot::Depot::Pull(context.object.data.contents,
+          if (depot::Depot::Pull(context.object->data.contents,
                                  nucleus::proton::Version::Any,
                                  *context.contents) == elle::Status::Error)
             escape("unable to load the contents");
@@ -77,11 +78,11 @@ namespace etoile
                           T&                                    context)
     {
       // if a block is referenced by the object, mark it as needing removal.
-      if (context.object.data.contents != nucleus::proton::Address::Null)
+      if (context.object->data.contents != nucleus::proton::Address::Null)
         {
           // mark the content block for removal.
-          if (context.transcript.Wipe(context.object.data.contents) ==
-              elle::Status::Error)
+          if (context.transcript.Wipe(
+                context.object->data.contents) == elle::Status::Error)
             escape("unable to mark the content block for removal");
         }
 
@@ -155,12 +156,12 @@ namespace etoile
             }
 
           // update the object with the null contents address.
-          if (context.object.Update(
+          if (context.object->Update(
                 context.author,
                 nucleus::proton::Address::Null,
                 0,
-                context.object.meta.access,
-                context.object.meta.owner.token) == elle::Status::Error)
+                context.object->meta.access,
+                context.object->meta.owner.token) == elle::Status::Error)
             escape("unable to update the object");
 
           //
@@ -214,12 +215,12 @@ namespace etoile
           context.contents->state = nucleus::proton::StateConsistent;
 
           // update the object.
-          if (context.object.Update(
+          if (context.object->Update(
                 context.author,
                 address,
                 size,
-                context.object.meta.access,
-                context.object.meta.owner.token) == elle::Status::Error)
+                context.object->meta.access,
+                context.object->meta.owner.token) == elle::Status::Error)
             escape("unable to update the object");
 
           // mark the block as needing to be stored.

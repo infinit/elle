@@ -15,7 +15,7 @@ simple_test(testing_tests "" "Tests are working.\n" "")
 add_subdirectory(elle)
 add_subdirectory(nucleus)
 add_subdirectory(surface)
-add_subdirectory(protocol)
+# XXX add_subdirectory(protocol)
 
 ###############################################################################
 add_custom_target(test COMMAND ${CMAKE_CTEST_COMMAND} DEPENDS ${TEST_EXECUTABLES})

@@ -21,6 +21,7 @@ namespace etoile
     Object::Object():
       Context(NatureObject),
 
+      object(nullptr),
       access(nullptr)
     {
       // initialize the rights structure.
@@ -34,6 +35,7 @@ namespace etoile
     Object::Object(const Nature                                 nature):
       Context(nature),
 
+      object(nullptr),
       access(nullptr)
     {
       // initialize the rights structure.
@@ -46,9 +48,8 @@ namespace etoile
     ///
     Object::~Object()
     {
-      // delete the access.
-      if (this->access != nullptr)
-        delete this->access;
+      delete this->object;
+      delete this->access;
     }
 
 //
@@ -73,7 +74,7 @@ namespace etoile
         escape("unable to dump the location");
 
       // dump the object.
-      if (this->object.Dump(margin + 2) == elle::Status::Error)
+      if (this->object->Dump(margin + 2) == elle::Status::Error)
         escape("unable to dump the object");
 
       // dump the access, if present.
