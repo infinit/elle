@@ -32,6 +32,13 @@ namespace plasma
     struct RegisterResponse : Response
     {};
 
+    struct UserResponse : Response
+    {
+      std::string _id;
+      std::string email;
+      std::string public_key;
+    };
+
     struct NetworksResponse : Response
     {
       std::list<std::string> networks;
@@ -132,6 +139,8 @@ namespace plasma
                                  std::string const& fullname,
                                  std::string const& password);
 
+      UserResponse user(std::string const& id);
+
       CreateDeviceResponse create_device(std::string const& name,
                                          std::string const& local_address,
                                          short port);
@@ -140,6 +149,9 @@ namespace plasma
                                          std::string const* name,
                                          std::string const* local_address,
                                          short port);
+
+      NetworkResponse network(std::string const& _id);
+
       NetworksResponse networks();
 
       CreateNetworkResponse create_network(std::string const& name);
@@ -148,6 +160,7 @@ namespace plasma
       void token(std::string const& tok);
       std::string const& token() const;
       std::string const& identity() const;
+      std::string const& email() const;
 
     private:
       template<typename T>

@@ -141,7 +141,7 @@ static void _init_daemon(std::string const& infinit_home)
           std::cerr << "Couldn't connect to " #sig "\n";                      \
       }                                                                       \
 
-    SIG_CONNECT(SIGCHLD);
+    //SIG_CONNECT(SIGCHLD);
     SIG_CONNECT(SIGHUP);
     SIG_CONNECT(SIGTERM);
     SIG_CONNECT(SIGKILL);

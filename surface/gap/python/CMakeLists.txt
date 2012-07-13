@@ -1,15 +1,16 @@
 find_package(Python3Libs)
 
-#XXX on gentoo boost python package has python version suffix
 #find_package(Boost COMPONENTS python3 REQUIRED)
-find_package(Boost QUIET COMPONENTS python3 python-3.2)
+find_package(Boost COMPONENTS python3)
 
-
-#include_directories("/usr/include/python3.2mu")
-#set(PYTHON3_LIBRARIES "python3.2mu")
+if (NOT Boost_PYTHON3_LIBRARY)
+	#XXX on gentoo boost python package has complete python version suffix
+	find_package(Boost COMPONENTS python-3.2)
+endif()
 
 message(STATUS "Python3 libraries: ${PYTHON3_LIBRARIES}")
 message(STATUS "Python3 include directory: ${PYTHON3_INCLUDE_DIR}")
+message(STATUS "Boost python library: ${Boost_PYTHON3_LIBRARY}")
 
 include_directories("${PYTHON3_INCLUDE_DIR}")
 
@@ -19,7 +20,7 @@ list(APPEND gap_srcs pygap.cc)
 add_library(_gap SHARED ${gap_srcs})
 link_directories(${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(_gap
-    elle lune hole metal nucleus infinit
+    elle common lune hole metal nucleus infinit
     ${INFINIT_OPENSSL_SHARED_LIBRARIES}
 	${Boost_LIBRARIES}
 	${PYTHON3_LIBRARIES}

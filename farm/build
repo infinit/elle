@@ -4,6 +4,3 @@ JOBS=8
 
 cd "$DIR_BUILD"
 make -j"$JOBS"
-for b in cryptography ; do
-    make -j"$JOBS" "test-$b"
-done

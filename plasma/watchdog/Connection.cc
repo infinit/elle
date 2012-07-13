@@ -10,7 +10,7 @@ Connection::Connection(QLocalSocketPtr&& socket) :
   QObject(),
   _socket(std::move(socket))
 {
-  this->_socket->setParent(this);
+  //this->_socket->setParent(this);
 }
 
 Connection::~Connection()
@@ -54,4 +54,11 @@ void Connection::_on_ready_read()
       elle::log::debug("Got client command:", QString(line).toStdString());
       this->_cmdback(line);
     }
+}
+
+void Connection::send_data(QByteArray const& data)
+{
+  // XXX async needed here
+  if (this->_socket->write(data) != data.size())
+    throw std::runtime_error("Not written !");
 }

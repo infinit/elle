@@ -8,6 +8,8 @@
 
 #include <elle/log.hh>
 
+#include <common/common.hh>
+
 #include <plasma/common/resources.hh>
 
 #include "LocalServer.hh"
@@ -23,8 +25,8 @@ Application::Application(int ac, char* av[]) :
 
 Application::~Application()
 {
-  //delete this->_server;
-  //this->_server = nullptr;
+  delete this->_server;
+  this->_server = nullptr;
 }
 
 namespace
@@ -57,7 +59,7 @@ namespace
 
 int Application::exec()
 {
-  QDir homeDirectory(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY));
+  QDir homeDirectory(common::infinit_home().c_str());
 
   // Generate new watchdog id
   std::string watchdogId = randString(ASCII, 42);

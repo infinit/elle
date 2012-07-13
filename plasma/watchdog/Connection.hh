@@ -45,6 +45,7 @@ namespace plasma
     public:
       /// Gives to the connection the callback and errback.
       void connect(Cmdback cmdback, Errback errback);
+      void send_data(QByteArray const& data);
 
     private:
       void _raise(std::string const& error);

@@ -97,22 +97,6 @@ extern "C"
       __WRAP_CPP(state, refresh_networks);
     }
 
-    char const* gap_path_to_network(gap_State* state, char const* path)
-    {
-      assert(state != nullptr);
-      assert(path != nullptr);
-      try
-        {
-          std::string const& network = __TO_CPP(state)->path_to_network(path);
-          return network.c_str();
-        }
-      catch (std::exception const& err)
-        {
-          elle::log::warn("Cannot convert path", path, "to network:", err.what());
-        }
-      return nullptr;
-    };
-
     char* gap_hash_password(gap_State* state,
                             char const* email,
                             char const* password)
@@ -163,6 +147,27 @@ extern "C"
           __WRAP_CPP(state, update_device, device_name, true);
         }
       return ret;
+    }
+
+    gap_Status gap_device_status(gap_State* state)
+    {
+      try
+        {
+          if (__TO_CPP(state)->has_device())
+            return gap_ok;
+          else
+            return gap_no_device_error;
+        }
+      catch (surface::gap::Exception const& err)
+        {
+          elle::log::error("Couldn't check the device:", err.what());
+          return err.code;
+        }
+      catch (std::exception const& err)
+        {
+          elle::log::error("Couldn't check the device:", err.what());
+        }
+      return gap_internal_error;
     }
 
     gap_Status gap_set_device_name(gap_State* state,
@@ -227,13 +232,9 @@ extern "C"
       __WRAP_CPP(state, create_network, name);
     }
 
-    gap_Status gap_launch_watchdog(gap_State* state,
-                                   char const* watchdog_path)
+    gap_Status gap_launch_watchdog(gap_State* state)
     {
-      static char const* nil_path = "";
-      if (watchdog_path == nullptr)
-        watchdog_path = nil_path;
-      __WRAP_CPP(state, launch_watchdog, watchdog_path);
+      __WRAP_CPP(state, launch_watchdog);
     }
 
     gap_Status gap_stop_watchdog(gap_State* state)
@@ -241,4 +242,13 @@ extern "C"
       __WRAP_CPP(state, stop_watchdog);
     }
 
+    gap_Status gap_set_permissions(gap_State* state,
+                                   char const* user_id,
+                                   char const* absolute_path,
+                                   int permissions)
+    {
+      assert(user_id != nullptr);
+      assert(absolute_path != nullptr);
+      __WRAP_CPP(state, set_permissions, user_id, absolute_path, permissions);
+    }
 } // ! extern "C"

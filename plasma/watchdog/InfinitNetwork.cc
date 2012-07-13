@@ -3,7 +3,10 @@
 
 #include <QDir>
 
+#include <common/common.hh>
+
 #include <elle/log.hh>
+#include <elle/os/path.hh>
 
 #include <lune/Descriptor.hh>
 #include <lune/Identity.hh>
@@ -36,12 +39,13 @@ InfinitNetwork::InfinitNetwork(Manager& manager,
   , _description(response)
   , _manager(manager)
   , _process()
-  , _infinitHome(QDir(QDir::homePath()).filePath(INFINIT_HOME_DIRECTORY))
-  , _home(
-      QDir(this->_infinitHome.filePath(
-          QString("networks/") + this->_description.name.c_str()
-      ))
-    )
+  , _mount_point{
+      elle::os::path::join(
+        common::infinit_home(),
+        "networks",
+        _description.name,
+        "mnt").c_str()
+  }
 {
   LOG("Creating new network.");
   this->_update();
@@ -49,8 +53,20 @@ InfinitNetwork::InfinitNetwork(Manager& manager,
 
 InfinitNetwork::~InfinitNetwork()
 {
-  this->_process.close();
-  this->_process.waitForFinished();
+  if (this->_process.state() != QProcess::NotRunning)
+    {
+      elle::log::warn("Network ", this->_description.name, "not terminated !");
+    }
+}
+
+std::string InfinitNetwork::mount_point() const
+{
+  return this->_mount_point.path().toStdString();
+}
+
+std::string const& InfinitNetwork::id() const
+{
+  return this->_description._id;
 }
 
 void InfinitNetwork::update(meta::NetworkResponse const& response)
@@ -60,16 +76,30 @@ void InfinitNetwork::update(meta::NetworkResponse const& response)
   this->_update();
 }
 
+void InfinitNetwork::stop()
+{
+  elle::log::debug("Shutting down network", this->_description.name);
+  this->_process.terminate();
+  //this->_process.waitForFinished();
+  elle::log::debug("Done!");
+}
+
 void InfinitNetwork::_update()
 {
   LOG("Starting network update.");
-  if (!this->_home.exists() && !this->_home.mkpath("."))
+  QDir home{
+    elle::os::path::join(
+      common::infinit_home(),
+      "networks",
+      this->_description.name).c_str()
+  };
+  if (!home.exists() && !home.mkpath("."))
       throw std::runtime_error("Cannot create network home");
 
   QString descriptionFilename =
     this->_description.name.c_str() + QString(".dsc");
 
-  if (!this->_home.exists(descriptionFilename))
+  if (!home.exists(descriptionFilename))
     {
       if (!this->_description.descriptor.size())
         return this->_create_network_root_block();
@@ -97,7 +127,6 @@ void InfinitNetwork::_create_network_root_block()
   auto genreDirectory = nucleus::neutron::GenreDirectory;
   auto access         = nucleus::neutron::Access::Null;
 
-  std::cerr << "IDenITY = " << this->_manager.identity() << std::endl;
   if (identity.Restore(this->_manager.identity())             == e ||
       directory.Create(genreDirectory, identity.pair.K)       == e ||
       directory.Seal(identity.pair.k, access)                 == e ||
@@ -110,9 +139,7 @@ void InfinitNetwork::_create_network_root_block()
   elle::io::Unique              rootAddress;
 
   directory.Save(rootBlock);
-  std::cerr << "root block string = " << rootBlock << std::endl;
   address.Save(rootAddress);
-  std::cerr << "root address string = " << rootAddress << std::endl;
 
   this->_manager.meta().UpdateNetwork(
       this->_description._id,
@@ -281,20 +308,15 @@ void InfinitNetwork::_on_any_error(meta::MetaClient::Error error, std::string co
 void InfinitNetwork::_start_process()
 {
   LOG("Starting infinit process");
-  QDir mnt(
-      this->_infinitHome.filePath(
-          QString::fromStdString(
-            "networks/" + this->_description.name + "/mnt"
-          )
-      )
-  );
 
-  if (!mnt.exists() && !mnt.mkpath("."))
+  if (!this->_mount_point.exists() && !_mount_point.mkpath("."))
     throw std::runtime_error(
-        "Cannot create the mount directory '" + mnt.path().toStdString() + "'"
+        "Cannot create the mount directory '" + _mount_point.path().toStdString() + "'"
     );
 
-  QDir home_mnt = QDir(QDir::homePath()).filePath("Infinit");
+  QDir home_mnt{
+      elle::os::path::join(common::home_directory(), "Infinit").c_str()
+  };
 
   if (home_mnt.exists() || home_mnt.mkpath("."))
     {
@@ -303,19 +325,12 @@ void InfinitNetwork::_start_process()
 #ifdef INFINIT_WINDOWS
       link_path += ".lnk";
 #endif
-      if (!QFile(mnt.path()).link(link_path))
+      if (!QFile(this->_mount_point.path()).link(link_path))
         elle::log::warn("Cannot create links to mount points.");
     }
   else
     elle::log::warn("Cannot create mount point directory.");
 
-  QStringList arguments;
-  arguments << "-n" << this->_description.name.c_str()
-            << "-m" << mnt.path();
-
-  LOG("exec: bin/8infinit",
-      "-n", this->_description.name.c_str(),
-      "-m", mnt.path().toStdString());
 
   this->connect(
       &this->_process, SIGNAL(started()),
@@ -332,8 +347,21 @@ void InfinitNetwork::_start_process()
       this, SLOT(_on_process_finished(int, QProcess::ExitStatus))
   );
 
+  LOG("exec:",
+      common::binary_path("8infinit"),
+      "-n", this->_description.name.c_str(),
+      "-m", this->_mount_point.path().toStdString(),
+      "-u", this->_manager.user().c_str()
+  );
+
+  QStringList arguments;
+  arguments << "-n" << this->_description.name.c_str()
+            << "-m" << this->_mount_point.path()
+            << "-u" << this->_manager.user().c_str()
+            ;
+
   this->_process.start(
-      this->_infinitHome.filePath("bin/8infinit"),
+      common::binary_path("8infinit").c_str(),
       arguments
   );
   ::sleep(3);

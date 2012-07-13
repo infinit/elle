@@ -28,6 +28,7 @@ namespace elle { namespace format { namespace json {
           delete (*it);
         _value.clear();
       }
+
       template<typename T> inline void push_back(T const& value);
       inline void push_back(std::unique_ptr<Object>&& value)
         {
@@ -44,6 +45,7 @@ namespace elle { namespace format { namespace json {
 
     public:
       using Object::operator ==;
+      inline Object& operator[] (size_t index) const;
 
       virtual bool operator ==(Object const& other) const
         { return other == *this; }

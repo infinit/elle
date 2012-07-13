@@ -1,0 +1,87 @@
+#!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+
+import argparse
+import os
+import sys
+
+parser = argparse.ArgumentParser(
+    prefix_chars='+-',
+    description="Infinit chmod",
+)
+
+parser.add_argument(
+    "path",
+    help="Path to the file or the directory",
+)
+
+parser.add_argument(
+    "-u", "--user",
+    help="User targetted",
+)
+
+parser.add_argument(
+    "-r",
+    default=0, const=-1, action='store_const',
+    help="Remove read right"
+)
+parser.add_argument(
+    "-w",
+    default=0, const=-1, action='store_const',
+    help="Remove write right"
+)
+parser.add_argument(
+    "-x",
+    default=0, const=-1, action='store_const',
+    help="Remove execute right"
+)
+parser.add_argument(
+    "+r",
+    default=0, const=1, action='store_const',
+    help="Add read right"
+)
+parser.add_argument(
+    "+w",
+    default=0, const=1, action='store_const',
+    help="Add write right"
+)
+parser.add_argument(
+    "+x",
+    default=0, const=1, action='store_const',
+    help="Add execute right"
+)
+
+def main(main, args):
+    path = os.path.abspath(args.path)
+    print("args.path:", path)
+    print("args.user:", args.user)
+
+    # XXX should be set according to current permissions of the targetted user.
+    # if args.r == 1 or (args.r == 0 && current_permissions.r == 1):
+    #   ...
+    permissions = 0
+    if args.r >= 0:
+        permissions |= state.read_perm
+    if args.w >= 0:
+        permissions |= state.write_perm
+    if args.x > 0:
+        permissions |= state.exec_perm
+
+    state.set_permissions(args.user, path, permissions)
+
+if __name__ == '__main__':
+    args = parser.parse_args()
+
+    file_dir = os.path.abspath(os.path.dirname(__file__))
+    sys.path = [
+        os.path.join(file_dir, '..', 'gap', 'python'),
+        os.path.join(file_dir, '..', 'python'),
+    ] + sys.path
+
+    import gap
+    state = gap.State()
+
+    try:
+        main(state, args)
+    except KeyboardInterrupt:
+        del state

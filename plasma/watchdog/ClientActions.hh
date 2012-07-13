@@ -80,6 +80,25 @@ namespace plasma
                                 Client& client,
                                 QVariantMap const& args);
 
+      ///
+      /// Retreive file infos
+      ///  Q : {
+      ///       "command": "status",
+      ///       "_id": "watchdog id",
+      ///  }
+      ///
+      ///  R : {
+      ///       "networks": [
+      ///           {
+      ///               "network_id": "the network id",
+      ///               "mount_point": "/path/to/mount/point",
+      ///           },
+      ///       ],
+      ///  }
+      void _on_status(Connection& conn,
+                      Client& client,
+                      QVariantMap const& args);
+
     };
 
   }

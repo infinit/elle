@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 
 #include <openssl/sha.h>
@@ -16,10 +17,13 @@
 #include <QLocalSocket>
 #include <QProcess>
 
-#include <elle/format/json/all.hh>
+#include <elle/format/json.hh>
 #include <elle/log.hh>
 #include <elle/network/Host.hh>
+#include <elle/os/path.hh>
 #include <elle/serialize/HexadecimalArchive.hh>
+
+#include <common/common.hh>
 
 #include <lune/Dictionary.hh>
 #include <lune/Identity.hh>
@@ -46,42 +50,24 @@ namespace surface
       , code(code)
     {}
 
-    // - Utilities ------------------------------------------------------------
-
-    namespace
-    {
-      std::string getenv(char const* var)
-      {
-        char const* res = ::getenv(var);
-        if (res == nullptr)
-          return "";
-        return res;
-      }
-    }
-
-    // - Network --------------------------------------------------------------
-
-    struct Network
-    {
-      std::string name;
-    };
-
     // - State ----------------------------------------------------------------
 
     State::State()
-      : _infinit_home(getenv("INFINIT_HOME"))
+      : _api(new plasma::meta::Client("127.0.0.1", 12345))
+      , _users()
+      , _files_infos()
       , _networks()
       , _networks_dirty(true)
-      , _api(new plasma::meta::Client("127.0.0.1", 12345))
     {
-      if (this->_infinit_home.empty())
+      std::ifstream identity_file{
+          elle::os::path::join(common::infinit_home(), "identity.wtg")
+      };
+
+      if (identity_file.good())
         {
-          struct passwd *pw = ::getpwuid(::getuid());
-          if (pw == nullptr || pw->pw_dir == nullptr)
-            throw Exception(gap_internal_error, "Cannot get current user");
-          boost::filesystem::path homedir(pw->pw_dir);
-          homedir /= ".config/infinit";
-          this->_infinit_home = homedir.string();
+          std::string token;
+          std::getline(identity_file, token);
+          this->_api->token(token);
         }
     }
 
@@ -100,20 +86,13 @@ namespace surface
       this->_networks_dirty = true;
     }
 
-    std::string const& State::path_to_network(std::string const& path_string)
-    {
-      if (this->_networks_dirty)
-        this->_reload_networks();
-      throw Exception(gap_error, "Cannot find any network for path '" + path_string + "'");
-    }
-
     void State::_reload_networks()
     {
     }
 
     std::string State::_watchdog_id() const // XXX should be cached
     {
-      boost::filesystem::path wtg_id_path(this->_infinit_home);
+      boost::filesystem::path wtg_id_path(common::infinit_home());
       wtg_id_path /= "infinit.wtg";
       std::ifstream file(wtg_id_path.string());
       if (!file.good())
@@ -130,7 +109,8 @@ namespace surface
 
     void
     State::_send_watchdog_cmd(std::string const& cmd,
-                              elle::format::json::Dictionary const* kwargs)
+                              elle::format::json::Dictionary const* kwargs,
+                              elle::format::json::Dictionary* response)
     {
       QLocalSocket conn;
       conn.connectToServer(WATCHDOG_SERVER_NAME);
@@ -145,14 +125,47 @@ namespace surface
           conn.write(req.repr().c_str());
           conn.write("\n");
           if (!conn.waitForBytesWritten(2000))
-              Exception(gap_internal_error, "Couldn't send the command '" + cmd + "'");
+              throw Exception(gap_internal_error,
+                              "Couldn't send the command '" + cmd + "'");
           elle::log::debug("Command sent");
+
+          if (response != nullptr)
+            {
+              if (!conn.waitForReadyRead(2000))
+                throw Exception(gap_internal_error,
+                              "Couldn't read response of '" + cmd + "' command");
+              QByteArray response_data = conn.readLine();
+              std::stringstream ss{
+                  std::string{
+                      response_data.data(),
+                      static_cast<size_t>(response_data.size()),
+                  },
+              };
+              auto ptr = json::Parser<>{}.Parse(ss);
+              response->update(dynamic_cast<json::Dictionary const&>(*ptr));
+            }
         }
       else
         throw Exception(gap_internal_error, "Couldn't connect to the watchdog");
     }
 
-    // XXX no hash occurs
+    User const& State::user(std::string const& id)
+    {
+      auto it = this->_users.find(id);
+      if (it != this->_users.end())
+        return *(it->second);
+
+      auto response = this->_api->user(id);
+      std::unique_ptr<User> user{new User{
+          response._id,
+          response.email,
+          response.public_key,
+      }};
+
+      this->_users[response._id] = user.get();
+      return *(user.release());
+    }
+
     std::string State::hash_password(std::string const& email,
                                      std::string const& password)
     {
@@ -175,6 +188,7 @@ namespace surface
 
     void State::login(std::string const& email, std::string const& password)
     {
+      this->_api->token("");
       auto res = this->_api->login(email, password);
 
       if (!res.success)
@@ -243,17 +257,19 @@ namespace surface
         }
     }
 
+    bool State::has_device() const
+    {
+      return fs::exists(common::passport_path());
+    }
+
     void State::update_device(std::string const& name, bool force_create)
     {
       std::string local_address = detail::get_local_address();
       elle::log::debug("Registering new device", name, "for host:", local_address);
 
-      fs::path passport_path(_infinit_home);
-      passport_path /=  "infinit.ppt";
-
       std::string passport_string;
 
-      if (force_create || !fs::exists(passport_path))
+      if (force_create || !this->has_device())
         {
           auto res = this->_api->create_device(name, local_address, 0);
           if (!res.success)
@@ -291,6 +307,7 @@ namespace surface
     void State::create_network(std::string const& name)
     {
       this->_api->create_network(name);
+      this->_networks_dirty = true;
     }
 
     std::map<std::string, Network*> const& State::networks()
@@ -300,8 +317,13 @@ namespace surface
           auto res = this->_api->networks();
           for (auto const& network_id: res.networks)
             {
-              this->_networks[network_id] = nullptr; //XXX
+              if (this->_networks.find(network_id) == this->_networks.end())
+                {
+                  this->_networks[network_id] =
+                    new Network{this->_api->network(network_id)};
+                }
             }
+          this->_networks_dirty = false;
         }
       return this->_networks;
     }
@@ -312,22 +334,33 @@ namespace surface
       // Waiting for the old server to be stopped
       {
         int tries = 1;
+        int sleep_time = 2;
         do {
-            QLocalSocket conn;
-            conn.connectToServer(WATCHDOG_SERVER_NAME);
-            if (!conn.waitForConnected(2000))
-              break;
-            elle::log::debug("Waiting for the old watchdog to be stopped (", tries, ')');
-            ::sleep(1);
+              {
+                QLocalSocket conn;
+                conn.connectToServer(WATCHDOG_SERVER_NAME);
+                if (!conn.waitForConnected(2000))
+                  break;
+                conn.disconnectFromServer();
+              }
+            elle::log::debug("Waiting", sleep_time,
+                             "secs for the old watchdog to be stopped (", tries, " / 10 )");
+            ::sleep(sleep_time);
+            sleep_time += 2;
         } while (++tries < 10);
 
         if (tries >= 10)
-          elle::log::warn("The old watchdog instance does not stop !");
+          throw Exception(gap_internal_error,
+                          "The old watchdog instance does not stop !");
       }
     }
 
-    void State::launch_watchdog(std::string const& watchdog_path)
+    void State::launch_watchdog()
     {
+      if (!fs::exists(common::passport_path()))
+        throw Exception(gap_no_device_error,
+                        "Cannot start infinit without any local device");
+
       std::string old_watchdog_id;
       try
         {
@@ -339,12 +372,7 @@ namespace surface
           elle::log::warn("Couldn't stop the watchdog:", err.what());
         }
 
-      std::string watchdog_binary;
-      if (watchdog_path.size())
-        watchdog_binary = watchdog_path;
-      else
-        watchdog_binary =
-          fs::path(_infinit_home).append("bin/8watchdog", fs::path::codecvt()).string();
+      std::string watchdog_binary = common::binary_path("8watchdog");
 
       elle::log::info("Launching binary:", watchdog_binary);
       QProcess p;
@@ -394,9 +422,92 @@ namespace surface
           json::Dictionary args;
           args["token"] = this->_api->token();
           args["identity"] = this->_api->identity();
+          args["user"] = this->_api->email();
           this->_send_watchdog_cmd("run", &args);
         }
     }
+
+    /// - File level ----------------------------------------------------------
+
+    FileInfos const& State::file_infos(std::string const& path)
+    {
+      std::string abspath = elle::os::path::absolute(path, true);
+      elle::log::debug("Get file infos of", abspath);
+      auto it = this->_files_infos.find(abspath);
+      if (it != this->_files_infos.end())
+        return *(it->second);
+
+      json::Dictionary request, response;
+      this->_send_watchdog_cmd("status", nullptr, &response);
+
+      auto& networks = response["networks"].as_array();
+
+      std::unique_ptr<FileInfos> infos;
+
+      for (size_t i = 0; i < networks.size(); ++i)
+      {
+        auto& network = networks[i].as_dictionary();
+        std::string mount_point = network["mount_point"].as_string();
+        std::string network_id = network["_id"].as_string();
+        if (boost::algorithm::starts_with(abspath, mount_point))
+          {
+            infos.reset(new FileInfos{
+                mount_point,
+                network_id,
+                abspath,
+                abspath.substr(mount_point.size() + 1),
+            });
+            break;
+          }
+      }
+
+      if (infos.get() == nullptr)
+        throw Exception(gap_error,
+                        "Cannot find network for path '" + abspath + "'");
+
+      this->_files_infos[abspath] = infos.get();
+      return *(infos.release());
+    }
+
+    void State::set_permissions(std::string const& user_id,
+                                std::string const& abspath,
+                                int permissions)
+    {
+      FileInfos const& infos = this->file_infos(abspath);
+      auto it = this->networks().find(infos.network_id);
+
+      if (it == this->networks().end())
+        throw Exception(gap_error, "Wrong network id");
+
+      Network* network = it->second;
+
+      std::string const& access_binary = common::binary_path("8access");
+
+      QStringList arguments;
+      arguments << "--user" << _api->email().c_str()
+                << "--type" << "user"
+                << "--grant"
+                << "--network" << network->name.c_str()
+                << "--path" << infos.relative_path.c_str()
+                << "--identifier" << this->user(user_id).public_key.c_str()
+                ;
+      if (permissions & gap_read)
+        arguments << "--read";
+      if (permissions & gap_write)
+        arguments << "--write";
+
+      elle::log::debug("LAUNCH:", access_binary, arguments.join(" ").toStdString());
+
+      if (permissions & gap_exec)
+        elle::log::warn(
+          "XXX: setting executable permissions not yet implemented");
+
+      QProcess p;
+      if (p.execute(access_binary.c_str(), arguments) < 0)
+        throw Exception(gap_internal_error, "Cannot start the watchdog !");
+    }
+
+
 
   }
 }

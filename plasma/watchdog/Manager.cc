@@ -114,12 +114,9 @@ void Manager::execute_command(ConnectionPtr& conn, QVariantMap const& cmd)
 
 void Manager::stop()
 {
-  std::cerr << "STOPPING\n";
-
-  // XXX couldn't get rid of a double free corruption
+  elle::log::debug("Shutting down the watchdog");
   this->_network_manager->stop();
-  //this->_app.quit();
-  ::exit(EXIT_SUCCESS);
+  this->_app.quit();
 }
 
 void Manager::start(std::string const& watchdogId)

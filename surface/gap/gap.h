@@ -13,6 +13,7 @@ extern "C" {
       gap_network_error = -2,
       gap_internal_error = -3,
       gap_api_error = -4,
+      gap_no_device_error = -5,
     };
 
     /// gap_State is an opaque structure used in every calls.
@@ -31,14 +32,9 @@ extern "C" {
     /// Notify the watchdog that networks has changed.
     gap_Status gap_refresh_networks(gap_State* state);
 
-    /// Retreive a network id from a path. Do not store or free the returned
-    /// pointer. Just copy the string if you plan to use it later.
-    /// Returns NULL on failure.
-    char const* gap_path_to_network(gap_State* state,
-                                    char const* path);
-
     /// Generate a hash for the password.
-    /// NOTE: You are responsible to free the returned pointer with gap_hash_free.
+    /// NOTE: You are responsible to free the returned pointer with
+    /// gap_hash_free.
     char* gap_hash_password(gap_State* state,
                             char const* email,
                             char const* password);
@@ -59,6 +55,9 @@ extern "C" {
                             char const* hash_password,
                             char const* device_name);
 
+    /// Returns the local device status.
+    gap_Status gap_device_status(gap_State* state);
+
     /// Update the local device name.
     gap_Status gap_set_device_name(gap_State* state,
                                    char const* name);
@@ -75,13 +74,25 @@ extern "C" {
                                   char const* name);
 
 
-    /// Launch the watchdog binary. If the given path is NULL, then the default
-    /// binary path will be used.
-    gap_Status gap_launch_watchdog(gap_State* state,
-                                   char const* watchdog_path);
+    /// Launch the watchdog binary.
+    gap_Status gap_launch_watchdog(gap_State* state);
 
     /// Stop the watchdog process.
     gap_Status gap_stop_watchdog(gap_State* state);
+
+    enum gap_Permission
+    {
+      gap_none  = 0,
+      gap_read  = 1,
+      gap_write = 2,
+      gap_exec  = 4,
+    };
+
+    /// Change file permissions for a user.
+    gap_Status gap_set_permissions(gap_State* state,
+                                   char const* user_id,
+                                   char const* absolute_path,
+                                   int permissions);
 
 # ifdef __cplusplus
 } // ! extern "C"

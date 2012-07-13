@@ -1,10 +1,15 @@
-#include <iostream>
+#include <fstream>
 
+#include <elle/format/json.hh>
 #include <elle/log.hh>
+#include <elle/os/path.hh>
+
+#include <common/common.hh>
 
 #include "Client.hh"
 #include "ClientActions.hh"
 #include "Connection.hh"
+#include "InfinitNetwork.hh"
 #include "Manager.hh"
 #include "NetworkManager.hh"
 
@@ -41,6 +46,7 @@ using namespace plasma::watchdog;
 # define REGISTER_ALL()                                                       \
   do {                                                                        \
       REGISTER(refresh_networks);                                             \
+      REGISTER(status);                                                       \
   } while (false)                                                             \
   /**/
 
@@ -62,10 +68,35 @@ void ClientActions::_on_run(Connection& conn,
   CHECK_ID(args);
   QString token = args["token"].toString();
   QString identity = args["identity"].toString();
+  QString user = args["user"].toString();
   if (token.size() > 0 && identity.size() > 0)
     {
       this->_manager.token(token);
       this->_manager.identity(identity);
+      this->_manager.user(user);
+
+      std::ofstream identity_infos{
+          elle::os::path::join(common::infinit_home(), "identity.wtg")
+      };
+
+      if (!identity_infos.good())
+        {
+          elle::log::fatal("Cannot open identity file");
+          std::abort();
+        }
+
+      identity_infos << token.toStdString() << "\n"
+                     << identity.toStdString() << "\n"
+                     << user.toStdString() << "\n"
+                     ;
+
+      if (!identity_infos.good())
+        {
+          elle::log::fatal("Cannot write identity file");
+          std::abort();
+        }
+      identity_infos.close();
+
       this->_manager.refresh_networks();
       UNREGISTER(run);
       REGISTER_ALL();
@@ -90,4 +121,29 @@ void ClientActions::_on_refresh_networks(Connection& conn,
 {
   CHECK_ID(args);
   this->_manager.refresh_networks();
+}
+
+
+void ClientActions::_on_status(Connection& conn,
+                               Client& client,
+                               QVariantMap const& args)
+{
+  namespace json = elle::format::json;
+
+  CHECK_ID(args);
+
+  json::Array networks;
+  for (auto& pair : this->_manager.network_manager().networks())
+    {
+      json::Dictionary network;
+      network["_id"] = pair.first;
+      network["mount_point"] = pair.second->mount_point();
+      network["user"] = this->_manager.user();
+      networks.push_back(network);
+    }
+
+  json::Dictionary response;
+  response["networks"] = networks;
+  elle::log::debug("Response =", response.repr());
+  conn.send_data((response.repr() + "\n").c_str());
 }

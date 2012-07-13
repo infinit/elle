@@ -55,6 +55,13 @@ SERIALIZE_RESPONSE(plasma::meta::LoginResponse, ar, res)
 
 SERIALIZE_RESPONSE(plasma::meta::RegisterResponse, ar, res) {}
 
+SERIALIZE_RESPONSE(plasma::meta::UserResponse, ar, res)
+{
+  ar & named("_id", res._id);
+  ar & named("email", res.email);
+  ar & named("public_key", res.public_key);
+}
+
 SERIALIZE_RESPONSE(plasma::meta::CreateDeviceResponse, ar, res)
 {
   ar & named("created_device_id", res.created_device_id);
@@ -75,6 +82,18 @@ SERIALIZE_RESPONSE(plasma::meta::NetworksResponse, ar, res)
 SERIALIZE_RESPONSE(plasma::meta::CreateNetworkResponse, ar, res)
 {
   ar & named("created_network_id", res.created_network_id);
+}
+
+SERIALIZE_RESPONSE(plasma::meta::NetworkResponse, ar, res)
+{
+  ar & named("_id", res._id);
+  ar & named("name", res.name);
+  ar & named("model", res.model);
+  ar & named("root_block", res.root_block);
+  ar & named("root_address", res.root_address);
+  ar & named("descriptor", res.descriptor);
+  ar & named("devices", res.devices);
+  ar & named("users", res.users);
 }
 
 namespace plasma
@@ -98,6 +117,7 @@ namespace plasma
       short port;
       std::string token;
       std::string identity;
+      std::string email;
     };
 
     // - Ctor & dtor ----------------------------------------------------------
@@ -129,6 +149,7 @@ namespace plasma
         {
           _impl->token = res.token;
           _impl->identity = res.identity;
+          _impl->email = email;
         }
       return res;
     }
@@ -143,6 +164,14 @@ namespace plasma
         {"password", password},
       }};
       return this->_post<RegisterResponse>("/user/register", request);
+    }
+
+    UserResponse
+    Client::user(std::string const& id)
+    {
+      if (id.size() == 0)
+        throw std::runtime_error("Wrong id");
+      return this->_get<UserResponse>("/user/" + id);
     }
 
     CreateDeviceResponse
@@ -185,6 +214,12 @@ namespace plasma
       return this->_get<NetworksResponse>("/networks");
     }
 
+    NetworkResponse
+    Client::network(std::string const& _id)
+    {
+      return this->_get<NetworkResponse>("/network/" + _id);
+    }
+
     CreateNetworkResponse
     Client::create_network(std::string const& name)
     {
@@ -210,6 +245,12 @@ namespace plasma
     Client::identity() const
     {
       return _impl->identity;
+    }
+
+    std::string const&
+    Client::email() const
+    {
+      return _impl->email;
     }
 
     // - Generic http POST and GET --------------------------------------------

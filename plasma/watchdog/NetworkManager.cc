@@ -18,7 +18,8 @@ NetworkManager::NetworkManager(Manager& manager):
 
 void NetworkManager::stop()
 {
-  this->_networks.clear();
+  for (auto& pair : this->_networks)
+      pair.second->stop();
 }
 
 void NetworkManager::update_networks()
@@ -29,6 +30,12 @@ void NetworkManager::update_networks()
       std::bind(&NetworkManager::_on_networks_update, this, _1)
   );
 }
+
+NetworkManager::NetworkMap const& NetworkManager::networks() const
+{
+  return this->_networks;
+}
+
 void NetworkManager::_on_networks_update(meta::NetworksResponse const& response)
 {
   std::set<std::string> visited;
@@ -79,7 +86,10 @@ void NetworkManager::_on_network_update(meta::NetworkResponse const& r)
       );
       if (res.second == false)
         throw std::runtime_error("Out of memory");
+      res.first->second->update(r);
     }
   else
     it->second->update(r);
 }
+
+
