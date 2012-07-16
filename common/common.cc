@@ -9,6 +9,8 @@
 #include <elle/print.hh>
 #include <elle/system/Platform.hh>
 
+#include <elle/idiom/Close.hh>
+
 #include <common/common.hh>
 
 namespace
