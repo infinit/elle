@@ -53,7 +53,7 @@ namespace
     std::stringstream ss(port_string);
     short port;
     ss >> port;
-    if (!ss.good())
+    if (ss.fail())
       throw std::runtime_error{
           "Couldn't retreive the port from '" + port_string + "'"
       };
