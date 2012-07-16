@@ -37,9 +37,9 @@ if __name__ == '__main__':
     EXE_TAG = """\t<executable path="%s" size="%d" md5sum="%s" />"""
     EXE_TAGS = []
 
-    for dir_ in ['bin', 'lib']:
+    for dir_ in ['bin', 'lib', 'python']:
         print("add directory binary : %s" % dir_)
-        add_to_manifest(dir_)    
+        add_to_manifest(dir_)
 
     if total_size > 1000000:
         human_size = "%d Mb" % (total_size / (1024 * 1024))

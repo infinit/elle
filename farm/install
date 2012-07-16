@@ -44,43 +44,6 @@ DIR_INSTALL_CLIENT = "%s/client" % DIR_INSTALL
 shutil.rmtree(DIR_INSTALL_CLIENT, True)
 os.makedirs(DIR_INSTALL_CLIENT)
 
-if which("otool"):
-    def get_deps(arg):
-        deps = cmd('otool', '-L', arg).decode("utf-8")
-        deps = deps.split("\n")[:-1]
-        if not deps:
-            return []
-        return (dep.strip().split(" ")[0] for dep in deps[1:])
-elif which("ldd"):
-    def get_deps(arg):
-        deps = cmd('ldd', arg).decode("utf-8")
-        deps = deps.split('\n')
-        if not deps:
-            return
-        for dep in deps[1:]:
-            dep = dep.strip()
-            if not dep or '=>' not in dep:
-                return
-            yield dep.split('=>')[1].strip().split(' ')[0].strip()
-else:
-    raise Exception("otool or ldd needed")
-
-def ship_libs(binary, dest_dir, type):
-    for dep in get_deps(binary):
-        lib = os.path.basename(dep)
-        path = os.path.dirname(dep)
-        print("try if lib is to add : %s => %s" % (lib, to_add(lib)))
-        if to_add(lib):
-            if (infinit_path.count((dep, "lib")) == 0):
-                print('Add lib : %s to %s' % (dep, dest_dir))
-                infinit_path.append((dep, "lib"))
-            if which("install_name_tool"):
-                if (type == "bin"):
-                    cmd("install_name_tool", "-change", dep, os.path.join("@loader_path/../lib", os.path.basename(dep))  , binary)
-                else:
-                    print("####### INSTALL NAME TOOL FOR : %s" % binary)
-                    cmd("install_name_tool", "-change", dep, os.path.join("@loader_path", os.path.basename(dep))  , binary)
-
 
 def to_add(lib):
 
@@ -120,6 +83,7 @@ def to_add(lib):
             "Foundation",
             "libfuse.so.",
             "libfuse4x",
+            "libutil.so",
         ],
 
         'contains': [
@@ -140,14 +104,13 @@ def to_add(lib):
             "libqjson",
             "libncurses",
             "libreadline",
+            "libpython3",
         ],
         'contains': [
             "libpth.",
             "libz.",
         ]
     }
-
-
     if any(lib.startswith(p) for p in patterns_exclude['startswith']) or \
        any(p in lib for p in patterns_exclude['contains']):
         return False
@@ -160,37 +123,127 @@ def to_add(lib):
 DIR_INSTALL_CLIENT_BIN = os.path.join(DIR_INSTALL_CLIENT, "bin")
 DIR_INSTALL_CLIENT_LIB = os.path.join(DIR_INSTALL_CLIENT, "lib")
 DIR_INSTALL_CLIENT_TEMP = os.path.join(DIR_INSTALL_CLIENT, "temp-app")
-os.makedirs(DIR_INSTALL_CLIENT_BIN)
-os.makedirs(DIR_INSTALL_CLIENT_LIB)
 os.makedirs(DIR_INSTALL_CLIENT_TEMP)
 
-infinit_path = [
+
+if which("otool"):
+    def get_binary_dependencies(arg):
+        deps = cmd('otool', '-L', arg).decode("utf-8")
+        deps = deps.split("\n")[:-1]
+        if not deps:
+            return []
+        return (dep.strip().split(" ")[0] for dep in deps[1:])
+elif which("ldd"):
+    def get_binary_dependencies(arg):
+        deps = cmd('ldd', arg).decode("utf-8")
+        deps = deps.split('\n')
+        if not deps:
+            return
+        for dep in deps[1:]:
+            dep = dep.strip()
+            if not dep or '=>' not in dep:
+                return
+            yield dep.split('=>')[1].strip().split(' ')[0].strip()
+else:
+    raise Exception("otool or ldd needed")
+
+if 'darwin' in sys.platform:
+    if not  which("install_name_tool"):
+        raise Exception("You need install_name_tool !")
+    def patch_binary_for(binary, dependency):
+        relpath = os.path.relpath(
+            dependency,
+            start=os.path.dirname(binary)
+        )
+        cmd(
+            "install_name_tool",
+            "-change", dependency,
+            os.path.join('@loader_path', relpath),
+            binary
+        )
+else:
+    def patch_binary_for(binary, dependency):
+        pass
+
+if 'linux' in sys.platform:
+    if not which("patchelf"):
+        raise Exception("patchelf needed on linux")
+    def patch_binary(binary, lib_dir):
+        reldir = os.path.relpath(lib_dir, start=os.path.dirname(binary))
+        cmd(
+            'patchelf',
+            #'--debug',
+            '--set-rpath', os.path.join('$ORIGIN', reldir),
+            dst
+        )
+else:
+    def patch_binary(binary, lib_dir):
+        pass
+
+
+
+def is_binary(path):
+    if not stat.S_IXUSR & os.stat(src)[stat.ST_MODE]:
+        return False
+    with open(path, 'rb') as f:
+        if f.read(2) == b'#!':
+            return False
+    return True
+
+def fill_dependencies(dependencies, binary_path, kind, indent=1):
+    print('-' * indent, binary_path)
+    node = dependencies.setdefault(binary_path, {})
+    node['kind'] = kind
+    childs = node.setdefault('childs', set())
+    node['is_binary'] = is_binary(binary_path)
+    if not node['is_binary']:
+        return
+    for dependency in get_binary_dependencies(binary_path):
+        #print('-' * indent, dependency)
+        filename = os.path.basename(dependency)
+        if not to_add(filename):
+            #print('-'*indent + '> IGNORE', dependency)
+            continue
+        childs.add(dependency)
+        if dependency not in dependencies:
+            fill_dependencies(dependencies, dependency, 'lib', indent + 1)
+
+infinit_files = [
     ("8infinit", "bin"),
-    ("plasma/watchdog/8watchdog", "bin")
+    ("satellites/access/8access", "bin"),
+    ("plasma/watchdog/8watchdog", "bin"),
+    ("surface/linux/infinit", "bin"),
+    ("surface/linux/8chmod", "bin"),
+    ("surface/gap/libgap.so", "lib"),
+    ("surface/gap/python/_gap.so", "python"),
+    ("surface/gap/python/gap.py", "python"),
 ]
 
-for f in infinit_path:
-    print("################## %s" % f[0])
-    is_bin = (f[1] == "bin")
-    if is_bin:
-        dst = os.path.join(DIR_INSTALL_CLIENT_BIN, os.path.basename(f[0]))
-        if not os.path.exists(dst):
-            shutil.copy(os.path.join(DIR_BUILD, f[0]), dst)
-            cmd('strip', dst)
-    else:
-        dst = os.path.join(DIR_INSTALL_CLIENT_LIB, os.path.basename(f[0]))
-        if not os.path.exists(dst):
-            shutil.copy(f[0], dst)
-            os.chmod(dst,stat.S_IRWXU)
-    print("Ship libs for %s" % dst)
-    ship_libs(dst, DIR_INSTALL_CLIENT_LIB, f[1])
-    if which("patchelf"):
-        print("patchelf for:", dst)
-        os.system("ldd %s" % dst)
-        if (is_bin):
-            cmd('patchelf', '--debug', '--set-rpath', '$ORIGIN/../lib', dst)
-        else:
-            cmd('patchelf', '--debug', '--set-rpath', '$ORIGIN', dst)
+dependencies = {}
+for src_rel, kind in infinit_files:
+    src = os.path.join(DIR_BUILD, src_rel)
+    fill_dependencies(dependencies, src, kind)
+
+for src, node in dependencies.items():
+    dst_dir = os.path.join(DIR_INSTALL_CLIENT, node['kind'])
+    if not os.path.exists(dst_dir):
+        os.makedirs(dst_dir)
+    dst = os.path.join(DIR_INSTALL_CLIENT, node['kind'], os.path.basename(src))
+    shutil.copy(src, dst)
+    if not node['is_binary']:
+        continue
+    os.chmod(dst, stat.S_IRWXU)
+    print("Strip", dst)
+    cmd('strip', dst)
+    patch_binary(dst, DIR_INSTALL_CLIENT_LIB)
+    for child in node['childs']:
+        patch_binary_for(
+            dst,
+            os.path.join(
+                DIR_INSTALL_CLIENT_LIB,
+                os.path.basename(child)
+            )
+        )
 
 infinit_app = os.path.join(DIR_BUILD, "surface/macosx/Infinit.app")
 if os.path.exists(infinit_app):
@@ -235,7 +288,6 @@ if os.path.isdir(os.path.join(DIR_BUILD, "oracle")): # oracle is built
     for f in server_scripts:
         src = os.path.join(DIR_BUILD, "oracle/disciples", f)
         dst = os.path.join(DIR_INSTALL_SERVER, f)
-        print("cpy", src, "->", dst)
         if os.path.isdir(src):
             shutil.copytree(src, dst)
         else:
