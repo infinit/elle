@@ -24,6 +24,7 @@ class Application(object):
         '/network/(.+)',        'Network',
         '/network',             'Network',
         '/networks',            'Network',
+        '/invite',              'Invite',
     )
 
     _views = {
@@ -31,6 +32,7 @@ class Application(object):
         'User': pages.User,
         'Device': pages.Device,
         'Network': pages.Network,
+        'Invite': pages.Invite,
     }
 
     def __init__(self, ip='127.0.0.1', port=12345):

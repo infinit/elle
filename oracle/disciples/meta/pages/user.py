@@ -8,6 +8,28 @@ import metalib
 import pythia
 import json
 
+class Invite(Page):
+
+    def POST(self):
+        if self.data['admin_token'] != conf.ADMIN_TOKEN:
+            return self.error("You're not admin")
+        email = self.data['email'].strip()
+        if database.invitations().find_one({'email': email}):
+            if 'force' not in self.data:
+                return self.error("Already invited!")
+            else:
+                database.invitations().remove({'email': email})
+        self._send_invitation(email)
+        database.invitations().insert({
+            'email': email,
+            'status': 'pending',
+        })
+
+        return self.success()
+
+    def _send_invitation(self, mail):
+        raise NotImplemented()
+
 class User(Page):
     """
     Get self infos

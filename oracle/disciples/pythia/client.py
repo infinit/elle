@@ -3,10 +3,19 @@
 import os
 import json
 import httplib2
-import urllib2
+try:
+    import urllib2
+except:
+    import urllib.request
+    urllib2 = urllib.request
 import urllib
-import poster
-import web
+#import poster
+try:
+    import web
+except:
+    class web:
+        class Forbidden(BaseException): pass
+        class NotFound(BaseException): pass
 
 from pythia.constants import DEFAULT_SERVER
 
@@ -40,7 +49,11 @@ class Client(object):
 
     def post(self, url, params={}, token=None):
         url = self._server + url.lstrip('/')
-        body = urllib.quote(json.dumps(params))
+        try:
+            body = urllib.quote(json.dumps(params))
+        except:
+            body = urllib.parse.quote(json.dumps(params))
+
         client = httplib2.Http()
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -63,7 +76,7 @@ class Client(object):
             return None
 
     def post_multipart(self, url, params, token=None):
-        opener = poster.streaminghttp.register_openers()
+        #opener = poster.streaminghttp.register_openers()
         params['token'] = token or self._session.get('token')
         fields = []
         files = []

@@ -3,6 +3,6 @@
 """Simple meta API client"""
 
 
-from client import Client
-from admin import Admin
-import constants
+from pythia.client import Client
+from pythia.admin import Admin
+import pythia.constants

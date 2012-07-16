@@ -28,10 +28,6 @@ def database(conn=None):
 
 # collections
 _users = None
-_devices = None
-_sessions = None
-_networks = None
-
 def users(conn=None):
     global _users
     if _users is None:
@@ -43,23 +39,33 @@ def users(conn=None):
         )
     return _users
 
+_devices = None
 def devices(conn=None):
     global _devices
     if _devices is None:
         _devices = database(conn)['devices']
     return _devices
 
+_sessions = None
 def sessions(conn=None):
     global _sessions
     if _sessions is None:
         _sessions = database(conn)['sessions']
     return _sessions
 
+_networks = None
 def networks(conn=None):
     global _networks
     if _networks is None:
         _networks = database(conn)['networks']
     return _networks
+
+_invitations = None
+def invitations(conn=None):
+    global _invitations
+    if _invitations is None:
+        _invitations = database(conn)['invitations']
+    return _invitations
 
 # functions
 def byId(collection, _id):
@@ -67,3 +73,4 @@ def byId(collection, _id):
     Get an object from collection `collection' with its id `_id'
     """
     return collection.find_one({'_id': ObjectId(_id)})
+

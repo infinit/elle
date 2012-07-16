@@ -16,5 +16,4 @@ class Admin(Client):
 
     def post(self, url, params={}, token=None):
         params['admin_token'] = ADMIN_TOKEN
-        print "ADMIN POST", params
         return Client.post(self, url, params, token)

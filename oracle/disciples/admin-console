@@ -7,6 +7,7 @@ import os
 import sys
 
 import meta.database
+import pythia
 
 SHELL_INTRO = """
     Administrative console to query infinit services.
@@ -35,7 +36,7 @@ class DatabaseCommands(type):
     def __prepare__(cls, name, bases):
         ns = {}
         ns['_argument_parsers'] = {}
-        for k in ['users', 'devices', 'networks']:
+        for k in ['users', 'devices', 'networks', 'invitations']:
             ns['_argument_parsers'][k] = cls._generate_argument_parser(k)
             ns['do_%s' % k] = cls._make_collection_command(k)
             ns['help_%s' % k] = cls._make_collection_command_help(k)
@@ -103,7 +104,6 @@ class DatabaseCommands(type):
         return command_help
 
 class AdminShell(cmd.Cmd, metaclass=DatabaseCommands):
-
     def __init__(self, args):
         self._connect(args.db_host, args.db_port)
         super(AdminShell, self).__init__()
@@ -122,6 +122,20 @@ class AdminShell(cmd.Cmd, metaclass=DatabaseCommands):
             print("Cannot connect to %s:%d" % (host, port))
         self._update_prompt()
 
+    def do_dbconnect(self, line):
+        """usage: connect host:port
+
+        Connect to (another) database.
+        """
+        host, port = line.strip().split(':')
+        self._connect(host, port)
+
+    def do_invite(self, line):
+        """usage: invite mail
+
+        Invite somebody with its email
+        """
+        pythia.Admin().post('/invite', {'mail': line.strip()})
 
     def default(self, line):
         if line == 'EOF':
