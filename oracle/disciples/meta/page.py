@@ -29,7 +29,7 @@ class Page(object):
     def user(self):
         if self._user is None:
             try:
-                self._user = database.users.find_one({
+                self._user = database.users().find_one({
                     '_id': self.session._user_id
                 })
             except AttributeError:
@@ -46,7 +46,7 @@ class Page(object):
         self.session.kill()
 
     def authenticate(self, email, password):
-        user = database.users.find_one({
+        user = database.users().find_one({
             'email': email,
             'password': self.hashPassword(password)
         })
@@ -58,7 +58,7 @@ class Page(object):
             return False
 
     def registerUser(self, **kwargs):
-        user = database.users.save(kwargs)
+        user = database.users().save(kwargs)
         return user
 
     def requireLoggedIn(self):

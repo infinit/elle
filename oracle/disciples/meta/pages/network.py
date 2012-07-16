@@ -78,13 +78,13 @@ class Network(Page):
         if id is None:
             return self.success({'networks': self.user.get('networks', [])})
         elif _type == "nodes":
-            network = database.byId(database.networks, id)
+            network = database.byId(database.networks(), id)
             res = {
                 "network_id": id,
                 "nodes": [],
             }
             for device_id in network['devices']:
-                device = database.byId(database.devices, device_id)
+                device = database.byId(database.devices(), device_id)
                 if device:
                     for addr_kind in ['local_address', 'extern_address']:
                         addr = device[addr_kind]
@@ -97,7 +97,7 @@ class Network(Page):
 
             return self.success(res)
         else:
-            network = database.networks.find_one({
+            network = database.networks().find_one({
                 '_id': database.ObjectId(id),
                 'owner': self.user['_id'],
             })
@@ -146,10 +146,10 @@ class Network(Page):
             'root_block': None,
             'root_address': None,
         }
-        id = database.networks.insert(network)
+        id = database.networks().insert(network)
         assert id is not None
         self.user.setdefault('networks', []).append(str(id))
-        database.users.save(self.user)
+        database.users().save(self.user)
         return self.success({
             'created_network_id': id
         })
@@ -160,7 +160,7 @@ class Network(Page):
         if str(id) not in self.user['networks']:
             print "user %s has no network %s in his networks" % (self.user['_id'], id), self.user['networks']
             raise web.Forbidden("The network '"+str(id)+"' does not belong to you")
-        to_save = database.networks.find_one({'_id': id})
+        to_save = database.networks().find_one({'_id': id})
         if 'name' in network:
             name = network['name'].strip()
             if not self._checkName(name):
@@ -207,7 +207,7 @@ class Network(Page):
                 traceback.print_exc()
                 return self.error("Unexpected error: " + str(err))
 
-        id = database.networks.save(to_save)
+        id = database.networks().save(to_save)
         res = {
             'updated_network_id': id
         }
@@ -238,7 +238,7 @@ class Network(Page):
             return False
         if user_id == str(self.user['_id']):
             return False
-        return database.users.find_one({
+        return database.users().find_one({
             '_id': database.ObjectId(user_id),
         }) is not None
 
@@ -253,8 +253,8 @@ class Network(Page):
                 'success': False,
                 'error': "The network '%s' was not found" % (id),
             })
-        database.users.save(self.user)
-        database.networks.find_and_modify({
+        database.users().save(self.user)
+        database.networks().find_and_modify({
             '_id': database.ObjectId(id),
             'owner': self.user['_id'], #not required
         }, remove=True)

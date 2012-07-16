@@ -8,6 +8,4 @@ class Root(creosus.Page):
 
     @troll.view.expose
     def index(self):
-        print self.session
-        print self.session.permissions
         return self.render()

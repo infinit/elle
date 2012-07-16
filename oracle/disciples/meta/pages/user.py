@@ -94,9 +94,9 @@ class User(Page):
 
     def _user_public(self, id_or_email):
         if '@' in id_or_email:
-            user = database.users.find_one({'email': id_or_email})
+            user = database.users().find_one({'email': id_or_email})
         else:
-            user = database.byId(database.users, id_or_email)
+            user = database.byId(database.users(), id_or_email)
         if not user:
             return self.error("Couldn't find user for id '%s'" % str(_id))
         return self.success({
@@ -142,7 +142,7 @@ class User(Page):
                 else:
                     user[k] = f
 
-        if not len(errors) and database.users.find_one({'email': user['email']}):
+        if not len(errors) and database.users().find_one({'email': user['email']}):
             errors.append('This email is already registered')
         if len(errors):
             return json.dumps({
@@ -151,7 +151,7 @@ class User(Page):
                 'error': ', '.join(errors),
             })
 
-        user["_id"] = str(database.users.save({}))
+        user["_id"] = str(database.users().save({}))
 
         identity, public_key = metalib.generate_identity(
             user["_id"],

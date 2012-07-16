@@ -68,7 +68,7 @@ class Device(Page):
         if id is None:
             return self.success({'devices': self.user.get('devices', [])})
         else:
-            device = database.devices.find_one({
+            device = database.devices().find_one({
                 '_id': database.ObjectId(id),
                 'owner': self.user['_id'],
             })
@@ -106,7 +106,7 @@ class Device(Page):
             'port': int(device.get('extern_port', to_save['local_address']['port'])),
         }
 
-        id = database.devices.insert(to_save)
+        id = database.devices().insert(to_save)
         assert id is not None
 
         to_save['passport'] = metalib.generate_passport(
@@ -114,11 +114,11 @@ class Device(Page):
             conf.INFINIT_AUTHORITY_PATH,
             conf.INFINIT_AUTHORITY_PASSWORD
         )
-        database.devices.save(to_save)
+        database.devices().save(to_save)
 
         # XXX check unique device ?
         self.user.setdefault('devices', []).append(str(id))
-        database.users.save(self.user)
+        database.users().save(self.user)
         return self.success({
             'created_device_id': str(id),
             'passport': to_save['passport']
@@ -129,7 +129,7 @@ class Device(Page):
         id = device['_id'].strip()
         if not id in self.user['devices']:
             raise web.Forbidden("This network does not belong to you")
-        to_save = database.devices.find_one({
+        to_save = database.devices().find_one({
             '_id': database.ObjectId(id)
         })
         if 'name' in device:
@@ -148,7 +148,7 @@ class Device(Page):
             'port': device.get('extern_port', to_save['local_address']['port']),
         }
 
-        id = database.devices.save(to_save)
+        id = database.devices().save(to_save)
         return self.success({
             'updated_device_id': str(id),
             'passport': to_save['passport'],
@@ -165,8 +165,8 @@ class Device(Page):
                 'success': False,
                 'error': "The device '%s' was not found" % (id),
             })
-        database.users.save(self.user)
-        database.devices.find_and_modify({
+        database.users().save(self.user)
+        database.devices().find_and_modify({
             '_id': database.ObjectId(id),
             'owner': self.user['_id'], #not required
         }, remove=True)

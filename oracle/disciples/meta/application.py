@@ -37,7 +37,7 @@ class Application(object):
         self.ip = ip
         self.port = port
         self.app = web.application(self._urls, self._views)
-        session = Session(self.app, SessionStore(database.sessions))
+        session = Session(self.app, SessionStore(database.sessions()))
         for cls in self._views.itervalues():
             cls.__session__ = session
 
