@@ -1,0 +1,146 @@
+#!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+
+import argparse
+import cmd
+import os
+import sys
+
+import meta.database
+
+SHELL_INTRO = """
+    Administrative console to query infinit services.
+"""
+
+ARGUMENT_PARSER = argparse.ArgumentParser(
+    description=SHELL_INTRO.strip(),
+)
+
+ARGUMENT_PARSER.add_argument(
+    '--db-host',
+    help="Database hostname or ip",
+    default="localhost"
+)
+
+ARGUMENT_PARSER.add_argument(
+    '--db-port',
+    help="Database connection port",
+    default=27017,
+    type=int
+)
+
+class DatabaseCommands(type):
+
+    @classmethod
+    def __prepare__(cls, name, bases):
+        ns = {}
+        ns['_argument_parsers'] = {}
+        for k in ['users', 'devices', 'networks']:
+            ns['_argument_parsers'][k] = cls._generate_argument_parser(k)
+            ns['do_%s' % k] = cls._make_collection_command(k)
+            ns['help_%s' % k] = cls._make_collection_command_help(k)
+        return ns
+
+    @classmethod
+    def _generate_argument_parser(cls, collection):
+        parser = argparse.ArgumentParser(
+            prog=collection,
+            description="Retreive %s from database" % collection,
+            add_help=False,
+        )
+        parser.add_argument(
+            'skip',
+            help="Skip N records",
+            default=0,
+            type=int,
+            nargs='?',
+        )
+        parser.add_argument(
+            'limit',
+            help="Limit result to N records",
+            default=100,
+            type=int,
+            nargs='?',
+        )
+        parser.exit = cls._raise_parser_exception
+        return parser
+
+    class ParseArgumentsException(BaseException):
+        def __init__(self, msg):
+            self.msg = msg
+
+    @classmethod
+    def _raise_parser_exception(cls, status, message):
+        raise cls.ParseArgumentsException(message)
+
+    @classmethod
+    def _make_collection_command(cls, collection):
+        def command(self, line):
+            if self._db_connection is None:
+                print("You have to be connected!")
+                return
+            try:
+                args = self._argument_parsers[collection].parse_args(
+                    line.strip().split()
+                )
+            except cls.ParseArgumentsException as e:
+                print(e.msg.strip())
+                return
+
+            records = getattr(meta.database, collection)(self._db_connection).find(
+                skip=args.skip,
+                limit=args.limit
+            )
+            print(records.count(), "%s found" % collection)
+            for record in records:
+                print(record)
+        return command
+
+    @classmethod
+    def _make_collection_command_help(cls, collection):
+        def command_help(self):
+            self._argument_parsers[collection].print_help()
+        return command_help
+
+class AdminShell(cmd.Cmd, metaclass=DatabaseCommands):
+
+    def __init__(self, args):
+        self._connect(args.db_host, args.db_port)
+        super(AdminShell, self).__init__()
+
+    def _update_prompt(self):
+        status = self._db_connection and "connected" or "not connected"
+        self.prompt = '%s:%d (%s)# ' % (self._db_host, self._db_port, status)
+
+    def _connect(self, host, port):
+        self._db_host = host
+        self._db_port = port
+        self._db_connection = None
+        try:
+            self._db_connection = meta.database.connection(host, port)
+        except:
+            print("Cannot connect to %s:%d" % (host, port))
+        self._update_prompt()
+
+
+    def default(self, line):
+        if line == 'EOF':
+            print('exit')
+            raise KeyboardInterrupt()
+        print("Command not found:", line)
+
+    def emptyline(self):
+        pass
+
+def main(args):
+    shell = AdminShell(args)
+    try:
+        shell.cmdloop(SHELL_INTRO)
+    except KeyboardInterrupt:
+        pass
+    return 0
+
+if __name__ == '__main__':
+    args = ARGUMENT_PARSER.parse_args()
+    sys.exit(main(args))
+
