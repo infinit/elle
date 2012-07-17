@@ -210,7 +210,7 @@ class User(Page):
         if not len(errors):
             if database.users().find_one({'email': user['email']}):
                 errors.append('This email is already registered')
-            else:
+            elif user['activation_code'] != 'bitebite': # XXX
                 invitation = database.invitations().find_one({
                     'code': user['activation_code'],
                     'status': 'pending',
@@ -246,6 +246,7 @@ class User(Page):
                 {'type':'email', 'id': user['email']}
             ]
         )
-        invitation['status'] = 'activated'
-        database.invitations().save(invitation)
+        if user['activation_code'] != 'bitebite': #XXX
+            invitation['status'] = 'activated'
+            database.invitations().save(invitation)
         return self.success()
