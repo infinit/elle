@@ -69,6 +69,9 @@ extern "C" {
     /// Release the pointer returned by gap_networks,
     void gap_networks_free(char** networks);
 
+    /// Get the network name from its id.
+    char const* gap_network_name(gap_State* state, char const* id);
+
     /// Create a new network.
     gap_Status gap_create_network(gap_State* state,
                                   char const* name);

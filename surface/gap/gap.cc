@@ -226,6 +226,25 @@ extern "C"
       ::free(networks);
     }
 
+    char const* gap_network_name(gap_State* state, char const* id)
+    {
+      assert(state != nullptr);
+      assert(id != nullptr);
+      gap_Status ret;
+      try
+        {
+          auto const& networks = __TO_CPP(state)->networks();
+          auto it = networks.find(id);
+          if (it == networks.end())
+            return nullptr;
+          return it->second->name.c_str();
+        }
+      CATCH_ALL(network_name);
+
+      (void) ret;
+      return nullptr;
+    }
+
     gap_Status gap_create_network(gap_State* state,
                                   char const* name)
     {
