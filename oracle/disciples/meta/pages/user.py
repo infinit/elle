@@ -1,17 +1,34 @@
 # -*- encoding: utf-8 -*-
 
+import json
 import web
 
 from meta.page import Page
 from meta import conf, database
 import metalib
 import pythia
-import json
+
+
+INVITATION_SUBJECT = "Invitation to test Infinit !"
+INVITATION_CONTENT = """
+Dear early beta tester,
+
+    This is an official invitation from Infinit, just download it for your
+platform at http://download.infinit.io/ and paste your activation code into the
+registration form.
+
+Activation code: %(activation_code)s
+
+--%(space)s
+The infinit team
+http://infinit.io
+
+""".strip()
 
 class Invite(Page):
 
     def POST(self):
-        if self.data['admin_token'] != conf.ADMIN_TOKEN:
+        if self.data['admin_token'] != pythia.constants.ADMIN_TOKEN:
             return self.error("You're not admin")
         email = self.data['email'].strip()
         if database.invitations().find_one({'email': email}):
@@ -19,16 +36,42 @@ class Invite(Page):
                 return self.error("Already invited!")
             else:
                 database.invitations().remove({'email': email})
-        self._send_invitation(email)
+        code = self._generate_code(email)
+        content = INVITATION_CONTENT % {
+            'activation_code': code,
+            'space': ' ',
+        }
+        self._send_invitation(email, INVITATION_SUBJECT, content)
         database.invitations().insert({
             'email': email,
             'status': 'pending',
+            'code': code,
         })
 
         return self.success()
 
-    def _send_invitation(self, mail):
-        raise NotImplemented()
+    def _generate_code(self, mail):
+        import hashlib
+        import time
+        hash_ = hashlib.md5()
+        hash_.update(mail.encode('utf8') + str(time.time()))
+        return hash_.hexdigest()
+
+    def _send_invitation(self, mail, subject, content):
+        from email.mime.text import MIMEText
+        from email.header import Header
+        #from email.utils import parseaddr, formataddr
+        import smtplib
+        msg = MIMEText(content, _charset='utf8')
+        msg['Subject'] = Header(subject, 'utf8')
+        msg['From'] = Header("Infinit.io <no-reply@infinit.io>", 'utf8')
+        msg['To'] = Header(mail, 'utf8')
+
+        smtp_server = smtplib.SMTP(conf.MANDRILL_SMTP_HOST, conf.MANDRILL_SMTP_PORT)
+        smtp_server.login(conf.MANDRILL_USERNAME, conf.MANDRILL_PASSWORD)
+        smtp_server.sendmail(msg['From'], [msg['To']], msg.as_string())
+        smtp_server.quit()
+
 
 class User(Page):
     """
