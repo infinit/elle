@@ -135,7 +135,7 @@ class AdminShell(cmd.Cmd, metaclass=DatabaseCommands):
 
         Invite somebody with its email
         """
-        pythia.Admin().post('/invite', {'mail': line.strip()})
+        pythia.Admin().post('/invite', {'email': line.strip()})
 
     def default(self, line):
         if line == 'EOF':

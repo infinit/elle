@@ -71,6 +71,8 @@ class Client(object):
             else:
                 raise Exception(content)
         if content:
+            try: content = content.decode('utf8')
+            except: pass
             return json.loads(content)
         else:
             return None
