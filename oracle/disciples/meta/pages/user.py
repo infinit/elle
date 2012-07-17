@@ -144,7 +144,7 @@ class User(Page):
     _validators = {
         'email': web.form.regexp(r".*@.*", "must be a valid email address"),
         'fullname': web.form.regexp(r".{3,90}$", 'fullname must be between 3 and 90 characters'),
-        'password': web.form.regexp(r".{64,64}$", 'password must be between 3 and 20 characters'), #XXX min password size
+        'password': web.form.regexp(r".{3,90}$", 'password must be between 3 and 90 characters'), #XXX min password size
     }
 
     def _register(self):
