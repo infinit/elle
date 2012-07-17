@@ -133,7 +133,7 @@ extern "C"
 
     gap_Status gap_logout(gap_State* state)
     {
-      __WRAP_CPP(state);
+      __WRAP_CPP(state, logout);
     }
 
     gap_Status gap_register(gap_State* state,
