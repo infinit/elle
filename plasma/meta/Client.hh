@@ -29,6 +29,9 @@ namespace plasma
       std::string  identity;
     };
 
+    struct LogoutResponse : Response
+    {};
+
     struct RegisterResponse : Response
     {};
 
@@ -134,6 +137,8 @@ namespace plasma
     public:
       LoginResponse login(std::string const& email,
                           std::string const& password);
+
+      LogoutResponse logout();
 
       RegisterResponse register_(std::string const& email,
                                  std::string const& fullname,

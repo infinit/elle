@@ -59,6 +59,7 @@ namespace surface
     public:
       void login(std::string const& email,
                  std::string const& password);
+      void logout();
       std::string hash_password(std::string const& email,
                                 std::string const& password);
       void register_(std::string const& fullname,

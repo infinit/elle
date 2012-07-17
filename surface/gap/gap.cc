@@ -131,6 +131,11 @@ extern "C"
       __WRAP_CPP(state, login, email, password);
     }
 
+    gap_Status gap_logout(gap_State* state)
+    {
+      __WRAP_CPP(state);
+    }
+
     gap_Status gap_register(gap_State* state,
                             char const* fullname,
                             char const* email,

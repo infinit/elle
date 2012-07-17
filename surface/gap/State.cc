@@ -224,6 +224,11 @@ namespace surface
         }
     }
 
+    void State::logout()
+    {
+      this->_api->logout();
+    }
+
     void State::register_(std::string const& fullname,
                           std::string const& email,
                           std::string const& password,
@@ -364,6 +369,7 @@ namespace surface
           throw Exception(gap_internal_error,
                           "The old watchdog instance does not stop !");
       }
+      this->logout();
     }
 
     void State::launch_watchdog()

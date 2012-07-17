@@ -47,6 +47,9 @@ extern "C" {
                          char const* email,
                          char const* hash_password);
 
+    /// Logout from meta.
+    gap_Status gap_logout(gap_State* state);
+
     /// Register to meta. If the device name is not NULL, it will also create
     /// the local device with specified name. password ha
     gap_Status gap_register(gap_State* state,

@@ -53,6 +53,7 @@ SERIALIZE_RESPONSE(plasma::meta::LoginResponse, ar, res)
   ar & named("identity", res.identity);
 }
 
+SERIALIZE_RESPONSE(plasma::meta::LogoutResponse, ar, res) {}
 SERIALIZE_RESPONSE(plasma::meta::RegisterResponse, ar, res) {}
 
 SERIALIZE_RESPONSE(plasma::meta::UserResponse, ar, res)
@@ -150,6 +151,20 @@ namespace plasma
           _impl->token = res.token;
           _impl->identity = res.identity;
           _impl->email = email;
+        }
+      return res;
+    }
+
+    LogoutResponse
+    Client::logout()
+    {
+      json::Dictionary request;
+      auto res = this->_post<LogoutResponse>("/user/logout", request);
+      if (res.success)
+        {
+          _impl->token = "";
+          _impl->identity = "";
+          _impl->email = "";
         }
       return res;
     }
