@@ -12,12 +12,41 @@
 		1C045BC8159CAA7900162909 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C045BC7159CAA7900162909 /* main.m */; };
 		1C045BCC159CAA7900162909 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 1C045BCA159CAA7900162909 /* Credits.rtf */; };
 		1C045BCF159CAA7900162909 /* OOAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C045BCE159CAA7900162909 /* OOAppDelegate.m */; };
-		1C045BD2159CAA7900162909 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C045BD0159CAA7900162909 /* MainMenu.xib */; };
+		1C045BD2159CAA7900162909 /* OOBrowserWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C045BD0159CAA7900162909 /* OOBrowserWindow.xib */; };
 		1C045BDA159CAA7900162909 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C045BD9159CAA7900162909 /* SenTestingKit.framework */; };
 		1C045BDB159CAA7900162909 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C045BBB159CAA7900162909 /* Cocoa.framework */; };
 		1C045BE3159CAA7900162909 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1C045BE1159CAA7900162909 /* InfoPlist.strings */; };
 		1C045BE6159CAA7900162909 /* FinderPanelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C045BE5159CAA7900162909 /* FinderPanelTests.m */; };
 		1C045C10159D990B00162909 /* OOBrowserWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C045C0F159D990A00162909 /* OOBrowserWindowController.m */; };
+		1C30B5B215B56A280056A382 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C045BBB159CAA7900162909 /* Cocoa.framework */; };
+		1C30B5B815B56A280056A382 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1C30B5B615B56A280056A382 /* InfoPlist.strings */; };
+		1C30B5C015B56A490056A382 /* OONetworkBrowserViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C9451A415A5A5E400370E90 /* OONetworkBrowserViewManager.m */; };
+		1C30B5C115B56A490056A382 /* OONetworkBrowserBackgroundLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C94519E15A5A5E400370E90 /* OONetworkBrowserBackgroundLayer.m */; };
+		1C30B5C215B56A490056A382 /* OONetworkBrowserView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C9451A215A5A5E400370E90 /* OONetworkBrowserView.m */; };
+		1C30B5C315B56A490056A382 /* OONetworkBrowserCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C9451A015A5A5E400370E90 /* OONetworkBrowserCell.m */; };
+		1C30B5C415B56A490056A382 /* OOUserBrowserViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CE2BA7415A437D400A58E68 /* OOUserBrowserViewManager.m */; };
+		1C30B5C515B56A490056A382 /* OOUserBrowserBackgroundLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C90972B15A2F077002F0B1E /* OOUserBrowserBackgroundLayer.m */; };
+		1C30B5C615B56A490056A382 /* OOUserBrowserView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CBD903615A1987D00D03CBD /* OOUserBrowserView.m */; };
+		1C30B5C715B56A490056A382 /* OOUserBrowserCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CBD903915A1997100D03CBD /* OOUserBrowserCell.m */; };
+		1C30B5C815B56A490056A382 /* OONetworkModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB8E5CB15A5A13C00DCA443 /* OONetworkModel.m */; };
+		1C30B5C915B56A490056A382 /* OOUserModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C90973B15A43630002F0B1E /* OOUserModel.m */; };
+		1C30B5CA15B56A490056A382 /* OOBrowserWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB4E8C215AC380900CEA998 /* OOBrowserWindow.m */; };
+		1C30B5CB15B56A490056A382 /* OOBrowserWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C045C0F159D990A00162909 /* OOBrowserWindowController.m */; };
+		1C30B5CC15B56A490056A382 /* OOBrowserUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C90972F15A2F0C1002F0B1E /* OOBrowserUtilities.m */; };
+		1C30B5D315B56A890056A382 /* OOBrowserWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CB4E8C115AC380900CEA998 /* OOBrowserWindow.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1C30B5D415B56A890056A382 /* OOBrowserWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C045C0E159D990A00162909 /* OOBrowserWindowController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1C30B5D515B56F7C0056A382 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CBD903B15A1CF0400D03CBD /* Quartz.framework */; };
+		1C30B5D615B570C20056A382 /* OONetworkBrowserViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C9451A315A5A5E400370E90 /* OONetworkBrowserViewManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1C30B5D715B570C20056A382 /* OONetworkBrowserBackgroundLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C94519D15A5A5E400370E90 /* OONetworkBrowserBackgroundLayer.h */; };
+		1C30B5D815B570C20056A382 /* OONetworkBrowserView.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C9451A115A5A5E400370E90 /* OONetworkBrowserView.h */; };
+		1C30B5D915B570C20056A382 /* OONetworkBrowserCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C94519F15A5A5E400370E90 /* OONetworkBrowserCell.h */; };
+		1C30B5DA15B570C20056A382 /* OOUserBrowserViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CE2BA7315A437D400A58E68 /* OOUserBrowserViewManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1C30B5DB15B570C20056A382 /* OOUserBrowserBackgroundLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C90972A15A2F077002F0B1E /* OOUserBrowserBackgroundLayer.h */; };
+		1C30B5DC15B570C20056A382 /* OOUserBrowserView.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CBD903515A1987D00D03CBD /* OOUserBrowserView.h */; };
+		1C30B5DD15B570C20056A382 /* OOUserBrowserCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CBD903815A1997100D03CBD /* OOUserBrowserCell.h */; };
+		1C30B5DE15B570C20056A382 /* OONetworkModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CB8E5CA15A5A13C00DCA443 /* OONetworkModel.h */; };
+		1C30B5DF15B570C20056A382 /* OOUserModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C90973A15A43630002F0B1E /* OOUserModel.h */; };
+		1C30B5E015B570C20056A382 /* OOBrowserUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C90972E15A2F0C1002F0B1E /* OOBrowserUtilities.h */; };
 		1C90972C15A2F077002F0B1E /* OOUserBrowserBackgroundLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C90972B15A2F077002F0B1E /* OOUserBrowserBackgroundLayer.m */; };
 		1C90973015A2F0C1002F0B1E /* OOBrowserUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C90972F15A2F0C1002F0B1E /* OOBrowserUtilities.m */; };
 		1C90973315A2F6F7002F0B1E /* handmadepaper.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C90973215A2F6F7002F0B1E /* handmadepaper.png */; };
@@ -28,6 +57,7 @@
 		1C9451A615A5A5E400370E90 /* OONetworkBrowserCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C9451A015A5A5E400370E90 /* OONetworkBrowserCell.m */; };
 		1C9451A715A5A5E400370E90 /* OONetworkBrowserView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C9451A215A5A5E400370E90 /* OONetworkBrowserView.m */; };
 		1C9451A815A5A5E400370E90 /* OONetworkBrowserViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C9451A415A5A5E400370E90 /* OONetworkBrowserViewManager.m */; };
+		1CB4E8C415AC380900CEA998 /* OOBrowserWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB4E8C215AC380900CEA998 /* OOBrowserWindow.m */; };
 		1CB8E5CC15A5A13C00DCA443 /* OONetworkModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB8E5CB15A5A13C00DCA443 /* OONetworkModel.m */; };
 		1CBD903715A1987D00D03CBD /* OOUserBrowserView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CBD903615A1987D00D03CBD /* OOUserBrowserView.m */; };
 		1CBD903A15A1997100D03CBD /* OOUserBrowserCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CBD903915A1997100D03CBD /* OOUserBrowserCell.m */; };
@@ -46,7 +76,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1C045BB7159CAA7900162909 /* FinderPanel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FinderPanel.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C045BB7159CAA7900162909 /* FinderPanel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = FinderPanel.app; path = FinderPanelApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C045BBB159CAA7900162909 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		1C045BBE159CAA7900162909 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		1C045BBF159CAA7900162909 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -58,7 +88,7 @@
 		1C045BCB159CAA7900162909 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
 		1C045BCD159CAA7900162909 /* OOAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OOAppDelegate.h; sourceTree = "<group>"; };
 		1C045BCE159CAA7900162909 /* OOAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OOAppDelegate.m; sourceTree = "<group>"; };
-		1C045BD1159CAA7900162909 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		1C045BD1159CAA7900162909 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/OOBrowserWindow.xib; sourceTree = "<group>"; };
 		1C045BD8159CAA7900162909 /* FinderPanelTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FinderPanelTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C045BD9159CAA7900162909 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		1C045BE0159CAA7900162909 /* FinderPanelTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "FinderPanelTests-Info.plist"; sourceTree = "<group>"; };
@@ -67,6 +97,12 @@
 		1C045BE5159CAA7900162909 /* FinderPanelTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FinderPanelTests.m; sourceTree = "<group>"; };
 		1C045C0E159D990A00162909 /* OOBrowserWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOBrowserWindowController.h; sourceTree = "<group>"; };
 		1C045C0F159D990A00162909 /* OOBrowserWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOBrowserWindowController.m; sourceTree = "<group>"; };
+		1C30B5B115B56A280056A382 /* FinderPanel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FinderPanel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C30B5B515B56A280056A382 /* FinderPanel-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "FinderPanel-Info.plist"; sourceTree = "<group>"; };
+		1C30B5B715B56A280056A382 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1C30B5B915B56A280056A382 /* FinderPanel-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FinderPanel-Prefix.pch"; sourceTree = "<group>"; };
+		1C30B5BA15B56A280056A382 /* FinderPanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FinderPanel.h; sourceTree = "<group>"; };
+		1C30B5BB15B56A280056A382 /* FinderPanel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FinderPanel.m; sourceTree = "<group>"; };
 		1C90972A15A2F077002F0B1E /* OOUserBrowserBackgroundLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOUserBrowserBackgroundLayer.h; sourceTree = "<group>"; };
 		1C90972B15A2F077002F0B1E /* OOUserBrowserBackgroundLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOUserBrowserBackgroundLayer.m; sourceTree = "<group>"; };
 		1C90972E15A2F0C1002F0B1E /* OOBrowserUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOBrowserUtilities.h; sourceTree = "<group>"; };
@@ -84,6 +120,8 @@
 		1C9451A215A5A5E400370E90 /* OONetworkBrowserView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OONetworkBrowserView.m; sourceTree = "<group>"; };
 		1C9451A315A5A5E400370E90 /* OONetworkBrowserViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OONetworkBrowserViewManager.h; sourceTree = "<group>"; };
 		1C9451A415A5A5E400370E90 /* OONetworkBrowserViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OONetworkBrowserViewManager.m; sourceTree = "<group>"; };
+		1CB4E8C115AC380900CEA998 /* OOBrowserWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOBrowserWindow.h; sourceTree = "<group>"; };
+		1CB4E8C215AC380900CEA998 /* OOBrowserWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOBrowserWindow.m; sourceTree = "<group>"; };
 		1CB8E5CA15A5A13C00DCA443 /* OONetworkModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OONetworkModel.h; sourceTree = "<group>"; };
 		1CB8E5CB15A5A13C00DCA443 /* OONetworkModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OONetworkModel.m; sourceTree = "<group>"; };
 		1CBD903515A1987D00D03CBD /* OOUserBrowserView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOUserBrowserView.h; sourceTree = "<group>"; };
@@ -114,6 +152,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1C30B5AD15B56A280056A382 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C30B5D515B56F7C0056A382 /* Quartz.framework in Frameworks */,
+				1C30B5B215B56A280056A382 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -121,6 +168,7 @@
 			isa = PBXGroup;
 			children = (
 				1C045BC1159CAA7900162909 /* FinderPanel */,
+				1C30B5B315B56A280056A382 /* FinderPanel */,
 				1C045BDE159CAA7900162909 /* FinderPanelTests */,
 				1C045BBA159CAA7900162909 /* Frameworks */,
 				1C045BB8159CAA7900162909 /* Products */,
@@ -132,6 +180,7 @@
 			children = (
 				1C045BB7159CAA7900162909 /* FinderPanel.app */,
 				1C045BD8159CAA7900162909 /* FinderPanelTests.octest */,
+				1C30B5B115B56A280056A382 /* FinderPanel.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -164,14 +213,14 @@
 				1C90973915A435C5002F0B1E /* model */,
 				1CE2BA7B15A43C8C00A58E68 /* window */,
 				1C90973115A2F6D4002F0B1E /* ressources */,
-				1C045BC2159CAA7900162909 /* Supporting Files */,
+				1C045BC2159CAA7900162909 /* App Supporting Files */,
 				1C90972E15A2F0C1002F0B1E /* OOBrowserUtilities.h */,
 				1C90972F15A2F0C1002F0B1E /* OOBrowserUtilities.m */,
 			);
 			path = FinderPanel;
 			sourceTree = "<group>";
 		};
-		1C045BC2159CAA7900162909 /* Supporting Files */ = {
+		1C045BC2159CAA7900162909 /* App Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
 				1C045BC3159CAA7900162909 /* FinderPanel-Info.plist */,
@@ -180,7 +229,7 @@
 				1C045BC9159CAA7900162909 /* FinderPanel-Prefix.pch */,
 				1C045BCA159CAA7900162909 /* Credits.rtf */,
 			);
-			name = "Supporting Files";
+			name = "App Supporting Files";
 			sourceTree = "<group>";
 		};
 		1C045BDE159CAA7900162909 /* FinderPanelTests */ = {
@@ -198,6 +247,26 @@
 			children = (
 				1C045BE0159CAA7900162909 /* FinderPanelTests-Info.plist */,
 				1C045BE1159CAA7900162909 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		1C30B5B315B56A280056A382 /* FinderPanel */ = {
+			isa = PBXGroup;
+			children = (
+				1C30B5BA15B56A280056A382 /* FinderPanel.h */,
+				1C30B5BB15B56A280056A382 /* FinderPanel.m */,
+				1C30B5B415B56A280056A382 /* Supporting Files */,
+			);
+			path = FinderPanel;
+			sourceTree = "<group>";
+		};
+		1C30B5B415B56A280056A382 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				1C30B5B515B56A280056A382 /* FinderPanel-Info.plist */,
+				1C30B5B615B56A280056A382 /* InfoPlist.strings */,
+				1C30B5B915B56A280056A382 /* FinderPanel-Prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -283,19 +352,44 @@
 			children = (
 				1C045BCD159CAA7900162909 /* OOAppDelegate.h */,
 				1C045BCE159CAA7900162909 /* OOAppDelegate.m */,
+				1CB4E8C115AC380900CEA998 /* OOBrowserWindow.h */,
+				1CB4E8C215AC380900CEA998 /* OOBrowserWindow.m */,
 				1C045C0E159D990A00162909 /* OOBrowserWindowController.h */,
 				1C045C0F159D990A00162909 /* OOBrowserWindowController.m */,
-				1C045BD0159CAA7900162909 /* MainMenu.xib */,
+				1C045BD0159CAA7900162909 /* OOBrowserWindow.xib */,
 			);
 			name = window;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		1C30B5AE15B56A280056A382 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C30B5D315B56A890056A382 /* OOBrowserWindow.h in Headers */,
+				1C30B5D415B56A890056A382 /* OOBrowserWindowController.h in Headers */,
+				1C30B5D615B570C20056A382 /* OONetworkBrowserViewManager.h in Headers */,
+				1C30B5DA15B570C20056A382 /* OOUserBrowserViewManager.h in Headers */,
+				1C30B5D715B570C20056A382 /* OONetworkBrowserBackgroundLayer.h in Headers */,
+				1C30B5D815B570C20056A382 /* OONetworkBrowserView.h in Headers */,
+				1C30B5D915B570C20056A382 /* OONetworkBrowserCell.h in Headers */,
+				1C30B5DB15B570C20056A382 /* OOUserBrowserBackgroundLayer.h in Headers */,
+				1C30B5DC15B570C20056A382 /* OOUserBrowserView.h in Headers */,
+				1C30B5DD15B570C20056A382 /* OOUserBrowserCell.h in Headers */,
+				1C30B5DE15B570C20056A382 /* OONetworkModel.h in Headers */,
+				1C30B5DF15B570C20056A382 /* OOUserModel.h in Headers */,
+				1C30B5E015B570C20056A382 /* OOBrowserUtilities.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
-		1C045BB6159CAA7900162909 /* FinderPanel */ = {
+		1C045BB6159CAA7900162909 /* FinderPanelApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1C045BE9159CAA7900162909 /* Build configuration list for PBXNativeTarget "FinderPanel" */;
+			buildConfigurationList = 1C045BE9159CAA7900162909 /* Build configuration list for PBXNativeTarget "FinderPanelApp" */;
 			buildPhases = (
 				1C045BB3159CAA7900162909 /* Sources */,
 				1C045BB4159CAA7900162909 /* Frameworks */,
@@ -305,7 +399,7 @@
 			);
 			dependencies = (
 			);
-			name = FinderPanel;
+			name = FinderPanelApp;
 			productName = FinderPanel;
 			productReference = 1C045BB7159CAA7900162909 /* FinderPanel.app */;
 			productType = "com.apple.product-type.application";
@@ -329,6 +423,24 @@
 			productReference = 1C045BD8159CAA7900162909 /* FinderPanelTests.octest */;
 			productType = "com.apple.product-type.bundle";
 		};
+		1C30B5B015B56A280056A382 /* FinderPanel */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1C30B5BD15B56A280056A382 /* Build configuration list for PBXNativeTarget "FinderPanel" */;
+			buildPhases = (
+				1C30B5AC15B56A280056A382 /* Sources */,
+				1C30B5AD15B56A280056A382 /* Frameworks */,
+				1C30B5AE15B56A280056A382 /* Headers */,
+				1C30B5AF15B56A280056A382 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FinderPanel;
+			productName = FinderPanel;
+			productReference = 1C30B5B115B56A280056A382 /* FinderPanel.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -350,8 +462,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1C045BB6159CAA7900162909 /* FinderPanel */,
+				1C045BB6159CAA7900162909 /* FinderPanelApp */,
 				1C045BD7159CAA7900162909 /* FinderPanelTests */,
+				1C30B5B015B56A280056A382 /* FinderPanel */,
 			);
 		};
 /* End PBXProject section */
@@ -363,7 +476,7 @@
 			files = (
 				1C045BC6159CAA7900162909 /* InfoPlist.strings in Resources */,
 				1C045BCC159CAA7900162909 /* Credits.rtf in Resources */,
-				1C045BD2159CAA7900162909 /* MainMenu.xib in Resources */,
+				1C045BD2159CAA7900162909 /* OOBrowserWindow.xib in Resources */,
 				1C90973315A2F6F7002F0B1E /* handmadepaper.png in Resources */,
 				1C90973515A2F8DE002F0B1E /* pin.tiff in Resources */,
 				1C90973715A2F8E6002F0B1E /* glossy.png in Resources */,
@@ -375,6 +488,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				1C045BE3159CAA7900162909 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1C30B5AF15B56A280056A382 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C30B5B815B56A280056A382 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -415,6 +536,7 @@
 				1C9451A615A5A5E400370E90 /* OONetworkBrowserCell.m in Sources */,
 				1C9451A715A5A5E400370E90 /* OONetworkBrowserView.m in Sources */,
 				1C9451A815A5A5E400370E90 /* OONetworkBrowserViewManager.m in Sources */,
+				1CB4E8C415AC380900CEA998 /* OOBrowserWindow.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -426,12 +548,32 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1C30B5AC15B56A280056A382 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C30B5C015B56A490056A382 /* OONetworkBrowserViewManager.m in Sources */,
+				1C30B5C115B56A490056A382 /* OONetworkBrowserBackgroundLayer.m in Sources */,
+				1C30B5C215B56A490056A382 /* OONetworkBrowserView.m in Sources */,
+				1C30B5C315B56A490056A382 /* OONetworkBrowserCell.m in Sources */,
+				1C30B5C415B56A490056A382 /* OOUserBrowserViewManager.m in Sources */,
+				1C30B5C515B56A490056A382 /* OOUserBrowserBackgroundLayer.m in Sources */,
+				1C30B5C615B56A490056A382 /* OOUserBrowserView.m in Sources */,
+				1C30B5C715B56A490056A382 /* OOUserBrowserCell.m in Sources */,
+				1C30B5C815B56A490056A382 /* OONetworkModel.m in Sources */,
+				1C30B5C915B56A490056A382 /* OOUserModel.m in Sources */,
+				1C30B5CA15B56A490056A382 /* OOBrowserWindow.m in Sources */,
+				1C30B5CB15B56A490056A382 /* OOBrowserWindowController.m in Sources */,
+				1C30B5CC15B56A490056A382 /* OOBrowserUtilities.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
 		1C045BDD159CAA7900162909 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1C045BB6159CAA7900162909 /* FinderPanel */;
+			target = 1C045BB6159CAA7900162909 /* FinderPanelApp */;
 			targetProxy = 1C045BDC159CAA7900162909 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -453,18 +595,26 @@
 			name = Credits.rtf;
 			sourceTree = "<group>";
 		};
-		1C045BD0159CAA7900162909 /* MainMenu.xib */ = {
+		1C045BD0159CAA7900162909 /* OOBrowserWindow.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				1C045BD1159CAA7900162909 /* en */,
 			);
-			name = MainMenu.xib;
+			name = OOBrowserWindow.xib;
 			sourceTree = "<group>";
 		};
 		1C045BE1159CAA7900162909 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
 				1C045BE2159CAA7900162909 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		1C30B5B615B56A280056A382 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1C30B5B715B56A280056A382 /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -569,6 +719,34 @@
 			};
 			name = Release;
 		};
+		1C30B5BE15B56A280056A382 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "FinderPanel/FinderPanel-Prefix.pch";
+				INFOPLIST_FILE = "FinderPanel/FinderPanel-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Debug;
+		};
+		1C30B5BF15B56A280056A382 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "FinderPanel/FinderPanel-Prefix.pch";
+				INFOPLIST_FILE = "FinderPanel/FinderPanel-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -581,7 +759,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1C045BE9159CAA7900162909 /* Build configuration list for PBXNativeTarget "FinderPanel" */ = {
+		1C045BE9159CAA7900162909 /* Build configuration list for PBXNativeTarget "FinderPanelApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1C045BEA159CAA7900162909 /* Debug */,
@@ -595,6 +773,15 @@
 			buildConfigurations = (
 				1C045BED159CAA7900162909 /* Debug */,
 				1C045BEE159CAA7900162909 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1C30B5BD15B56A280056A382 /* Build configuration list for PBXNativeTarget "FinderPanel" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1C30B5BE15B56A280056A382 /* Debug */,
+				1C30B5BF15B56A280056A382 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

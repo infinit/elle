@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <Quartz/Quartz.h>
 
-@interface OOUserModel : NSObject
+@interface OOUserModel : NSObject <NSCoding, NSPasteboardWriting, NSPasteboardReading> 
 {
     NSString* uid;
     NSImage* image; 

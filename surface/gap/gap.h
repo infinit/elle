@@ -6,7 +6,7 @@ extern "C" {
 # endif
 
     /// Status returned from gap calls.
-    enum gap_Status
+    typedef enum gap_Status
     {
       gap_ok = 0,
       gap_error = -1,
@@ -14,7 +14,7 @@ extern "C" {
       gap_internal_error = -3,
       gap_api_error = -4,
       gap_no_device_error = -5,
-    };
+    } gap_Status;
 
     /// gap_State is an opaque structure used in every calls.
     typedef void gap_State;

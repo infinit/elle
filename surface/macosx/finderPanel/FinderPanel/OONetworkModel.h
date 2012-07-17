@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <Quartz/Quartz.h>
 
-@interface OONetworkModel : NSObject
+@interface OONetworkModel : NSObject <NSCoding, NSPasteboardWriting, NSPasteboardReading> 
 {
     NSString* uid;
     NSImage* image; 

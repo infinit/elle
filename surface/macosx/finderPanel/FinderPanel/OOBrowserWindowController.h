@@ -1,7 +1,7 @@
 #import <Quartz/Quartz.h>
 #import <Cocoa/Cocoa.h>
-#import "OOUserBrowserViewManager.h"
 #import "OONetworkBrowserViewManager.h"
+#import "OOUserBrowserViewManager.h"
 
 @interface OOBrowserWindowController : NSWindowController {
     IBOutlet IKImageBrowserView*            userBrowser;
@@ -9,6 +9,11 @@
     
     IBOutlet IKImageBrowserView*            networkBrowser;
     IBOutlet OONetworkBrowserViewManager*   networkBrowserViewManager;
+    
+    BOOL isOpen;
 }
 
+@property(nonatomic, assign) BOOL isOpen;
+
+- (id)initWithWindowNib;
 @end

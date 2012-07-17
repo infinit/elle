@@ -22,7 +22,7 @@
     [networkBrowser setAnimates:YES];
     [networkBrowser setAllowsDroppingOnItems:YES];
     [networkBrowser setDraggingDestinationDelegate:self];
-    //[networkBrowser setDraggingDestinationDelegate:self[networkBrowser registerForDraggedTypes:[NSArray arrayWithObjects: NSColorPboardType, NSFilenamesPboardType, nil]];];
+    [networkBrowser registerForDraggedTypes:[NSArray arrayWithObjects: NSPasteboardTypeString, NSFilenamesPboardType, nil]];
 	
 	// customize the appearance
     [networkBrowser setAllowsMultipleSelection:NO];
@@ -169,7 +169,7 @@
 }
 
 - (NSUInteger) imageBrowser:(IKImageBrowserView *) aBrowser writeItemsAtIndexes:(NSIndexSet *) itemIndexes toPasteboard:(NSPasteboard *)pasteboard {
-    return [itemIndexes count];
+    return 0;
 }
 
 #pragma mark -
