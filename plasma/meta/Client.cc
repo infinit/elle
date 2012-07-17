@@ -158,8 +158,7 @@ namespace plasma
     LogoutResponse
     Client::logout()
     {
-      json::Dictionary request;
-      auto res = this->_post<LogoutResponse>("/user/logout", request);
+      auto res = this->_get<LogoutResponse>("/user/logout");
       if (res.success)
         {
           _impl->token = "";
