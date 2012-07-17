@@ -18,6 +18,7 @@ file(
 	creosus-server
 	meta-server
 	meta-tests
+	admin-console
 	production-meta-server.sh
 	production-creosus-server.sh
   DESTINATION .
