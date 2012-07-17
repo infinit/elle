@@ -207,8 +207,16 @@ class User(Page):
                 else:
                     user[k] = f
 
-        if not len(errors) and database.users().find_one({'email': user['email']}):
-            errors.append('This email is already registered')
+        if not len(errors):
+            if database.users().find_one({'email': user['email']}):
+                errors.append('This email is already registered')
+            else:
+                invitation = database.invitations().find_one({
+                    'code': user['activation_code'],
+                    'status': 'pending',
+                })
+                if not invitation:
+                    errors.append('Your activation code is wrong  ?!')
         if len(errors):
             return json.dumps({
                 'success': False,
@@ -238,4 +246,6 @@ class User(Page):
                 {'type':'email', 'id': user['email']}
             ]
         )
+        invitation['status'] = 'activated'
+        database.invitations().save(invitation)
         return self.success()
