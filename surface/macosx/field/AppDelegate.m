@@ -32,9 +32,9 @@
     //[OOInjectorHelper launchFinderHelperTools:YES];
     
     //[self update];
-    //[self tryToLogin];
-    OOBrowserWindowController* aaa = [[OOBrowserWindowController alloc] initWithWindowNib];
-    [aaa showWindow:self];
+    [self tryToLogin];
+    //OOBrowserWindowController* aaa = [[OOBrowserWindowController alloc] initWithWindowNib];
+    //[aaa showWindow:self];
 }
 
 - (void)awakeFromNib

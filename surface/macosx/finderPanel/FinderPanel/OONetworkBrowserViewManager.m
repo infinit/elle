@@ -2,6 +2,7 @@
 #import "OONetworkBrowserBackgroundLayer.h"
 #import "OONetworkModel.h"
 #import "OOUserBrowserView.h"
+#import <Phone/OOPhone.h>
 
 @implementation OONetworkBrowserViewManager
 
@@ -106,18 +107,22 @@
 	}
 }
 
-- (void)addUsersWithIds:(NSArray*)userIds
+- (void)updateNetworks
 {   
-    NSInteger i, n;
-	n = [userIds count];
-    for (i = 0; i < n; i++)
-	{
-        NSString* userId = [userIds objectAtIndex:i];
-		[self addUserWithId:userId];
-    }
+    while (YES) {
+        NSArray* networkIds = [[OOPhone getInstance] getUserNetworks];
+        NSInteger i, n;
+        n = [networkIds count];
+        for (i = 0; i < n; i++)
+        {
+            NSString* userId = [networkIds objectAtIndex:i];
+            [self addUserWithId:userId];
+        }
     
-	// Update the data source in the main thread.
-    [self performSelectorOnMainThread:@selector(updateDatasource) withObject:nil waitUntilDone:YES];
+        // Update the data source in the main thread.
+        [self performSelectorOnMainThread:@selector(updateDatasource) withObject:nil waitUntilDone:YES];
+        sleep(10);
+    }
 }
 
 

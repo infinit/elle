@@ -15,7 +15,7 @@
 	<key>CFBundleName</key>
 	<string>${PRODUCT_NAME}</string>
 	<key>CFBundlePackageType</key>
-	<string>FMWK</string>
+	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleSignature</key>
@@ -25,6 +25,10 @@
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2012 __MyCompanyName__. All rights reserved.</string>
 	<key>NSPrincipalClass</key>
-	<string></string>
+	<string>NSApplication</string>
+	<key>NSMainNibFile</key>
+	<string>OOBrowserWindow</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
 </dict>
 </plist>

@@ -11,6 +11,7 @@
 #import "OORestResquest.h"
 
 NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotification";
+#define countof(X) ( (size_t) ( sizeof(X)/sizeof*(X) ) )
 
 @implementation OOPhone
 
@@ -44,8 +45,8 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
 
 - (void)metaIsRespondingWithPerformSelector:(SEL)arg1 forObject:(id)arg2 {
     [self addOperationWithBlock:^(void) {
-        //gap_Status response = gap_meta_status(self._gap_State);
-        [arg2 performSelectorOnMainThread:arg1 withObject:[NSNumber numberWithInt:0] waitUntilDone:NO];
+        gap_Status response = gap_meta_status(self._gap_State);
+        [arg2 performSelectorOnMainThread:arg1 withObject:[NSNumber numberWithInt:response] waitUntilDone:NO];
     }];
 }
 
@@ -54,10 +55,10 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
        performSelector:(SEL)arg3 
              forObject:(id)arg4 {
     [self addOperationWithBlock:^(void) {
-        /*gap_Status response =  gap_login(self._gap_State,
+        gap_Status response =  gap_login(self._gap_State,
                                          [arg1 cStringUsingEncoding:NSASCIIStringEncoding],
-                                         [arg2 cStringUsingEncoding:NSASCIIStringEncoding]);*/
-        [arg4 performSelectorOnMainThread:arg3 withObject:[NSNumber numberWithInt:0] waitUntilDone:NO];
+                                         [arg2 cStringUsingEncoding:NSASCIIStringEncoding]);
+        [arg4 performSelectorOnMainThread:arg3 withObject:[NSNumber numberWithInt:response] waitUntilDone:NO];
     }];
 }
 
@@ -65,20 +66,34 @@ NSString *OOUpdateProgessChangedNotification = @"OOUpdateProgessChangedNotificat
                        email:(NSString*)arg2 
                     password:(NSString*)arg3 
                  machineName:(NSString*)arg4 
-             performSelector:(SEL)arg5 
-                   forObject:(id)arg6 {
+              activationCode:(NSString*)arg5 
+             performSelector:(SEL)arg6 
+                   forObject:(id)arg7 {
     [self addOperationWithBlock:^(void) {
+        gap_logout(self._gap_State);
         gap_Status response = gap_register(self._gap_State,
                                            [arg1 cStringUsingEncoding:NSASCIIStringEncoding],
                                            [arg2 cStringUsingEncoding:NSASCIIStringEncoding],
                                            [arg3 cStringUsingEncoding:NSASCIIStringEncoding],
-                                           [arg4 cStringUsingEncoding:NSASCIIStringEncoding]);
-        [arg6 performSelectorOnMainThread:arg5 withObject:[NSNumber numberWithInt:0] waitUntilDone:NO];
+                                           [arg4 cStringUsingEncoding:NSASCIIStringEncoding],
+                                           [arg5 cStringUsingEncoding:NSASCIIStringEncoding]);
+        [arg7 performSelectorOnMainThread:arg6 withObject:[NSNumber numberWithInt:response] waitUntilDone:NO];
     }];
 }
 
-- (char**)getUserNetworks {
-    return gap_networks(self._gap_State);
+- (NSArray*)getUserNetworks {
+    NSMutableArray* returnArray = [[NSMutableArray alloc] init];
+    char** networkIds = gap_networks(self._gap_State);
+    size_t i;
+    
+    if (networkIds == NULL) return returnArray;
+    
+    for (i = 0; i < countof(networkIds); i++) {
+        NSString *myString = [[NSString alloc] initWithUTF8String:networkIds[i]];
+        [returnArray addObject:myString];
+    }
+    
+    return returnArray;
 }
 
 - (void)update {

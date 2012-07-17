@@ -34,4 +34,6 @@ extern NSString *OOUpdateProgessChangedNotification;
 
 - (void)update;
 
+- (NSArray*)getUserNetworks;
+
 @end

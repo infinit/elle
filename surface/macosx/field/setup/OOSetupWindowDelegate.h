@@ -40,8 +40,10 @@ extern NSString *OOUserUnLoggedNotification;
     IBOutlet NSTextField            *registerViewFullName;
     IBOutlet NSSecureTextField      *registerViewPassword;
     IBOutlet NSSecureTextField      *registerViewPasswordVerif;
+    IBOutlet NSTextField            *registerViewActivationCode;
     IBOutlet NSButtonCell           *registerViewTermOfService;
     IBOutlet NSButtonCell           *registerViewContinue;
+    IBOutlet NSTextField            *registerViewError;
     
     // Thank you page //
     
@@ -70,7 +72,12 @@ extern NSString *OOUserUnLoggedNotification;
 @property(retain)NSTextField        *registerViewFullName;
 @property(retain)NSSecureTextField  *registerViewPassword;
 @property(retain)NSSecureTextField  *registerViewPasswordVerif;
+@property(retain)NSTextField        *registerViewActivationCode;
 @property(retain)NSButtonCell       *registerViewTermOfService;
 @property(retain)NSButtonCell       *registerViewContinue;
+@property(retain)NSTextField        *registerViewError;
+
+- (void)loginResult:(NSNumber *)arg1;
+- (void)registerResult:(NSNumber *)arg1;
 
 @end

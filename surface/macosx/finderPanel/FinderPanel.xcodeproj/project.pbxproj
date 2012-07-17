@@ -18,6 +18,12 @@
 		1C045BE3159CAA7900162909 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1C045BE1159CAA7900162909 /* InfoPlist.strings */; };
 		1C045BE6159CAA7900162909 /* FinderPanelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C045BE5159CAA7900162909 /* FinderPanelTests.m */; };
 		1C045C10159D990B00162909 /* OOBrowserWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C045C0F159D990A00162909 /* OOBrowserWindowController.m */; };
+		1C136A7915B58D5F003D41B9 /* OOBrowserWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C045BD0159CAA7900162909 /* OOBrowserWindow.xib */; };
+		1C136A7B15B58D7B003D41B9 /* handmadepaper.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C90973215A2F6F7002F0B1E /* handmadepaper.png */; };
+		1C136A7C15B58D7D003D41B9 /* pin.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 1C90973415A2F8DE002F0B1E /* pin.tiff */; };
+		1C136A7D15B58D81003D41B9 /* glossy.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C90973615A2F8E6002F0B1E /* glossy.png */; };
+		1C136A7E15B58DCF003D41B9 /* FinderPanel-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1C30B5B515B56A280056A382 /* FinderPanel-Info.plist */; };
+		1C136A8015B58EA4003D41B9 /* Phone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C136A7F15B58EA4003D41B9 /* Phone.framework */; };
 		1C30B5B215B56A280056A382 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C045BBB159CAA7900162909 /* Cocoa.framework */; };
 		1C30B5B815B56A280056A382 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1C30B5B615B56A280056A382 /* InfoPlist.strings */; };
 		1C30B5C015B56A490056A382 /* OONetworkBrowserViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C9451A415A5A5E400370E90 /* OONetworkBrowserViewManager.m */; };
@@ -47,6 +53,7 @@
 		1C30B5DE15B570C20056A382 /* OONetworkModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CB8E5CA15A5A13C00DCA443 /* OONetworkModel.h */; };
 		1C30B5DF15B570C20056A382 /* OOUserModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C90973A15A43630002F0B1E /* OOUserModel.h */; };
 		1C30B5E015B570C20056A382 /* OOBrowserUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C90972E15A2F0C1002F0B1E /* OOBrowserUtilities.h */; };
+		1C53A1B515B578B300D2B3B0 /* FinderPanel-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1C045BC3159CAA7900162909 /* FinderPanel-Info.plist */; };
 		1C90972C15A2F077002F0B1E /* OOUserBrowserBackgroundLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C90972B15A2F077002F0B1E /* OOUserBrowserBackgroundLayer.m */; };
 		1C90973015A2F0C1002F0B1E /* OOBrowserUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C90972F15A2F0C1002F0B1E /* OOBrowserUtilities.m */; };
 		1C90973315A2F6F7002F0B1E /* handmadepaper.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C90973215A2F6F7002F0B1E /* handmadepaper.png */; };
@@ -97,6 +104,7 @@
 		1C045BE5159CAA7900162909 /* FinderPanelTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FinderPanelTests.m; sourceTree = "<group>"; };
 		1C045C0E159D990A00162909 /* OOBrowserWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOBrowserWindowController.h; sourceTree = "<group>"; };
 		1C045C0F159D990A00162909 /* OOBrowserWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOBrowserWindowController.m; sourceTree = "<group>"; };
+		1C136A7F15B58EA4003D41B9 /* Phone.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Phone.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/Surface-dsztwyginwybdeccplzkjlttngdj/Build/Products/Debug/Phone.framework"; sourceTree = "<group>"; };
 		1C30B5B115B56A280056A382 /* FinderPanel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FinderPanel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C30B5B515B56A280056A382 /* FinderPanel-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "FinderPanel-Info.plist"; sourceTree = "<group>"; };
 		1C30B5B715B56A280056A382 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -156,6 +164,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C136A8015B58EA4003D41B9 /* Phone.framework in Frameworks */,
 				1C30B5D515B56F7C0056A382 /* Quartz.framework in Frameworks */,
 				1C30B5B215B56A280056A382 /* Cocoa.framework in Frameworks */,
 			);
@@ -167,6 +176,7 @@
 		1C045BAC159CAA7900162909 = {
 			isa = PBXGroup;
 			children = (
+				1C136A7F15B58EA4003D41B9 /* Phone.framework */,
 				1C045BC1159CAA7900162909 /* FinderPanel */,
 				1C30B5B315B56A280056A382 /* FinderPanel */,
 				1C045BDE159CAA7900162909 /* FinderPanelTests */,
@@ -474,6 +484,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C53A1B515B578B300D2B3B0 /* FinderPanel-Info.plist in Resources */,
 				1C045BC6159CAA7900162909 /* InfoPlist.strings in Resources */,
 				1C045BCC159CAA7900162909 /* Credits.rtf in Resources */,
 				1C045BD2159CAA7900162909 /* OOBrowserWindow.xib in Resources */,
@@ -495,7 +506,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C136A7E15B58DCF003D41B9 /* FinderPanel-Info.plist in Resources */,
 				1C30B5B815B56A280056A382 /* InfoPlist.strings in Resources */,
+				1C136A7915B58D5F003D41B9 /* OOBrowserWindow.xib in Resources */,
+				1C136A7B15B58D7B003D41B9 /* handmadepaper.png in Resources */,
+				1C136A7C15B58D7D003D41B9 /* pin.tiff in Resources */,
+				1C136A7D15B58D81003D41B9 /* glossy.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -724,6 +740,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/Surface-dsztwyginwybdeccplzkjlttngdj/Build/Products/Debug\"",
+				);
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FinderPanel/FinderPanel-Prefix.pch";
@@ -738,6 +758,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/Surface-dsztwyginwybdeccplzkjlttngdj/Build/Products/Debug\"",
+				);
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FinderPanel/FinderPanel-Prefix.pch";

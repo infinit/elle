@@ -38,9 +38,10 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
 @synthesize registerViewFullName;
 @synthesize registerViewPassword;
 @synthesize registerViewPasswordVerif;
+@synthesize registerViewActivationCode;
 @synthesize registerViewTermOfService;
 @synthesize registerViewContinue;
-
+@synthesize registerViewError;
 
 - (void)awakeFromNib
 {
@@ -71,6 +72,10 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
     }
     // Focus
     [self.window setLevel:NSFloatingWindowLevel];
+    
+    // Error label
+    [self.registerViewError setStringValue:@""];
+    [self.loginViewError setStringValue:@""];
     
     //isLogged
     self.isLogged = NO;
@@ -121,8 +126,8 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
 
 - (void)loginResult:(NSNumber *)arg1 {
     int error = [arg1 intValue];
-    if (error > 0)
-        [self.loginViewError setStringValue:@"Super mega error!!!!"];
+    if (error != 0)
+        [self.loginViewError setStringValue:@"An error occurred..."];
     else {
         [transition setSubtype:kCATransitionFromRight];
         [self swapView:loggedView];
@@ -140,6 +145,7 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
 
 - (IBAction)registerViewGoBack:(id)sender
 {
+    [transition setSubtype:kCATransitionFromLeft];
     [self swapView:welcomeView];
 }
 
@@ -147,18 +153,32 @@ NSString *OOUserUnLoggedNotification = @"OOUserUnLoggedNotification";
 {
     NSUserDefaults *pref;
     pref=[NSUserDefaults standardUserDefaults];
-    [pref setObject:[self.registerViewFullName stringValue]  forKey:@"FullName"];
-    [pref setObject:[self.registerViewEmail stringValue]  forKey:@"Email"];
-    [pref setObject:[[self.registerViewPassword stringValue] sha1]  forKey:@"Password"];
-    [pref setObject:[self.registerViewComputerName stringValue]  forKey:@"ComputerName"];
+    [pref setObject:[self.registerViewFullName stringValue] forKey:@"FullName"];
+    [pref setObject:[self.registerViewEmail stringValue] forKey:@"Email"];
+    [pref setObject:[[self.registerViewPassword stringValue] sha1] forKey:@"Password"];
+    [pref setObject:[self.registerViewComputerName stringValue] forKey:@"ComputerName"];
+    [pref setObject:[self.registerViewActivationCode stringValue] forKey:@"ActivationCode"];
     [pref synchronize];
-    const char* a = [[pref objectForKey:@"Password"] UTF8String];
+    const char* a = [[pref objectForKey:@"ActivationCode"] UTF8String];
     [[OOPhone getInstance] registerWithFullName:[pref objectForKey:@"FullName"]
                                           email:[pref objectForKey:@"Email"]
                                        password:[pref objectForKey:@"Password"]
-                                     machineName:[pref objectForKey:@"ComputerName"]
-                                performSelector:@selector(loginResult:) 
+                                    machineName:[pref objectForKey:@"ComputerName"]
+                                 activationCode:[pref objectForKey:@"ActivationCode"]
+                                performSelector:@selector(registerResult:) 
                                       forObject:self];
+}
+
+- (void)registerResult:(NSNumber *)arg1 {
+    int error = [arg1 intValue];
+    if (error != 0)
+        [self.registerViewError setStringValue:@"An error occurred..."];
+    else {
+        [transition setSubtype:kCATransitionFromRight];
+        [self swapView:loggedView];
+        
+        self.isLogged = YES;
+    }
 }
 
 - (void)windowWillClose:(NSNotification *)notification

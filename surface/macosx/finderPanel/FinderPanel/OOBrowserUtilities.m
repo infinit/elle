@@ -10,7 +10,7 @@ CGImageRef createImageWithName(NSString * imageName)
 {
 	CGImageRef returnValue = NULL;
 	
-	NSString *path = [[NSBundle mainBundle] pathForResource:[imageName stringByDeletingPathExtension] ofType:[imageName pathExtension]];
+	NSString *path = [[NSBundle bundleWithIdentifier:@"io.infinit.FinderPanel"] pathForResource:[imageName stringByDeletingPathExtension] ofType:[imageName pathExtension]];
 	if(path){
 		CGImageSourceRef imageSource = CGImageSourceCreateWithURL((__bridge CFURLRef)[NSURL fileURLWithPath:path], NULL);
 		

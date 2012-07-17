@@ -25,7 +25,7 @@
     if (networks)
 	{ 
         // launch import in an independent thread
-		[NSThread detachNewThreadSelector:@selector(addUsersWithIds:) toTarget:networkBrowserViewManager withObject:networks];
+		[NSThread detachNewThreadSelector:@selector(updateNetworks) toTarget:networkBrowserViewManager withObject:nil];
 	}
 }
 
