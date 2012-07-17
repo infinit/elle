@@ -282,6 +282,11 @@ extern "C"
       return nullptr;
     }
 
+    void gap_network_users_free(char** users)
+    {
+      ::free(users);
+    }
+
     gap_Status gap_create_network(gap_State* state,
                                   char const* name)
     {

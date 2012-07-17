@@ -76,6 +76,9 @@ extern "C" {
     /// of null-terminated strings.
     char** gap_network_users(gap_State* state, char const* id);
 
+    /// Free a previously allocated network users'.
+    void gap_network_users_free(char** users);
+
     /// Create a new network.
     gap_Status gap_create_network(gap_State* state,
                                   char const* name);
