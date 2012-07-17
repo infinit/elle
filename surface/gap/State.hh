@@ -101,6 +101,7 @@ namespace surface
       std::map<std::string, Network*> const& networks();
       void create_network(std::string const& name);
       void refresh_networks();
+      Network const& network(std::string const& id);
 
     private:
       std::string _watchdog_id() const;

@@ -233,13 +233,50 @@ extern "C"
       gap_Status ret;
       try
         {
-          auto const& networks = __TO_CPP(state)->networks();
-          auto it = networks.find(id);
-          if (it == networks.end())
-            return nullptr;
-          return it->second->name.c_str();
+          auto const& network = __TO_CPP(state)->network(id);
+          return network.name.c_str();
         }
       CATCH_ALL(network_name);
+
+      (void) ret;
+      return nullptr;
+    }
+
+    static char**
+    _cpp_stringlist_to_c_stringlist(std::list<std::string> const& list)
+    {
+      size_t total_size = (1 + list.size()) * sizeof(void*);
+      for (auto const& str : list)
+        total_size += str.size() + 1;
+
+      char** ptr = reinterpret_cast<char**>(malloc(total_size));
+      if (ptr == nullptr)
+        return nullptr;
+
+      char** array = ptr;
+      char* cstr = reinterpret_cast<char*>(ptr + (list.size() + 1));
+      for (auto const& str : list)
+        {
+          *array = cstr;
+          ::strncpy(cstr, str.c_str(), str.size() + 1);
+          ++array;
+          cstr += str.size() + 1;
+        }
+      *array = nullptr;
+      return ptr;
+    }
+
+    char** gap_network_users(gap_State* state, char const* id)
+    {
+      assert(state != nullptr);
+      assert(id != nullptr);
+      gap_Status ret;
+      try
+        {
+          auto const& network = __TO_CPP(state)->network(id);
+          return _cpp_stringlist_to_c_stringlist(network.users);
+        }
+      CATCH_ALL(network_users);
 
       (void) ret;
       return nullptr;
@@ -270,4 +307,6 @@ extern "C"
       assert(absolute_path != nullptr);
       __WRAP_CPP(state, set_permissions, user_id, absolute_path, permissions);
     }
+
+
 } // ! extern "C"

@@ -326,6 +326,18 @@ namespace surface
       return this->_networks;
     }
 
+    Network const&
+    State::network(std::string const& id)
+    {
+      auto it = this->_networks.find(id);
+      if (it == this->_networks.end())
+        throw Exception{
+            gap_error,
+            "Cannot find any network for id '" + id + "'"
+        };
+      return *(it->second);
+    }
+
     void State::stop_watchdog()
     {
       this->_send_watchdog_cmd("stop");
