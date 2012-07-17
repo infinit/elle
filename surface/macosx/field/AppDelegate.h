@@ -12,19 +12,23 @@
 {
     NSWindow *window;
     IBOutlet NSMenu *statusMenu;
+    IBOutlet NSMenu *statusLoginMenu;
     NSStatusItem *statusItem;
     NSInteger currentFrame;
     NSTimer *animTimer;
+    int     pendingCount;
+    BOOL     isPending;
 }
 
-@property (assign) IBOutlet NSWindow *window;
-@property (assign) NSInteger currentFrame;
-@property (assign) NSTimer *animTimer;
+@property(assign)   IBOutlet NSWindow   *window;
+@property(assign)   NSInteger           currentFrame;
+@property(assign)   NSTimer             *animTimer;
+@property           BOOL                isPending;
 
 - (void)launch8infinit;
 
-- (void)startAnimatingStatusItem;
-- (void)stopAnimatingStatusItem;
+- (void)addPending;
+- (void)removePending;
 - (void)updateStatusItemImageWithTimer:(NSTimer*)arg1;
 
 - (IBAction)openInfinitNeworks:(id)sender;
@@ -33,6 +37,6 @@
 - (IBAction)launchWebsite:(id)sender;
 - (IBAction)launchHelpCenter:(id)sender;
 
-
+- (void)updateProgessChangedNotification:(NSNotification *)notification;
 
 @end

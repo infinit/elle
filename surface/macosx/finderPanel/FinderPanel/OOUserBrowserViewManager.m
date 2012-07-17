@@ -172,8 +172,9 @@
          [draggedUsers addObject:user.uid];
      }];
     if ([draggedUsers count] > 0) {
-        //[pasteboard clearContents];
-        [pasteboard writeObjects:draggedUsers];
+        [pasteboard clearContents];
+        NSArray *array = [[NSArray alloc] initWithArray:draggedUsers];
+        BOOL OK = [pasteboard writeObjects:array];
     }
     return [draggedUsers count];
 }
