@@ -137,7 +137,8 @@ namespace plasma
 
       RegisterResponse register_(std::string const& email,
                                  std::string const& fullname,
-                                 std::string const& password);
+                                 std::string const& password,
+                                 std::string const& activation_code);
 
       UserResponse user(std::string const& id);
 

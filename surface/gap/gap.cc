@@ -135,13 +135,16 @@ extern "C"
                             char const* fullname,
                             char const* email,
                             char const* password,
-                            char const* device_name)
+                            char const* device_name,
+                            char const* activation_code)
     {
       assert(fullname != nullptr);
       assert(email != nullptr);
       assert(password != nullptr);
+      assert(activation_code != nullptr);
 
-      __WRAP_CPP_RET(state, register_, fullname, email, password);
+      __WRAP_CPP_RET(state, register_, fullname, email,
+                     password, activation_code);
       if (ret == gap_ok && device_name != nullptr)
         {
           __WRAP_CPP(state, update_device, device_name, true);

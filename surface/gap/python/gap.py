@@ -77,11 +77,11 @@ class State:
         finally:
             _gap.hash_free(pw_hash)
 
-    def register(self, fullname, email, password, dev_name):
+    def register(self, fullname, email, password, dev_name, activation_code):
         self.email = email
         pw_hash = self._call('hash_password', email, password)
         try:
-            self._call('register', fullname, email, pw_hash, dev_name)
+            self._call('register', fullname, email, pw_hash, dev_name, activation_code)
         finally:
             _gap.hash_free(pw_hash)
 

@@ -154,14 +154,17 @@ namespace plasma
       return res;
     }
 
-    RegisterResponse Client::register_(std::string const& email,
-                                       std::string const& fullname,
-                                       std::string const& password)
+    RegisterResponse
+    Client::register_(std::string const& email,
+                      std::string const& fullname,
+                      std::string const& password,
+                      std::string const& activation_code)
     {
       json::Dictionary request{std::map<std::string, std::string>{
         {"email", email},
         {"fullname", fullname},
         {"password", password},
+        {"activation_code", activation_code},
       }};
       return this->_post<RegisterResponse>("/user/register", request);
     }

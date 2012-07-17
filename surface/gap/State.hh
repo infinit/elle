@@ -63,7 +63,8 @@ namespace surface
                                 std::string const& password);
       void register_(std::string const& fullname,
                      std::string const& email,
-                     std::string const& password);
+                     std::string const& password,
+                     std::string const& activation_code);
       User const& user(std::string const& id);
 
     ///

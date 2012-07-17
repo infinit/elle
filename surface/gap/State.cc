@@ -226,10 +226,11 @@ namespace surface
 
     void State::register_(std::string const& fullname,
                           std::string const& email,
-                          std::string const& password)
+                          std::string const& password,
+                          std::string const& activation_code)
     {
         {
-          auto res = this->_api->register_(email, fullname, password);
+          auto res = this->_api->register_(email, fullname, password, activation_code);
           if (!res.success)
               throw Exception(gap_api_error, res.error);
         }

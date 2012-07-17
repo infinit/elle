@@ -53,7 +53,8 @@ extern "C" {
                             char const* fullname,
                             char const* email,
                             char const* hash_password,
-                            char const* device_name);
+                            char const* device_name,
+                            char const* activation_code);
 
     /// Returns the local device status.
     gap_Status gap_device_status(gap_State* state);
