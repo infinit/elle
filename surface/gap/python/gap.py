@@ -72,18 +72,12 @@ class State:
     def login(self, email, password):
         self.email = email
         pw_hash = self._call('hash_password', email, password)
-        try:
-            self._call('login', email, pw_hash)
-        finally:
-            _gap.hash_free(pw_hash)
+        self._call('login', email, pw_hash)
 
     def register(self, fullname, email, password, dev_name, activation_code):
         self.email = email
         pw_hash = self._call('hash_password', email, password)
-        try:
-            self._call('register', fullname, email, pw_hash, dev_name, activation_code)
-        finally:
-            _gap.hash_free(pw_hash)
+        self._call('register', fullname, email, pw_hash, dev_name, activation_code)
 
 if __name__ == "__main__":
     import doctest

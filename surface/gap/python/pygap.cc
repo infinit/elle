@@ -19,6 +19,19 @@ _get_networks(gap_State* state)
   return networks_;
 }
 
+static std::string
+_hash_password(gap_State* state, std::string email, std::string password)
+{
+  char* hash = gap_hash_password(state, email.c_str(), password.c_str());
+
+  if (hash == nullptr)
+    throw std::runtime_error("Couldn't hash the password");
+
+  std::string res(hash);
+  gap_hash_free(hash);
+  return res;
+}
+
 BOOST_PYTHON_MODULE(_gap)
 {
   namespace py = boost::python;
@@ -41,8 +54,7 @@ BOOST_PYTHON_MODULE(_gap)
 
   //- Authentication and registration -----------------------------------------
 
-  py::def("hash_password", &gap_hash_password, by_value());
-  py::def("hash_free", &gap_hash_free);
+  py::def("hash_password", &_hash_password, by_value());
   py::def("login", &gap_login);
   py::def("register", &gap_register);
 
