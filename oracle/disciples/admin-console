@@ -30,6 +30,7 @@ ARGUMENT_PARSER.add_argument(
     type=int
 )
 
+
 class DatabaseCommands(type):
 
     @classmethod
@@ -71,7 +72,7 @@ class DatabaseCommands(type):
             self.msg = msg
 
     @classmethod
-    def _raise_parser_exception(cls, status, message):
+    def _raise_parser_exception(cls, status=None, message=""):
         raise cls.ParseArgumentsException(message)
 
     @classmethod
@@ -103,7 +104,40 @@ class DatabaseCommands(type):
             self._argument_parsers[collection].print_help()
         return command_help
 
+def make_simple_argument_parser(prog=None, description=None, add_help=False, args=None):
+    parser = argparse.ArgumentParser(prog=prog,
+                                     description=description,
+                                     add_help=add_help)
+    for arg in args:
+        flags = arg.pop('flags')
+        if not (isinstance(flags, list) or isinstance(flags, tuple)):
+            flags = (flags,)
+        parser.add_argument(*flags, **arg)
+    return parser
+
 class AdminShell(cmd.Cmd, metaclass=DatabaseCommands):
+
+    _invite_argument_parser = make_simple_argument_parser(
+        prog="invite",
+        description="Generate and send an invitation",
+        args=[
+            {
+                'flags': 'email',
+                'help': "The email to send an invitation to"
+            },
+            {
+                'flags': ('-f', '--force'),
+                'help': "Force invitation, even if already in database",
+                'action': "store_true",
+            },
+            {
+                'flags': ('-n', '--no-mail'),
+                'help': "Do not send an email",
+                'action': "store_true",
+            },
+        ]
+    )
+
     def __init__(self, args):
         self._connect(args.db_host, args.db_port)
         super(AdminShell, self).__init__()
@@ -130,12 +164,32 @@ class AdminShell(cmd.Cmd, metaclass=DatabaseCommands):
         host, port = line.strip().split(':')
         self._connect(host, port)
 
+    def _get_args(self, parser, line):
+        parser.exit = DatabaseCommands._raise_parser_exception
+        try:
+            return parser.parse_args(line.strip().split())
+        except DatabaseCommands.ParseArgumentsException as e:
+            print(e.msg.strip())
+
     def do_invite(self, line):
         """usage: invite mail
 
         Invite somebody with its email
         """
-        pythia.Admin().post('/invite', {'email': line.strip()})
+        args = self._get_args(self._invite_argument_parser, line)
+        if not args:
+            return
+        request = {
+            'email': args.email,
+            'force': args.force,
+            'dont_send_mail': args.no_mail,
+        }
+        res = pythia.Admin().post('/invite', request)
+        if not res['success']:
+            print("ERROR:", res['error'])
+
+    def help_invite(self):
+        self._invite_argument_parser.print_help()
 
     def default(self, line):
         if line == 'EOF':
