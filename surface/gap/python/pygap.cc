@@ -22,6 +22,7 @@ _get_networks(gap_State* state)
 BOOST_PYTHON_MODULE(_gap)
 {
   namespace py = boost::python;
+  typedef py::return_value_policy<py::return_by_value> by_value;
 
   py::enum_<gap_Status>("Status")
     .value("gap_ok", gap_ok)
@@ -33,35 +34,45 @@ BOOST_PYTHON_MODULE(_gap)
     .export_values()
   ;
 
-  py::def("new", &gap_new,
-          py::return_value_policy<py::return_opaque_pointer>());
+  //- gap ctor and dtor -------------------------------------------------------
 
+  py::def("new", &gap_new, by_value());
   py::def("free", &gap_free);
 
-  py::def("hash_password", &gap_hash_password,
-          py::return_value_policy<py::return_opaque_pointer>());
+  //- Authentication and registration -----------------------------------------
 
+  py::def("hash_password", &gap_hash_password, by_value());
   py::def("hash_free", &gap_hash_free);
+  py::def("login", &gap_login);
+  py::def("register", &gap_register);
+
+  //- Infinit services status -------------------------------------------------
 
   py::def("meta_status", &gap_meta_status);
 
-  py::def("refresh_networks", &gap_refresh_networks);
-
-  py::def("login", &gap_login);
-
-  py::def("register", &gap_register);
+  //- Device ------------------------------------------------------------------
 
   py::def("device_status", &gap_device_status);
-
   py::def("set_device_name", &gap_set_device_name);
 
-  py::def("networks", &_get_networks);
+  //- Network -----------------------------------------------------------------
 
+  py::def("networks", &_get_networks);
   py::def("create_network", &gap_create_network);
+  py::def("network_name", &gap_network_name, by_value());
+
+  //- Users -------------------------------------------------------------------
+
+  py::def("user_fullname", &gap_user_fullname, by_value());
+  py::def("user_email", &gap_user_email, by_value());
+
+  //- Watchdog ----------------------------------------------------------------
 
   py::def("launch_watchdog", &gap_launch_watchdog);
-
+  py::def("refresh_networks", &gap_refresh_networks);
   py::def("stop_watchdog", &gap_stop_watchdog);
+
+  //- Permissions -------------------------------------------------------------
 
   py::enum_<gap_Permission>("Permission")
     .value("gap_read", gap_read)
@@ -71,5 +82,6 @@ BOOST_PYTHON_MODULE(_gap)
   ;
 
   py::def("set_permissions", &gap_set_permissions);
+
 }
 

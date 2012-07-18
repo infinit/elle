@@ -26,6 +26,7 @@ namespace surface
     struct User
     {
       std::string _id;
+      std::string fullname;
       std::string email;
       std::string public_key;
     };

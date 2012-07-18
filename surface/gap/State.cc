@@ -156,6 +156,7 @@ namespace surface
       auto response = this->_api->user(id);
       std::unique_ptr<User> user{new User{
           response._id,
+          response.fullname,
           response.email,
           response.public_key,
       }};

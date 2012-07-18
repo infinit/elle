@@ -14,6 +14,8 @@
 extern "C"
 {
 
+  /// - Utils -----------------------------------------------------------------
+
 #define __TO_C(st)    reinterpret_cast<gap_State*>(st)
 #define __TO_CPP(st)  reinterpret_cast<surface::gap::State*>(st)
 
@@ -52,6 +54,31 @@ extern "C"
     return ret                                                                \
   /**/
 
+    static char**
+    _cpp_stringlist_to_c_stringlist(std::list<std::string> const& list)
+    {
+      size_t total_size = (1 + list.size()) * sizeof(void*);
+      for (auto const& str : list)
+        total_size += str.size() + 1;
+
+      char** ptr = reinterpret_cast<char**>(malloc(total_size));
+      if (ptr == nullptr)
+        return nullptr;
+
+      char** array = ptr;
+      char* cstr = reinterpret_cast<char*>(ptr + (list.size() + 1));
+      for (auto const& str : list)
+        {
+          *array = cstr;
+          ::strncpy(cstr, str.c_str(), str.size() + 1);
+          ++array;
+          cstr += str.size() + 1;
+        }
+      *array = nullptr;
+      return ptr;
+    }
+
+    /// - gap ctor & dtor -----------------------------------------------------
 
     gap_State* gap_new()
     {
@@ -92,10 +119,7 @@ extern "C"
       return gap_ok;
     }
 
-    gap_Status gap_refresh_networks(gap_State* state)
-    {
-      __WRAP_CPP(state, refresh_networks);
-    }
+    /// - Authentication ------------------------------------------------------
 
     char* gap_hash_password(gap_State* state,
                             char const* email,
@@ -157,6 +181,8 @@ extern "C"
       return ret;
     }
 
+    /// - Device --------------------------------------------------------------
+
     gap_Status gap_device_status(gap_State* state)
     {
       try
@@ -185,7 +211,8 @@ extern "C"
       __WRAP_CPP(state, update_device, name);
     }
 
-    /// Retrieve all user networks.
+    /// - Network -------------------------------------------------------------
+
     char** gap_networks(gap_State* state)
     {
       assert(state != nullptr);
@@ -194,34 +221,12 @@ extern "C"
         {
           auto const& networks_map = __TO_CPP(state)->networks();
 
-          // compute total size needed
-          size_t total_size = 0;
-          for (auto const& network_pair: networks_map)
-            total_size += network_pair.first.size() + 1 + sizeof(char*);
-          total_size += sizeof(char*);
+          std::list<std::string> res;
 
-          void* ptr = malloc(total_size);
-          if (ptr == nullptr)
-            return nullptr;
+          for (auto const& network_pair : networks_map)
+            res.push_back(network_pair.first);
 
-          // the memory area contains an array of c string pointers, and
-          // strings themselves are stored right after that.
-          char** networks = reinterpret_cast<char**>(ptr);
-          char* network_str = reinterpret_cast<char*>(networks + (networks_map.size() + 1));
-          for (auto const& network_pair: networks_map)
-            {
-              char const* str = network_pair.first.c_str();
-              size_t size = network_pair.first.size();
-
-              memcpy(network_str, str, size);
-              network_str[size] = '\0';
-              *networks = network_str;
-              networks++;
-              network_str += size + 1;
-            }
-          *networks = nullptr; // guard
-
-          return reinterpret_cast<char**>(ptr); // original start pointer
+          return _cpp_stringlist_to_c_stringlist(res);
         }
       CATCH_ALL(networks);
 
@@ -248,30 +253,6 @@ extern "C"
 
       (void) ret;
       return nullptr;
-    }
-
-    static char**
-    _cpp_stringlist_to_c_stringlist(std::list<std::string> const& list)
-    {
-      size_t total_size = (1 + list.size()) * sizeof(void*);
-      for (auto const& str : list)
-        total_size += str.size() + 1;
-
-      char** ptr = reinterpret_cast<char**>(malloc(total_size));
-      if (ptr == nullptr)
-        return nullptr;
-
-      char** array = ptr;
-      char* cstr = reinterpret_cast<char*>(ptr + (list.size() + 1));
-      for (auto const& str : list)
-        {
-          *array = cstr;
-          ::strncpy(cstr, str.c_str(), str.size() + 1);
-          ++array;
-          cstr += str.size() + 1;
-        }
-      *array = nullptr;
-      return ptr;
     }
 
     char** gap_network_users(gap_State* state, char const* id)
@@ -301,15 +282,56 @@ extern "C"
       __WRAP_CPP(state, create_network, name);
     }
 
+    /// - User ----------------------------------------------------------------
+
+    char const* gap_user_fullname(gap_State* state, char const* id)
+    {
+      assert(id != nullptr);
+      gap_Status ret;
+      try
+        {
+          auto const& user = __TO_CPP(state)->user(id);
+          return user.fullname.c_str();
+        }
+      CATCH_ALL(user_fullname);
+
+      (void) ret;
+      return nullptr;
+    }
+
+    char const* gap_user_email(gap_State* state, char const* id)
+    {
+      assert(id != nullptr);
+      gap_Status ret;
+      try
+        {
+          auto const& user = __TO_CPP(state)->user(id);
+          return user.email.c_str();
+        }
+      CATCH_ALL(user_email);
+
+      (void) ret;
+      return nullptr;
+    }
+
+    /// - Watchdog ------------------------------------------------------------
+
     gap_Status gap_launch_watchdog(gap_State* state)
     {
       __WRAP_CPP(state, launch_watchdog);
+    }
+
+    gap_Status gap_refresh_networks(gap_State* state)
+    {
+      __WRAP_CPP(state, refresh_networks);
     }
 
     gap_Status gap_stop_watchdog(gap_State* state)
     {
       __WRAP_CPP(state, stop_watchdog);
     }
+
+    /// - Permissions ---------------------------------------------------------
 
     gap_Status gap_set_permissions(gap_State* state,
                                    char const* user_id,

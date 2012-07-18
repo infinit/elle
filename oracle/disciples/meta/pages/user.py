@@ -171,6 +171,7 @@ class User(Page):
             '_id': user['_id'],
             'email': user['email'],
             'public_key': user['public_key'],
+            'fullname': user['fullname'],
         })
 
     def _login(self):

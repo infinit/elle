@@ -55,7 +55,8 @@ extern "C" {
     gap_Status gap_logout(gap_State* state);
 
     /// Register to meta. If the device name is not NULL, it will also create
-    /// the local device with specified name. password ha
+    /// the local device with specified name. The password hash is obtained via
+    /// gap_hash_password() function.
     gap_Status gap_register(gap_State* state,
                             char const* fullname,
                             char const* email,
@@ -94,6 +95,14 @@ extern "C" {
 
     /// Free a previously allocated network users'.
     void gap_network_users_free(char** users);
+
+    /// - User ----------------------------------------------------------------
+
+    /// Retrieve user fullname.
+    char const* gap_user_fullname(gap_State* state, char const* id);
+
+    /// Retrieve user email address.
+    char const* gap_user_email(gap_State* state, char const* id);
 
     /// - Watchdog ------------------------------------------------------------
 
