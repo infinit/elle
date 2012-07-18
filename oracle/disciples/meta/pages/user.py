@@ -31,8 +31,10 @@ class Invite(Page):
         if self.data['admin_token'] != pythia.constants.ADMIN_TOKEN:
             return self.error("You're not admin")
         email = self.data['email'].strip()
+        force = self.data.get('force', False)
+        send_email = not self.data.get('dont_send_email', False)
         if database.invitations().find_one({'email': email}):
-            if 'force' not in self.data:
+            if not force:
                 return self.error("Already invited!")
             else:
                 database.invitations().remove({'email': email})
@@ -41,7 +43,8 @@ class Invite(Page):
             'activation_code': code,
             'space': ' ',
         }
-        self._send_invitation(email, INVITATION_SUBJECT, content)
+        if send_email:
+            self._send_invitation(email, INVITATION_SUBJECT, content)
         database.invitations().insert({
             'email': email,
             'status': 'pending',
