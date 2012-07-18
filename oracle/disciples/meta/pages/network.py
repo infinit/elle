@@ -101,6 +101,8 @@ class Network(Page):
                 '_id': database.ObjectId(id),
                 'owner': self.user['_id'],
             })
+            if not network:
+                return self.error("Network does not exists")
             network.pop('owner')
             return self.success(network)
 

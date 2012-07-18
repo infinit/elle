@@ -385,7 +385,7 @@ extern "C"
       CATCH_ALL(get_permissions);
 
       (void) ret;
-      return -1;
+      return gap_error;
     }
 
 } // ! extern "C"
