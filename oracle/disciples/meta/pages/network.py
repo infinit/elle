@@ -138,7 +138,7 @@ class Network(Page):
 
         network = {
             'name': name,
-            'owner': self.user['_id'],
+            'owner': database.ObjectId(self.user['_id']),
             'model': 'slug',
             'users': users,
             'devices': devices,
