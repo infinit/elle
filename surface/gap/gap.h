@@ -117,19 +117,35 @@ extern "C" {
 
     /// - Permissions ---------------------------------------------------------
 
-    enum gap_Permission
+    typedef enum gap_Permission
     {
       gap_none  = 0,
       gap_read  = 1,
       gap_write = 2,
       gap_exec  = 4,
-    };
+      // WARNING: negative values are reserved for errors, no value of this
+      // enum should have a negative value.
+    } gap_Permission;
 
     /// Change file permissions for a user.
+    // XXX exec permission does not work
     gap_Status gap_set_permissions(gap_State* state,
                                    char const* user_id,
                                    char const* absolute_path,
                                    int permissions);
+
+    /// Retrieve users associated to a file (have read and/or write access).
+    char** gap_file_users(gap_State* state,
+                          char const* absolute_path);
+
+    void gap_file_users_free(char** users);
+
+
+    /// Retrieve file permissions for a user. Returns -1 in case of errors.
+    // XXX exec permission does not work
+    int gap_get_permissions(gap_State* state,
+                            char const* user_id,
+                            char const* absolute_path);
 
 # ifdef __cplusplus
 } // ! extern "C"

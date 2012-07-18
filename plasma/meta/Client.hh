@@ -147,6 +147,7 @@ namespace plasma
                                  std::string const& activation_code);
 
       UserResponse user(std::string const& id);
+      UserResponse user_from_public_key(std::string const& public_key);
 
       CreateDeviceResponse create_device(std::string const& name,
                                          std::string const& local_address,

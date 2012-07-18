@@ -192,6 +192,16 @@ namespace plasma
       return this->_get<UserResponse>("/user/" + id);
     }
 
+    UserResponse
+    Client::user_from_public_key(std::string const& public_key)
+    {
+      if (public_key.size() == 0)
+        throw std::runtime_error("empty public key!");
+      json::Dictionary request;
+      request["public_key"] = public_key;
+      return this->_post<UserResponse>("/user_from_public_key", request);
+    }
+
     CreateDeviceResponse
     Client::create_device(std::string const& name,
                           std::string const& local_address,

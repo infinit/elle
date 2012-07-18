@@ -49,7 +49,9 @@ BOOST_PYTHON_MODULE(_gap)
 
   //- gap ctor and dtor -------------------------------------------------------
 
-  py::def("new", &gap_new, by_value());
+  py::def("new",
+          &gap_new,
+          py::return_value_policy<py::return_opaque_pointer>());
   py::def("free", &gap_free);
 
   //- Authentication and registration -----------------------------------------

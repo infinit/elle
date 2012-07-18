@@ -17,10 +17,11 @@ namespace surface
 
     struct FileInfos
     {
-      std::string mount_point;
-      std::string network_id;
-      std::string absolute_path;
-      std::string relative_path;
+      std::string                 mount_point;
+      std::string                 network_id;
+      std::string                 absolute_path;
+      std::string                 relative_path;
+      std::map<std::string, int>  accesses;
     };
 
     struct User
@@ -68,6 +69,7 @@ namespace surface
                      std::string const& password,
                      std::string const& activation_code);
       User const& user(std::string const& id);
+      User const& user_from_public_key(std::string const& public_key);
 
     ///
     /// Launch and stop infinit instances

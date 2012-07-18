@@ -8,6 +8,22 @@ from meta import conf, database
 import metalib
 import pythia
 
+class UserFromPublicKey(Page):
+
+    def POST(self):
+        user = database.users().find_one({
+            'public_key': self.data['public_key'],
+        })
+
+        if not user:
+            return self.error("No user could be found for this public key!")
+        return self.success({
+            '_id': user['_id'],
+            'email': user['email'],
+            'public_key': user['public_key'],
+            'fullname': user['fullname'],
+        })
+
 
 INVITATION_SUBJECT = "Invitation to test Infinit !"
 INVITATION_CONTENT = """

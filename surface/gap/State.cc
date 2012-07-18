@@ -29,6 +29,8 @@
 #include <lune/Identity.hh>
 #include <lune/Passport.hh>
 
+#include <nucleus/neutron/Permissions.hh>
+
 #include <elle/idiom/Close.hh>
 
 #include <plasma/common/resources.hh>
@@ -154,6 +156,26 @@ namespace surface
         return *(it->second);
 
       auto response = this->_api->user(id);
+      std::unique_ptr<User> user{new User{
+          response._id,
+          response.fullname,
+          response.email,
+          response.public_key,
+      }};
+
+      this->_users[response._id] = user.get();
+      return *(user.release());
+    }
+
+    User const&
+    State::user_from_public_key(std::string const& public_key)
+    {
+      for (auto const& pair : this->_users)
+        {
+          if (pair.second->public_key == public_key)
+            return *(pair.second);
+        }
+      auto response = this->_api->user_from_public_key(public_key);
       std::unique_ptr<User> user{new User{
           response._id,
           response.fullname,
@@ -336,8 +358,8 @@ namespace surface
     Network const&
     State::network(std::string const& id)
     {
-      auto it = this->_networks.find(id);
-      if (it == this->_networks.end())
+      auto it = this->networks().find(id);
+      if (it == this->networks().end())
         throw Exception{
             gap_error,
             "Cannot find any network for id '" + id + "'"
@@ -455,6 +477,7 @@ namespace surface
       if (it != this->_files_infos.end())
         return *(it->second);
 
+
       json::Dictionary request, response;
       this->_send_watchdog_cmd("status", nullptr, &response);
 
@@ -474,6 +497,7 @@ namespace surface
                 network_id,
                 abspath,
                 abspath.substr(mount_point.size() + 1),
+                {},
             });
             break;
           }
@@ -482,6 +506,43 @@ namespace surface
       if (infos.get() == nullptr)
         throw Exception(gap_error,
                         "Cannot find network for path '" + abspath + "'");
+
+      std::string const& access_binary = common::binary_path("8access");
+
+      QStringList arguments;
+      arguments << "--user" << this->_api->email().c_str()
+                << "--type" << "user"
+                << "--network" << this->network(infos->network_id).name.c_str()
+                << "--path" << ("/" + infos->relative_path).c_str()
+                << "--consult"
+                ;
+
+      QProcess p;
+      elle::log::debug("LAUNCH:", access_binary, arguments.join(" ").toStdString());
+      p.start(access_binary.c_str(), arguments);
+      if (!p.waitForFinished()) // .8 sec
+        throw Exception(gap_internal_error, "8access binary failed");
+      std::stringstream ss{p.readAllStandardOutput().constData()};
+
+      std::string line;
+      while(std::getline(ss, line))
+        {
+          if (!line.size())
+            continue;
+          std::stringstream line_stream{line};
+          std::string public_key;
+          int permissions;
+          line_stream >> public_key /* eat "User" */
+                      >> public_key
+                      >> permissions;
+          int gap_perm = (int) gap_none;
+          if (permissions & nucleus::neutron::PermissionRead)
+            gap_perm |= gap_read;
+          if (permissions & nucleus::neutron::PermissionWrite)
+            gap_perm |= gap_write;
+          std::string const& user_id = this->user_from_public_key(public_key)._id;
+          infos->accesses[user_id] = gap_perm;
+        }
 
       this->_files_infos[abspath] = infos.get();
       return *(infos.release());
@@ -521,11 +582,10 @@ namespace surface
           "XXX: setting executable permissions not yet implemented");
 
       QProcess p;
-      if (p.execute(access_binary.c_str(), arguments) < 0)
-        throw Exception(gap_internal_error, "Cannot start the watchdog !");
+      p.start(access_binary.c_str(), arguments);
+      if (!p.waitForFinished())
+        throw Exception(gap_internal_error, "8access binary failed");
     }
-
-
 
   }
 }

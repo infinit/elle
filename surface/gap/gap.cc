@@ -343,5 +343,49 @@ extern "C"
       __WRAP_CPP(state, set_permissions, user_id, absolute_path, permissions);
     }
 
+    char** gap_file_users(gap_State* state,
+                          char const* absolute_path)
+    {
+      assert(absolute_path != nullptr);
+      gap_Status ret;
+      try
+        {
+          auto const& infos = __TO_CPP(state)->file_infos(absolute_path);
+          std::list<std::string> list;
+          for (auto const& pair : infos.accesses)
+            list.push_back(pair.first);
+          return _cpp_stringlist_to_c_stringlist(list);
+        }
+      CATCH_ALL(get_file_users);
+
+      (void) ret;
+      return nullptr;
+    }
+
+    void gap_file_users_free(char** users)
+    {
+      ::free(users);
+    }
+
+    int gap_get_permissions(gap_State* state,
+                            char const* user_id,
+                            char const* absolute_path)
+    {
+      assert(user_id != nullptr);
+      assert(absolute_path != nullptr);
+      gap_Status ret;
+      try
+        {
+          auto const& infos = __TO_CPP(state)->file_infos(absolute_path);
+          auto it = infos.accesses.find(user_id);
+          if (it == infos.accesses.end())
+            throw surface::gap::Exception(gap_error, "No such user for this file");
+          return it->second;
+        }
+      CATCH_ALL(get_permissions);
+
+      (void) ret;
+      return -1;
+    }
 
 } // ! extern "C"

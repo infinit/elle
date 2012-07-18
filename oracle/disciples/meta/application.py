@@ -15,24 +15,26 @@ class Application(object):
     """
 
     _urls = (
-        '/',                    'Root',
-        '/me',                  'User',
-        '/user/(.+)',           'User',
-        '/device/(.+)',         'Device',
-        '/devices',             'Device',
-        '/network/(.+)/(.+)',   'Network',
-        '/network/(.+)',        'Network',
-        '/network',             'Network',
-        '/networks',            'Network',
-        '/invite',              'Invite',
+        '/',                            'Root',
+        '/me',                          'User',
+        '/user/(.+)',                   'User',
+        '/user_from_public_key',        'UserFromPublicKey',
+        '/device/(.+)',                 'Device',
+        '/devices',                     'Device',
+        '/network/(.+)/(.+)',           'Network',
+        '/network/(.+)',                'Network',
+        '/network',                     'Network',
+        '/networks',                    'Network',
+        '/invite',                      'Invite',
     )
 
     _views = {
-        'Root': pages.Root,
-        'User': pages.User,
-        'Device': pages.Device,
-        'Network': pages.Network,
-        'Invite': pages.Invite,
+        'Root':                 pages.Root,
+        'User':                 pages.User,
+        'UserFromPublicKey':    pages.UserFromPublicKey,
+        'Device':               pages.Device,
+        'Network':              pages.Network,
+        'Invite':               pages.Invite,
     }
 
     def __init__(self, ip='127.0.0.1', port=12345):
