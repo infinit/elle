@@ -19,6 +19,8 @@ extern "C" {
     /// gap_State is an opaque structure used in every calls.
     typedef void gap_State;
 
+    /// - gap ctor & dtor -----------------------------------------------------
+
     /// Create a new state.
     /// Returns NULL on failure.
     gap_State* gap_new();
@@ -26,11 +28,13 @@ extern "C" {
     /// Release a state.
     void gap_free(gap_State* state);
 
+    /// - Services status -----------------------------------------------------
+
     /// Check if meta is alive.
     gap_Status gap_meta_status(gap_State* state);
 
-    /// Notify the watchdog that networks has changed.
-    gap_Status gap_refresh_networks(gap_State* state);
+
+    /// - Authentication & registration ---------------------------------------
 
     /// Generate a hash for the password.
     /// NOTE: You are responsible to free the returned pointer with
@@ -59,12 +63,20 @@ extern "C" {
                             char const* device_name,
                             char const* activation_code);
 
+    /// - Device --------------------------------------------------------------
+
     /// Returns the local device status.
     gap_Status gap_device_status(gap_State* state);
 
     /// Update the local device name.
     gap_Status gap_set_device_name(gap_State* state,
                                    char const* name);
+
+    /// - Network -------------------------------------------------------------
+
+    /// Create a new network.
+    gap_Status gap_create_network(gap_State* state,
+                                  char const* name);
 
     /// Retrieve all user networks ids. Returned value is null in case of
     /// error, or is a null-terminated array of null-terminated strings.
@@ -83,16 +95,18 @@ extern "C" {
     /// Free a previously allocated network users'.
     void gap_network_users_free(char** users);
 
-    /// Create a new network.
-    gap_Status gap_create_network(gap_State* state,
-                                  char const* name);
-
+    /// - Watchdog ------------------------------------------------------------
 
     /// Launch the watchdog binary.
     gap_Status gap_launch_watchdog(gap_State* state);
 
+    /// Notify the watchdog that networks has changed.
+    gap_Status gap_refresh_networks(gap_State* state);
+
     /// Stop the watchdog process.
     gap_Status gap_stop_watchdog(gap_State* state);
+
+    /// - Permissions ---------------------------------------------------------
 
     enum gap_Permission
     {
