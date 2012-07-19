@@ -17,7 +17,7 @@ namespace elle { namespace serialize {
     class OutputJSONArchive::_DictStream
     {
     public:
-      static ArchiveMode const mode = ArchiveMode::Output;
+      static ArchiveMode const mode;
       typedef uint32_t SequenceSizeType;
     private:
       OutputJSONArchive&  _archive;
@@ -92,7 +92,7 @@ namespace elle { namespace serialize {
     class InputJSONArchive::_DictStream
     {
     public:
-      static ArchiveMode const mode = ArchiveMode::Output;
+      static ArchiveMode const mode;
       typedef uint32_t SequenceSizeType;
 
     private:

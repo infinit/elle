@@ -3,7 +3,7 @@
 
 #include "ArchiveMode.hh"
 
-inline std::ostream& operator <<(std::ostream& out, elle::serialize::ArchiveMode mode)
+std::ostream& operator <<(std::ostream& out, elle::serialize::ArchiveMode mode)
 {
   assert(
         mode == elle::serialize::ArchiveMode::Input
