@@ -4,7 +4,10 @@
 # include <cassert>
 # include <iosfwd>
 
-namespace elle { namespace serialize {
+namespace elle
+{
+  namespace serialize
+  {
 
     /// ArchiveMode represent either an input or an output archive.
     enum class ArchiveMode
@@ -13,9 +16,10 @@ namespace elle { namespace serialize {
       Output = 0x3417e,
     };
 
-}} // !namespace elle::serialize
+  }
+} // !namespace elle::serialize
 
-inline std::ostream& operator <<(std::ostream& out, elle::serialize::ArchiveMode mode);
+std::ostream& operator <<(std::ostream& out, elle::serialize::ArchiveMode mode);
 
 #endif /* ! ARCHIVEMODE_HH */
 
