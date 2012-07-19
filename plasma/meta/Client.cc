@@ -91,9 +91,20 @@ SERIALIZE_RESPONSE(plasma::meta::NetworkResponse, ar, res)
   ar & named("_id", res._id);
   ar & named("name", res.name);
   ar & named("model", res.model);
-  ar & named("root_block", res.root_block);
-  ar & named("root_address", res.root_address);
-  ar & named("descriptor", res.descriptor);
+  try
+    {
+      ar & named("root_block", res.root_block);
+      ar & named("root_address", res.root_address);
+      ar & named("descriptor", res.descriptor);
+    }
+  catch (std::bad_cast const&)
+    {
+      if (Archive::mode != ArchiveMode::Input)
+          throw;
+      res.root_block = "";
+      res.root_address = "";
+      res.descriptor = "";
+    }
   ar & named("devices", res.devices);
   ar & named("users", res.users);
 }
@@ -319,6 +330,8 @@ namespace plasma
         { throw Exception(Error::network_error, err.what()); }
 
       T ret;
+
+      elle::log::debug("GET", url, "=>", res.str());
 
       // deserialize response
       try
