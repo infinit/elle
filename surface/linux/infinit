@@ -59,7 +59,7 @@ class InfinitShell(cmd.Cmd):
         """Print networks."""
         networks = self._state.networks()
         for network in networks:
-            print(network)
+            print(network, ':', self._state.network_name(network))
 
     def do_create_network(self, args):
         """Create a new network."""
