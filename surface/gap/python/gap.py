@@ -29,9 +29,9 @@ class State:
             'networks',
             'launch_watchdog',
             'stop_watchdog',
-            'networks',
             'set_permissions',
             'set_device_name',
+            'network_name',
         ]
 
         def make_method(m):
