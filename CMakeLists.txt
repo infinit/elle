@@ -139,9 +139,9 @@ add_subdirectory(tests)
 
 add_subdirectory(surface)
 
-if("${INFINIT_PLATFORM}" MATCHES "linux*")
-  add_subdirectory(oracle)
-endif()
+#if("${INFINIT_PLATFORM}" MATCHES "linux*")
+add_subdirectory(oracle)
+#endif()
 
 # just to make files appears on qtcreator
 file(GLOB_RECURSE HEADERS *.hh *.hxx)
