@@ -99,7 +99,7 @@ class Network(Page):
         else:
             network = database.networks().find_one({
                 '_id': database.ObjectId(id),
-                'owner': self.user['_id'],
+                'owner': database.ObjectId(self.user['_id']),
             })
             if not network:
                 return self.error("Network does not exists")
