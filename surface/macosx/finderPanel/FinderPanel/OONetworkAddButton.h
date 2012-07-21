@@ -7,7 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <Quartz/Quartz.h>
 
-@interface OONetworkAddButton : NSObject
-
+@interface OONetworkAddButton : NSObject <NSCoding, NSPasteboardWriting, NSPasteboardReading> 
+{
+    NSString* uid;
+    NSImage* image; 
+    NSString* name;
+}
+@property NSString* uid;
+@property NSImage* image;
+@property NSString* name;
 @end

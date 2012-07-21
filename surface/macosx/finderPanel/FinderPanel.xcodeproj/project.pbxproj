@@ -53,6 +53,9 @@
 		1C30B5DE15B570C20056A382 /* OONetworkModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CB8E5CA15A5A13C00DCA443 /* OONetworkModel.h */; };
 		1C30B5DF15B570C20056A382 /* OOUserModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C90973A15A43630002F0B1E /* OOUserModel.h */; };
 		1C30B5E015B570C20056A382 /* OOBrowserUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C90972E15A2F0C1002F0B1E /* OOBrowserUtilities.h */; };
+		1C49943E15B6F32E00BADF60 /* OONetworkAddButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C49943C15B6F32E00BADF60 /* OONetworkAddButton.h */; };
+		1C49943F15B6F32E00BADF60 /* OONetworkAddButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C49943D15B6F32E00BADF60 /* OONetworkAddButton.m */; };
+		1C49944015B6F32E00BADF60 /* OONetworkAddButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C49943D15B6F32E00BADF60 /* OONetworkAddButton.m */; };
 		1C53A1B515B578B300D2B3B0 /* FinderPanel-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1C045BC3159CAA7900162909 /* FinderPanel-Info.plist */; };
 		1C90972C15A2F077002F0B1E /* OOUserBrowserBackgroundLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C90972B15A2F077002F0B1E /* OOUserBrowserBackgroundLayer.m */; };
 		1C90973015A2F0C1002F0B1E /* OOBrowserUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C90972F15A2F0C1002F0B1E /* OOBrowserUtilities.m */; };
@@ -64,6 +67,7 @@
 		1C9451A615A5A5E400370E90 /* OONetworkBrowserCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C9451A015A5A5E400370E90 /* OONetworkBrowserCell.m */; };
 		1C9451A715A5A5E400370E90 /* OONetworkBrowserView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C9451A215A5A5E400370E90 /* OONetworkBrowserView.m */; };
 		1C9451A815A5A5E400370E90 /* OONetworkBrowserViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C9451A415A5A5E400370E90 /* OONetworkBrowserViewManager.m */; };
+		1CB13BDC15B6C1520069FEEF /* Phone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C136A7F15B58EA4003D41B9 /* Phone.framework */; };
 		1CB4E8C415AC380900CEA998 /* OOBrowserWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB4E8C215AC380900CEA998 /* OOBrowserWindow.m */; };
 		1CB8E5CC15A5A13C00DCA443 /* OONetworkModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB8E5CB15A5A13C00DCA443 /* OONetworkModel.m */; };
 		1CBD903715A1987D00D03CBD /* OOUserBrowserView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CBD903615A1987D00D03CBD /* OOUserBrowserView.m */; };
@@ -83,7 +87,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1C045BB7159CAA7900162909 /* FinderPanel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = FinderPanel.app; path = FinderPanelApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C045BB7159CAA7900162909 /* FinderPanelApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FinderPanelApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C045BBB159CAA7900162909 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		1C045BBE159CAA7900162909 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		1C045BBF159CAA7900162909 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -111,6 +115,8 @@
 		1C30B5B915B56A280056A382 /* FinderPanel-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FinderPanel-Prefix.pch"; sourceTree = "<group>"; };
 		1C30B5BA15B56A280056A382 /* FinderPanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FinderPanel.h; sourceTree = "<group>"; };
 		1C30B5BB15B56A280056A382 /* FinderPanel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FinderPanel.m; sourceTree = "<group>"; };
+		1C49943C15B6F32E00BADF60 /* OONetworkAddButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OONetworkAddButton.h; sourceTree = "<group>"; };
+		1C49943D15B6F32E00BADF60 /* OONetworkAddButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OONetworkAddButton.m; sourceTree = "<group>"; };
 		1C90972A15A2F077002F0B1E /* OOUserBrowserBackgroundLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOUserBrowserBackgroundLayer.h; sourceTree = "<group>"; };
 		1C90972B15A2F077002F0B1E /* OOUserBrowserBackgroundLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OOUserBrowserBackgroundLayer.m; sourceTree = "<group>"; };
 		1C90972E15A2F0C1002F0B1E /* OOBrowserUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOBrowserUtilities.h; sourceTree = "<group>"; };
@@ -146,6 +152,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1CB13BDC15B6C1520069FEEF /* Phone.framework in Frameworks */,
 				1CBD903C15A1CF0400D03CBD /* Quartz.framework in Frameworks */,
 				1C045BBC159CAA7900162909 /* Cocoa.framework in Frameworks */,
 			);
@@ -188,7 +195,7 @@
 		1C045BB8159CAA7900162909 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1C045BB7159CAA7900162909 /* FinderPanel.app */,
+				1C045BB7159CAA7900162909 /* FinderPanelApp.app */,
 				1C045BD8159CAA7900162909 /* FinderPanelTests.octest */,
 				1C30B5B115B56A280056A382 /* FinderPanel.framework */,
 			);
@@ -326,6 +333,8 @@
 				1C9451A215A5A5E400370E90 /* OONetworkBrowserView.m */,
 				1C94519F15A5A5E400370E90 /* OONetworkBrowserCell.h */,
 				1C9451A015A5A5E400370E90 /* OONetworkBrowserCell.m */,
+				1C49943C15B6F32E00BADF60 /* OONetworkAddButton.h */,
+				1C49943D15B6F32E00BADF60 /* OONetworkAddButton.m */,
 			);
 			name = network;
 			sourceTree = "<group>";
@@ -391,6 +400,7 @@
 				1C30B5DE15B570C20056A382 /* OONetworkModel.h in Headers */,
 				1C30B5DF15B570C20056A382 /* OOUserModel.h in Headers */,
 				1C30B5E015B570C20056A382 /* OOBrowserUtilities.h in Headers */,
+				1C49943E15B6F32E00BADF60 /* OONetworkAddButton.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -411,7 +421,7 @@
 			);
 			name = FinderPanelApp;
 			productName = FinderPanel;
-			productReference = 1C045BB7159CAA7900162909 /* FinderPanel.app */;
+			productReference = 1C045BB7159CAA7900162909 /* FinderPanelApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 		1C045BD7159CAA7900162909 /* FinderPanelTests */ = {
@@ -553,6 +563,7 @@
 				1C9451A715A5A5E400370E90 /* OONetworkBrowserView.m in Sources */,
 				1C9451A815A5A5E400370E90 /* OONetworkBrowserViewManager.m in Sources */,
 				1CB4E8C415AC380900CEA998 /* OOBrowserWindow.m in Sources */,
+				1C49943F15B6F32E00BADF60 /* OONetworkAddButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -581,6 +592,7 @@
 				1C30B5CA15B56A490056A382 /* OOBrowserWindow.m in Sources */,
 				1C30B5CB15B56A490056A382 /* OOBrowserWindowController.m in Sources */,
 				1C30B5CC15B56A490056A382 /* OOBrowserUtilities.m in Sources */,
+				1C49944015B6F32E00BADF60 /* OONetworkAddButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -688,6 +700,10 @@
 		1C045BEA159CAA7900162909 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/Surface-dsztwyginwybdeccplzkjlttngdj/Build/Products/Debug\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FinderPanel/FinderPanel-Prefix.pch";
 				INFOPLIST_FILE = "FinderPanel/FinderPanel-Info.plist";
@@ -699,6 +715,10 @@
 		1C045BEB159CAA7900162909 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/Surface-dsztwyginwybdeccplzkjlttngdj/Build/Products/Debug\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FinderPanel/FinderPanel-Prefix.pch";
 				INFOPLIST_FILE = "FinderPanel/FinderPanel-Info.plist";

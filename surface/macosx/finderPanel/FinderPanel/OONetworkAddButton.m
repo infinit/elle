@@ -10,4 +10,34 @@
 
 @implementation OONetworkAddButton
 
+@synthesize uid;
+@synthesize image;
+@synthesize name;
+
+- (id)init {
+    
+    self = [super init];
+    if (self) {
+        self.image = [NSImage imageNamed:NSImageNameDotMac];
+    }
+    
+    return self;
+}
+
+- (NSString*)imageRepresentationType {
+	return IKImageBrowserNSImageRepresentationType;
+}
+- (id)imageRepresentation {
+	return self.image;
+}
+- (NSString*)imageUID {
+    return self.uid;
+}
+- (NSString*)imageTitle {
+    return nil;
+}
+- (NSString*)imageSubtitle {
+    return nil;
+}
+
 @end

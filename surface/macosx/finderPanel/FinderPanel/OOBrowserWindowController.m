@@ -1,5 +1,6 @@
 #import "OOBrowserWindowController.h"
 #import "OOUserBrowserBackgroundLayer.h"
+#import <Phone/OOPhone.h>
 
 //==============================================================================
 @implementation OOBrowserWindowController
@@ -108,6 +109,14 @@
     [theAnim startAnimation];
     
     
+}
+
+
+// -------------------------------------------------------------------------
+//	performDragOperation:sender
+// ------------------------------------------------------------------------- 
+- (IBAction)createNetwork:(id)sender {
+    [[OOPhone getInstance] createNetworkWithName:@"Hello"];
 }
 
 @end
