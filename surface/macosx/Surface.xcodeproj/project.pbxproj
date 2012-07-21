@@ -27,6 +27,7 @@
 		1C7863451566919800F7D2F5 /* 19px-pending-anim-blue.gif in Resources */ = {isa = PBXBuildFile; fileRef = 1C7863061566919800F7D2F5 /* 19px-pending-anim-blue.gif */; };
 		1C7863461566919800F7D2F5 /* 19px-pending-anim-red.gif in Resources */ = {isa = PBXBuildFile; fileRef = 1C7863071566919800F7D2F5 /* 19px-pending-anim-red.gif */; };
 		1C8C74B9159894A6002A14A8 /* NSString+Hashes.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C74B8159894A6002A14A8 /* NSString+Hashes.m */; };
+		1CAB4C9215B83E04005CD6FC /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367B0EB714FFB6F100AC66A2 /* Security.framework */; };
 		1CB3FFA11594AF8300CFDBA7 /* infinit-setup.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CB3FFA01594AF8300CFDBA7 /* infinit-setup.png */; };
 		1CB4FB751528EDA100DDEC99 /* io.infinit.FinderDopant.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CD297041528D28A006D1A4C /* io.infinit.FinderDopant.bundle */; };
 		1CB4FB761528EDA100DDEC99 /* io.infinit.Nurse.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CD297061528D28A006D1A4C /* io.infinit.Nurse.helper */; };
@@ -68,7 +69,6 @@
 		1CD5C46C1552EC9200556CC9 /* pref_tab_stores.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CD5C4621552EC9200556CC9 /* pref_tab_stores.png */; };
 		1CDABDA315502B3200F8097E /* infinite-app-icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1CDABDA115502B3200F8097E /* infinite-app-icon.icns */; };
 		3667200E150BE370002A595A /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367B0EBA14FFB70200AC66A2 /* ServiceManagement.framework */; };
-		3667200F150BE372002A595A /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367B0EB714FFB6F100AC66A2 /* Security.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -281,13 +281,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1CAB4C9215B83E04005CD6FC /* Security.framework in Frameworks */,
 				1C48593F15B569C3003ED64A /* FinderPanel.framework in Frameworks */,
 				1CD48DBE15B5530B00C929BF /* Phone.framework in Frameworks */,
 				1CC9FCB4157CD4DC002C3BE1 /* AddressBook.framework in Frameworks */,
 				1C03F3381575265B00966EC3 /* QuartzCore.framework in Frameworks */,
 				1CD5C4411552989B00556CC9 /* Cocoa.framework in Frameworks */,
 				3667200E150BE370002A595A /* ServiceManagement.framework in Frameworks */,
-				3667200F150BE372002A595A /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -344,7 +344,7 @@
 		1C4858F415B55C75003ED64A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1C4858FA15B55C76003ED64A /* FinderPanel.app */,
+				1C4858FA15B55C76003ED64A /* FinderPanelApp.app */,
 				1C4858FC15B55C76003ED64A /* FinderPanelTests.octest */,
 				1C48593E15B569C0003ED64A /* FinderPanel.framework */,
 			);
@@ -539,8 +539,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				1C48594115B569CA003ED64A /* PBXTargetDependency */,
 				1CD48DC015B5530E00C929BF /* PBXTargetDependency */,
+				1C48594115B569CA003ED64A /* PBXTargetDependency */,
 				1C99E16F155AAC7B00426951 /* PBXTargetDependency */,
 				1C99E171155AAC7B00426951 /* PBXTargetDependency */,
 				1C99E173155AAC7B00426951 /* PBXTargetDependency */,
@@ -595,10 +595,9 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		1C4858FA15B55C76003ED64A /* FinderPanel.app */ = {
+		1C4858FA15B55C76003ED64A /* FinderPanelApp.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			name = FinderPanel.app;
 			path = FinderPanelApp.app;
 			remoteRef = 1C4858F915B55C76003ED64A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
