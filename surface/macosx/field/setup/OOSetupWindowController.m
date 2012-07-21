@@ -10,6 +10,19 @@
 
 @implementation OOSetupWindowController
 
++ (OOSetupWindowController *)getInstance {
+    
+    static OOSetupWindowController *singleton;
+    @synchronized(self){
+        if (![singleton window]){
+            // Le singleton n'a pas encore été instancié
+            singleton = [[OOSetupWindowController alloc] init];
+        }
+        return singleton;
+    }
+    
+}
+
 - (id) init {
     if(self = [super initWithWindowNibName:@"OOSetupWindow"]) {
     }

@@ -31,6 +31,7 @@ extern NSString *OOUserUnLoggedNotification;
     IBOutlet NSTextField            *loginViewComputerName;
     IBOutlet NSTextField            *loginViewEmail;
     IBOutlet NSSecureTextField      *loginViewPassword;
+    IBOutlet NSButtonCell           *loginViewRememberMe;
     IBOutlet NSTextField            *loginViewError;
     
     
@@ -42,6 +43,7 @@ extern NSString *OOUserUnLoggedNotification;
     IBOutlet NSSecureTextField      *registerViewPasswordVerif;
     IBOutlet NSTextField            *registerViewActivationCode;
     IBOutlet NSButtonCell           *registerViewTermOfService;
+    IBOutlet NSButtonCell           *registerViewRememberMe;
     IBOutlet NSButtonCell           *registerViewContinue;
     IBOutlet NSTextField            *registerViewError;
     
@@ -64,6 +66,7 @@ extern NSString *OOUserUnLoggedNotification;
 @property(retain)NSTextField        *loginViewComputerName;
 @property(retain)NSTextField        *loginViewEmail;
 @property(retain)NSSecureTextField  *loginViewPassword;
+@property(retain)NSButtonCell       *loginViewRememberMe;
 @property(retain)NSTextField        *loginViewError;
 
 // Register view //
@@ -74,6 +77,7 @@ extern NSString *OOUserUnLoggedNotification;
 @property(retain)NSSecureTextField  *registerViewPasswordVerif;
 @property(retain)NSTextField        *registerViewActivationCode;
 @property(retain)NSButtonCell       *registerViewTermOfService;
+@property(retain)NSButtonCell       *registerViewRememberMe;
 @property(retain)NSButtonCell       *registerViewContinue;
 @property(retain)NSTextField        *registerViewError;
 

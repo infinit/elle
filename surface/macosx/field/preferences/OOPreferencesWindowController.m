@@ -7,8 +7,22 @@
 //
 
 #import "OOPreferencesWindowController.h"
+#import "AppDelegate.h"
 
 @implementation OOPreferencesWindowController
+
++ (OOPreferencesWindowController *)getInstance {
+    
+    static OOPreferencesWindowController *singleton;
+    @synchronized(self){
+        if (![singleton window]){
+            // Le singleton n'a pas encore été instancié
+            singleton = [[OOPreferencesWindowController alloc] init];
+        }
+        return singleton;
+    }
+    
+}
 
 - (id) init {
     if(self = [super initWithWindowNibName:@"OOPreferencesWindows"]) {
@@ -80,6 +94,15 @@
     [view setFrame:newFrameRect];
     
     return frame;
+}
+
+- (IBAction)unlinkInfinitAccount:(id)sender {
+    NSUserDefaults *pref;
+    pref=[NSUserDefaults standardUserDefaults];
+    [pref setObject:@"NO" forKey:@"RememberMe"];
+    [pref synchronize];
+    [[self window] close];
+    [[NSNotificationCenter defaultCenter] postNotificationName:OOOpenSetupWindowAndStopWatchdog object:self];
 }
 
 - (NSArray *)toolbarSelectableItemIdentifiers:(NSToolbar *)toolbar {

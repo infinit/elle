@@ -9,5 +9,5 @@
 #import <Cocoa/Cocoa.h>
 void testfunc2(void);
 @interface OOSetupWindowController : NSWindowController
-
++ (OOSetupWindowController *)getInstance;
 @end

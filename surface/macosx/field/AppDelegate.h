@@ -8,6 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+extern NSString *OOOpenSetupWindowAndStopWatchdog;
+
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 {
     NSWindow *window;
@@ -16,6 +18,7 @@
     NSStatusItem *statusItem;
     NSInteger currentFrame;
     NSTimer *animTimer;
+    NSImage *defaultIcon;
     int     pendingCount;
     BOOL     isPending;
 }
@@ -38,5 +41,5 @@
 - (IBAction)launchHelpCenter:(id)sender;
 
 - (void)updateProgessChangedNotification:(NSNotification *)notification;
-
+- (void)showSetupWindow;
 @end
