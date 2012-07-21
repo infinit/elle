@@ -24,16 +24,19 @@ extern NSString *OOUpdateProgessChangedNotification;
 - (void)loginWithEmail:(NSString*)arg1 password:(NSString*)arg2 performSelector:(SEL)arg3 forObject:(id)arg4;
 
 - (void)registerWithFullName:(NSString*)arg1 
-                      email:(NSString*)arg2 
-                   password:(NSString*)arg3 
-                machineName:(NSString*)arg4 
-            performSelector:(SEL)arg5 
-                  forObject:(id)arg6;
+                       email:(NSString*)arg2 
+                    password:(NSString*)arg3 
+                 machineName:(NSString*)arg4
+              activationCode:(NSString*)arg5
+             performSelector:(SEL)arg6 
+                   forObject:(id)arg7;
 
 - (void)createNetworkWithName:(NSString*)arg1;
 
 - (void)update;
 
 - (NSArray*)getUserNetworks;
+
+- (NSString*)getNetworkNameWithId:(NSString*)arg1;
 
 @end
